@@ -26,9 +26,8 @@ public:
         }
     }
 
-    // Constructor with existing terms
     inline vint32m1_t(TermManager* t, const std::vector<Term>& data)
-        : tm(t), elements(data), vl(data.size()) {}
+        : elements(data), tm(t), vl(data.size()) {}
 
 
     inline Term getElement(size_t idx) const {
@@ -67,9 +66,8 @@ public:
         }
     }
 
-    // Constructor with existing terms
     inline vint8m1_t(TermManager* t, const std::vector<Term>& data)
-        : tm(t), elements(data), vl(data.size()) {}
+        : elements(data), tm(t), vl(data.size()) {}
 
 
     inline Term getElement(size_t idx) const {
@@ -108,9 +106,8 @@ public:
         }
     }
 
-    // Constructor with existing terms
     inline vint16m2_t(TermManager* t, const std::vector<Term>& data)
-        : tm(t), elements(data), vl(data.size()) {}
+        : elements(data), tm(t), vl(data.size()) {}
 
 
     inline Term getElement(size_t idx) const {
@@ -149,9 +146,8 @@ public:
         }
     }
 
-    // Constructor with existing terms
     inline vint32m4_t(TermManager* t, const std::vector<Term>& data)
-        : tm(t), elements(data), vl(data.size()) {}
+        : elements(data), tm(t), vl(data.size()) {}
 
 
     inline Term getElement(size_t idx) const {
