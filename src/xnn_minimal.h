@@ -26,4 +26,18 @@ struct xnn_qs8_add_minmax_params {
     } scalar;
 };
 
+struct xnn_qu8_add_minmax_params {
+    struct {
+      uint8_t a_zero_point;
+      uint8_t b_zero_point;
+      int32_t bias;
+      int32_t a_multiplier;
+      int32_t b_multiplier;
+      int32_t shift;
+      int16_t output_zero_point;
+      uint8_t output_min;
+      uint8_t output_max;
+    } scalar;
+  };
+
 #endif // XNN_MINIMAL_H

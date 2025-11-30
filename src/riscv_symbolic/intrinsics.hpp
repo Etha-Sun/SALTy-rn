@@ -136,7 +136,7 @@ inline Term roundedShiftRight(Term value, size_t shift, unsigned int vxrm) {
 
 /**
  * __riscv_vsetvl_e32m1: Set vector length for 32-bit elements with LMUL=1
- * Semantics: Returns the actual vector length that will be used
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
  */
 inline size_t __riscv_vsetvl_e32m1(size_t avl) {
   g_current_vl = avl;
@@ -145,6 +145,7 @@ inline size_t __riscv_vsetvl_e32m1(size_t avl) {
 
 /**
  * __riscv_vsetvl_e8m1: Set vector length for 8-bit elements with LMUL=1
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
  */
 inline size_t __riscv_vsetvl_e8m1(size_t avl) {
   g_current_vl = avl;
@@ -153,6 +154,7 @@ inline size_t __riscv_vsetvl_e8m1(size_t avl) {
 
 /**
  * __riscv_vsetvl_e8m2: Set vector length for 8-bit elements with LMUL=2
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
  */
 inline size_t __riscv_vsetvl_e8m2(size_t avl) {
   g_current_vl = avl;
@@ -339,6 +341,43 @@ inline vint32m4_t __riscv_vsra_vx_i32m4(const vint32m4_t &vec, uint32_t shift,
     result_elements.push_back(
         g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, // Arithmetic shift right
                               {vec.getElement(i), shift_term}));
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vssra_vx_i32m4: Saturating arithmetic right shift by scalar
+ * Performs arithmetic shift right with saturation (clamps to min/max values)
+ */
+inline vint32m4_t __riscv_vssra_vx_i32m4(const vint32m4_t &vec, uint32_t shift,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // For saturating shift right, we need to check if the value would overflow
+  // For signed integers, overflow only happens with negative values
+  Term shift_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(shift));
+  Term zero = g_symbolic_tm->mkBitVector(32, 0);
+  Term min_int32 = g_symbolic_tm->mkBitVector(32, 0x80000000); // INT32_MIN
+
+  for (size_t i = 0; i < vl; i++) {
+    Term elem = vec.getElement(i);
+    
+    // Check if negative
+    Term is_negative = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {elem, zero});
+    
+    // Perform arithmetic shift right
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, {elem, shift_term});
+    
+    // For saturation: if the value is INT32_MIN and we shift, it stays INT32_MIN
+    // This is the main saturation case for signed right shift
+    Term is_min = g_symbolic_tm->mkTerm(Kind::EQUAL, {elem, min_int32});
+    Term saturated = g_symbolic_tm->mkTerm(
+        Kind::ITE, {is_min, min_int32, shifted});
+    
+    result_elements.push_back(saturated);
   }
 
   return vint32m4_t(g_symbolic_tm, result_elements);
@@ -724,6 +763,31 @@ inline vint16m4_t __riscv_vwsub_vx_i16m4(const vint8m2_t &vec, int8_t scalar,
   }
 
   return vint16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwadd_vx_i32m4: Widening addition (int16 vector + int16 scalar
+ * -> int32 vector)
+ */
+inline vint32m4_t __riscv_vwadd_vx_i32m4(const vint16m2_t &vec, int16_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  int32_t scalar_ext = static_cast<int32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint32_t>(scalar_ext));
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term vec_elem_ext = g_symbolic_tm->mkTerm(sext_op, {vec.getElement(i)});
+
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {vec_elem_ext, scalar_term}));
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
 }
 
 /**
@@ -1149,6 +1213,154 @@ inline vint32m4_t __riscv_vsub_vv_i32m4(const vint32m4_t &op1,
   }
 
   return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Missing Intrinsics for qu8vaddc_rvv.cpp
+// ============================================================================
+
+/**
+ * __riscv_vsext_vf2_i32m8: Sign-extend int16m4 to int32m8 (widening by 2x)
+ */
+inline vint32m8_t __riscv_vsext_vf2_i32m8(const vint16m4_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+  for (size_t i = 0; i < vl; i++) {
+    Term extended = g_symbolic_tm->mkTerm(sext_op, {vec.getElement(i)});
+    result_elements.push_back(extended);
+  }
+
+  return vint32m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmv_v_x_i32m8: Move scalar to all elements of vector (int32m8)
+ */
+inline vint32m8_t __riscv_vmv_v_x_i32m8(int32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t scalar_u32 = static_cast<uint32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar_u32));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vint32m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmacc_vx_i32m8: Multiply-accumulate (acc += vec * scalar) for int32m8
+ */
+inline vint32m8_t __riscv_vmacc_vx_i32m8(const vint32m8_t &acc, int32_t scalar,
+                                         const vint32m8_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t scalar_u32 = static_cast<uint32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar_u32));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term product = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT,
+                                         {vec.getElement(i), scalar_term});
+    Term result = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD,
+                                        {acc.getElement(i), product});
+    result_elements.push_back(result);
+  }
+
+  return vint32m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vssra_vx_i32m8: Saturating arithmetic right shift by scalar (int32m8)
+ */
+inline vint32m8_t __riscv_vssra_vx_i32m8(const vint32m8_t &vec, uint32_t shift,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(shift));
+  Term zero = g_symbolic_tm->mkBitVector(32, 0);
+  Term min_int32 = g_symbolic_tm->mkBitVector(32, 0x80000000); // INT32_MIN
+
+  for (size_t i = 0; i < vl; i++) {
+    Term elem = vec.getElement(i);
+    
+    // Perform arithmetic shift right
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, {elem, shift_term});
+    
+    // For saturation: if the value is INT32_MIN and we shift, it stays INT32_MIN
+    Term is_min = g_symbolic_tm->mkTerm(Kind::EQUAL, {elem, min_int32});
+    Term saturated = g_symbolic_tm->mkTerm(
+        Kind::ITE, {is_min, min_int32, shifted});
+    
+    result_elements.push_back(saturated);
+  }
+
+  return vint32m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vnclip_wi_i16m4: Narrowing clip with immediate shift (int32m8 -> int16m4)
+ * Note: "wi" means "with immediate" shift value
+ */
+inline vint16m4_t __riscv_vnclip_wi_i16m4(const vint32m8_t &vec, size_t shift,
+                                          size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  shift = shift & 31;
+  unsigned int vxrm = __RISCV_VXRM_RNU; // Default assumption
+
+  Term max_val = g_symbolic_tm->mkBitVector(32, 32767);
+  Term min_val = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(-32768));
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term tmp = roundedShiftRight(vec.getElement(i), shift, vxrm);
+    Term gt_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {tmp, max_val});
+    Term lt_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {tmp, min_val});
+    Term clipped = g_symbolic_tm->mkTerm(
+        Kind::ITE, {gt_max, max_val,
+                    g_symbolic_tm->mkTerm(Kind::ITE, {lt_min, min_val, tmp})});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {clipped}));
+  }
+
+  return vint16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vnclip_wi_i8m2: Narrowing clip with immediate shift (int16m4 -> int8m2)
+ */
+inline vint8m2_t __riscv_vnclip_wi_i8m2(const vint16m4_t &vec, size_t shift,
+                                        size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  shift = shift & 15;
+  unsigned int vxrm = __RISCV_VXRM_RNU;
+
+  Term max_val = g_symbolic_tm->mkBitVector(16, 127);
+  Term min_val = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(-128));
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term tmp = roundedShiftRight(vec.getElement(i), shift, vxrm);
+    Term gt_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {tmp, max_val});
+    Term lt_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {tmp, min_val});
+    Term clipped = g_symbolic_tm->mkTerm(
+        Kind::ITE, {gt_max, max_val,
+                    g_symbolic_tm->mkTerm(Kind::ITE, {lt_min, min_val, tmp})});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {clipped}));
+  }
+
+  return vint8m2_t(g_symbolic_tm, result_elements);
 }
 
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP

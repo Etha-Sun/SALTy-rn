@@ -255,4 +255,106 @@ public:
     }
 };
 
+/**
+ * Symbolic representation of ARM NEON uint16x8_t vector type
+ * Represents 8 lanes of 16-bit unsigned integers
+ */
+class uint16x8_t {
+private:
+    std::array<Term, 8> lanes;
+    TermManager* tm;
+
+public:
+    inline uint16x8_t(TermManager* t) : tm(t) {
+        Sort bv16 = tm->mkBitVectorSort(16);
+        for (int i = 0; i < 8; i++) {
+            lanes[i] = tm->mkConst(bv16, "uint16x8_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline uint16x8_t(TermManager* t, const std::array<Term, 8>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 8>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
+ * Symbolic representation of ARM NEON uint8x8_t vector type
+ * Represents 8 lanes of 8-bit unsigned integers
+ */
+class uint8x8_t {
+private:
+    std::array<Term, 8> lanes;
+    TermManager* tm;
+
+public:
+    inline uint8x8_t(TermManager* t) : tm(t) {
+        Sort bv8 = tm->mkBitVectorSort(8);
+        for (int i = 0; i < 8; i++) {
+            lanes[i] = tm->mkConst(bv8, "uint8x8_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline uint8x8_t(TermManager* t, const std::array<Term, 8>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 8>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
+ * Symbolic representation of ARM NEON uint8x16_t vector type
+ * Represents 16 lanes of 8-bit unsigned integers
+ */
+class uint8x16_t {
+private:
+    std::array<Term, 16> lanes;
+    TermManager* tm;
+
+public:
+    inline uint8x16_t(TermManager* t) : tm(t) {
+        Sort bv8 = tm->mkBitVectorSort(8);
+        for (int i = 0; i < 16; i++) {
+            lanes[i] = tm->mkConst(bv8, "uint8x16_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline uint8x16_t(TermManager* t, const std::array<Term, 16>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 16>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
 #endif // NEON_SYMBOLIC_TYPES_HPP

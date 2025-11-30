@@ -1,27 +1,14 @@
-#include "neon_symbolic/memory.hpp"
-#include "neon_symbolic/neon_symbolic.hpp"
-#include "riscv_symbolic/memory.hpp"
-#include "riscv_symbolic/riscv_symbolic.hpp"
-#include "symbolic_common.hpp"
-#include "symbolic_helpers.hpp"
+#include "../../src/xnn_minimal.h"
+#include "../../src/neon_symbolic/memory.hpp"
+#include "../../src/neon_symbolic/neon_symbolic.hpp"
+#include "../../src/riscv_symbolic/memory.hpp"
+#include "../../src/riscv_symbolic/riscv_symbolic.hpp"
+#include "../../src/symbolic_common.hpp"
+#include "../../src/symbolic_helpers.hpp"
 #include <array>
 #include <cstdint>
 #include <iostream>
 #include <vector>
-
-struct xnn_qs8_add_minmax_params {
-  struct {
-    int8_t a_zero_point;
-    int8_t b_zero_point;
-    int32_t bias;
-    int32_t a_multiplier;
-    int32_t b_multiplier;
-    int32_t shift;
-    int16_t output_zero_point;
-    int8_t output_min;
-    int8_t output_max;
-  } scalar;
-};
 
 // Forward declarations
 extern "C" {
@@ -53,14 +40,6 @@ inline void populateNEONMemory8x16(const int8_t *ptr,
 }
 
 // Helper to populate RISC-V memory with int8 symbolic inputs
-inline void populateRISCVMemory8(const int8_t *ptr,
-                                 const std::vector<Term> &symbolic_values) {
-  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-
-  // RISC-V can process all elements at once (variable length)
-  g_riscv_memory_i8[addr].push_back(vint8m1_t(g_symbolic_tm, symbolic_values));
-}
-
 int main() {
   // Initialize the global term manager and solver
   TermManager tm;
@@ -96,8 +75,9 @@ int main() {
   populateNEONMemory8x16(input_a, symbolic_a);
   populateNEONMemory8x16(input_b, symbolic_b);
 
-  populateRISCVMemory8(input_a, symbolic_a);
-  populateRISCVMemory8(input_b, symbolic_b);
+  // Populate RISC-V memory (signed 8-bit)
+  SymbolicRISCVHelpers::populateMemory8(input_a, symbolic_a);
+  SymbolicRISCVHelpers::populateMemory8(input_b, symbolic_b);
 
   // Setup params struct with concrete test values
   struct xnn_qs8_add_minmax_params params;

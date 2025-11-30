@@ -11,20 +11,6 @@
 
 namespace SymbolicHelpers {
 
-
-inline std::vector<Term> createSymbolicArray(TermManager& tm, int len, const std::string& name_prefix) {
-    std::vector<Term> symbolic_array;
-    Sort bv32 = tm.mkBitVectorSort(32);
-    symbolic_array.reserve(len);
-
-    for (int i = 0; i < len; i++) {
-        symbolic_array.push_back(tm.mkConst(bv32, name_prefix + "_" + std::to_string(i)));
-    }
-
-    return symbolic_array;
-}
-
-
 inline void populateNEONMemory(const int32_t* ptr, const std::vector<Term>& symbolic_values) {
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 

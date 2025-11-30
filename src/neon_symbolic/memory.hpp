@@ -11,6 +11,8 @@
 inline std::map<uintptr_t, std::vector<int32x4_t>> g_neon_memory;
 inline std::map<uintptr_t, std::vector<int8x16_t>> g_neon_memory_i8x16;
 inline std::map<uintptr_t, std::vector<int8x8_t>> g_neon_memory_i8x8;
+inline std::map<uintptr_t, std::vector<uint8x16_t>> g_neon_memory_u8x16;
+inline std::map<uintptr_t, std::vector<uint8x8_t>> g_neon_memory_u8x8;
 
 // ============================================================================
 // Load Operations
@@ -70,7 +72,67 @@ inline int8x8_t vld1_s8(const int8_t *ptr) {
     return int8x8_t(g_symbolic_tm, lanes);
   }
 
+  // Additional fallback: Search for overlapping 128-bit vector
+  // E.g., loading from addr=56 might overlap with vector at addr=48
+  for (auto it = g_neon_memory_i8x16.begin(); it != g_neon_memory_i8x16.end(); ++it) {
+    uintptr_t base_addr = it->first;
+    // Check if addr falls within [base_addr, base_addr+16)
+    if (addr >= base_addr && addr < base_addr + 16 && !it->second.empty()) {
+      const int8x16_t &vec128 = it->second.back();
+      size_t offset = addr - base_addr;
+      std::array<Term, 8> lanes;
+      for (int i = 0; i < 8 && (offset + i) < 16; i++) {
+        lanes[i] = vec128.getLane(offset + i);
+      }
+      // Pad remaining lanes if we're at the edge
+      for (size_t i = (16 - offset); i < 8; i++) {
+        lanes[i] = vec128.getLane(15);  // Pad with last element
+      }
+      return int8x8_t(g_symbolic_tm, lanes);
+    }
+  }
+
   return int8x8_t(g_symbolic_tm);
+}
+
+/**
+ * vld1q_u8: Load vector of 8-bit unsigned integers (128-bit)
+ */
+inline uint8x16_t vld1q_u8(const uint8_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  auto it = g_neon_memory_u8x16.find(addr);
+  if (it != g_neon_memory_u8x16.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Otherwise, create fresh symbolic values
+  return uint8x16_t(g_symbolic_tm);
+}
+
+/**
+ * vld1_u8: Load vector of 8-bit unsigned integers (64-bit)
+ */
+inline uint8x8_t vld1_u8(const uint8_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  auto it = g_neon_memory_u8x8.find(addr);
+  if (it != g_neon_memory_u8x8.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Fallback: Check 128-bit memory map and extract lower half
+  auto it128 = g_neon_memory_u8x16.find(addr);
+  if (it128 != g_neon_memory_u8x16.end() && !it128->second.empty()) {
+    const uint8x16_t &vec128 = it128->second.back();
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+      lanes[i] = vec128.getLane(i);
+    }
+    return uint8x8_t(g_symbolic_tm, lanes);
+  }
+
+  return uint8x8_t(g_symbolic_tm);
 }
 
 // ============================================================================
@@ -99,6 +161,22 @@ inline void vst1q_s8(int8_t *ptr, const int8x16_t &vec) {
 inline void vst1_s8(int8_t *ptr, const int8x8_t &vec) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
   g_neon_memory_i8x8[addr].push_back(vec);
+}
+
+/**
+ * vst1q_u8: Store vector of 8-bit unsigned integers (128-bit)
+ */
+inline void vst1q_u8(uint8_t *ptr, const uint8x16_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_u8x16[addr].push_back(vec);
+}
+
+/**
+ * vst1_u8: Store vector of 8-bit unsigned integers (64-bit)
+ */
+inline void vst1_u8(uint8_t *ptr, const uint8x8_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_u8x8[addr].push_back(vec);
 }
 
 // ============================================================================
@@ -175,6 +253,22 @@ inline void vst1_lane_s8(int8_t *ptr, const int8x8_t &vec, int lane) {
     full_lanes[i] = lane0_term; // Pad with same value
   }
   g_neon_memory_i8x8[addr].push_back(int8x8_t(g_symbolic_tm, full_lanes));
+}
+
+/**
+ * vst1_lane_u8: Store 1 byte (specified lane of uint8x8_t)
+ */
+inline void vst1_lane_u8(uint8_t *ptr, const uint8x8_t &vec, int lane) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  // Extract single byte from specified lane
+  Term lane_term = vec.getLane(lane);
+  // Store as uint8x8_t (we'll only use first element)
+  std::array<Term, 8> full_lanes;
+  full_lanes[0] = lane_term;
+  for (int i = 1; i < 8; i++) {
+    full_lanes[i] = lane_term; // Pad with same value
+  }
+  g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, full_lanes));
 }
 
 #endif // NEON_SYMBOLIC_MEMORY_HPP

@@ -1,9 +1,12 @@
 #ifndef NEON_SYMBOLIC_HELPERS_HPP
 #define NEON_SYMBOLIC_HELPERS_HPP
 
+#include "../symbolic_common.hpp"
 #include "types.hpp"
 #include "memory.hpp"
 #include <vector>
+#include <string>
+#include <algorithm>
 
 
 namespace SymbolicNEONHelpers {
@@ -21,6 +24,84 @@ namespace SymbolicNEONHelpers {
         g_neon_memory.clear();
         g_neon_memory_i8x16.clear();
         g_neon_memory_i8x8.clear();
+        g_neon_memory_u8x16.clear();
+        g_neon_memory_u8x8.clear();
+    }
+
+    /**
+     * Generic memory population for NEON symbolic execution.
+     * 
+     * @tparam ElementType The C++ type of the elements (int8_t, uint8_t, int16_t, uint16_t, int32_t, uint32_t)
+     * @param ptr Pointer to the memory location to populate
+     * @param symbolic_values Vector of symbolic terms to populate
+     * @param element_bits Size of each element in bits (8, 16, or 32)
+     * @param is_signed Whether the elements are signed (true) or unsigned (false)
+     * 
+     * Supported combinations:
+     *   - 8-bit signed (int8_t): populates g_neon_memory_i8x16
+     *   - 8-bit unsigned (uint8_t): populates g_neon_memory_u8x16
+     *   - 32-bit signed (int32_t): populates g_neon_memory
+     */
+    template<typename ElementType>
+    inline void populateMemory(const ElementType* ptr,
+                               const std::vector<Term>& symbolic_values,
+                               size_t element_bits,
+                               bool is_signed) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        if (element_bits == 8) {
+            // 8-bit elements: 16 elements per 128-bit vector
+            const size_t lanes_per_vec = 16;
+            for (size_t i = 0; i < symbolic_values.size(); i += lanes_per_vec) {
+                std::array<Term, 16> lanes;
+                for (size_t j = 0; j < lanes_per_vec && (i + j) < symbolic_values.size(); j++) {
+                    lanes[j] = symbolic_values[i + j];
+                }
+                // Pad remaining lanes with last valid element
+                size_t valid_count = std::min(lanes_per_vec, symbolic_values.size() - i);
+                for (size_t j = valid_count; j < lanes_per_vec; j++) {
+                    lanes[j] = symbolic_values.back();
+                }
+                
+                if (is_signed) {
+                    g_neon_memory_i8x16[addr + i].push_back(int8x16_t(g_symbolic_tm, lanes));
+                } else {
+                    g_neon_memory_u8x16[addr + i].push_back(uint8x16_t(g_symbolic_tm, lanes));
+                }
+            }
+        } else if (element_bits == 32) {
+            // 32-bit elements: 4 elements per 128-bit vector
+            const size_t lanes_per_vec = 4;
+            for (size_t i = 0; i < symbolic_values.size(); i += lanes_per_vec) {
+                std::array<Term, 4> lanes;
+                for (size_t j = 0; j < lanes_per_vec && (i + j) < symbolic_values.size(); j++) {
+                    lanes[j] = symbolic_values[i + j];
+                }
+                // Pad remaining lanes with last valid element
+                size_t valid_count = std::min(lanes_per_vec, symbolic_values.size() - i);
+                for (size_t j = valid_count; j < lanes_per_vec; j++) {
+                    lanes[j] = symbolic_values.back();
+                }
+                
+                g_neon_memory[addr + i * sizeof(int32_t)].push_back(int32x4_t(g_symbolic_tm, lanes));
+            }
+        }
+        // Note: 16-bit support can be added when int16x8_t/uint16x8_t types are available
+    }
+
+    /**
+     * Convenience overloads for common types
+     */
+    inline void populateMemory8(const int8_t* ptr, const std::vector<Term>& symbolic_values) {
+        populateMemory(ptr, symbolic_values, 8, true);
+    }
+
+    inline void populateMemoryU8(const uint8_t* ptr, const std::vector<Term>& symbolic_values) {
+        populateMemory(ptr, symbolic_values, 8, false);
+    }
+
+    inline void populateMemory32(const int32_t* ptr, const std::vector<Term>& symbolic_values) {
+        populateMemory(ptr, symbolic_values, 32, true);
     }
     
     inline const std::vector<int8x16_t>* getStoredResults8x16(const int8_t* ptr) {
@@ -39,6 +120,86 @@ namespace SymbolicNEONHelpers {
             return &(it->second);
         }
         return nullptr;
+    }
+
+    /**
+     * Collect all 8-bit signed integer elements from NEON memory
+     * Handles both int8x16_t and int8x8_t vector types
+     */
+    inline std::vector<Term> collectResults8(const int8_t* ptr, size_t batch) {
+        std::vector<Term> elements;
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+
+            // Try 16-byte map (int8x16)
+            if (g_neon_memory_i8x16.count(current_addr) &&
+                !g_neon_memory_i8x16[current_addr].empty()) {
+                const int8x16_t &neon_vec = g_neon_memory_i8x16[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(16), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 16;
+                continue;
+            }
+
+            // Try 8-byte map (int8x8)
+            if (g_neon_memory_i8x8.count(current_addr) &&
+                !g_neon_memory_i8x8[current_addr].empty()) {
+                const int8x8_t &neon_vec = g_neon_memory_i8x8[current_addr].back();
+                size_t valid_len = 8;
+                
+                // Check for overlap with next stored vector
+                auto it = g_neon_memory_i8x8.upper_bound(current_addr);
+                if (it != g_neon_memory_i8x8.end()) {
+                    uintptr_t next_addr = it->first;
+                    if (next_addr < current_addr + 8) {
+                        valid_len = next_addr - current_addr;
+                    }
+                }
+                
+                size_t len = std::min(valid_len, batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += len;
+                continue;
+            }
+
+            // No vector found at this address
+            break;
+        }
+
+        return elements;
+    }
+
+    /**
+     * Collect all 32-bit signed integer elements from NEON memory
+     */
+    inline std::vector<Term> collectResults32(const int32_t* ptr, size_t batch) {
+        std::vector<Term> elements;
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+
+            if (g_neon_memory.count(current_addr) && !g_neon_memory[current_addr].empty()) {
+                const int32x4_t &neon_vec = g_neon_memory[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(4), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 4;
+                continue;
+            }
+
+            // No vector found at this address
+            break;
+        }
+
+        return elements;
     }
 
     inline Term vectorEqual(const int32x4_t& a, const int32x4_t& b) {
