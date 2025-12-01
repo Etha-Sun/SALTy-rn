@@ -75,6 +75,86 @@ inline uint8x16_t vdupq_n_u8(uint8_t value) {
     return uint8x16_t(g_symbolic_tm, lanes);
 }
 
+/**
+ * vmovq_n_s32: Move scalar to all lanes (int32x4) - alias for vdupq_n_s32
+ */
+inline int32x4_t vmovq_n_s32(int32_t value) {
+    return vdupq_n_s32(value);
+}
+
+/**
+ * vmovq_n_s16: Move scalar to all lanes (int16x8) - alias for vdupq_n_s16
+ */
+inline int16x8_t vmovq_n_s16(int16_t value) {
+    return vdupq_n_s16(value);
+}
+
+// ============================================================================
+// Pairwise Add and Accumulate Long Operations
+// ============================================================================
+
+/**
+ * vpadalq_s8: Pairwise Add and Accumulate Long (int8 -> int16)
+ * Takes pairs of adjacent int8 elements from input vector, adds them,
+ * sign-extends the result to int16, and adds to the accumulator.
+ * 
+ * Semantics: acc[i] = acc[i] + sign_extend(input[2*i] + input[2*i+1])
+ * For i in [0, 7]
+ */
+inline int16x8_t vpadalq_s8(const int16x8_t& acc, const int8x16_t& input) {
+    std::array<Term, 8> result_lanes;
+    
+    for (int i = 0; i < 8; i++) {
+        // Get pair of int8 elements
+        Term a = input.getLane(2 * i);
+        Term b = input.getLane(2 * i + 1);
+        
+        // Sign-extend each int8 to int16
+        Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+        Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a});
+        Term b_ext = g_symbolic_tm->mkTerm(extend_op, {b});
+        
+        // Add the extended values
+        Term pair_sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {a_ext, b_ext});
+        
+        // Add to accumulator
+        result_lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), pair_sum});
+    }
+    
+    return int16x8_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vpadalq_s16: Pairwise Add and Accumulate Long (int16 -> int32)
+ * Takes pairs of adjacent int16 elements from input vector, adds them,
+ * sign-extends the result to int32, and adds to the accumulator.
+ * 
+ * Semantics: acc[i] = acc[i] + sign_extend(input[2*i] + input[2*i+1])
+ * For i in [0, 3]
+ */
+inline int32x4_t vpadalq_s16(const int32x4_t& acc, const int16x8_t& input) {
+    std::array<Term, 4> result_lanes;
+    
+    for (int i = 0; i < 4; i++) {
+        // Get pair of int16 elements
+        Term a = input.getLane(2 * i);
+        Term b = input.getLane(2 * i + 1);
+        
+        // Sign-extend each int16 to int32
+        Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+        Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a});
+        Term b_ext = g_symbolic_tm->mkTerm(extend_op, {b});
+        
+        // Add the extended values
+        Term pair_sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {a_ext, b_ext});
+        
+        // Add to accumulator
+        result_lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), pair_sum});
+    }
+    
+    return int32x4_t(g_symbolic_tm, result_lanes);
+}
+
 // ============================================================================
 // Arithmetic Operations (int32x4)
 // ============================================================================
@@ -138,6 +218,49 @@ inline int32x4_t vmlaq_s32(const int32x4_t& acc, const int32x4_t& a, const int32
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
     }
     return int32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Reduction Operations
+// ============================================================================
+
+/**
+ * vaddvq_s32: Add all lanes of vector (horizontal add/reduce)
+ * Returns: a[0] + a[1] + a[2] + a[3]
+ * Returns symbolic_int32_t that tracks both symbolic and concrete computation
+ */
+inline symbolic_int32_t vaddvq_s32(const int32x4_t& a) {
+    // Add all lanes together symbolically
+    Term sum = a.getLane(0);
+    sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {sum, a.getLane(1)});
+    sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {sum, a.getLane(2)});
+    sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {sum, a.getLane(3)});
+    
+    // Store the symbolic result for later verification
+    g_neon_scalar_results["vaddvq_s32"] = sum;
+    
+    return symbolic_int32_t(g_symbolic_tm, sum, 0);
+}
+
+// ============================================================================
+// Arithmetic Operations (int8x16)
+// ============================================================================
+
+/**
+ * vmulq_s8: Multiply two vectors element-wise (int8x16)
+ * Semantics: result[i] = a[i] * b[i] (mod 2^8)
+ */
+inline int8x16_t vmulq_s8(const int8x16_t& a, const int8x16_t& b) {
+    std::array<Term, 16> result_lanes;
+    
+    for (int i = 0; i < 16; i++) {
+        result_lanes[i] = g_symbolic_tm->mkTerm(
+            Kind::BITVECTOR_MULT,
+            {a.getLane(i), b.getLane(i)}
+        );
+    }
+    
+    return int8x16_t(g_symbolic_tm, result_lanes);
 }
 
 // ============================================================================

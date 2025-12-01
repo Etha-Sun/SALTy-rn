@@ -14,6 +14,9 @@ inline std::map<uintptr_t, std::vector<int8x8_t>> g_neon_memory_i8x8;
 inline std::map<uintptr_t, std::vector<uint8x16_t>> g_neon_memory_u8x16;
 inline std::map<uintptr_t, std::vector<uint8x8_t>> g_neon_memory_u8x8;
 
+// Global storage for scalar reduction results
+inline std::map<std::string, Term> g_neon_scalar_results;
+
 // ============================================================================
 // Load Operations
 // ============================================================================

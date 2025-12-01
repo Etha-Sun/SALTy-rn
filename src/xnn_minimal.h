@@ -11,6 +11,15 @@
 #define XNN_UNLIKELY(condition) (__builtin_expect(!!(condition), 0))
 #define XNN_LIKELY(condition) (__builtin_expect(!!(condition), 1))
 
+// Memory alignment macro
+#if defined(__GNUC__)
+#define XNN_ALIGN(alignment) __attribute__((__aligned__(alignment)))
+#elif defined(_MSC_VER)
+#define XNN_ALIGN(alignment) __declspec(align(alignment))
+#else
+#define XNN_ALIGN(alignment)  // Fallback: no alignment
+#endif
+
 // From xnnpack/microparams.h
 struct xnn_qs8_add_minmax_params {
     struct {
@@ -39,5 +48,9 @@ struct xnn_qu8_add_minmax_params {
       uint8_t output_max;
     } scalar;
   };
+
+struct xnn_qs8_rsum_params {
+    char _;  // Dummy member variable to comply with the C standard
+};
 
 #endif // XNN_MINIMAL_H
