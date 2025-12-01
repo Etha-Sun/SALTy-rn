@@ -96,6 +96,14 @@ private:
     TermManager* tm;
 
 public:
+    // Default constructor (uses global term manager)
+    inline int8x8_t() : tm(g_symbolic_tm) {
+        Sort bv8 = tm->mkBitVectorSort(8);
+        for (int i = 0; i < 8; i++) {
+            lanes[i] = tm->mkConst(bv8, "int8x8_" + std::to_string(i));
+        }
+    }
+
     inline int8x8_t(TermManager* t) : tm(t) {
         Sort bv8 = tm->mkBitVectorSort(8);
         for (int i = 0; i < 8; i++) {
@@ -147,6 +155,56 @@ public:
     }
 
     inline const std::array<Term, 8>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
+ * Symbolic representation of ARM NEON int32x2_t vector type
+ * Represents 2 lanes of 32-bit signed integers
+ */
+class int32x2_t {
+private:
+    std::array<Term, 2> lanes;
+    TermManager* tm;
+
+public:
+    // Default constructor (uses global term manager)
+    inline int32x2_t() : tm(g_symbolic_tm) {
+        Sort bv32 = tm->mkBitVectorSort(32);
+        for (int i = 0; i < 2; i++) {
+            lanes[i] = tm->mkConst(bv32, "int32x2_" + std::to_string(i));
+        }
+    }
+
+    inline int32x2_t(TermManager* t) : tm(t) {
+        Sort bv32 = tm->mkBitVectorSort(32);
+        for (int i = 0; i < 2; i++) {
+            lanes[i] = tm->mkConst(bv32, "int32x2_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline int32x2_t(TermManager* t, const std::array<Term, 2>& data)
+        : lanes(data), tm(t) {}
+
+    // Constructor with specific name prefix
+    inline int32x2_t(TermManager* t, const std::string& name) : tm(t) {
+        Sort bv32 = tm->mkBitVectorSort(32);
+        for (int i = 0; i < 2; i++) {
+            lanes[i] = tm->mkConst(bv32, name + "_" + std::to_string(i));
+        }
+    }
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 2>& getLanes() const {
         return lanes;
     }
 

@@ -185,6 +185,24 @@ namespace SymbolicNEONHelpers {
         for (size_t i = 0; i < batch;) {
             uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
 
+            // Check scalar memory first (most specific)
+            if (g_neon_scalar_memory.count(current_addr)) {
+                elements.push_back(g_neon_scalar_memory[current_addr]);
+                i += 1;
+                continue;
+            }
+
+            // Check int32x2 memory
+            if (g_neon_memory_i32x2.count(current_addr) && !g_neon_memory_i32x2[current_addr].empty()) {
+                const int32x2_t &neon_vec = g_neon_memory_i32x2[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(2), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 2;
+                continue;
+            }
+
             if (g_neon_memory.count(current_addr) && !g_neon_memory[current_addr].empty()) {
                 const int32x4_t &neon_vec = g_neon_memory[current_addr].back();
                 size_t len = std::min(static_cast<size_t>(4), batch - i);

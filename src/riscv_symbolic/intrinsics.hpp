@@ -1255,6 +1255,24 @@ inline vint32m1_t __riscv_vmv_v_x_i32m1(int32_t scalar, size_t vl) {
 }
 
 /**
+ * __riscv_vmv_v_x_i16m2: Move scalar to all elements of vector (int16m2)
+ */
+inline vint16m2_t __riscv_vmv_v_x_i16m2(int16_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint16_t scalar_u16 = static_cast<uint16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar_u16));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vmv_v_x_i32m8: Move scalar to all elements of vector (int32m8)
  */
 inline vint32m8_t __riscv_vmv_v_x_i32m8(int32_t scalar, size_t vl) {
@@ -1425,6 +1443,25 @@ inline vint32m4_t __riscv_vmv_v_x_i32m4(int32_t scalar, size_t vl) {
   }
 
   return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwadd_wv_i16m2: Widening add (wide int16m2 + narrow int8m1)
+ * Wide operand is 16-bit, narrow operand is 8-bit (sign-extended to 16-bit)
+ */
+inline vint16m2_t __riscv_vwadd_wv_i16m2(const vint16m2_t &acc, const vint8m1_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term vec_elem_ext = g_symbolic_tm->mkTerm(sext_op, {vec.getElement(i)});
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {acc.getElement(i), vec_elem_ext}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
 }
 
 /**

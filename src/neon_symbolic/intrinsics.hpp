@@ -177,6 +177,44 @@ inline int32x4_t vaddq_s32(const int32x4_t& a, const int32x4_t& b) {
 }
 
 /**
+ * vadd_s32: Add two vectors element-wise (int32x2)
+ * Semantics: result[i] = a[i] + b[i] (mod 2^32)
+ */
+inline int32x2_t vadd_s32(const int32x2_t& a, const int32x2_t& b) {
+    std::array<Term, 2> result_lanes;
+
+    for (int i = 0; i < 2; i++) {
+        result_lanes[i] = g_symbolic_tm->mkTerm(
+            Kind::BITVECTOR_ADD,
+            {a.getLane(i), b.getLane(i)}
+        );
+    }
+
+    return int32x2_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vpadd_s32: Pairwise add (int32x2)
+ * result[0] = a[0] + a[1]
+ * result[1] = b[0] + b[1]
+ */
+inline int32x2_t vpadd_s32(const int32x2_t& a, const int32x2_t& b) {
+    std::array<Term, 2> result_lanes;
+    
+    result_lanes[0] = g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD,
+        {a.getLane(0), a.getLane(1)}
+    );
+    
+    result_lanes[1] = g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD,
+        {b.getLane(0), b.getLane(1)}
+    );
+
+    return int32x2_t(g_symbolic_tm, result_lanes);
+}
+
+/**
  * vmulq_n_s32: Multiply vector by scalar (wrapping arithmetic)
  * Semantics: result[i] = vec[i] * scalar (mod 2^32)
  */
@@ -218,6 +256,28 @@ inline int32x4_t vmlaq_s32(const int32x4_t& acc, const int32x4_t& a, const int32
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
     }
     return int32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Lane Access Operations
+// ============================================================================
+
+/**
+ * vgetq_lane_s32: Get a single lane from int32x4
+ * Returns symbolic_int32_t to maintain symbolic tracking
+ */
+inline symbolic_int32_t vgetq_lane_s32(const int32x4_t& vec, int lane) {
+    Term lane_term = vec.getLane(lane);
+    return symbolic_int32_t(g_symbolic_tm, lane_term, 0, true);
+}
+
+/**
+ * vget_lane_s32: Get a single lane from int32x2
+ * Returns symbolic_int32_t to maintain symbolic tracking
+ */
+inline symbolic_int32_t vget_lane_s32(const int32x2_t& vec, int lane) {
+    Term lane_term = vec.getLane(lane);
+    return symbolic_int32_t(g_symbolic_tm, lane_term, 0, true);
 }
 
 // ============================================================================
@@ -289,6 +349,44 @@ inline int16x8_t vqaddq_s16(const int16x8_t& a, const int16x8_t& b) {
 // ============================================================================
 // Conversion/Widening Operations
 // ============================================================================
+
+/**
+ * vaddw_s8: Widening add (int16 + sign_extend(int8) -> int16)
+ * Adds int16x8 vector with int8x8 vector (widened to int16)
+ * result[i] = wide[i] + sign_extend(narrow[i])
+ */
+inline int16x8_t vaddw_s8(const int16x8_t& wide, const int8x8_t& narrow) {
+    std::array<Term, 8> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+    
+    for (int i = 0; i < 8; i++) {
+        // Sign-extend int8 to int16
+        Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
+        // Add to wide element
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {wide.getLane(i), narrow_ext});
+    }
+    
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vaddw_s16: Widening add (int32 + sign_extend(int16) -> int32)
+ * Adds int32x4 vector with int16x4 vector (widened to int32)
+ * result[i] = wide[i] + sign_extend(narrow[i])
+ */
+inline int32x4_t vaddw_s16(const int32x4_t& wide, const int16x4_t& narrow) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+    
+    for (int i = 0; i < 4; i++) {
+        // Sign-extend int16 to int32
+        Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
+        // Add to wide element
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {wide.getLane(i), narrow_ext});
+    }
+    
+    return int32x4_t(g_symbolic_tm, lanes);
+}
 
 /**
  * vsubl_s8: Widening subtract (int8 -> int16)
@@ -614,6 +712,28 @@ inline int16x4_t vget_high_s16(const int16x8_t& vec) {
 }
 
 /**
+ * vget_low_s32: Get low half of int32x4
+ */
+inline int32x2_t vget_low_s32(const int32x4_t& vec) {
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return int32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_high_s32: Get high half of int32x4
+ */
+inline int32x2_t vget_high_s32(const int32x4_t& vec) {
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = vec.getLane(i + 2);
+    }
+    return int32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vcombine_s16: Combine two int16x4 into int16x8
  */
 inline int16x8_t vcombine_s16(const int16x4_t& low, const int16x4_t& high) {
@@ -663,6 +783,23 @@ inline int8x8_t vext_s8(const int8x8_t& a, const int8x8_t& b, int n) {
         }
     }
     return int8x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vextq_s32: Extract (rotate/shift) int32x4
+ * Concatenates a and b, extracts 4 elements starting at index n
+ */
+inline int32x4_t vextq_s32(const int32x4_t& a, const int32x4_t& b, int n) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        int src_idx = i + n;
+        if (src_idx < 4) {
+            lanes[i] = a.getLane(src_idx);
+        } else {
+            lanes[i] = b.getLane(src_idx - 4);
+        }
+    }
+    return int32x4_t(g_symbolic_tm, lanes);
 }
 
 /**

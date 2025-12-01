@@ -24,6 +24,11 @@ inline std::map<uintptr_t, std::vector<vint32m1_t>> g_riscv_memory;
  */
 inline std::map<uintptr_t, std::vector<vint8m1_t>> g_riscv_memory_i8;
 
+/**
+ * Global storage for int32m4 vectors (needed for wider LMUL operations)
+ */
+inline std::map<uintptr_t, std::vector<vint32m4_t>> g_riscv_memory_i32m4;
+
 
 /**
  * __riscv_vle32_v_i32m1: Load vector of 32-bit integers
@@ -63,7 +68,40 @@ inline vint8m1_t __riscv_vle8_v_i8m1(const int8_t* ptr, size_t vl) {
         return it->second.back();
     }
 
-    return vint8m1_t(g_symbolic_tm, vl);
+    // Overlap search
+    for (auto it = g_riscv_memory_i8.begin(); it != g_riscv_memory_i8.end(); ++it) {
+        uintptr_t base_addr = it->first;
+        if (!it->second.empty()) {
+            const vint8m1_t& base_vec = it->second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl; // 1 byte per element
+            
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                // Found overlap
+                size_t offset_elems = addr - base_addr;
+                
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        // Out of bounds read - return 0
+                        elements.push_back(g_symbolic_tm->mkBitVector(8, 0));
+                    }
+                }
+                return vint8m1_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // If not found in memory, return concrete zeros (not symbolic variables)
+    std::vector<Term> zero_elements(vl);
+    Term zero = g_symbolic_tm->mkBitVector(8, 0);
+    for (size_t i = 0; i < vl; i++) {
+        zero_elements[i] = zero;
+    }
+    return vint8m1_t(g_symbolic_tm, zero_elements);
 }
 
 /**
@@ -73,6 +111,29 @@ inline void __riscv_vse8_v_i8m1(int8_t* ptr, const vint8m1_t& vec, size_t vl) {
     (void)vl;
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
     g_riscv_memory_i8[addr].push_back(vec);
+}
+
+/**
+ * __riscv_vle32_v_i32m4: Load vector of 32-bit integers (LMUL=4)
+ */
+inline vint32m4_t __riscv_vle32_v_i32m4(const int32_t* ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_i32m4.find(addr);
+    if (it != g_riscv_memory_i32m4.end() && !it->second.empty()) {
+        return it->second.back();
+    }
+
+    return vint32m4_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse32_v_i32m4: Store vector of 32-bit integers (LMUL=4)
+ */
+inline void __riscv_vse32_v_i32m4(int32_t* ptr, const vint32m4_t& vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_i32m4[addr].push_back(vec);
 }
 
 #endif // RISCV_SYMBOLIC_MEMORY_HPP

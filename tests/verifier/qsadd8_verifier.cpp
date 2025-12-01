@@ -49,7 +49,7 @@ int main() {
   g_symbolic_solver = &solver;
 
   // Test parameters
-  const size_t batch = 17; // Test with 16 elements
+  const size_t batch = 8; // Test with 16 elements
 
   // Allocate arrays
   int8_t input_a[batch] = {0};

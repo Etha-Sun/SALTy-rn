@@ -10,6 +10,7 @@
 #define XNN_OOB_READS
 #define XNN_UNLIKELY(condition) (__builtin_expect(!!(condition), 0))
 #define XNN_LIKELY(condition) (__builtin_expect(!!(condition), 1))
+#define XNN_UNPREDICTABLE(condition) (__builtin_expect(!!(condition), 0))
 
 // Memory alignment macro
 #if defined(__GNUC__)

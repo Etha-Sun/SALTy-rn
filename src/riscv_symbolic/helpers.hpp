@@ -68,7 +68,11 @@ namespace SymbolicRISCVHelpers {
     }
 
     inline void populateMemory32(const int32_t* ptr, const std::vector<Term>& symbolic_values) {
-        populateMemory(ptr, symbolic_values);
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        
+        // Store in both memory maps to support both m1 and m4 loads
+        g_riscv_memory[addr].push_back(vint32m1_t(g_symbolic_tm, symbolic_values));
+        g_riscv_memory_i32m4[addr].push_back(vint32m4_t(g_symbolic_tm, symbolic_values));
     }
 
     /**
@@ -95,14 +99,26 @@ namespace SymbolicRISCVHelpers {
      */
     inline std::vector<Term> collectResults32(const int32_t* ptr) {
         std::vector<Term> elements;
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
         
+        // Try g_riscv_memory_i32m4 first (for LMUL=4 operations like rdsum)
+        auto it_m4 = g_riscv_memory_i32m4.find(addr);
+        if (it_m4 != g_riscv_memory_i32m4.end() && !it_m4->second.empty()) {
+            // Only collect from the last stored vector (most recent result)
+            const vint32m4_t& vec = it_m4->second.back();
+            for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                elements.push_back(vec.getElement(elem));
+            }
+            return elements;
+        }
+        
+        // Otherwise try the standard memory (vint32m1)
         const auto* results = getStoredResults(ptr);
         if (results && !results->empty()) {
-            for (size_t vec_idx = 0; vec_idx < results->size(); vec_idx++) {
-                const vint32m1_t& vec = (*results)[vec_idx];
-                for (size_t elem = 0; elem < vec.getVL(); elem++) {
-                    elements.push_back(vec.getElement(elem));
-                }
+            // Only collect from the last stored vector (most recent result)
+            const vint32m1_t& vec = results->back();
+            for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                elements.push_back(vec.getElement(elem));
             }
         }
         

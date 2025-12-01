@@ -9,6 +9,7 @@
 
 // Global storage indexed by memory address for load/store tracking
 inline std::map<uintptr_t, std::vector<int32x4_t>> g_neon_memory;
+inline std::map<uintptr_t, std::vector<int32x2_t>> g_neon_memory_i32x2;
 inline std::map<uintptr_t, std::vector<int8x16_t>> g_neon_memory_i8x16;
 inline std::map<uintptr_t, std::vector<int8x8_t>> g_neon_memory_i8x8;
 inline std::map<uintptr_t, std::vector<uint8x16_t>> g_neon_memory_u8x16;
@@ -73,45 +74,50 @@ inline int8x16_t vld1q_s8(const int8_t *ptr) {
  * vld1_s8: Load vector of 8-bit integers (64-bit)
  */
 inline int8x8_t vld1_s8(const int8_t *ptr) {
-  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  uintptr_t start_addr = reinterpret_cast<uintptr_t>(ptr);
+  std::array<Term, 8> lanes;
+  Term zero = g_symbolic_tm->mkBitVector(8, 0);
 
-  auto it = g_neon_memory_i8x8.find(addr);
-  if (it != g_neon_memory_i8x8.end() && !it->second.empty()) {
-    return it->second.back();
-  }
-
-  // Fallback: Check 128-bit memory map and extract lower half
-  auto it128 = g_neon_memory_i8x16.find(addr);
-  if (it128 != g_neon_memory_i8x16.end() && !it128->second.empty()) {
-    const int8x16_t &vec128 = it128->second.back();
-    std::array<Term, 8> lanes;
-    for (int i = 0; i < 8; i++) {
-      lanes[i] = vec128.getLane(i);
+  for (int i = 0; i < 8; i++) {
+    uintptr_t curr = start_addr + i;
+    bool found = false;
+    
+    // Check exact match in i8x8
+    if (g_neon_memory_i8x8.count(curr) && !g_neon_memory_i8x8[curr].empty()) {
+        lanes[i] = g_neon_memory_i8x8[curr].back().getLane(0); 
+        found = true;
     }
-    return int8x8_t(g_symbolic_tm, lanes);
-  }
 
-  // Additional fallback: Search for overlapping 128-bit vector
-  // E.g., loading from addr=56 might overlap with vector at addr=48
-  for (auto it = g_neon_memory_i8x16.begin(); it != g_neon_memory_i8x16.end(); ++it) {
-    uintptr_t base_addr = it->first;
-    // Check if addr falls within [base_addr, base_addr+16)
-    if (addr >= base_addr && addr < base_addr + 16 && !it->second.empty()) {
-      const int8x16_t &vec128 = it->second.back();
-      size_t offset = addr - base_addr;
-      std::array<Term, 8> lanes;
-      for (int i = 0; i < 8 && (offset + i) < 16; i++) {
-        lanes[i] = vec128.getLane(offset + i);
-      }
-      // Pad remaining lanes if we're at the edge
-      for (size_t i = (16 - offset); i < 8; i++) {
-        lanes[i] = vec128.getLane(15);  // Pad with last element
-      }
-      return int8x8_t(g_symbolic_tm, lanes);
+    if (!found) {
+        // Scan i8x16 map using upper_bound to find the most specific overlapping vector
+        auto it = g_neon_memory_i8x16.upper_bound(curr);
+        if (it != g_neon_memory_i8x16.begin()) {
+            --it;
+            uintptr_t base = it->first;
+            if (curr >= base && curr < base + 16 && !it->second.empty()) {
+                lanes[i] = it->second.back().getLane(curr - base);
+                found = true;
+            }
+        }
+    }
+    
+    if (!found) {
+        // Scan i8x8 map
+        for (auto it = g_neon_memory_i8x8.begin(); it != g_neon_memory_i8x8.end(); ++it) {
+            uintptr_t base = it->first;
+            if (curr >= base && curr < base + 8 && !it->second.empty()) {
+                lanes[i] = it->second.back().getLane(curr - base);
+                found = true;
+                break;
+            }
+        }
+    }
+    
+    if (!found) {
+        lanes[i] = zero;
     }
   }
-
-  return int8x8_t(g_symbolic_tm);
+  return int8x8_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -164,6 +170,50 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
 inline void vst1q_s32(int32_t *ptr, const int32x4_t &vec) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
   g_neon_memory[addr].push_back(vec);
+}
+
+/**
+ * vld1_s32: Load vector of 32-bit integers (64-bit, 2 elements)
+ */
+inline int32x2_t vld1_s32(const int32_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  auto it = g_neon_memory_i32x2.find(addr);
+  if (it != g_neon_memory_i32x2.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Fallback: Check g_neon_memory (int32x4)
+  // Case 1: addr matches start of int32x4
+  auto it4 = g_neon_memory.find(addr);
+  if (it4 != g_neon_memory.end() && !it4->second.empty()) {
+      const int32x4_t &vec4 = it4->second.back();
+      std::array<Term, 2> lanes;
+      lanes[0] = vec4.getLane(0);
+      lanes[1] = vec4.getLane(1);
+      return int32x2_t(g_symbolic_tm, lanes);
+  }
+  
+  // Case 2: addr is offset by 2 ints (8 bytes) from start of int32x4
+  uintptr_t base = addr - 8;
+  it4 = g_neon_memory.find(base);
+  if (it4 != g_neon_memory.end() && !it4->second.empty()) {
+      const int32x4_t &vec4 = it4->second.back();
+      std::array<Term, 2> lanes;
+      lanes[0] = vec4.getLane(2);
+      lanes[1] = vec4.getLane(3);
+      return int32x2_t(g_symbolic_tm, lanes);
+  }
+
+  return int32x2_t(g_symbolic_tm);
+}
+
+/**
+ * vst1_s32: Store vector of 32-bit integers (64-bit, 2 elements)
+ */
+inline void vst1_s32(int32_t *ptr, const int32x2_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_i32x2[addr].push_back(vec);
 }
 
 /**
