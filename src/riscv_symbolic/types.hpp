@@ -4,6 +4,8 @@
 #include <cvc5/cvc5.h>
 #include <string>
 #include <vector>
+#include <cstdint>
+#include "../symbolic_scalar_types.hpp"
 
 using namespace cvc5;
 

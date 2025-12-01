@@ -239,7 +239,7 @@ inline symbolic_int32_t vaddvq_s32(const int32x4_t& a) {
     // Store the symbolic result for later verification
     g_neon_scalar_results["vaddvq_s32"] = sum;
     
-    return symbolic_int32_t(g_symbolic_tm, sum, 0);
+    return symbolic_int32_t(g_symbolic_tm, sum, 0, true);
 }
 
 // ============================================================================

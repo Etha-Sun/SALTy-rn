@@ -24,6 +24,7 @@ inline std::map<uintptr_t, std::vector<vint32m1_t>> g_riscv_memory;
  */
 inline std::map<uintptr_t, std::vector<vint8m1_t>> g_riscv_memory_i8;
 
+
 /**
  * __riscv_vle32_v_i32m1: Load vector of 32-bit integers
  * Returns previously stored value if available, otherwise creates fresh symbolic constants
@@ -52,7 +53,7 @@ inline void __riscv_vse32_v_i32m1(int32_t* ptr, const vint32m1_t& vec, size_t vl
 }
 
 /**
- * __riscv_vle8_v_i8m1: Load vector of 8-bit integers
+ * __riscv_vle8_v_i8m1: Load vector of 8-bit integers (LMUL=1)
  */
 inline vint8m1_t __riscv_vle8_v_i8m1(const int8_t* ptr, size_t vl) {
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
@@ -66,7 +67,7 @@ inline vint8m1_t __riscv_vle8_v_i8m1(const int8_t* ptr, size_t vl) {
 }
 
 /**
- * __riscv_vse8_v_i8m1: Store vector of 8-bit integers
+ * __riscv_vse8_v_i8m1: Store vector of 8-bit integers (LMUL=1)
  */
 inline void __riscv_vse8_v_i8m1(int8_t* ptr, const vint8m1_t& vec, size_t vl) {
     (void)vl;

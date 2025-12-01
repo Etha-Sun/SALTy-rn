@@ -49,6 +49,22 @@ inline int8x16_t vld1q_s8(const int8_t *ptr) {
     return it->second.back();
   }
 
+  std::array<Term, 16> lanes;
+  bool has_concrete = false;
+  try {
+    for (int i = 0; i < 16; i++) {
+      int8_t val = ptr[i];  
+      lanes[i] = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(static_cast<uint8_t>(val)));
+    }
+    has_concrete = true;
+  } catch (...) {
+    has_concrete = false;
+  }
+  
+  if (has_concrete) {
+    return int8x16_t(g_symbolic_tm, lanes);
+  }
+
   // Otherwise, create fresh symbolic values
   return int8x16_t(g_symbolic_tm);
 }

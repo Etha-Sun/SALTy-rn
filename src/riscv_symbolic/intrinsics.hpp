@@ -164,6 +164,7 @@ inline size_t __riscv_vsetvl_e8m2(size_t avl) {
 // ============================================================================
 // Load Operations
 // ============================================================================
+// Note: __riscv_vle8_v_i8m1 and __riscv_vse8_v_i8m1 are defined in memory.hpp
 
 /**
  * __riscv_vle8_v_i8m2: Load 8-bit vector with LMUL=2
@@ -1236,6 +1237,24 @@ inline vint32m8_t __riscv_vsext_vf2_i32m8(const vint16m4_t &vec, size_t vl) {
 }
 
 /**
+ * __riscv_vmv_v_x_i32m1: Move scalar to all elements of vector (int32m1)
+ */
+inline vint32m1_t __riscv_vmv_v_x_i32m1(int32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t scalar_u32 = static_cast<uint32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar_u32));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vint32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vmv_v_x_i32m8: Move scalar to all elements of vector (int32m8)
  */
 inline vint32m8_t __riscv_vmv_v_x_i32m8(int32_t scalar, size_t vl) {
@@ -1361,6 +1380,120 @@ inline vint8m2_t __riscv_vnclip_wi_i8m2(const vint16m4_t &vec, size_t shift,
   }
 
   return vint8m2_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Additional Vector Configuration and Operations
+// ============================================================================
+
+/**
+ * __riscv_vsetvl_e32m4: Set vector length for 32-bit elements with LMUL=4
+ * Returns the actual VL set based on AVL
+ */
+inline size_t __riscv_vsetvl_e32m4(size_t avl) {
+  g_current_vl = avl;
+  return avl;
+}
+
+/**
+ * __riscv_vsetvlmax_e32m1: Set vector length to maximum for 32-bit elements with LMUL=1
+ * Returns VLMAX (maximum vector length for this configuration)
+ * For symbolic execution, we use a reasonable default
+ */
+inline size_t __riscv_vsetvlmax_e32m1() {
+  // VLEN=256 bits, element width=32 bits, LMUL=1
+  // VLMAX = (VLEN/SEW) * LMUL = (256/32) * 1 = 8
+  size_t vlmax = 8;
+  g_current_vl = vlmax;
+  return vlmax;
+}
+
+/**
+ * __riscv_vmv_v_x_i32m4: Move scalar to all elements of vector (int32m4)
+ * Broadcasts scalar value to all vector elements
+ */
+inline vint32m4_t __riscv_vmv_v_x_i32m4(int32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t scalar_u32 = static_cast<uint32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar_u32));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwadd_wv_i32m4: Widening add (wide + vector)
+ * Adds int32m4 vector with int16m2 vector (widened to int32)
+ * Result: wide[i] + sign_extend(vec[i])
+ */
+inline vint32m4_t __riscv_vwadd_wv_i32m4(const vint32m4_t &wide, 
+                                          const vint16m2_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Sign-extend int16 element to int32
+    Term vec_elem_ext = g_symbolic_tm->mkTerm(sext_op, {vec.getElement(i)});
+    
+    // Add to wide element
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {wide.getElement(i), vec_elem_ext}));
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vredsum_vs_i32m4_i32m1: Vector reduction sum
+ * Sums all elements in vector and adds to scalar accumulator
+ * Result: scalar[0] + sum(vec[0..vl-1])
+ */
+inline vint32m1_t __riscv_vredsum_vs_i32m4_i32m1(const vint32m4_t &vec,
+                                                  const vint32m1_t &scalar,
+                                                  size_t vl) {
+  // Start with the scalar accumulator value (element 0)
+  Term sum = scalar.getElement(0);
+  
+  // Add all vector elements
+  for (size_t i = 0; i < vl; i++) {
+    sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {sum, vec.getElement(i)});
+  }
+  
+  // Return as a vector with one element
+  std::vector<Term> result_elements;
+  result_elements.push_back(sum);
+  
+  return vint32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vredsum: Generic vector reduction sum (simplified interface)
+ * Alias for __riscv_vredsum_vs_i32m4_i32m1
+ */
+inline vint32m1_t __riscv_vredsum(const vint32m4_t &vec,
+                                   const vint32m1_t &scalar,
+                                   size_t vl) {
+  return __riscv_vredsum_vs_i32m4_i32m1(vec, scalar, vl);
+}
+
+/**
+ * __riscv_vmv_x_s_i32m1_i32: Move element 0 of vector to scalar GPR
+ * Returns the first element of the vector as a symbolic_int32_t
+ * This allows symbolic tracking through subsequent scalar operations
+ */
+inline symbolic_int32_t __riscv_vmv_x_s_i32m1_i32(const vint32m1_t &vec) {
+  // Extract the symbolic term from element 0
+  Term scalar_term = vec.getElement(0);
+  
+  return symbolic_int32_t(g_symbolic_tm, scalar_term, 0, false);
 }
 
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP
