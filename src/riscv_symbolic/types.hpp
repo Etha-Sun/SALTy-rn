@@ -234,6 +234,38 @@ public:
 };
 
 /**
+ * Symbolic representation of RISC-V Vector vfloat16m2_t type
+ * Represents a variable-length vector of 16-bit floating-point values with LMUL=2
+ */
+class vfloat16m2_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vfloat16m2_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort fp16 = tm->mkFloatingPointSort(5, 11);  // IEEE 754 half precision
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(fp16, "vec_f16m2_" + std::to_string(i)));
+    }
+  }
+
+  inline vfloat16m2_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
  * Symbolic representation of RISC-V Vector vfloat32m8_t type
  * Represents a variable-length vector of 32-bit floating-point values with LMUL=8
  */

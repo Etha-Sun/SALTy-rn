@@ -1939,4 +1939,74 @@ inline vint16m2_t __riscv_vsmul_vx_i16m2(const vint16m2_t &vec, int16_t scalar,
   return vint16m2_t(g_symbolic_tm, result_elements);
 }
 
+// ============================================================================
+// Float16 (Half-Precision) Operations
+// ============================================================================
+
+/**
+ * __riscv_vsub_vx_i16m2: Vector-scalar subtraction (int16m2)
+ * result[i] = vec[i] - scalar
+ */
+inline vint16m2_t __riscv_vsub_vx_i16m2(const vint16m2_t &vec, int16_t scalar,
+                                        size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint16_t scalar_u16 = static_cast<uint16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar_u16));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {vec.getElement(i), scalar_term}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfcvt_f_x_v_f16m2: Convert signed int16 vector to float16 vector
+ * result[i] = (float16)vec[i]
+ */
+inline vfloat16m2_t __riscv_vfcvt_f_x_v_f16m2(const vint16m2_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {5, 11});  // IEEE 754 half precision
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmul_vf_f16m2: Vector-scalar floating-point multiply (float16m2)
+ * result[i] = vec[i] * scalar
+ */
+inline vfloat16m2_t __riscv_vfmul_vf_f16m2(const vfloat16m2_t &vec, _Float16 scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to its IEEE 754 bit representation
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(_Float16));
+  Term bv = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat16m2_t(g_symbolic_tm, result_elements);
+}
+
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP

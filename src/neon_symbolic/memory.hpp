@@ -14,6 +14,8 @@ inline std::map<uintptr_t, std::vector<int8x16_t>> g_neon_memory_i8x16;
 inline std::map<uintptr_t, std::vector<int8x8_t>> g_neon_memory_i8x8;
 inline std::map<uintptr_t, std::vector<uint8x16_t>> g_neon_memory_u8x16;
 inline std::map<uintptr_t, std::vector<uint8x8_t>> g_neon_memory_u8x8;
+inline std::map<uintptr_t, std::vector<uint16x8_t>> g_neon_memory_u16x8;
+inline std::map<uintptr_t, std::vector<uint16x4_t>> g_neon_memory_u16x4;
 
 // Global storage for scalar reduction results
 inline std::map<std::string, Term> g_neon_scalar_results;
@@ -338,6 +340,48 @@ inline void vst1_lane_u8(uint8_t *ptr, const uint8x8_t &vec, int lane) {
     full_lanes[i] = lane_term; // Pad with same value
   }
   g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, full_lanes));
+}
+
+// ============================================================================
+// uint16 Store Operations
+// ============================================================================
+
+/**
+ * vst1q_u16: Store vector of 16-bit unsigned integers (128-bit)
+ */
+inline void vst1q_u16(uint16_t *ptr, const uint16x8_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_u16x8[addr].push_back(vec);
+}
+
+/**
+ * vst1_u16: Store vector of 16-bit unsigned integers (64-bit)
+ */
+inline void vst1_u16(uint16_t *ptr, const uint16x4_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_u16x4[addr].push_back(vec);
+}
+
+/**
+ * vst1_lane_u16: Store a single lane from uint16x4_t to memory
+ */
+inline void vst1_lane_u16(uint16_t *ptr, const uint16x4_t &vec, int lane) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  // Extract the specified lane (2 bytes)
+  Term lane_term = vec.getLane(lane);
+  // Extract individual bytes from the uint16
+  std::array<Term, 8> full_lanes;
+  for (int i = 0; i < 2; i++) {
+    Op extract_op = g_symbolic_tm->mkOp(
+        Kind::BITVECTOR_EXTRACT,
+        {static_cast<uint32_t>(i * 8 + 7), static_cast<uint32_t>(i * 8)});
+    full_lanes[i] = g_symbolic_tm->mkTerm(extract_op, {lane_term});
+  }
+  // Pad remaining lanes
+  for (int i = 2; i < 8; i++) {
+    full_lanes[i] = full_lanes[1];
+  }
+  g_neon_memory_i8x8[addr].push_back(int8x8_t(g_symbolic_tm, full_lanes));
 }
 
 #endif // NEON_SYMBOLIC_MEMORY_HPP

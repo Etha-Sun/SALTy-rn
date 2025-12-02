@@ -26,6 +26,8 @@ namespace SymbolicNEONHelpers {
         g_neon_memory_i8x8.clear();
         g_neon_memory_u8x16.clear();
         g_neon_memory_u8x8.clear();
+        g_neon_memory_u16x8.clear();
+        g_neon_memory_u16x4.clear();
     }
 
     /**
@@ -241,6 +243,82 @@ namespace SymbolicNEONHelpers {
         }
 
         return g_symbolic_tm->mkTerm(Kind::OR, lane_inequalities);
+    }
+
+    /**
+     * Collect all 16-bit unsigned integer elements from NEON memory (for float16 results)
+     * Handles both uint16x8_t and uint16x4_t vector types
+     */
+    inline std::vector<Term> collectResultsU16(const uint16_t* ptr, size_t batch) {
+        std::vector<Term> elements;
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+
+            // Try 16-byte map (uint16x8) - 8 elements
+            if (g_neon_memory_u16x8.count(current_addr) &&
+                !g_neon_memory_u16x8[current_addr].empty()) {
+                const uint16x8_t &neon_vec = g_neon_memory_u16x8[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(8), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 8;
+                continue;
+            }
+
+            // Try 8-byte map (uint16x4) - 4 elements
+            if (g_neon_memory_u16x4.count(current_addr) &&
+                !g_neon_memory_u16x4[current_addr].empty()) {
+                const uint16x4_t &neon_vec = g_neon_memory_u16x4[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(4), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 4;
+                continue;
+            }
+
+            // Try int8x8 map for partial stores
+            // vst1_lane_u32 stores 4 bytes = 2 uint16, vst1_lane_u16 stores 2 bytes = 1 uint16
+            if (g_neon_memory_i8x8.count(current_addr) &&
+                !g_neon_memory_i8x8[current_addr].empty()) {
+                const int8x8_t &neon_vec = g_neon_memory_i8x8[current_addr].back();
+
+                // Reconstruct first uint16 from bytes 0-1
+                Term lo0 = neon_vec.getLane(0);
+                Term hi0 = neon_vec.getLane(1);
+                Term combined0 = g_symbolic_tm->mkTerm(Kind::BITVECTOR_CONCAT, {hi0, lo0});
+                elements.push_back(combined0);
+                i += 1;
+
+                // Check if there's a second uint16 stored here (from vst1_lane_u32)
+                // vst1_lane_u32 stores 4 bytes (2 uint16), but there won't be another entry at i+1
+                // since vst1_lane_u32 advances pointer by 2 uint16, so next entry is at i+2
+                // We can detect this by checking if the next address (i+1) has NO entry but
+                // the current int8x8 has valid data in lanes 2-3
+                uintptr_t next_addr = reinterpret_cast<uintptr_t>(ptr + i);
+                if (i < batch &&
+                    !g_neon_memory_u16x8.count(next_addr) &&
+                    !g_neon_memory_u16x4.count(next_addr) &&
+                    !g_neon_memory_i8x8.count(next_addr)) {
+                    // No entry at next address - this was likely vst1_lane_u32
+                    // Extract second uint16 from bytes 2-3
+                    Term lo1 = neon_vec.getLane(2);
+                    Term hi1 = neon_vec.getLane(3);
+                    Term combined1 = g_symbolic_tm->mkTerm(Kind::BITVECTOR_CONCAT, {hi1, lo1});
+                    elements.push_back(combined1);
+                    i += 1;
+                }
+                continue;
+            }
+
+            // No vector found at this address
+            break;
+        }
+
+        return elements;
     }
 }
 

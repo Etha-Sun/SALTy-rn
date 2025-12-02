@@ -22,6 +22,8 @@ namespace SymbolicRISCVHelpers {
     inline void clearMemory() {
         g_riscv_memory.clear();
         g_riscv_memory_i8.clear();
+        g_riscv_memory_i32m4.clear();
+        g_riscv_memory_f16m2.clear();
     }
     
     inline const std::vector<vint8m1_t>* getStoredResults8(const int8_t* ptr) {
@@ -150,6 +152,26 @@ namespace SymbolicRISCVHelpers {
         }
 
         return g_symbolic_tm->mkTerm(Kind::OR, element_inequalities);
+    }
+
+    /**
+     * Collect all float16 elements from RISC-V memory (vfloat16m2_t)
+     */
+    inline std::vector<Term> collectResultsF16(const void* ptr) {
+        std::vector<Term> elements;
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        auto it = g_riscv_memory_f16m2.find(addr);
+        if (it != g_riscv_memory_f16m2.end() && !it->second.empty()) {
+            // Collect all stored vectors at this address
+            for (const vfloat16m2_t& vec : it->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+        }
+
+        return elements;
     }
 }
 

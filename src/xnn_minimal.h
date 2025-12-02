@@ -3,9 +3,147 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <string.h>
 #define XNN_ARCH_ARM64 1
 
 // Minimal definitions needed for XNN symbolic execution
+
+// Float16/BFloat16 helper functions (from xnnpack/fp16.h)
+static inline float fp32_from_bits(uint32_t w) {
+  union {
+    uint32_t as_bits;
+    float as_value;
+  } fp32 = {w};
+  return fp32.as_value;
+}
+
+static inline uint32_t fp32_to_bits(float f) {
+  union {
+    float as_value;
+    uint32_t as_bits;
+  } fp32 = {f};
+  return fp32.as_bits;
+}
+
+static inline float fp16_ieee_to_fp32_value(uint16_t h) {
+  const uint32_t w = (uint32_t)h << 16;
+  const uint32_t sign = w & UINT32_C(0x80000000);
+  const uint32_t two_w = w + w;
+  const uint32_t exp_offset = UINT32_C(0xE0) << 23;
+  const float exp_scale = fp32_from_bits(UINT32_C(0x7800000));
+  const float normalized_value =
+      fp32_from_bits((two_w >> 4) + exp_offset) * exp_scale;
+  const uint32_t magic_mask = UINT32_C(126) << 23;
+  const float magic_bias = 0.5f;
+  const float denormalized_value =
+      fp32_from_bits((two_w >> 17) | magic_mask) - magic_bias;
+  const uint32_t denormalized_cutoff = UINT32_C(1) << 27;
+  const uint32_t result =
+      sign | (two_w < denormalized_cutoff ? fp32_to_bits(denormalized_value)
+                                          : fp32_to_bits(normalized_value));
+  return fp32_from_bits(result);
+}
+
+static inline uint16_t fp16_ieee_from_fp32_value(float f) {
+  const float scale_to_inf = fp32_from_bits(UINT32_C(0x77800000));
+  const float scale_to_zero = fp32_from_bits(UINT32_C(0x08800000));
+  const uint32_t w = fp32_to_bits(f);
+  const float abs_f = fp32_from_bits(w & UINT32_C(0x7FFFFFFF));
+  float base = (abs_f * scale_to_inf) * scale_to_zero;
+  const uint32_t shl1_w = w + w;
+  const uint32_t sign = w & UINT32_C(0x80000000);
+  uint32_t bias = shl1_w & UINT32_C(0xFF000000);
+  if (bias < UINT32_C(0x71000000)) {
+    bias = UINT32_C(0x71000000);
+  }
+  base = fp32_from_bits((bias >> 1) + UINT32_C(0x07800000)) + base;
+  const uint32_t bits = fp32_to_bits(base);
+  const uint32_t exp_bits = (bits >> 13) & UINT32_C(0x00007C00);
+  const uint32_t mantissa_bits = bits & UINT32_C(0x00000FFF);
+  const uint32_t nonsign = exp_bits + mantissa_bits;
+  return (sign >> 16) |
+         (shl1_w > UINT32_C(0xFF000000) ? UINT16_C(0x7E00) : nonsign);
+}
+
+// Float16 type definition
+#ifndef XNN_HAVE_FLOAT16
+#define XNN_HAVE_FLOAT16 0
+#endif
+
+#if XNN_HAVE_FLOAT16
+typedef _Float16 xnn_float16;
+#else
+struct xnn_float16 {
+  uint16_t value;
+
+#ifdef __cplusplus
+  xnn_float16() = default;
+  xnn_float16(float x) : value(fp16_ieee_from_fp32_value(x)) {}
+  operator float() const { return fp16_ieee_to_fp32_value(value); }
+#endif
+};
+typedef struct xnn_float16 xnn_float16;
+#endif
+
+// BFloat16 type definition
+struct xnn_bfloat16 {
+  uint16_t value;
+
+#ifdef __cplusplus
+  xnn_bfloat16() = default;
+  xnn_bfloat16(float x) : value((fp32_to_bits(x) + UINT32_C(0x00007FFF) + ((fp32_to_bits(x) >> 16) & 1)) >> 16) {}
+  operator float() const { return fp32_from_bits((uint32_t)value << 16); }
+#endif
+};
+typedef struct xnn_bfloat16 xnn_bfloat16;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+static inline xnn_float16 xnn_float16_from_float(float f) {
+#if XNN_HAVE_FLOAT16
+  return (xnn_float16)f;
+#else
+  struct xnn_float16 result;
+  result.value = fp16_ieee_from_fp32_value(f);
+  return result;
+#endif
+}
+
+static inline float xnn_float16_to_float(xnn_float16 fp16) {
+#if XNN_HAVE_FLOAT16
+  return (float)fp16;
+#else
+  return fp16_ieee_to_fp32_value(fp16.value);
+#endif
+}
+
+static inline uint16_t xnn_float16_to_bits(xnn_float16 fp16) {
+  uint16_t result;
+  memcpy(&result, &fp16, sizeof(result));
+  return result;
+}
+
+static inline xnn_float16 xnn_float16_from_bits(uint16_t x) {
+  xnn_float16 result;
+  memcpy(&result, &x, sizeof(result));
+  return result;
+}
+
+static inline xnn_bfloat16 xnn_bfloat16_from_float(float f) {
+  xnn_bfloat16 result;
+  result.value = (fp32_to_bits(f) + UINT32_C(0x00007FFF) + ((fp32_to_bits(f) >> 16) & 1)) >> 16;
+  return result;
+}
+
+static inline float xnn_bfloat16_to_float(xnn_bfloat16 bf16) {
+  return fp32_from_bits((uint32_t)bf16.value << 16);
+}
+
+#ifdef __cplusplus
+}
+#endif
 
 // From xnnpack/common.h
 #define XNN_OOB_READS
@@ -82,4 +220,12 @@ struct xnn_qs8_cvt_params {
     int16_t output_zero_point;
   } scalar;
 };
+
+struct xnn_qs8_f16_cvt_params {
+  struct {
+    int16_t zero_point;
+    xnn_float16 scale;
+  } scalar;
+};
+
 #endif // XNN_MINIMAL_H

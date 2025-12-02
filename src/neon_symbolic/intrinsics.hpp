@@ -1210,6 +1210,20 @@ inline Term convertToWidth(Term term, size_t target_width) {
 // ============================================================================
 
 /**
+ * vld1q_dup_u16: Load and duplicate a single uint16 to all lanes (uint16x8)
+ * Loads from memory and replicates across all 8 lanes
+ */
+inline uint16x8_t vld1q_dup_u16(const uint16_t* ptr) {
+    std::array<Term, 8> lanes;
+    // In symbolic execution, we create a symbolic constant for the loaded value
+    Term val_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(*ptr));
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = val_term;
+    }
+    return uint16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vdupq_n_f32: Duplicate scalar float to all lanes (float32x4)
  */
 inline float32x4_t vdupq_n_f32(float value) {
@@ -1295,12 +1309,210 @@ inline float32x4_t vmulq_f32(const float32x4_t& a, const float32x4_t& b) {
 inline float32x4_t vaddq_f32(const float32x4_t& a, const float32x4_t& b) {
     std::array<Term, 4> lanes;
     Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
-    
+
     for (int i = 0; i < 4; i++) {
         lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ADD, {rm, a.getLane(i), b.getLane(i)});
     }
-    
+
     return float32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Float16 (Half-Precision) Conversion Operations
+// ============================================================================
+
+/**
+ * vcvtq_f16_s16: Convert signed int16x8 to float16x8
+ * result[i] = (float16)vec[i]
+ */
+inline float16x8_t vcvtq_f16_s16(const int16x8_t& vec) {
+    std::array<Term, 8> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {5, 11});  // IEEE 754 half precision
+
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getLane(i)});
+    }
+
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Float16 (Half-Precision) Arithmetic Operations
+// ============================================================================
+
+/**
+ * vmulq_f16: Multiply two vectors element-wise (float16x8)
+ * result[i] = a[i] * b[i]
+ */
+inline float16x8_t vmulq_f16(const float16x8_t& a, const float16x8_t& b) {
+    std::array<Term, 8> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_MULT, {rm, a.getLane(i), b.getLane(i)});
+    }
+
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Float16 (Half-Precision) Reinterpret Operations
+// ============================================================================
+
+/**
+ * vreinterpretq_u16_f16: Reinterpret float16x8_t as uint16x8_t
+ * Converts floating-point bit representation to unsigned integer interpretation
+ */
+inline uint16x8_t vreinterpretq_u16_f16(const float16x8_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 8> lanes;
+    Sort bv16 = tm->mkBitVectorSort(16);
+    Op to_fp_op = tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    static int reinterpret_f16_counter = 0;
+
+    for (int i = 0; i < 8; i++) {
+        // Create a fresh bitvector that represents the IEEE bits
+        Term bv_lane = tm->mkConst(bv16, "fp16_to_bv_" + std::to_string(reinterpret_f16_counter++) + "_" + std::to_string(i));
+
+        // Convert this BV back to FP16
+        Term fp_from_bv = tm->mkTerm(to_fp_op, {bv_lane});
+
+        // Assert equality: the FP from BV must equal original FP (bit-level equality)
+        Term eq = tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getLane(i)});
+        g_symbolic_solver->assertFormula(eq);
+
+        lanes[i] = bv_lane;
+    }
+    return uint16x8_t(tm, lanes);
+}
+
+/**
+ * vreinterpretq_f16_u16: Reinterpret uint16x8_t as float16x8_t
+ * Converts unsigned integer bit representation to floating-point interpretation
+ */
+inline float16x8_t vreinterpretq_f16_u16(const uint16x8_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 8> lanes;
+    Op to_fp_op = tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    for (int i = 0; i < 8; i++) {
+        // Convert bitvector to FP16 using IEEE bit interpretation
+        lanes[i] = tm->mkTerm(to_fp_op, {vec.getLane(i)});
+    }
+    return float16x8_t(tm, lanes);
+}
+
+/**
+ * vreinterpret_u16_f16: Reinterpret float16x4_t as uint16x4_t
+ * Converts floating-point bit representation to unsigned integer interpretation
+ */
+inline uint16x4_t vreinterpret_u16_f16(const float16x4_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 4> lanes;
+    Sort bv16 = tm->mkBitVectorSort(16);
+    Op to_fp_op = tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    static int reinterpret_f16x4_counter = 0;
+
+    for (int i = 0; i < 4; i++) {
+        // Create a fresh bitvector that represents the IEEE bits
+        Term bv_lane = tm->mkConst(bv16, "fp16x4_to_bv_" + std::to_string(reinterpret_f16x4_counter++) + "_" + std::to_string(i));
+
+        // Convert this BV back to FP16
+        Term fp_from_bv = tm->mkTerm(to_fp_op, {bv_lane});
+
+        // Assert equality: the FP from BV must equal original FP (bit-level equality)
+        Term eq = tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getLane(i)});
+        g_symbolic_solver->assertFormula(eq);
+
+        lanes[i] = bv_lane;
+    }
+    return uint16x4_t(tm, lanes);
+}
+
+// ============================================================================
+// Float16 (Half-Precision) Extract Operations
+// ============================================================================
+
+/**
+ * vget_low_f16: Get low half of float16x8_t
+ * Returns the lower 4 lanes as float16x4_t
+ */
+inline float16x4_t vget_low_f16(const float16x8_t& vec) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return float16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_high_f16: Get high half of float16x8_t
+ * Returns the upper 4 lanes as float16x4_t
+ */
+inline float16x4_t vget_high_f16(const float16x8_t& vec) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = vec.getLane(i + 4);
+    }
+    return float16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vext_f16: Extract vector from pair of vectors (float16x4_t)
+ * Concatenates a and b, then extracts 4 elements starting at index n
+ */
+inline float16x4_t vext_f16(const float16x4_t& a, const float16x4_t& b, int n) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        int src_idx = i + n;
+        if (src_idx < 4) {
+            lanes[i] = a.getLane(src_idx);
+        } else {
+            lanes[i] = b.getLane(src_idx - 4);
+        }
+    }
+    return float16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vreinterpret_u32_f16: Reinterpret float16x4_t as uint32x2_t
+ * Combines pairs of float16 lanes into uint32 lanes
+ */
+inline uint32x2_t vreinterpret_u32_f16(const float16x4_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    Sort bv16 = tm->mkBitVectorSort(16);
+    Op to_fp_op = tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    static int reinterpret_f16_u32_counter = 0;
+
+    // First convert each float16 lane to a bitvector
+    std::array<Term, 4> bv_lanes;
+    for (int i = 0; i < 4; i++) {
+        Term bv_lane = tm->mkConst(bv16, "fp16_to_u32_bv_" + std::to_string(reinterpret_f16_u32_counter++) + "_" + std::to_string(i));
+        Term fp_from_bv = tm->mkTerm(to_fp_op, {bv_lane});
+        Term eq = tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getLane(i)});
+        g_symbolic_solver->assertFormula(eq);
+        bv_lanes[i] = bv_lane;
+    }
+
+    // Combine pairs of 16-bit values into 32-bit values
+    std::array<Term, 2> result_lanes;
+    for (int i = 0; i < 2; i++) {
+        Term low = bv_lanes[i * 2];
+        Term high = bv_lanes[i * 2 + 1];
+        // Zero-extend both to 32 bits
+        Term low_ext = tm->mkTerm(tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {16}), {low});
+        Term high_ext = tm->mkTerm(tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {16}), {high});
+        // Shift high part left by 16 bits
+        Term high_shifted = tm->mkTerm(Kind::BITVECTOR_SHL, {high_ext, tm->mkBitVector(32, 16)});
+        // OR them together
+        result_lanes[i] = tm->mkTerm(Kind::BITVECTOR_OR, {low_ext, high_shifted});
+    }
+
+    return uint32x2_t(tm, result_lanes);
 }
 
 #endif

@@ -29,6 +29,11 @@ inline std::map<uintptr_t, std::vector<vint8m1_t>> g_riscv_memory_i8;
  */
 inline std::map<uintptr_t, std::vector<vint32m4_t>> g_riscv_memory_i32m4;
 
+/**
+ * Global storage for float16m2 vectors (needed for half-precision operations)
+ */
+inline std::map<uintptr_t, std::vector<vfloat16m2_t>> g_riscv_memory_f16m2;
+
 
 /**
  * __riscv_vle32_v_i32m1: Load vector of 32-bit integers
@@ -134,6 +139,15 @@ inline void __riscv_vse32_v_i32m4(int32_t* ptr, const vint32m4_t& vec, size_t vl
     (void)vl;
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
     g_riscv_memory_i32m4[addr].push_back(vec);
+}
+
+/**
+ * __riscv_vse16_v_f16m2: Store vector of 16-bit floats (LMUL=2)
+ */
+inline void __riscv_vse16_v_f16m2(_Float16* ptr, const vfloat16m2_t& vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_f16m2[addr].push_back(vec);
 }
 
 #endif // RISCV_SYMBOLIC_MEMORY_HPP
