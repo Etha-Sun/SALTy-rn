@@ -30,6 +30,18 @@ inline int8x16_t vdupq_n_s8(int8_t value) {
 }
 
 /**
+ * vdup_n_s8: Duplicate scalar to all lanes (int8x8)
+ */
+inline int8x8_t vdup_n_s8(int8_t value) {
+    std::array<Term, 8> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(static_cast<uint8_t>(value)));
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = val_term;
+    }
+    return int8x8_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vdupq_n_s16: Duplicate scalar to all lanes (int16x8)
  */
 inline int16x8_t vdupq_n_s16(int16_t value) {

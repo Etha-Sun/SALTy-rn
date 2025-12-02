@@ -429,14 +429,14 @@ private:
 public:
     // Default constructor (uses global term manager)
     inline float32x4_t() : tm(g_symbolic_tm) {
-        Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+        Sort fp32 = tm->mkFloatingPointSort(8, 24);  
         for (int i = 0; i < 4; i++) {
             lanes[i] = tm->mkConst(fp32, "float32x4_" + std::to_string(i));
         }
     }
 
     inline float32x4_t(TermManager* t) : tm(t) {
-        Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+        Sort fp32 = tm->mkFloatingPointSort(8, 24);  
         for (int i = 0; i < 4; i++) {
             lanes[i] = tm->mkConst(fp32, "float32x4_" + std::to_string(i));
         }
@@ -448,7 +448,7 @@ public:
 
     // Constructor with specific name prefix
     inline float32x4_t(TermManager* t, const std::string& name) : tm(t) {
-        Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+        Sort fp32 = tm->mkFloatingPointSort(8, 24); 
         for (int i = 0; i < 4; i++) {
             lanes[i] = tm->mkConst(fp32, name + "_" + std::to_string(i));
         }
