@@ -75,4 +75,11 @@ union xnn_qs8_mul_minmax_params {
   } scalar;
 };
 
+struct xnn_qs8_cvt_params {
+  struct {
+    int16_t input_zero_point;
+    int32_t multiplier;
+    int16_t output_zero_point;
+  } scalar;
+};
 #endif // XNN_MINIMAL_H

@@ -1843,4 +1843,100 @@ inline vint8m2_t __riscv_vnclip_wx_i8m2(const vint16m4_t &vec, size_t shift,
   return vint8m2_t(g_symbolic_tm, result_elements);
 }
 
+/**
+ * __riscv_vwadd_vx_i16m2: Widening addition (int8 vector + int8 scalar ->
+ * int16 vector)
+ */
+inline vint16m2_t __riscv_vwadd_vx_i16m2(const vint8m1_t &vec, int8_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  int16_t scalar_ext = static_cast<int16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint16_t>(scalar_ext));
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term vec_elem_ext = g_symbolic_tm->mkTerm(sext_op, {vec.getElement(i)});
+
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {vec_elem_ext, scalar_term}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vrsub_vx_i16m2: Reverse subtraction (scalar - vector, int16m2)
+ * Computes scalar - vec[i] for each element
+ */
+inline vint16m2_t __riscv_vrsub_vx_i16m2(const vint16m2_t &vec, int16_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint16_t scalar_u16 = static_cast<uint16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar_u16));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {scalar_term, vec.getElement(i)}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vsmul_vx_i16m2: Signed saturating fixed-point multiply (int16m2)
+ * Multiplies each element by scalar, shifts right by 15 bits (Q15 format),
+ * rounds according to vxrm, and saturates to int16 range.
+ */
+inline vint16m2_t __riscv_vsmul_vx_i16m2(const vint16m2_t &vec, int16_t scalar,
+                                         unsigned int vxrm, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  int32_t scalar_ext = static_cast<int32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint32_t>(scalar_ext));
+
+  // Sign extend 16-bit to 32-bit
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  // Saturation constants for 16-bit signed
+  Term max_val = g_symbolic_tm->mkBitVector(32, 32767);
+  Term min_val = g_symbolic_tm->mkBitVector(32, static_cast<uint32_t>(-32768));
+
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Sign extend vector element to 32 bits
+    Term vec_elem_ext = g_symbolic_tm->mkTerm(sext_op, {vec.getElement(i)});
+
+    // Multiply (32-bit result)
+    Term product =
+        g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {vec_elem_ext, scalar_term});
+
+    // Shift right by 15 with rounding (Q15 fixed-point format)
+    Term shifted = roundedShiftRight(product, 15, vxrm);
+
+    // Saturate to int16 range
+    Term gt_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {shifted, max_val});
+    Term lt_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {shifted, min_val});
+
+    Term saturated = g_symbolic_tm->mkTerm(
+        Kind::ITE,
+        {gt_max, max_val,
+         g_symbolic_tm->mkTerm(Kind::ITE, {lt_min, min_val, shifted})});
+
+    // Extract lower 16 bits
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {saturated}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP
