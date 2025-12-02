@@ -6,3 +6,6 @@
 #include <algorithm>
 #define XNN_ARCH_ARM64 1
 
+
+extern "C" {
+}

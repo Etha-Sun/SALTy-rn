@@ -2,3 +2,6 @@
 #include "../src/xnn_minimal.h"
 #include <assert.h>
 
+
+extern "C" {
+}
