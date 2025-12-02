@@ -417,4 +417,54 @@ public:
     }
 };
 
+/**
+ * Symbolic representation of ARM NEON float32x4_t vector type
+ * Represents 4 lanes of 32-bit floating-point values
+ */
+class float32x4_t {
+private:
+    std::array<Term, 4> lanes;
+    TermManager* tm;
+
+public:
+    // Default constructor (uses global term manager)
+    inline float32x4_t() : tm(g_symbolic_tm) {
+        Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+        for (int i = 0; i < 4; i++) {
+            lanes[i] = tm->mkConst(fp32, "float32x4_" + std::to_string(i));
+        }
+    }
+
+    inline float32x4_t(TermManager* t) : tm(t) {
+        Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+        for (int i = 0; i < 4; i++) {
+            lanes[i] = tm->mkConst(fp32, "float32x4_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline float32x4_t(TermManager* t, const std::array<Term, 4>& data)
+        : lanes(data), tm(t) {}
+
+    // Constructor with specific name prefix
+    inline float32x4_t(TermManager* t, const std::string& name) : tm(t) {
+        Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+        for (int i = 0; i < 4; i++) {
+            lanes[i] = tm->mkConst(fp32, name + "_" + std::to_string(i));
+        }
+    }
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 4>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
 #endif // NEON_SYMBOLIC_TYPES_HPP

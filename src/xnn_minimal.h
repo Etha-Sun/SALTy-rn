@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#define XNN_ARCH_ARM64 1
 
 // Minimal definitions needed for XNN symbolic execution
 
@@ -63,5 +64,15 @@ struct xnn_qs8_lrelu_params {
   } scalar;
 };
 
+union xnn_qs8_mul_minmax_params {
+  struct {
+    int8_t a_zero_point;
+    int8_t b_zero_point;
+    float scale;
+    int16_t output_zero_point;
+    int8_t output_min;
+    int8_t output_max;
+  } scalar;
+};
 
 #endif // XNN_MINIMAL_H

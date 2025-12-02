@@ -9,6 +9,7 @@
 #include "memory.hpp"
 #include "types.hpp"
 #include <cstdint>
+#include <cstring>
 #include <string>
 
 /**
@@ -1661,6 +1662,185 @@ inline symbolic_int32_t __riscv_vmv_x_s_i32m1_i32(const vint32m1_t &vec) {
   Term scalar_term = vec.getElement(0);
   
   return symbolic_int32_t(g_symbolic_tm, scalar_term, 0, false);
+}
+
+// ============================================================================
+// Arithmetic Operations (int16m4)
+// ============================================================================
+
+/**
+ * __riscv_vsub_vx_i16m4: Subtract scalar from vector (int16m4)
+ */
+inline vint16m4_t __riscv_vsub_vx_i16m4(const vint16m4_t &vec, int16_t scalar,
+                                        size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint16_t scalar_u16 = static_cast<uint16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar_u16));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {vec.getElement(i), scalar_term}));
+  }
+
+  return vint16m4_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Widening Multiply Operations (int16m4 -> int32m8)
+// ============================================================================
+
+/**
+ * __riscv_vwmul_vv_i32m8: Widening multiply vector by vector (int16m4 * int16m4 -> int32m8)
+ */
+inline vint32m8_t __riscv_vwmul_vv_i32m8(const vint16m4_t &op1,
+                                         const vint16m4_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Sign-extend both operands to 32 bits
+    Term op1_ext = g_symbolic_tm->mkTerm(sext_op, {op1.getElement(i)});
+    Term op2_ext = g_symbolic_tm->mkTerm(sext_op, {op2.getElement(i)});
+
+    // Multiply
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {op1_ext, op2_ext}));
+  }
+
+  return vint32m8_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Floating-Point Conversion Operations
+// ============================================================================
+
+/**
+ * __riscv_vfcvt_f_x_v_f32m8: Convert signed int32m8 to float32m8
+ */
+inline vfloat32m8_t __riscv_vfcvt_f_x_v_f32m8(const vint32m8_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {8, 24});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat32m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfcvt_x_f_v_i32m8: Convert float32m8 to signed int32m8
+ * Uses round-to-nearest-ties-to-even by default
+ */
+inline vint32m8_t __riscv_vfcvt_x_f_v_i32m8(const vfloat32m8_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_sbv_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_SBV, {32});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_sbv_op, {rm, vec.getElement(i)}));
+  }
+
+  return vint32m8_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Floating-Point Arithmetic Operations
+// ============================================================================
+
+/**
+ * __riscv_vfmul_vf_f32m8: Multiply float32m8 vector by scalar float
+ */
+inline vfloat32m8_t __riscv_vfmul_vf_f32m8(const vfloat32m8_t &vec, float scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert float scalar to its IEEE 754 bit representation
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat32m8_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Narrowing Clip Operations (with vxrm parameter)
+// ============================================================================
+
+/**
+ * __riscv_vnclip_wx_i16m4: Narrowing clip (int32m8 -> int16m4) with vxrm
+ */
+inline vint16m4_t __riscv_vnclip_wx_i16m4(const vint32m8_t &vec, size_t shift,
+                                          unsigned int vxrm, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  shift = shift & 31;
+
+  Term max_val = g_symbolic_tm->mkBitVector(32, 32767);
+  Term min_val = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(-32768));
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term tmp = roundedShiftRight(vec.getElement(i), shift, vxrm);
+    Term gt_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {tmp, max_val});
+    Term lt_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {tmp, min_val});
+    Term clipped = g_symbolic_tm->mkTerm(
+        Kind::ITE, {gt_max, max_val,
+                    g_symbolic_tm->mkTerm(Kind::ITE, {lt_min, min_val, tmp})});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {clipped}));
+  }
+
+  return vint16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vnclip_wx_i8m2: Narrowing clip (int16m4 -> int8m2) with vxrm
+ */
+inline vint8m2_t __riscv_vnclip_wx_i8m2(const vint16m4_t &vec, size_t shift,
+                                        unsigned int vxrm, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  shift = shift & 15;
+
+  Term max_val = g_symbolic_tm->mkBitVector(16, 127);
+  Term min_val = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(-128));
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term tmp = roundedShiftRight(vec.getElement(i), shift, vxrm);
+    Term gt_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {tmp, max_val});
+    Term lt_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {tmp, min_val});
+    Term clipped = g_symbolic_tm->mkTerm(
+        Kind::ITE, {gt_max, max_val,
+                    g_symbolic_tm->mkTerm(Kind::ITE, {lt_min, min_val, tmp})});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {clipped}));
+  }
+
+  return vint8m2_t(g_symbolic_tm, result_elements);
 }
 
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP
