@@ -1,5 +1,5 @@
-#include "../src/neon_symbolic/neon_symbolic.hpp"
-#include "../src/xnn_minimal.h"
+#include "../../src/neon_symbolic/neon_symbolic.hpp"
+#include "../../src/xnn_minimal.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>

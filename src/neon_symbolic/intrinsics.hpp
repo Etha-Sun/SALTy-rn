@@ -346,6 +346,51 @@ inline int16x8_t vqaddq_s16(const int16x8_t& a, const int16x8_t& b) {
     return int16x8_t(g_symbolic_tm, lanes);
 }
 
+/**
+ * vqrdmulhq_s16: Saturating rounding doubling multiply returning high half (int16x8)
+ * result[i] = sat_i16((a[i] * b[i] * 2 + (1 << 15)) >> 16)
+ */
+inline int16x8_t vqrdmulhq_s16(const int16x8_t& a, const int16x8_t& b) {
+    std::array<Term, 8> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+    Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+    
+    Term min_i16_32 = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(-32768)));
+    Term max_i16_32 = g_symbolic_tm->mkBitVector(32, 32767);
+    Term rounding = g_symbolic_tm->mkBitVector(32, 1 << 15);
+    Term one = g_symbolic_tm->mkBitVector(32, 1);
+    Term sixteen = g_symbolic_tm->mkBitVector(32, 16);
+    
+    for (int i = 0; i < 8; i++) {
+        // Sign-extend both operands to 32 bits
+        Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a.getLane(i)});
+        Term b_ext = g_symbolic_tm->mkTerm(extend_op, {b.getLane(i)});
+        
+        // Multiply
+        Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+        
+        // Double the result
+        Term doubled = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {prod, one});
+        
+        // Add rounding
+        Term with_rounding = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {doubled, rounding});
+        
+        // Arithmetic shift right by 16
+        Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, {with_rounding, sixteen});
+        
+        // Saturate
+        Term cmp_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {shifted, min_i16_32});
+        shifted = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_min, min_i16_32, shifted});
+        Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {shifted, max_i16_32});
+        shifted = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_i16_32, shifted});
+        
+        // Extract lower 16 bits
+        lanes[i] = g_symbolic_tm->mkTerm(extract_op, {shifted});
+    }
+    
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
 // ============================================================================
 // Conversion/Widening Operations
 // ============================================================================
@@ -364,6 +409,25 @@ inline int16x8_t vaddw_s8(const int16x8_t& wide, const int8x8_t& narrow) {
         Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
         // Add to wide element
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {wide.getLane(i), narrow_ext});
+    }
+    
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vsubw_s8: Widening subtract (int16 - sign_extend(int8) -> int16)
+ * Subtracts int8x8 vector (widened to int16) from int16x8 vector
+ * result[i] = wide[i] - sign_extend(narrow[i])
+ */
+inline int16x8_t vsubw_s8(const int16x8_t& wide, const int8x8_t& narrow) {
+    std::array<Term, 8> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+    
+    for (int i = 0; i < 8; i++) {
+        // Sign-extend int8 to int16
+        Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
+        // Subtract from wide element
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SUB, {wide.getLane(i), narrow_ext});
     }
     
     return int16x8_t(g_symbolic_tm, lanes);
@@ -532,6 +596,21 @@ inline uint8x8_t vqmovun_s16(const int16x8_t& vec) {
 // ============================================================================
 
 /**
+ * vshlq_n_s16: Shift left by immediate (int16x8)
+ * result[i] = vec[i] << n
+ */
+inline int16x8_t vshlq_n_s16(const int16x8_t& vec, int n) {
+    std::array<Term, 8> lanes;
+    Term shift_amount = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(n));
+    
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {vec.getLane(i), shift_amount});
+    }
+    
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vrshlq_s32: Rounding shift left (negative = shift right)
  */
 inline int32x4_t vrshlq_s32(const int32x4_t& vec, const int32x4_t& shift_vec) {
@@ -652,6 +731,45 @@ inline uint8x16_t vminq_u8(const uint8x16_t& a, const uint8x16_t& b) {
     return uint8x16_t(g_symbolic_tm, lanes);
 }
 
+/**
+ * vcltq_s16: Compare less than (int16x8)
+ * result[i] = (a[i] < b[i]) ? 0xFFFF : 0x0000
+ */
+inline uint16x8_t vcltq_s16(const int16x8_t& a, const int16x8_t& b) {
+    std::array<Term, 8> lanes;
+    Term all_ones = g_symbolic_tm->mkBitVector(16, 0xFFFF);
+    Term all_zeros = g_symbolic_tm->mkBitVector(16, 0x0000);
+    
+    for (int i = 0; i < 8; i++) {
+        Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {a.getLane(i), b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, all_ones, all_zeros});
+    }
+    return uint16x8_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Bitwise Select Operations
+// ============================================================================
+
+/**
+ * vbslq_s16: Bitwise select (int16x8)
+ * For each bit: if mask bit is 1, select from a; else select from b
+ * result[i] = (mask[i] & a[i]) | (~mask[i] & b[i])
+ */
+inline int16x8_t vbslq_s16(const uint16x8_t& mask, const int16x8_t& a, const int16x8_t& b) {
+    std::array<Term, 8> lanes;
+    
+    for (int i = 0; i < 8; i++) {
+        Term m = mask.getLane(i);
+        Term and_a = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {m, a.getLane(i)});
+        Term not_m = g_symbolic_tm->mkTerm(Kind::BITVECTOR_NOT, {m});
+        Term and_b = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {not_m, b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {and_a, and_b});
+    }
+    
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
 // ============================================================================
 // Extract/Combine Operations
 // ============================================================================
@@ -663,6 +781,17 @@ inline int8x8_t vget_low_s8(const int8x16_t& vec) {
     std::array<Term, 8> lanes;
     for (int i = 0; i < 8; i++) {
         lanes[i] = vec.getLane(i);
+    }
+    return int8x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_high_s8: Get high half of int8x16
+ */
+inline int8x8_t vget_high_s8(const int8x16_t& vec) {
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = vec.getLane(i + 8);
     }
     return int8x8_t(g_symbolic_tm, lanes);
 }

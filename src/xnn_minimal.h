@@ -54,4 +54,14 @@ struct xnn_qs8_rsum_params {
     char _;  // Dummy member variable to comply with the C standard
 };
 
+struct xnn_qs8_lrelu_params {
+  struct {
+    int32_t input_zero_point;
+    int32_t positive_multiplier;
+    int32_t negative_multiplier;
+    int32_t output_zero_point;
+  } scalar;
+};
+
+
 #endif // XNN_MINIMAL_H

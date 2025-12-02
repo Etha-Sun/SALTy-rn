@@ -233,4 +233,37 @@ public:
   inline TermManager *getTermManager() const { return tm; }
 };
 
+/**
+ * Symbolic representation of RISC-V Vector vbool8_t type
+ * Represents a mask vector (1 bit per 8-bit element group)
+ * Each element is a 1-bit boolean term
+ */
+class vbool8_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vbool8_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv1 = tm->mkBitVectorSort(1);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv1, "mask_" + std::to_string(i)));
+    }
+  }
+
+  inline vbool8_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
 #endif // RISCV_SYMBOLIC_TYPES_HPP

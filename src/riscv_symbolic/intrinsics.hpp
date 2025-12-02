@@ -1273,6 +1273,136 @@ inline vint16m2_t __riscv_vmv_v_x_i16m2(int16_t scalar, size_t vl) {
 }
 
 /**
+ * __riscv_vmv_v_x_i8m1: Move scalar to all elements of vector (int8m1)
+ */
+inline vint8m1_t __riscv_vmv_v_x_i8m1(int8_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint8_t scalar_u8 = static_cast<uint8_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar_u8));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vsub_vv_i16m2: Subtract vector from vector (int16m2)
+ */
+inline vint16m2_t __riscv_vsub_vv_i16m2(const vint16m2_t &op1,
+                                        const vint16m2_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {op1.getElement(i), op2.getElement(i)}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmslt_vx_i16m2_b8: Compare vector less than scalar, return mask (int16m2)
+ * Returns vbool8_t where each element is 1 if vec[i] < scalar, else 0
+ */
+inline vbool8_t __riscv_vmslt_vx_i16m2_b8(const vint16m2_t &vec, int16_t scalar,
+                                          size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint16_t scalar_u16 = static_cast<uint16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar_u16));
+
+  Term one_bit = g_symbolic_tm->mkBitVector(1, 1);
+  Term zero_bit = g_symbolic_tm->mkBitVector(1, 0);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Signed less than comparison
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT,
+                                     {vec.getElement(i), scalar_term});
+    // Convert boolean to 1-bit bitvector
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, one_bit, zero_bit}));
+  }
+
+  return vbool8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vsll_vx_i16m2: Shift left logical by scalar (int16m2)
+ */
+inline vint16m2_t __riscv_vsll_vx_i16m2(const vint16m2_t &vec, uint16_t shift,
+                                        size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(shift));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {vec.getElement(i), shift_term}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwmul_vv_i32m4: Widening multiply vector by vector (int16m2 * int16m2 -> int32m4)
+ */
+inline vint32m4_t __riscv_vwmul_vv_i32m4(const vint16m2_t &op1,
+                                         const vint16m2_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op sext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Sign-extend both operands to 32 bits
+    Term op1_ext = g_symbolic_tm->mkTerm(sext_op, {op1.getElement(i)});
+    Term op2_ext = g_symbolic_tm->mkTerm(sext_op, {op2.getElement(i)});
+
+    // Multiply
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {op1_ext, op2_ext}));
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmerge_vxm_i16m2: Merge vector with scalar based on mask (int16m2)
+ * result[i] = mask[i] ? scalar : vec[i]
+ */
+inline vint16m2_t __riscv_vmerge_vxm_i16m2(const vint16m2_t &vec, int16_t scalar,
+                                           const vbool8_t &mask, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint16_t scalar_u16 = static_cast<uint16_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar_u16));
+
+  Term one_bit = g_symbolic_tm->mkBitVector(1, 1);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Check if mask bit is set (mask[i] == 1)
+    Term mask_set = g_symbolic_tm->mkTerm(Kind::EQUAL, {mask.getElement(i), one_bit});
+    // Select scalar if mask is set, otherwise vector element
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {mask_set, scalar_term, vec.getElement(i)}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vmv_v_x_i32m8: Move scalar to all elements of vector (int32m8)
  */
 inline vint32m8_t __riscv_vmv_v_x_i32m8(int32_t scalar, size_t vl) {
