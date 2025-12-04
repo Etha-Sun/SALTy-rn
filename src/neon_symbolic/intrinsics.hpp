@@ -1960,4 +1960,162 @@ inline int16x8_t vreinterpretq_s16_s32(const int32x4_t& vec) {
     return int16x8_t(g_symbolic_tm, lanes);
 }
 
+// ============================================================================
+// Duplicate/Move Operations (uint32)
+// ============================================================================
+
+/**
+ * vmovq_n_u32: Move scalar to all lanes (uint32x4) - alias for vdupq_n_u32
+ */
+inline uint32x4_t vmovq_n_u32(uint32_t value) {
+    return vdupq_n_u32(value);
+}
+
+/**
+ * vmov_n_u32: Move scalar to all lanes (uint32x2) - alias for vdup_n_u32
+ */
+inline uint32x2_t vmov_n_u32(uint32_t value) {
+    std::array<Term, 2> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(value));
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = val_term;
+    }
+    return uint32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vdup_n_u32: Duplicate scalar to all lanes (uint32x2)
+ */
+inline uint32x2_t vdup_n_u32(uint32_t value) {
+    return vmov_n_u32(value);
+}
+
+// ============================================================================
+// Zip Operations
+// ============================================================================
+
+/**
+ * vzipq_u32: Interleave elements of two uint32x4 vectors
+ *
+ * Given:
+ *   a = [a0, a1, a2, a3]
+ *   b = [b0, b1, b2, b3]
+ *
+ * Returns:
+ *   result.val[0] = [a0, b0, a1, b1]
+ *   result.val[1] = [a2, b2, a3, b3]
+ */
+inline uint32x4x2_t vzipq_u32(const uint32x4_t& a, const uint32x4_t& b) {
+    uint32x4x2_t result;
+
+    // First result vector: interleave low halves
+    std::array<Term, 4> lanes0;
+    lanes0[0] = a.getLane(0);
+    lanes0[1] = b.getLane(0);
+    lanes0[2] = a.getLane(1);
+    lanes0[3] = b.getLane(1);
+    result.val[0] = uint32x4_t(g_symbolic_tm, lanes0);
+
+    // Second result vector: interleave high halves
+    std::array<Term, 4> lanes1;
+    lanes1[0] = a.getLane(2);
+    lanes1[1] = b.getLane(2);
+    lanes1[2] = a.getLane(3);
+    lanes1[3] = b.getLane(3);
+    result.val[1] = uint32x4_t(g_symbolic_tm, lanes1);
+
+    return result;
+}
+
+/**
+ * vzip_u32: Interleave elements of two uint32x2 vectors
+ *
+ * Given:
+ *   a = [a0, a1]
+ *   b = [b0, b1]
+ *
+ * Returns:
+ *   result.val[0] = [a0, b0]
+ *   result.val[1] = [a1, b1]
+ */
+inline uint32x2x2_t vzip_u32(const uint32x2_t& a, const uint32x2_t& b) {
+    uint32x2x2_t result;
+
+    // First result vector
+    std::array<Term, 2> lanes0;
+    lanes0[0] = a.getLane(0);
+    lanes0[1] = b.getLane(0);
+    result.val[0] = uint32x2_t(g_symbolic_tm, lanes0);
+
+    // Second result vector
+    std::array<Term, 2> lanes1;
+    lanes1[0] = a.getLane(1);
+    lanes1[1] = b.getLane(1);
+    result.val[1] = uint32x2_t(g_symbolic_tm, lanes1);
+
+    return result;
+}
+
+/**
+ * vzipq_s32: Interleave elements of two int32x4 vectors
+ *
+ * Given:
+ *   a = [a0, a1, a2, a3]
+ *   b = [b0, b1, b2, b3]
+ *
+ * Returns:
+ *   result.val[0] = [a0, b0, a1, b1]
+ *   result.val[1] = [a2, b2, a3, b3]
+ */
+inline int32x4x2_t vzipq_s32(const int32x4_t& a, const int32x4_t& b) {
+    int32x4x2_t result;
+
+    // First result vector: interleave low halves
+    std::array<Term, 4> lanes0;
+    lanes0[0] = a.getLane(0);
+    lanes0[1] = b.getLane(0);
+    lanes0[2] = a.getLane(1);
+    lanes0[3] = b.getLane(1);
+    result.val[0] = int32x4_t(g_symbolic_tm, lanes0);
+
+    // Second result vector: interleave high halves
+    std::array<Term, 4> lanes1;
+    lanes1[0] = a.getLane(2);
+    lanes1[1] = b.getLane(2);
+    lanes1[2] = a.getLane(3);
+    lanes1[3] = b.getLane(3);
+    result.val[1] = int32x4_t(g_symbolic_tm, lanes1);
+
+    return result;
+}
+
+/**
+ * vzip_s32: Interleave elements of two int32x2 vectors
+ *
+ * Given:
+ *   a = [a0, a1]
+ *   b = [b0, b1]
+ *
+ * Returns:
+ *   result.val[0] = [a0, b0]
+ *   result.val[1] = [a1, b1]
+ */
+inline int32x2x2_t vzip_s32(const int32x2_t& a, const int32x2_t& b) {
+    int32x2x2_t result;
+
+    // First result vector
+    std::array<Term, 2> lanes0;
+    lanes0[0] = a.getLane(0);
+    lanes0[1] = b.getLane(0);
+    result.val[0] = int32x2_t(g_symbolic_tm, lanes0);
+
+    // Second result vector
+    std::array<Term, 2> lanes1;
+    lanes1[0] = a.getLane(1);
+    lanes1[1] = b.getLane(1);
+    result.val[1] = int32x2_t(g_symbolic_tm, lanes1);
+
+    return result;
+}
+
 #endif

@@ -654,4 +654,52 @@ public:
     }
 };
 
+// ============================================================================
+// Tuple Types for zip/unzip operations
+// ============================================================================
+
+/**
+ * uint32x4x2_t: Tuple of two uint32x4_t vectors
+ * Used by vzipq_u32 and similar operations
+ */
+struct uint32x4x2_t {
+    uint32x4_t val[2];
+
+    uint32x4x2_t() : val{uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm)} {}
+    uint32x4x2_t(const uint32x4_t& v0, const uint32x4_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * uint32x2x2_t: Tuple of two uint32x2_t vectors
+ * Used by vzip_u32 and similar operations
+ */
+struct uint32x2x2_t {
+    uint32x2_t val[2];
+
+    uint32x2x2_t() : val{uint32x2_t(g_symbolic_tm), uint32x2_t(g_symbolic_tm)} {}
+    uint32x2x2_t(const uint32x2_t& v0, const uint32x2_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * int32x4x2_t: Tuple of two int32x4_t vectors
+ * Used by vzipq_s32 and similar operations
+ */
+struct int32x4x2_t {
+    int32x4_t val[2];
+
+    int32x4x2_t() : val{int32x4_t(g_symbolic_tm), int32x4_t(g_symbolic_tm)} {}
+    int32x4x2_t(const int32x4_t& v0, const int32x4_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * int32x2x2_t: Tuple of two int32x2_t vectors
+ * Used by vzip_s32 and similar operations
+ */
+struct int32x2x2_t {
+    int32x2_t val[2];
+
+    int32x2x2_t() : val{int32x2_t(g_symbolic_tm), int32x2_t(g_symbolic_tm)} {}
+    int32x2x2_t(const int32x2_t& v0, const int32x2_t& v1) : val{v0, v1} {}
+};
+
 #endif // NEON_SYMBOLIC_TYPES_HPP

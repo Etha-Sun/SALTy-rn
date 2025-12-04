@@ -25,8 +25,23 @@ static inline uint32_t fp32_to_bits(float f) {
   return fp32.as_bits;
 }
 
-static inline int doz(int a, int b) {
+static inline size_t doz(size_t a, size_t b) {
   return a > b ? a - b : 0;
+}
+
+// Check if n is a power of 2
+static inline bool is_po2(size_t n) {
+  return (n != 0) && ((n & (n - 1)) == 0);
+}
+
+// Round down n to the nearest multiple of q (q must be power of 2)
+static inline size_t round_down_po2(size_t n, size_t q) {
+  return n & -q;
+}
+
+// Round up n to the nearest multiple of q (q must be power of 2)
+static inline size_t round_up_po2(size_t n, size_t q) {
+  return round_down_po2(n + q - 1, q);
 }
 
 static inline float fp16_ieee_to_fp32_value(uint16_t h) {
@@ -255,6 +270,13 @@ struct xnn_s8_minmax_params {
   struct {
     int32_t min;
     int32_t max;
+  } scalar;
+};
+
+struct xnn_u8_minmax_params {
+  struct {
+    uint32_t min;
+    uint32_t max;
   } scalar;
 };
 

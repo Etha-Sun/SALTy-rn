@@ -162,6 +162,15 @@ inline size_t __riscv_vsetvl_e8m2(size_t avl) {
   return avl;
 }
 
+/**
+ * __riscv_vsetvl_e8m8: Set vector length for 8-bit elements with LMUL=8
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
+ */
+inline size_t __riscv_vsetvl_e8m8(size_t avl) {
+  g_current_vl = avl;
+  return avl;
+}
+
 // ============================================================================
 // Load Operations
 // ============================================================================
@@ -2647,6 +2656,46 @@ inline vuint8mf4_t __riscv_vminu_vx_u8mf4(const vuint8mf4_t &vec, uint8_t scalar
   return vuint8mf4_t(g_symbolic_tm, result_elements);
 }
 
+/**
+ * __riscv_vmaxu_vx_u8m8: Maximum with scalar (unsigned, LMUL=8)
+ */
+inline vuint8m8_t __riscv_vmaxu_vx_u8m8(const vuint8m8_t &vec, uint8_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vuint8m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vminu_vx_u8m8: Minimum with scalar (unsigned, LMUL=8)
+ */
+inline vuint8m8_t __riscv_vminu_vx_u8m8(const vuint8m8_t &vec, uint8_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ULT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vuint8m8_t(g_symbolic_tm, result_elements);
+}
+
 // ============================================================================
 // Subtract Operations (i16m1)
 // ============================================================================
@@ -2692,6 +2741,24 @@ inline vint16mf2_t __riscv_vsub_vx_i16mf2(const vint16mf2_t &vec, int16_t scalar
 // ============================================================================
 // Unsigned Move/Duplicate Operations
 // ============================================================================
+
+/**
+ * __riscv_vmv_v_x_u32m1: Move scalar to all elements of vector (uint32m1)
+ * Creates a vector where all elements are copies of the scalar value
+ */
+inline vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vuint32m1_t(g_symbolic_tm, result_elements);
+}
 
 /**
  * __riscv_vmv_v_x_u32m4: Move scalar to all elements of vector (uint32m4)

@@ -28,7 +28,9 @@ namespace SymbolicRISCVHelpers {
         g_riscv_memory_u8m1.clear();
         g_riscv_memory_u8mf2.clear();
         g_riscv_memory_u8mf4.clear();
+        g_riscv_memory_u32m1.clear();
         g_riscv_memory_u32m4.clear();
+        g_riscv_memory_u8m8.clear();
     }
     
     inline const std::vector<vint8m1_t>* getStoredResults8(const int8_t* ptr) {
@@ -87,9 +89,23 @@ namespace SymbolicRISCVHelpers {
 
     inline void populateMemoryU32(const uint32_t* ptr, const std::vector<Term>& symbolic_values) {
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        const size_t elems_per_vec = 4;  // vuint32m1_t holds 4 elements
 
-        // Store in u32m4 memory map for unsigned 32-bit vector loads
-        g_riscv_memory_u32m4[addr].push_back(vuint32m4_t(g_symbolic_tm, symbolic_values));
+        // Store at strided addresses to support strided loads
+        for (size_t i = 0; i < symbolic_values.size(); i += elems_per_vec) {
+            std::vector<Term> chunk;
+            for (size_t j = 0; j < elems_per_vec && (i + j) < symbolic_values.size(); j++) {
+                chunk.push_back(symbolic_values[i + j]);
+            }
+            // Pad remaining elements with last valid element
+            while (chunk.size() < elems_per_vec) {
+                chunk.push_back(symbolic_values.back());
+            }
+
+            uintptr_t chunk_addr = addr + i * sizeof(uint32_t);
+            g_riscv_memory_u32m1[chunk_addr].push_back(vuint32m1_t(g_symbolic_tm, chunk));
+            g_riscv_memory_u32m4[chunk_addr].push_back(vuint32m4_t(g_symbolic_tm, chunk));
+        }
     }
 
     /**
@@ -211,12 +227,13 @@ namespace SymbolicRISCVHelpers {
 
     /**
      * Collect all 32-bit unsigned integer elements from RISC-V memory
+     * Handles vuint32m1_t and vuint32m4_t vector types
      */
     inline std::vector<Term> collectResultsU32(const uint32_t* ptr) {
         std::vector<Term> elements;
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-        // Try g_riscv_memory_u32m4 (for unsigned LMUL=4 operations like qu8-rdsum)
+        // Try g_riscv_memory_u32m4 first (for LMUL=4 operations like qu8-rdsum)
         auto it_m4 = g_riscv_memory_u32m4.find(addr);
         if (it_m4 != g_riscv_memory_u32m4.end() && !it_m4->second.empty()) {
             // Only collect from the last stored vector (most recent result)
@@ -227,18 +244,41 @@ namespace SymbolicRISCVHelpers {
             return elements;
         }
 
+        // Try g_riscv_memory_u32m1 (for LMUL=1 operations like transpose)
+        auto it_m1 = g_riscv_memory_u32m1.find(addr);
+        if (it_m1 != g_riscv_memory_u32m1.end() && !it_m1->second.empty()) {
+            // Collect all stored vectors at this address
+            for (const vuint32m1_t& vec : it_m1->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+            return elements;
+        }
+
         return elements;
     }
 
     /**
      * Collect all unsigned 8-bit elements from RISC-V memory
-     * Handles vuint8m1_t, vuint8mf2_t, and vuint8mf4_t vector types
+     * Handles vuint8m1_t, vuint8mf2_t, vuint8mf4_t, and vuint8m8_t vector types
      */
     inline std::vector<Term> collectResultsU8(const uint8_t* ptr) {
         std::vector<Term> elements;
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-        // Try vuint8m1_t first (LMUL=1)
+        // Try vuint8m8_t first (LMUL=8) - largest LMUL
+        auto it_m8 = g_riscv_memory_u8m8.find(addr);
+        if (it_m8 != g_riscv_memory_u8m8.end() && !it_m8->second.empty()) {
+            for (const vuint8m8_t& vec : it_m8->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+            return elements;
+        }
+
+        // Try vuint8m1_t (LMUL=1)
         auto it_m1 = g_riscv_memory_u8m1.find(addr);
         if (it_m1 != g_riscv_memory_u8m1.end() && !it_m1->second.empty()) {
             for (const vuint8m1_t& vec : it_m1->second) {

@@ -55,9 +55,19 @@ inline std::map<uintptr_t, std::vector<vuint8mf2_t>> g_riscv_memory_u8mf2;
 inline std::map<uintptr_t, std::vector<vuint8mf4_t>> g_riscv_memory_u8mf4;
 
 /**
+ * Global storage for unsigned 32-bit vectors (LMUL=1)
+ */
+inline std::map<uintptr_t, std::vector<vuint32m1_t>> g_riscv_memory_u32m1;
+
+/**
  * Global storage for unsigned 32-bit vectors (LMUL=4)
  */
 inline std::map<uintptr_t, std::vector<vuint32m4_t>> g_riscv_memory_u32m4;
+
+/**
+ * Global storage for unsigned 8-bit vectors (LMUL=8)
+ */
+inline std::map<uintptr_t, std::vector<vuint8m8_t>> g_riscv_memory_u8m8;
 
 
 /**
@@ -328,6 +338,69 @@ inline void __riscv_vse8_v_u8mf4(uint8_t *base, const vuint8mf4_t &vec, size_t v
 }
 
 // ============================================================================
+// Unsigned 32-bit Load/Store Operations (LMUL=1)
+// ============================================================================
+
+/**
+ * __riscv_vle32_v_u32m1: Load vector of unsigned 32-bit integers (LMUL=1)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vuint32m1_t __riscv_vle32_v_u32m1(const uint32_t *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_u32m1.find(addr);
+    if (it != g_riscv_memory_u32m1.end() && !it->second.empty()) {
+        const vuint32m1_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vuint32m1_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // Overlap search in u32m1 memory
+    for (const auto& entry : g_riscv_memory_u32m1) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vuint32m1_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl * sizeof(uint32_t);
+
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = (addr - base_addr) / sizeof(uint32_t);
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkBitVector(32, 0));
+                    }
+                }
+                return vuint32m1_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vuint32m1_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse32_v_u32m1: Store vector of unsigned 32-bit integers (LMUL=1)
+ */
+inline void __riscv_vse32_v_u32m1(uint32_t *ptr, const vuint32m1_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_u32m1[addr].push_back(vec);
+}
+
+// ============================================================================
 // Unsigned 32-bit Load/Store Operations (LMUL=4)
 // ============================================================================
 
@@ -354,6 +427,95 @@ inline void __riscv_vse32_v_u32m4(uint32_t *ptr, const vuint32m4_t &vec, size_t 
     (void)vl;
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
     g_riscv_memory_u32m4[addr].push_back(vec);
+}
+
+// ============================================================================
+// Unsigned 8-bit Load/Store Operations (LMUL=8)
+// ============================================================================
+
+/**
+ * __riscv_vle8_v_u8m8: Load vector of unsigned 8-bit integers (LMUL=8)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vuint8m8_t __riscv_vle8_v_u8m8(const uint8_t *base, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(base);
+
+    // Check if we have stored values at this exact address
+    auto it = g_riscv_memory_u8m8.find(addr);
+    if (it != g_riscv_memory_u8m8.end() && !it->second.empty()) {
+        const vuint8m8_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vuint8m8_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // Overlap search in u8m8 memory
+    for (const auto& entry : g_riscv_memory_u8m8) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vuint8m8_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl;
+
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = addr - base_addr;
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkBitVector(8, 0));
+                    }
+                }
+                return vuint8m8_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // Also check u8m1 memory for overlaps
+    for (const auto& entry : g_riscv_memory_u8m1) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vuint8m1_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl;
+
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = addr - base_addr;
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkBitVector(8, 0));
+                    }
+                }
+                return vuint8m8_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vuint8m8_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse8_v_u8m8: Store vector of unsigned 8-bit integers (LMUL=8)
+ */
+inline void __riscv_vse8_v_u8m8(uint8_t *base, const vuint8m8_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(base);
+    g_riscv_memory_u8m8[addr].push_back(vec);
 }
 
 #endif // RISCV_SYMBOLIC_MEMORY_HPP
