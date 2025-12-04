@@ -2689,4 +2689,229 @@ inline vint16mf2_t __riscv_vsub_vx_i16mf2(const vint16mf2_t &vec, int16_t scalar
   return vint16mf2_t(g_symbolic_tm, result_elements);
 }
 
+// ============================================================================
+// Unsigned Move/Duplicate Operations
+// ============================================================================
+
+/**
+ * __riscv_vmv_v_x_u32m4: Move scalar to all elements of vector (uint32m4)
+ * Creates a vector where all elements are copies of the scalar value
+ */
+inline vuint32m4_t __riscv_vmv_v_x_u32m4(uint32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vuint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmv_v_x_u16m2: Move scalar to all elements of vector (uint16m2)
+ * Creates a vector where all elements are copies of the scalar value
+ */
+inline vuint16m2_t __riscv_vmv_v_x_u16m2(uint16_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vuint16m2_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Unsigned Widening Add Operations
+// ============================================================================
+
+/**
+ * __riscv_vwaddu_wv_u16m2: Widening unsigned add (uint16 + uint8 -> uint16)
+ * Adds uint16m2 vector with uint8m1 vector (zero-extended to uint16)
+ * result[i] = wide[i] + zero_extend(narrow[i])
+ */
+inline vuint16m2_t __riscv_vwaddu_wv_u16m2(const vuint16m2_t &wide,
+                                            const vuint8m1_t &narrow,
+                                            size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op zext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {8});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Zero-extend uint8 to uint16
+    Term narrow_ext = g_symbolic_tm->mkTerm(zext_op, {narrow.getElement(i)});
+    // Add to wide element
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {wide.getElement(i), narrow_ext}));
+  }
+
+  return vuint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwaddu_wv_u32m4: Widening unsigned add (uint32 + uint16 -> uint32)
+ * Adds uint32m4 vector with uint16m2 vector (zero-extended to uint32)
+ * result[i] = wide[i] + zero_extend(narrow[i])
+ */
+inline vuint32m4_t __riscv_vwaddu_wv_u32m4(const vuint32m4_t &wide,
+                                            const vuint16m2_t &narrow,
+                                            size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op zext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Zero-extend uint16 to uint32
+    Term narrow_ext = g_symbolic_tm->mkTerm(zext_op, {narrow.getElement(i)});
+    // Add to wide element
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {wide.getElement(i), narrow_ext}));
+  }
+
+  return vuint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vadd_vv_u32m4: Add two unsigned 32-bit vectors (LMUL=4)
+ * result[i] = op1[i] + op2[i]
+ */
+inline vuint32m4_t __riscv_vadd_vv_u32m4(const vuint32m4_t &op1,
+                                          const vuint32m4_t &op2,
+                                          size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD, {op1.getElement(i), op2.getElement(i)}));
+  }
+
+  return vuint32m4_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Signed 8-bit Bilinear Interpolation Intrinsics
+// ============================================================================
+
+/**
+ * __riscv_vwsub_vv_i16m2: Widening subtract vector-vector (int8m1 - int8m1 -> int16m2)
+ * Sign-extends both operands to 16-bit, then subtracts
+ * result[i] = sign_extend(op1[i]) - sign_extend(op2[i])
+ */
+inline vint16m2_t __riscv_vwsub_vv_i16m2(const vint8m1_t &op1,
+                                          const vint8m1_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term op1_ext = g_symbolic_tm->mkTerm(extend_op, {op1.getElement(i)});
+    Term op2_ext = g_symbolic_tm->mkTerm(extend_op, {op2.getElement(i)});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::BITVECTOR_SUB, {op1_ext, op2_ext}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vsll_vx_i32m4: Shift left logical by scalar (int32m4)
+ * result[i] = vec[i] << shift
+ */
+inline vint32m4_t __riscv_vsll_vx_i32m4(const vint32m4_t &vec, uint32_t shift,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(shift));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {vec.getElement(i), shift_term}));
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwmacc_vx_i32m4: Widening multiply-accumulate vector-scalar (int16m2 * int16 + int32m4)
+ * result[i] = acc[i] + sign_extend(vec[i]) * sign_extend(scalar)
+ */
+inline vint32m4_t __riscv_vwmacc_vx_i32m4(const vint32m4_t &acc, int16_t scalar,
+                                           const vint16m2_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+  Term scalar_16 = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(static_cast<uint16_t>(scalar)));
+  Term scalar_ext = g_symbolic_tm->mkTerm(extend_op, {scalar_16});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term vec_ext = g_symbolic_tm->mkTerm(extend_op, {vec.getElement(i)});
+    Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {vec_ext, scalar_ext});
+    Term sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getElement(i), prod});
+    result_elements.push_back(sum);
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vnsra_wx_i16m2: Narrowing shift right arithmetic (int32m4 -> int16m2)
+ * Shifts right arithmetically by scalar, then narrows to 16-bit
+ * result[i] = (int16_t)(vec[i] >> shift)
+ */
+inline vint16m2_t __riscv_vnsra_wx_i16m2(const vint32m4_t &vec, uint32_t shift,
+                                          size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(shift));
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR,
+                                          {vec.getElement(i), shift_term});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {shifted}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vnsra_wx_i8m1: Narrowing shift right arithmetic (int16m2 -> int8m1)
+ * Shifts right arithmetically by scalar, then narrows to 8-bit
+ * result[i] = (int8_t)(vec[i] >> shift)
+ */
+inline vint8m1_t __riscv_vnsra_wx_i8m1(const vint16m2_t &vec, uint32_t shift,
+                                        size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(shift));
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR,
+                                          {vec.getElement(i), shift_term});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {shifted}));
+  }
+
+  return vint8m1_t(g_symbolic_tm, result_elements);
+}
+
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP

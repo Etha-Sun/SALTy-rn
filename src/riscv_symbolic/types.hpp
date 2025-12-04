@@ -619,6 +619,38 @@ public:
 };
 
 /**
+ * Symbolic representation of RISC-V Vector vuint32m4_t type
+ * Represents a variable-length vector of 32-bit unsigned integers with LMUL=4
+ */
+class vuint32m4_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint32m4_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv32 = tm->mkBitVectorSort(32);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv32, "vec_u32m4_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint32m4_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
  * Symbolic representation of RISC-V Vector vfloat32m1_t type
  * Represents a variable-length vector of 32-bit floating-point values with LMUL=1
  */

@@ -282,6 +282,40 @@ public:
 };
 
 /**
+ * Symbolic representation of ARM NEON uint32x4_t vector type
+ * Represents 4 lanes of 32-bit unsigned integers
+ */
+class uint32x4_t {
+private:
+    std::array<Term, 4> lanes;
+    TermManager* tm;
+
+public:
+    inline uint32x4_t(TermManager* t) : tm(t) {
+        Sort bv32 = tm->mkBitVectorSort(32);
+        for (int i = 0; i < 4; i++) {
+            lanes[i] = tm->mkConst(bv32, "uint32x4_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline uint32x4_t(TermManager* t, const std::array<Term, 4>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 4>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
  * Symbolic representation of ARM NEON uint16x4_t vector type
  * Represents 4 lanes of 16-bit unsigned integers
  */
@@ -393,6 +427,9 @@ private:
     TermManager* tm;
 
 public:
+    // Default constructor for uninitialized declarations
+    inline uint8x16_t() : tm(nullptr) {}
+
     inline uint8x16_t(TermManager* t) : tm(t) {
         Sort bv8 = tm->mkBitVectorSort(8);
         for (int i = 0; i < 16; i++) {

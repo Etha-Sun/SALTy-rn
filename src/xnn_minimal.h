@@ -25,6 +25,10 @@ static inline uint32_t fp32_to_bits(float f) {
   return fp32.as_bits;
 }
 
+static inline int doz(int a, int b) {
+  return a > b ? a - b : 0;
+}
+
 static inline float fp16_ieee_to_fp32_value(uint16_t h) {
   const uint32_t w = (uint32_t)h << 16;
   const uint32_t sign = w & UINT32_C(0x80000000);
@@ -190,7 +194,7 @@ struct xnn_qu8_add_minmax_params {
   };
 
 struct xnn_qs8_rsum_params {
-    char _;  // Dummy member variable to comply with the C standard
+    char _; 
 };
 
 struct xnn_qs8_lrelu_params {
@@ -245,6 +249,13 @@ union xnn_qu8_conv_minmax_params {
     uint8_t output_min;
     uint8_t output_max;
   } fp32_neon;
+};
+
+struct xnn_s8_minmax_params {
+  struct {
+    int32_t min;
+    int32_t max;
+  } scalar;
 };
 
 #endif // XNN_MINIMAL_H

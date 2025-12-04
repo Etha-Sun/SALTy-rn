@@ -28,6 +28,7 @@ namespace SymbolicRISCVHelpers {
         g_riscv_memory_u8m1.clear();
         g_riscv_memory_u8mf2.clear();
         g_riscv_memory_u8mf4.clear();
+        g_riscv_memory_u32m4.clear();
     }
     
     inline const std::vector<vint8m1_t>* getStoredResults8(const int8_t* ptr) {
@@ -78,10 +79,17 @@ namespace SymbolicRISCVHelpers {
 
     inline void populateMemory32(const int32_t* ptr, const std::vector<Term>& symbolic_values) {
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-        
+
         // Store in both memory maps to support both m1 and m4 loads
         g_riscv_memory[addr].push_back(vint32m1_t(g_symbolic_tm, symbolic_values));
         g_riscv_memory_i32m4[addr].push_back(vint32m4_t(g_symbolic_tm, symbolic_values));
+    }
+
+    inline void populateMemoryU32(const uint32_t* ptr, const std::vector<Term>& symbolic_values) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        // Store in u32m4 memory map for unsigned 32-bit vector loads
+        g_riscv_memory_u32m4[addr].push_back(vuint32m4_t(g_symbolic_tm, symbolic_values));
     }
 
     /**
@@ -196,6 +204,27 @@ namespace SymbolicRISCVHelpers {
                     elements.push_back(vec.getElement(elem));
                 }
             }
+        }
+
+        return elements;
+    }
+
+    /**
+     * Collect all 32-bit unsigned integer elements from RISC-V memory
+     */
+    inline std::vector<Term> collectResultsU32(const uint32_t* ptr) {
+        std::vector<Term> elements;
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        // Try g_riscv_memory_u32m4 (for unsigned LMUL=4 operations like qu8-rdsum)
+        auto it_m4 = g_riscv_memory_u32m4.find(addr);
+        if (it_m4 != g_riscv_memory_u32m4.end() && !it_m4->second.empty()) {
+            // Only collect from the last stored vector (most recent result)
+            const vuint32m4_t& vec = it_m4->second.back();
+            for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                elements.push_back(vec.getElement(elem));
+            }
+            return elements;
         }
 
         return elements;

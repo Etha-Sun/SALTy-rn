@@ -54,6 +54,11 @@ inline std::map<uintptr_t, std::vector<vuint8mf2_t>> g_riscv_memory_u8mf2;
  */
 inline std::map<uintptr_t, std::vector<vuint8mf4_t>> g_riscv_memory_u8mf4;
 
+/**
+ * Global storage for unsigned 32-bit vectors (LMUL=4)
+ */
+inline std::map<uintptr_t, std::vector<vuint32m4_t>> g_riscv_memory_u32m4;
+
 
 /**
  * __riscv_vle32_v_i32m1: Load vector of 32-bit integers
@@ -320,6 +325,35 @@ inline void __riscv_vse8_v_u8mf4(uint8_t *base, const vuint8mf4_t &vec, size_t v
     (void)vl;
     uintptr_t addr = reinterpret_cast<uintptr_t>(base);
     g_riscv_memory_u8mf4[addr].push_back(vec);
+}
+
+// ============================================================================
+// Unsigned 32-bit Load/Store Operations (LMUL=4)
+// ============================================================================
+
+/**
+ * __riscv_vle32_v_u32m4: Load vector of unsigned 32-bit integers (LMUL=4)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vuint32m4_t __riscv_vle32_v_u32m4(const uint32_t *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_u32m4.find(addr);
+    if (it != g_riscv_memory_u32m4.end() && !it->second.empty()) {
+        return it->second.back();
+    }
+
+    // If not found, create fresh symbolic variables (represents input data)
+    return vuint32m4_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse32_v_u32m4: Store vector of unsigned 32-bit integers (LMUL=4)
+ */
+inline void __riscv_vse32_v_u32m4(uint32_t *ptr, const vuint32m4_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_u32m4[addr].push_back(vec);
 }
 
 #endif // RISCV_SYMBOLIC_MEMORY_HPP

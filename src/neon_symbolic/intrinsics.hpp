@@ -103,6 +103,37 @@ inline int16x8_t vmovq_n_s16(int16_t value) {
     return vdupq_n_s16(value);
 }
 
+/**
+ * vdupq_n_u32: Duplicate scalar to all lanes (uint32x4)
+ */
+inline uint32x4_t vdupq_n_u32(uint32_t value) {
+    std::array<Term, 4> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(value));
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = val_term;
+    }
+    return uint32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vdupq_n_u16: Duplicate scalar to all lanes (uint16x8)
+ */
+inline uint16x8_t vdupq_n_u16(uint16_t value) {
+    std::array<Term, 8> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(value));
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = val_term;
+    }
+    return uint16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmovq_n_u16: Move scalar to all lanes (uint16x8) - alias for vdupq_n_u16
+ */
+inline uint16x8_t vmovq_n_u16(uint16_t value) {
+    return vdupq_n_u16(value);
+}
+
 // ============================================================================
 // Pairwise Add and Accumulate Long Operations
 // ============================================================================
@@ -188,6 +219,40 @@ inline int32x4_t vaddq_s32(const int32x4_t& a, const int32x4_t& b) {
     }
 
     return int32x4_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vaddq_u32: Add two vectors element-wise (wrapping arithmetic, unsigned)
+ * Semantics: result[i] = a[i] + b[i] (mod 2^32)
+ */
+inline uint32x4_t vaddq_u32(const uint32x4_t& a, const uint32x4_t& b) {
+    std::array<Term, 4> result_lanes;
+
+    for (int i = 0; i < 4; i++) {
+        result_lanes[i] = g_symbolic_tm->mkTerm(
+            Kind::BITVECTOR_ADD,
+            {a.getLane(i), b.getLane(i)}
+        );
+    }
+
+    return uint32x4_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vadd_u32: Add two vectors element-wise (uint32x2)
+ * Semantics: result[i] = a[i] + b[i] (mod 2^32)
+ */
+inline uint32x2_t vadd_u32(const uint32x2_t& a, const uint32x2_t& b) {
+    std::array<Term, 2> result_lanes;
+
+    for (int i = 0; i < 2; i++) {
+        result_lanes[i] = g_symbolic_tm->mkTerm(
+            Kind::BITVECTOR_ADD,
+            {a.getLane(i), b.getLane(i)}
+        );
+    }
+
+    return uint32x2_t(g_symbolic_tm, result_lanes);
 }
 
 /**
@@ -324,6 +389,24 @@ inline symbolic_int32_t vgetq_lane_s32(const int32x4_t& vec, int lane) {
 inline symbolic_int32_t vget_lane_s32(const int32x2_t& vec, int lane) {
     Term lane_term = vec.getLane(lane);
     return symbolic_int32_t(g_symbolic_tm, lane_term, 0, true);
+}
+
+/**
+ * vgetq_lane_u32: Get a single lane from uint32x4
+ * Returns symbolic_uint32_t to maintain symbolic tracking
+ */
+inline symbolic_uint32_t vgetq_lane_u32(const uint32x4_t& vec, int lane) {
+    Term lane_term = vec.getLane(lane);
+    return symbolic_uint32_t(g_symbolic_tm, lane_term, 0, true);
+}
+
+/**
+ * vget_lane_u32: Get a single lane from uint32x2
+ * Returns symbolic_uint32_t to maintain symbolic tracking
+ */
+inline symbolic_uint32_t vget_lane_u32(const uint32x2_t& vec, int lane) {
+    Term lane_term = vec.getLane(lane);
+    return symbolic_uint32_t(g_symbolic_tm, lane_term, 0, true);
 }
 
 // ============================================================================
@@ -487,15 +570,53 @@ inline int16x8_t vsubw_s8(const int16x8_t& wide, const int8x8_t& narrow) {
 inline int32x4_t vaddw_s16(const int32x4_t& wide, const int16x4_t& narrow) {
     std::array<Term, 4> lanes;
     Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
-    
+
     for (int i = 0; i < 4; i++) {
         // Sign-extend int16 to int32
         Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
         // Add to wide element
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {wide.getLane(i), narrow_ext});
     }
-    
+
     return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vaddw_u8: Widening add (uint16 + zero_extend(uint8) -> uint16)
+ * Adds uint16x8 vector with uint8x8 vector (widened to uint16)
+ * result[i] = wide[i] + zero_extend(narrow[i])
+ */
+inline uint16x8_t vaddw_u8(const uint16x8_t& wide, const uint8x8_t& narrow) {
+    std::array<Term, 8> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {8});
+
+    for (int i = 0; i < 8; i++) {
+        // Zero-extend uint8 to uint16
+        Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
+        // Add to wide element
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {wide.getLane(i), narrow_ext});
+    }
+
+    return uint16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vaddw_u16: Widening add (uint32 + zero_extend(uint16) -> uint32)
+ * Adds uint32x4 vector with uint16x4 vector (widened to uint32)
+ * result[i] = wide[i] + zero_extend(narrow[i])
+ */
+inline uint32x4_t vaddw_u16(const uint32x4_t& wide, const uint16x4_t& narrow) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {16});
+
+    for (int i = 0; i < 4; i++) {
+        // Zero-extend uint16 to uint32
+        Term narrow_ext = g_symbolic_tm->mkTerm(extend_op, {narrow.getLane(i)});
+        // Add to wide element
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {wide.getLane(i), narrow_ext});
+    }
+
+    return uint32x4_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -984,6 +1105,50 @@ inline int16x4_t vget_high_s16(const int16x8_t& vec) {
 }
 
 /**
+ * vget_low_u16: Get low half of uint16x8
+ */
+inline uint16x4_t vget_low_u16(const uint16x8_t& vec) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return uint16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_high_u16: Get high half of uint16x8
+ */
+inline uint16x4_t vget_high_u16(const uint16x8_t& vec) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = vec.getLane(i + 4);
+    }
+    return uint16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_low_u32: Get low half of uint32x4
+ */
+inline uint32x2_t vget_low_u32(const uint32x4_t& vec) {
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return uint32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_high_u32: Get high half of uint32x4
+ */
+inline uint32x2_t vget_high_u32(const uint32x4_t& vec) {
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = vec.getLane(i + 2);
+    }
+    return uint32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vget_low_s32: Get low half of int32x4
  */
 inline int32x2_t vget_low_s32(const int32x4_t& vec) {
@@ -1094,6 +1259,23 @@ inline int32x4_t vextq_s32(const int32x4_t& a, const int32x4_t& b, int n) {
         }
     }
     return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vextq_u32: Extract (rotate/shift) uint32x4
+ * Concatenates a and b, extracts 4 elements starting at index n
+ */
+inline uint32x4_t vextq_u32(const uint32x4_t& a, const uint32x4_t& b, int n) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        int src_idx = i + n;
+        if (src_idx < 4) {
+            lanes[i] = a.getLane(src_idx);
+        } else {
+            lanes[i] = b.getLane(src_idx - 4);
+        }
+    }
+    return uint32x4_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -1599,6 +1781,183 @@ inline uint32x2_t vreinterpret_u32_f16(const float16x4_t& vec) {
     }
 
     return uint32x2_t(tm, result_lanes);
+}
+
+// ============================================================================
+// Signed 8-bit Bilinear Interpolation Intrinsics
+// ============================================================================
+
+/**
+ * vld1q_dup_s16: Load and duplicate int16 to all lanes (int16x8)
+ * Loads a single int16 from memory and replicates across all 8 lanes
+ */
+inline int16x8_t vld1q_dup_s16(const int16_t* ptr) {
+    std::array<Term, 8> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(static_cast<uint16_t>(*ptr)));
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = val_term;
+    }
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vld1_dup_s16: Load and duplicate int16 to all lanes (int16x4)
+ * Loads a single int16 from memory and replicates across all 4 lanes
+ */
+inline int16x4_t vld1_dup_s16(const int16_t* ptr) {
+    std::array<Term, 4> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(static_cast<uint16_t>(*ptr)));
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = val_term;
+    }
+    return int16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmovl_s8: Widening move (int8 -> int16)
+ * Sign-extends each 8-bit element to 16-bit
+ */
+inline int16x8_t vmovl_s8(const int8x8_t& vec) {
+    std::array<Term, 8> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {8});
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(extend_op, {vec.getLane(i)});
+    }
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vsubq_s16: Subtract two int16x8 vectors element-wise
+ * result[i] = a[i] - b[i]
+ */
+inline int16x8_t vsubq_s16(const int16x8_t& a, const int16x8_t& b) {
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SUB, {a.getLane(i), b.getLane(i)});
+    }
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vshll_n_s16: Shift left long by immediate (int16 -> int32)
+ * Sign-extends int16x4 to int32x4, then shifts left by n bits
+ * result[i] = sign_extend(vec[i]) << n
+ */
+inline int32x4_t vshll_n_s16(const int16x4_t& vec, int n) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+    Term shift_amount = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(n));
+
+    for (int i = 0; i < 4; i++) {
+        Term extended = g_symbolic_tm->mkTerm(extend_op, {vec.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {extended, shift_amount});
+    }
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vshlq_n_s32: Shift left by immediate (int32x4)
+ * result[i] = vec[i] << n
+ */
+inline int32x4_t vshlq_n_s32(const int32x4_t& vec, int n) {
+    std::array<Term, 4> lanes;
+    Term shift_amount = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(n));
+
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {vec.getLane(i), shift_amount});
+    }
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmlal_high_s16: Widening multiply-accumulate high half (ARM64)
+ * Takes high half of int16x8 vectors, multiplies, and accumulates to int32x4
+ * result[i] = acc[i] + sign_extend(a[i+4]) * sign_extend(b[i+4])
+ */
+inline int32x4_t vmlal_high_s16(const int32x4_t& acc, const int16x8_t& a, const int16x8_t& b) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+    for (int i = 0; i < 4; i++) {
+        // Use high half (lanes 4-7)
+        Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a.getLane(i + 4)});
+        Term b_ext = g_symbolic_tm->mkTerm(extend_op, {b.getLane(i + 4)});
+        Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
+    }
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vuzp2q_s16: Unzip second elements from two int16x8 vectors (ARM64)
+ * Takes odd-indexed elements from each vector
+ * result = {a[1], a[3], a[5], a[7], b[1], b[3], b[5], b[7]}
+ */
+inline int16x8_t vuzp2q_s16(const int16x8_t& a, const int16x8_t& b) {
+    std::array<Term, 8> lanes;
+    // Take odd elements from a
+    lanes[0] = a.getLane(1);
+    lanes[1] = a.getLane(3);
+    lanes[2] = a.getLane(5);
+    lanes[3] = a.getLane(7);
+    // Take odd elements from b
+    lanes[4] = b.getLane(1);
+    lanes[5] = b.getLane(3);
+    lanes[6] = b.getLane(5);
+    lanes[7] = b.getLane(7);
+    return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vshrn_n_s32: Shift right narrow (int32 -> int16)
+ * Shifts right by n bits, then narrows to int16
+ * result[i] = (int16_t)(vec[i] >> n)
+ */
+inline int16x4_t vshrn_n_s32(const int32x4_t& vec, int n) {
+    std::array<Term, 4> lanes;
+    Term shift_amount = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(n));
+    Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+    for (int i = 0; i < 4; i++) {
+        Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, {vec.getLane(i), shift_amount});
+        lanes[i] = g_symbolic_tm->mkTerm(extract_op, {shifted});
+    }
+    return int16x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vrshrn_n_s16: Rounding shift right narrow (int16 -> int8)
+ * Adds rounding constant before shifting, then narrows to int8
+ * result[i] = (int8_t)((vec[i] + (1 << (n-1))) >> n)
+ */
+inline int8x8_t vrshrn_n_s16(const int16x8_t& vec, int n) {
+    std::array<Term, 8> lanes;
+    Term rounding = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(1 << (n - 1)));
+    Term shift_amount = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(n));
+    Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+    for (int i = 0; i < 8; i++) {
+        Term with_rounding = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {vec.getLane(i), rounding});
+        Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, {with_rounding, shift_amount});
+        lanes[i] = g_symbolic_tm->mkTerm(extract_op, {shifted});
+    }
+    return int8x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vreinterpretq_s16_s32: Reinterpret int32x4_t as int16x8_t
+ * Treats each int32 as two int16 values (little-endian)
+ */
+inline int16x8_t vreinterpretq_s16_s32(const int32x4_t& vec) {
+    std::array<Term, 8> lanes;
+    Op extract_low = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+    Op extract_high = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {31, 16});
+
+    for (int i = 0; i < 4; i++) {
+        lanes[i * 2] = g_symbolic_tm->mkTerm(extract_low, {vec.getLane(i)});
+        lanes[i * 2 + 1] = g_symbolic_tm->mkTerm(extract_high, {vec.getLane(i)});
+    }
+    return int16x8_t(g_symbolic_tm, lanes);
 }
 
 #endif

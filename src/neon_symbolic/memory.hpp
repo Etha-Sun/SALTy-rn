@@ -16,6 +16,8 @@ inline std::map<uintptr_t, std::vector<uint8x16_t>> g_neon_memory_u8x16;
 inline std::map<uintptr_t, std::vector<uint8x8_t>> g_neon_memory_u8x8;
 inline std::map<uintptr_t, std::vector<uint16x8_t>> g_neon_memory_u16x8;
 inline std::map<uintptr_t, std::vector<uint16x4_t>> g_neon_memory_u16x4;
+inline std::map<uintptr_t, std::vector<uint32x4_t>> g_neon_memory_u32x4;
+inline std::map<uintptr_t, std::vector<uint32x2_t>> g_neon_memory_u32x2;
 inline std::map<uintptr_t, std::vector<float32x4_t>> g_neon_memory_f32x4;
 inline std::map<uintptr_t, std::vector<float32x2_t>> g_neon_memory_f32x2;
 
@@ -48,6 +50,73 @@ inline int32x4_t vld1q_s32(const int32_t *ptr) {
  */
 inline int32x4_t vld1q_s32(const void *ptr) {
   return vld1q_s32(reinterpret_cast<const int32_t*>(ptr));
+}
+
+/**
+ * vld1q_u32: Load vector of 32-bit unsigned integers
+ * Returns previously stored value if available, otherwise creates fresh
+ * symbolic constants
+ */
+inline uint32x4_t vld1q_u32(const uint32_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  // Check if this address was previously stored to
+  auto it = g_neon_memory_u32x4.find(addr);
+  if (it != g_neon_memory_u32x4.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  return uint32x4_t(g_symbolic_tm);
+}
+
+/**
+ * vld1q_u32: Overload for const void* (common in XNNPACK code)
+ */
+inline uint32x4_t vld1q_u32(const void *ptr) {
+  return vld1q_u32(reinterpret_cast<const uint32_t*>(ptr));
+}
+
+/**
+ * vld1_u32: Load vector of 32-bit unsigned integers (64-bit, 2 elements)
+ */
+inline uint32x2_t vld1_u32(const uint32_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  // Check if this address was previously stored to
+  auto it = g_neon_memory_u32x2.find(addr);
+  if (it != g_neon_memory_u32x2.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Check if addr falls within a stored uint32x4
+  auto it4 = g_neon_memory_u32x4.find(addr);
+  if (it4 != g_neon_memory_u32x4.end() && !it4->second.empty()) {
+    const uint32x4_t &vec4 = it4->second.back();
+    std::array<Term, 2> lanes;
+    lanes[0] = vec4.getLane(0);
+    lanes[1] = vec4.getLane(1);
+    return uint32x2_t(g_symbolic_tm, lanes);
+  }
+
+  // Check if addr is offset by 2 elements (8 bytes) from start of uint32x4
+  uintptr_t base = addr - 8;
+  it4 = g_neon_memory_u32x4.find(base);
+  if (it4 != g_neon_memory_u32x4.end() && !it4->second.empty()) {
+    const uint32x4_t &vec4 = it4->second.back();
+    std::array<Term, 2> lanes;
+    lanes[0] = vec4.getLane(2);
+    lanes[1] = vec4.getLane(3);
+    return uint32x2_t(g_symbolic_tm, lanes);
+  }
+
+  return uint32x2_t(g_symbolic_tm);
+}
+
+/**
+ * vld1_u32: Overload for const void* (common in XNNPACK code)
+ */
+inline uint32x2_t vld1_u32(const void *ptr) {
+  return vld1_u32(reinterpret_cast<const uint32_t*>(ptr));
 }
 
 /**
@@ -142,6 +211,39 @@ inline uint8x16_t vld1q_u8(const uint8_t *ptr) {
     return it->second.back();
   }
 
+  // Overlap search - check if addr falls within a stored vector
+  // This spans multiple vectors if needed for 16-element load
+  for (const auto& entry : g_neon_memory_u8x16) {
+    uintptr_t base_addr = entry.first;
+    if (!entry.second.empty()) {
+      const size_t vec_size = 16;
+      if (addr >= base_addr && addr < base_addr + vec_size) {
+        // Found overlap - extract 16 elements starting at offset
+        // May need to span into the next vector
+        size_t offset = addr - base_addr;
+        const uint8x16_t &vec128 = entry.second.back();
+        std::array<Term, 16> lanes;
+        for (int i = 0; i < 16; i++) {
+          if (offset + i < 16) {
+            lanes[i] = vec128.getLane(offset + i);
+          } else {
+            // Need to get from the next vector
+            uintptr_t next_addr = base_addr + 16;
+            auto next_it = g_neon_memory_u8x16.find(next_addr);
+            if (next_it != g_neon_memory_u8x16.end() && !next_it->second.empty()) {
+              const uint8x16_t &next_vec = next_it->second.back();
+              size_t next_offset = (offset + i) - 16;
+              lanes[i] = next_vec.getLane(next_offset);
+            } else {
+              lanes[i] = g_symbolic_tm->mkBitVector(8, 0);
+            }
+          }
+        }
+        return uint8x16_t(g_symbolic_tm, lanes);
+      }
+    }
+  }
+
   // Otherwise, create fresh symbolic values
   return uint8x16_t(g_symbolic_tm);
 }
@@ -169,6 +271,7 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
   }
 
   // Overlap search in 128-bit memory map - check if addr falls within a stored vector
+  // This now spans multiple vectors if needed
   for (const auto& entry : g_neon_memory_u8x16) {
     uintptr_t base_addr = entry.first;
     if (!entry.second.empty()) {
@@ -176,6 +279,7 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
       const size_t vec_size = 16;
       if (addr >= base_addr && addr < base_addr + vec_size) {
         // Found overlap - extract 8 elements starting at offset
+        // May need to span into the next vector
         size_t offset = addr - base_addr;
         const uint8x16_t &vec128 = entry.second.back();
         std::array<Term, 8> lanes;
@@ -183,7 +287,16 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
           if (offset + i < 16) {
             lanes[i] = vec128.getLane(offset + i);
           } else {
-            lanes[i] = g_symbolic_tm->mkBitVector(8, 0);
+            // Need to get from the next vector
+            uintptr_t next_addr = base_addr + 16;
+            auto next_it = g_neon_memory_u8x16.find(next_addr);
+            if (next_it != g_neon_memory_u8x16.end() && !next_it->second.empty()) {
+              const uint8x16_t &next_vec = next_it->second.back();
+              size_t next_offset = (offset + i) - 16;
+              lanes[i] = next_vec.getLane(next_offset);
+            } else {
+              lanes[i] = g_symbolic_tm->mkBitVector(8, 0);
+            }
           }
         }
         return uint8x8_t(g_symbolic_tm, lanes);
@@ -279,6 +392,22 @@ inline void vst1_s8(int8_t *ptr, const int8x8_t &vec) {
 inline void vst1q_u8(uint8_t *ptr, const uint8x16_t &vec) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
   g_neon_memory_u8x16[addr].push_back(vec);
+}
+
+/**
+ * vst1q_u32: Store vector of 32-bit unsigned integers (128-bit)
+ */
+inline void vst1q_u32(uint32_t *ptr, const uint32x4_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_u32x4[addr].push_back(vec);
+}
+
+/**
+ * vst1_u32: Store vector of 32-bit unsigned integers (64-bit, 2 elements)
+ */
+inline void vst1_u32(uint32_t *ptr, const uint32x2_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_u32x2[addr].push_back(vec);
 }
 
 /**

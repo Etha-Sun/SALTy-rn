@@ -366,6 +366,75 @@ namespace SymbolicNEONHelpers {
     }
 
     /**
+     * Populate unsigned 32-bit memory for NEON symbolic execution
+     */
+    inline void populateMemoryU32(const uint32_t* ptr, const std::vector<Term>& symbolic_values) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        const size_t lanes_per_vec = 4;
+
+        for (size_t i = 0; i < symbolic_values.size(); i += lanes_per_vec) {
+            std::array<Term, 4> lanes;
+            for (size_t j = 0; j < lanes_per_vec && (i + j) < symbolic_values.size(); j++) {
+                lanes[j] = symbolic_values[i + j];
+            }
+            // Pad remaining lanes with last valid element
+            size_t valid_count = std::min(lanes_per_vec, symbolic_values.size() - i);
+            for (size_t j = valid_count; j < lanes_per_vec; j++) {
+                lanes[j] = symbolic_values.back();
+            }
+
+            g_neon_memory_u32x4[addr + i * sizeof(uint32_t)].push_back(uint32x4_t(g_symbolic_tm, lanes));
+        }
+    }
+
+    /**
+     * Collect all 32-bit unsigned integer elements from NEON memory
+     * Handles uint32x4_t, uint32x2_t, and scalar memory
+     */
+    inline std::vector<Term> collectResultsU32(const uint32_t* ptr, size_t batch) {
+        std::vector<Term> elements;
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+
+            // Check scalar memory first (most specific)
+            if (g_neon_scalar_memory.count(current_addr)) {
+                elements.push_back(g_neon_scalar_memory[current_addr]);
+                i += 1;
+                continue;
+            }
+
+            // Check uint32x2 memory
+            if (g_neon_memory_u32x2.count(current_addr) && !g_neon_memory_u32x2[current_addr].empty()) {
+                const uint32x2_t &neon_vec = g_neon_memory_u32x2[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(2), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 2;
+                continue;
+            }
+
+            // Check uint32x4 memory
+            if (g_neon_memory_u32x4.count(current_addr) && !g_neon_memory_u32x4[current_addr].empty()) {
+                const uint32x4_t &neon_vec = g_neon_memory_u32x4[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(4), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 4;
+                continue;
+            }
+
+            // No vector found at this address
+            break;
+        }
+
+        return elements;
+    }
+
+    /**
      * Collect all 8-bit unsigned integer elements from NEON memory
      * Handles both uint8x16_t and uint8x8_t vector types
      */
