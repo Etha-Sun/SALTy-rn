@@ -28,6 +28,8 @@ namespace SymbolicNEONHelpers {
         g_neon_memory_u8x8.clear();
         g_neon_memory_u16x8.clear();
         g_neon_memory_u16x4.clear();
+        g_neon_memory_f32x4.clear();
+        g_neon_memory_f32x2.clear();
     }
 
     /**
@@ -246,6 +248,48 @@ namespace SymbolicNEONHelpers {
     }
 
     /**
+     * Collect all 32-bit floating-point elements from NEON memory
+     * Handles both float32x4_t and float32x2_t vector types
+     */
+    inline std::vector<Term> collectResultsF32(const float* ptr, size_t batch) {
+        std::vector<Term> elements;
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+
+            // Try 16-byte map (float32x4) - 4 elements
+            if (g_neon_memory_f32x4.count(current_addr) &&
+                !g_neon_memory_f32x4[current_addr].empty()) {
+                const float32x4_t &neon_vec = g_neon_memory_f32x4[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(4), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 4;
+                continue;
+            }
+
+            // Try 8-byte map (float32x2) - 2 elements
+            if (g_neon_memory_f32x2.count(current_addr) &&
+                !g_neon_memory_f32x2[current_addr].empty()) {
+                const float32x2_t &neon_vec = g_neon_memory_f32x2[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(2), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 2;
+                continue;
+            }
+
+            // No vector found at this address
+            break;
+        }
+
+        return elements;
+    }
+
+    /**
      * Collect all 16-bit unsigned integer elements from NEON memory (for float16 results)
      * Handles both uint16x8_t and uint16x4_t vector types
      */
@@ -311,6 +355,48 @@ namespace SymbolicNEONHelpers {
                     elements.push_back(combined1);
                     i += 1;
                 }
+                continue;
+            }
+
+            // No vector found at this address
+            break;
+        }
+
+        return elements;
+    }
+
+    /**
+     * Collect all 8-bit unsigned integer elements from NEON memory
+     * Handles both uint8x16_t and uint8x8_t vector types
+     */
+    inline std::vector<Term> collectResultsU8(const uint8_t* ptr, size_t batch) {
+        std::vector<Term> elements;
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+
+            // Try 16-byte map (uint8x16)
+            if (g_neon_memory_u8x16.count(current_addr) &&
+                !g_neon_memory_u8x16[current_addr].empty()) {
+                const uint8x16_t &neon_vec = g_neon_memory_u8x16[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(16), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 16;
+                continue;
+            }
+
+            // Try 8-byte map (uint8x8)
+            if (g_neon_memory_u8x8.count(current_addr) &&
+                !g_neon_memory_u8x8[current_addr].empty()) {
+                const uint8x8_t &neon_vec = g_neon_memory_u8x8[current_addr].back();
+                size_t len = std::min(static_cast<size_t>(8), batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += 8;
                 continue;
             }
 

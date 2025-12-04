@@ -24,6 +24,10 @@ namespace SymbolicRISCVHelpers {
         g_riscv_memory_i8.clear();
         g_riscv_memory_i32m4.clear();
         g_riscv_memory_f16m2.clear();
+        g_riscv_memory_f32m4.clear();
+        g_riscv_memory_u8m1.clear();
+        g_riscv_memory_u8mf2.clear();
+        g_riscv_memory_u8mf4.clear();
     }
     
     inline const std::vector<vint8m1_t>* getStoredResults8(const int8_t* ptr) {
@@ -42,16 +46,19 @@ namespace SymbolicRISCVHelpers {
     template<typename T>
     inline void populateMemory(const T* ptr, const std::vector<Term>& symbolic_values) {
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-        
+
         // Use if constexpr to select the right memory map and vector type at compile time
-        if constexpr (std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t>) {
-            // 8-bit types (both signed and unsigned use the same memory map)
+        if constexpr (std::is_same_v<T, int8_t>) {
+            // Signed 8-bit types use signed memory map
             g_riscv_memory_i8[addr].push_back(vint8m1_t(g_symbolic_tm, symbolic_values));
+        } else if constexpr (std::is_same_v<T, uint8_t>) {
+            // Unsigned 8-bit types use unsigned memory map
+            g_riscv_memory_u8m1[addr].push_back(vuint8m1_t(g_symbolic_tm, symbolic_values));
         } else if constexpr (std::is_same_v<T, int32_t> || std::is_same_v<T, uint32_t>) {
             // 32-bit types
             g_riscv_memory[addr].push_back(vint32m1_t(g_symbolic_tm, symbolic_values));
         } else {
-            static_assert(std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t> || 
+            static_assert(std::is_same_v<T, int8_t> || std::is_same_v<T, uint8_t> ||
                          std::is_same_v<T, int32_t> || std::is_same_v<T, uint32_t>,
                          "Unsupported type for populateMemory. Supported types: int8_t, uint8_t, int32_t, uint32_t");
         }
@@ -169,6 +176,70 @@ namespace SymbolicRISCVHelpers {
                     elements.push_back(vec.getElement(elem));
                 }
             }
+        }
+
+        return elements;
+    }
+
+    /**
+     * Collect all float32 elements from RISC-V memory (vfloat32m4_t)
+     */
+    inline std::vector<Term> collectResultsF32(const float* ptr) {
+        std::vector<Term> elements;
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        auto it = g_riscv_memory_f32m4.find(addr);
+        if (it != g_riscv_memory_f32m4.end() && !it->second.empty()) {
+            // Collect all stored vectors at this address
+            for (const vfloat32m4_t& vec : it->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+        }
+
+        return elements;
+    }
+
+    /**
+     * Collect all unsigned 8-bit elements from RISC-V memory
+     * Handles vuint8m1_t, vuint8mf2_t, and vuint8mf4_t vector types
+     */
+    inline std::vector<Term> collectResultsU8(const uint8_t* ptr) {
+        std::vector<Term> elements;
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        // Try vuint8m1_t first (LMUL=1)
+        auto it_m1 = g_riscv_memory_u8m1.find(addr);
+        if (it_m1 != g_riscv_memory_u8m1.end() && !it_m1->second.empty()) {
+            for (const vuint8m1_t& vec : it_m1->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+            return elements;
+        }
+
+        // Try vuint8mf2_t (LMUL=1/2)
+        auto it_mf2 = g_riscv_memory_u8mf2.find(addr);
+        if (it_mf2 != g_riscv_memory_u8mf2.end() && !it_mf2->second.empty()) {
+            for (const vuint8mf2_t& vec : it_mf2->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+            return elements;
+        }
+
+        // Try vuint8mf4_t (LMUL=1/4)
+        auto it_mf4 = g_riscv_memory_u8mf4.find(addr);
+        if (it_mf4 != g_riscv_memory_u8mf4.end() && !it_mf4->second.empty()) {
+            for (const vuint8mf4_t& vec : it_mf4->second) {
+                for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                    elements.push_back(vec.getElement(elem));
+                }
+            }
+            return elements;
         }
 
         return elements;

@@ -568,6 +568,19 @@ inline int32x4_t vmovl_s16(const int16x4_t& vec) {
     return int32x4_t(g_symbolic_tm, lanes);
 }
 
+/**
+ * vmovl_u8: Widening move (uint8 -> uint16)
+ * Zero-extends each 8-bit element to 16-bit
+ */
+inline uint16x8_t vmovl_u8(const uint8x8_t& vec) {
+    std::array<Term, 8> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {8});
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(extend_op, {vec.getLane(i)});
+    }
+    return uint16x8_t(g_symbolic_tm, lanes);
+}
+
 // ============================================================================
 // Narrowing Operations
 // ============================================================================
@@ -689,6 +702,36 @@ inline int8x16_t vqmovn_high_s16(const int8x8_t& low, const int16x8_t& high) {
         lanes[i + 8] = g_symbolic_tm->mkTerm(extract_op, {clamped});
     }
     return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vqmovun_high_s16: Saturating narrow int16x8 -> uint8x8 (unsigned), combine with existing low half
+ * Returns uint8x16 where low half is 'low' and high half is saturated unsigned narrow of 'high'
+ * Clamps signed int16 values to [0, 255] and narrows to uint8
+ */
+inline uint8x16_t vqmovun_high_s16(const uint8x8_t& low, const int16x8_t& high) {
+    std::array<Term, 16> lanes;
+    Term zero_i16 = g_symbolic_tm->mkBitVector(16, 0);
+    Term max_u8 = g_symbolic_tm->mkBitVector(16, 255);
+    Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+    // Copy low half
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = low.getLane(i);
+    }
+
+    // Saturating unsigned narrow high half
+    for (int i = 0; i < 8; i++) {
+        Term clamped = high.getLane(i);
+        // Clamp to [0, 255] using signed comparison
+        Term cmp_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {clamped, zero_i16});
+        clamped = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_min, zero_i16, clamped});
+        Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {clamped, max_u8});
+        clamped = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_u8, clamped});
+        // Extract lower 8 bits
+        lanes[i + 8] = g_symbolic_tm->mkTerm(extract_op, {clamped});
+    }
+    return uint8x16_t(g_symbolic_tm, lanes);
 }
 
 // ============================================================================
@@ -960,6 +1003,28 @@ inline int32x2_t vget_high_s32(const int32x4_t& vec) {
         lanes[i] = vec.getLane(i + 2);
     }
     return int32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_low_f32: Get low half of float32x4
+ */
+inline float32x2_t vget_low_f32(const float32x4_t& vec) {
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return float32x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vget_high_f32: Get high half of float32x4
+ */
+inline float32x2_t vget_high_f32(const float32x4_t& vec) {
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++) {
+        lanes[i] = vec.getLane(i + 2);
+    }
+    return float32x2_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -1251,7 +1316,7 @@ inline float32x4_t vdupq_n_f32(float value) {
 inline int32x4_t vmull_s16(const int16x4_t& a, const int16x4_t& b) {
     std::array<Term, 4> lanes;
     Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
-    
+
     for (int i = 0; i < 4; i++) {
         // Sign-extend both operands from 16 to 32 bits
         Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a.getLane(i)});
@@ -1259,7 +1324,28 @@ inline int32x4_t vmull_s16(const int16x4_t& a, const int16x4_t& b) {
         // Multiply
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
     }
-    
+
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmlal_s16: Widening multiply-accumulate (int32 + int16 * int16 -> int32)
+ * result[i] = acc[i] + sign_extend(a[i]) * sign_extend(b[i])
+ */
+inline int32x4_t vmlal_s16(const int32x4_t& acc, const int16x4_t& a, const int16x4_t& b) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+    for (int i = 0; i < 4; i++) {
+        // Sign-extend both operands from 16 to 32 bits
+        Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a.getLane(i)});
+        Term b_ext = g_symbolic_tm->mkTerm(extend_op, {b.getLane(i)});
+        // Multiply
+        Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+        // Accumulate
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
+    }
+
     return int32x4_t(g_symbolic_tm, lanes);
 }
 

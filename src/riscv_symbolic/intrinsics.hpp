@@ -1217,6 +1217,26 @@ inline vint32m4_t __riscv_vsub_vv_i32m4(const vint32m4_t &op1,
   return vint32m4_t(g_symbolic_tm, result_elements);
 }
 
+/**
+ * __riscv_vsub_vx_i32m4: Subtract scalar from vector (int32m4)
+ */
+inline vint32m4_t __riscv_vsub_vx_i32m4(const vint32m4_t &vec, int32_t scalar,
+                                        size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t scalar_u32 = static_cast<uint32_t>(scalar);
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar_u32));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {vec.getElement(i), scalar_term}));
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
 // ============================================================================
 // Missing Intrinsics for qu8vaddc_rvv.cpp
 // ============================================================================
@@ -1785,6 +1805,49 @@ inline vfloat32m8_t __riscv_vfmul_vf_f32m8(const vfloat32m8_t &vec, float scalar
   return vfloat32m8_t(g_symbolic_tm, result_elements);
 }
 
+/**
+ * __riscv_vfcvt_f_x_v_f32m4: Convert signed int32m4 to float32m4
+ */
+inline vfloat32m4_t __riscv_vfcvt_f_x_v_f32m4(const vint32m4_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {8, 24});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmul_vf_f32m4: Multiply float32m4 vector by scalar float
+ */
+inline vfloat32m4_t __riscv_vfmul_vf_f32m4(const vfloat32m4_t &vec, float scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert float scalar to its IEEE 754 bit representation
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat32m4_t(g_symbolic_tm, result_elements);
+}
+
 // ============================================================================
 // Narrowing Clip Operations (with vxrm parameter)
 // ============================================================================
@@ -2007,6 +2070,623 @@ inline vfloat16m2_t __riscv_vfmul_vf_f16m2(const vfloat16m2_t &vec, _Float16 sca
   }
 
   return vfloat16m2_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Widening Conversion Operations (Unsigned)
+// ============================================================================
+
+/**
+ * __riscv_vwcvtu_x_x_v_u16m2: Widening convert unsigned uint8 to uint16 (LMUL 1->2)
+ * Zero-extends each 8-bit element to 16-bit
+ */
+inline vuint16m2_t __riscv_vwcvtu_x_x_v_u16m2(const vuint8m1_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {8});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(extend_op, {vec.getElement(i)}));
+  }
+
+  return vuint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwcvtu_x_x_v_u16m1: Widening convert unsigned uint8 to uint16 (LMUL 1/2->1)
+ */
+inline vuint16m1_t __riscv_vwcvtu_x_x_v_u16m1(const vuint8mf2_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {8});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(extend_op, {vec.getElement(i)}));
+  }
+
+  return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Reinterpret Operations
+// ============================================================================
+
+/**
+ * __riscv_vreinterpret_v_u16m2_i16m2: Reinterpret unsigned as signed (16-bit, LMUL=2)
+ */
+inline vint16m2_t __riscv_vreinterpret_v_u16m2_i16m2(const vuint16m2_t &vec) {
+  // Just copy the terms - bitvector representation is the same
+  return vint16m2_t(g_symbolic_tm, vec.getElements());
+}
+
+/**
+ * __riscv_vreinterpret_v_i16m2_u16m2: Reinterpret signed as unsigned (16-bit, LMUL=2)
+ */
+inline vuint16m2_t __riscv_vreinterpret_v_i16m2_u16m2(const vint16m2_t &vec) {
+  return vuint16m2_t(g_symbolic_tm, vec.getElements());
+}
+
+/**
+ * __riscv_vreinterpret_v_u16m1_i16m1: Reinterpret unsigned as signed (16-bit, LMUL=1)
+ */
+inline vint16m1_t __riscv_vreinterpret_v_u16m1_i16m1(const vuint16m1_t &vec) {
+  return vint16m1_t(g_symbolic_tm, vec.getElements());
+}
+
+/**
+ * __riscv_vreinterpret_v_i16mf2_u16mf2: Reinterpret signed as unsigned (16-bit, LMUL=1/2)
+ */
+inline vuint16mf2_t __riscv_vreinterpret_v_i16mf2_u16mf2(const vint16mf2_t &vec) {
+  return vuint16mf2_t(g_symbolic_tm, vec.getElements());
+}
+
+/**
+ * __riscv_vreinterpret_v_f32m4_i32m4: Reinterpret float32 as int32 (LMUL=4)
+ */
+inline vint32m4_t __riscv_vreinterpret_v_f32m4_i32m4(const vfloat32m4_t &vec) {
+  std::vector<Term> result_elements;
+  size_t vl = vec.getVL();
+  result_elements.reserve(vl);
+
+  Sort bv32 = g_symbolic_tm->mkBitVectorSort(32);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+
+  static int reinterpret_counter = 0;
+
+  for (size_t i = 0; i < vl; i++) {
+    Term bv_lane = g_symbolic_tm->mkConst(bv32, "f32m4_to_bv_" +
+        std::to_string(reinterpret_counter++) + "_" + std::to_string(i));
+    Term fp_from_bv = g_symbolic_tm->mkTerm(to_fp_op, {bv_lane});
+    Term eq = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getElement(i)});
+    g_symbolic_solver->assertFormula(eq);
+    result_elements.push_back(bv_lane);
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vreinterpret_v_f32m1_i32m1: Reinterpret float32 as int32 (LMUL=1)
+ */
+inline vint32m1_t __riscv_vreinterpret_v_f32m1_i32m1(const vfloat32m1_t &vec) {
+  std::vector<Term> result_elements;
+  size_t vl = vec.getVL();
+  result_elements.reserve(vl);
+
+  Sort bv32 = g_symbolic_tm->mkBitVectorSort(32);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+
+  static int reinterpret_m1_counter = 0;
+
+  for (size_t i = 0; i < vl; i++) {
+    Term bv_lane = g_symbolic_tm->mkConst(bv32, "f32m1_to_bv_" +
+        std::to_string(reinterpret_m1_counter++) + "_" + std::to_string(i));
+    Term fp_from_bv = g_symbolic_tm->mkTerm(to_fp_op, {bv_lane});
+    Term eq = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getElement(i)});
+    g_symbolic_solver->assertFormula(eq);
+    result_elements.push_back(bv_lane);
+  }
+
+  return vint32m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Widening Multiply-Accumulate Operations
+// ============================================================================
+
+/**
+ * __riscv_vwmacc_vv_i32m4: Widening multiply-accumulate vector-vector (i16m2 * i16m2 + i32m4)
+ * result[i] = acc[i] + sign_extend(op1[i]) * sign_extend(op2[i])
+ */
+inline vint32m4_t __riscv_vwmacc_vv_i32m4(const vint32m4_t &acc,
+                                          const vint16m2_t &op1,
+                                          const vint16m2_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term op1_ext = g_symbolic_tm->mkTerm(extend_op, {op1.getElement(i)});
+    Term op2_ext = g_symbolic_tm->mkTerm(extend_op, {op2.getElement(i)});
+    Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {op1_ext, op2_ext});
+    Term sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getElement(i), prod});
+    result_elements.push_back(sum);
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwmacc_vv_i32m1: Widening multiply-accumulate vector-vector (i16mf2 * i16mf2 + i32m1)
+ */
+inline vint32m1_t __riscv_vwmacc_vv_i32m1(const vint32m1_t &acc,
+                                          const vint16mf2_t &op1,
+                                          const vint16mf2_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term op1_ext = g_symbolic_tm->mkTerm(extend_op, {op1.getElement(i)});
+    Term op2_ext = g_symbolic_tm->mkTerm(extend_op, {op2.getElement(i)});
+    Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {op1_ext, op2_ext});
+    Term sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getElement(i), prod});
+    result_elements.push_back(sum);
+  }
+
+  return vint32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vwmacc_vv_i32m1: Widening multiply-accumulate vector-vector (i16m1 * i16m1 + i32m1)
+ * Overload for vint16m1_t operands
+ * result[i] = acc[i] + sign_extend(op1[i]) * sign_extend(op2[i])
+ */
+inline vint32m1_t __riscv_vwmacc_vv_i32m1(const vint32m1_t &acc,
+                                          const vint16m1_t &op1,
+                                          const vint16m1_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term op1_ext = g_symbolic_tm->mkTerm(extend_op, {op1.getElement(i)});
+    Term op2_ext = g_symbolic_tm->mkTerm(extend_op, {op2.getElement(i)});
+    Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {op1_ext, op2_ext});
+    Term sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getElement(i), prod});
+    result_elements.push_back(sum);
+  }
+
+  return vint32m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Floating-Point Operations (LMUL=4 and LMUL=1)
+// ============================================================================
+
+/**
+ * __riscv_vfadd_vf_f32m4: Vector-scalar floating-point add (LMUL=4)
+ */
+inline vfloat32m4_t __riscv_vfadd_vf_f32m4(const vfloat32m4_t &vec, float scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_ADD, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfcvt_f_x_v_f32m1: Convert signed int32 to float32 (LMUL=1)
+ */
+inline vfloat32m1_t __riscv_vfcvt_f_x_v_f32m1(const vint32m1_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {8, 24});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmul_vf_f32m1: Vector-scalar floating-point multiply (LMUL=1)
+ */
+inline vfloat32m1_t __riscv_vfmul_vf_f32m1(const vfloat32m1_t &vec, float scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfadd_vf_f32m1: Vector-scalar floating-point add (LMUL=1)
+ */
+inline vfloat32m1_t __riscv_vfadd_vf_f32m1(const vfloat32m1_t &vec, float scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_ADD, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat32m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Saturating Subtract Operations
+// ============================================================================
+
+/**
+ * __riscv_vssub_vx_i32m4: Saturating subtract vector-scalar (signed, LMUL=4)
+ */
+inline vint32m4_t __riscv_vssub_vx_i32m4(const vint32m4_t &vec, int32_t scalar,
+                                          size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(scalar)));
+  Term min_i32 = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(INT32_MIN)));
+  Term max_i32 = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(INT32_MAX)));
+
+  // Use 64-bit for overflow detection
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {32});
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {31, 0});
+  Term min_i32_64 = g_symbolic_tm->mkBitVector(64, static_cast<uint64_t>(static_cast<int64_t>(INT32_MIN)));
+  Term max_i32_64 = g_symbolic_tm->mkBitVector(64, static_cast<uint64_t>(static_cast<int64_t>(INT32_MAX)));
+  Term scalar_ext = g_symbolic_tm->mkTerm(extend_op, {scalar_term});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term vec_ext = g_symbolic_tm->mkTerm(extend_op, {vec.getElement(i)});
+    Term diff = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SUB, {vec_ext, scalar_ext});
+
+    Term cmp_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {diff, min_i32_64});
+    Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {diff, max_i32_64});
+    Term result_normal = g_symbolic_tm->mkTerm(extract_op, {diff});
+    Term result = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_min, min_i32, result_normal});
+    result = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_i32, result});
+
+    result_elements.push_back(result);
+  }
+
+  return vint32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vssub_vx_i32m1: Saturating subtract vector-scalar (signed, LMUL=1)
+ */
+inline vint32m1_t __riscv_vssub_vx_i32m1(const vint32m1_t &vec, int32_t scalar,
+                                          size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(scalar)));
+  Term min_i32 = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(INT32_MIN)));
+  Term max_i32 = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(INT32_MAX)));
+
+  Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {32});
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {31, 0});
+  Term min_i32_64 = g_symbolic_tm->mkBitVector(64, static_cast<uint64_t>(static_cast<int64_t>(INT32_MIN)));
+  Term max_i32_64 = g_symbolic_tm->mkBitVector(64, static_cast<uint64_t>(static_cast<int64_t>(INT32_MAX)));
+  Term scalar_ext = g_symbolic_tm->mkTerm(extend_op, {scalar_term});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term vec_ext = g_symbolic_tm->mkTerm(extend_op, {vec.getElement(i)});
+    Term diff = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SUB, {vec_ext, scalar_ext});
+
+    Term cmp_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {diff, min_i32_64});
+    Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {diff, max_i32_64});
+    Term result_normal = g_symbolic_tm->mkTerm(extract_op, {diff});
+    Term result = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_min, min_i32, result_normal});
+    result = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_i32, result});
+
+    result_elements.push_back(result);
+  }
+
+  return vint32m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Narrowing Clip Operations (Unsigned)
+// ============================================================================
+
+/**
+ * __riscv_vnclipu_wx_u8m1: Narrowing clip unsigned (i16m2 -> u8m1)
+ */
+inline vuint8m1_t __riscv_vnclipu_wx_u8m1(const vuint16m2_t &vec, size_t shift,
+                                           unsigned int vxrm, size_t vl) {
+  (void)vxrm;
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(shift));
+  Term max_u8 = g_symbolic_tm->mkBitVector(16, 255);
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_LSHR,
+        {vec.getElement(i), shift_term});
+    Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGT, {shifted, max_u8});
+    Term clamped = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_u8, shifted});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {clamped}));
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vnclipu_wx_u8mf4: Narrowing clip unsigned (u16mf2 -> u8mf4)
+ */
+inline vuint8mf4_t __riscv_vnclipu_wx_u8mf4(const vuint16mf2_t &vec, size_t shift,
+                                             unsigned int vxrm, size_t vl) {
+  (void)vxrm;
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(shift));
+  Term max_u8 = g_symbolic_tm->mkBitVector(16, 255);
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_LSHR,
+        {vec.getElement(i), shift_term});
+    Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGT, {shifted, max_u8});
+    Term clamped = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_u8, shifted});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {clamped}));
+  }
+
+  return vuint8mf4_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Narrowing Clip Operations (LMUL=2 -> LMUL=1/2)
+// ============================================================================
+
+/**
+ * __riscv_vnclip_wx_i16mf2: Narrowing clip signed (i32m1 -> i16mf2)
+ */
+inline vint16mf2_t __riscv_vnclip_wx_i16mf2(const vint32m1_t &vec, size_t shift,
+                                             unsigned int vxrm, size_t vl) {
+  (void)vxrm;
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term shift_term = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(shift));
+  Term min_i16 = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(-32768)));
+  Term max_i16 = g_symbolic_tm->mkBitVector(32, 32767);
+  Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR,
+        {vec.getElement(i), shift_term});
+    Term cmp_min = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {shifted, min_i16});
+    shifted = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_min, min_i16, shifted});
+    Term cmp_max = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {shifted, max_i16});
+    shifted = g_symbolic_tm->mkTerm(Kind::ITE, {cmp_max, max_i16, shifted});
+    result_elements.push_back(g_symbolic_tm->mkTerm(extract_op, {shifted}));
+  }
+
+  return vint16mf2_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Min/Max Operations (Signed int16)
+// ============================================================================
+
+/**
+ * __riscv_vmax_vx_i16m2: Maximum with scalar (signed, LMUL=2)
+ */
+inline vint16m2_t __riscv_vmax_vx_i16m2(const vint16m2_t &vec, int16_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(16,
+      static_cast<uint64_t>(static_cast<uint16_t>(scalar)));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vint16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmax_vx_i16mf2: Maximum with scalar (signed, LMUL=1/2)
+ */
+inline vint16mf2_t __riscv_vmax_vx_i16mf2(const vint16mf2_t &vec, int16_t scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(16,
+      static_cast<uint64_t>(static_cast<uint16_t>(scalar)));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vint16mf2_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Min/Max Operations (Unsigned uint8)
+// ============================================================================
+
+/**
+ * __riscv_vmaxu_vx_u8m1: Maximum with scalar (unsigned, LMUL=1)
+ */
+inline vuint8m1_t __riscv_vmaxu_vx_u8m1(const vuint8m1_t &vec, uint8_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vminu_vx_u8m1: Minimum with scalar (unsigned, LMUL=1)
+ */
+inline vuint8m1_t __riscv_vminu_vx_u8m1(const vuint8m1_t &vec, uint8_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ULT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmaxu_vx_u8mf4: Maximum with scalar (unsigned, LMUL=1/4)
+ */
+inline vuint8mf4_t __riscv_vmaxu_vx_u8mf4(const vuint8mf4_t &vec, uint8_t scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vuint8mf4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vminu_vx_u8mf4: Minimum with scalar (unsigned, LMUL=1/4)
+ */
+inline vuint8mf4_t __riscv_vminu_vx_u8mf4(const vuint8mf4_t &vec, uint8_t scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ULT,
+        {vec.getElement(i), scalar_term});
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vuint8mf4_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Subtract Operations (i16m1)
+// ============================================================================
+
+/**
+ * __riscv_vsub_vx_i16m1: Subtract scalar from vector (LMUL=1)
+ */
+inline vint16m1_t __riscv_vsub_vx_i16m1(const vint16m1_t &vec, int16_t scalar,
+                                         size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(16,
+      static_cast<uint64_t>(static_cast<uint16_t>(scalar)));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {vec.getElement(i), scalar_term}));
+  }
+
+  return vint16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vsub_vx_i16mf2: Subtract scalar from vector (LMUL=1/2)
+ */
+inline vint16mf2_t __riscv_vsub_vx_i16mf2(const vint16mf2_t &vec, int16_t scalar,
+                                           size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(16,
+      static_cast<uint64_t>(static_cast<uint16_t>(scalar)));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SUB, {vec.getElement(i), scalar_term}));
+  }
+
+  return vint16mf2_t(g_symbolic_tm, result_elements);
 }
 
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP

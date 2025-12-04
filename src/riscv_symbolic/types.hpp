@@ -234,6 +234,70 @@ public:
 };
 
 /**
+ * Symbolic representation of RISC-V Vector vuint8m1_t type
+ * Represents a variable-length vector of 8-bit unsigned integers with LMUL=1
+ */
+class vuint8m1_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint8m1_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv8 = tm->mkBitVectorSort(8);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv8, "vec_u8m1_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint8m1_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vuint16m2_t type
+ * Represents a variable-length vector of 16-bit unsigned integers with LMUL=2
+ */
+class vuint16m2_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint16m2_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv16 = tm->mkBitVectorSort(16);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv16, "vec_u16m2_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint16m2_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
  * Symbolic representation of RISC-V Vector vfloat16m2_t type
  * Represents a variable-length vector of 16-bit floating-point values with LMUL=2
  */
@@ -254,6 +318,38 @@ public:
   }
 
   inline vfloat16m2_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vfloat32m4_t type
+ * Represents a variable-length vector of 32-bit floating-point values with LMUL=4
+ */
+class vfloat32m4_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vfloat32m4_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(fp32, "vec_f32m4_" + std::to_string(i)));
+    }
+  }
+
+  inline vfloat32m4_t(TermManager *t, const std::vector<Term> &data)
       : elements(data), tm(t), vl(data.size()) {}
 
   inline Term getElement(size_t idx) const { return elements[idx]; }
@@ -319,6 +415,230 @@ public:
   }
 
   inline vbool8_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vuint8mf2_t type
+ * Represents a variable-length vector of 8-bit unsigned integers with LMUL=1/2
+ */
+class vuint8mf2_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint8mf2_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv8 = tm->mkBitVectorSort(8);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv8, "vec_u8mf2_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint8mf2_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vuint8mf4_t type
+ * Represents a variable-length vector of 8-bit unsigned integers with LMUL=1/4
+ */
+class vuint8mf4_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint8mf4_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv8 = tm->mkBitVectorSort(8);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv8, "vec_u8mf4_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint8mf4_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vuint16m1_t type
+ * Represents a variable-length vector of 16-bit unsigned integers with LMUL=1
+ */
+class vuint16m1_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint16m1_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv16 = tm->mkBitVectorSort(16);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv16, "vec_u16m1_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint16m1_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vuint16mf2_t type
+ * Represents a variable-length vector of 16-bit unsigned integers with LMUL=1/2
+ */
+class vuint16mf2_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vuint16mf2_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv16 = tm->mkBitVectorSort(16);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv16, "vec_u16mf2_" + std::to_string(i)));
+    }
+  }
+
+  inline vuint16mf2_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vint16m1_t type
+ * Represents a variable-length vector of 16-bit signed integers with LMUL=1
+ */
+class vint16m1_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vint16m1_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv16 = tm->mkBitVectorSort(16);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv16, "vec_i16m1_" + std::to_string(i)));
+    }
+  }
+
+  inline vint16m1_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vint16mf2_t type
+ * Represents a variable-length vector of 16-bit signed integers with LMUL=1/2
+ */
+class vint16mf2_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vint16mf2_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort bv16 = tm->mkBitVectorSort(16);
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(bv16, "vec_i16mf2_" + std::to_string(i)));
+    }
+  }
+
+  inline vint16mf2_t(TermManager *t, const std::vector<Term> &data)
+      : elements(data), tm(t), vl(data.size()) {}
+
+  inline Term getElement(size_t idx) const { return elements[idx]; }
+
+  inline const std::vector<Term> &getElements() const { return elements; }
+
+  inline size_t getVL() const { return vl; }
+
+  inline TermManager *getTermManager() const { return tm; }
+};
+
+/**
+ * Symbolic representation of RISC-V Vector vfloat32m1_t type
+ * Represents a variable-length vector of 32-bit floating-point values with LMUL=1
+ */
+class vfloat32m1_t {
+private:
+  std::vector<Term> elements;
+  TermManager *tm;
+  size_t vl;
+
+public:
+  inline vfloat32m1_t(TermManager *t, size_t vector_length)
+      : tm(t), vl(vector_length) {
+    Sort fp32 = tm->mkFloatingPointSort(8, 24);  // IEEE 754 single precision
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+      elements.push_back(tm->mkConst(fp32, "vec_f32m1_" + std::to_string(i)));
+    }
+  }
+
+  inline vfloat32m1_t(TermManager *t, const std::vector<Term> &data)
       : elements(data), tm(t), vl(data.size()) {}
 
   inline Term getElement(size_t idx) const { return elements[idx]; }

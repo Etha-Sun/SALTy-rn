@@ -16,6 +16,8 @@ inline std::map<uintptr_t, std::vector<uint8x16_t>> g_neon_memory_u8x16;
 inline std::map<uintptr_t, std::vector<uint8x8_t>> g_neon_memory_u8x8;
 inline std::map<uintptr_t, std::vector<uint16x8_t>> g_neon_memory_u16x8;
 inline std::map<uintptr_t, std::vector<uint16x4_t>> g_neon_memory_u16x4;
+inline std::map<uintptr_t, std::vector<float32x4_t>> g_neon_memory_f32x4;
+inline std::map<uintptr_t, std::vector<float32x2_t>> g_neon_memory_f32x2;
 
 // Global storage for scalar reduction results
 inline std::map<std::string, Term> g_neon_scalar_results;
@@ -39,6 +41,13 @@ inline int32x4_t vld1q_s32(const int32_t *ptr) {
   }
 
   return int32x4_t(g_symbolic_tm);
+}
+
+/**
+ * vld1q_s32: Overload for const void* (common in XNNPACK code)
+ */
+inline int32x4_t vld1q_s32(const void *ptr) {
+  return vld1q_s32(reinterpret_cast<const int32_t*>(ptr));
 }
 
 /**
@@ -148,7 +157,7 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
     return it->second.back();
   }
 
-  // Fallback: Check 128-bit memory map and extract lower half
+  // Check 128-bit memory map - exact match at addr
   auto it128 = g_neon_memory_u8x16.find(addr);
   if (it128 != g_neon_memory_u8x16.end() && !it128->second.empty()) {
     const uint8x16_t &vec128 = it128->second.back();
@@ -159,7 +168,37 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
     return uint8x8_t(g_symbolic_tm, lanes);
   }
 
+  // Overlap search in 128-bit memory map - check if addr falls within a stored vector
+  for (const auto& entry : g_neon_memory_u8x16) {
+    uintptr_t base_addr = entry.first;
+    if (!entry.second.empty()) {
+      // 16 elements per uint8x16_t, 1 byte each = 16 bytes
+      const size_t vec_size = 16;
+      if (addr >= base_addr && addr < base_addr + vec_size) {
+        // Found overlap - extract 8 elements starting at offset
+        size_t offset = addr - base_addr;
+        const uint8x16_t &vec128 = entry.second.back();
+        std::array<Term, 8> lanes;
+        for (int i = 0; i < 8; i++) {
+          if (offset + i < 16) {
+            lanes[i] = vec128.getLane(offset + i);
+          } else {
+            lanes[i] = g_symbolic_tm->mkBitVector(8, 0);
+          }
+        }
+        return uint8x8_t(g_symbolic_tm, lanes);
+      }
+    }
+  }
+
   return uint8x8_t(g_symbolic_tm);
+}
+
+/**
+ * vld1_u8: Overload for const void* (common in XNNPACK code)
+ */
+inline uint8x8_t vld1_u8(const void *ptr) {
+  return vld1_u8(reinterpret_cast<const uint8_t*>(ptr));
 }
 
 // ============================================================================
@@ -240,6 +279,22 @@ inline void vst1_s8(int8_t *ptr, const int8x8_t &vec) {
 inline void vst1q_u8(uint8_t *ptr, const uint8x16_t &vec) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
   g_neon_memory_u8x16[addr].push_back(vec);
+}
+
+/**
+ * vst1q_f32: Store vector of 32-bit floating-point values (128-bit)
+ */
+inline void vst1q_f32(float *ptr, const float32x4_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_f32x4[addr].push_back(vec);
+}
+
+/**
+ * vst1_f32: Store vector of 32-bit floating-point values (64-bit, 2 elements)
+ */
+inline void vst1_f32(float *ptr, const float32x2_t &vec) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  g_neon_memory_f32x2[addr].push_back(vec);
 }
 
 /**
@@ -340,6 +395,20 @@ inline void vst1_lane_u8(uint8_t *ptr, const uint8x8_t &vec, int lane) {
     full_lanes[i] = lane_term; // Pad with same value
   }
   g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, full_lanes));
+}
+
+/**
+ * vst1_lane_f32: Store a single lane from float32x2_t to memory
+ */
+inline void vst1_lane_f32(float *ptr, const float32x2_t &vec, int lane) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  // Extract the specified lane (single float)
+  Term lane_term = vec.getLane(lane);
+  // Store as float32x2_t with the lane value
+  std::array<Term, 2> full_lanes;
+  full_lanes[0] = lane_term;
+  full_lanes[1] = lane_term; // Pad with same value
+  g_neon_memory_f32x2[addr].push_back(float32x2_t(g_symbolic_tm, full_lanes));
 }
 
 // ============================================================================

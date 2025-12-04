@@ -228,4 +228,23 @@ struct xnn_qs8_f16_cvt_params {
   } scalar;
 };
 
+struct xnn_qs8_f32_cvt_params {
+  struct {
+    int32_t zero_point;
+    float scale;
+  } scalar;
+};
+
+union xnn_qu8_conv_minmax_params {
+  struct {
+    uint8_t kernel_zero_point;
+    uint8_t padding[3];
+    float scale;
+    float magic_bias;
+    int32_t magic_bias_less_output_zero_point;
+    uint8_t output_min;
+    uint8_t output_max;
+  } fp32_neon;
+};
+
 #endif // XNN_MINIMAL_H
