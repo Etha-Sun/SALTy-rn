@@ -170,6 +170,27 @@ static inline float xnn_bfloat16_to_float(xnn_bfloat16 bf16) {
 #define XNN_LIKELY(condition) (__builtin_expect(!!(condition), 1))
 #define XNN_UNPREDICTABLE(condition) (__builtin_expect(!!(condition), 0))
 
+// XNN_UNREACHABLE - marks code that should never be reached
+#if defined(__GNUC__)
+#if defined(__clang__) || (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 5)
+#define XNN_UNREACHABLE      \
+  do {                       \
+    __builtin_unreachable(); \
+  } while (0)
+#else
+#define XNN_UNREACHABLE \
+  do {                  \
+    __builtin_trap();   \
+  } while (0)
+#endif
+#elif defined(_MSC_VER)
+#define XNN_UNREACHABLE __assume(0)
+#else
+#define XNN_UNREACHABLE \
+  do {                  \
+  } while (0)
+#endif
+
 // Memory alignment macro
 #if defined(__GNUC__)
 #define XNN_ALIGN(alignment) __attribute__((__aligned__(alignment)))

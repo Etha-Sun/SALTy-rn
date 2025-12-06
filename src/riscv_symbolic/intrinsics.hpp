@@ -171,6 +171,15 @@ inline size_t __riscv_vsetvl_e8m8(size_t avl) {
   return avl;
 }
 
+/**
+ * __riscv_vsetvl_e16m1: Set vector length for 16-bit elements with LMUL=1
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
+ */
+inline size_t __riscv_vsetvl_e16m1(size_t avl) {
+  g_current_vl = avl;
+  return avl;
+}
+
 // ============================================================================
 // Load Operations
 // ============================================================================
@@ -1574,6 +1583,19 @@ inline size_t __riscv_vsetvl_e32m4(size_t avl) {
 }
 
 /**
+ * __riscv_vsetvl_e32m8: Set vector length for 32-bit elements with LMUL=8
+ * Returns the actual VL set based on AVL
+ * For VLEN=256, LMUL=8, SEW=32: VLMAX = (256/32) * 8 = 64
+ */
+inline size_t __riscv_vsetvl_e32m8(size_t avl) {
+  // VLMAX for e32m8 with VLEN=256 is 64
+  const size_t vlmax = 64;
+  size_t vl = (avl < vlmax) ? avl : vlmax;
+  g_current_vl = vl;
+  return vl;
+}
+
+/**
  * __riscv_vsetvlmax_e32m1: Set vector length to maximum for 32-bit elements with LMUL=1
  * Returns VLMAX (maximum vector length for this configuration)
  * For symbolic execution, we use a reasonable default
@@ -2779,6 +2801,60 @@ inline vuint32m4_t __riscv_vmv_v_x_u32m4(uint32_t scalar, size_t vl) {
 }
 
 /**
+ * __riscv_vmv_v_x_u32m8: Move scalar to all elements of vector (uint32m8)
+ * Creates a vector where all elements are copies of the scalar value
+ */
+inline vuint32m8_t __riscv_vmv_v_x_u32m8(uint32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vuint32m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmv_v_x_u8m1: Move scalar to all elements of vector (uint8m1)
+ * Creates a vector where all elements are copies of the scalar value
+ */
+inline vuint8m1_t __riscv_vmv_v_x_u8m1(uint8_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmv_v_x_u16m1: Move scalar to all elements of vector (uint16m1)
+ * Creates a vector where all elements are copies of the scalar value
+ */
+inline vuint16m1_t __riscv_vmv_v_x_u16m1(uint16_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term =
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vmv_v_x_u16m2: Move scalar to all elements of vector (uint16m2)
  * Creates a vector where all elements are copies of the scalar value
  */
@@ -2979,6 +3055,306 @@ inline vint8m1_t __riscv_vnsra_wx_i8m1(const vint16m2_t &vec, uint32_t shift,
   }
 
   return vint8m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Vector Slide Operations
+// ============================================================================
+
+/**
+ * __riscv_vslideup_vx_u8m1: Slide elements up by offset positions
+ * Elements [0, offset-1] in dest are unchanged (from dest/merge)
+ * Elements [offset, vl-1] get values from src[0, vl-offset-1]
+ * 
+ * If offset >= vl, no elements from src are written
+ */
+inline vuint8m1_t __riscv_vslideup_vx_u8m1(const vuint8m1_t &dest, 
+                                            const vuint8m1_t &src, 
+                                            size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Elements before offset come from dest
+  for (size_t i = 0; i < offset && i < vl; i++) {
+    if (i < dest.getVL()) {
+      result_elements.push_back(dest.getElement(i));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(8, 0));
+    }
+  }
+
+  // Elements from offset onwards come from src
+  for (size_t i = offset; i < vl; i++) {
+    size_t src_idx = i - offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(8, 0));
+    }
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslidedown_vx_u8m1: Slide elements down by offset positions
+ * result[i] = src[i + offset] for valid indices
+ * Elements that slide out are lost, elements that slide in are zeros
+ */
+inline vuint8m1_t __riscv_vslidedown_vx_u8m1(const vuint8m1_t &src, 
+                                              size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    size_t src_idx = i + offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      // Elements that slide in from beyond the vector are zero
+      result_elements.push_back(g_symbolic_tm->mkBitVector(8, 0));
+    }
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Vector Gather Operations
+// ============================================================================
+
+/**
+ * __riscv_vrgather_vv_u8m1: Gather elements using index vector
+ * result[i] = src[index[i]] for each element
+ * If index[i] >= VLMAX, result[i] is 0
+ */
+inline vuint8m1_t __riscv_vrgather_vv_u8m1(const vuint8m1_t &src, 
+                                            const vuint8m1_t &index, 
+                                            size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term zero = g_symbolic_tm->mkBitVector(8, 0);
+  size_t src_vl = src.getVL();
+
+  for (size_t i = 0; i < vl; i++) {
+    // Get the index value - for symbolic execution, we need to handle this
+    // If index is concrete, we can directly use it
+    // For symbolic execution, we'll create an ITE chain
+    
+    Term result_elem = zero;  // Default value
+    
+    // Build ITE chain: if index[i] == 0 then src[0] else if index[i] == 1 then src[1] ...
+    for (size_t j = 0; j < src_vl; j++) {
+      Term idx_val = g_symbolic_tm->mkBitVector(8, j);
+      Term cond = g_symbolic_tm->mkTerm(Kind::EQUAL, {index.getElement(i), idx_val});
+      result_elem = g_symbolic_tm->mkTerm(Kind::ITE, {cond, src.getElement(j), result_elem});
+    }
+    
+    result_elements.push_back(result_elem);
+  }
+
+  return vuint8m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslideup_vx_u16m1: Slide elements up by offset positions (uint16)
+ * Elements [0, offset-1] in dest are unchanged
+ * Elements [offset, vl-1] get values from src[0, vl-offset-1]
+ */
+inline vuint16m1_t __riscv_vslideup_vx_u16m1(const vuint16m1_t &dest, 
+                                              const vuint16m1_t &src, 
+                                              size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < offset && i < vl; i++) {
+    if (i < dest.getVL()) {
+      result_elements.push_back(dest.getElement(i));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(16, 0));
+    }
+  }
+
+  for (size_t i = offset; i < vl; i++) {
+    size_t src_idx = i - offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(16, 0));
+    }
+  }
+
+  return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslidedown_vx_u16m1: Slide elements down by offset positions (uint16)
+ * result[i] = src[i + offset] for valid indices
+ */
+inline vuint16m1_t __riscv_vslidedown_vx_u16m1(const vuint16m1_t &src, 
+                                                size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    size_t src_idx = i + offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(16, 0));
+    }
+  }
+
+  return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslideup_vx_u32m1: Slide elements up by offset positions (uint32)
+ * Elements [0, offset-1] in dest are unchanged
+ * Elements [offset, vl-1] get values from src[0, vl-offset-1]
+ */
+inline vuint32m1_t __riscv_vslideup_vx_u32m1(const vuint32m1_t &dest, 
+                                              const vuint32m1_t &src, 
+                                              size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < offset && i < vl; i++) {
+    if (i < dest.getVL()) {
+      result_elements.push_back(dest.getElement(i));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(32, 0));
+    }
+  }
+
+  for (size_t i = offset; i < vl; i++) {
+    size_t src_idx = i - offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(32, 0));
+    }
+  }
+
+  return vuint32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslidedown_vx_u32m1: Slide elements down by offset positions (uint32)
+ * result[i] = src[i + offset] for valid indices
+ */
+inline vuint32m1_t __riscv_vslidedown_vx_u32m1(const vuint32m1_t &src, 
+                                                size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    size_t src_idx = i + offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(32, 0));
+    }
+  }
+
+  return vuint32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslide1down_vx_u32m1: Slide elements down by 1 and insert scalar at top
+ * result[i] = src[i + 1] for i < vl-1, result[vl-1] = scalar
+ * Elements shift toward lower indices, scalar inserted at highest index
+ */
+inline vuint32m1_t __riscv_vslide1down_vx_u32m1(const vuint32m1_t &src,
+                                                 uint32_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Shift elements down: result[i] = src[i + 1]
+  for (size_t i = 0; i < vl - 1; i++) {
+    if (i + 1 < src.getVL()) {
+      result_elements.push_back(src.getElement(i + 1));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkBitVector(32, 0));
+    }
+  }
+
+  // Insert scalar at the top (last position)
+  result_elements.push_back(g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(scalar)));
+
+  return vuint32m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vrgather_vv_u16m1: Gather elements using index vector (uint16)
+ * result[i] = src[index[i]] for each element
+ */
+inline vuint16m1_t __riscv_vrgather_vv_u16m1(const vuint16m1_t &src,
+                                              const vuint16m1_t &index,
+                                              size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term zero = g_symbolic_tm->mkBitVector(16, 0);
+  size_t src_vl = src.getVL();
+
+  for (size_t i = 0; i < vl; i++) {
+    Term result_elem = zero;
+    
+    for (size_t j = 0; j < src_vl; j++) {
+      Term idx_val = g_symbolic_tm->mkBitVector(16, j);
+      Term cond = g_symbolic_tm->mkTerm(Kind::EQUAL, {index.getElement(i), idx_val});
+      result_elem = g_symbolic_tm->mkTerm(Kind::ITE, {cond, src.getElement(j), result_elem});
+    }
+    
+    result_elements.push_back(result_elem);
+  }
+
+  return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vrgather_vv_u32m1: Gather elements using index vector (uint32)
+ * result[i] = src[index[i]] for each element
+ */
+inline vuint32m1_t __riscv_vrgather_vv_u32m1(const vuint32m1_t &src, 
+                                              const vuint32m1_t &index, 
+                                              size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term zero = g_symbolic_tm->mkBitVector(32, 0);
+  size_t src_vl = src.getVL();
+
+  for (size_t i = 0; i < vl; i++) {
+    Term result_elem = zero;
+    
+    for (size_t j = 0; j < src_vl; j++) {
+      Term idx_val = g_symbolic_tm->mkBitVector(32, j);
+      Term cond = g_symbolic_tm->mkTerm(Kind::EQUAL, {index.getElement(i), idx_val});
+      result_elem = g_symbolic_tm->mkTerm(Kind::ITE, {cond, src.getElement(j), result_elem});
+    }
+    
+    result_elements.push_back(result_elem);
+  }
+
+  return vuint32m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Tuple Creation Intrinsics
+// ============================================================================
+
+/**
+ * __riscv_vcreate_v_u32m1x4: Create a tuple of 4 vuint32m1_t vectors
+ * Used for segment load/store operations
+ */
+inline vuint32m1x4_t __riscv_vcreate_v_u32m1x4(const vuint32m1_t& v0,
+                                               const vuint32m1_t& v1,
+                                               const vuint32m1_t& v2,
+                                               const vuint32m1_t& v3) {
+  return vuint32m1x4_t(v0, v1, v2, v3);
 }
 
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP

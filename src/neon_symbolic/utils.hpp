@@ -30,6 +30,9 @@ namespace SymbolicNEONHelpers {
         g_neon_memory_u16x4.clear();
         g_neon_memory_f32x4.clear();
         g_neon_memory_f32x2.clear();
+        g_neon_memory_u32x4.clear();
+        g_neon_memory_u32x2.clear();
+        g_neon_scalar_memory.clear();
     }
 
     /**
@@ -106,6 +109,28 @@ namespace SymbolicNEONHelpers {
 
     inline void populateMemory32(const int32_t* ptr, const std::vector<Term>& symbolic_values) {
         populateMemory(ptr, symbolic_values, 32, true);
+    }
+
+    /**
+     * Populate unsigned 16-bit memory for NEON symbolic execution
+     */
+    inline void populateMemoryU16(const uint16_t* ptr, const std::vector<Term>& symbolic_values) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        const size_t lanes_per_vec = 8;  // uint16x8_t holds 8 elements
+
+        for (size_t i = 0; i < symbolic_values.size(); i += lanes_per_vec) {
+            std::array<Term, 8> lanes;
+            for (size_t j = 0; j < lanes_per_vec && (i + j) < symbolic_values.size(); j++) {
+                lanes[j] = symbolic_values[i + j];
+            }
+            // Pad remaining lanes with last valid element
+            size_t valid_count = std::min(lanes_per_vec, symbolic_values.size() - i);
+            for (size_t j = valid_count; j < lanes_per_vec; j++) {
+                lanes[j] = symbolic_values.back();
+            }
+
+            g_neon_memory_u16x8[addr + i * sizeof(uint16_t)].push_back(uint16x8_t(g_symbolic_tm, lanes));
+        }
     }
     
     inline const std::vector<int8x16_t>* getStoredResults8x16(const int8_t* ptr) {
@@ -437,6 +462,7 @@ namespace SymbolicNEONHelpers {
     /**
      * Collect all 8-bit unsigned integer elements from NEON memory
      * Handles both uint8x16_t and uint8x8_t vector types
+     * Also handles partial stores (vst1_lane_u32 stores 4 bytes, vst1_lane_u16 stores 2 bytes, etc.)
      */
     inline std::vector<Term> collectResultsU8(const uint8_t* ptr, size_t batch) {
         std::vector<Term> elements;
@@ -457,19 +483,39 @@ namespace SymbolicNEONHelpers {
                 continue;
             }
 
-            // Try 8-byte map (uint8x8)
+            // Try 8-byte map (uint8x8) - but only collect the valid bytes
             if (g_neon_memory_u8x8.count(current_addr) &&
                 !g_neon_memory_u8x8[current_addr].empty()) {
                 const uint8x8_t &neon_vec = g_neon_memory_u8x8[current_addr].back();
-                size_t len = std::min(static_cast<size_t>(8), batch - i);
+
+                // Determine how many bytes were actually stored
+                // Check if there's another store at nearby addresses
+                // For now, collect up to 8 bytes but check for next store
+                size_t bytes_to_collect = 8;
+
+                // Check if there's a store at i+1, i+2, i+4 which would indicate partial store
+                for (size_t offset = 1; offset < 8 && (i + offset) < batch; offset++) {
+                    uintptr_t next_addr = reinterpret_cast<uintptr_t>(ptr + i + offset);
+                    if (g_neon_memory_u8x8.count(next_addr) && !g_neon_memory_u8x8[next_addr].empty()) {
+                        bytes_to_collect = offset;
+                        break;
+                    }
+                    if (g_neon_memory_u8x16.count(next_addr) && !g_neon_memory_u8x16[next_addr].empty()) {
+                        bytes_to_collect = offset;
+                        break;
+                    }
+                }
+
+                size_t len = std::min(bytes_to_collect, batch - i);
                 for (size_t lane = 0; lane < len; lane++) {
                     elements.push_back(neon_vec.getLane(lane));
                 }
-                i += 8;
+                i += len;
                 continue;
             }
 
-            // No vector found at this address
+            // No vector found at this address - try single byte increment
+            // This shouldn't happen if all stores went to memory properly
             break;
         }
 

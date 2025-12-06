@@ -2,6 +2,7 @@
 #define NEON_SYMBOLIC_MEMORY_HPP
 
 #include "../symbolic_common.hpp"
+#include "../symbolic_scalar_types.hpp"
 #include "types.hpp"
 #include <cstdint>
 #include <map>
@@ -60,7 +61,7 @@ inline int32x4_t vld1q_s32(const void *ptr) {
 inline uint32x4_t vld1q_u32(const uint32_t *ptr) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-  // Check if this address was previously stored to
+  // Check if this address was previously stored to (exact match)
   auto it = g_neon_memory_u32x4.find(addr);
   if (it != g_neon_memory_u32x4.end() && !it->second.empty()) {
     return it->second.back();
@@ -304,7 +305,13 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
     }
   }
 
-  return uint8x8_t(g_symbolic_tm);
+  // If not found in symbolic memory, read concrete values from the actual memory
+  // This handles cases like loading from static const arrays (e.g., permutation tables)
+  std::array<Term, 8> lanes;
+  for (int i = 0; i < 8; i++) {
+    lanes[i] = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(ptr[i]));
+  }
+  return uint8x8_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -312,6 +319,91 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
  */
 inline uint8x8_t vld1_u8(const void *ptr) {
   return vld1_u8(reinterpret_cast<const uint8_t*>(ptr));
+}
+
+/**
+ * vld1q_u16: Load vector of 16-bit unsigned integers (128-bit, 8 elements)
+ */
+inline uint16x8_t vld1q_u16(const uint16_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  auto it = g_neon_memory_u16x8.find(addr);
+  if (it != g_neon_memory_u16x8.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Try to read concrete values from memory
+  std::array<Term, 8> lanes;
+  bool has_concrete = false;
+  try {
+    for (int i = 0; i < 8; i++) {
+      uint16_t val = ptr[i];
+      lanes[i] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(val));
+    }
+    has_concrete = true;
+  } catch (...) {
+    has_concrete = false;
+  }
+
+  if (has_concrete) {
+    return uint16x8_t(g_symbolic_tm, lanes);
+  }
+
+  // Otherwise, create fresh symbolic values
+  return uint16x8_t(g_symbolic_tm);
+}
+
+/**
+ * vld1q_u16: Overload for const void* (common in XNNPACK code)
+ */
+inline uint16x8_t vld1q_u16(const void *ptr) {
+  return vld1q_u16(reinterpret_cast<const uint16_t*>(ptr));
+}
+
+/**
+ * vld1_u16: Load vector of 16-bit unsigned integers (64-bit, 4 elements)
+ */
+inline uint16x4_t vld1_u16(const uint16_t *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  auto it = g_neon_memory_u16x4.find(addr);
+  if (it != g_neon_memory_u16x4.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Check if addr falls within a stored uint16x8
+  auto it8 = g_neon_memory_u16x8.find(addr);
+  if (it8 != g_neon_memory_u16x8.end() && !it8->second.empty()) {
+    const uint16x8_t &vec8 = it8->second.back();
+    std::array<Term, 4> lanes;
+    lanes[0] = vec8.getLane(0);
+    lanes[1] = vec8.getLane(1);
+    lanes[2] = vec8.getLane(2);
+    lanes[3] = vec8.getLane(3);
+    return uint16x4_t(g_symbolic_tm, lanes);
+  }
+
+  // Check if addr is offset by 4 elements (8 bytes) from start of uint16x8
+  uintptr_t base = addr - 8;
+  it8 = g_neon_memory_u16x8.find(base);
+  if (it8 != g_neon_memory_u16x8.end() && !it8->second.empty()) {
+    const uint16x8_t &vec8 = it8->second.back();
+    std::array<Term, 4> lanes;
+    lanes[0] = vec8.getLane(4);
+    lanes[1] = vec8.getLane(5);
+    lanes[2] = vec8.getLane(6);
+    lanes[3] = vec8.getLane(7);
+    return uint16x4_t(g_symbolic_tm, lanes);
+  }
+
+  return uint16x4_t(g_symbolic_tm);
+}
+
+/**
+ * vld1_u16: Overload for const void* (common in XNNPACK code)
+ */
+inline uint16x4_t vld1_u16(const void *ptr) {
+  return vld1_u16(reinterpret_cast<const uint16_t*>(ptr));
 }
 
 // ============================================================================
@@ -395,6 +487,13 @@ inline void vst1q_u8(uint8_t *ptr, const uint8x16_t &vec) {
 }
 
 /**
+ * vst1q_u8: Overload for void* (common in XNNPACK code)
+ */
+inline void vst1q_u8(void *ptr, const uint8x16_t &vec) {
+  vst1q_u8(reinterpret_cast<uint8_t*>(ptr), vec);
+}
+
+/**
  * vst1q_u32: Store vector of 32-bit unsigned integers (128-bit)
  */
 inline void vst1q_u32(uint32_t *ptr, const uint32x4_t &vec) {
@@ -434,63 +533,82 @@ inline void vst1_u8(uint8_t *ptr, const uint8x8_t &vec) {
   g_neon_memory_u8x8[addr].push_back(vec);
 }
 
+/**
+ * vst1_u8: Overload for void* (common in XNNPACK code)
+ */
+inline void vst1_u8(void *ptr, const uint8x8_t &vec) {
+  vst1_u8(reinterpret_cast<uint8_t*>(ptr), vec);
+}
+
 // ============================================================================
 // Store Lane Operations
 // ============================================================================
 
 /**
- * vst1_lane_u32: Store 4 bytes (lane 0 of uint32x2_t = first 4 bytes)
+ * vst1_lane_u32: Store 4 bytes from specified lane of uint32x2_t
  */
 inline void vst1_lane_u32(void *ptr, const uint32x2_t &vec, int lane) {
-  (void)lane;
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-  // Extract first 4 int8_t elements from the uint32x2_t
-  // uint32x2_t represents 2 uint32_t = 8 bytes = 8 int8_t
-  // Lane 0 is the first uint32_t = first 4 bytes
-  std::array<Term, 8> lanes;        // int8x8_t needs 8 lanes
-  Term lane0_term = vec.getLane(0); // First uint32_t
+  // Extract 4 bytes from the specified lane of uint32x2_t
+  std::array<Term, 8> lanes;
+  Term lane_term = vec.getLane(lane);
   for (int i = 0; i < 4; i++) {
-    // Extract byte i from the uint32x2_t
-    // The uint32x2_t lanes are stored as 2 uint32_t terms
-    // We need to extract bytes 0-3 from lane 0
     Op extract_op = g_symbolic_tm->mkOp(
         Kind::BITVECTOR_EXTRACT,
         {static_cast<uint32_t>(i * 8 + 7), static_cast<uint32_t>(i * 8)});
-    lanes[i] = g_symbolic_tm->mkTerm(extract_op, {lane0_term});
+    lanes[i] = g_symbolic_tm->mkTerm(extract_op, {lane_term});
   }
   // Pad remaining lanes with last element
   for (int i = 4; i < 8; i++) {
     lanes[i] = lanes[3];
   }
-  // Store as int8x8_t
-  g_neon_memory_i8x8[addr].push_back(int8x8_t(g_symbolic_tm, lanes));
+  // Store as uint8x8_t for unsigned byte collection
+  g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, lanes));
 }
 
 /**
- * vst1_lane_u16: Store 2 bytes (lane 0 of uint16x4_t = first 2 bytes)
+ * vst1q_lane_u32: Store a single 32-bit value from specified lane of uint32x4_t
+ *
+ * @param ptr Pointer to memory location to store to
+ * @param vec Input vector containing the value to store
+ * @param lane Lane index (0-3) to store
+ */
+inline void vst1q_lane_u32(uint32_t *ptr, const uint32x4_t &vec, const int lane) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  // Store as scalar in g_neon_scalar_memory for proper collection
+  g_neon_scalar_memory[addr] = vec.getLane(lane);
+}
+
+/**
+ * vst1q_lane_u32: Overload for void* (common in XNNPACK code)
+ */
+inline void vst1q_lane_u32(void *ptr, const uint32x4_t &vec, const int lane) {
+  vst1q_lane_u32(reinterpret_cast<uint32_t*>(ptr), vec, lane);
+}
+
+/**
+ * vst1_lane_u16: Store 2 bytes from specified lane of uint16x4_t
  */
 inline void vst1_lane_u16(void *ptr, const uint16x4_t &vec, int lane) {
-  (void)lane;
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-  // Extract first 2 int8_t elements from the uint16x4_t
-  std::array<Term, 2> lanes;
-  Term lane0_term = vec.getLane(0); // First uint16_t
+  // Extract 2 bytes from the specified lane of uint16x4_t
+  std::array<Term, 2> byte_lanes;
+  Term lane_term = vec.getLane(lane);
   for (int i = 0; i < 2; i++) {
     Op extract_op = g_symbolic_tm->mkOp(
         Kind::BITVECTOR_EXTRACT,
         {static_cast<uint32_t>(i * 8 + 7), static_cast<uint32_t>(i * 8)});
-    lanes[i] = g_symbolic_tm->mkTerm(extract_op, {lane0_term});
+    byte_lanes[i] = g_symbolic_tm->mkTerm(extract_op, {lane_term});
   }
-  // Store as int8x8_t (we'll only use first 2 elements)
-  // Pad with the same value for remaining lanes
+  // Store as uint8x8_t (we'll only use first 2 elements)
   std::array<Term, 8> full_lanes;
   for (int i = 0; i < 2; i++) {
-    full_lanes[i] = lanes[i];
+    full_lanes[i] = byte_lanes[i];
   }
   for (int i = 2; i < 8; i++) {
-    full_lanes[i] = lanes[1]; // Pad with last element
+    full_lanes[i] = byte_lanes[1]; // Pad with last element
   }
-  g_neon_memory_i8x8[addr].push_back(int8x8_t(g_symbolic_tm, full_lanes));
+  g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, full_lanes));
 }
 
 /**
@@ -527,6 +645,13 @@ inline void vst1_lane_u8(uint8_t *ptr, const uint8x8_t &vec, int lane) {
 }
 
 /**
+ * vst1_lane_u8: Overload for void* (common in XNNPACK code)
+ */
+inline void vst1_lane_u8(void *ptr, const uint8x8_t &vec, int lane) {
+  vst1_lane_u8(reinterpret_cast<uint8_t*>(ptr), vec, lane);
+}
+
+/**
  * vst1_lane_f32: Store a single lane from float32x2_t to memory
  */
 inline void vst1_lane_f32(float *ptr, const float32x2_t &vec, int lane) {
@@ -538,6 +663,83 @@ inline void vst1_lane_f32(float *ptr, const float32x2_t &vec, int lane) {
   full_lanes[0] = lane_term;
   full_lanes[1] = lane_term; // Pad with same value
   g_neon_memory_f32x2[addr].push_back(float32x2_t(g_symbolic_tm, full_lanes));
+}
+
+// ============================================================================
+// Multi-Vector Store Operations (uint32)
+// ============================================================================
+
+/**
+ * vst4q_u32: Store 4 uint32x4_t vectors to memory (interleaved)
+ *
+ * Stores 4 vectors with interleaved element ordering.
+ * Memory layout: [v0[0], v1[0], v2[0], v3[0], v0[1], v1[1], v2[1], v3[1], ...]
+ *
+ * @param ptr Pointer to memory location to store to (16 consecutive uint32 values)
+ * @param vec Tuple of 4 vectors to store
+ */
+inline void vst4q_u32(uint32_t *ptr, const uint32x4x4_t &vec) {
+  // Store each vector's lanes interleaved as individual scalars
+  // Memory layout: [v0[0], v1[0], v2[0], v3[0], v0[1], v1[1], v2[1], v3[1], ...]
+  for (int lane = 0; lane < 4; lane++) {
+    for (int v = 0; v < 4; v++) {
+      uintptr_t addr = reinterpret_cast<uintptr_t>(ptr + lane * 4 + v);
+      // Store as scalar in g_neon_scalar_memory for proper collection
+      g_neon_scalar_memory[addr] = vec.val[v].getLane(lane);
+    }
+  }
+}
+
+// ============================================================================
+// Load Lane Operations (uint32)
+// ============================================================================
+
+/**
+ * vld1q_lane_u32: Load a single uint32 value into a specific lane of a vector
+ *
+ * Loads a single 32-bit value from memory and inserts it into the specified
+ * lane of the input vector, returning a new vector with the updated lane.
+ *
+ * @param ptr Pointer to memory location to load from
+ * @param vec Input vector (other lanes are preserved)
+ * @param lane Lane index (0-3) to insert the loaded value
+ * @return New vector with the specified lane updated
+ */
+inline uint32x4_t vld1q_lane_u32(const uint32_t* ptr, const uint32x4_t& vec, const int lane) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+
+    // Look up symbolic value from memory
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    Term loaded_value;
+
+    // Search for this address in symbolic memory
+    bool found = false;
+    for (const auto& entry : g_neon_memory_u32x4) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const uint32x4_t& base_vec = entry.second.back();
+            // Check if addr falls within this vector (4 elements * 4 bytes = 16 bytes)
+            if (addr >= base_addr && addr < base_addr + 16) {
+                size_t offset_elems = (addr - base_addr) / sizeof(uint32_t);
+                if (offset_elems < 4) {
+                    loaded_value = base_vec.getLane(offset_elems);
+                    found = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if (!found) {
+        // Fall back to concrete value if not in symbolic memory
+        loaded_value = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(*ptr));
+    }
+
+    lanes[lane] = loaded_value;
+    return uint32x4_t(g_symbolic_tm, lanes);
 }
 
 // ============================================================================

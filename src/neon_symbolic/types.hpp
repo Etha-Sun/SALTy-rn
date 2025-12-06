@@ -670,6 +670,17 @@ struct uint32x4x2_t {
 };
 
 /**
+ * uint32x4x4_t: Tuple of four uint32x4_t vectors
+ * Used by vld4q_u32 and similar operations
+ */
+struct uint32x4x4_t {
+    uint32x4_t val[4];
+
+    uint32x4x4_t() : val{uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm)} {}
+    uint32x4x4_t(const uint32x4_t& v0, const uint32x4_t& v1, const uint32x4_t& v2, const uint32x4_t& v3) : val{v0, v1, v2, v3} {}
+};
+
+/**
  * uint32x2x2_t: Tuple of two uint32x2_t vectors
  * Used by vzip_u32 and similar operations
  */
@@ -700,6 +711,61 @@ struct int32x2x2_t {
 
     int32x2x2_t() : val{int32x2_t(g_symbolic_tm), int32x2_t(g_symbolic_tm)} {}
     int32x2x2_t(const int32x2_t& v0, const int32x2_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * uint8x8x2_t: Tuple of two uint8x8_t vectors
+ * Used by vtbl2_u8 and similar operations
+ */
+struct uint8x8x2_t {
+    uint8x8_t val[2];
+
+    uint8x8x2_t() : val{uint8x8_t(g_symbolic_tm), uint8x8_t(g_symbolic_tm)} {}
+    uint8x8x2_t(const uint8x8_t& v0, const uint8x8_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * uint16x8x2_t: Tuple of two uint16x8_t vectors
+ * Used by vld2q_lane_u16 and similar operations
+ */
+struct uint16x8x2_t {
+    uint16x8_t val[2];
+
+    uint16x8x2_t() : val{uint16x8_t(g_symbolic_tm), uint16x8_t(g_symbolic_tm)} {}
+    uint16x8x2_t(const uint16x8_t& v0, const uint16x8_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * uint16x8x3_t: Tuple of three uint16x8_t vectors
+ * Used by vld3q_lane_u16 and similar operations
+ */
+struct uint16x8x3_t {
+    uint16x8_t val[3];
+
+    uint16x8x3_t() : val{uint16x8_t(g_symbolic_tm), uint16x8_t(g_symbolic_tm), uint16x8_t(g_symbolic_tm)} {}
+    uint16x8x3_t(const uint16x8_t& v0, const uint16x8_t& v1, const uint16x8_t& v2) : val{v0, v1, v2} {}
+};
+
+/**
+ * uint16x8x4_t: Tuple of four uint16x8_t vectors
+ * Used by vld4q_lane_u16 and similar operations
+ */
+struct uint16x8x4_t {
+    uint16x8_t val[4];
+
+    uint16x8x4_t() : val{uint16x8_t(g_symbolic_tm), uint16x8_t(g_symbolic_tm), uint16x8_t(g_symbolic_tm), uint16x8_t(g_symbolic_tm)} {}
+    uint16x8x4_t(const uint16x8_t& v0, const uint16x8_t& v1, const uint16x8_t& v2, const uint16x8_t& v3) : val{v0, v1, v2, v3} {}
+};
+
+/**
+ * uint8x16x4_t: Tuple of four uint8x16_t vectors
+ * Used by vld1q_u8_x4 and similar operations
+ */
+struct uint8x16x4_t {
+    uint8x16_t val[4];
+
+    uint8x16x4_t() : val{uint8x16_t(g_symbolic_tm), uint8x16_t(g_symbolic_tm), uint8x16_t(g_symbolic_tm), uint8x16_t(g_symbolic_tm)} {}
+    uint8x16x4_t(const uint8x16_t& v0, const uint8x16_t& v1, const uint8x16_t& v2, const uint8x16_t& v3) : val{v0, v1, v2, v3} {}
 };
 
 #endif // NEON_SYMBOLIC_TYPES_HPP

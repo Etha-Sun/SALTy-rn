@@ -1404,6 +1404,48 @@ inline int16x8_t vreinterpretq_s16_u16(const uint16x8_t& vec) {
 }
 
 /**
+ * vreinterpretq_u8_u32: Reinterpret uint32x4_t as uint8x16_t
+ * Treats each uint32 as 4 uint8 values (little-endian byte order)
+ */
+inline uint8x16_t vreinterpretq_u8_u32(const uint32x4_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 16> lanes;
+
+    for (int i = 0; i < 4; i++) {
+        Term u32_val = vec.getLane(i);
+        // Extract 4 bytes from each uint32 (little-endian: byte 0 is LSB)
+        for (int j = 0; j < 4; j++) {
+            Op extract_op = tm->mkOp(Kind::BITVECTOR_EXTRACT,
+                {static_cast<uint32_t>(j * 8 + 7), static_cast<uint32_t>(j * 8)});
+            lanes[i * 4 + j] = tm->mkTerm(extract_op, {u32_val});
+        }
+    }
+    return uint8x16_t(tm, lanes);
+}
+
+/**
+ * vreinterpretq_u32_u8: Reinterpret uint8x16_t as uint32x4_t
+ * Combines 4 uint8 values into each uint32 (little-endian byte order)
+ */
+inline uint32x4_t vreinterpretq_u32_u8(const uint8x16_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 4> lanes;
+
+    for (int i = 0; i < 4; i++) {
+        // Combine 4 bytes into a uint32 (little-endian: byte 0 is LSB)
+        Term u32_val = tm->mkTerm(tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {24}), {vec.getLane(i * 4)});
+        for (int j = 1; j < 4; j++) {
+            Term byte_j = vec.getLane(i * 4 + j);
+            Term byte_j_ext = tm->mkTerm(tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {24}), {byte_j});
+            Term shifted = tm->mkTerm(Kind::BITVECTOR_SHL, {byte_j_ext, tm->mkBitVector(32, j * 8)});
+            u32_val = tm->mkTerm(Kind::BITVECTOR_OR, {u32_val, shifted});
+        }
+        lanes[i] = u32_val;
+    }
+    return uint32x4_t(tm, lanes);
+}
+
+/**
  * vreinterpretq_s32_f32: Reinterpret float32x4_t as int32x4_t
  * Converts floating-point bit representation to signed integer interpretation
  */
@@ -2116,6 +2158,392 @@ inline int32x2x2_t vzip_s32(const int32x2_t& a, const int32x2_t& b) {
     result.val[1] = int32x2_t(g_symbolic_tm, lanes1);
 
     return result;
+}
+
+// ============================================================================
+// Load Lane Operations (uint16)
+// ============================================================================
+
+/**
+ * vld1q_lane_u16: Load a single uint16 value into a specific lane of a vector
+ *
+ * Loads a single 16-bit value from memory and inserts it into the specified
+ * lane of the input vector, returning a new vector with the updated lane.
+ *
+ * @param ptr Pointer to memory location to load from
+ * @param vec Input vector (other lanes are preserved)
+ * @param lane Lane index (0-7) to insert the loaded value
+ * @return New vector with the specified lane updated
+ */
+inline uint16x8_t vld1q_lane_u16(const uint16_t* ptr, const uint16x8_t& vec, const int lane) {
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    // Load the value from memory and insert into the specified lane
+    lanes[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(*ptr));
+    return uint16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vld2q_lane_u16: Load 2 uint16 values into specific lanes of two vectors
+ *
+ * Loads 2 consecutive 16-bit values from memory and inserts them into
+ * the specified lane of each of the two input vectors.
+ *
+ * Memory layout: [val0, val1] -> vec.val[0][lane], vec.val[1][lane]
+ *
+ * @param ptr Pointer to memory location to load from (2 consecutive uint16 values)
+ * @param vec Input tuple of two vectors (other lanes are preserved)
+ * @param lane Lane index (0-7) to insert the loaded values
+ * @return New tuple with the specified lanes updated
+ */
+inline uint16x8x2_t vld2q_lane_u16(const uint16_t* ptr, const uint16x8x2_t& vec, const int lane) {
+    uint16x8x2_t result;
+
+    // Copy all lanes from input vectors
+    std::array<Term, 8> lanes0, lanes1;
+    for (int i = 0; i < 8; i++) {
+        lanes0[i] = vec.val[0].getLane(i);
+        lanes1[i] = vec.val[1].getLane(i);
+    }
+
+    // Load 2 values and insert into the specified lane of each vector
+    lanes0[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[0]));
+    lanes1[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[1]));
+
+    result.val[0] = uint16x8_t(g_symbolic_tm, lanes0);
+    result.val[1] = uint16x8_t(g_symbolic_tm, lanes1);
+    return result;
+}
+
+/**
+ * vld3q_lane_u16: Load 3 uint16 values into specific lanes of three vectors
+ *
+ * Loads 3 consecutive 16-bit values from memory and inserts them into
+ * the specified lane of each of the three input vectors.
+ *
+ * Memory layout: [val0, val1, val2] -> vec.val[0][lane], vec.val[1][lane], vec.val[2][lane]
+ *
+ * @param ptr Pointer to memory location to load from (3 consecutive uint16 values)
+ * @param vec Input tuple of three vectors (other lanes are preserved)
+ * @param lane Lane index (0-7) to insert the loaded values
+ * @return New tuple with the specified lanes updated
+ */
+inline uint16x8x3_t vld3q_lane_u16(const uint16_t* ptr, const uint16x8x3_t& vec, const int lane) {
+    uint16x8x3_t result;
+
+    // Copy all lanes from input vectors
+    std::array<Term, 8> lanes0, lanes1, lanes2;
+    for (int i = 0; i < 8; i++) {
+        lanes0[i] = vec.val[0].getLane(i);
+        lanes1[i] = vec.val[1].getLane(i);
+        lanes2[i] = vec.val[2].getLane(i);
+    }
+
+    // Load 3 values and insert into the specified lane of each vector
+    lanes0[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[0]));
+    lanes1[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[1]));
+    lanes2[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[2]));
+
+    result.val[0] = uint16x8_t(g_symbolic_tm, lanes0);
+    result.val[1] = uint16x8_t(g_symbolic_tm, lanes1);
+    result.val[2] = uint16x8_t(g_symbolic_tm, lanes2);
+    return result;
+}
+
+/**
+ * vld4q_lane_u16: Load 4 uint16 values into specific lanes of four vectors
+ *
+ * Loads 4 consecutive 16-bit values from memory and inserts them into
+ * the specified lane of each of the four input vectors.
+ *
+ * Memory layout: [val0, val1, val2, val3] -> vec.val[0][lane], vec.val[1][lane], vec.val[2][lane], vec.val[3][lane]
+ *
+ * @param ptr Pointer to memory location to load from (4 consecutive uint16 values)
+ * @param vec Input tuple of four vectors (other lanes are preserved)
+ * @param lane Lane index (0-7) to insert the loaded values
+ * @return New tuple with the specified lanes updated
+ */
+inline uint16x8x4_t vld4q_lane_u16(const uint16_t* ptr, const uint16x8x4_t& vec, const int lane) {
+    uint16x8x4_t result;
+
+    // Copy all lanes from input vectors
+    std::array<Term, 8> lanes0, lanes1, lanes2, lanes3;
+    for (int i = 0; i < 8; i++) {
+        lanes0[i] = vec.val[0].getLane(i);
+        lanes1[i] = vec.val[1].getLane(i);
+        lanes2[i] = vec.val[2].getLane(i);
+        lanes3[i] = vec.val[3].getLane(i);
+    }
+
+    // Load 4 values and insert into the specified lane of each vector
+    lanes0[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[0]));
+    lanes1[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[1]));
+    lanes2[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[2]));
+    lanes3[lane] = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(ptr[3]));
+
+    result.val[0] = uint16x8_t(g_symbolic_tm, lanes0);
+    result.val[1] = uint16x8_t(g_symbolic_tm, lanes1);
+    result.val[2] = uint16x8_t(g_symbolic_tm, lanes2);
+    result.val[3] = uint16x8_t(g_symbolic_tm, lanes3);
+    return result;
+}
+
+// ============================================================================
+// Table Lookup Operations
+// ============================================================================
+
+/**
+ * vtbl1_u8: Table lookup using single 8-byte table
+ *
+ * For each element in idx, use it as an index into the 8-byte table t.
+ * If the index is >= 8 (out of range), the result for that lane is 0.
+ *
+ * Semantics:
+ *   result[i] = (idx[i] < 8) ? t[idx[i]] : 0
+ *
+ * @param t Table vector (8 bytes)
+ * @param idx Index vector (8 bytes, each element is an index into t)
+ * @return Result vector with looked-up values
+ */
+inline uint8x8_t vtbl1_u8(const uint8x8_t& t, const uint8x8_t& idx) {
+    std::array<Term, 8> result_lanes;
+    Term zero = g_symbolic_tm->mkBitVector(8, 0);
+    Term eight = g_symbolic_tm->mkBitVector(8, 8);
+
+    for (int i = 0; i < 8; i++) {
+        Term index = idx.getLane(i);
+
+        // Check if index is out of range (>= 8)
+        Term out_of_range = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGE, {index, eight});
+
+        // Build nested ITE for table lookup
+        // Start with out-of-range default (0), then check each valid index
+        Term lookup_result = zero;
+        for (int j = 7; j >= 0; j--) {
+            Term j_const = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(j));
+            Term is_j = g_symbolic_tm->mkTerm(Kind::EQUAL, {index, j_const});
+            lookup_result = g_symbolic_tm->mkTerm(Kind::ITE, {is_j, t.getLane(j), lookup_result});
+        }
+
+        // Final result: 0 if out of range, otherwise lookup result
+        result_lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {out_of_range, zero, lookup_result});
+    }
+
+    return uint8x8_t(g_symbolic_tm, result_lanes);
+}
+
+// ============================================================================
+// uint8 Arithmetic Operations
+// ============================================================================
+
+/**
+ * vsubq_u8: Subtract two uint8x16 vectors element-wise
+ * result[i] = a[i] - b[i] (wrapping)
+ */
+inline uint8x16_t vsubq_u8(const uint8x16_t& a, const uint8x16_t& b) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SUB, {a.getLane(i), b.getLane(i)});
+    }
+    return uint8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmovq_n_u8: Move scalar to all lanes (uint8x16) - alias for vdupq_n_u8
+ */
+inline uint8x16_t vmovq_n_u8(uint8_t value) {
+    return vdupq_n_u8(value);
+}
+
+// ============================================================================
+// Multi-Vector Load Operations (uint8)
+// ============================================================================
+
+/**
+ * vld1q_u8_x4: Load 4 consecutive uint8x16_t vectors from memory
+ *
+ * Loads 64 consecutive bytes (4 * 16 bytes) from memory into 4 vectors.
+ * Memory layout: [v0[0..15], v1[0..15], v2[0..15], v3[0..15]]
+ *
+ * @param ptr Pointer to memory location to load from (64 consecutive bytes)
+ * @return Tuple of 4 uint8x16_t vectors
+ */
+inline uint8x16x4_t vld1q_u8_x4(const uint8_t* ptr) {
+    uint8x16x4_t result;
+
+    // Load 4 consecutive 16-byte vectors
+    for (int v = 0; v < 4; v++) {
+        std::array<Term, 16> lanes;
+        uintptr_t vec_addr = reinterpret_cast<uintptr_t>(ptr + v * 16);
+
+        // Check if we have symbolic values at this address
+        auto it = g_neon_memory_u8x16.find(vec_addr);
+        if (it != g_neon_memory_u8x16.end() && !it->second.empty()) {
+            result.val[v] = it->second.back();
+        } else {
+            // Read concrete values from memory
+            for (int i = 0; i < 16; i++) {
+                lanes[i] = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(ptr[v * 16 + i]));
+            }
+            result.val[v] = uint8x16_t(g_symbolic_tm, lanes);
+        }
+    }
+
+    return result;
+}
+
+/**
+ * vtbl2_u8: Table lookup using two 8-byte tables (16 bytes total)
+ *
+ * For each element in idx, use it as an index into the 16-byte table
+ * formed by concatenating t.val[0] and t.val[1].
+ * If the index is >= 16 (out of range), the result for that lane is 0.
+ *
+ * Semantics:
+ *   table[0..7]   = t.val[0][0..7]
+ *   table[8..15]  = t.val[1][0..7]
+ *   result[i] = (idx[i] < 16) ? table[idx[i]] : 0
+ *
+ * @param t Table tuple (two uint8x8_t vectors, 16 bytes total)
+ * @param idx Index vector (8 bytes, each element is an index into the table)
+ * @return Result vector with looked-up values
+ */
+inline uint8x8_t vtbl2_u8(const uint8x8x2_t& t, const uint8x8_t& idx) {
+    std::array<Term, 8> result_lanes;
+    Term zero = g_symbolic_tm->mkBitVector(8, 0);
+    Term sixteen = g_symbolic_tm->mkBitVector(8, 16);
+
+    for (int i = 0; i < 8; i++) {
+        Term index = idx.getLane(i);
+
+        // Check if index is out of range (>= 16)
+        Term out_of_range = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGE, {index, sixteen});
+
+        // Build nested ITE for table lookup across both vectors
+        // Indices 0-7 come from t.val[0], indices 8-15 come from t.val[1]
+        Term lookup_result = zero;
+
+        // Check indices 15 down to 8 (from t.val[1])
+        for (int j = 7; j >= 0; j--) {
+            Term j_const = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(j + 8));
+            Term is_j = g_symbolic_tm->mkTerm(Kind::EQUAL, {index, j_const});
+            lookup_result = g_symbolic_tm->mkTerm(Kind::ITE, {is_j, t.val[1].getLane(j), lookup_result});
+        }
+
+        // Check indices 7 down to 0 (from t.val[0])
+        for (int j = 7; j >= 0; j--) {
+            Term j_const = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(j));
+            Term is_j = g_symbolic_tm->mkTerm(Kind::EQUAL, {index, j_const});
+            lookup_result = g_symbolic_tm->mkTerm(Kind::ITE, {is_j, t.val[0].getLane(j), lookup_result});
+        }
+
+        // Final result: 0 if out of range, otherwise lookup result
+        result_lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {out_of_range, zero, lookup_result});
+    }
+
+    return uint8x8_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vqtbl4q_u8: Table lookup using four 16-byte tables (64 bytes total) - ARM64
+ *
+ * For each element in idx, use it as an index into the 64-byte table
+ * formed by concatenating t.val[0], t.val[1], t.val[2], t.val[3].
+ * If the index is >= 64 (out of range), the result for that lane is 0.
+ *
+ * Semantics:
+ *   table[0..15]  = t.val[0][0..15]
+ *   table[16..31] = t.val[1][0..15]
+ *   table[32..47] = t.val[2][0..15]
+ *   table[48..63] = t.val[3][0..15]
+ *   result[i] = (idx[i] < 64) ? table[idx[i]] : 0
+ *
+ * @param t Table tuple (four uint8x16_t vectors, 64 bytes total)
+ * @param idx Index vector (16 bytes, each element is an index into the table)
+ * @return Result vector with looked-up values
+ */
+inline uint8x16_t vqtbl4q_u8(const uint8x16x4_t& t, const uint8x16_t& idx) {
+    std::array<Term, 16> result_lanes;
+    Term zero = g_symbolic_tm->mkBitVector(8, 0);
+    Term sixty_four = g_symbolic_tm->mkBitVector(8, 64);
+
+    for (int i = 0; i < 16; i++) {
+        Term index = idx.getLane(i);
+
+        // Check if index is out of range (>= 64)
+        Term out_of_range = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGE, {index, sixty_four});
+
+        // Build nested ITE for table lookup across all 4 vectors (64 entries)
+        Term lookup_result = zero;
+
+        // Check indices from all 4 vectors (63 down to 0)
+        for (int v = 3; v >= 0; v--) {
+            for (int j = 15; j >= 0; j--) {
+                int table_idx = v * 16 + j;
+                Term idx_const = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(table_idx));
+                Term is_match = g_symbolic_tm->mkTerm(Kind::EQUAL, {index, idx_const});
+                lookup_result = g_symbolic_tm->mkTerm(Kind::ITE, {is_match, t.val[v].getLane(j), lookup_result});
+            }
+        }
+
+        // Final result: 0 if out of range, otherwise lookup result
+        result_lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {out_of_range, zero, lookup_result});
+    }
+
+    return uint8x16_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vqtbx4q_u8: Table lookup with extension using four 16-byte tables (64 bytes total) - ARM64
+ *
+ * For each element in idx, use it as an index into the 64-byte table
+ * formed by concatenating t.val[0], t.val[1], t.val[2], t.val[3].
+ * If the index is >= 64 (out of range), the result lane keeps the original value from 'a'.
+ *
+ * Semantics:
+ *   table[0..15]  = t.val[0][0..15]
+ *   table[16..31] = t.val[1][0..15]
+ *   table[32..47] = t.val[2][0..15]
+ *   table[48..63] = t.val[3][0..15]
+ *   result[i] = (idx[i] < 64) ? table[idx[i]] : a[i]
+ *
+ * @param a Default vector (values used when index is out of range)
+ * @param t Table tuple (four uint8x16_t vectors, 64 bytes total)
+ * @param idx Index vector (16 bytes, each element is an index into the table)
+ * @return Result vector with looked-up values, or original values for out-of-range indices
+ */
+inline uint8x16_t vqtbx4q_u8(const uint8x16_t& a, const uint8x16x4_t& t, const uint8x16_t& idx) {
+    std::array<Term, 16> result_lanes;
+    Term sixty_four = g_symbolic_tm->mkBitVector(8, 64);
+
+    for (int i = 0; i < 16; i++) {
+        Term index = idx.getLane(i);
+        Term default_val = a.getLane(i);
+
+        // Check if index is out of range (>= 64)
+        Term out_of_range = g_symbolic_tm->mkTerm(Kind::BITVECTOR_UGE, {index, sixty_four});
+
+        // Build nested ITE for table lookup across all 4 vectors (64 entries)
+        // Start with default value (used when out of range or no match)
+        Term lookup_result = default_val;
+
+        // Check indices from all 4 vectors (63 down to 0)
+        for (int v = 3; v >= 0; v--) {
+            for (int j = 15; j >= 0; j--) {
+                int table_idx = v * 16 + j;
+                Term idx_const = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(table_idx));
+                Term is_match = g_symbolic_tm->mkTerm(Kind::EQUAL, {index, idx_const});
+                lookup_result = g_symbolic_tm->mkTerm(Kind::ITE, {is_match, t.val[v].getLane(j), lookup_result});
+            }
+        }
+
+        // Final result: default value if out of range, otherwise lookup result
+        result_lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {out_of_range, default_val, lookup_result});
+    }
+
+    return uint8x16_t(g_symbolic_tm, result_lanes);
 }
 
 #endif

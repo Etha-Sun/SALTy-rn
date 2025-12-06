@@ -30,7 +30,9 @@ namespace SymbolicRISCVHelpers {
         g_riscv_memory_u8mf4.clear();
         g_riscv_memory_u32m1.clear();
         g_riscv_memory_u32m4.clear();
+        g_riscv_memory_u32m8.clear();
         g_riscv_memory_u8m8.clear();
+        g_riscv_memory_u16m1.clear();
     }
     
     inline const std::vector<vint8m1_t>* getStoredResults8(const int8_t* ptr) {
@@ -106,6 +108,11 @@ namespace SymbolicRISCVHelpers {
             g_riscv_memory_u32m1[chunk_addr].push_back(vuint32m1_t(g_symbolic_tm, chunk));
             g_riscv_memory_u32m4[chunk_addr].push_back(vuint32m4_t(g_symbolic_tm, chunk));
         }
+    }
+
+    inline void populateMemoryU16(const uint16_t* ptr, const std::vector<Term>& symbolic_values) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        g_riscv_memory_u16m1[addr].push_back(vuint16m1_t(g_symbolic_tm, symbolic_values));
     }
 
     /**
@@ -228,12 +235,75 @@ namespace SymbolicRISCVHelpers {
     /**
      * Collect all 32-bit unsigned integer elements from RISC-V memory
      * Handles vuint32m1_t and vuint32m4_t vector types
+     * If batch is 0, uses old behavior (single address lookup)
+     * If batch > 0, scans through consecutive addresses
      */
-    inline std::vector<Term> collectResultsU32(const uint32_t* ptr) {
+    inline std::vector<Term> collectResultsU32(const uint32_t* ptr, size_t batch = 0) {
         std::vector<Term> elements;
-        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        uintptr_t base_addr = reinterpret_cast<uintptr_t>(ptr);
 
-        // Try g_riscv_memory_u32m4 first (for LMUL=4 operations like qu8-rdsum)
+        // If batch is specified, scan through consecutive addresses
+        if (batch > 0) {
+            elements.reserve(batch);
+            for (size_t i = 0; i < batch;) {
+                uintptr_t current_addr = base_addr + i * sizeof(uint32_t);
+
+                // Try g_riscv_memory_u32m8 first (largest LMUL)
+                auto it_m8 = g_riscv_memory_u32m8.find(current_addr);
+                if (it_m8 != g_riscv_memory_u32m8.end() && !it_m8->second.empty()) {
+                    const vuint32m8_t& vec = it_m8->second.back();
+                    size_t vec_len = vec.getVL();
+                    for (size_t elem = 0; elem < vec_len && i + elem < batch; elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                    i += vec_len;
+                    continue;
+                }
+
+                // Try g_riscv_memory_u32m4
+                auto it_m4 = g_riscv_memory_u32m4.find(current_addr);
+                if (it_m4 != g_riscv_memory_u32m4.end() && !it_m4->second.empty()) {
+                    const vuint32m4_t& vec = it_m4->second.back();
+                    size_t vec_len = vec.getVL();
+                    for (size_t elem = 0; elem < vec_len && i + elem < batch; elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                    i += vec_len;
+                    continue;
+                }
+
+                // Try g_riscv_memory_u32m1
+                auto it_m1 = g_riscv_memory_u32m1.find(current_addr);
+                if (it_m1 != g_riscv_memory_u32m1.end() && !it_m1->second.empty()) {
+                    const vuint32m1_t& vec = it_m1->second.back();
+                    size_t vec_len = vec.getVL();
+                    for (size_t elem = 0; elem < vec_len && i + elem < batch; elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                    i += vec_len;
+                    continue;
+                }
+
+                // No data found at this address
+                break;
+            }
+            return elements;
+        }
+
+        // Old behavior: single address lookup
+        uintptr_t addr = base_addr;
+
+        // Try g_riscv_memory_u32m8 first (for LMUL=8 operations like xx-fill)
+        auto it_m8 = g_riscv_memory_u32m8.find(addr);
+        if (it_m8 != g_riscv_memory_u32m8.end() && !it_m8->second.empty()) {
+            const vuint32m8_t& vec = it_m8->second.back();
+            for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                elements.push_back(vec.getElement(elem));
+            }
+            return elements;
+        }
+
+        // Try g_riscv_memory_u32m4 (for LMUL=4 operations like qu8-rdsum)
         auto it_m4 = g_riscv_memory_u32m4.find(addr);
         if (it_m4 != g_riscv_memory_u32m4.end() && !it_m4->second.empty()) {
             // Only collect from the last stored vector (most recent result)
@@ -262,48 +332,142 @@ namespace SymbolicRISCVHelpers {
     /**
      * Collect all unsigned 8-bit elements from RISC-V memory
      * Handles vuint8m1_t, vuint8mf2_t, vuint8mf4_t, and vuint8m8_t vector types
+     * Scans through addresses to handle partial stores at different offsets
      */
-    inline std::vector<Term> collectResultsU8(const uint8_t* ptr) {
+    inline std::vector<Term> collectResultsU8(const uint8_t* ptr, size_t batch = 0) {
+        std::vector<Term> elements;
+
+        // If batch is 0, use the old behavior (single address lookup)
+        if (batch == 0) {
+            uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+            // Try vuint8m8_t first (LMUL=8) - largest LMUL
+            auto it_m8 = g_riscv_memory_u8m8.find(addr);
+            if (it_m8 != g_riscv_memory_u8m8.end() && !it_m8->second.empty()) {
+                for (const vuint8m8_t& vec : it_m8->second) {
+                    for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                }
+                return elements;
+            }
+
+            // Try vuint8m1_t (LMUL=1)
+            auto it_m1 = g_riscv_memory_u8m1.find(addr);
+            if (it_m1 != g_riscv_memory_u8m1.end() && !it_m1->second.empty()) {
+                for (const vuint8m1_t& vec : it_m1->second) {
+                    for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                }
+                return elements;
+            }
+
+            // Try vuint8mf2_t (LMUL=1/2)
+            auto it_mf2 = g_riscv_memory_u8mf2.find(addr);
+            if (it_mf2 != g_riscv_memory_u8mf2.end() && !it_mf2->second.empty()) {
+                for (const vuint8mf2_t& vec : it_mf2->second) {
+                    for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                }
+                return elements;
+            }
+
+            // Try vuint8mf4_t (LMUL=1/4)
+            auto it_mf4 = g_riscv_memory_u8mf4.find(addr);
+            if (it_mf4 != g_riscv_memory_u8mf4.end() && !it_mf4->second.empty()) {
+                for (const vuint8mf4_t& vec : it_mf4->second) {
+                    for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                }
+                return elements;
+            }
+
+            return elements;
+        }
+
+        // Batch mode: scan through addresses like NEON does
+        elements.reserve(batch);
+
+        for (size_t i = 0; i < batch;) {
+            uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+            bool found = false;
+
+            // Try vuint8m8_t
+            auto it_m8 = g_riscv_memory_u8m8.find(current_addr);
+            if (it_m8 != g_riscv_memory_u8m8.end() && !it_m8->second.empty()) {
+                const vuint8m8_t& vec = it_m8->second.back();
+                size_t len = std::min(vec.getVL(), batch - i);
+                for (size_t j = 0; j < len; j++) {
+                    elements.push_back(vec.getElement(j));
+                }
+                i += len;
+                found = true;
+                continue;
+            }
+
+            // Try vuint8m1_t
+            auto it_m1 = g_riscv_memory_u8m1.find(current_addr);
+            if (it_m1 != g_riscv_memory_u8m1.end() && !it_m1->second.empty()) {
+                const vuint8m1_t& vec = it_m1->second.back();
+                size_t len = std::min(vec.getVL(), batch - i);
+                for (size_t j = 0; j < len; j++) {
+                    elements.push_back(vec.getElement(j));
+                }
+                i += len;
+                found = true;
+                continue;
+            }
+
+            // Try vuint8mf2_t
+            auto it_mf2 = g_riscv_memory_u8mf2.find(current_addr);
+            if (it_mf2 != g_riscv_memory_u8mf2.end() && !it_mf2->second.empty()) {
+                const vuint8mf2_t& vec = it_mf2->second.back();
+                size_t len = std::min(vec.getVL(), batch - i);
+                for (size_t j = 0; j < len; j++) {
+                    elements.push_back(vec.getElement(j));
+                }
+                i += len;
+                found = true;
+                continue;
+            }
+
+            // Try vuint8mf4_t
+            auto it_mf4 = g_riscv_memory_u8mf4.find(current_addr);
+            if (it_mf4 != g_riscv_memory_u8mf4.end() && !it_mf4->second.empty()) {
+                const vuint8mf4_t& vec = it_mf4->second.back();
+                size_t len = std::min(vec.getVL(), batch - i);
+                for (size_t j = 0; j < len; j++) {
+                    elements.push_back(vec.getElement(j));
+                }
+                i += len;
+                found = true;
+                continue;
+            }
+
+            // No vector found at this address
+            if (!found) {
+                break;
+            }
+        }
+
+        return elements;
+    }
+
+    /**
+     * Collect all unsigned 16-bit elements from RISC-V memory
+     * Handles vuint16m1_t vector type
+     */
+    inline std::vector<Term> collectResultsU16(const uint16_t* ptr) {
         std::vector<Term> elements;
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-        // Try vuint8m8_t first (LMUL=8) - largest LMUL
-        auto it_m8 = g_riscv_memory_u8m8.find(addr);
-        if (it_m8 != g_riscv_memory_u8m8.end() && !it_m8->second.empty()) {
-            for (const vuint8m8_t& vec : it_m8->second) {
-                for (size_t elem = 0; elem < vec.getVL(); elem++) {
-                    elements.push_back(vec.getElement(elem));
-                }
-            }
-            return elements;
-        }
-
-        // Try vuint8m1_t (LMUL=1)
-        auto it_m1 = g_riscv_memory_u8m1.find(addr);
-        if (it_m1 != g_riscv_memory_u8m1.end() && !it_m1->second.empty()) {
-            for (const vuint8m1_t& vec : it_m1->second) {
-                for (size_t elem = 0; elem < vec.getVL(); elem++) {
-                    elements.push_back(vec.getElement(elem));
-                }
-            }
-            return elements;
-        }
-
-        // Try vuint8mf2_t (LMUL=1/2)
-        auto it_mf2 = g_riscv_memory_u8mf2.find(addr);
-        if (it_mf2 != g_riscv_memory_u8mf2.end() && !it_mf2->second.empty()) {
-            for (const vuint8mf2_t& vec : it_mf2->second) {
-                for (size_t elem = 0; elem < vec.getVL(); elem++) {
-                    elements.push_back(vec.getElement(elem));
-                }
-            }
-            return elements;
-        }
-
-        // Try vuint8mf4_t (LMUL=1/4)
-        auto it_mf4 = g_riscv_memory_u8mf4.find(addr);
-        if (it_mf4 != g_riscv_memory_u8mf4.end() && !it_mf4->second.empty()) {
-            for (const vuint8mf4_t& vec : it_mf4->second) {
+        // Try vuint16m1_t (LMUL=1)
+        auto it_m1 = g_riscv_memory_u16m1.find(addr);
+        if (it_m1 != g_riscv_memory_u16m1.end() && !it_m1->second.empty()) {
+            for (const vuint16m1_t& vec : it_m1->second) {
                 for (size_t elem = 0; elem < vec.getVL(); elem++) {
                     elements.push_back(vec.getElement(elem));
                 }
