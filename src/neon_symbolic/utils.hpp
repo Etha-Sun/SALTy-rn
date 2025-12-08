@@ -7,6 +7,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <cstring>
 
 
 namespace SymbolicNEONHelpers {
@@ -153,7 +154,8 @@ namespace SymbolicNEONHelpers {
 
     /**
      * Collect all 8-bit signed integer elements from NEON memory
-     * Handles both int8x16_t and int8x8_t vector types
+     * Handles int8x16_t, int8x8_t, and uint8x8_t vector types
+     * (uint8x8_t is used by vst1_lane_u32/u16 for partial stores)
      */
     inline std::vector<Term> collectResults8(const int8_t* ptr, size_t batch) {
         std::vector<Term> elements;
@@ -161,6 +163,7 @@ namespace SymbolicNEONHelpers {
 
         for (size_t i = 0; i < batch;) {
             uintptr_t current_addr = reinterpret_cast<uintptr_t>(ptr + i);
+            bool found = false;
 
             // Try 16-byte map (int8x16)
             if (g_neon_memory_i8x16.count(current_addr) &&
@@ -174,13 +177,13 @@ namespace SymbolicNEONHelpers {
                 continue;
             }
 
-            // Try 8-byte map (int8x8)
+            // Try 8-byte signed map (int8x8)
             if (g_neon_memory_i8x8.count(current_addr) &&
                 !g_neon_memory_i8x8[current_addr].empty()) {
                 const int8x8_t &neon_vec = g_neon_memory_i8x8[current_addr].back();
                 size_t valid_len = 8;
-                
-                // Check for overlap with next stored vector
+
+                // Check for overlap with next stored vector in same map
                 auto it = g_neon_memory_i8x8.upper_bound(current_addr);
                 if (it != g_neon_memory_i8x8.end()) {
                     uintptr_t next_addr = it->first;
@@ -188,17 +191,58 @@ namespace SymbolicNEONHelpers {
                         valid_len = next_addr - current_addr;
                     }
                 }
-                
+                // Also check for overlap with unsigned map
+                auto it_u = g_neon_memory_u8x8.upper_bound(current_addr);
+                if (it_u != g_neon_memory_u8x8.end()) {
+                    uintptr_t next_addr = it_u->first;
+                    if (next_addr < current_addr + valid_len) {
+                        valid_len = next_addr - current_addr;
+                    }
+                }
+
                 size_t len = std::min(valid_len, batch - i);
                 for (size_t lane = 0; lane < len; lane++) {
                     elements.push_back(neon_vec.getLane(lane));
                 }
                 i += len;
-                continue;
+                found = true;
             }
 
-            // No vector found at this address
-            break;
+            // Try 8-byte unsigned map (uint8x8) - used by vst1_lane_u32/u16 for partial stores
+            if (!found && g_neon_memory_u8x8.count(current_addr) &&
+                !g_neon_memory_u8x8[current_addr].empty()) {
+                const uint8x8_t &neon_vec = g_neon_memory_u8x8[current_addr].back();
+                size_t valid_len = 8;
+
+                // Check for overlap with next stored vector in same map
+                auto it = g_neon_memory_u8x8.upper_bound(current_addr);
+                if (it != g_neon_memory_u8x8.end()) {
+                    uintptr_t next_addr = it->first;
+                    if (next_addr < current_addr + 8) {
+                        valid_len = next_addr - current_addr;
+                    }
+                }
+                // Also check for overlap with signed map
+                auto it_s = g_neon_memory_i8x8.upper_bound(current_addr);
+                if (it_s != g_neon_memory_i8x8.end()) {
+                    uintptr_t next_addr = it_s->first;
+                    if (next_addr < current_addr + valid_len) {
+                        valid_len = next_addr - current_addr;
+                    }
+                }
+
+                size_t len = std::min(valid_len, batch - i);
+                for (size_t lane = 0; lane < len; lane++) {
+                    elements.push_back(neon_vec.getLane(lane));
+                }
+                i += len;
+                found = true;
+            }
+
+            if (!found) {
+                // No vector found at this address
+                break;
+            }
         }
 
         return elements;
@@ -391,6 +435,38 @@ namespace SymbolicNEONHelpers {
     }
 
     /**
+     * Populate float32 memory for NEON symbolic execution
+     * Takes concrete float values and creates symbolic FP terms for them
+     */
+    inline void populateMemoryF32(const float* ptr, const std::vector<float>& concrete_values) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+        const size_t lanes_per_vec = 4;
+
+        for (size_t i = 0; i < concrete_values.size(); i += lanes_per_vec) {
+            std::array<Term, 4> lanes;
+            for (size_t j = 0; j < lanes_per_vec && (i + j) < concrete_values.size(); j++) {
+                // Create concrete float32 term from float value
+                uint32_t bits;
+                std::memcpy(&bits, &concrete_values[i + j], sizeof(float));
+                Term bv = g_symbolic_tm->mkBitVector(32, bits);
+                Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+                lanes[j] = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+            }
+            // Pad remaining lanes with last valid element
+            size_t valid_count = std::min(lanes_per_vec, concrete_values.size() - i);
+            for (size_t j = valid_count; j < lanes_per_vec; j++) {
+                uint32_t bits;
+                std::memcpy(&bits, &concrete_values.back(), sizeof(float));
+                Term bv = g_symbolic_tm->mkBitVector(32, bits);
+                Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+                lanes[j] = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+            }
+
+            g_neon_memory_f32x4[addr + i * sizeof(float)].push_back(float32x4_t(g_symbolic_tm, lanes));
+        }
+    }
+
+    /**
      * Populate unsigned 32-bit memory for NEON symbolic execution
      */
     inline void populateMemoryU32(const uint32_t* ptr, const std::vector<Term>& symbolic_values) {
@@ -504,6 +580,10 @@ namespace SymbolicNEONHelpers {
                         bytes_to_collect = offset;
                         break;
                     }
+                    if (g_neon_scalar_memory.count(next_addr)) {
+                        bytes_to_collect = offset;
+                        break;
+                    }
                 }
 
                 size_t len = std::min(bytes_to_collect, batch - i);
@@ -511,6 +591,24 @@ namespace SymbolicNEONHelpers {
                     elements.push_back(neon_vec.getLane(lane));
                 }
                 i += len;
+                continue;
+            }
+
+            // Try scalar memory (for vst1q_lane_u32 which stores 32-bit values)
+            if (g_neon_scalar_memory.count(current_addr)) {
+                Term scalar_term = g_neon_scalar_memory[current_addr];
+                // Check bit-width of the term to determine how many bytes
+                size_t bit_width = scalar_term.getSort().getBitVectorSize();
+                size_t byte_count = bit_width / 8;
+                
+                // Extract bytes (little-endian)
+                for (size_t b = 0; b < byte_count && (i + b) < batch; b++) {
+                    Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT,
+                        {static_cast<uint32_t>(b * 8 + 7), static_cast<uint32_t>(b * 8)});
+                    Term byte_term = g_symbolic_tm->mkTerm(extract_op, {scalar_term});
+                    elements.push_back(byte_term);
+                }
+                i += byte_count;
                 continue;
             }
 

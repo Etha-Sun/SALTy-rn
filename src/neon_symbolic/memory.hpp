@@ -202,6 +202,13 @@ inline int8x8_t vld1_s8(const int8_t *ptr) {
 }
 
 /**
+ * vld1_s8: Overload for const void* (common in XNNPACK code)
+ */
+inline int8x8_t vld1_s8(const void *ptr) {
+  return vld1_s8(reinterpret_cast<const int8_t*>(ptr));
+}
+
+/**
  * vld1q_u8: Load vector of 8-bit unsigned integers (128-bit)
  */
 inline uint8x16_t vld1q_u8(const uint8_t *ptr) {
@@ -247,6 +254,13 @@ inline uint8x16_t vld1q_u8(const uint8_t *ptr) {
 
   // Otherwise, create fresh symbolic values
   return uint8x16_t(g_symbolic_tm);
+}
+
+/**
+ * vld1q_u8: Overload for void* (common in XNNPACK code)
+ */
+inline uint8x16_t vld1q_u8(const void *ptr) {
+  return vld1q_u8(reinterpret_cast<const uint8_t*>(ptr));
 }
 
 /**
@@ -319,6 +333,62 @@ inline uint8x8_t vld1_u8(const uint8_t *ptr) {
  */
 inline uint8x8_t vld1_u8(const void *ptr) {
   return vld1_u8(reinterpret_cast<const uint8_t*>(ptr));
+}
+
+/**
+ * xnn_load_tail_safe_f32: Load up to 4 floats safely (XNNPACK helper)
+ * Loads `num_elements` floats from memory, padding remaining lanes with zeros.
+ * Used for tail processing when the number of elements is less than a full vector.
+ */
+inline float32x4_t xnn_load_tail_safe_f32(const float *ptr, size_t num_elements) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  // Check if this address was previously stored to
+  auto it = g_neon_memory_f32x4.find(addr);
+  if (it != g_neon_memory_f32x4.end() && !it->second.empty()) {
+    // Return the stored value (even if partial, the caller handles masking)
+    return it->second.back();
+  }
+
+  // Create fresh symbolic values for the specified number of elements
+  // Remaining lanes are set to floating-point zero
+  std::array<Term, 4> lanes;
+  Sort fp32 = g_symbolic_tm->mkFloatingPointSort(8, 24);
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(8, 24);
+  static int tail_counter = 0;
+  for (size_t i = 0; i < 4; i++) {
+    if (i < num_elements) {
+      lanes[i] = g_symbolic_tm->mkConst(fp32, "tail_f32_" + std::to_string(tail_counter++) + "_" + std::to_string(i));
+    } else {
+      lanes[i] = zero;
+    }
+  }
+  return float32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vld1q_f32: Load vector of 32-bit floating-point values (128-bit, 4 elements)
+ * Returns previously stored value if available, otherwise creates fresh
+ * symbolic constants
+ */
+inline float32x4_t vld1q_f32(const float *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  // Check if this address was previously stored to
+  auto it = g_neon_memory_f32x4.find(addr);
+  if (it != g_neon_memory_f32x4.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Otherwise, create fresh symbolic values
+  return float32x4_t(g_symbolic_tm);
+}
+
+/**
+ * vld1q_f32: Overload for const void* (common in XNNPACK code)
+ */
+inline float32x4_t vld1q_f32(const void *ptr) {
+  return vld1q_f32(reinterpret_cast<const float*>(ptr));
 }
 
 /**

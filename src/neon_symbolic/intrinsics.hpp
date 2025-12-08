@@ -1011,6 +1011,24 @@ inline uint16x8_t vcltq_s16(const int16x8_t& a, const int16x8_t& b) {
     return uint16x8_t(g_symbolic_tm, lanes);
 }
 
+/**
+ * vcgtq_f32: Compare greater than (float32x4)
+ * result[i] = (a[i] > b[i]) ? 0xFFFFFFFF : 0x00000000
+ * Returns uint32x4_t mask where each lane is all 1s if a > b, else all 0s
+ */
+inline uint32x4_t vcgtq_f32(const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes;
+    Term all_ones = g_symbolic_tm->mkBitVector(32, 0xFFFFFFFF);
+    Term all_zeros = g_symbolic_tm->mkBitVector(32, 0x00000000);
+
+    for (int i = 0; i < 4; i++) {
+        // Floating-point greater than comparison
+        Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_GT, {a.getLane(i), b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, all_ones, all_zeros});
+    }
+    return uint32x4_t(g_symbolic_tm, lanes);
+}
+
 // ============================================================================
 // Bitwise Select Operations
 // ============================================================================
@@ -1022,7 +1040,7 @@ inline uint16x8_t vcltq_s16(const int16x8_t& a, const int16x8_t& b) {
  */
 inline int16x8_t vbslq_s16(const uint16x8_t& mask, const int16x8_t& a, const int16x8_t& b) {
     std::array<Term, 8> lanes;
-    
+
     for (int i = 0; i < 8; i++) {
         Term m = mask.getLane(i);
         Term and_a = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {m, a.getLane(i)});
@@ -1030,8 +1048,70 @@ inline int16x8_t vbslq_s16(const uint16x8_t& mask, const int16x8_t& a, const int
         Term and_b = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {not_m, b.getLane(i)});
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {and_a, and_b});
     }
-    
+
     return int16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vbslq_u32: Bitwise select (uint32x4)
+ * For each bit: if mask bit is 1, select from a; else select from b
+ * result[i] = (mask[i] & a[i]) | (~mask[i] & b[i])
+ */
+inline uint32x4_t vbslq_u32(const uint32x4_t& mask, const uint32x4_t& a, const uint32x4_t& b) {
+    std::array<Term, 4> lanes;
+
+    for (int i = 0; i < 4; i++) {
+        Term m = mask.getLane(i);
+        Term and_a = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {m, a.getLane(i)});
+        Term not_m = g_symbolic_tm->mkTerm(Kind::BITVECTOR_NOT, {m});
+        Term and_b = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {not_m, b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {and_a, and_b});
+    }
+
+    return uint32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vbslq_f32: Bitwise select (float32x4)
+ * For each bit: if mask bit is 1, select from a; else select from b
+ * This operates on the IEEE 754 bit representation of the floats.
+ * result[i] = (mask[i] & a[i]) | (~mask[i] & b[i])
+ */
+inline float32x4_t vbslq_f32(const uint32x4_t& mask, const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes;
+    Sort bv32 = g_symbolic_tm->mkBitVectorSort(32);
+    Sort fp32 = g_symbolic_tm->mkFloatingPointSort(8, 24);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+
+    static int bsl_counter = 0;
+
+    for (int i = 0; i < 4; i++) {
+        Term m = mask.getLane(i);
+
+        // Convert float a to bitvector
+        Term bv_a = g_symbolic_tm->mkConst(bv32, "bsl_a_bv_" + std::to_string(bsl_counter) + "_" + std::to_string(i));
+        Term fp_from_bv_a = g_symbolic_tm->mkTerm(to_fp_op, {bv_a});
+        Term eq_a = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv_a, a.getLane(i)});
+        g_symbolic_solver->assertFormula(eq_a);
+
+        // Convert float b to bitvector
+        Term bv_b = g_symbolic_tm->mkConst(bv32, "bsl_b_bv_" + std::to_string(bsl_counter) + "_" + std::to_string(i));
+        Term fp_from_bv_b = g_symbolic_tm->mkTerm(to_fp_op, {bv_b});
+        Term eq_b = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv_b, b.getLane(i)});
+        g_symbolic_solver->assertFormula(eq_b);
+
+        // Perform bitwise select on the bitvector representations
+        Term and_a = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {m, bv_a});
+        Term not_m = g_symbolic_tm->mkTerm(Kind::BITVECTOR_NOT, {m});
+        Term and_b = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {not_m, bv_b});
+        Term result_bv = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {and_a, and_b});
+
+        // Convert result back to floating-point
+        lanes[i] = g_symbolic_tm->mkTerm(to_fp_op, {result_bv});
+    }
+    bsl_counter++;
+
+    return float32x4_t(g_symbolic_tm, lanes);
 }
 
 // ============================================================================
@@ -1473,6 +1553,34 @@ inline int32x4_t vreinterpretq_s32_f32(const float32x4_t& vec) {
     return int32x4_t(tm, lanes);
 }
 
+/**
+ * vreinterpretq_u32_f32: Reinterpret float32x4_t as uint32x4_t
+ * Converts floating-point bit representation to unsigned integer interpretation
+ */
+inline uint32x4_t vreinterpretq_u32_f32(const float32x4_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 4> lanes;
+    Sort bv32 = tm->mkBitVectorSort(32);
+    Op to_fp_op = tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+
+    static int reinterpret_counter = 0;
+
+    for (int i = 0; i < 4; i++) {
+        // Create a fresh bitvector that represents the IEEE bits
+        Term bv_lane = tm->mkConst(bv32, "fp_to_ubv_" + std::to_string(reinterpret_counter++) + "_" + std::to_string(i));
+
+        // Convert this BV back to FP
+        Term fp_from_bv = tm->mkTerm(to_fp_op, {bv_lane});
+
+        // Assert equality: the FP from BV must equal original FP (bit-level equality)
+        Term eq = tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getLane(i)});
+        g_symbolic_solver->assertFormula(eq);
+
+        lanes[i] = bv_lane;
+    }
+    return uint32x4_t(tm, lanes);
+}
+
 // ============================================================================
 // Helper Functions
 // ============================================================================
@@ -1566,6 +1674,37 @@ inline int32x4_t vmlal_s16(const int32x4_t& acc, const int16x4_t& a, const int16
         Term b_ext = g_symbolic_tm->mkTerm(extend_op, {b.getLane(i)});
         // Multiply
         Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+        // Accumulate
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
+    }
+
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmlal_lane_s16: Widening multiply-accumulate with lane selection
+ * Multiplies each element of vector 'a' by a single element (lane) from vector 'b',
+ * then accumulates to the corresponding element in 'acc'.
+ * result[i] = acc[i] + sign_extend(a[i]) * sign_extend(b[lane])
+ *
+ * @param acc  Accumulator vector (int32x4_t)
+ * @param a    First source vector (int16x4_t) - all lanes used
+ * @param b    Second source vector (int16x4_t) - single lane selected
+ * @param lane Lane index (0-3) to select from vector 'b'
+ * @return     Result vector with accumulated products
+ */
+inline int32x4_t vmlal_lane_s16(const int32x4_t& acc, const int16x4_t& a, const int16x4_t& b, const int lane) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+
+    // Get the selected lane from vector b and sign-extend it once
+    Term b_lane_ext = g_symbolic_tm->mkTerm(extend_op, {b.getLane(lane)});
+
+    for (int i = 0; i < 4; i++) {
+        // Sign-extend operand from vector a
+        Term a_ext = g_symbolic_tm->mkTerm(extend_op, {a.getLane(i)});
+        // Multiply with the selected lane from b
+        Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_lane_ext});
         // Accumulate
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
     }
@@ -2287,6 +2426,180 @@ inline uint16x8x4_t vld4q_lane_u16(const uint16_t* ptr, const uint16x8x4_t& vec,
     result.val[1] = uint16x8_t(g_symbolic_tm, lanes1);
     result.val[2] = uint16x8_t(g_symbolic_tm, lanes2);
     result.val[3] = uint16x8_t(g_symbolic_tm, lanes3);
+    return result;
+}
+
+/**
+ * vld2q_lane_u32: Load 2 uint32 values into specific lanes of two vectors
+ *
+ * Loads 2 consecutive 32-bit values from memory and inserts them into
+ * the specified lane of each of the two input vectors.
+ *
+ * Memory layout: [val0, val1] -> vec.val[0][lane], vec.val[1][lane]
+ *
+ * @param ptr Pointer to memory location to load from (2 consecutive uint32 values)
+ * @param vec Input tuple of two vectors (other lanes are preserved)
+ * @param lane Lane index (0-3) to insert the loaded values
+ * @return New tuple with the specified lanes updated
+ */
+inline uint32x4x2_t vld2q_lane_u32(const uint32_t* ptr, const uint32x4x2_t& vec, const int lane) {
+    uint32x4x2_t result;
+
+    // Copy all lanes from input vectors
+    std::array<Term, 4> lanes0, lanes1;
+    for (int i = 0; i < 4; i++) {
+        lanes0[i] = vec.val[0].getLane(i);
+        lanes1[i] = vec.val[1].getLane(i);
+    }
+
+    // Load 2 values from symbolic memory and insert into the specified lane of each vector
+    uintptr_t base_addr = reinterpret_cast<uintptr_t>(ptr);
+
+    // Helper lambda to look up symbolic value from memory
+    auto lookup_symbolic = [&](size_t offset) -> Term {
+        uintptr_t addr = base_addr + offset * sizeof(uint32_t);
+
+        // Search for this address in symbolic memory
+        for (const auto& entry : g_neon_memory_u32x4) {
+            uintptr_t entry_addr = entry.first;
+            if (!entry.second.empty()) {
+                const uint32x4_t& base_vec = entry.second.back();
+                if (addr >= entry_addr && addr < entry_addr + 16) {
+                    size_t offset_elems = (addr - entry_addr) / sizeof(uint32_t);
+                    if (offset_elems < 4) {
+                        return base_vec.getLane(offset_elems);
+                    }
+                }
+            }
+        }
+        return g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(ptr[offset]));
+    };
+
+    lanes0[lane] = lookup_symbolic(0);
+    lanes1[lane] = lookup_symbolic(1);
+
+    result.val[0] = uint32x4_t(g_symbolic_tm, lanes0);
+    result.val[1] = uint32x4_t(g_symbolic_tm, lanes1);
+    return result;
+}
+
+/**
+ * vld3q_lane_u32: Load 3 uint32 values into specific lanes of three vectors
+ *
+ * Loads 3 consecutive 32-bit values from memory and inserts them into
+ * the specified lane of each of the three input vectors.
+ *
+ * Memory layout: [val0, val1, val2] -> vec.val[0][lane], vec.val[1][lane], vec.val[2][lane]
+ *
+ * @param ptr Pointer to memory location to load from (3 consecutive uint32 values)
+ * @param vec Input tuple of three vectors (other lanes are preserved)
+ * @param lane Lane index (0-3) to insert the loaded values
+ * @return New tuple with the specified lanes updated
+ */
+inline uint32x4x3_t vld3q_lane_u32(const uint32_t* ptr, const uint32x4x3_t& vec, const int lane) {
+    uint32x4x3_t result;
+
+    // Copy all lanes from input vectors
+    std::array<Term, 4> lanes0, lanes1, lanes2;
+    for (int i = 0; i < 4; i++) {
+        lanes0[i] = vec.val[0].getLane(i);
+        lanes1[i] = vec.val[1].getLane(i);
+        lanes2[i] = vec.val[2].getLane(i);
+    }
+
+    // Load 3 values from symbolic memory and insert into the specified lane of each vector
+    uintptr_t base_addr = reinterpret_cast<uintptr_t>(ptr);
+
+    // Helper lambda to look up symbolic value from memory
+    auto lookup_symbolic = [&](size_t offset) -> Term {
+        uintptr_t addr = base_addr + offset * sizeof(uint32_t);
+
+        // Search for this address in symbolic memory
+        for (const auto& entry : g_neon_memory_u32x4) {
+            uintptr_t entry_addr = entry.first;
+            if (!entry.second.empty()) {
+                const uint32x4_t& base_vec = entry.second.back();
+                if (addr >= entry_addr && addr < entry_addr + 16) {
+                    size_t offset_elems = (addr - entry_addr) / sizeof(uint32_t);
+                    if (offset_elems < 4) {
+                        return base_vec.getLane(offset_elems);
+                    }
+                }
+            }
+        }
+        return g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(ptr[offset]));
+    };
+
+    lanes0[lane] = lookup_symbolic(0);
+    lanes1[lane] = lookup_symbolic(1);
+    lanes2[lane] = lookup_symbolic(2);
+
+    result.val[0] = uint32x4_t(g_symbolic_tm, lanes0);
+    result.val[1] = uint32x4_t(g_symbolic_tm, lanes1);
+    result.val[2] = uint32x4_t(g_symbolic_tm, lanes2);
+    return result;
+}
+
+/**
+ * vld4q_lane_u32: Load 4 uint32 values into specific lanes of four vectors
+ *
+ * Loads 4 consecutive 32-bit values from memory and inserts them into
+ * the specified lane of each of the four input vectors.
+ *
+ * Memory layout: [val0, val1, val2, val3] -> vec.val[0][lane], vec.val[1][lane], vec.val[2][lane], vec.val[3][lane]
+ *
+ * @param ptr Pointer to memory location to load from (4 consecutive uint32 values)
+ * @param vec Input tuple of four vectors (other lanes are preserved)
+ * @param lane Lane index (0-3) to insert the loaded values
+ * @return New tuple with the specified lanes updated
+ */
+inline uint32x4x4_t vld4q_lane_u32(const uint32_t* ptr, const uint32x4x4_t& vec, const int lane) {
+    uint32x4x4_t result;
+
+    // Copy all lanes from input vectors
+    std::array<Term, 4> lanes0, lanes1, lanes2, lanes3;
+    for (int i = 0; i < 4; i++) {
+        lanes0[i] = vec.val[0].getLane(i);
+        lanes1[i] = vec.val[1].getLane(i);
+        lanes2[i] = vec.val[2].getLane(i);
+        lanes3[i] = vec.val[3].getLane(i);
+    }
+
+    // Load 4 values from symbolic memory and insert into the specified lane of each vector
+    uintptr_t base_addr = reinterpret_cast<uintptr_t>(ptr);
+
+    // Helper lambda to look up symbolic value from memory
+    auto lookup_symbolic = [&](size_t offset) -> Term {
+        uintptr_t addr = base_addr + offset * sizeof(uint32_t);
+
+        // Search for this address in symbolic memory
+        for (const auto& entry : g_neon_memory_u32x4) {
+            uintptr_t entry_addr = entry.first;
+            if (!entry.second.empty()) {
+                const uint32x4_t& base_vec = entry.second.back();
+                // Check if addr falls within this vector (4 elements * 4 bytes = 16 bytes)
+                if (addr >= entry_addr && addr < entry_addr + 16) {
+                    size_t offset_elems = (addr - entry_addr) / sizeof(uint32_t);
+                    if (offset_elems < 4) {
+                        return base_vec.getLane(offset_elems);
+                    }
+                }
+            }
+        }
+
+        // Fall back to concrete value if not in symbolic memory
+        return g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(ptr[offset]));
+    };
+
+    lanes0[lane] = lookup_symbolic(0);
+    lanes1[lane] = lookup_symbolic(1);
+    lanes2[lane] = lookup_symbolic(2);
+    lanes3[lane] = lookup_symbolic(3);
+
+    result.val[0] = uint32x4_t(g_symbolic_tm, lanes0);
+    result.val[1] = uint32x4_t(g_symbolic_tm, lanes1);
+    result.val[2] = uint32x4_t(g_symbolic_tm, lanes2);
+    result.val[3] = uint32x4_t(g_symbolic_tm, lanes3);
     return result;
 }
 

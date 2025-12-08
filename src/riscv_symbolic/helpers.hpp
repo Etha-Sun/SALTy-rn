@@ -6,6 +6,8 @@
 #include "memory.hpp"
 #include <vector>
 #include <type_traits>
+#include <algorithm>
+#include <cstring>
 
 namespace SymbolicRISCVHelpers {
 
@@ -22,6 +24,7 @@ namespace SymbolicRISCVHelpers {
     inline void clearMemory() {
         g_riscv_memory.clear();
         g_riscv_memory_i8.clear();
+        g_riscv_memory_i8mf4.clear();
         g_riscv_memory_i32m4.clear();
         g_riscv_memory_f16m2.clear();
         g_riscv_memory_f32m4.clear();
@@ -84,24 +87,38 @@ namespace SymbolicRISCVHelpers {
     inline void populateMemory32(const int32_t* ptr, const std::vector<Term>& symbolic_values) {
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
 
-        // Store in both memory maps to support both m1 and m4 loads
+        // Store all symbolic values as a single large vector at the base address
         g_riscv_memory[addr].push_back(vint32m1_t(g_symbolic_tm, symbolic_values));
         g_riscv_memory_i32m4[addr].push_back(vint32m4_t(g_symbolic_tm, symbolic_values));
+
+        // Also store at 4-element boundaries for compatibility with smaller loads
+        const size_t elems_per_vec = 4;
+        for (size_t i = elems_per_vec; i < symbolic_values.size(); i += elems_per_vec) {
+            std::vector<Term> chunk;
+            for (size_t j = i; j < symbolic_values.size(); j++) {
+                chunk.push_back(symbolic_values[j]);
+            }
+
+            uintptr_t chunk_addr = addr + i * sizeof(int32_t);
+            g_riscv_memory[chunk_addr].push_back(vint32m1_t(g_symbolic_tm, chunk));
+            g_riscv_memory_i32m4[chunk_addr].push_back(vint32m4_t(g_symbolic_tm, chunk));
+        }
     }
 
     inline void populateMemoryU32(const uint32_t* ptr, const std::vector<Term>& symbolic_values) {
         uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
-        const size_t elems_per_vec = 4;  // vuint32m1_t holds 4 elements
 
-        // Store at strided addresses to support strided loads
-        for (size_t i = 0; i < symbolic_values.size(); i += elems_per_vec) {
+        // Store all symbolic values as a single large vector at the base address
+        // This allows loads of any size to work correctly
+        g_riscv_memory_u32m1[addr].push_back(vuint32m1_t(g_symbolic_tm, symbolic_values));
+        g_riscv_memory_u32m4[addr].push_back(vuint32m4_t(g_symbolic_tm, symbolic_values));
+
+        // Also store at 4-element boundaries for compatibility with smaller loads
+        const size_t elems_per_vec = 4;
+        for (size_t i = elems_per_vec; i < symbolic_values.size(); i += elems_per_vec) {
             std::vector<Term> chunk;
-            for (size_t j = 0; j < elems_per_vec && (i + j) < symbolic_values.size(); j++) {
-                chunk.push_back(symbolic_values[i + j]);
-            }
-            // Pad remaining elements with last valid element
-            while (chunk.size() < elems_per_vec) {
-                chunk.push_back(symbolic_values.back());
+            for (size_t j = i; j < symbolic_values.size(); j++) {
+                chunk.push_back(symbolic_values[j]);
             }
 
             uintptr_t chunk_addr = addr + i * sizeof(uint32_t);
@@ -116,21 +133,124 @@ namespace SymbolicRISCVHelpers {
     }
 
     /**
-     * Collect all 8-bit signed integer elements from RISC-V memory
+     * Populate float32 memory for RISC-V symbolic execution
+     * Takes concrete float values and creates symbolic FP terms for them
      */
-    inline std::vector<Term> collectResults8(const int8_t* ptr) {
+    inline void populateMemoryF32(const float* ptr, const std::vector<float>& concrete_values) {
+        uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+        std::vector<Term> fp_elements;
+        fp_elements.reserve(concrete_values.size());
+
+        for (size_t i = 0; i < concrete_values.size(); i++) {
+            // Create concrete float32 term from float value
+            uint32_t bits;
+            std::memcpy(&bits, &concrete_values[i], sizeof(float));
+            Term bv = g_symbolic_tm->mkBitVector(32, bits);
+            Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+            fp_elements.push_back(g_symbolic_tm->mkTerm(to_fp_op, {bv}));
+        }
+
+        g_riscv_memory_f32m1[addr].push_back(vfloat32m1_t(g_symbolic_tm, fp_elements));
+    }
+
+    /**
+     * Collect 8-bit signed integer elements from RISC-V memory
+     * Checks both vint8m1_t (g_riscv_memory_i8) and vint8mf4_t (g_riscv_memory_i8mf4)
+     * @param ptr Base pointer for the output buffer
+     * @param batch Number of elements to collect (if 0, collects all from all addresses >= ptr)
+     */
+    inline std::vector<Term> collectResults8(const int8_t* ptr, size_t batch = 0) {
         std::vector<Term> elements;
-        
-        const auto* results = getStoredResults8(ptr);
-        if (results && !results->empty()) {
-            for (size_t vec_idx = 0; vec_idx < results->size(); vec_idx++) {
-                const vint8m1_t& vec = (*results)[vec_idx];
-                for (size_t elem = 0; elem < vec.getVL(); elem++) {
-                    elements.push_back(vec.getElement(elem));
+        uintptr_t base_addr = reinterpret_cast<uintptr_t>(ptr);
+
+        // If batch is specified, scan through consecutive addresses like NEON does
+        if (batch > 0) {
+            elements.reserve(batch);
+            for (size_t i = 0; i < batch;) {
+                uintptr_t current_addr = base_addr + i;
+                bool found = false;
+
+                // Check g_riscv_memory_i8 first (vint8m1_t)
+                auto it_i8 = g_riscv_memory_i8.find(current_addr);
+                if (it_i8 != g_riscv_memory_i8.end() && !it_i8->second.empty()) {
+                    const vint8m1_t& vec = it_i8->second.back();
+                    size_t vec_len = vec.getVL();
+                    size_t len = std::min(vec_len, batch - i);
+                    for (size_t elem = 0; elem < len; elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                    i += vec_len;
+                    found = true;
+                    continue;
+                }
+
+                // Check g_riscv_memory_i8mf4 (vint8mf4_t)
+                auto it_mf4 = g_riscv_memory_i8mf4.find(current_addr);
+                if (it_mf4 != g_riscv_memory_i8mf4.end() && !it_mf4->second.empty()) {
+                    const vint8mf4_t& vec = it_mf4->second.back();
+                    size_t vec_len = vec.getVL();
+                    size_t len = std::min(vec_len, batch - i);
+                    for (size_t elem = 0; elem < len; elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                    i += vec_len;
+                    found = true;
+                    continue;
+                }
+
+                // No data found at this address
+                if (!found) {
+                    break;
+                }
+            }
+            return elements;
+        }
+
+        // Old behavior (batch == 0): Collect from all addresses >= base_addr
+        std::vector<uintptr_t> addresses;
+
+        for (const auto& kv : g_riscv_memory_i8) {
+            if (kv.first >= base_addr) {
+                addresses.push_back(kv.first);
+            }
+        }
+        for (const auto& kv : g_riscv_memory_i8mf4) {
+            if (kv.first >= base_addr) {
+                // Avoid duplicates
+                if (std::find(addresses.begin(), addresses.end(), kv.first) == addresses.end()) {
+                    addresses.push_back(kv.first);
                 }
             }
         }
-        
+
+        // Sort addresses
+        std::sort(addresses.begin(), addresses.end());
+
+        // Collect elements from all addresses in order
+        for (uintptr_t addr : addresses) {
+            // Check g_riscv_memory_i8 first
+            auto it_i8 = g_riscv_memory_i8.find(addr);
+            if (it_i8 != g_riscv_memory_i8.end() && !it_i8->second.empty()) {
+                for (const auto& vec : it_i8->second) {
+                    for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                }
+                continue;
+            }
+
+            // Check g_riscv_memory_i8mf4
+            auto it_mf4 = g_riscv_memory_i8mf4.find(addr);
+            if (it_mf4 != g_riscv_memory_i8mf4.end() && !it_mf4->second.empty()) {
+                for (const auto& vec : it_mf4->second) {
+                    for (size_t elem = 0; elem < vec.getVL(); elem++) {
+                        elements.push_back(vec.getElement(elem));
+                    }
+                }
+            }
+        }
+
         return elements;
     }
 
@@ -247,6 +367,7 @@ namespace SymbolicRISCVHelpers {
             elements.reserve(batch);
             for (size_t i = 0; i < batch;) {
                 uintptr_t current_addr = base_addr + i * sizeof(uint32_t);
+                bool found = false;
 
                 // Try g_riscv_memory_u32m8 first (largest LMUL)
                 auto it_m8 = g_riscv_memory_u32m8.find(current_addr);
@@ -257,6 +378,7 @@ namespace SymbolicRISCVHelpers {
                         elements.push_back(vec.getElement(elem));
                     }
                     i += vec_len;
+                    found = true;
                     continue;
                 }
 
@@ -269,10 +391,11 @@ namespace SymbolicRISCVHelpers {
                         elements.push_back(vec.getElement(elem));
                     }
                     i += vec_len;
+                    found = true;
                     continue;
                 }
 
-                // Try g_riscv_memory_u32m1
+                // Try g_riscv_memory_u32m1 - check for single-element vectors (from strided stores)
                 auto it_m1 = g_riscv_memory_u32m1.find(current_addr);
                 if (it_m1 != g_riscv_memory_u32m1.end() && !it_m1->second.empty()) {
                     const vuint32m1_t& vec = it_m1->second.back();
@@ -281,11 +404,22 @@ namespace SymbolicRISCVHelpers {
                         elements.push_back(vec.getElement(elem));
                     }
                     i += vec_len;
+                    found = true;
+                    continue;
+                }
+
+                // Try g_riscv_scalar_memory for scalar stores
+                if (g_riscv_scalar_memory.count(current_addr)) {
+                    elements.push_back(g_riscv_scalar_memory[current_addr]);
+                    i += 1;
+                    found = true;
                     continue;
                 }
 
                 // No data found at this address
-                break;
+                if (!found) {
+                    break;
+                }
             }
             return elements;
         }

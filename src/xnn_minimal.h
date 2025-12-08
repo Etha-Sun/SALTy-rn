@@ -166,6 +166,7 @@ static inline float xnn_bfloat16_to_float(xnn_bfloat16 bf16) {
 
 // From xnnpack/common.h
 #define XNN_OOB_READS
+#define XNN_INLINE inline __attribute__((always_inline))
 #define XNN_UNLIKELY(condition) (__builtin_expect(!!(condition), 0))
 #define XNN_LIKELY(condition) (__builtin_expect(!!(condition), 1))
 #define XNN_UNPREDICTABLE(condition) (__builtin_expect(!!(condition), 0))
@@ -300,5 +301,64 @@ struct xnn_u8_minmax_params {
     uint32_t max;
   } scalar;
 };
+
+union xnn_qs8_conv_minmax_params {
+  struct {
+    float scale;
+    int16_t output_zero_point;
+    int16_t output_min;
+    int16_t output_max;
+  } fp32_scalar;
+  struct {
+    int32_t multiplier;
+    uint32_t shift;
+    int16_t output_min;
+    int16_t output_max;
+    int32_t output_zero_point;
+    int64_t rounding;
+  } rndnu_scalar;
+#if XNN_ARCH_ARM
+  struct {
+    float scale;
+    float magic_bias;
+    int32_t magic_bias_less_zero_point;
+    uint32_t output_min;
+    uint32_t output_max;
+  } fp32_armsimd32;
+#endif  // XNN_ARCH_ARM
+#if XNN_ARCH_ARM || XNN_ARCH_ARM64
+  struct {
+    float scale;
+    float magic_bias;
+    int32_t magic_bias_less_output_zero_point;
+    int8_t output_min;
+    int8_t output_max;
+  } fp32_neon;
+  struct {
+    float scale;
+    int16_t output_zero_point;
+    int8_t output_min;
+    int8_t output_max;
+  } fp32_neonv8;
+  struct {
+    int32_t right_pre_shift;
+    int32_t multiplier;
+    int32_t right_post_shift;
+    int16_t output_zero_point;
+    int8_t output_min;
+    int8_t output_max;
+  } rndnu_neon;
+#endif 
+};
+
+union xnn_qs8_qc8w_conv_minmax_params {
+  struct {
+    float magic_bias;
+    int32_t magic_bias_less_output_zero_point;
+    int8_t output_min;
+    int8_t output_max;
+  } fp32_neon;
+};
+
 
 #endif // XNN_MINIMAL_H

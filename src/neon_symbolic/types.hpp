@@ -291,6 +291,14 @@ private:
     TermManager* tm;
 
 public:
+    // Default constructor (uses global term manager)
+    inline uint32x4_t() : tm(g_symbolic_tm) {
+        Sort bv32 = tm->mkBitVectorSort(32);
+        for (int i = 0; i < 4; i++) {
+            lanes[i] = tm->mkConst(bv32, "uint32x4_" + std::to_string(i));
+        }
+    }
+
     inline uint32x4_t(TermManager* t) : tm(t) {
         Sort bv32 = tm->mkBitVectorSort(32);
         for (int i = 0; i < 4; i++) {
@@ -667,6 +675,17 @@ struct uint32x4x2_t {
 
     uint32x4x2_t() : val{uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm)} {}
     uint32x4x2_t(const uint32x4_t& v0, const uint32x4_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * uint32x4x3_t: Tuple of three uint32x4_t vectors
+ * Used by vld3q_u32, vld3q_lane_u32 and similar operations
+ */
+struct uint32x4x3_t {
+    uint32x4_t val[3];
+
+    uint32x4x3_t() : val{uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm), uint32x4_t(g_symbolic_tm)} {}
+    uint32x4x3_t(const uint32x4_t& v0, const uint32x4_t& v1, const uint32x4_t& v2) : val{v0, v1, v2} {}
 };
 
 /**
