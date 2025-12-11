@@ -82,7 +82,7 @@ When implementing intrinsics for symbolic verification:
 - Include comments referencing the specific intrinsic name and any non-obvious semantic choices
 - Test implementations against concrete examples when possible
 - Flag any intrinsics with ambiguous documentation for manual review
-
+- aim to make it work for any valid symbolic length rather than a hardcoded value
 ## When Uncertain
 
 If you encounter an intrinsic with unclear semantics:

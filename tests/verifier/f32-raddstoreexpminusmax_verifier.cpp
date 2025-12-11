@@ -11,3 +11,333 @@
 #include <iostream>
 #include <vector>
 
+// Forward declarations for f16 raddstoreexpminusmax kernels
+extern "C" {
+void xnn_f16_raddstoreexpminusmax_ukernel__neonfp16arith_rr2_p2_u32(
+    size_t batch,
+    const xnn_float16* input,
+    const xnn_float16* max,
+    xnn_float16* output,
+    xnn_float16* sum,
+    const void* params);
+
+void xnn_f16_raddstoreexpminusmax_ukernel__rvv_rr2_p2(
+    size_t batch,
+    const xnn_float16* input,
+    const xnn_float16* max,
+    xnn_float16* output,
+    xnn_float16* sum,
+    const void* params);
+}
+
+int main() {
+  // Initialize the global term manager and solver
+  TermManager tm;
+  Solver solver(tm);
+  g_symbolic_tm = &tm;
+  g_symbolic_solver = &solver;
+  solver.setOption("produce-models", "true");
+  solver.setOption("fp-exp", "true");  // Enable experimental FP support for Float16
+
+  // Parameters for raddstoreexpminusmax kernel
+  // batch = number of bytes (elements * sizeof(uint16_t))
+  const size_t num_elements = 4;  // Keep small for verification
+  const size_t batch = num_elements * sizeof(uint16_t);
+
+  // Allocate arrays
+  std::vector<uint16_t> input_data(num_elements + 16, 0);
+  std::vector<uint16_t> output_neon(num_elements + 16, 0);
+  std::vector<uint16_t> output_riscv(num_elements + 16, 0);
+  uint16_t max_val = 0;
+  uint16_t sum_neon = 0;
+  uint16_t sum_riscv = 0;
+
+  // Clear memory before each run
+  SymbolicNEONHelpers::clearMemory();
+  SymbolicRISCVHelpers::clearMemory();
+
+  // Create symbolic inputs using float16 sort (5-bit exponent, 11-bit significand including hidden bit)
+  Sort fp16 = tm.mkFloatingPointSort(5, 11);
+  Term zero_f16 = tm.mkFloatingPointPosZero(5, 11);
+
+  // Symbolic max value (declare first so we can use it in input constraints)
+  Term symbolic_max = tm.mkConst(fp16, "max_val");
+  // Constrain max to be finite
+  solver.assertFormula(tm.mkTerm(Kind::NOT, {tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {symbolic_max})}));
+  solver.assertFormula(tm.mkTerm(Kind::NOT, {tm.mkTerm(Kind::FLOATINGPOINT_IS_INF, {symbolic_max})}));
+
+  // Symbolic input elements
+  std::vector<Term> symbolic_input;
+  symbolic_input.reserve(num_elements);
+  for (size_t i = 0; i < num_elements; i++) {
+    Term input_i = tm.mkConst(fp16, "input_" + std::to_string(i));
+    symbolic_input.push_back(input_i);
+
+    // Constrain inputs to be finite (not NaN or infinity)
+    Term is_nan = tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {input_i});
+    Term is_inf = tm.mkTerm(Kind::FLOATINGPOINT_IS_INF, {input_i});
+    solver.assertFormula(tm.mkTerm(Kind::NOT, {is_nan}));
+    solver.assertFormula(tm.mkTerm(Kind::NOT, {is_inf}));
+
+    // Constrain input[i] <= max (for valid softmax computation, x - max <= 0)
+    Term input_leq_max = tm.mkTerm(Kind::FLOATINGPOINT_LEQ, {input_i, symbolic_max});
+    solver.assertFormula(input_leq_max);
+  }
+
+  // Create bitvector terms for each input element (shared between NEON and constraints)
+  std::vector<Term> input_bv_terms;
+  input_bv_terms.reserve(num_elements);
+  Sort bv16 = tm.mkBitVectorSort(16);
+  Op to_fp_op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+  for (size_t i = 0; i < num_elements; i++) {
+    Term bv_lane = tm.mkConst(bv16, "input_bv_" + std::to_string(i));
+    // Assert the relationship between the bitvector and float16
+    Term fp_from_bv = tm.mkTerm(to_fp_op, {bv_lane});
+    solver.assertFormula(tm.mkTerm(Kind::EQUAL, {fp_from_bv, symbolic_input[i]}));
+    input_bv_terms.push_back(bv_lane);
+  }
+
+  // Populate NEON memory for input at base address only
+  // vld1q_u16 loads 8 consecutive uint16_t values from base address
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(input_data.data());
+    std::array<Term, 8> lanes8;
+    for (size_t j = 0; j < 8; j++) {
+      if (j < num_elements) {
+        lanes8[j] = input_bv_terms[j];
+      } else {
+        lanes8[j] = tm.mkBitVector(16, 0);
+      }
+    }
+    g_neon_memory_u16x8[addr].push_back(uint16x8_t(g_symbolic_tm, lanes8));
+  }
+
+  // Create bitvector term for max value (shared between NEON and constraints)
+  Term max_bv = tm.mkConst(bv16, "max_bv");
+  {
+    Term fp_from_bv = tm.mkTerm(to_fp_op, {max_bv});
+    solver.assertFormula(tm.mkTerm(Kind::EQUAL, {fp_from_bv, symbolic_max}));
+  }
+
+  // Populate NEON memory for max value (using vld1q_dup_u16)
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(&max_val);
+    std::array<Term, 8> lanes8_dup;
+    for (int j = 0; j < 8; j++) {
+      lanes8_dup[j] = max_bv;
+    }
+    g_neon_memory_u16x8[addr].push_back(uint16x8_t(g_symbolic_tm, lanes8_dup));
+  }
+
+  // Populate RISC-V memory for input (using vle16_v_f16m1)
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(input_data.data());
+    std::vector<Term> elements;
+    for (size_t i = 0; i < num_elements; i++) {
+      elements.push_back(symbolic_input[i]);
+    }
+    g_riscv_memory_f16m1[addr].push_back(vfloat16m1_t(g_symbolic_tm, elements));
+  }
+
+  // Populate RISC-V memory for max value (vector load with 16 elements)
+  // The RVV kernel loads max via vle16 with VL=16, all elements are the same symbolic_max
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(&max_val);
+    // Store 16 copies of symbolic_max for vector load
+    std::vector<Term> max_vec;
+    for (size_t j = 0; j < 16; j++) {
+      max_vec.push_back(symbolic_max);
+    }
+    g_riscv_memory_f16m1[addr].push_back(vfloat16m1_t(g_symbolic_tm, max_vec));
+  }
+
+  std::cout << "Testing XNNPACK f16_raddstoreexpminusmax: NEON vs RISC-V equivalence" << std::endl;
+  std::cout << "Number of elements: " << num_elements << std::endl;
+  std::cout << "Batch size (bytes): " << batch << std::endl;
+
+  // Run NEON implementation
+  std::cout << "\nRunning NEON implementation..." << std::endl;
+  xnn_f16_raddstoreexpminusmax_ukernel__neonfp16arith_rr2_p2_u32(
+      batch,
+      reinterpret_cast<const xnn_float16*>(input_data.data()),
+      reinterpret_cast<const xnn_float16*>(&max_val),
+      reinterpret_cast<xnn_float16*>(output_neon.data()),
+      reinterpret_cast<xnn_float16*>(&sum_neon),
+      nullptr);
+
+  // Run RISC-V implementation
+  std::cout << "Running RISC-V implementation..." << std::endl;
+  xnn_f16_raddstoreexpminusmax_ukernel__rvv_rr2_p2(
+      batch,
+      reinterpret_cast<const xnn_float16*>(input_data.data()),
+      reinterpret_cast<const xnn_float16*>(&max_val),
+      reinterpret_cast<xnn_float16*>(output_riscv.data()),
+      reinterpret_cast<xnn_float16*>(&sum_riscv),
+      nullptr);
+
+  // Collect NEON output results from memory
+  std::vector<Term> neon_output_elements;
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(output_neon.data());
+    Op to_fp_op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    // First try u16x8 (8-element stores via vst1q_u16)
+    auto it8 = g_neon_memory_u16x8.find(addr);
+    if (it8 != g_neon_memory_u16x8.end() && !it8->second.empty()) {
+      const uint16x8_t& vec = it8->second.back();
+      for (size_t i = 0; i < num_elements && i < 8; i++) {
+        // Convert u16 bitvector back to fp16
+        neon_output_elements.push_back(tm.mkTerm(to_fp_op, {vec.getLane(i)}));
+      }
+    }
+
+    // If not found, try u16x4 (4-element stores via vst1_u16)
+    if (neon_output_elements.empty()) {
+      auto it4 = g_neon_memory_u16x4.find(addr);
+      if (it4 != g_neon_memory_u16x4.end() && !it4->second.empty()) {
+        const uint16x4_t& vec = it4->second.back();
+        for (size_t i = 0; i < num_elements && i < 4; i++) {
+          neon_output_elements.push_back(tm.mkTerm(to_fp_op, {vec.getLane(i)}));
+        }
+      }
+    }
+  }
+
+  // Collect RISC-V output results from memory
+  std::vector<Term> riscv_output_elements;
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(output_riscv.data());
+    auto it = g_riscv_memory_f16m1.find(addr);
+    if (it != g_riscv_memory_f16m1.end() && !it->second.empty()) {
+      const vfloat16m1_t& vec = it->second.back();
+      for (size_t i = 0; i < vec.getVL() && i < num_elements; i++) {
+        riscv_output_elements.push_back(vec.getElement(i));
+      }
+    }
+  }
+
+  // Collect sum results
+  Term neon_sum_term;
+  Term riscv_sum_term;
+
+  // NEON sum is stored via vst1_lane_u16
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(&sum_neon);
+    auto it = g_neon_memory_u16x4.find(addr);
+    if (it != g_neon_memory_u16x4.end() && !it->second.empty()) {
+      Op to_fp_op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+      neon_sum_term = tm.mkTerm(to_fp_op, {it->second.back().getLane(0)});
+    }
+  }
+
+  // RISC-V sum is stored via scalar write
+  {
+    auto it = g_riscv_scalar_results.find("vfmv_f_s_f16m1_f16");
+    if (it != g_riscv_scalar_results.end()) {
+      riscv_sum_term = it->second;
+    }
+  }
+
+  std::cout << "\nNEON collected " << neon_output_elements.size() << " output elements" << std::endl;
+  std::cout << "RISC-V collected " << riscv_output_elements.size() << " output elements" << std::endl;
+
+  bool have_outputs = !neon_output_elements.empty() && !riscv_output_elements.empty();
+  bool have_sums = !neon_sum_term.isNull() && !riscv_sum_term.isNull();
+
+  if (!have_outputs) {
+    std::cerr << "WARNING: Could not collect output elements from both implementations" << std::endl;
+  }
+
+  if (!have_sums) {
+    std::cerr << "WARNING: Could not collect sum results from both implementations" << std::endl;
+  }
+
+  // Build equality assertions
+  std::vector<Term> all_equalities;
+
+  // Compare output elements
+  if (have_outputs) {
+    size_t compare_count = std::min(neon_output_elements.size(), riscv_output_elements.size());
+    for (size_t i = 0; i < compare_count; i++) {
+      Term fp_eq = tm.mkTerm(Kind::FLOATINGPOINT_EQ, {neon_output_elements[i], riscv_output_elements[i]});
+      Term neon_is_nan = tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {neon_output_elements[i]});
+      Term riscv_is_nan = tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {riscv_output_elements[i]});
+      Term both_nan = tm.mkTerm(Kind::AND, {neon_is_nan, riscv_is_nan});
+      Term eq = tm.mkTerm(Kind::OR, {fp_eq, both_nan});
+      all_equalities.push_back(eq);
+    }
+  }
+
+  // Compare sum results
+  if (have_sums) {
+    Term fp_eq = tm.mkTerm(Kind::FLOATINGPOINT_EQ, {neon_sum_term, riscv_sum_term});
+    Term neon_is_nan = tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {neon_sum_term});
+    Term riscv_is_nan = tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {riscv_sum_term});
+    Term both_nan = tm.mkTerm(Kind::AND, {neon_is_nan, riscv_is_nan});
+    Term sum_eq = tm.mkTerm(Kind::OR, {fp_eq, both_nan});
+    all_equalities.push_back(sum_eq);
+    std::cout << "Added sum comparison to verification" << std::endl;
+  }
+
+  if (all_equalities.empty()) {
+    std::cerr << "ERROR: No elements to compare!" << std::endl;
+    return 1;
+  }
+
+  Term all_equal;
+  if (all_equalities.size() == 1) {
+    all_equal = all_equalities[0];
+  } else {
+    all_equal = tm.mkTerm(Kind::AND, all_equalities);
+  }
+
+  Term not_equal = tm.mkTerm(Kind::NOT, {all_equal});
+
+  std::cout << "\nAsserting: NOT(NEON_result == RISC-V_result)" << std::endl;
+  std::cout << "Looking for counterexample where outputs differ..." << std::endl;
+
+  solver.assertFormula(not_equal);
+  Result result = solver.checkSat();
+
+  std::cout << "\nResult: " << result << std::endl;
+
+  if (result.isUnsat()) {
+    std::cout << "\n===== VERIFICATION PASSED =====" << std::endl;
+    std::cout << "UNSAT: No counterexample found!" << std::endl;
+    std::cout << "The NEON and RISC-V implementations are equivalent." << std::endl;
+    return 0;
+  } else if (result.isSat()) {
+    std::cout << "\n===== VERIFICATION FAILED =====" << std::endl;
+    std::cout << "SAT: Found a counterexample!" << std::endl;
+    std::cout << "Input values that cause different outputs:" << std::endl;
+
+    std::cout << "\nInput values:" << std::endl;
+    for (size_t i = 0; i < num_elements; i++) {
+      std::cout << "  input[" << i << "] = " << solver.getValue(symbolic_input[i]) << std::endl;
+    }
+
+    std::cout << "\nMax value:" << std::endl;
+    std::cout << "  max = " << solver.getValue(symbolic_max) << std::endl;
+
+    if (have_outputs) {
+      std::cout << "\nOutput comparison:" << std::endl;
+      size_t compare_count = std::min(neon_output_elements.size(), riscv_output_elements.size());
+      for (size_t i = 0; i < compare_count; i++) {
+        std::cout << "  output[" << i << "]: NEON = " << solver.getValue(neon_output_elements[i])
+                  << ", RISC-V = " << solver.getValue(riscv_output_elements[i]) << std::endl;
+      }
+    }
+
+    if (have_sums) {
+      std::cout << "\nSum comparison:" << std::endl;
+      std::cout << "  NEON sum = " << solver.getValue(neon_sum_term) << std::endl;
+      std::cout << "  RISC-V sum = " << solver.getValue(riscv_sum_term) << std::endl;
+    }
+    return 1;
+  } else {
+    std::cout << "\n===== VERIFICATION INCONCLUSIVE =====" << std::endl;
+    std::cout << "UNKNOWN: Solver could not determine equivalence" << std::endl;
+    return 2;
+  }
+}

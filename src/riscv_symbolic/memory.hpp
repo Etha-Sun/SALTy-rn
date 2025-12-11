@@ -2,16 +2,25 @@
 #define RISCV_SYMBOLIC_MEMORY_HPP
 
 #include "../symbolic_common.hpp"
+#include "../symbolic_scalar_types.hpp"
 #include "types.hpp"
 #include <map>
 #include <vector>
 #include <cstdint>
+#include <iostream>
+#include <string>
 
 /**
  * Global VL (vector length) for current operation
  * Set by vsetvl instructions, affects subsequent vector operations
  */
 inline size_t g_current_vl = 0;
+
+/**
+ * Global storage for scalar results from reduction operations
+ * Maps operation names to their symbolic result terms
+ */
+inline std::map<std::string, Term> g_riscv_scalar_results;
 
 /**
  * Global storage indexed by memory address for load/store tracking
@@ -58,6 +67,11 @@ inline std::map<uintptr_t, std::vector<vuint8mf4_t>> g_riscv_memory_u8mf4;
  * Global storage for signed 8-bit vectors (LMUL=1/4)
  */
 inline std::map<uintptr_t, std::vector<vint8mf4_t>> g_riscv_memory_i8mf4;
+
+/**
+ * Global storage for signed 8-bit vectors (LMUL=1/2)
+ */
+inline std::map<uintptr_t, std::vector<vint8mf2_t>> g_riscv_memory_i8mf2;
 
 /**
  * Global storage for unsigned 32-bit vectors (LMUL=1)
@@ -994,6 +1008,142 @@ inline void __riscv_vse32_v_f32m1(float *ptr, const vfloat32m1_t &vec, size_t vl
     g_riscv_memory_f32m1[addr].push_back(vec);
 }
 
+/**
+ * __riscv_vle32_v_f32m1: Overload for symbolic_float32_t arrays
+ * This allows loading from local arrays that contain symbolic values
+ */
+inline vfloat32m1_t __riscv_vle32_v_f32m1(const symbolic_float32_t *ptr, size_t vl) {
+    std::vector<Term> elements;
+    elements.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        elements.push_back(ptr[i].getTerm());
+    }
+    return vfloat32m1_t(g_symbolic_tm, elements);
+}
+
+/**
+ * riscv_symbolic_float_load: Read a symbolic float from memory
+ * Looks up the address in g_riscv_float_scalar_memory and returns a symbolic_float32_t
+ * If not found, returns a symbolic_float32_t with the concrete value from memory
+ */
+inline symbolic_float32_t riscv_symbolic_float_load(const float* ptr) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    auto it = g_riscv_float_scalar_memory.find(addr);
+    if (it != g_riscv_float_scalar_memory.end()) {
+        return symbolic_float32_t(g_symbolic_tm, it->second, *ptr, false);
+    }
+    // Not found in symbolic memory - create from concrete value
+    return symbolic_float32_t(g_symbolic_tm, *ptr, false);
+}
+
+/**
+ * riscv_symbolic_float_store: Write a symbolic float to memory
+ * Stores the symbolic term to g_riscv_float_scalar_memory and updates the concrete value
+ */
+inline void riscv_symbolic_float_store(float* ptr, const symbolic_float32_t& val) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_float_scalar_memory[addr] = val.getTerm();
+    *ptr = static_cast<float>(val);
+}
+
+// ============================================================================
+// Segment Load Operations (Float32)
+// ============================================================================
+
+/**
+ * __riscv_vlseg2e32_v_f32m1x2: Segment load of 2 vectors with 32-bit float elements
+ * Loads interleaved data: result.v0 = {ptr[0], ptr[2], ptr[4], ...}
+ *                         result.v1 = {ptr[1], ptr[3], ptr[5], ...}
+ * This is the RVV equivalent of NEON's vld2q_f32 de-interleave operation
+ *
+ * @param ptr Base address to load from (must point to 2*vl floats in interleaved order)
+ * @param vl Vector length (number of elements per segment)
+ * @return Tuple of 2 vfloat32m1_t vectors
+ */
+inline vfloat32m1x2_t __riscv_vlseg2e32_v_f32m1x2(const float *ptr, size_t vl) {
+    uintptr_t base_addr = reinterpret_cast<uintptr_t>(ptr);
+
+    std::vector<Term> seg0_elements;
+    std::vector<Term> seg1_elements;
+    seg0_elements.reserve(vl);
+    seg1_elements.reserve(vl);
+
+    // Check if we have symbolic values stored at this base address
+    // For segment load, data is interleaved: v0[0], v1[0], v0[1], v1[1], ...
+    bool found_in_memory = false;
+
+    // Check in f32m1 memory for stored values
+    auto it = g_riscv_memory_f32m1.find(base_addr);
+    if (it != g_riscv_memory_f32m1.end() && !it->second.empty()) {
+        const vfloat32m1_t& stored = it->second.back();
+        size_t stored_vl = stored.getVL();
+
+        // If we have enough interleaved elements
+        if (stored_vl >= 2 * vl) {
+            for (size_t i = 0; i < vl; i++) {
+                seg0_elements.push_back(stored.getElement(i * 2));      // Even indices
+                seg1_elements.push_back(stored.getElement(i * 2 + 1));  // Odd indices
+            }
+            found_in_memory = true;
+        }
+    }
+
+    if (!found_in_memory) {
+        // Also search for overlaps - check if the address falls within any stored vector
+        for (const auto& entry : g_riscv_memory_f32m1) {
+            uintptr_t stored_base = entry.first;
+            if (!entry.second.empty()) {
+                const vfloat32m1_t& stored_vec = entry.second.back();
+                size_t stored_vl = stored_vec.getVL();
+                size_t stored_size = stored_vl * sizeof(float);
+
+                if (base_addr >= stored_base && base_addr < stored_base + stored_size) {
+                    size_t offset_elems = (base_addr - stored_base) / sizeof(float);
+                    size_t available = stored_vl - offset_elems;
+
+                    if (available >= 2 * vl) {
+                        for (size_t i = 0; i < vl; i++) {
+                            seg0_elements.push_back(stored_vec.getElement(offset_elems + i * 2));
+                            seg1_elements.push_back(stored_vec.getElement(offset_elems + i * 2 + 1));
+                        }
+                        found_in_memory = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    if (!found_in_memory) {
+        // If not found in symbolic memory, create fresh symbolic constants for input
+        Sort fp32 = g_symbolic_tm->mkFloatingPointSort(8, 24);
+        for (size_t i = 0; i < vl; i++) {
+            seg0_elements.push_back(g_symbolic_tm->mkConst(fp32, "seg2_v0_" + std::to_string(i)));
+            seg1_elements.push_back(g_symbolic_tm->mkConst(fp32, "seg2_v1_" + std::to_string(i)));
+        }
+    }
+
+    vfloat32m1_t v0(g_symbolic_tm, seg0_elements);
+    vfloat32m1_t v1(g_symbolic_tm, seg1_elements);
+
+    return vfloat32m1x2_t(v0, v1);
+}
+
+/**
+ * __riscv_vget_v_f32m1x2_f32m1: Extract a single vector from a vfloat32m1x2_t tuple
+ *
+ * @param tuple The tuple to extract from
+ * @param index Index of vector to extract (0 or 1)
+ * @return The extracted vfloat32m1_t vector
+ */
+inline vfloat32m1_t __riscv_vget_v_f32m1x2_f32m1(const vfloat32m1x2_t& tuple, size_t index) {
+    if (index == 0) {
+        return tuple.get0();
+    } else {
+        return tuple.get1();
+    }
+}
+
 // ============================================================================
 // Segment Store Operations
 // ============================================================================
@@ -1034,6 +1184,173 @@ inline void __riscv_vsseg4e32_v_u32m1x4(uint32_t *ptr, const vuint32m1x4_t &tupl
         std::vector<Term> elem3 = {v3.getElement(i)};
         g_riscv_memory_u32m1[addr3].push_back(vuint32m1_t(g_symbolic_tm, elem3));
     }
+}
+
+// ============================================================================
+// Float32 LMUL=2 Memory Operations
+// ============================================================================
+
+/**
+ * Global storage for float32m2 vectors
+ */
+inline std::map<uintptr_t, std::vector<vfloat32m2_t>> g_riscv_memory_f32m2;
+
+/**
+ * __riscv_vle32_v_f32m2: Load vector of 32-bit floats (LMUL=2)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vfloat32m2_t __riscv_vle32_v_f32m2(const float *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    // First check for exact address match
+    auto it = g_riscv_memory_f32m2.find(addr);
+    if (it != g_riscv_memory_f32m2.end() && !it->second.empty()) {
+        const vfloat32m2_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vfloat32m2_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // Overlap search in f32m2 memory - check if addr falls within a stored vector
+    for (const auto& entry : g_riscv_memory_f32m2) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vfloat32m2_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl * sizeof(float);
+
+            // Check if our load address falls within the range of this stored vector
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = (addr - base_addr) / sizeof(float);
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkFloatingPointPosZero(8, 24));
+                    }
+                }
+                return vfloat32m2_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // Also check f32m1 memory for overlaps (in case data was stored as m1)
+    for (const auto& entry : g_riscv_memory_f32m1) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vfloat32m1_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl * sizeof(float);
+
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = (addr - base_addr) / sizeof(float);
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkFloatingPointPosZero(8, 24));
+                    }
+                }
+                return vfloat32m2_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vfloat32m2_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse32_v_f32m2: Store vector of 32-bit floats (LMUL=2)
+ */
+inline void __riscv_vse32_v_f32m2(float *ptr, const vfloat32m2_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_f32m2[addr].push_back(vec);
+}
+
+// ============================================================================
+// Float16 LMUL=1 Memory Operations
+// ============================================================================
+
+/**
+ * Global storage for float16m1 vectors
+ */
+inline std::map<uintptr_t, std::vector<vfloat16m1_t>> g_riscv_memory_f16m1;
+
+/**
+ * __riscv_vle16_v_f16m1: Load vector of 16-bit floats (LMUL=1)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vfloat16m1_t __riscv_vle16_v_f16m1(const _Float16 *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_f16m1.find(addr);
+    if (it != g_riscv_memory_f16m1.end() && !it->second.empty()) {
+        const vfloat16m1_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vfloat16m1_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vfloat16m1_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse16_v_f16m1: Store vector of 16-bit floats (LMUL=1)
+ */
+inline void __riscv_vse16_v_f16m1(_Float16 *ptr, const vfloat16m1_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_f16m1[addr].push_back(vec);
+}
+
+// ============================================================================
+// Signed 8-bit Load/Store Operations (LMUL=1/2)
+// ============================================================================
+
+/**
+ * __riscv_vle8_v_i8mf2: Load vector of signed 8-bit integers (LMUL=1/2)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vint8mf2_t __riscv_vle8_v_i8mf2(const int8_t *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_i8mf2.find(addr);
+    if (it != g_riscv_memory_i8mf2.end() && !it->second.empty()) {
+        return it->second.back();
+    }
+
+    // If not found in memory, create fresh symbolic variables
+    return vint8mf2_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse8_v_i8mf2: Store vector of signed 8-bit integers (LMUL=1/2)
+ */
+inline void __riscv_vse8_v_i8mf2(int8_t *base, const vint8mf2_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(base);
+    g_riscv_memory_i8mf2[addr].push_back(vec);
 }
 
 #endif // RISCV_SYMBOLIC_MEMORY_HPP

@@ -171,6 +171,17 @@ static inline float xnn_bfloat16_to_float(xnn_bfloat16 bf16) {
 #define XNN_LIKELY(condition) (__builtin_expect(!!(condition), 1))
 #define XNN_UNPREDICTABLE(condition) (__builtin_expect(!!(condition), 0))
 
+// XNN_FORCE_REALIZATION - forces compiler to keep value in memory
+// On ARM/x86/WASM architectures, this prevents redundant broadcast operations.
+// For symbolic execution, this is a no-op.
+#define XNN_FORCE_REALIZATION(x)
+
+// xnn_prefetch_to_l1 - hint CPU to prefetch data into L1 cache
+// For symbolic execution, this is a no-op since it doesn't affect program semantics.
+static inline void xnn_prefetch_to_l1(const void* address) {
+  (void)address;  // Suppress unused parameter warning
+}
+
 // XNN_UNREACHABLE - marks code that should never be reached
 #if defined(__GNUC__)
 #if defined(__clang__) || (__GNUC__ > 4 || __GNUC__ == 4 && __GNUC_MINOR__ >= 5)
@@ -360,5 +371,29 @@ union xnn_qs8_qc8w_conv_minmax_params {
   } fp32_neon;
 };
 
+struct xnn_f32_minmax_params {
+  struct {
+    float min;
+    float max;
+  } scalar;
+};
+
+
+struct xnn_f32_qs8_cvt_params {
+  struct {
+    float scale;
+    int16_t output_zero_point;
+  } scalar;
+};
+struct xnn_f32_default_params {
+  char _;  // Dummy member variable to comply with the C standard
+};
+struct xnn_f32_elu_params {
+  struct {
+    float prescale;
+    float alpha;
+    float beta;
+  } scalar;
+};
 
 #endif // XNN_MINIMAL_H

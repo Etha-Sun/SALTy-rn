@@ -722,6 +722,52 @@ inline void vst1_lane_u8(void *ptr, const uint8x8_t &vec, int lane) {
 }
 
 /**
+ * vld1_f32: Load vector of 32-bit floating-point values (64-bit, 2 elements)
+ * Returns previously stored value if available, otherwise creates fresh
+ * symbolic constants
+ */
+inline float32x2_t vld1_f32(const float *ptr) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+  // Check if this address was previously stored to (exact match)
+  auto it = g_neon_memory_f32x2.find(addr);
+  if (it != g_neon_memory_f32x2.end() && !it->second.empty()) {
+    return it->second.back();
+  }
+
+  // Check if addr falls within a stored float32x4
+  auto it4 = g_neon_memory_f32x4.find(addr);
+  if (it4 != g_neon_memory_f32x4.end() && !it4->second.empty()) {
+    const float32x4_t &vec4 = it4->second.back();
+    std::array<Term, 2> lanes;
+    lanes[0] = vec4.getLane(0);
+    lanes[1] = vec4.getLane(1);
+    return float32x2_t(g_symbolic_tm, lanes);
+  }
+
+  // Check if addr is offset by 2 elements (8 bytes) from start of float32x4
+  uintptr_t base = addr - 8;
+  it4 = g_neon_memory_f32x4.find(base);
+  if (it4 != g_neon_memory_f32x4.end() && !it4->second.empty()) {
+    const float32x4_t &vec4 = it4->second.back();
+    std::array<Term, 2> lanes;
+    lanes[0] = vec4.getLane(2);
+    lanes[1] = vec4.getLane(3);
+    return float32x2_t(g_symbolic_tm, lanes);
+  }
+
+  // Otherwise, create fresh symbolic values
+  return float32x2_t(g_symbolic_tm);
+}
+
+/**
+ * vld1_f32: Overload for const void* (common in XNNPACK code)
+ */
+inline float32x2_t vld1_f32(const void *ptr) {
+  return vld1_f32(reinterpret_cast<const float*>(ptr));
+}
+
+/**
  * vst1_lane_f32: Store a single lane from float32x2_t to memory
  */
 inline void vst1_lane_f32(float *ptr, const float32x2_t &vec, int lane) {
@@ -729,6 +775,20 @@ inline void vst1_lane_f32(float *ptr, const float32x2_t &vec, int lane) {
   // Extract the specified lane (single float)
   Term lane_term = vec.getLane(lane);
   // Store as float32x2_t with the lane value
+  std::array<Term, 2> full_lanes;
+  full_lanes[0] = lane_term;
+  full_lanes[1] = lane_term; // Pad with same value
+  g_neon_memory_f32x2[addr].push_back(float32x2_t(g_symbolic_tm, full_lanes));
+}
+
+/**
+ * vst1q_lane_f32: Store a single lane from float32x4_t to memory
+ */
+inline void vst1q_lane_f32(float *ptr, const float32x4_t &vec, int lane) {
+  uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+  // Extract the specified lane (single float)
+  Term lane_term = vec.getLane(lane);
+  // Store as float32x2_t with the lane value (for compatibility with collection)
   std::array<Term, 2> full_lanes;
   full_lanes[0] = lane_term;
   full_lanes[1] = lane_term; // Pad with same value

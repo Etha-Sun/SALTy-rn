@@ -324,6 +324,72 @@ public:
 };
 
 /**
+ * Symbolic representation of ARM NEON uint64x1_t vector type
+ * Represents 1 lane of 64-bit unsigned integer
+ */
+class uint64x1_t {
+private:
+    std::array<Term, 1> lanes;
+    TermManager* tm;
+
+public:
+    inline uint64x1_t(TermManager* t) : tm(t) {
+        Sort bv64 = tm->mkBitVectorSort(64);
+        lanes[0] = tm->mkConst(bv64, "uint64x1_0");
+    }
+
+    // Constructor with existing terms
+    inline uint64x1_t(TermManager* t, const std::array<Term, 1>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 1>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
+ * Symbolic representation of ARM NEON uint64x2_t vector type
+ * Represents 2 lanes of 64-bit unsigned integers
+ */
+class uint64x2_t {
+private:
+    std::array<Term, 2> lanes;
+    TermManager* tm;
+
+public:
+    inline uint64x2_t(TermManager* t) : tm(t) {
+        Sort bv64 = tm->mkBitVectorSort(64);
+        for (int i = 0; i < 2; i++) {
+            lanes[i] = tm->mkConst(bv64, "uint64x2_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline uint64x2_t(TermManager* t, const std::array<Term, 2>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 2>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
  * Symbolic representation of ARM NEON uint16x4_t vector type
  * Represents 4 lanes of 16-bit unsigned integers
  */
@@ -785,6 +851,28 @@ struct uint8x16x4_t {
 
     uint8x16x4_t() : val{uint8x16_t(g_symbolic_tm), uint8x16_t(g_symbolic_tm), uint8x16_t(g_symbolic_tm), uint8x16_t(g_symbolic_tm)} {}
     uint8x16x4_t(const uint8x16_t& v0, const uint8x16_t& v1, const uint8x16_t& v2, const uint8x16_t& v3) : val{v0, v1, v2, v3} {}
+};
+
+/**
+ * float32x4x2_t: Tuple of two float32x4_t vectors
+ * Used by vzipq_f32 and similar operations that produce two result vectors
+ */
+struct float32x4x2_t {
+    float32x4_t val[2];
+
+    float32x4x2_t() : val{float32x4_t(g_symbolic_tm), float32x4_t(g_symbolic_tm)} {}
+    float32x4x2_t(const float32x4_t& v0, const float32x4_t& v1) : val{v0, v1} {}
+};
+
+/**
+ * float32x2x2_t: Tuple of two float32x2_t vectors
+ * Used by vuzp_f32, vld2_f32 and similar operations that produce two result vectors
+ */
+struct float32x2x2_t {
+    float32x2_t val[2];
+
+    float32x2x2_t() : val{float32x2_t(g_symbolic_tm), float32x2_t(g_symbolic_tm)} {}
+    float32x2x2_t(const float32x2_t& v0, const float32x2_t& v1) : val{v0, v1} {}
 };
 
 #endif // NEON_SYMBOLIC_TYPES_HPP
