@@ -34,6 +34,7 @@ namespace SymbolicNEONHelpers {
         g_neon_memory_u32x4.clear();
         g_neon_memory_u32x2.clear();
         g_neon_scalar_memory.clear();
+        g_neon_u16_scalar_memory.clear();
     }
 
     /**

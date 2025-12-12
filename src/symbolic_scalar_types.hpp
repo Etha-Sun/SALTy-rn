@@ -10,6 +10,11 @@
 inline std::map<uintptr_t, Term> g_neon_scalar_memory;
 inline std::map<uintptr_t, Term> g_riscv_scalar_memory;
 
+// Memory tracking for uint16_t scalar writes (address -> symbolic term)
+// Used by vst1_lane_u32 and vst1_lane_u16 for f16 tail handling
+inline std::map<uintptr_t, Term> g_neon_u16_scalar_memory;
+inline std::map<uintptr_t, Term> g_riscv_u16_scalar_memory;
+
 /**
  * Symbolic wrapper for int32_t scalar values
  * Tracks both symbolic Term and concrete value for operations
@@ -23,8 +28,11 @@ private:
     bool is_neon;  // Track which architecture this is for
 
 public:
+    // Default constructor for array declarations
+    symbolic_int32_t() : concrete_value(0), tm(nullptr), is_neon(false) {}
+
     // Constructor from concrete value
-    symbolic_int32_t(TermManager* t, std::int32_t val = 0, bool neon = true) 
+    symbolic_int32_t(TermManager* t, std::int32_t val = 0, bool neon = true)
         : concrete_value(val), tm(t), is_neon(neon) {
         symbolic_term = tm->mkBitVector(32, static_cast<uint64_t>(static_cast<uint32_t>(val)));
     }
@@ -68,8 +76,10 @@ public:
     Term getTerm() const { return symbolic_term; }
     
     TermManager* getTermManager() const { return tm; }
-    
+
     bool isNeon() const { return is_neon; }
+
+    bool isInitialized() const { return tm != nullptr; }
 };
 
 // Global operator+= for int32_t& and symbolic_int32_t
@@ -98,6 +108,62 @@ inline void operator+=(int32_t& lhs, const symbolic_int32_t& rhs) {
     // Do the concrete operation
     lhs += static_cast<std::int32_t>(rhs);
 }
+
+/**
+ * Symbolic wrapper for int8_t scalar values
+ * Tracks both symbolic Term and concrete value for operations
+ */
+class symbolic_int8_t {
+private:
+    Term symbolic_term;
+    std::int8_t concrete_value;
+    TermManager* tm;
+    bool is_neon;
+
+public:
+    // Default constructor for array declarations
+    symbolic_int8_t() : concrete_value(0), tm(nullptr), is_neon(false) {}
+
+    // Constructor from concrete value
+    symbolic_int8_t(TermManager* t, std::int8_t val = 0, bool neon = true)
+        : concrete_value(val), tm(t), is_neon(neon) {
+        symbolic_term = tm->mkBitVector(8, static_cast<uint64_t>(static_cast<uint8_t>(val)));
+    }
+
+    // Constructor from symbolic Term
+    symbolic_int8_t(TermManager* t, Term term, std::int8_t placeholder = 0, bool neon = true)
+        : symbolic_term(term), concrete_value(placeholder), tm(t), is_neon(neon) {}
+
+    // Multiplication with sign extension to int32
+    symbolic_int32_t operator*(const symbolic_int8_t& other) const {
+        // Sign extend both operands to 32 bits
+        Op extend_op = tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {24});
+        Term a_ext = tm->mkTerm(extend_op, {symbolic_term});
+        Term b_ext = tm->mkTerm(extend_op, {other.symbolic_term});
+        Term result = tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+        return symbolic_int32_t(tm, result,
+            static_cast<int32_t>(concrete_value) * static_cast<int32_t>(other.concrete_value), is_neon);
+    }
+
+    // Conversion to concrete int8_t (for compatibility)
+    operator std::int8_t() const { return concrete_value; }
+
+    // Cast to int32_t with sign extension
+    symbolic_int32_t to_int32() const {
+        Op extend_op = tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {24});
+        Term extended = tm->mkTerm(extend_op, {symbolic_term});
+        return symbolic_int32_t(tm, extended, static_cast<int32_t>(concrete_value), is_neon);
+    }
+
+    // Access to symbolic term for verification
+    Term getTerm() const { return symbolic_term; }
+
+    TermManager* getTermManager() const { return tm; }
+
+    bool isNeon() const { return is_neon; }
+
+    bool isInitialized() const { return tm != nullptr; }
+};
 
 /**
  * Symbolic wrapper for uint32_t scalar values

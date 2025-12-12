@@ -388,12 +388,65 @@ struct xnn_f32_qs8_cvt_params {
 struct xnn_f32_default_params {
   char _;  // Dummy member variable to comply with the C standard
 };
+struct xnn_f16_default_params {
+  char _;  // Dummy member variable to comply with the C standard
+};
 struct xnn_f32_elu_params {
   struct {
     float prescale;
     float alpha;
     float beta;
   } scalar;
+};
+struct xnn_f32_lrelu_params {
+  struct {
+    float slope;
+  } scalar;
+};
+
+// Log2 sizeof macros (from xnnpack/common.h)
+#define XNN_LOG2_SIZEOF_INT8_T 0    // log2(sizeof(int8_t))
+#define XNN_LOG2_SIZEOF_UINT8_T 0   // log2(sizeof(uint8_t))
+#define XNN_LOG2_SIZEOF_INT16_T 1   // log2(sizeof(int16_t))
+#define XNN_LOG2_SIZEOF_UINT16_T 1  // log2(sizeof(uint16_t))
+#define XNN_LOG2_SIZEOF_FLOAT16 1   // log2(sizeof(xnn_float16))
+#define XNN_LOG2_SIZEOF_BFLOAT16 1  // log2(sizeof(xnn_bfloat16))
+#define XNN_LOG2_SIZEOF_FLOAT 2     // log2(sizeof(float))
+#define XNN_LOG2_SIZEOF_INT32_T 2   // log2(sizeof(int32_t))
+#define XNN_LOG2_SIZEOF_UINT32_T 2  // log2(sizeof(uint32_t))
+
+// XNN_FALLTHROUGH for switch statement fall through
+#if defined(__cplusplus) && (__cplusplus >= 201703L)
+#define XNN_FALLTHROUGH [[fallthrough]]
+#elif defined(__clang__)
+#define XNN_FALLTHROUGH __attribute__((fallthrough))
+#elif defined(__GNUC__) && __GNUC__ >= 7
+#define XNN_FALLTHROUGH __attribute__((fallthrough))
+#else
+#define XNN_FALLTHROUGH ((void)0)
+#endif
+
+// XNN_COMPILER_HAS_FEATURE macro
+#if defined(__clang__)
+#define XNN_COMPILER_HAS_FEATURE(feature) __has_feature(feature)
+#else
+#define XNN_COMPILER_HAS_FEATURE(feature) 0
+#endif
+
+struct xnn_qs8_qc4w_packing_params {
+  int8_t input_zero_point;
+  uint8_t kernel_zero_point;
+};
+struct xnn_f32_qc4w_minmax_params {
+  struct {
+    float min;
+    float max;
+    int32_t kernel_zero_point;
+  } scalar;
+};
+struct xnn_qd8_quantization_params {
+  int32_t zero_point;
+  float inv_scale;
 };
 
 #endif // XNN_MINIMAL_H

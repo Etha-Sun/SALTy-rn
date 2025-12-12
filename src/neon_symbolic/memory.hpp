@@ -152,6 +152,13 @@ inline int8x16_t vld1q_s8(const int8_t *ptr) {
 }
 
 /**
+ * vld1q_s8: Overload for const void* (common in XNNPACK code)
+ */
+inline int8x16_t vld1q_s8(const void *ptr) {
+  return vld1q_s8(reinterpret_cast<const int8_t*>(ptr));
+}
+
+/**
  * vld1_s8: Load vector of 8-bit integers (64-bit)
  */
 inline int8x8_t vld1_s8(const int8_t *ptr) {
@@ -616,6 +623,7 @@ inline void vst1_u8(void *ptr, const uint8x8_t &vec) {
 
 /**
  * vst1_lane_u32: Store 4 bytes from specified lane of uint32x2_t
+ * The 32-bit value contains two 16-bit values (for f16 tail handling)
  */
 inline void vst1_lane_u32(void *ptr, const uint32x2_t &vec, int lane) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
@@ -634,6 +642,17 @@ inline void vst1_lane_u32(void *ptr, const uint32x2_t &vec, int lane) {
   }
   // Store as uint8x8_t for unsigned byte collection
   g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, lanes));
+
+  // Also store individual uint16 values to scalar memory for easier collection
+  // Extract low 16 bits (first uint16)
+  Op extract_low = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+  Term low_u16 = g_symbolic_tm->mkTerm(extract_low, {lane_term});
+  g_neon_u16_scalar_memory[addr] = low_u16;
+
+  // Extract high 16 bits (second uint16)
+  Op extract_high = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {31, 16});
+  Term high_u16 = g_symbolic_tm->mkTerm(extract_high, {lane_term});
+  g_neon_u16_scalar_memory[addr + sizeof(uint16_t)] = high_u16;
 }
 
 /**
@@ -679,6 +698,9 @@ inline void vst1_lane_u16(void *ptr, const uint16x4_t &vec, int lane) {
     full_lanes[i] = byte_lanes[1]; // Pad with last element
   }
   g_neon_memory_u8x8[addr].push_back(uint8x8_t(g_symbolic_tm, full_lanes));
+
+  // Also store the uint16 value directly to scalar memory for easier collection
+  g_neon_u16_scalar_memory[addr] = lane_term;
 }
 
 /**
@@ -890,6 +912,11 @@ inline void vst1q_u16(uint16_t *ptr, const uint16x8_t &vec) {
 inline void vst1_u16(uint16_t *ptr, const uint16x4_t &vec) {
   uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
   g_neon_memory_u16x4[addr].push_back(vec);
+
+  // Also store each element to scalar memory for easier collection
+  for (int i = 0; i < 4; i++) {
+    g_neon_u16_scalar_memory[addr + i * sizeof(uint16_t)] = vec.getLane(i);
+  }
 }
 
 /**
@@ -912,6 +939,9 @@ inline void vst1_lane_u16(uint16_t *ptr, const uint16x4_t &vec, int lane) {
     full_lanes[i] = full_lanes[1];
   }
   g_neon_memory_i8x8[addr].push_back(int8x8_t(g_symbolic_tm, full_lanes));
+
+  // Also store the uint16 value directly to scalar memory for easier collection
+  g_neon_u16_scalar_memory[addr] = lane_term;
 }
 
 #endif // NEON_SYMBOLIC_MEMORY_HPP

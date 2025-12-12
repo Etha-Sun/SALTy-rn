@@ -324,6 +324,40 @@ public:
 };
 
 /**
+ * Symbolic representation of ARM NEON int64x2_t vector type
+ * Represents 2 lanes of 64-bit signed integers
+ */
+class int64x2_t {
+private:
+    std::array<Term, 2> lanes;
+    TermManager* tm;
+
+public:
+    inline int64x2_t(TermManager* t) : tm(t) {
+        Sort bv64 = tm->mkBitVectorSort(64);
+        for (int i = 0; i < 2; i++) {
+            lanes[i] = tm->mkConst(bv64, "int64x2_" + std::to_string(i));
+        }
+    }
+
+    // Constructor with existing terms
+    inline int64x2_t(TermManager* t, const std::array<Term, 2>& data)
+        : lanes(data), tm(t) {}
+
+    inline Term getLane(int idx) const {
+        return lanes[idx];
+    }
+
+    inline const std::array<Term, 2>& getLanes() const {
+        return lanes;
+    }
+
+    inline TermManager* getTermManager() const {
+        return tm;
+    }
+};
+
+/**
  * Symbolic representation of ARM NEON uint64x1_t vector type
  * Represents 1 lane of 64-bit unsigned integer
  */

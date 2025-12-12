@@ -30,6 +30,13 @@ inline int8x16_t vdupq_n_s8(int8_t value) {
 }
 
 /**
+ * vmovq_n_s8: Move scalar to all lanes (int8x16) - alias for vdupq_n_s8
+ */
+inline int8x16_t vmovq_n_s8(int8_t value) {
+    return vdupq_n_s8(value);
+}
+
+/**
  * vdup_n_s8: Duplicate scalar to all lanes (int8x8)
  */
 inline int8x8_t vdup_n_s8(int8_t value) {
@@ -296,18 +303,52 @@ inline int32x2_t vadd_s32(const int32x2_t& a, const int32x2_t& b) {
  */
 inline int32x2_t vpadd_s32(const int32x2_t& a, const int32x2_t& b) {
     std::array<Term, 2> result_lanes;
-    
+
     result_lanes[0] = g_symbolic_tm->mkTerm(
         Kind::BITVECTOR_ADD,
         {a.getLane(0), a.getLane(1)}
     );
-    
+
     result_lanes[1] = g_symbolic_tm->mkTerm(
         Kind::BITVECTOR_ADD,
         {b.getLane(0), b.getLane(1)}
     );
 
     return int32x2_t(g_symbolic_tm, result_lanes);
+}
+
+/**
+ * vpaddq_s32: Pairwise add (int32x4)
+ * Adds adjacent pairs from both vectors:
+ * result[0] = a[0] + a[1]
+ * result[1] = a[2] + a[3]
+ * result[2] = b[0] + b[1]
+ * result[3] = b[2] + b[3]
+ */
+inline int32x4_t vpaddq_s32(const int32x4_t& a, const int32x4_t& b) {
+    std::array<Term, 4> result_lanes;
+
+    result_lanes[0] = g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD,
+        {a.getLane(0), a.getLane(1)}
+    );
+
+    result_lanes[1] = g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD,
+        {a.getLane(2), a.getLane(3)}
+    );
+
+    result_lanes[2] = g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD,
+        {b.getLane(0), b.getLane(1)}
+    );
+
+    result_lanes[3] = g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_ADD,
+        {b.getLane(2), b.getLane(3)}
+    );
+
+    return int32x4_t(g_symbolic_tm, result_lanes);
 }
 
 /**
@@ -351,6 +392,27 @@ inline int32x4_t vmlaq_s32(const int32x4_t& acc, const int32x4_t& a, const int32
         Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a.getLane(i), b.getLane(i)});
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {acc.getLane(i), prod});
     }
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vmulq_lane_s32: Multiply vector by scalar lane
+ * Multiplies each element of vector 'a' by a single element (lane) from vector 'b'.
+ * result[i] = a[i] * b[lane]
+ *
+ * @param a    First source vector (int32x4_t) - all lanes used
+ * @param b    Second source vector (int32x2_t) - single lane selected
+ * @param lane Lane index (0-1) to select from vector 'b'
+ * @return     Result vector with products
+ */
+inline int32x4_t vmulq_lane_s32(const int32x4_t& a, const int32x2_t& b, const int lane) {
+    std::array<Term, 4> lanes;
+    Term b_lane = b.getLane(lane);
+
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a.getLane(i), b_lane});
+    }
+
     return int32x4_t(g_symbolic_tm, lanes);
 }
 
@@ -424,6 +486,24 @@ inline symbolic_uint32_t vgetq_lane_u32(const uint32x4_t& vec, int lane) {
 inline symbolic_uint32_t vget_lane_u32(const uint32x2_t& vec, int lane) {
     Term lane_term = vec.getLane(lane);
     return symbolic_uint32_t(g_symbolic_tm, lane_term, 0, true);
+}
+
+/**
+ * vsetq_lane_u16: Set a single lane in uint16x8
+ * Returns a new vector with the specified lane set to the given value
+ */
+inline uint16x8_t vsetq_lane_u16(uint16_t value, const uint16x8_t& vec, int lane) {
+    std::array<Term, 8> lanes;
+    Term val_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(value));
+
+    for (int i = 0; i < 8; i++) {
+        if (i == lane) {
+            lanes[i] = val_term;
+        } else {
+            lanes[i] = vec.getLane(i);
+        }
+    }
+    return uint16x8_t(g_symbolic_tm, lanes);
 }
 
 // ============================================================================
@@ -1012,6 +1092,322 @@ inline uint8x16_t vminq_u8(const uint8x16_t& a, const uint8x16_t& b) {
     return uint8x16_t(g_symbolic_tm, lanes);
 }
 
+// ============================================================================
+// Bitwise Operations (int8x16, uint8x16)
+// ============================================================================
+
+/**
+ * vandq_s8: Bitwise AND (int8x16)
+ * result[i] = a[i] & b[i]
+ */
+inline int8x16_t vandq_s8(const int8x16_t& a, const int8x16_t& b) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {a.getLane(i), b.getLane(i)});
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * veorq_s8: Bitwise XOR (int8x16)
+ * result[i] = a[i] ^ b[i]
+ */
+inline int8x16_t veorq_s8(const int8x16_t& a, const int8x16_t& b) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_XOR, {a.getLane(i), b.getLane(i)});
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vorrq_u8: Bitwise OR (uint8x16)
+ * result[i] = a[i] | b[i]
+ */
+inline uint8x16_t vorrq_u8(const uint8x16_t& a, const uint8x16_t& b) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {a.getLane(i), b.getLane(i)});
+    }
+    return uint8x16_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Shift Operations (int8x16, uint8x16)
+// ============================================================================
+
+/**
+ * vshlq_n_s8: Shift left by immediate (int8x16)
+ * result[i] = vec[i] << n
+ */
+inline int8x16_t vshlq_n_s8(const int8x16_t& vec, int n) {
+    std::array<Term, 16> lanes;
+    Term shift_amount = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(n));
+
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {vec.getLane(i), shift_amount});
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vshrq_n_u8: Shift right by immediate (uint8x16) - logical shift
+ * result[i] = vec[i] >> n (zero-fill)
+ */
+inline uint8x16_t vshrq_n_u8(const uint8x16_t& vec, int n) {
+    std::array<Term, 16> lanes;
+    Term shift_amount = g_symbolic_tm->mkBitVector(8, static_cast<uint64_t>(n));
+
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_LSHR, {vec.getLane(i), shift_amount});
+    }
+    return uint8x16_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Dot Product Operations
+// ============================================================================
+
+/**
+ * vdotq_s32: Dot product of int8x16 vectors, accumulated to int32x4
+ *
+ * Performs 4 separate dot products of 4 int8 elements each.
+ * For each i in [0,3]:
+ *   result[i] = acc[i] + sum(a[4*i + j] * b[4*i + j]) for j in [0,3]
+ *
+ * This is used in quantized neural network operations.
+ */
+inline int32x4_t vdotq_s32(const int32x4_t& acc, const int8x16_t& a, const int8x16_t& b) {
+    std::array<Term, 4> lanes;
+    Op sign_extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {24});  // 8 -> 32 bits
+
+    for (int i = 0; i < 4; i++) {
+        // Start with accumulator value
+        Term sum = acc.getLane(i);
+
+        // Compute dot product of 4 int8 elements
+        for (int j = 0; j < 4; j++) {
+            int idx = 4 * i + j;
+            // Sign-extend both operands to 32 bits
+            Term a_ext = g_symbolic_tm->mkTerm(sign_extend_op, {a.getLane(idx)});
+            Term b_ext = g_symbolic_tm->mkTerm(sign_extend_op, {b.getLane(idx)});
+            // Multiply
+            Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+            // Accumulate
+            sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {sum, prod});
+        }
+        lanes[i] = sum;
+    }
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vdotq_lane_s32: Dot product with lane selection from int8x8
+ *
+ * Performs 4 separate dot products of 4 int8 elements each.
+ * The 'a' operand is an int8x8 (64-bit), where each "lane" (0 or 1) represents
+ * a group of 4 consecutive int8 elements. The selected lane's 4 elements are
+ * broadcast to multiply against each group of 4 elements in 'b'.
+ *
+ * For lane 0: uses a[0..3]
+ * For lane 1: uses a[4..7]
+ *
+ * For each i in [0,3]:
+ *   result[i] = acc[i] + sum(a[lane*4 + j] * b[4*i + j]) for j in [0,3]
+ *
+ * @param acc  Accumulator vector (int32x4_t)
+ * @param b    Second source vector (int8x16_t) - 16 int8 elements
+ * @param a    First source vector (int8x8_t) - 8 int8 elements, select lane 0 or 1
+ * @param lane Lane index (0-1) to select 4 consecutive elements from 'a'
+ * @return     Result vector with accumulated dot products
+ */
+inline int32x4_t vdotq_lane_s32(const int32x4_t& acc, const int8x16_t& b, const int8x8_t& a, const int lane) {
+    std::array<Term, 4> lanes;
+    Op sign_extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {24});  // 8 -> 32 bits
+
+    // Base index in 'a' for the selected lane (each lane has 4 elements)
+    int a_base = lane * 4;
+
+    for (int i = 0; i < 4; i++) {
+        // Start with accumulator value
+        Term sum = acc.getLane(i);
+
+        // Compute dot product of 4 int8 elements
+        // a elements come from selected lane (a_base + j)
+        // b elements come from the corresponding group (4*i + j)
+        for (int j = 0; j < 4; j++) {
+            int b_idx = 4 * i + j;
+            int a_idx = a_base + j;
+            // Sign-extend both operands to 32 bits
+            Term a_ext = g_symbolic_tm->mkTerm(sign_extend_op, {a.getLane(a_idx)});
+            Term b_ext = g_symbolic_tm->mkTerm(sign_extend_op, {b.getLane(b_idx)});
+            // Multiply
+            Term prod = g_symbolic_tm->mkTerm(Kind::BITVECTOR_MULT, {a_ext, b_ext});
+            // Accumulate
+            sum = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {sum, prod});
+        }
+        lanes[i] = sum;
+    }
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Zip Operations (int8x16, int64x2)
+// ============================================================================
+
+/**
+ * vzip1q_s8: Zip lower halves of two int8x16 vectors
+ * Interleaves elements from the lower half of both vectors:
+ * result = { a[0], b[0], a[1], b[1], a[2], b[2], a[3], b[3],
+ *            a[4], b[4], a[5], b[5], a[6], b[6], a[7], b[7] }
+ */
+inline int8x16_t vzip1q_s8(const int8x16_t& a, const int8x16_t& b) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 8; i++) {
+        lanes[2 * i] = a.getLane(i);
+        lanes[2 * i + 1] = b.getLane(i);
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vzip2q_s8: Zip upper halves of two int8x16 vectors
+ * Interleaves elements from the upper half of both vectors:
+ * result = { a[8], b[8], a[9], b[9], a[10], b[10], a[11], b[11],
+ *            a[12], b[12], a[13], b[13], a[14], b[14], a[15], b[15] }
+ */
+inline int8x16_t vzip2q_s8(const int8x16_t& a, const int8x16_t& b) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 8; i++) {
+        lanes[2 * i] = a.getLane(i + 8);
+        lanes[2 * i + 1] = b.getLane(i + 8);
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vzip1q_s64: Zip lower elements of two int64x2 vectors
+ * result = { a[0], b[0] }
+ */
+inline int64x2_t vzip1q_s64(const int64x2_t& a, const int64x2_t& b) {
+    std::array<Term, 2> lanes;
+    lanes[0] = a.getLane(0);
+    lanes[1] = b.getLane(0);
+    return int64x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vzip2q_s64: Zip upper elements of two int64x2 vectors
+ * result = { a[1], b[1] }
+ */
+inline int64x2_t vzip2q_s64(const int64x2_t& a, const int64x2_t& b) {
+    std::array<Term, 2> lanes;
+    lanes[0] = a.getLane(1);
+    lanes[1] = b.getLane(1);
+    return int64x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vuzp1q_s64: Unzip even elements from two int64x2 vectors
+ * result = { a[0], b[0] }
+ */
+inline int64x2_t vuzp1q_s64(const int64x2_t& a, const int64x2_t& b) {
+    std::array<Term, 2> lanes;
+    lanes[0] = a.getLane(0);
+    lanes[1] = b.getLane(0);
+    return int64x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vuzp2q_s64: Unzip odd elements from two int64x2 vectors
+ * result = { a[1], b[1] }
+ */
+inline int64x2_t vuzp2q_s64(const int64x2_t& a, const int64x2_t& b) {
+    std::array<Term, 2> lanes;
+    lanes[0] = a.getLane(1);
+    lanes[1] = b.getLane(1);
+    return int64x2_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Reinterpret Cast Operations (int8/int64/uint8)
+// ============================================================================
+
+/**
+ * vreinterpretq_s64_s8: Reinterpret int8x16 as int64x2
+ * Combines 8 int8 lanes into each int64 lane
+ */
+inline int64x2_t vreinterpretq_s64_s8(const int8x16_t& vec) {
+    std::array<Term, 2> lanes;
+
+    for (int i = 0; i < 2; i++) {
+        // Combine 8 bytes into one 64-bit value (little-endian)
+        Term result = g_symbolic_tm->mkTerm(
+            g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {56}),
+            {vec.getLane(i * 8)}
+        );
+        for (int j = 1; j < 8; j++) {
+            Term byte_ext = g_symbolic_tm->mkTerm(
+                g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {56}),
+                {vec.getLane(i * 8 + j)}
+            );
+            Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL,
+                {byte_ext, g_symbolic_tm->mkBitVector(64, static_cast<uint64_t>(j * 8))});
+            result = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {result, shifted});
+        }
+        lanes[i] = result;
+    }
+    return int64x2_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vreinterpretq_s8_s64: Reinterpret int64x2 as int8x16
+ * Splits each int64 lane into 8 int8 lanes
+ */
+inline int8x16_t vreinterpretq_s8_s64(const int64x2_t& vec) {
+    std::array<Term, 16> lanes;
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 8; j++) {
+            // Extract 8 bits at position j*8
+            Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT,
+                {static_cast<uint32_t>(j * 8 + 7), static_cast<uint32_t>(j * 8)});
+            lanes[i * 8 + j] = g_symbolic_tm->mkTerm(extract_op, {vec.getLane(i)});
+        }
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vreinterpretq_u8_s64: Reinterpret int64x2 as uint8x16
+ * Splits each int64 lane into 8 uint8 lanes
+ */
+inline uint8x16_t vreinterpretq_u8_s64(const int64x2_t& vec) {
+    std::array<Term, 16> lanes;
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 8; j++) {
+            // Extract 8 bits at position j*8
+            Op extract_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT,
+                {static_cast<uint32_t>(j * 8 + 7), static_cast<uint32_t>(j * 8)});
+            lanes[i * 8 + j] = g_symbolic_tm->mkTerm(extract_op, {vec.getLane(i)});
+        }
+    }
+    return uint8x16_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vreinterpretq_s8_u8: Reinterpret uint8x16 as int8x16
+ * No-op at the bitvector level (same bit representation)
+ */
+inline int8x16_t vreinterpretq_s8_u8(const uint8x16_t& vec) {
+    std::array<Term, 16> lanes;
+    for (int i = 0; i < 16; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return int8x16_t(g_symbolic_tm, lanes);
+}
+
 /**
  * vcltq_s16: Compare less than (int16x8)
  * result[i] = (a[i] < b[i]) ? 0xFFFF : 0x0000
@@ -1020,12 +1416,30 @@ inline uint16x8_t vcltq_s16(const int16x8_t& a, const int16x8_t& b) {
     std::array<Term, 8> lanes;
     Term all_ones = g_symbolic_tm->mkBitVector(16, 0xFFFF);
     Term all_zeros = g_symbolic_tm->mkBitVector(16, 0x0000);
-    
+
     for (int i = 0; i < 8; i++) {
         Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {a.getLane(i), b.getLane(i)});
         lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, all_ones, all_zeros});
     }
     return uint16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vcltq_s32: Compare less than (int32x4)
+ * result[i] = (a[i] < b[i]) ? 0xFFFFFFFF : 0x00000000
+ * Returns uint32x4_t mask where each lane is all 1s if a < b (signed), else all 0s
+ */
+inline uint32x4_t vcltq_s32(const int32x4_t& a, const int32x4_t& b) {
+    std::array<Term, 4> lanes;
+    Term all_ones = g_symbolic_tm->mkBitVector(32, 0xFFFFFFFF);
+    Term all_zeros = g_symbolic_tm->mkBitVector(32, 0x00000000);
+
+    for (int i = 0; i < 4; i++) {
+        // Signed less than comparison
+        Term cmp = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {a.getLane(i), b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, all_ones, all_zeros});
+    }
+    return uint32x4_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -1488,6 +1902,19 @@ inline uint16x4_t vreinterpret_u16_u8(const uint8x8_t& vec) {
 }
 
 /**
+ * vreinterpret_u16_s16: Reinterpret int16x4_t as uint16x4_t
+ * No-op conversion - just treats the bits as unsigned instead of signed
+ */
+inline uint16x4_t vreinterpret_u16_s16(const int16x4_t& vec) {
+    TermManager* tm = vec.getTermManager();
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = vec.getLane(i);
+    }
+    return uint16x4_t(tm, lanes);
+}
+
+/**
  * vreinterpretq_s16_u16: Reinterpret uint16x8_t as int16x8_t
  * No-op conversion - just treats the bits as signed instead of unsigned
  */
@@ -1754,11 +2181,40 @@ inline float32x4_t vcvtq_f32_s32(const int32x4_t& vec) {
     std::array<Term, 4> lanes;
     Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
     Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {8, 24});
-    
+
     for (int i = 0; i < 4; i++) {
         lanes[i] = g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getLane(i)});
     }
-    
+
+    return float32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vcvtq_n_f32_s32: Convert signed int32x4 to float32x4 with fixed-point scaling
+ * Converts fixed-point integers to floating-point by dividing by 2^n.
+ * result[i] = (float)vec[i] / 2^n
+ *
+ * @param vec Input vector of signed 32-bit integers (fixed-point values)
+ * @param n   Number of fractional bits (1-32), determines the divisor 2^n
+ * @return    Result vector of float32 values
+ */
+inline float32x4_t vcvtq_n_f32_s32(const int32x4_t& vec, const int n) {
+    std::array<Term, 4> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {8, 24});
+
+    // Create the divisor 2^n as a float constant
+    float divisor = static_cast<float>(1ULL << n);
+    Term divisor_term = g_symbolic_tm->mkFloatingPoint(8, 24,
+        g_symbolic_tm->mkBitVector(32, *reinterpret_cast<uint32_t*>(&divisor)));
+
+    for (int i = 0; i < 4; i++) {
+        // Convert integer to float
+        Term float_val = g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getLane(i)});
+        // Divide by 2^n
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_DIV, {rm, float_val, divisor_term});
+    }
+
     return float32x4_t(g_symbolic_tm, lanes);
 }
 
@@ -2064,6 +2520,23 @@ inline int32x4_t vshll_n_s16(const int16x4_t& vec, int n) {
         lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {extended, shift_amount});
     }
     return int32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vshll_n_u16: Shift left long by immediate (uint16 -> uint32)
+ * Zero-extends uint16x4 to uint32x4, then shifts left by n bits
+ * result[i] = zero_extend(vec[i]) << n
+ */
+inline uint32x4_t vshll_n_u16(const uint16x4_t& vec, int n) {
+    std::array<Term, 4> lanes;
+    Op extend_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_ZERO_EXTEND, {16});
+    Term shift_amount = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(n));
+
+    for (int i = 0; i < 4; i++) {
+        Term extended = g_symbolic_tm->mkTerm(extend_op, {vec.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SHL, {extended, shift_amount});
+    }
+    return uint32x4_t(g_symbolic_tm, lanes);
 }
 
 /**
@@ -3058,6 +3531,26 @@ inline float32x4_t vmlaq_lane_f32(const float32x4_t& a, const float32x4_t& b,
 }
 
 /**
+ * vmulq_lane_f32: Multiply vector by scalar lane from float32x2
+ * result[i] = a[i] * b[lane]
+ *
+ * @param a    First source vector (float32x4_t) - all lanes used
+ * @param b    Second source vector (float32x2_t) - single lane selected
+ * @param lane Lane index (0-1) to select from vector 'b'
+ * @return     Result vector with products
+ */
+inline float32x4_t vmulq_lane_f32(const float32x4_t& a, const float32x2_t& b, const int lane) {
+    std::array<Term, 4> lanes;
+    Term b_lane = b.getLane(lane);
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_MULT, {rm, a.getLane(i), b_lane});
+    }
+    return float32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vzipq_f32: Interleave elements from two vectors
  * Returns two vectors:
  *   val[0] = { a[0], b[0], a[1], b[1] }
@@ -3745,6 +4238,108 @@ inline float16x8_t vfmaq_f16(const float16x8_t& acc, const float16x8_t& a, const
 }
 
 /**
+ * vfmsq_f16: Fused multiply-subtract (float16x8)
+ * result[i] = acc[i] - a[i] * b[i]
+ * This is a fused operation (single rounding)
+ */
+inline float16x8_t vfmsq_f16(const float16x8_t& acc, const float16x8_t& a, const float16x8_t& b) {
+    std::array<Term, 8> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    for (int i = 0; i < 8; i++) {
+        // FMS: acc - a * b = acc + (-a) * b
+        // Negate a first
+        Term neg_a = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_NEG, {a.getLane(i)});
+        // FMA with negated a: acc + (-a) * b
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_FMA, {rm, neg_a, b.getLane(i), acc.getLane(i)});
+    }
+
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vabsq_f16: Absolute value (float16x8)
+ * result[i] = |a[i]|
+ * Returns the absolute value of each floating-point element.
+ */
+inline float16x8_t vabsq_f16(const float16x8_t& a) {
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ABS, {a.getLane(i)});
+    }
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vminq_f16: Element-wise minimum of two float16x8 vectors
+ */
+inline float16x8_t vminq_f16(const float16x8_t& a, const float16x8_t& b) {
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_LT, {a.getLane(i), b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, a.getLane(i), b.getLane(i)});
+    }
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vdivq_f16: Element-wise division of two float16x8 vectors
+ * result[i] = a[i] / b[i]
+ */
+inline float16x8_t vdivq_f16(const float16x8_t& a, const float16x8_t& b) {
+    std::array<Term, 8> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    for (int i = 0; i < 8; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_DIV, {rm, a.getLane(i), b.getLane(i)});
+    }
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vbslq_f16: Bitwise select (float16x8)
+ * For each bit: if mask bit is 1, select from a; else select from b
+ * This operates on the IEEE 754 bit representation of the floats.
+ * result[i] = (mask[i] & a[i]) | (~mask[i] & b[i])
+ */
+inline float16x8_t vbslq_f16(const uint16x8_t& mask, const float16x8_t& a, const float16x8_t& b) {
+    std::array<Term, 8> lanes;
+    Sort bv16 = g_symbolic_tm->mkBitVectorSort(16);
+    Sort fp16 = g_symbolic_tm->mkFloatingPointSort(5, 11);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    static int bsl_f16_counter = 0;
+
+    for (int i = 0; i < 8; i++) {
+        Term m = mask.getLane(i);
+
+        // Convert float a to bitvector
+        Term bv_a = g_symbolic_tm->mkConst(bv16, "bsl_f16_a_bv_" + std::to_string(bsl_f16_counter) + "_" + std::to_string(i));
+        Term fp_from_bv_a = g_symbolic_tm->mkTerm(to_fp_op, {bv_a});
+        Term eq_a = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv_a, a.getLane(i)});
+        g_symbolic_solver->assertFormula(eq_a);
+
+        // Convert float b to bitvector
+        Term bv_b = g_symbolic_tm->mkConst(bv16, "bsl_f16_b_bv_" + std::to_string(bsl_f16_counter) + "_" + std::to_string(i));
+        Term fp_from_bv_b = g_symbolic_tm->mkTerm(to_fp_op, {bv_b});
+        Term eq_b = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv_b, b.getLane(i)});
+        g_symbolic_solver->assertFormula(eq_b);
+
+        // Perform bitwise select on the bitvector representations
+        Term and_a = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {m, bv_a});
+        Term not_m = g_symbolic_tm->mkTerm(Kind::BITVECTOR_NOT, {m});
+        Term and_b = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {not_m, bv_b});
+        Term result_bv = g_symbolic_tm->mkTerm(Kind::BITVECTOR_OR, {and_a, and_b});
+
+        // Convert result back to floating-point
+        lanes[i] = g_symbolic_tm->mkTerm(to_fp_op, {result_bv});
+    }
+    bsl_f16_counter++;
+
+    return float16x8_t(g_symbolic_tm, lanes);
+}
+
+/**
  * vcltq_f16: Compare less than (float16x8)
  * result[i] = (a[i] < b[i]) ? 0xFFFF : 0x0000
  * Returns uint16x8_t with all-ones for true, all-zeros for false
@@ -4214,6 +4809,203 @@ inline float32x4_t vfmaq_f32(const float32x4_t& acc, const float32x4_t& a, const
     }
 
     return float32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Float to Integer Conversion Operations
+// ============================================================================
+
+/**
+ * vcvtq_s32_f32: Convert float32x4 to signed int32x4 (round toward zero)
+ * result[i] = (int32_t)a[i]
+ * Uses round toward zero (truncation) as per ARM NEON semantics.
+ */
+inline int32x4_t vcvtq_s32_f32(const float32x4_t& a) {
+    std::array<Term, 4> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_TOWARD_ZERO);
+    Op to_sbv_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_SBV, {32});
+
+    for (int i = 0; i < 4; i++) {
+        // Convert FP32 to signed 32-bit integer with truncation
+        lanes[i] = g_symbolic_tm->mkTerm(to_sbv_op, {rm, a.getLane(i)});
+    }
+
+    return int32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Absolute Compare Operations
+// ============================================================================
+
+/**
+ * vcaltq_f32: Absolute compare less than (float32x4)
+ * result[i] = |a[i]| < |b[i]| ? 0xFFFFFFFF : 0
+ * Compares absolute values and returns all-ones mask if true.
+ */
+inline uint32x4_t vcaltq_f32(const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes;
+
+    for (int i = 0; i < 4; i++) {
+        // Get absolute values
+        Term abs_a = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ABS, {a.getLane(i)});
+        Term abs_b = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ABS, {b.getLane(i)});
+
+        // Compare: |a| < |b|
+        Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_LT, {abs_a, abs_b});
+
+        // Convert boolean to all-ones or all-zeros mask
+        Term all_ones = g_symbolic_tm->mkBitVector(32, 0xFFFFFFFF);
+        Term all_zeros = g_symbolic_tm->mkBitVector(32, 0);
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, all_ones, all_zeros});
+    }
+
+    return uint32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Additional Bitwise Operations
+// ============================================================================
+
+/**
+ * vbicq_u32: Bitwise clear (AND NOT) for uint32x4
+ * result[i] = a[i] & ~b[i]
+ * Clears bits in 'a' that are set in 'b'.
+ */
+inline uint32x4_t vbicq_u32(const uint32x4_t& a, const uint32x4_t& b) {
+    std::array<Term, 4> lanes;
+
+    for (int i = 0; i < 4; i++) {
+        Term not_b = g_symbolic_tm->mkTerm(Kind::BITVECTOR_NOT, {b.getLane(i)});
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {a.getLane(i), not_b});
+    }
+
+    return uint32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Floating-Point Reciprocal Estimate Operations
+// ============================================================================
+
+/**
+ * vrecpeq_f32: Reciprocal estimate (float32x4)
+ * result[i] = approximate(1.0 / a[i])
+ * Note: This is an approximation. For symbolic verification, we model it as exact division.
+ */
+inline float32x4_t vrecpeq_f32(const float32x4_t& a) {
+    std::array<Term, 4> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    // Create 1.0f constant
+    uint32_t one_bits = 0x3F800000;  // 1.0f in IEEE 754
+    Term one_bv = g_symbolic_tm->mkBitVector(32, one_bits);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+    Term one = g_symbolic_tm->mkTerm(to_fp_op, {one_bv});
+
+    for (int i = 0; i < 4; i++) {
+        // result[i] = 1.0 / a[i]
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_DIV, {rm, one, a.getLane(i)});
+    }
+
+    return float32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vfmsq_f32: Fused multiply-subtract (float32x4)
+ * result[i] = acc[i] - a[i] * b[i]
+ * This is a fused operation (single rounding)
+ */
+inline float32x4_t vfmsq_f32(const float32x4_t& acc, const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    for (int i = 0; i < 4; i++) {
+        // FMS: acc - a * b = acc + (-a) * b
+        // Negate a first
+        Term neg_a = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_NEG, {a.getLane(i)});
+        // FMA with negated a: acc + (-a) * b
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_FMA, {rm, neg_a, b.getLane(i), acc.getLane(i)});
+    }
+
+    return float32x4_t(g_symbolic_tm, lanes);
+}
+
+// vcagtq_f32: Compare absolute greater than (|a| > |b|)
+inline uint32x4_t vcagtq_f32(const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        Term abs_a = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ABS, {a.getLane(i)});
+        Term abs_b = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ABS, {b.getLane(i)});
+        Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_GT, {abs_a, abs_b});
+        Term all_ones = g_symbolic_tm->mkBitVector(32, 0xFFFFFFFF);
+        Term all_zeros = g_symbolic_tm->mkBitVector(32, 0);
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::ITE, {cmp, all_ones, all_zeros});
+    }
+    return uint32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// Square Root Operations
+// ============================================================================
+
+/**
+ * vsqrtq_f32: Square root of each element in a float32x4_t vector
+ */
+inline float32x4_t vsqrtq_f32(const float32x4_t& a) {
+    std::array<Term, 4> lanes;
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+    for (int i = 0; i < 4; i++) {
+        lanes[i] = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_SQRT, {rm, a.getLane(i)});
+    }
+    return float32x4_t(g_symbolic_tm, lanes);
+}
+
+// ============================================================================
+// XNN SIMD Abstraction Layer (for XNNPACK compatibility)
+// ============================================================================
+
+// SIMD type alias
+typedef float32x4_t xnn_simd_f32_t;
+
+// SIMD size constants
+#define xnn_simd_size_f32 4
+#define xnn_simd_log2_size_f32 2
+#define xnn_simd_bytes_f32 (xnn_simd_size_f32 * sizeof(float))
+
+// Load operations
+inline xnn_simd_f32_t xnn_loadu_f32(const float* ptr) {
+    return vld1q_f32(ptr);
+}
+
+inline xnn_simd_f32_t xnn_load_f32(const float* ptr) {
+    return vld1q_f32(ptr);
+}
+
+// Store operations
+inline void xnn_storeu_f32(float* ptr, xnn_simd_f32_t v) {
+    vst1q_f32(ptr, v);
+}
+
+inline void xnn_store_f32(float* ptr, xnn_simd_f32_t v) {
+    vst1q_f32(ptr, v);
+}
+
+// Tail load/store operations
+inline xnn_simd_f32_t xnn_load_tail_f32(const float* input, size_t num_elements) {
+    return xnn_load_tail_safe_f32(input, num_elements);
+}
+
+inline void xnn_store_tail_f32(float* output, xnn_simd_f32_t v, size_t num_elements) {
+    // Store only the specified number of elements
+    float32x2_t v_low = vget_low_f32(v);
+    if (num_elements >= 2) {
+        vst1_f32(output, v_low);
+        output += 2;
+        v_low = vget_high_f32(v);
+        num_elements -= 2;
+    }
+    if (num_elements >= 1) {
+        vst1_lane_f32(output, v_low, 0);
+    }
 }
 
 #endif
