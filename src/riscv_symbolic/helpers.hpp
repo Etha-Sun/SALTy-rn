@@ -42,6 +42,7 @@ namespace SymbolicRISCVHelpers {
         g_riscv_memory_u16m1.clear();
         g_riscv_memory_u16m4.clear();
         g_riscv_memory_f16m4.clear();
+        g_riscv_memory_f16m8.clear();
     }
     
     inline const std::vector<vint8m1_t>* getStoredResults8(const int8_t* ptr) {

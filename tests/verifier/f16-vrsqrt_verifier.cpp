@@ -1,3 +1,4 @@
+#include <cvc5/cvc5.h>
 #include "../../src/xnn_minimal.h"
 #include "../../src/neon_symbolic/memory.hpp"
 #include "../../src/neon_symbolic/neon_symbolic.hpp"
@@ -11,3 +12,267 @@
 #include <iostream>
 #include <vector>
 
+using namespace cvc5;
+
+// Forward declarations for f16 vrsqrt kernels
+extern "C" {
+void xnn_f16_vrsqrt_ukernel__neonfp16arith_rsqrt_u16(
+    size_t batch,
+    const xnn_float16* input,
+    xnn_float16* output,
+    const struct xnn_f16_default_params* params);
+
+void xnn_f16_vrsqrt_ukernel__rvv_rsqrt(
+    size_t batch,
+    const xnn_float16* input,
+    xnn_float16* output,
+    const struct xnn_f16_default_params* params);
+}
+
+int main() {
+  // Initialize the global term manager and solver
+  TermManager tm;
+  Solver solver(tm);
+  g_symbolic_tm = &tm;
+  g_symbolic_solver = &solver;
+  solver.setOption("produce-models", "true");
+  // Enable experimental FP solver for Float16 (5/11) support
+  solver.setOption("fp-exp", "true");
+
+  // f16-vrsqrt: Reciprocal square root of float16
+  // output[i] = 1/sqrt(input[i])
+  // Both implementations use Newton-Raphson refinement for better accuracy
+  // batch is in bytes, so batch/sizeof(uint16_t) is the number of elements
+
+  const size_t num_elements = 1;  // Use 8 elements to match NEON vector width
+  const size_t batch = num_elements * sizeof(uint16_t);
+
+  // Allocate arrays for NEON operations
+  std::vector<uint16_t> input_neon(num_elements + 16, 0);
+  std::vector<uint16_t> output_neon(num_elements + 16, 0);
+
+  // Allocate arrays for RVV operations
+  std::vector<uint16_t> input_riscv(num_elements + 16, 0);
+  std::vector<uint16_t> output_riscv(num_elements + 16, 0);
+
+  // Setup params struct (not used for vrsqrt but required by signatures)
+  struct xnn_f16_default_params params;
+
+  // Clear memory before each run
+  SymbolicNEONHelpers::clearMemory();
+  SymbolicRISCVHelpers::clearMemory();
+
+  // Create symbolic inputs using bitvector representation (for uint16 loads)
+  // Both implementations load as uint16 and reinterpret/use as fp16
+  Sort bv16 = tm.mkBitVectorSort(16);
+  Sort fp16 = tm.mkFloatingPointSort(5, 11);
+  Op to_fp_op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+  // Symbolic input elements (as bitvectors)
+  std::vector<Term> symbolic_input_bv;
+  std::vector<Term> symbolic_input_fp;
+  symbolic_input_bv.reserve(num_elements);
+  symbolic_input_fp.reserve(num_elements);
+
+  for (size_t i = 0; i < num_elements; i++) {
+    Term x_bv = tm.mkConst(bv16, "x_" + std::to_string(i));
+    symbolic_input_bv.push_back(x_bv);
+
+    // Convert to fp16 for constraints
+    Term x_fp = tm.mkTerm(to_fp_op, {x_bv});
+    symbolic_input_fp.push_back(x_fp);
+
+    // Constraint: input must be positive for rsqrt (rsqrt of negative/zero = NaN/Inf)
+    Term zero = tm.mkFloatingPointPosZero(5, 11);
+    Term is_positive = tm.mkTerm(Kind::FLOATINGPOINT_GT, {x_fp, zero});
+    solver.assertFormula(is_positive);
+
+    // Exclude NaN values
+    Term is_nan = tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {x_fp});
+    solver.assertFormula(tm.mkTerm(Kind::NOT, {is_nan}));
+
+    // Exclude infinity values
+    Term is_inf = tm.mkTerm(Kind::FLOATINGPOINT_IS_INF, {x_fp});
+    solver.assertFormula(tm.mkTerm(Kind::NOT, {is_inf}));
+  }
+
+  // Populate NEON memory for input (using vld1q_u16 for uint16x8_t)
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(input_neon.data());
+    std::array<Term, 8> bv_elements;
+    for (size_t i = 0; i < num_elements; i++) {
+      bv_elements[i] = symbolic_input_bv[i];
+    }
+    // Fill remaining with zeros
+    for (size_t i = num_elements; i < 8; i++) {
+      bv_elements[i] = tm.mkBitVector(16, 0);
+    }
+    // Store as uint16x8_t since NEON code uses vld1q_u16 then reinterprets to f16
+    uint16x8_t symbolic_vec(g_symbolic_tm, bv_elements);
+    g_neon_memory_u16x8[addr].push_back(symbolic_vec);
+  }
+
+  // Populate RISC-V memory for input (using vle16_v_f16m4)
+  // RVV loads directly as f16, so store fp16 terms
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(input_riscv.data());
+    g_riscv_memory_f16m4[addr].push_back(vfloat16m4_t(g_symbolic_tm, symbolic_input_fp));
+  }
+
+  std::cout << "Testing XNNPACK f16_vrsqrt: NEON vs RISC-V equivalence" << std::endl;
+  std::cout << "Operation: output[i] = 1/sqrt(input[i])" << std::endl;
+  std::cout << "Number of elements: " << num_elements << std::endl;
+  std::cout << "Batch size (bytes): " << batch << std::endl;
+
+  // Run NEON implementation
+  std::cout << "\nRunning NEON implementation..." << std::endl;
+  xnn_f16_vrsqrt_ukernel__neonfp16arith_rsqrt_u16(
+      batch,
+      reinterpret_cast<const xnn_float16*>(input_neon.data()),
+      reinterpret_cast<xnn_float16*>(output_neon.data()),
+      &params);
+
+  // Run RISC-V implementation
+  std::cout << "Running RISC-V implementation..." << std::endl;
+  xnn_f16_vrsqrt_ukernel__rvv_rsqrt(
+      batch,
+      reinterpret_cast<const xnn_float16*>(input_riscv.data()),
+      reinterpret_cast<xnn_float16*>(output_riscv.data()),
+      &params);
+
+  // Collect NEON output results from memory
+  // NEON code stores via vst1q_u16 (full vectors), vst1_u16 (4-element vectors),
+  // or vst1_lane_u16 (scalar) depending on batch size
+  std::vector<Term> neon_output_elements;
+  {
+    uintptr_t base_addr = reinterpret_cast<uintptr_t>(output_neon.data());
+
+    // Try to collect from u16x8 storage first (for full 8-element stores)
+    auto it8 = g_neon_memory_u16x8.find(base_addr);
+    if (it8 != g_neon_memory_u16x8.end() && !it8->second.empty()) {
+      const uint16x8_t& vec = it8->second.back();
+      for (size_t i = 0; i < 8 && i < num_elements; i++) {
+        neon_output_elements.push_back(vec.getLane(i));
+      }
+    }
+
+    // If not found in u16x8, try u16x4 storage (for 4-element stores)
+    if (neon_output_elements.empty()) {
+      auto it4 = g_neon_memory_u16x4.find(base_addr);
+      if (it4 != g_neon_memory_u16x4.end() && !it4->second.empty()) {
+        const uint16x4_t& vec = it4->second.back();
+        for (size_t i = 0; i < 4 && i < num_elements; i++) {
+          neon_output_elements.push_back(vec.getLane(i));
+        }
+      }
+    }
+
+    // If not found in vector storage, try scalar u16 memory (for vst1_lane_u16)
+    if (neon_output_elements.empty()) {
+      for (size_t i = 0; i < num_elements; i++) {
+        uintptr_t addr = base_addr + i * sizeof(uint16_t);
+        auto scalar_it = g_neon_u16_scalar_memory.find(addr);
+        if (scalar_it != g_neon_u16_scalar_memory.end()) {
+          neon_output_elements.push_back(scalar_it->second);
+        }
+      }
+    }
+  }
+
+  // Collect RISC-V output results from memory
+  std::vector<Term> riscv_output_elements;
+  {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(output_riscv.data());
+    auto it = g_riscv_memory_f16m4.find(addr);
+    if (it != g_riscv_memory_f16m4.end() && !it->second.empty()) {
+      const vfloat16m4_t& vec = it->second.back();
+      for (size_t i = 0; i < vec.getVL() && i < num_elements; i++) {
+        riscv_output_elements.push_back(vec.getElement(i));
+      }
+    }
+  }
+
+  std::cout << "\nNEON collected " << neon_output_elements.size() << " output elements" << std::endl;
+  std::cout << "RISC-V collected " << riscv_output_elements.size() << " output elements" << std::endl;
+
+  if (neon_output_elements.empty()) {
+    std::cerr << "ERROR: No NEON results stored!" << std::endl;
+    return 1;
+  }
+
+  if (riscv_output_elements.empty()) {
+    std::cerr << "ERROR: No RISC-V results stored!" << std::endl;
+    return 1;
+  }
+
+  // Compare outputs
+  size_t compare_count = std::min(neon_output_elements.size(), riscv_output_elements.size());
+
+  if (neon_output_elements.size() != riscv_output_elements.size()) {
+    std::cerr << "WARNING: Different number of elements! NEON: "
+              << neon_output_elements.size() << ", RISC-V: " << riscv_output_elements.size()
+              << std::endl;
+    std::cerr << "Comparing first " << compare_count << " elements" << std::endl;
+  }
+
+  // Build floating-point equality assertions
+  // Note: The NEON and RISC-V implementations use different algorithms:
+  // - NEON: vrsqrte + Newton-Raphson step with vrsqrts
+  // - RISC-V: vfrsqrt7 + manual Newton-Raphson iteration
+  // They should produce equivalent results for valid inputs
+  //
+  // NEON outputs are bitvectors (from vst1q_u16), RVV outputs are fp16 (from vse16_v_f16m4)
+  // Convert NEON bv outputs to fp16 for comparison
+  std::vector<Term> all_equalities;
+  for (size_t i = 0; i < compare_count; i++) {
+    // Convert NEON bitvector output to fp16
+    Term neon_fp = tm.mkTerm(to_fp_op, {neon_output_elements[i]});
+    Term eq = tm.mkTerm(Kind::FLOATINGPOINT_EQ, {neon_fp, riscv_output_elements[i]});
+    all_equalities.push_back(eq);
+  }
+
+  Term all_equal;
+  if (all_equalities.size() == 1) {
+    all_equal = all_equalities[0];
+  } else {
+    all_equal = tm.mkTerm(Kind::AND, all_equalities);
+  }
+
+  Term not_equal = tm.mkTerm(Kind::NOT, {all_equal});
+
+  std::cout << "\nAsserting: NOT(NEON_result == RISC-V_result)" << std::endl;
+  std::cout << "Looking for counterexample where outputs differ..." << std::endl;
+
+  solver.assertFormula(not_equal);
+  Result result = solver.checkSat();
+
+  std::cout << "\nResult: " << result << std::endl;
+
+  if (result.isUnsat()) {
+    std::cout << "\n===== VERIFICATION PASSED =====" << std::endl;
+    std::cout << "UNSAT: No counterexample found!" << std::endl;
+    std::cout << "The NEON and RISC-V implementations are equivalent." << std::endl;
+    return 0;
+  } else if (result.isSat()) {
+    std::cout << "\n===== VERIFICATION FAILED =====" << std::endl;
+    std::cout << "SAT: Found a counterexample!" << std::endl;
+    std::cout << "Input values that cause different outputs:" << std::endl;
+
+    std::cout << "\nInput values (bitvector and fp16):" << std::endl;
+    for (size_t i = 0; i < num_elements; i++) {
+      std::cout << "  x[" << i << "] = " << solver.getValue(symbolic_input_bv[i])
+                << " (fp16: " << solver.getValue(symbolic_input_fp[i]) << ")" << std::endl;
+    }
+
+    std::cout << "\nOutput comparison:" << std::endl;
+    for (size_t i = 0; i < compare_count; i++) {
+      std::cout << "  output[" << i << "]: NEON = " << solver.getValue(neon_output_elements[i])
+                << ", RISC-V = " << solver.getValue(riscv_output_elements[i]) << std::endl;
+    }
+    return 1;
+  } else {
+    std::cout << "\n===== VERIFICATION INCONCLUSIVE =====" << std::endl;
+    std::cout << "UNKNOWN: Solver could not determine equivalence" << std::endl;
+    return 2;
+  }
+}

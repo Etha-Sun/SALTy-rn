@@ -16,7 +16,6 @@ static inline float fp32_from_bits(uint32_t w) {
   } fp32 = {w};
   return fp32.as_value;
 }
-
 static inline uint32_t fp32_to_bits(float f) {
   union {
     float as_value;
@@ -103,6 +102,13 @@ struct xnn_float16 {
 };
 typedef struct xnn_float16 xnn_float16;
 #endif
+
+struct xnn_f16_minmax_params {
+  struct {
+    xnn_float16 min;
+    xnn_float16 max;
+  } scalar;
+};
 
 // BFloat16 type definition
 struct xnn_bfloat16 {
@@ -447,6 +453,36 @@ struct xnn_f32_qc4w_minmax_params {
 struct xnn_qd8_quantization_params {
   int32_t zero_point;
   float inv_scale;
+};
+
+struct xnn_f16_lrelu_params {
+  struct {
+    xnn_float16 slope;
+  } scalar;
+};
+struct xnn_f16_elu_params {
+  struct {
+    xnn_float16 prescale;
+    xnn_float16 alpha;
+    xnn_float16 beta;
+  } scalar;
+};
+struct xnn_f16_scale_params {
+  struct {
+    xnn_float16 scale;
+  } scalar;
+};
+
+struct xnn_f16_qs8_cvt_params {
+  struct {
+    xnn_float16 scale;
+    int16_t output_zero_point;
+  } scalar;
+};
+struct xnn_f16_f32acc_scale_params {
+  struct {
+    float scale;
+  } scalar;
 };
 
 #endif // XNN_MINIMAL_H

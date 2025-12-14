@@ -844,17 +844,6 @@ struct uint8x8x2_t {
 };
 
 /**
- * uint16x4x2_t: Tuple of two uint16x4_t vectors
- * Used by vld2_u16 and similar operations
- */
-struct uint16x4x2_t {
-    uint16x4_t val[2];
-
-    uint16x4x2_t() : val{uint16x4_t(g_symbolic_tm), uint16x4_t(g_symbolic_tm)} {}
-    uint16x4x2_t(const uint16x4_t& v0, const uint16x4_t& v1) : val{v0, v1} {}
-};
-
-/**
  * uint16x8x2_t: Tuple of two uint16x8_t vectors
  * Used by vld2q_lane_u16 and similar operations
  */
@@ -918,28 +907,6 @@ struct float32x2x2_t {
 
     float32x2x2_t() : val{float32x2_t(g_symbolic_tm), float32x2_t(g_symbolic_tm)} {}
     float32x2x2_t(const float32x2_t& v0, const float32x2_t& v1) : val{v0, v1} {}
-};
-
-/**
- * float16x8x2_t: Tuple of two float16x8_t vectors
- * Used by vuzpq_f16, vzipq_f16 and similar operations that produce two result vectors
- */
-struct float16x8x2_t {
-    float16x8_t val[2];
-
-    float16x8x2_t() : val{float16x8_t(g_symbolic_tm), float16x8_t(g_symbolic_tm)} {}
-    float16x8x2_t(const float16x8_t& v0, const float16x8_t& v1) : val{v0, v1} {}
-};
-
-/**
- * float16x4x2_t: Tuple of two float16x4_t vectors
- * Used by vuzp_f16, vzip_f16 and similar operations that produce two result vectors
- */
-struct float16x4x2_t {
-    float16x4_t val[2];
-
-    float16x4x2_t() : val{float16x4_t(g_symbolic_tm), float16x4_t(g_symbolic_tm)} {}
-    float16x4x2_t(const float16x4_t& v0, const float16x4_t& v1) : val{v0, v1} {}
 };
 
 // ============================================================================
@@ -1060,6 +1027,21 @@ inline float16_t load_f16(const float16_t* ptr) {
 inline void store_f16(float16_t* ptr, const float16_t& val) {
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
     g_neon_f16_scalar_memory[addr] = val.getTerm();
+}
+
+
+inline void store_fp16_to_addr(void* ptr, const float16_t& val) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_neon_f16_scalar_memory[addr] = val.getTerm();
+}
+
+inline float16_t load_fp16_from_addr(const void* ptr) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    auto it = g_neon_f16_scalar_memory.find(addr);
+    if (it != g_neon_f16_scalar_memory.end()) {
+        return float16_t(g_symbolic_tm, it->second);
+    }
+    return float16_t(g_symbolic_tm, "fp16_load_" + std::to_string(addr));
 }
 
 #endif // NEON_SYMBOLIC_TYPES_HPP

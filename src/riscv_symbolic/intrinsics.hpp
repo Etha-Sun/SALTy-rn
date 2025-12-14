@@ -183,6 +183,15 @@ inline size_t __riscv_vsetvl_e16m1(size_t avl) {
   return avl;
 }
 
+/**
+ * __riscv_vsetvl_e16m2: Set vector length for 16-bit elements with LMUL=2
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
+ */
+inline size_t __riscv_vsetvl_e16m2(size_t avl) {
+  g_current_vl = avl;
+  return avl;
+}
+
 // ============================================================================
 // Load Operations
 // ============================================================================
@@ -1868,6 +1877,26 @@ inline vfloat32m4_t __riscv_vfcvt_f_x_v_f32m4(const vint32m4_t &vec, size_t vl) 
   for (size_t i = 0; i < vl; i++) {
     result_elements.push_back(
         g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfwcvt_f_f_v_f32m4: Widening convert float16m2 to float32m4
+ * Converts each fp16 element to fp32 (widens from LMUL=2 to LMUL=4)
+ */
+inline vfloat32m4_t __riscv_vfwcvt_f_f_v_f32m4(const vfloat16m2_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp32_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_FP, {8, 24});
+
+  for (size_t i = 0; i < vl && i < vec.getVL(); i++) {
+    // Widen fp16 to fp32
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_fp32_op, {rm, vec.getElement(i)}));
   }
 
   return vfloat32m4_t(g_symbolic_tm, result_elements);
@@ -4895,6 +4924,73 @@ inline vfloat32m2_t __riscv_vfmul_vf_f32m2(const vfloat32m2_t &vec, float scalar
 }
 
 /**
+ * __riscv_vfmv_v_f_f32m2: Splat scalar float to all vector elements (LMUL=2)
+ * Creates a vector where all elements equal the scalar value
+ */
+inline vfloat32m2_t __riscv_vfmv_v_f_f32m2(float scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert float scalar to its IEEE 754 bit representation
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(scalar_term);
+  }
+
+  return vfloat32m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfwadd_wv_f32m2: Widening add of f32m2 + f16m1 -> f32m2
+ * Widens f16m1 source to f32, then adds to f32m2 destination
+ * result[i] = dest[i] + widen(src[i])
+ */
+inline vfloat32m2_t __riscv_vfwadd_wv_f32m2(const vfloat32m2_t &dest,
+                                             const vfloat16m1_t &src,
+                                             size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp32_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_FP, {8, 24});
+
+  for (size_t i = 0; i < vl; i++) {
+    // Widen f16 to f32
+    Term widened = g_symbolic_tm->mkTerm(to_fp32_op, {rm, src.getElement(i)});
+    // Add to destination
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_ADD, {rm, dest.getElement(i), widened}));
+  }
+
+  return vfloat32m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfadd_vv_f32m2: Vector-vector addition for float32 (LMUL=2)
+ * result[i] = op1[i] + op2[i]
+ */
+inline vfloat32m2_t __riscv_vfadd_vv_f32m2(const vfloat32m2_t &op1,
+                                            const vfloat32m2_t &op2,
+                                            size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_ADD, {rm, op1.getElement(i), op2.getElement(i)}));
+  }
+
+  return vfloat32m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vadd_vx_i32m2: Add scalar to int32m2 vector
  */
 inline vint32m2_t __riscv_vadd_vx_i32m2(const vint32m2_t &vec, int32_t scalar,
@@ -5027,6 +5123,158 @@ inline vfloat16m1_t __riscv_vfmacc_vv_f16m1(const vfloat16m1_t &acc, const vfloa
 }
 
 /**
+ * __riscv_vfmadd_vv_f16m1: Fused multiply-add (vector-vector)
+ * result[i] = acc[i] * op1[i] + op2[i]
+ */
+inline vfloat16m1_t __riscv_vfmadd_vv_f16m1(const vfloat16m1_t &acc, const vfloat16m1_t &op1,
+                                             const vfloat16m1_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    // FMA: acc * op1 + op2
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_FMA, {rm, acc.getElement(i), op1.getElement(i), op2.getElement(i)}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfnmsac_vf_f16m1: Fused negative multiply-subtract from accumulator (vector-scalar)
+ * result[i] = acc[i] - (vec[i] * scalar)
+ * This is equivalent to: acc - (vec * scalar) = acc + (-(vec * scalar))
+ */
+inline vfloat16m1_t __riscv_vfnmsac_vf_f16m1(const vfloat16m1_t &acc, _Float16 scalar,
+                                              const vfloat16m1_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to symbolic floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Negate the scalar for FMA: acc + (-scalar) * vec = acc - scalar * vec
+    Term neg_scalar = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_NEG, {scalar_term});
+    // FMA: acc + (-scalar) * vec
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_FMA, {rm, neg_scalar, vec.getElement(i), acc.getElement(i)}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfnmsac_vv_f16m1: Fused negative multiply-subtract from accumulator (vector-vector)
+ * result[i] = acc[i] - (op1[i] * op2[i])
+ * This is equivalent to: acc - (op1 * op2)
+ */
+inline vfloat16m1_t __riscv_vfnmsac_vv_f16m1(const vfloat16m1_t &acc, const vfloat16m1_t &op1,
+                                              const vfloat16m1_t &op2, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Negate op1 for FMA: acc + (-op1) * op2 = acc - op1 * op2
+    Term neg_op1 = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_NEG, {op1.getElement(i)});
+    // FMA: acc + (-op1) * op2
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_FMA, {rm, neg_op1, op2.getElement(i), acc.getElement(i)}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmax_vf_f16m1: Element-wise maximum with scalar
+ * result[i] = max(vec[i], scalar)
+ */
+inline vfloat16m1_t __riscv_vfmax_vf_f16m1(const vfloat16m1_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to its IEEE 754 bit representation
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  for (size_t i = 0; i < vl; i++) {
+    // result = vec[i] > scalar ? vec[i] : scalar
+    Term gt = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_GT, {vec.getElement(i), scalar_term});
+    result_elements.push_back(g_symbolic_tm->mkTerm(Kind::ITE, {gt, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmax_vv_f16m1: Element-wise maximum between two vectors
+ * result[i] = max(a[i], b[i])
+ */
+inline vfloat16m1_t __riscv_vfmax_vv_f16m1(const vfloat16m1_t &a, const vfloat16m1_t &b, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Use FLOATINGPOINT_MAX for IEEE 754 compliant maximum
+    Term max_val = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_MAX, {a.getElement(i), b.getElement(i)});
+    result_elements.push_back(max_val);
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmin_vf_f16m1: Element-wise minimum with scalar
+ * result[i] = min(vec[i], scalar)
+ */
+inline vfloat16m1_t __riscv_vfmin_vf_f16m1(const vfloat16m1_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to its IEEE 754 bit representation
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  for (size_t i = 0; i < vl; i++) {
+    // result = vec[i] < scalar ? vec[i] : scalar
+    Term lt = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_LT, {vec.getElement(i), scalar_term});
+    result_elements.push_back(g_symbolic_tm->mkTerm(Kind::ITE, {lt, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmin_vv_f16m1: Element-wise minimum between two vectors
+ * result[i] = min(a[i], b[i])
+ */
+inline vfloat16m1_t __riscv_vfmin_vv_f16m1(const vfloat16m1_t &a, const vfloat16m1_t &b, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Use FLOATINGPOINT_MIN for IEEE 754 compliant minimum
+    Term min_val = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_MIN, {a.getElement(i), b.getElement(i)});
+    result_elements.push_back(min_val);
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vfmul_vv_f16m1: Multiply two float16 vectors element-wise
  * result[i] = op1[i] * op2[i]
  */
@@ -5039,6 +5287,30 @@ inline vfloat16m1_t __riscv_vfmul_vv_f16m1(const vfloat16m1_t &op1, const vfloat
   for (size_t i = 0; i < vl; i++) {
     result_elements.push_back(g_symbolic_tm->mkTerm(
         Kind::FLOATINGPOINT_MULT, {rm, op1.getElement(i), op2.getElement(i)}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmul_vf_f16m1: Vector-scalar multiply for float16 (LMUL=1)
+ * result[i] = vec[i] * scalar
+ */
+inline vfloat16m1_t __riscv_vfmul_vf_f16m1(const vfloat16m1_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to symbolic floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
   }
 
   return vfloat16m1_t(g_symbolic_tm, result_elements);
@@ -5060,6 +5332,170 @@ inline vfloat16m1_t __riscv_vfadd_vv_f16m1(const vfloat16m1_t &op1, const vfloat
   }
 
   return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vslidedown_vx_f16m1: Slide float16 vector elements down by offset
+ * result[i] = src[i + offset] for valid indices, 0 otherwise
+ */
+inline vfloat16m1_t __riscv_vslidedown_vx_f16m1(const vfloat16m1_t &src,
+                                                  size_t offset, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(5, 11);  // IEEE 754 half precision
+
+  for (size_t i = 0; i < vl; i++) {
+    size_t src_idx = i + offset;
+    if (src_idx < src.getVL()) {
+      result_elements.push_back(src.getElement(src_idx));
+    } else {
+      result_elements.push_back(zero);
+    }
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfslide1down_vf_f16m1: Slide float16 elements down by 1 and insert scalar at top
+ * result[i] = src[i + 1] for i < vl-1, result[vl-1] = scalar
+ * Elements shift toward lower indices, scalar inserted at highest index
+ */
+inline vfloat16m1_t __riscv_vfslide1down_vf_f16m1(const vfloat16m1_t &src,
+                                                   _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Shift elements down: result[i] = src[i + 1]
+  for (size_t i = 0; i < vl - 1; i++) {
+    if (i + 1 < src.getVL()) {
+      result_elements.push_back(src.getElement(i + 1));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkFloatingPointPosZero(5, 11));
+    }
+  }
+
+  // Insert scalar at the top (last position)
+  // Convert _Float16 to IEEE 754 half-precision floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Term scalar_term = g_symbolic_tm->mkFloatingPoint(5, 11,
+      g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits)));
+  result_elements.push_back(scalar_term);
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfslide1down_vf_f16m1_sym: Slide with symbolic scalar from pointer
+ * Same as vfslide1down but looks up the scalar value in symbolic memory
+ */
+inline vfloat16m1_t __riscv_vfslide1down_vf_f16m1_sym(const vfloat16m1_t &src,
+                                                       const _Float16* scalar_ptr, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Shift elements down: result[i] = src[i + 1]
+  for (size_t i = 0; i < vl - 1; i++) {
+    if (i + 1 < src.getVL()) {
+      result_elements.push_back(src.getElement(i + 1));
+    } else {
+      result_elements.push_back(g_symbolic_tm->mkFloatingPointPosZero(5, 11));
+    }
+  }
+
+  // Look up scalar in symbolic memory
+  uintptr_t addr = reinterpret_cast<uintptr_t>(scalar_ptr);
+  Term scalar_term;
+
+  if (g_riscv_scalar_memory.count(addr)) {
+    scalar_term = g_riscv_scalar_memory[addr];
+  } else {
+    // Fall back to concrete value
+    uint16_t bits;
+    std::memcpy(&bits, scalar_ptr, sizeof(bits));
+    scalar_term = g_symbolic_tm->mkFloatingPoint(5, 11,
+        g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits)));
+  }
+  result_elements.push_back(scalar_term);
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfcvt_f_x_v_f16m1: Convert signed int16 vector to float16 vector (LMUL=1)
+ * result[i] = (float16)vec[i]
+ * Converts each signed 16-bit integer element to a float16 value.
+ */
+inline vfloat16m1_t __riscv_vfcvt_f_x_v_f16m1(const vint16m1_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_SBV, {5, 11});  // IEEE 754 half precision
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_fp_op, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfcvt_x_f_v_i16m1_rm: Convert float16 vector to signed int16 vector with rounding mode
+ * result[i] = (int16)vec[i] with specified rounding mode
+ * Rounding modes:
+ *   __RISCV_FRM_RNE = 0: Round to Nearest, ties to Even
+ *   __RISCV_FRM_RTZ = 1: Round toward Zero
+ *   __RISCV_FRM_RDN = 2: Round Down (toward -inf)
+ *   __RISCV_FRM_RUP = 3: Round Up (toward +inf)
+ *   __RISCV_FRM_RMM = 4: Round to Nearest, ties to Max Magnitude
+ */
+#define __RISCV_FRM_RNE 0
+#define __RISCV_FRM_RTZ 1
+#define __RISCV_FRM_RDN 2
+#define __RISCV_FRM_RUP 3
+#define __RISCV_FRM_RMM 4
+
+inline vint16m1_t __riscv_vfcvt_x_f_v_i16m1_rm(const vfloat16m1_t &vec, int frm, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Map RISC-V FRM to cvc5 rounding mode
+  RoundingMode cvc5_rm;
+  switch (frm) {
+    case __RISCV_FRM_RNE:
+      cvc5_rm = RoundingMode::ROUND_NEAREST_TIES_TO_EVEN;
+      break;
+    case __RISCV_FRM_RTZ:
+      cvc5_rm = RoundingMode::ROUND_TOWARD_ZERO;
+      break;
+    case __RISCV_FRM_RDN:
+      cvc5_rm = RoundingMode::ROUND_TOWARD_NEGATIVE;
+      break;
+    case __RISCV_FRM_RUP:
+      cvc5_rm = RoundingMode::ROUND_TOWARD_POSITIVE;
+      break;
+    case __RISCV_FRM_RMM:
+      // cvc5 doesn't have ties-to-max-magnitude, use ties-to-even as approximation
+      cvc5_rm = RoundingMode::ROUND_NEAREST_TIES_TO_EVEN;
+      break;
+    default:
+      cvc5_rm = RoundingMode::ROUND_NEAREST_TIES_TO_EVEN;
+      break;
+  }
+
+  Term rm = g_symbolic_tm->mkRoundingMode(cvc5_rm);
+  Op to_sbv_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_SBV, {16});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(
+        g_symbolic_tm->mkTerm(to_sbv_op, {rm, vec.getElement(i)}));
+  }
+
+  return vint16m1_t(g_symbolic_tm, result_elements);
 }
 
 /**
@@ -5153,6 +5589,25 @@ inline vbool16_t __riscv_vmflt_vf_f16m1_b16(const vfloat16m1_t &vec, _Float16 sc
 }
 
 /**
+ * __riscv_vmslt_vx_i16m1_b16: Signed less than comparison (vector vs scalar) for int16 (LMUL=1)
+ * Returns vbool16_t mask where result[i] = vec[i] < scalar (signed comparison)
+ */
+inline vbool16_t __riscv_vmslt_vx_i16m1_b16(const vint16m1_t &vec, int16_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(static_cast<uint16_t>(scalar)));
+
+  for (size_t i = 0; i < vl; i++) {
+    // Signed less than comparison
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::BITVECTOR_SLT, {vec.getElement(i), scalar_term}));
+  }
+
+  return vbool16_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vmerge_vvm_f16m1: Merge with mask (vector-vector)
  * result[i] = mask[i] ? op2[i] : op1[i]
  */
@@ -5200,6 +5655,23 @@ inline vfloat16m1_t __riscv_vfredosum_vs_f16m1_f16m1(const vfloat16m1_t &vec,
 inline _Float16 __riscv_vfmv_f_s_f16m1_f16(const vfloat16m1_t &vec) {
   // Store the symbolic result for later verification
   g_riscv_scalar_results["vfmv_f_s_f16m1_f16"] = vec.getElement(0);
+
+  // Return a placeholder value (actual value tracked symbolically)
+  return static_cast<_Float16>(0.0);
+}
+
+/**
+ * rvv_extract_lane_f16: Extract element at specified index from float16 vector
+ * This is a helper function (not a standard RVV intrinsic) to extract any lane.
+ * Returns the element at the specified index as a _Float16
+ * @param vec The source vector
+ * @param lane The lane index to extract
+ * @param vl The vector length (used for bounds checking)
+ */
+inline _Float16 rvv_extract_lane_f16(const vfloat16m1_t &vec, size_t lane, size_t vl) {
+  (void)vl; // vl is used for bounds context but not strictly needed for extraction
+  // Store the symbolic result for later verification
+  g_riscv_scalar_results["rvv_extract_lane_f16_" + std::to_string(lane)] = vec.getElement(lane);
 
   // Return a placeholder value (actual value tracked symbolically)
   return static_cast<_Float16>(0.0);
@@ -5275,6 +5747,10 @@ inline vfloat16m1_t vfredosum_vs_f16m1_f16m1(const vfloat16m1_t &vec,
 
 inline _Float16 vfmv_f_s_f16m1_f16(const vfloat16m1_t &vec) {
   return __riscv_vfmv_f_s_f16m1_f16(vec);
+}
+
+inline vfloat16m1_t vfslide1down_vf_f16m1(const vfloat16m1_t &src, _Float16 scalar, size_t vl) {
+  return __riscv_vfslide1down_vf_f16m1(src, scalar, vl);
 }
 
 inline size_t vsetvl_e16m1(size_t avl) {
@@ -5670,6 +6146,24 @@ inline vfloat32m4_t __riscv_vfsqrt_v_f32m4(const vfloat32m4_t &vec, size_t vl) {
   }
 
   return vfloat32m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfsqrt_v_f16m4: Square root of each element (f16 m4 register group)
+ * Computes sqrt(vec[i]) for each active element
+ */
+inline vfloat16m4_t __riscv_vfsqrt_v_f16m4(const vfloat16m4_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_SQRT, {rm, vec.getElement(i)}));
+  }
+
+  return vfloat16m4_t(g_symbolic_tm, result_elements);
 }
 
 // ============================================================================
@@ -6214,6 +6708,15 @@ inline size_t __riscv_vsetvl_e16m4(size_t avl) {
 }
 
 /**
+ * __riscv_vsetvl_e16m8: Set vector length for 16-bit elements with LMUL=8
+ * For symbolic execution, we return avl unchanged to avoid artificial splitting
+ */
+inline size_t __riscv_vsetvl_e16m8(size_t avl) {
+  g_current_vl = avl;
+  return avl;
+}
+
+/**
  * __riscv_vfmv_v_f_f16m4: Splat scalar _Float16 to all vector elements (LMUL=4)
  * Creates a vector where all elements equal the scalar value
  */
@@ -6345,6 +6848,27 @@ inline vfloat16m4_t __riscv_vfmin_vf_f16m4(const vfloat16m4_t &vec, _Float16 sca
 
   for (size_t i = 0; i < vl; i++) {
     Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_LT, {vec.getElement(i), scalar_term});
+    result_elements.push_back(g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmax_vf_f16m4: Element-wise maximum with scalar for float16 vector (LMUL=4)
+ */
+inline vfloat16m4_t __riscv_vfmax_vf_f16m4(const vfloat16m4_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to its IEEE 754 bit representation
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  for (size_t i = 0; i < vl; i++) {
+    Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_GT, {vec.getElement(i), scalar_term});
     result_elements.push_back(g_symbolic_tm->mkTerm(Kind::ITE, {cmp, vec.getElement(i), scalar_term}));
   }
 
@@ -6499,6 +7023,77 @@ inline vfloat16m4_t __riscv_vfdiv_vv_f16m4(const vfloat16m4_t &op1, const vfloat
 }
 
 /**
+ * __riscv_vfrsqrt7_v_f16m4: Reciprocal square root estimate for float16 (LMUL=4)
+ * result[i] = 1.0 / sqrt(vec[i]) (approximate, 7-bit accuracy)
+ * For symbolic execution, we compute the exact value: 1.0 / sqrt(vec[i])
+ */
+inline vfloat16m4_t __riscv_vfrsqrt7_v_f16m4(const vfloat16m4_t &vec, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  // 1.0 in fp16: sign=0, exp=01111 (15), mantissa=0 -> 0x3C00
+  Term one = g_symbolic_tm->mkFloatingPoint(5, 11, g_symbolic_tm->mkBitVector(16, 0x3C00));
+
+  for (size_t i = 0; i < vl; i++) {
+    Term sqrt_val = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_SQRT, {rm, vec.getElement(i)});
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_DIV, {rm, one, sqrt_val}));
+  }
+
+  return vfloat16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfrsub_vf_f16m4: Reverse vector-scalar floating-point subtract for float16 (LMUL=4)
+ * result[i] = scalar - vec[i]
+ */
+inline vfloat16m4_t __riscv_vfrsub_vf_f16m4(const vfloat16m4_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to symbolic floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    // Reverse subtract: scalar - vec[i]
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_SUB, {rm, scalar_term, vec.getElement(i)}));
+  }
+
+  return vfloat16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmul_vf_f16m4: Vector-scalar multiply for float16 (LMUL=4)
+ * result[i] = vec[i] * scalar
+ */
+inline vfloat16m4_t __riscv_vfmul_vf_f16m4(const vfloat16m4_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to symbolic floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
  * __riscv_vand_vx_u16m4: Bitwise AND with scalar for uint16 vector (LMUL=4)
  */
 inline vuint16m4_t __riscv_vand_vx_u16m4(const vuint16m4_t &vec, uint16_t scalar, size_t vl) {
@@ -6512,6 +7107,22 @@ inline vuint16m4_t __riscv_vand_vx_u16m4(const vuint16m4_t &vec, uint16_t scalar
   }
 
   return vuint16m4_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vand_vx_u16m8: Bitwise AND with scalar for uint16 vector (LMUL=8)
+ */
+inline vuint16m8_t __riscv_vand_vx_u16m8(const vuint16m8_t &vec, uint16_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term scalar_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar));
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(Kind::BITVECTOR_AND, {vec.getElement(i), scalar_term}));
+  }
+
+  return vuint16m8_t(g_symbolic_tm, result_elements);
 }
 
 /**
@@ -6740,6 +7351,589 @@ inline vint8m1_t vmovq_n_s8_rvv(int8_t scalar, size_t vl) {
     }
 
     return vint8m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Float16 LMUL=1 Operations
+// ============================================================================
+
+/**
+ * __riscv_vfabs_v_f16m1: Floating-point absolute value for vfloat16m1
+ * result[i] = |vec[i]|
+ */
+inline vfloat16m1_t __riscv_vfabs_v_f16m1(const vfloat16m1_t &vec, size_t vl) {
+    std::vector<Term> result_elements;
+    result_elements.reserve(vl);
+
+    for (size_t i = 0; i < vl && i < vec.getVL(); i++) {
+        Term abs_val = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ABS, {vec.getElement(i)});
+        result_elements.push_back(abs_val);
+    }
+
+    return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfadd_vf_f16m1: Floating-point add vector-scalar for vfloat16m1
+ * result[i] = vec[i] + scalar
+ */
+inline vfloat16m1_t __riscv_vfadd_vf_f16m1(const vfloat16m1_t &vec, _Float16 scalar, size_t vl) {
+    std::vector<Term> result_elements;
+    result_elements.reserve(vl);
+
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    // Convert scalar to symbolic fp16 term
+    uint16_t scalar_bits;
+    std::memcpy(&scalar_bits, &scalar, sizeof(uint16_t));
+    Term scalar_bv = g_symbolic_tm->mkBitVector(16, scalar_bits);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+    Term scalar_fp = g_symbolic_tm->mkTerm(to_fp_op, {scalar_bv});
+
+    for (size_t i = 0; i < vl && i < vec.getVL(); i++) {
+        Term sum = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ADD, {rm, vec.getElement(i), scalar_fp});
+        result_elements.push_back(sum);
+    }
+
+    return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfdiv_vv_f16m1: Floating-point divide vector-vector for vfloat16m1
+ * result[i] = a[i] / b[i]
+ */
+inline vfloat16m1_t __riscv_vfdiv_vv_f16m1(const vfloat16m1_t &a, const vfloat16m1_t &b, size_t vl) {
+    std::vector<Term> result_elements;
+    result_elements.reserve(vl);
+
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    for (size_t i = 0; i < vl && i < a.getVL() && i < b.getVL(); i++) {
+        Term quotient = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_DIV, {rm, a.getElement(i), b.getElement(i)});
+        result_elements.push_back(quotient);
+    }
+
+    return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfrsub_vf_f16m1: Floating-point reverse subtract vector-scalar for vfloat16m1
+ * result[i] = scalar - vec[i]
+ */
+inline vfloat16m1_t __riscv_vfrsub_vf_f16m1(const vfloat16m1_t &vec, _Float16 scalar, size_t vl) {
+    std::vector<Term> result_elements;
+    result_elements.reserve(vl);
+
+    Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+    // Convert scalar to symbolic fp16 term
+    uint16_t scalar_bits;
+    std::memcpy(&scalar_bits, &scalar, sizeof(uint16_t));
+    Term scalar_bv = g_symbolic_tm->mkBitVector(16, scalar_bits);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+    Term scalar_fp = g_symbolic_tm->mkTerm(to_fp_op, {scalar_bv});
+
+    for (size_t i = 0; i < vl && i < vec.getVL(); i++) {
+        // Reverse subtract: scalar - vec[i]
+        Term diff = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_SUB, {rm, scalar_fp, vec.getElement(i)});
+        result_elements.push_back(diff);
+    }
+
+    return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmfgt_vf_f16m1_b16: Floating-point compare greater than (vector-scalar) for vfloat16m1
+ * result[i] = (vec[i] > scalar) ? 1 : 0
+ * Returns vbool16_t mask
+ */
+inline vbool16_t __riscv_vmfgt_vf_f16m1_b16(const vfloat16m1_t &vec, _Float16 scalar, size_t vl) {
+    std::vector<Term> result_elements;
+    result_elements.reserve(vl);
+
+    // Convert scalar to symbolic fp16 term
+    uint16_t scalar_bits;
+    std::memcpy(&scalar_bits, &scalar, sizeof(uint16_t));
+    Term scalar_bv = g_symbolic_tm->mkBitVector(16, scalar_bits);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+    Term scalar_fp = g_symbolic_tm->mkTerm(to_fp_op, {scalar_bv});
+
+    for (size_t i = 0; i < vl && i < vec.getVL(); i++) {
+        // Compare: vec[i] > scalar
+        Term cmp = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_GT, {vec.getElement(i), scalar_fp});
+        result_elements.push_back(cmp);
+    }
+
+    return vbool16_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vreinterpret_v_f16m1_u16m1: Reinterpret float16 vector as uint16 vector (LMUL=1)
+ * Converts floating-point bit representation to unsigned integer interpretation
+ * Creates fresh bitvector variables and asserts bit-level equality via roundtrip.
+ */
+inline vuint16m1_t __riscv_vreinterpret_v_f16m1_u16m1(const vfloat16m1_t &vec) {
+    std::vector<Term> result_elements;
+    size_t vl = vec.getVL();
+    result_elements.reserve(vl);
+
+    Sort bv16 = g_symbolic_tm->mkBitVectorSort(16);
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    static int reinterpret_f16m1_counter = 0;
+
+    for (size_t i = 0; i < vl; i++) {
+        // Create a fresh bitvector that represents the IEEE bits
+        Term bv_elem = g_symbolic_tm->mkConst(bv16, "f16m1_to_bv_" + std::to_string(reinterpret_f16m1_counter++) + "_" + std::to_string(i));
+
+        // Convert this BV back to FP16
+        Term fp_from_bv = g_symbolic_tm->mkTerm(to_fp_op, {bv_elem});
+
+        // Assert equality: the FP from BV must equal original FP
+        Term eq = g_symbolic_tm->mkTerm(Kind::EQUAL, {fp_from_bv, vec.getElement(i)});
+        g_symbolic_solver->assertFormula(eq);
+
+        result_elements.push_back(bv_elem);
+    }
+
+    return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vreinterpret_v_u16m1_f16m1: Reinterpret uint16 vector as float16 vector (LMUL=1)
+ * Converts unsigned integer bit representation to floating-point interpretation
+ */
+inline vfloat16m1_t __riscv_vreinterpret_v_u16m1_f16m1(const vuint16m1_t &vec) {
+    std::vector<Term> result_elements;
+    size_t vl = vec.getVL();
+    result_elements.reserve(vl);
+
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    for (size_t i = 0; i < vl; i++) {
+        // Convert bitvector to fp16 using IEEE bit interpretation
+        result_elements.push_back(g_symbolic_tm->mkTerm(to_fp_op, {vec.getElement(i)}));
+    }
+
+    return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vreinterpret_v_u16m2_f16m2: Reinterpret uint16 vector as float16 vector (LMUL=2)
+ * Converts unsigned integer bit representation to floating-point interpretation
+ */
+inline vfloat16m2_t __riscv_vreinterpret_v_u16m2_f16m2(const vuint16m2_t &vec) {
+    std::vector<Term> result_elements;
+    size_t vl = vec.getVL();
+    result_elements.reserve(vl);
+
+    Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+
+    for (size_t i = 0; i < vl; i++) {
+        // Convert bitvector to fp16 using IEEE bit interpretation
+        result_elements.push_back(g_symbolic_tm->mkTerm(to_fp_op, {vec.getElement(i)}));
+    }
+
+    return vfloat16m2_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmerge_vxm_u16m1: Merge vector with scalar based on mask for vuint16m1
+ * result[i] = mask[i] ? scalar : vec[i]
+ * RVV calling convention: (vector, scalar, mask, vl)
+ */
+inline vuint16m1_t __riscv_vmerge_vxm_u16m1(const vuint16m1_t &vec, uint16_t scalar, const vbool16_t &mask, size_t vl) {
+    std::vector<Term> result_elements;
+    result_elements.reserve(vl);
+
+    Term scalar_term = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(scalar));
+
+    for (size_t i = 0; i < vl && i < vec.getVL() && i < mask.getVL(); i++) {
+        // ITE: if mask[i] is true, use scalar; otherwise use vec[i]
+        Term merged = g_symbolic_tm->mkTerm(Kind::ITE, {mask.getElement(i), scalar_term, vec.getElement(i)});
+        result_elements.push_back(merged);
+    }
+
+    return vuint16m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Float16 LMUL=8 Operations
+// ============================================================================
+
+/**
+ * __riscv_vfmul_vf_f16m8: Vector-scalar multiply for float16 (LMUL=8)
+ * result[i] = vec[i] * scalar
+ */
+inline vfloat16m8_t __riscv_vfmul_vf_f16m8(const vfloat16m8_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to symbolic floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_MULT, {rm, vec.getElement(i), scalar_term}));
+  }
+
+  return vfloat16m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vmflt_vf_f16m8: Compare less than (vector vs scalar) for float16 (LMUL=8)
+ * Returns vbool2_t mask where result[i] = vec[i] < scalar
+ */
+inline vbool2_t __riscv_vmflt_vf_f16m8(const vfloat16m8_t &vec, _Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert _Float16 scalar to its IEEE 754 bit representation
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits))});
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::FLOATINGPOINT_LT, {vec.getElement(i), scalar_term}));
+  }
+
+  return vbool2_t(g_symbolic_tm, result_elements);
+}
+
+// Alias with explicit _b2 suffix
+inline vbool2_t __riscv_vmflt_vf_f16m8_b2(const vfloat16m8_t &vec, _Float16 scalar, size_t vl) {
+  return __riscv_vmflt_vf_f16m8(vec, scalar, vl);
+}
+
+/**
+ * __riscv_vmerge_vvm_f16m8: Merge with mask (vector-vector) for float16 (LMUL=8)
+ * result[i] = mask[i] ? op2[i] : op1[i]
+ */
+inline vfloat16m8_t __riscv_vmerge_vvm_f16m8(const vfloat16m8_t &op1, const vfloat16m8_t &op2,
+                                              const vbool2_t &mask, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  for (size_t i = 0; i < vl; i++) {
+    result_elements.push_back(g_symbolic_tm->mkTerm(
+        Kind::ITE, {mask.getElement(i), op2.getElement(i), op1.getElement(i)}));
+  }
+
+  return vfloat16m8_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfmv_s_f_f16m1: Move scalar to element 0 of vector (float16 LMUL=1)
+ * Creates a vector with scalar in element 0, rest of elements are undefined (set to zero)
+ */
+inline vfloat16m1_t __riscv_vfmv_s_f_f16m1(_Float16 scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert scalar _Float16 to symbolic floating-point term
+  uint16_t bits;
+  std::memcpy(&bits, &scalar, sizeof(_Float16));
+  Term bv = g_symbolic_tm->mkBitVector(16, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  // Element 0 gets the scalar value
+  result_elements.push_back(scalar_term);
+
+  // Rest of elements are zero (undefined in spec, but zero for determinism)
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(5, 11);
+  for (size_t i = 1; i < vl; i++) {
+    result_elements.push_back(zero);
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfredusum_vs_f16m4_f16m1: Unordered floating-point reduction sum (float16 m4 -> m1)
+ * Sums all elements in src vector and adds to scalar element 0 of dest vector
+ * result[0] = dest[0] + sum(src[0..vl-1])
+ */
+inline vfloat16m1_t __riscv_vfredusum_vs_f16m4_f16m1(const vfloat16m4_t &src,
+                                                      const vfloat16m1_t &dest,
+                                                      size_t vl) {
+  // Start with the scalar value from dest[0]
+  Term acc = dest.getElement(0);
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+
+  // Sum all elements from src
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    acc = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ADD, {rm, acc, src.getElement(i)});
+  }
+
+  // Create result vector with sum in element 0
+  std::vector<Term> result_elements;
+  result_elements.push_back(acc);
+
+  // Rest of elements are undefined (set to zero for determinism)
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(5, 11);
+  for (size_t i = 1; i < 8; i++) {  // LMUL=1 has up to 8 elements
+    result_elements.push_back(zero);
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfredmin_vs_f16m4_f16m1: Floating-point reduction minimum (float16 m4 -> m1)
+ * Finds minimum of all elements in src vector and the scalar element 0 of dest vector
+ * result[0] = min(dest[0], min(src[0..vl-1]))
+ */
+inline vfloat16m1_t __riscv_vfredmin_vs_f16m4_f16m1(const vfloat16m4_t &src,
+                                                    const vfloat16m1_t &dest,
+                                                    size_t vl) {
+  // Start with the scalar value from dest[0]
+  Term min_val = dest.getElement(0);
+
+  // Find minimum across all elements from src
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    min_val = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_MIN, {min_val, src.getElement(i)});
+  }
+
+  // Create result vector with minimum in element 0
+  std::vector<Term> result_elements;
+  result_elements.push_back(min_val);
+
+  // Rest of elements are undefined (set to zero for determinism)
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(5, 11);
+  for (size_t i = 1; i < 8; i++) {  // LMUL=1 has up to 8 elements
+    result_elements.push_back(zero);
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+/**
+ * __riscv_vfredmax_vs_f16m4_f16m1: Floating-point reduction maximum (float16 m4 -> m1)
+ * Finds maximum of all elements in src vector and the scalar element 0 of dest vector
+ * result[0] = max(dest[0], max(src[0..vl-1]))
+ */
+inline vfloat16m1_t __riscv_vfredmax_vs_f16m4_f16m1(const vfloat16m4_t &src,
+                                                    const vfloat16m1_t &dest,
+                                                    size_t vl) {
+  // Start with the scalar value from dest[0]
+  Term max_val = dest.getElement(0);
+
+  // Find maximum across all elements from src
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    max_val = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_MAX, {max_val, src.getElement(i)});
+  }
+
+  // Create result vector with maximum in element 0
+  std::vector<Term> result_elements;
+  result_elements.push_back(max_val);
+
+  // Rest of elements are undefined (set to zero for determinism)
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(5, 11);
+  for (size_t i = 1; i < 8; i++) {  // LMUL=1 has up to 8 elements
+    result_elements.push_back(zero);
+  }
+
+  return vfloat16m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Float16 to Integer Conversion Operations
+// ============================================================================
+
+/**
+ * __riscv_vfcvt_x_f_v_i16m1: Convert float16 vector to signed int16 vector
+ * result[i] = (int16_t)round(src[i])
+ * Uses round-to-nearest-ties-to-even rounding mode
+ */
+inline vint16m1_t __riscv_vfcvt_x_f_v_i16m1(const vfloat16m1_t &src, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_sbv_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_SBV, {16});
+
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    Term converted = g_symbolic_tm->mkTerm(to_sbv_op, {rm, src.getElement(i)});
+    result_elements.push_back(converted);
+  }
+
+  return vint16m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Saturating Arithmetic Operations
+// ============================================================================
+
+/**
+ * __riscv_vsadd_vx_i16m1: Saturating add vector-scalar (int16)
+ * result[i] = saturate(src[i] + scalar)
+ * Saturates to INT16_MIN (-32768) or INT16_MAX (32767) on overflow
+ */
+inline vint16m1_t __riscv_vsadd_vx_i16m1(const vint16m1_t &src, int16_t scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Create scalar as 16-bit bitvector (signed interpretation)
+  Term scalar_bv = g_symbolic_tm->mkBitVector(16, static_cast<uint16_t>(scalar));
+
+  // Constants for saturation bounds
+  Term int16_max = g_symbolic_tm->mkBitVector(16, 0x7FFF);  // 32767
+  Term int16_min = g_symbolic_tm->mkBitVector(16, 0x8000);  // -32768
+
+  Op sign_ext_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_SIGN_EXTEND, {1});
+  Op extract_16_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {15, 0});
+
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    Term elem = src.getElement(i);
+
+    // Sign-extend both operands to 17 bits for overflow detection
+    Term elem_ext = g_symbolic_tm->mkTerm(sign_ext_op, {elem});
+    Term scalar_ext = g_symbolic_tm->mkTerm(sign_ext_op, {scalar_bv});
+
+    // Perform 17-bit addition
+    Term sum_ext = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ADD, {elem_ext, scalar_ext});
+
+    // Check for positive overflow: sum > 32767
+    Term pos_overflow_bound = g_symbolic_tm->mkBitVector(17, 0x7FFF);
+    Term pos_overflow = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {sum_ext, pos_overflow_bound});
+
+    // Check for negative overflow: sum < -32768
+    Term neg_overflow_bound = g_symbolic_tm->mkBitVector(17, 0x18000);  // -32768 in 17-bit signed
+    Term neg_overflow = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {sum_ext, neg_overflow_bound});
+
+    // Extract low 16 bits for normal case
+    Term sum_truncated = g_symbolic_tm->mkTerm(extract_16_op, {sum_ext});
+
+    // Select result based on overflow
+    Term result = g_symbolic_tm->mkTerm(Kind::ITE, {pos_overflow, int16_max,
+                  g_symbolic_tm->mkTerm(Kind::ITE, {neg_overflow, int16_min, sum_truncated})});
+
+    result_elements.push_back(result);
+  }
+
+  return vint16m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Narrowing Clip Operations
+// ============================================================================
+
+/**
+ * __riscv_vnclip_wx_i8m1: Narrowing clip with right shift (int16 -> int8)
+ * result[i] = saturate_i8(src[i] >> shift)
+ * Right shifts by scalar amount, then saturates to INT8 range [-128, 127]
+ */
+inline vint8m1_t __riscv_vnclip_wx_i8m1(const vint16m1_t &src, size_t shift, size_t vl) {
+
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Constants for saturation bounds (as 16-bit values for comparison)
+  Term int8_max_16 = g_symbolic_tm->mkBitVector(16, 127);   // 0x007F
+  Term int8_min_16 = g_symbolic_tm->mkBitVector(16, 0xFF80); // -128 in 16-bit signed
+
+  // Constants for result (8-bit)
+  Term int8_max = g_symbolic_tm->mkBitVector(8, 127);   // 0x7F
+  Term int8_min = g_symbolic_tm->mkBitVector(8, 0x80);  // -128
+
+  Op extract_8_op = g_symbolic_tm->mkOp(Kind::BITVECTOR_EXTRACT, {7, 0});
+  Term shift_amt = g_symbolic_tm->mkBitVector(16, static_cast<uint16_t>(shift));
+
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    Term elem = src.getElement(i);
+
+    // Arithmetic right shift by shift amount
+    Term shifted = g_symbolic_tm->mkTerm(Kind::BITVECTOR_ASHR, {elem, shift_amt});
+
+    // Check for positive overflow: shifted > 127
+    Term pos_overflow = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SGT, {shifted, int8_max_16});
+
+    // Check for negative overflow: shifted < -128
+    Term neg_overflow = g_symbolic_tm->mkTerm(Kind::BITVECTOR_SLT, {shifted, int8_min_16});
+
+    // Extract low 8 bits for normal case
+    Term truncated = g_symbolic_tm->mkTerm(extract_8_op, {shifted});
+
+    // Select result based on saturation
+    Term result = g_symbolic_tm->mkTerm(Kind::ITE, {pos_overflow, int8_max,
+                  g_symbolic_tm->mkTerm(Kind::ITE, {neg_overflow, int8_min, truncated})});
+
+    result_elements.push_back(result);
+  }
+
+  return vint8m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Scalar Move Operations (float32)
+// ============================================================================
+
+/**
+ * __riscv_vfmv_s_f_f32m1: Move scalar to element 0 of vector (float32 LMUL=1)
+ * Creates a vector with scalar in element 0, rest of elements are undefined (set to zero)
+ */
+inline vfloat32m1_t __riscv_vfmv_s_f_f32m1(float scalar, size_t vl) {
+  std::vector<Term> result_elements;
+  result_elements.reserve(vl);
+
+  // Convert scalar float to symbolic floating-point term
+  uint32_t bits;
+  std::memcpy(&bits, &scalar, sizeof(float));
+  Term bv = g_symbolic_tm->mkBitVector(32, static_cast<uint64_t>(bits));
+  Op to_fp_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+  Term scalar_term = g_symbolic_tm->mkTerm(to_fp_op, {bv});
+
+  // Element 0 gets the scalar value
+  result_elements.push_back(scalar_term);
+
+  // Rest of elements are zero (undefined in spec, but zero for determinism)
+  Term zero = g_symbolic_tm->mkFloatingPointPosZero(8, 24);
+  for (size_t i = 1; i < vl; i++) {
+    result_elements.push_back(zero);
+  }
+
+  return vfloat32m1_t(g_symbolic_tm, result_elements);
+}
+
+// ============================================================================
+// Widening Floating-Point Reduction Operations
+// ============================================================================
+
+/**
+ * __riscv_vfwredusum_vs_f16m1_f32m1: Widening unordered floating-point reduction sum
+ * Converts f16 elements to f32, sums them, and adds to scalar element 0 of dest vector
+ * result[0] = dest[0] + sum(convert_f32(src[0..vl-1]))
+ * The widening avoids precision loss during accumulation.
+ */
+inline vfloat32m1_t __riscv_vfwredusum_vs_f16m1_f32m1(const vfloat16m1_t &src,
+                                                       const vfloat32m1_t &dest,
+                                                       size_t vl) {
+  // Start with the scalar value from dest[0]
+  Term acc = dest.getElement(0);
+  Term rm = g_symbolic_tm->mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+  Op to_fp32_op = g_symbolic_tm->mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_FP, {8, 24});
+
+  // Sum all elements from src, converting each f16 to f32 first
+  for (size_t i = 0; i < vl && i < src.getVL(); i++) {
+    // Convert f16 element to f32
+    Term f32_elem = g_symbolic_tm->mkTerm(to_fp32_op, {rm, src.getElement(i)});
+    // Add to accumulator
+    acc = g_symbolic_tm->mkTerm(Kind::FLOATINGPOINT_ADD, {rm, acc, f32_elem});
+  }
+
+  // Result is a single-element vector with the sum in element 0
+  std::vector<Term> result_elements;
+  result_elements.push_back(acc);
+
+  return vfloat32m1_t(g_symbolic_tm, result_elements);
 }
 
 #endif // RISCV_SYMBOLIC_INTRINSICS_HPP

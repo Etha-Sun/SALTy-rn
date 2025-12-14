@@ -22,6 +22,9 @@ inline std::map<uintptr_t, std::vector<uint32x2_t>> g_neon_memory_u32x2;
 inline std::map<uintptr_t, std::vector<float32x4_t>> g_neon_memory_f32x4;
 inline std::map<uintptr_t, std::vector<float32x2_t>> g_neon_memory_f32x2;
 
+// Global storage for scalar float16_t values (address -> symbolic term)
+inline std::map<uintptr_t, Term> g_neon_f16_scalar_memory;
+
 // Global storage for scalar reduction results
 inline std::map<std::string, Term> g_neon_scalar_results;
 
@@ -892,6 +895,13 @@ inline uint32x4_t vld1q_lane_u32(const uint32_t* ptr, const uint32x4_t& vec, con
 
     lanes[lane] = loaded_value;
     return uint32x4_t(g_symbolic_tm, lanes);
+}
+
+/**
+ * vld1q_lane_u32: Load single 32-bit value into vector lane (const void* overload)
+ */
+inline uint32x4_t vld1q_lane_u32(const void* ptr, const uint32x4_t& vec, const int lane) {
+    return vld1q_lane_u32(static_cast<const uint32_t*>(ptr), vec, lane);
 }
 
 // ============================================================================

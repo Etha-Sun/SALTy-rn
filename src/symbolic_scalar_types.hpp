@@ -15,6 +15,11 @@ inline std::map<uintptr_t, Term> g_riscv_scalar_memory;
 inline std::map<uintptr_t, Term> g_neon_u16_scalar_memory;
 inline std::map<uintptr_t, Term> g_riscv_u16_scalar_memory;
 
+// Memory tracking for uint32_t scalar writes (address -> symbolic term)
+// Used by vld1q_dup_u32 for loading and duplicating scalar values
+inline std::map<uintptr_t, Term> g_neon_u32_scalar_memory;
+inline std::map<uintptr_t, Term> g_riscv_u32_scalar_memory;
+
 /**
  * Symbolic wrapper for int32_t scalar values
  * Tracks both symbolic Term and concrete value for operations

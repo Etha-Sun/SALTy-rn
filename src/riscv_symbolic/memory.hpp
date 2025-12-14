@@ -99,6 +99,11 @@ inline std::map<uintptr_t, std::vector<vuint8m8_t>> g_riscv_memory_u8m8;
 inline std::map<uintptr_t, std::vector<vuint16m1_t>> g_riscv_memory_u16m1;
 
 /**
+ * Global storage for unsigned 16-bit vectors (LMUL=2)
+ */
+inline std::map<uintptr_t, std::vector<vuint16m2_t>> g_riscv_memory_u16m2;
+
+/**
  * Global storage for unsigned 16-bit vectors (LMUL=4)
  */
 inline std::map<uintptr_t, std::vector<vuint16m4_t>> g_riscv_memory_u16m4;
@@ -107,6 +112,11 @@ inline std::map<uintptr_t, std::vector<vuint16m4_t>> g_riscv_memory_u16m4;
  * Global storage for float16 vectors (LMUL=4)
  */
 inline std::map<uintptr_t, std::vector<vfloat16m4_t>> g_riscv_memory_f16m4;
+
+/**
+ * Global storage for float16 vectors (LMUL=8)
+ */
+inline std::map<uintptr_t, std::vector<vfloat16m8_t>> g_riscv_memory_f16m8;
 
 
 /**
@@ -886,6 +896,65 @@ inline void __riscv_vse16_v_u16m1(uint16_t *ptr, const vuint16m1_t &vec, size_t 
 }
 
 /**
+ * __riscv_vle16_v_u16m2: Load vector of unsigned 16-bit integers (LMUL=2)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vuint16m2_t __riscv_vle16_v_u16m2(const uint16_t *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_u16m2.find(addr);
+    if (it != g_riscv_memory_u16m2.end() && !it->second.empty()) {
+        const vuint16m2_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vuint16m2_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // Overlap search in u16m2 memory
+    for (const auto& entry : g_riscv_memory_u16m2) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vuint16m2_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl * sizeof(uint16_t);
+
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = (addr - base_addr) / sizeof(uint16_t);
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkBitVector(16, 0));
+                    }
+                }
+                return vuint16m2_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vuint16m2_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse16_v_u16m2: Store vector of unsigned 16-bit integers (LMUL=2)
+ */
+inline void __riscv_vse16_v_u16m2(uint16_t *ptr, const vuint16m2_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_u16m2[addr].push_back(vec);
+}
+
+/**
  * __riscv_vlse16_v_u16m1: Strided load of unsigned 16-bit integers (LMUL=1)
  * Loads vl elements with a stride (in bytes) between consecutive elements
  */
@@ -1495,6 +1564,112 @@ inline void __riscv_vse16_v_f16m4(_Float16 *ptr, const vfloat16m4_t &vec, size_t
     (void)vl;
     uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
     g_riscv_memory_f16m4[addr].push_back(vec);
+}
+
+// ============================================================================
+// Float16 Load/Store Operations (LMUL=8)
+// ============================================================================
+
+/**
+ * __riscv_vle16_v_f16m8: Load vector of 16-bit floats (LMUL=8)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vfloat16m8_t __riscv_vle16_v_f16m8(const _Float16 *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_f16m8.find(addr);
+    if (it != g_riscv_memory_f16m8.end() && !it->second.empty()) {
+        const vfloat16m8_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vfloat16m8_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vfloat16m8_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse16_v_f16m8: Store vector of 16-bit floats (LMUL=8)
+ */
+inline void __riscv_vse16_v_f16m8(_Float16 *ptr, const vfloat16m8_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_f16m8[addr].push_back(vec);
+}
+
+// ============================================================================
+// Unsigned 16-bit Load/Store Operations (LMUL=8)
+// ============================================================================
+
+/**
+ * Global storage for unsigned 16-bit vectors (LMUL=8)
+ */
+inline std::map<uintptr_t, std::vector<vuint16m8_t>> g_riscv_memory_u16m8;
+
+/**
+ * __riscv_vle16_v_u16m8: Load vector of unsigned 16-bit integers (LMUL=8)
+ * Returns previously stored value if available, otherwise creates fresh symbolic constants
+ */
+inline vuint16m8_t __riscv_vle16_v_u16m8(const uint16_t *ptr, size_t vl) {
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+
+    auto it = g_riscv_memory_u16m8.find(addr);
+    if (it != g_riscv_memory_u16m8.end() && !it->second.empty()) {
+        const vuint16m8_t& stored = it->second.back();
+        if (stored.getVL() >= vl) {
+            std::vector<Term> elements;
+            elements.reserve(vl);
+            for (size_t i = 0; i < vl; i++) {
+                elements.push_back(stored.getElement(i));
+            }
+            return vuint16m8_t(g_symbolic_tm, elements);
+        }
+        return stored;
+    }
+
+    // Overlap search in u16m8 memory
+    for (const auto& entry : g_riscv_memory_u16m8) {
+        uintptr_t base_addr = entry.first;
+        if (!entry.second.empty()) {
+            const vuint16m8_t& base_vec = entry.second.back();
+            size_t base_vl = base_vec.getVL();
+            size_t base_size = base_vl * sizeof(uint16_t);
+
+            if (addr >= base_addr && addr < base_addr + base_size) {
+                size_t offset_elems = (addr - base_addr) / sizeof(uint16_t);
+
+                std::vector<Term> elements;
+                elements.reserve(vl);
+                for (size_t i = 0; i < vl; i++) {
+                    if (offset_elems + i < base_vl) {
+                        elements.push_back(base_vec.getElement(offset_elems + i));
+                    } else {
+                        elements.push_back(g_symbolic_tm->mkBitVector(16, 0));
+                    }
+                }
+                return vuint16m8_t(g_symbolic_tm, elements);
+            }
+        }
+    }
+
+    // If not found in memory, create fresh symbolic variables (for input data)
+    return vuint16m8_t(g_symbolic_tm, vl);
+}
+
+/**
+ * __riscv_vse16_v_u16m8: Store vector of unsigned 16-bit integers (LMUL=8)
+ */
+inline void __riscv_vse16_v_u16m8(uint16_t *ptr, const vuint16m8_t &vec, size_t vl) {
+    (void)vl;
+    uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
+    g_riscv_memory_u16m8[addr].push_back(vec);
 }
 
 #endif // RISCV_SYMBOLIC_MEMORY_HPP
