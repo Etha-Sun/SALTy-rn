@@ -14,12 +14,18 @@
 // Forward declarations
 extern "C" {
 void xnn_qs8_vmul_minmax_fp32_ukernel__neon_ld128_u16(
-    size_t batch, const int8_t *input_a, const int8_t *input_b, int8_t *output,
-    const union xnn_qs8_mul_minmax_params *params);
+    size_t batch,
+    const int8_t* input_a,
+    const int8_t* input_b,
+    int8_t* output,
+    const union xnn_qs8_mul_minmax_params* params);
 
 void xnn_qs8_vmul_minmax_fp32_ukernel__rvv_u16(
-    size_t batch, const int8_t *input_a, const int8_t *input_b, int8_t *output,
-    const union xnn_qs8_mul_minmax_params *params);
+    size_t batch,
+    const int8_t* input_a,
+    const int8_t* input_b,
+    int8_t* output,
+    const union xnn_qs8_mul_minmax_params* params);
 }
 
 int main() {
@@ -30,8 +36,8 @@ int main() {
   g_symbolic_solver = &solver;
   solver.setOption("produce-models", "true");
 
-  // Test parameters - using 16 to match the kernel's batch size processing
-  const size_t batch = 17;
+  // Test parameters
+  const size_t batch = 67;  // Use prime number to test edge cases
 
   // Allocate arrays
   int8_t input_a[batch] = {0};
@@ -47,58 +53,50 @@ int main() {
   std::vector<Term> symbolic_a = createSymbolicArray(tm, batch, "a", 8);
   std::vector<Term> symbolic_b = createSymbolicArray(tm, batch, "b", 8);
 
-  // Populate NEON memory (signed 8-bit)
+  // Populate NEON memory
   SymbolicNEONHelpers::populateMemory8(input_a, symbolic_a);
   SymbolicNEONHelpers::populateMemory8(input_b, symbolic_b);
 
-  // Populate RISC-V memory (signed 8-bit)
+  // Populate RISC-V memory
   SymbolicRISCVHelpers::populateMemory8(input_a, symbolic_a);
   SymbolicRISCVHelpers::populateMemory8(input_b, symbolic_b);
 
+
   // Setup params struct with concrete test values
-  // Based on XNNPACK benchmark: uses xnn_init_qs8_mul_minmax_scalar_params
-  // with quantization {zero_point=0, scale=1.0f} for all inputs/output
   union xnn_qs8_mul_minmax_params params;
   params.scalar.a_zero_point = 0;
   params.scalar.b_zero_point = 0;
-  params.scalar.scale = 1.0f;  // Benchmark uses scale=1.0f (from quantization.scale)
+  params.scalar.scale = 1.0f;
   params.scalar.output_zero_point = 0;
   params.scalar.output_min = -128;
   params.scalar.output_max = 127;
 
-  std::cout << "Testing XNNPACK qs8_vmul: NEON vs RISC-V equivalence" << std::endl;
+  std::cout << "Testing XNNPACK qs8vmul: NEON vs RISC-V equivalence" << std::endl;
   std::cout << "Batch size: " << batch << " elements" << std::endl;
-  std::cout << "Parameters:" << std::endl;
-  std::cout << "  a_zero_point: " << (int)params.scalar.a_zero_point << std::endl;
-  std::cout << "  b_zero_point: " << (int)params.scalar.b_zero_point << std::endl;
-  std::cout << "  scale: " << params.scalar.scale << std::endl;
-  std::cout << "  output_zero_point: " << params.scalar.output_zero_point << std::endl;
-  std::cout << "  output_min: " << (int)params.scalar.output_min << std::endl;
-  std::cout << "  output_max: " << (int)params.scalar.output_max << std::endl;
 
   g_current_params_ptr = nullptr;
 
   // Run NEON implementation
-  std::cout << "\nRunning NEON implementation..." << std::endl;
+  std::cout << "Running NEON implementation..." << std::endl;
   xnn_qs8_vmul_minmax_fp32_ukernel__neon_ld128_u16(batch * sizeof(int8_t), input_a,
-                                                   input_b, output_neon, &params);
+                        input_b, output_neon, &params);
 
   // Run RISC-V implementation
   std::cout << "Running RISC-V implementation..." << std::endl;
-  xnn_qs8_vmul_minmax_fp32_ukernel__rvv_u16(batch * sizeof(int8_t), input_a, input_b,
-                                            output_riscv, &params);
+  xnn_qs8_vmul_minmax_fp32_ukernel__rvv_u16(batch * sizeof(int8_t), input_a,
+                      input_b, output_riscv, &params);
 
-  // Collect results from both architectures using helper functions
+  // Collect results from both architectures
   std::vector<Term> neon_elements = SymbolicNEONHelpers::collectResults8(output_neon, batch);
   std::vector<Term> riscv_elements = SymbolicRISCVHelpers::collectResults8(output_riscv);
 
-  std::cout << "\nNEON collected " << neon_elements.size() << " elements" << std::endl;
-  
+  std::cout << "NEON collected " << neon_elements.size() << " elements" << std::endl;
+
   if (neon_elements.empty()) {
     std::cerr << "ERROR: No NEON results stored!" << std::endl;
     return 1;
   }
-  
+
   if (riscv_elements.empty()) {
     std::cerr << "ERROR: No RISC-V results stored!" << std::endl;
     return 1;
@@ -106,9 +104,9 @@ int main() {
 
   std::cout << "RISC-V collected " << riscv_elements.size() << " elements" << std::endl;
 
-  // Compare the minimum number of elements from both
+  // Compare minimum number of elements from both
   size_t compare_count = std::min(neon_elements.size(), riscv_elements.size());
-  
+
   if (neon_elements.size() != riscv_elements.size()) {
     std::cerr << "WARNING: Different number of elements! NEON: "
               << neon_elements.size() << ", RISC-V: " << riscv_elements.size()
@@ -116,6 +114,7 @@ int main() {
     std::cerr << "Comparing first " << compare_count << " elements" << std::endl;
   }
 
+  // Build equality assertions
   std::vector<Term> all_equalities;
   for (size_t i = 0; i < compare_count; i++) {
     Term eq = tm.mkTerm(Kind::EQUAL, {neon_elements[i], riscv_elements[i]});
@@ -148,12 +147,15 @@ int main() {
     std::cout << "\n===== VERIFICATION FAILED =====" << std::endl;
     std::cout << "SAT: Found a counterexample!" << std::endl;
     std::cout << "Input values that cause different outputs:" << std::endl;
-    
+
     for (size_t i = 0; i < std::min(batch, (size_t)4); i++) {
       std::cout << "  a[" << i << "] = " << solver.getValue(symbolic_a[i]) << std::endl;
-      std::cout << "  b[" << i << "] = " << solver.getValue(symbolic_b[i]) << std::endl;
     }
     
+    for (size_t i = 0; i < std::min(batch, (size_t)4); i++) {
+      std::cout << "  b[" << i << "] = " << solver.getValue(symbolic_b[i]) << std::endl;
+    }
+
     std::cout << "\nOutput comparison:" << std::endl;
     for (size_t i = 0; i < std::min(compare_count, (size_t)4); i++) {
       std::cout << "  NEON[" << i << "] = " << solver.getValue(neon_elements[i]) << std::endl;
@@ -166,4 +168,3 @@ int main() {
     return 2;
   }
 }
-

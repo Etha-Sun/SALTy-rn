@@ -20,11 +20,11 @@ extern "C" {
         size_t n = batch / sizeof(float);
 
         while (n > 0) {
-            size_t vl = vsetvl_e32m2(n);
-            vfloat32m2_t va = vle32_v_f32m2(input_a, vl);
+            size_t vl = __riscv_vsetvl_e32m2(n);
+            vfloat32m2_t va = __riscv_vle32_v_f32m2(input_a, vl);
             // Use pointer version to support symbolic scalar lookup
-            vfloat32m2_t vacc = vfmul_vf_f32m2_ptr(va, input_b, vl);
-            vse32_v_f32m2(output, vacc, vl);
+            vfloat32m2_t vacc = __riscv_vfmul_vf_f32m2_ptr(va, input_b, vl);
+            __riscv_vse32_v_f32m2(output, vacc, vl);
             input_a += vl;
             output += vl;
             n -= vl;

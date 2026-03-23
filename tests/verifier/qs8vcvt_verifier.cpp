@@ -14,12 +14,16 @@
 // Forward declarations
 extern "C" {
 void xnn_qs8_vcvt_ukernel__neon_u32(
-    size_t batch, const int8_t *input, int8_t *output,
-    const struct xnn_qs8_cvt_params *params);
+    size_t batch,
+    const int8_t* input_a,
+    int8_t* output,
+    const struct xnn_qs8_cvt_params* params);
 
 void xnn_qs8_vcvt_ukernel__rvv(
-    size_t batch, const int8_t *input, int8_t *output,
-    const struct xnn_qs8_cvt_params *params);
+    size_t batch,
+    const int8_t* input_a,
+    int8_t* output,
+    const struct xnn_qs8_cvt_params* params);
 }
 
 int main() {
@@ -30,10 +34,11 @@ int main() {
   g_symbolic_solver = &solver;
   solver.setOption("produce-models", "true");
 
-  const size_t batch = 129;
+  // Test parameters
+  const size_t batch = 67;  // Use prime number to test edge cases
 
   // Allocate arrays
-  int8_t input[batch] = {0};
+  int8_t input_a[batch] = {0};
   int8_t output_neon[batch] = {0};
   int8_t output_riscv[batch] = {0};
 
@@ -42,42 +47,41 @@ int main() {
   SymbolicRISCVHelpers::clearMemory();
 
   // Setup symbolic inputs using the common helper
-  std::vector<Term> symbolic_input = createSymbolicArray(tm, batch, "in", 8);
+  std::vector<Term> symbolic_a = createSymbolicArray(tm, batch, "a", 8);
 
-  // Populate NEON memory (signed 8-bit)
-  SymbolicNEONHelpers::populateMemory8(input, symbolic_input);
+  // Populate NEON memory
+  SymbolicNEONHelpers::populateMemory8(input_a, symbolic_a);
 
-  // Populate RISC-V memory (signed 8-bit)
-  SymbolicRISCVHelpers::populateMemory8(input, symbolic_input);
+  // Populate RISC-V memory
+  SymbolicRISCVHelpers::populateMemory8(input_a, symbolic_a);
+
 
   // Setup params struct with concrete test values
   struct xnn_qs8_cvt_params params;
   params.scalar.input_zero_point = 0;
-  params.scalar.multiplier = 256;  
+  params.scalar.multiplier = 1 << 15;
   params.scalar.output_zero_point = 0;
 
-  std::cout << "Testing XNNPACK qs8_vcvt: NEON vs RISC-V equivalence" << std::endl;
+  std::cout << "Testing XNNPACK qs8vcvt: NEON vs RISC-V equivalence" << std::endl;
   std::cout << "Batch size: " << batch << " elements" << std::endl;
-  std::cout << "Parameters:" << std::endl;
-  std::cout << "  input_zero_point: " << params.scalar.input_zero_point << std::endl;
-  std::cout << "  multiplier: " << params.scalar.multiplier << std::endl;
-  std::cout << "  output_zero_point: " << params.scalar.output_zero_point << std::endl;
 
   g_current_params_ptr = nullptr;
 
   // Run NEON implementation
-  std::cout << "\nRunning NEON implementation..." << std::endl;
-  xnn_qs8_vcvt_ukernel__neon_u32(batch * sizeof(int8_t), input, output_neon, &params);
+  std::cout << "Running NEON implementation..." << std::endl;
+  xnn_qs8_vcvt_ukernel__neon_u32(batch * sizeof(int8_t), input_a,
+                        output_neon, &params);
 
   // Run RISC-V implementation
   std::cout << "Running RISC-V implementation..." << std::endl;
-  xnn_qs8_vcvt_ukernel__rvv(batch * sizeof(int8_t), input, output_riscv, &params);
+  xnn_qs8_vcvt_ukernel__rvv(batch * sizeof(int8_t), input_a,
+                      output_riscv, &params);
 
-  // Collect results from both architectures using helper functions
+  // Collect results from both architectures
   std::vector<Term> neon_elements = SymbolicNEONHelpers::collectResults8(output_neon, batch);
   std::vector<Term> riscv_elements = SymbolicRISCVHelpers::collectResults8(output_riscv);
 
-  std::cout << "\nNEON collected " << neon_elements.size() << " elements" << std::endl;
+  std::cout << "NEON collected " << neon_elements.size() << " elements" << std::endl;
 
   if (neon_elements.empty()) {
     std::cerr << "ERROR: No NEON results stored!" << std::endl;
@@ -91,7 +95,7 @@ int main() {
 
   std::cout << "RISC-V collected " << riscv_elements.size() << " elements" << std::endl;
 
-  // Compare the minimum number of elements from both
+  // Compare minimum number of elements from both
   size_t compare_count = std::min(neon_elements.size(), riscv_elements.size());
 
   if (neon_elements.size() != riscv_elements.size()) {
@@ -101,6 +105,7 @@ int main() {
     std::cerr << "Comparing first " << compare_count << " elements" << std::endl;
   }
 
+  // Build equality assertions
   std::vector<Term> all_equalities;
   for (size_t i = 0; i < compare_count; i++) {
     Term eq = tm.mkTerm(Kind::EQUAL, {neon_elements[i], riscv_elements[i]});
@@ -135,8 +140,9 @@ int main() {
     std::cout << "Input values that cause different outputs:" << std::endl;
 
     for (size_t i = 0; i < std::min(batch, (size_t)4); i++) {
-      std::cout << "  input[" << i << "] = " << solver.getValue(symbolic_input[i]) << std::endl;
+      std::cout << "  a[" << i << "] = " << solver.getValue(symbolic_a[i]) << std::endl;
     }
+    
 
     std::cout << "\nOutput comparison:" << std::endl;
     for (size_t i = 0; i < std::min(compare_count, (size_t)4); i++) {
