@@ -1,0 +1,24 @@
+The following RVV translation of a Neon kernel failed to compile or execute. Please fix the errors.
+
+Original Neon Code:
+```c
+{source_code}
+```
+
+Failed RVV Code:
+```c
+{target_code}
+```
+
+Compilation/Execution Error:
+```
+{error}
+```
+
+Instructions:
+- Fix only the specific error(s) indicated above.
+- Do not change the function signature (name, parameter types, or parameter order).
+- Use only valid RVV 1.0 intrinsics from <riscv_vector.h>.
+- Do not invent instructions that do not exist in the RVV specification.
+- Maintain the VLA loop pattern: use vsetvl to determine vector length each iteration.
+- Return ONLY the corrected C code with no markdown formatting, no explanation, just the raw code.

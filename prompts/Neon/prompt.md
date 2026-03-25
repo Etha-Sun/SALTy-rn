@@ -1,0 +1,24 @@
+Translate AArch64 NEON intrinsic code into semantically equivalent RVV 1.0 C using only intrinsics from `<riscv_vector.h>`.
+
+**Goal: Arm-correct mode.** The RVV output must produce the exact same result bits as the NEON source for every input. Do not accept approximations or behavioral differences.
+
+**Target:** Saturn — RVV 1.0, ELEN=64, VLEN=256.
+
+**Frozen AArch64 FP environment:** RMode=RNE, FZ=0, FZ16=0, DN=0, AH=0. RVV defaults (frm=RNE, subnormals preserved) match this profile.
+
+Requirements:
+1. Keep the exact function signature and parameter order. Rename the suffix from `__neon...` to `__rvv...`.
+2. Replace NEON fixed-width loops and tail handling with a single VLA stripmine loop: call `vsetvl` each iteration, process `vl` elements, advance pointers by `vl`.
+3. Choose LMUL so the widest type in the kernel stays within LMUL=8. Keep the SEW/LMUL ratio constant across width stages (e.g., e8m2 → e16m4 → e32m8).
+4. Preserve exact operation semantics. Follow the attached translation rules for correctness hazards (fused vs non-fused FMA, rounding modes, NaN fixups, conversions, estimates).
+5. Use only legal explicit (non-overloaded) RVV intrinsics. Do not invent instructions.
+6. If an exact lowering is unclear, emit the safest legal code and add a `TODO` comment.
+7. Return only C code. No markdown, no explanation outside the code.
+
+Refer to the attached translation rules, NEON/RVV background references, and annotated examples for detailed guidance.
+
+Parameter struct:
+{parameter}
+
+NEON Code:
+{source_code}

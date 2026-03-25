@@ -1,0 +1,86 @@
+"""Kernel translation status tracking via kernels/status.json."""
+
+import json
+import logging
+from pathlib import Path
+
+log = logging.getLogger("pipeline")
+
+
+class StatusTracker:
+    """Read/write kernel status from kernels/status.json.
+
+    Each kernel entry tracks:
+        translated: bool  - LLM produced output
+        compiled:   bool  - passed Zephyr/Spike compilation
+        verified:   bool  - passed formal verification
+        attempts:   int   - number of translation/repair attempts
+        error:      str   - last error message (if any)
+    """
+
+    def __init__(self, status_file: Path):
+        self._path = status_file
+        self._data: dict[str, dict] = {}
+        self._load()
+
+    _VALID_FIELDS = {"translated", "compiled", "verified", "attempts", "error"}
+
+    def _load(self):
+        if self._path.exists():
+            raw = json.loads(self._path.read_text())
+            if not isinstance(raw, dict):
+                log.warning("Invalid status.json (expected dict), starting fresh")
+                raw = {}
+            self._data = raw
+            log.info("Loaded status for %d kernels", len(self._data))
+        else:
+            self._data = {}
+
+    def _save(self):
+        self._path.parent.mkdir(parents=True, exist_ok=True)
+        self._path.write_text(json.dumps(self._data, indent=2) + "\n")
+
+    def get(self, kernel: str) -> dict:
+        """Get status for a kernel, or empty defaults."""
+        return self._data.get(kernel, {
+            "translated": False,
+            "compiled": False,
+            "verified": False,
+            "attempts": 0,
+            "error": "",
+        })
+
+    def update(self, kernel: str, **fields):
+        """Update status fields for a kernel and persist.
+
+        Only accepts known fields: translated, compiled, verified, attempts, error.
+        Raises ValueError on unknown fields to catch typos early.
+        """
+        bad = fields.keys() - self._VALID_FIELDS
+        if bad:
+            raise ValueError(f"Unknown status fields: {bad}. Valid: {self._VALID_FIELDS}")
+        entry = self.get(kernel)
+        entry.update(fields)
+        self._data[kernel] = entry
+        self._save()
+
+    def is_translated(self, kernel: str) -> bool:
+        return self.get(kernel).get("translated", False)
+
+    def is_compiled(self, kernel: str) -> bool:
+        return self.get(kernel).get("compiled", False)
+
+    def is_verified(self, kernel: str) -> bool:
+        return self.get(kernel).get("verified", False)
+
+    def all_kernels(self) -> dict[str, dict]:
+        """Return the full status dict."""
+        return dict(self._data)
+
+    def summary(self) -> str:
+        """One-line summary of progress."""
+        total = len(self._data)
+        translated = sum(1 for v in self._data.values() if v.get("translated"))
+        compiled = sum(1 for v in self._data.values() if v.get("compiled"))
+        verified = sum(1 for v in self._data.values() if v.get("verified"))
+        return f"{total} kernels: {translated} translated, {compiled} compiled, {verified} verified"
