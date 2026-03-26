@@ -12,23 +12,17 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent  # src/workflow/ -> SALT/
 
 @dataclass
 class Config:
-    """Pipeline configuration.
-
-    Usage:
-        python pipeline.py --source Neon --model gcp::gemini-3.1-pro-preview-customtools
-        python pipeline.py --source RVV --model openai::gpt-4o
-    """
     # Translation
     source: str = "Neon"           # source language (maps to prompts/<source>/ and kernels/source/)
     target: str = "RVV"            # target language (maps to kernels/target/)
-    model: str = "gemini-3.1-pro-preview-customtools"  # provider::model format
+    model: str = "gemini-3.1-pro-preview-customtools"
     temperature: float = 0.1
     repair_temperature: float = 0.3
     thinking: str | None = None  # Gemini thinking level (low/medium/high) or None
 
     # Zephyr / Spike
     zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
-    chipyard_path: str = ""  # machine-specific, set via env CHIPYARD_PATH or CLI
+    chipyard_path: str = ""
 
     # Pipeline
     max_retries: int = 5
