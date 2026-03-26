@@ -13,7 +13,7 @@ from pathlib import Path
 log = logging.getLogger("pipeline")
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent.parent  # src/workflow/ -> SALT/
+PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent  # src/workflow/prompts_pkg/ -> SALT/
 OP_SEMANTICS_DIR = PROJECT_ROOT / "op-semantics"
 
 NEON_DOC = OP_SEMANTICS_DIR / "neon-intrinsics.md"
@@ -23,7 +23,6 @@ RVV_DOC = OP_SEMANTICS_DIR / "rvv-intrinsics.md"
 NEON_SUFFIX_RE = r"(?:[sufp]\d+|bf16)"
 
 # Regex to match NEON intrinsic names in C source code
-# Matches patterns like: vaddq_s32, vld1q_f16, vmulq_lane_f32, etc.
 NEON_INTRINSIC_RE = re.compile(rf"\bv[a-z][a-z0-9_]*_{NEON_SUFFIX_RE}\b")
 
 # Regex to match RVV intrinsic names in C source code

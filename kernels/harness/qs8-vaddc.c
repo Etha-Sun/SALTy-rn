@@ -1,6 +1,3 @@
-// Test harness for qs8-vaddc (quantized int8 vector add with constant)
-// RVV implementation test
-
 #include <stdint.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -21,15 +18,15 @@ struct xnn_qs8_add_minmax_params {
     } scalar;
 };
 
+// Generated RVV kernel (from kernels/target/)
+#include "qs8-vaddc.c"
+
 #define BATCH_SIZE 64
-#define OUTPUT_MATRIX_NAME output_arr
 
 static int8_t input_a_arr[BATCH_SIZE];
 static int8_t input_b_val;
 static int8_t output_arr[BATCH_SIZE];
 static int8_t gold[BATCH_SIZE];
-
-#define REPEAT_TEST_ITERS 1
 
 // Scalar reference implementation
 void reference_qs8_vaddc(
@@ -70,27 +67,6 @@ int full_is_equal(int8_t* x, int8_t* y) {
     return 1;
 }
 
-// Saturn-specific cycle counter
-unsigned long read_cycles() {
-    unsigned long cc;
-    __asm__ volatile("rdcycle %0" : "=r"(cc));
-    return cc;
-}
-
-
-// Reset state macro for FireSim batched runs
-// Resets variables that get modified during candidate execution
-#define RESET_STATE() do { \
-    batch = BATCH_SIZE; \
-    input_a = input_a_arr; \
-    input_b = &input_b_val; \
-    output = output_arr; \
-} while(0)
-
-static inline void fence(void) {
-    __asm__ volatile("fence" ::: "memory");
-}
-
 int main() {
     static struct xnn_qs8_add_minmax_params params_storage;
 
@@ -103,31 +79,28 @@ int main() {
     params_storage.scalar.output_max = 127;
     params_storage.scalar.output_zero_point = 0;
 
-    for (int repeat_iters = 0; repeat_iters < REPEAT_TEST_ITERS; repeat_iters++) {
-        // Initialize input data
-        for (size_t i = 0; i < BATCH_SIZE; i++) {
-            input_a_arr[i] = (int8_t)(rand() % 256 - 128);
-        }
-        input_b_val = (int8_t)(rand() % 256 - 128);
-
-        // Clear output
-        for (size_t i = 0; i < BATCH_SIZE; i++) {
-            output_arr[i] = 0;
-        }
-
-        // Compute gold reference
-        reference_qs8_vaddc(BATCH_SIZE, input_a_arr, &input_b_val, gold, &params_storage);
-
-        // Set up variables for injected code
-        size_t batch = BATCH_SIZE;
-        const int8_t* input_a = input_a_arr;
-        const int8_t* input_b = &input_b_val;
-        int8_t* output = output_arr;
-        const struct xnn_qs8_add_minmax_params* params = &params_storage;
-
-        // SUBSTITUTE HERE
-        // SUBSTITUTE END
+    // Initialize input data
+    for (size_t i = 0; i < BATCH_SIZE; i++) {
+        input_a_arr[i] = (int8_t)(rand() % 256 - 128);
     }
-    printf("Correct result\n");
+    input_b_val = (int8_t)(rand() % 256 - 128);
+
+    // Clear output
+    for (size_t i = 0; i < BATCH_SIZE; i++) {
+        output_arr[i] = 0;
+    }
+
+    // Compute gold reference
+    reference_qs8_vaddc(BATCH_SIZE, input_a_arr, &input_b_val, gold, &params_storage);
+
+    // Call the generated RVV kernel
+    test_rvv(BATCH_SIZE, input_a_arr, &input_b_val, output_arr, &params_storage);
+
+    if (full_is_equal(output_arr, gold)) {
+        printf("PASS\n");
+    } else {
+        printf("FAIL\n");
+    }
+
     sys_reboot(SYS_REBOOT_COLD);
 }

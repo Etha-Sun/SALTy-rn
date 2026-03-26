@@ -18,7 +18,7 @@ from pathlib import Path
 log = logging.getLogger("pipeline")
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parent.parent  # src/workflow/ -> SALT/
+PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent  # src/workflow/prompts_pkg/ -> SALT/
 PROMPTS_DIR = PROJECT_ROOT / "prompts"
 
 # Standard prompt files expected in each source language directory

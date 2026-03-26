@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "salty-rn"
+version = "0.1.0"
+description = "LLM-powered SIMD kernel translation pipeline (Neon → RVV)"
+requires-python = ">=3.11"
+dependencies = [
+    "google-genai>=1.0",
+    "openai>=1.0",
+    "anthropic>=0.30",
+    "together>=1.0",
+    "boto3>=1.30",
+    "backoff>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+]
+
+[project.scripts]
+salty-rn = "workflow.pipeline:main"
+salty-compile = "workflow.compiler:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]

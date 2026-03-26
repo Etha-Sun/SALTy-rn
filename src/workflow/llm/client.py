@@ -5,7 +5,7 @@ Supports: Google (Gemini/Vertex AI), OpenAI, Anthropic, Together AI,
 AWS Bedrock, and vLLM.
 
 Usage:
-    from llm_client import LLMClient
+    from workflow.llm_client import LLMClient
 
     client = LLMClient("gemini-2.0-flash-001")              # auto-detects gcp
     client = LLMClient("gpt-4o", provider="openai")          # explicit provider
@@ -59,7 +59,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 try:
-    import keys
+    from . import keys
 except ImportError:
     keys = None
 

@@ -30,19 +30,15 @@ import argparse
 import logging
 import re
 import sys
+import time
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Add src/workflow/ to sys.path so sibling imports work
-# ---------------------------------------------------------------------------
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent  # src/workflow/ -> SALT/
-sys.path.insert(0, str(SCRIPT_DIR))
 
-from config import Config, TranslationResult
-from agents import load_reference_docs, load_translation_prompt
-from intrinsics_tools import build_intrinsics_tools
-from status import StatusTracker
+from .config import Config, TranslationResult
+from .prompts_pkg import load_reference_docs, load_translation_prompt, build_intrinsics_tools
+from .status import StatusTracker
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -126,9 +122,9 @@ def translate_kernel(
     kernel_name = kernel_path.stem
     log.info("Translating: %s", kernel_name)
 
-    # Skip if already translated and skip_existing is set
-    if cfg.skip_existing and tracker.is_translated(kernel_name):
-        log.info("Skipping %s (already translated)", kernel_name)
+    # Skip if already generated and skip_existing is set
+    if cfg.skip_existing and tracker.is_generated(kernel_name):
+        log.info("Skipping %s (already generated)", kernel_name)
         return TranslationResult(
             kernel_name=kernel_name, success=True,
             output_file=str(cfg.target_dir / kernel_path.name),
@@ -155,6 +151,7 @@ def translate_kernel(
 
     # 4. Call LLM
     try:
+        t0 = time.perf_counter()
         if tools:
             log.info("Calling LLM with tools: model=%s thinking=%s tools=%s",
                      cfg.model, cfg.thinking, list(tools.keys()))
@@ -174,24 +171,70 @@ def translate_kernel(
                 temperature=cfg.temperature,
                 thinking=cfg.thinking,
             )
+        elapsed = time.perf_counter() - t0
         translated_code = extract_code(response)
-        log.info("Got translation: %d chars", len(translated_code))
+        log.info("Got translation: %d chars in %.1fs", len(translated_code), elapsed)
     except Exception as e:
         log.error("LLM call failed for %s: %s", kernel_name, e)
-        tracker.update(kernel_name, translated=False, attempts=1, error=str(e))
+        tracker.update(kernel_name, generated=False, attempts=1, error=str(e))
         return TranslationResult(
             kernel_name=kernel_name, success=False,
             attempts=1, error=str(e),
         )
 
-    # 6. Write output
+    # 5. Write output
     cfg.target_dir.mkdir(parents=True, exist_ok=True)
     output_path = cfg.target_dir / kernel_path.name
     output_path.write_text(translated_code)
     log.info("Wrote translation: %s", output_path)
 
-    # 7. Update status
-    tracker.update(kernel_name, translated=True, attempts=1)
+    # 6. Update status (generated, not yet compiled)
+    tracker.update(kernel_name, generated=True, attempts=1)
+
+    # 7. Compile (if zephyr_base exists on disk)
+    from .build import build_kernel, run_spike
+    if cfg.zephyr_base and Path(cfg.zephyr_base).exists():
+        log.info("Compiling %s...", kernel_name)
+        build_result = build_kernel(kernel_name, zephyr_base=cfg.zephyr_base)
+
+        if not build_result.success:
+            log.error("Compilation failed for %s", kernel_name)
+            tracker.update(kernel_name, compiled=False, error=build_result.error[-500:])
+            return TranslationResult(
+                kernel_name=kernel_name, success=False,
+                attempts=1, output_file=str(output_path),
+                error=f"compile_error: {build_result.error[-500:]}",
+            )
+
+        tracker.update(kernel_name, compiled=True)
+        log.info("Compilation passed (%.1fs)", build_result.elapsed)
+
+        # 8. Run on Spike (if chipyard_path is set)
+        if cfg.chipyard_path:
+            run_result = run_spike(chipyard_path=cfg.chipyard_path)
+
+            if run_result.passed:
+                log.info("Spike run: PASS (%.1fs)", run_result.elapsed)
+            elif not run_result.success:
+                log.error("Spike run failed: %s", run_result.error[:500])
+                tracker.update(kernel_name, error=f"runtime_error: {run_result.error[:500]}")
+                return TranslationResult(
+                    kernel_name=kernel_name, success=False,
+                    attempts=1, output_file=str(output_path),
+                    error=f"runtime_error: {run_result.error[:500]}",
+                )
+            else:
+                log.warning("Spike run: FAIL (wrong output)")
+                tracker.update(kernel_name, error=f"wrong_output: {run_result.output[:500]}")
+                return TranslationResult(
+                    kernel_name=kernel_name, success=False,
+                    attempts=1, output_file=str(output_path),
+                    error=f"wrong_output: {run_result.output[:500]}",
+                )
+        else:
+            log.info("Skipping Spike (CHIPYARD_PATH not set)")
+    else:
+        log.info("Skipping compilation (zephyr not found at %s)", cfg.zephyr_base)
 
     return TranslationResult(
         kernel_name=kernel_name,
@@ -210,9 +253,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     # What to translate
     g = p.add_mutually_exclusive_group(required=True)
-    g.add_argument("--kernel", type=str, help="Kernel name to translate (e.g. f32-vmulc)")
-    g.add_argument("--file", type=Path, help="Path to a specific source kernel file")
-    g.add_argument("--batch", action="store_true", help="Translate all kernels in source dir")
+    g.add_argument("-k", "--kernel", type=str, help="Kernel name to translate (e.g. f32-vmulc)")
+    g.add_argument("-f", "--file", type=Path, help="Path to a specific source kernel file")
+    g.add_argument("-b", "--batch", action="store_true", help="Translate all kernels in source dir")
 
     # Translation config
     p.add_argument("--source", default="Neon", help="Source ISA (default: Neon)")
@@ -227,7 +270,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     # Build / simulation
     p.add_argument("--zephyr-base", default="", help="Path to Zephyr SDK")
-    p.add_argument("--spike-path", default="", help="Path to Spike simulator")
+    p.add_argument("--chipyard-path", default="", help="Path to Chipyard (for Spike)")
 
     # Directories
     p.add_argument("--kernels-dir", type=Path, default=None,
@@ -236,7 +279,7 @@ def build_parser() -> argparse.ArgumentParser:
     # Flags
     p.add_argument("--dry-run", action="store_true", help="Show what would be done")
     p.add_argument("--skip-existing", action="store_true",
-                    help="Skip already-translated kernels")
+                    help="Skip already-generated kernels")
     p.add_argument("--tools", action="store_true",
                     help="Enable intrinsics search tools (model can look up op-semantics)")
     p.add_argument("--rules-only", action="store_true",
@@ -249,26 +292,22 @@ def main():
     parser = build_parser()
     args = parser.parse_args()
 
-    # Handle --thinking none
     if args.thinking == "none":
         args.thinking = None
 
-    # Build config
     cfg = Config.from_env_and_args(args)
 
     log.info("Pipeline config: source=%s target=%s model=%s", cfg.source, cfg.target, cfg.model)
     log.info("Directories: source=%s target=%s", cfg.source_dir, cfg.target_dir)
 
-    # Init components
-    client = cfg.create_llm_client()
-    if args.tools and client.supports_tools:
-        tools = build_intrinsics_tools()
-    elif args.tools and not client.supports_tools:
-        log.warning("Provider '%s' does not support tool calling — tools disabled",
-                    client.provider)
-        tools = {}
-    else:
-        tools = {}
+    client = None if cfg.dry_run else cfg.create_llm_client()
+    tools = {}
+    if not cfg.dry_run and args.tools:
+        if client.supports_tools:
+            tools = build_intrinsics_tools()
+        else:
+            log.warning("Provider '%s' does not support tool calling — tools disabled",
+                        client.provider)
     tracker = StatusTracker(cfg.status_file)
 
     log.info("Tools: %s", "disabled" if not tools else list(tools.keys()))
@@ -288,14 +327,13 @@ def main():
             log.error("No kernel files found in %s", cfg.source_dir)
             sys.exit(1)
         log.info("Batch mode: found %d kernels", len(kernel_files))
+        sys.exit(1)
 
-    # Translate
     results = []
     for kernel_path in kernel_files:
         result = translate_kernel(kernel_path, cfg, client, tools, tracker)
         results.append(result)
 
-    # Summary
     total = len(results)
     success = sum(1 for r in results if r.success)
     log.info("Done: %d/%d translations succeeded", success, total)

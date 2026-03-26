@@ -11,10 +11,10 @@ class StatusTracker:
     """Read/write kernel status from kernels/status.json.
 
     Each kernel entry tracks:
-        translated: bool  - LLM produced output
+        generated:  bool  - LLM produced output
         compiled:   bool  - passed Zephyr/Spike compilation
         verified:   bool  - passed formal verification
-        attempts:   int   - number of translation/repair attempts
+        attempts:   int   - number of generation/repair attempts
         error:      str   - last error message (if any)
     """
 
@@ -23,7 +23,7 @@ class StatusTracker:
         self._data: dict[str, dict] = {}
         self._load()
 
-    _VALID_FIELDS = {"translated", "compiled", "verified", "attempts", "error"}
+    _VALID_FIELDS = {"generated", "compiled", "verified", "attempts", "error"}
 
     def _load(self):
         if self._path.exists():
@@ -43,7 +43,7 @@ class StatusTracker:
     def get(self, kernel: str) -> dict:
         """Get status for a kernel, or empty defaults."""
         return self._data.get(kernel, {
-            "translated": False,
+            "generated": False,
             "compiled": False,
             "verified": False,
             "attempts": 0,
@@ -53,7 +53,7 @@ class StatusTracker:
     def update(self, kernel: str, **fields):
         """Update status fields for a kernel and persist.
 
-        Only accepts known fields: translated, compiled, verified, attempts, error.
+        Only accepts known fields: generated, compiled, verified, attempts, error.
         Raises ValueError on unknown fields to catch typos early.
         """
         bad = fields.keys() - self._VALID_FIELDS
@@ -64,8 +64,8 @@ class StatusTracker:
         self._data[kernel] = entry
         self._save()
 
-    def is_translated(self, kernel: str) -> bool:
-        return self.get(kernel).get("translated", False)
+    def is_generated(self, kernel: str) -> bool:
+        return self.get(kernel).get("generated", False)
 
     def is_compiled(self, kernel: str) -> bool:
         return self.get(kernel).get("compiled", False)
@@ -80,7 +80,7 @@ class StatusTracker:
     def summary(self) -> str:
         """One-line summary of progress."""
         total = len(self._data)
-        translated = sum(1 for v in self._data.values() if v.get("translated"))
+        generated = sum(1 for v in self._data.values() if v.get("generated"))
         compiled = sum(1 for v in self._data.values() if v.get("compiled"))
         verified = sum(1 for v in self._data.values() if v.get("verified"))
-        return f"{total} kernels: {translated} translated, {compiled} compiled, {verified} verified"
+        return f"{total} kernels: {generated} generated, {compiled} compiled, {verified} verified"

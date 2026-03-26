@@ -12,7 +12,7 @@ Usage:
 
 import logging
 import re
-from intrinsics_search import IntrinsicsDB
+from .search import IntrinsicsDB
 
 log = logging.getLogger("pipeline")
 

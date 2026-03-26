@@ -27,8 +27,8 @@ class Config:
     thinking: str | None = None  # Gemini thinking level (low/medium/high) or None
 
     # Zephyr / Spike
-    zephyr_base: str = ""
-    spike_path: str = ""
+    zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
+    chipyard_path: str = ""  # machine-specific, set via env CHIPYARD_PATH or CLI
 
     # Pipeline
     max_retries: int = 5
@@ -52,14 +52,17 @@ class Config:
     @classmethod
     def from_env_and_args(cls, args: argparse.Namespace) -> "Config":
         cfg = cls()
+        # Translation
         cfg.source = args.source
         cfg.target = args.target
         cfg.model = args.model
         cfg.temperature = args.temperature
         cfg.repair_temperature = args.repair_temperature
         cfg.thinking = args.thinking
-        cfg.zephyr_base = args.zephyr_base or os.environ.get("ZEPHYR_BASE", "")
-        cfg.spike_path = args.spike_path or os.environ.get("SPIKE_PATH", "")
+        # Build paths
+        cfg.zephyr_base = args.zephyr_base or os.environ.get("ZEPHYR_BASE", cfg.zephyr_base)
+        cfg.chipyard_path = args.chipyard_path or os.environ.get("CHIPYARD_PATH", "")
+        # Pipeline
         cfg.max_retries = args.max_retries
         cfg.dry_run = args.dry_run
         cfg.skip_existing = args.skip_existing
@@ -70,7 +73,7 @@ class Config:
 
     def create_llm_client(self):
         """Create an LLMClient from this config."""
-        from llm_client import LLMClient
+        from .llm import LLMClient
         return LLMClient.from_model_string(self.model)
 
 
