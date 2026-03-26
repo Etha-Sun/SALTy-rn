@@ -61,7 +61,7 @@ class Config:
         cfg.thinking = args.thinking
         # Build paths
         cfg.zephyr_base = args.zephyr_base or os.environ.get("ZEPHYR_BASE", cfg.zephyr_base)
-        cfg.chipyard_path = args.chipyard_path or os.environ.get("CHIPYARD_PATH", "")
+        cfg.chipyard_path = args.chipyard_path or os.environ.get("CHIPYARD_PATH", cfg.chipyard_path)
         # Pipeline
         cfg.max_retries = args.max_retries
         cfg.dry_run = args.dry_run
