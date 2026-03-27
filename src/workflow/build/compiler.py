@@ -116,8 +116,10 @@ def build_kernel(
     pristine_flag = "" if _has_cached_build(build_dir) else "-p"
     log.info("Building %s: pristine=%s", kernel_name, bool(pristine_flag))
 
-    build_log = build_dir / "build.log"
-    build_log.parent.mkdir(parents=True, exist_ok=True)
+    # Write build output to a log file under the project logs dir
+    logs_dir = PROJECT_ROOT / "logs" / "builds" / kernel_name
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    build_log = logs_dir / "build.log"
 
     cmd = (
         f"cd {zephyr_base} && "
@@ -297,7 +299,7 @@ def main():
     )
     print(f"Build: {'PASS' if build_result.success else 'FAIL'} ({build_result.elapsed:.1f}s)")
     if not build_result.success:
-        print(f"Error: {build_result.error[-1000:]}")
+        print(f"Error:\n{build_result.error}")
         exit(1)
 
     if args.build_only:
