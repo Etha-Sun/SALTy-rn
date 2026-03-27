@@ -61,19 +61,17 @@ def _extract_compile_errors(raw: str) -> str:
         r"(: error:|: fatal error:|undefined reference"
         r"|In file included from|In function|: note:)"
     )
+    noise = re.compile(
+        r"(^FAILED:|^ninja:|^FATAL ERROR:|^\s*\^)"
+    )
     lines = raw.splitlines()
-    keep = set()
-    for i, line in enumerate(lines):
-        if diag.search(line):
-            keep.add(i)
+    keep = []
+    for line in lines:
+        if diag.search(line) and len(line) < 500 and not noise.search(line):
+            keep.append(line)
 
     if keep:
-        # Only include matched lines, skip huge gcc command lines
-        extracted = "\n".join(
-            lines[i] for i in sorted(keep) if len(lines[i]) < 500
-        )
-        if extracted.strip():
-            return extracted[:3000]
+        return "\n".join(keep)[:3000]
 
     # Fallback: short lines only, skip gcc commands and cmake noise
     useful = [l for l in lines if l.strip() and len(l) < 500
