@@ -65,19 +65,21 @@ def _extract_compile_errors(raw: str) -> str:
     keep = set()
     for i, line in enumerate(lines):
         if diag.search(line):
-            for j in range(max(0, i - 2), min(len(lines), i + 3)):
-                keep.add(j)
+            keep.add(i)
 
     if keep:
-        extracted = "\n".join(lines[i] for i in sorted(keep))
-        return extracted[:3000]
+        # Only include matched lines, skip huge gcc command lines
+        extracted = "\n".join(
+            lines[i] for i in sorted(keep) if len(lines[i]) < 500
+        )
+        if extracted.strip():
+            return extracted[:3000]
 
-    # Fallback: skip gcc command lines (very long, start with path to gcc)
-    # and cmake/ninja progress lines, keep the rest
-    junk = re.compile(r"(^\[?\d+/\d+\]|riscv64.*-gcc |^--|^Loading )")
-    useful = [l for l in lines if l.strip() and not junk.search(l)]
+    # Fallback: short lines only, skip gcc commands and cmake noise
+    useful = [l for l in lines if l.strip() and len(l) < 500
+              and not l.startswith("--") and not l.startswith("[")]
     if useful:
-        return "\n".join(useful[-40:])[:3000]
+        return "\n".join(useful[-30:])[:3000]
 
     return raw[-1500:]
 
