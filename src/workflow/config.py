@@ -21,8 +21,11 @@ class Config:
     thinking: str | None = None  # Gemini thinking level (low/medium/high) or None
 
     # Zephyr / Spike
-    zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
-    chipyard_path: str = ""
+    # zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
+    # chipyard_path: str = ""
+    zephyr_base: str = "/scratch/kchern2/SALTy-rn/third_party/zephyr"
+    chipyard_path: str = "/scratch/kchern2/chipyard-salty"
+
 
     # Pipeline
     max_retries: int = 5
