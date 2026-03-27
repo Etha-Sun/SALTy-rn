@@ -7,12 +7,10 @@ Handles:
     - Parsing build errors and Spike output
 """
 
-import asyncio
 import logging
 import re
 import shutil
 import subprocess
-import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -30,6 +28,9 @@ DEFAULT_BUILD_DIR = PROJECT_ROOT / "build" / "xnnpack-kernel" / "build"
 DEFAULT_HARNESS_DIR = PROJECT_ROOT / "kernels" / "harness"
 DEFAULT_SPIKE_ISA = "rv64gcv_zvl512b_zicntr"
 DEFAULT_SPIKE_TIMEOUT = 15
+
+# Pre-compiled regexes for error extraction
+_NOISE_RE = re.compile(r"(^FAILED:|^ninja:|^FATAL ERROR:|^\s*\^)")
 
 
 @dataclass
@@ -50,30 +51,35 @@ class RunResult:
     elapsed: float = 0.0
 
 
+_ERROR_RE = re.compile(r"(: error:|: fatal error:|undefined reference)")
+_CONTEXT_RE = re.compile(r"(In file included from|In function|: note:)")
+
+
 def _extract_compile_errors(raw: str) -> str:
-    """Pull actual compiler diagnostics out of cmake/ninja build log.
+    """Pull compiler diagnostics from a cmake/ninja build log.
 
-    Keeps lines that contain ': error:', 'undefined reference', etc.
-    plus surrounding context lines.  Falls back to the last 40 non-junk
-    lines if no diagnostics are found.
+    Prioritizes actual error lines over include-stack context to avoid
+    truncating real errors when the include stack is deep.
+    Falls back to the last 30 short lines if no diagnostics match.
     """
-    diag = re.compile(
-        r"(: error:|: fatal error:|undefined reference"
-        r"|In file included from|In function|: note:)"
-    )
-    noise = re.compile(
-        r"(^FAILED:|^ninja:|^FATAL ERROR:|^\s*\^)"
-    )
     lines = raw.splitlines()
-    keep = []
-    for line in lines:
-        if diag.search(line) and len(line) < 500 and not noise.search(line):
-            keep.append(line)
 
-    if keep:
-        return "\n".join(keep)[:3000]
+    errors = [l for l in lines
+              if _ERROR_RE.search(l) and len(l) < 500 and not _NOISE_RE.search(l)]
+    context = [l for l in lines
+               if _CONTEXT_RE.search(l) and len(l) < 500 and not _NOISE_RE.search(l)]
 
-    # Fallback: short lines only, skip gcc commands and cmake noise
+    if errors:
+        # Errors first (budgeted 2500 chars), then context with remaining space
+        error_block = "\n".join(errors)[:2500]
+        remaining = 3000 - len(error_block) - 1
+        if remaining > 0 and context:
+            # Only keep the last few context lines (closest to the error)
+            ctx_block = "\n".join(context[-5:])[:remaining]
+            return ctx_block + "\n" + error_block
+        return error_block
+
+    # Fallback: short lines, skip gcc commands and cmake noise
     useful = [l for l in lines if l.strip() and len(l) < 500
               and not l.startswith("--") and not l.startswith("[")]
     if useful:
@@ -116,10 +122,12 @@ def build_kernel(
     pristine_flag = "" if _has_cached_build(build_dir) else "-p"
     log.info("Building %s: pristine=%s", kernel_name, bool(pristine_flag))
 
-    # Write build output to a log file under the project logs dir
+    # Build log goes under logs/builds/<kernel>/<timestamp>.log
+    from datetime import datetime
     logs_dir = PROJECT_ROOT / "logs" / "builds" / kernel_name
     logs_dir.mkdir(parents=True, exist_ok=True)
-    build_log = logs_dir / "build.log"
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    build_log = logs_dir / f"{timestamp}.log"
 
     cmd = (
         f"cd {zephyr_base} && "
@@ -153,22 +161,22 @@ def build_kernel(
 
     except subprocess.TimeoutExpired:
         elapsed = time.perf_counter() - t0
-        return BuildResult(success=False, error="Build timed out (300s)", elapsed=elapsed)
+        partial = ""
+        if build_log.exists():
+            partial = _extract_compile_errors(build_log.read_text())
+        return BuildResult(success=False, error=f"Build timed out (300s)\n{partial}", elapsed=elapsed)
     except Exception as e:
         elapsed = time.perf_counter() - t0
         return BuildResult(success=False, error=str(e), elapsed=elapsed)
 
 
-async def run_spike_async(
+def run_spike(
     build_dir: Path = DEFAULT_BUILD_DIR,
     chipyard_path: str = DEFAULT_CHIPYARD_PATH,
     isa: str = DEFAULT_SPIKE_ISA,
     timeout: int = DEFAULT_SPIKE_TIMEOUT,
 ) -> RunResult:
-    """Run the compiled ELF on Spike simulator (async).
-
-    Spike runs under chipyard's environment (source env.sh).
-    """
+    """Run the compiled ELF on Spike simulator."""
     elf_path = build_dir / "zephyr" / "zephyr.elf"
     if not elf_path.exists():
         return RunResult(success=False, error=f"ELF not found: {elf_path}")
@@ -185,69 +193,40 @@ async def run_spike_async(
 
     t0 = time.perf_counter()
     try:
-        proc = await asyncio.create_subprocess_shell(
-            cmd,
-            stdout=asyncio.subprocess.PIPE,
-            stderr=asyncio.subprocess.PIPE,
-            executable="/bin/bash",
-        )
-        stdout, stderr = await asyncio.wait_for(
-            proc.communicate(), timeout=timeout
+        result = subprocess.run(
+            cmd, shell=True, executable="/bin/bash",
+            capture_output=True, text=True, timeout=timeout,
         )
         elapsed = time.perf_counter() - t0
 
-        stdout_str = stdout.decode(errors="replace")
-        stderr_str = stderr.decode(errors="replace")
-
-        if proc.returncode != 0:
-            error = stderr_str or stdout_str
+        if result.returncode != 0:
+            error = result.stderr or result.stdout
             log.error("Spike failed (%.1fs, exit=%d):\n%s",
-                      elapsed, proc.returncode, error[-2000:])
+                      elapsed, result.returncode, error[-2000:])
             return RunResult(
-                success=False, output=stdout_str, error=error, elapsed=elapsed,
+                success=False, output=result.stdout, error=error, elapsed=elapsed,
             )
 
-        passed = "PASS" in stdout_str
-        failed = "FAIL" in stdout_str
+        passed = "PASS" in result.stdout
+        failed = "FAIL" in result.stdout
 
         if passed:
             log.info("Spike: PASS (%.1fs)", elapsed)
         elif failed:
-            log.warning("Spike: FAIL (%.1fs)\n%s", elapsed, stdout_str[-2000:])
+            log.warning("Spike: FAIL (%.1fs)\n%s", elapsed, result.stdout[-2000:])
         else:
             log.warning("Spike: no PASS/FAIL in output (%.1fs)", elapsed)
 
         return RunResult(
-            success=True, output=stdout_str, passed=passed, elapsed=elapsed,
+            success=True, output=result.stdout, passed=passed, elapsed=elapsed,
         )
 
-    except asyncio.TimeoutError:
+    except subprocess.TimeoutExpired:
         elapsed = time.perf_counter() - t0
-        log.error("Spike timed out after %.1fs", elapsed)
-        try:
-            proc.kill()
-        except Exception:
-            pass
         return RunResult(success=False, error=f"Spike timed out ({timeout}s)", elapsed=elapsed)
     except Exception as e:
         elapsed = time.perf_counter() - t0
         return RunResult(success=False, error=str(e), elapsed=elapsed)
-
-
-def run_spike(
-    build_dir: Path = DEFAULT_BUILD_DIR,
-    chipyard_path: str = DEFAULT_CHIPYARD_PATH,
-    isa: str = DEFAULT_SPIKE_ISA,
-    timeout: int = DEFAULT_SPIKE_TIMEOUT,
-) -> RunResult:
-    """Sync wrapper for run_spike_async."""
-    loop = asyncio.new_event_loop()
-    try:
-        return loop.run_until_complete(
-            run_spike_async(build_dir, chipyard_path, isa, timeout)
-        )
-    finally:
-        loop.close()
 
 
 def compile_and_run(
@@ -279,10 +258,12 @@ def main():
         datefmt="%H:%M:%S",
     )
 
-    cfg = Config()  # picks up defaults (zephyr_base, chipyard_path)
+    cfg = Config()
 
     p = argparse.ArgumentParser(description="Compile and run a kernel on Spike")
     p.add_argument("kernel", help="Kernel name (e.g. qs8-vaddc)")
+    p.add_argument("--zephyr-base", default=None, help="Path to Zephyr (default: from config/env)")
+    p.add_argument("--chipyard-path", default=None, help="Path to Chipyard (default: from config/env)")
     p.add_argument("--app-dir", type=Path, default=DEFAULT_APP_DIR)
     p.add_argument("--build-dir", type=Path, default=DEFAULT_BUILD_DIR)
     p.add_argument("--harness-dir", type=Path, default=DEFAULT_HARNESS_DIR)
@@ -291,8 +272,8 @@ def main():
     p.add_argument("--build-only", action="store_true", help="Skip Spike run")
     args = p.parse_args()
 
-    zephyr_base = cfg.zephyr_base
-    chipyard_path = cfg.chipyard_path
+    zephyr_base = args.zephyr_base or cfg.zephyr_base
+    chipyard_path = args.chipyard_path or cfg.chipyard_path
 
     build_result = build_kernel(
         args.kernel, zephyr_base, args.app_dir, args.build_dir, args.harness_dir

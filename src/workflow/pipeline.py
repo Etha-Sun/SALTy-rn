@@ -237,11 +237,11 @@ def translate_kernel(
 
         if not build_result.success:
             log.error("Compilation failed for %s", kernel_name)
-            tracker.update(kernel_name, compiled=False, error=build_result.error[-500:])
+            tracker.update(kernel_name, compiled=False, error=build_result.error)
             return TranslationResult(
                 kernel_name=kernel_name, success=False,
                 attempts=1, output_file=str(output_path),
-                error=f"compile_error: {build_result.error[-500:]}",
+                error=f"compile_error: {build_result.error}",
             )
 
         tracker.update(kernel_name, compiled=True)
