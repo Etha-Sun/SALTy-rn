@@ -9,6 +9,7 @@ Handles:
 
 import asyncio
 import logging
+import re
 import shutil
 import subprocess
 import time
@@ -23,7 +24,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent  # src/workflow/build/ -> SALT/
 # Defaults
 DEFAULT_ZEPHYR_BASE = PROJECT_ROOT / "third_party" / "zephyr"
 DEFAULT_CHIPYARD_PATH = ""  # e.g. /scratch/kchern2/chipyard
-DEFAULT_APP_DIR = PROJECT_ROOT / "build" / "xnnpack-kernel" / "app"
+DEFAULT_APP_DIR = PROJECT_ROOT / "build" / "xnnpack-kernel"
 DEFAULT_BUILD_DIR = DEFAULT_APP_DIR / "build"
 DEFAULT_HARNESS_DIR = PROJECT_ROOT / "kernels" / "harness"
 DEFAULT_SPIKE_ISA = "rv64gcv_zvl512b_zicntr"
@@ -46,6 +47,34 @@ class RunResult:
     error: str = ""
     passed: bool = False  # harness printed PASS
     elapsed: float = 0.0
+
+
+def _extract_compile_errors(raw: str) -> str:
+    """Pull actual compiler diagnostics out of cmake/ninja build log.
+
+    Keeps lines that contain ': error:', ': warning:', 'undefined reference',
+    or 'fatal error', plus surrounding context lines (the 'In file included
+    from' / 'In function' breadcrumbs).  Falls back to the last 1500 chars of
+    the raw log if no diagnostics are found.
+    """
+    patterns = re.compile(
+        r"(: error:|: fatal error:|undefined reference"
+        r"|In file included from|In function|: note:)"
+    )
+    lines = raw.splitlines()
+    keep = set()
+    for i, line in enumerate(lines):
+        if patterns.search(line):
+            # grab a small window around each diagnostic
+            for j in range(max(0, i - 2), min(len(lines), i + 3)):
+                keep.add(j)
+
+    if keep:
+        extracted = "\n".join(lines[i] for i in sorted(keep))
+        # cap at a reasonable size for a repair prompt
+        return extracted[:3000]
+
+    return raw[-1500:]
 
 
 def _has_cached_build(build_dir: Path) -> bool:
@@ -102,8 +131,9 @@ def build_kernel(
         elapsed = time.perf_counter() - t0
 
         if result.returncode != 0:
-            error = result.stderr or result.stdout
-            log.error("Build failed (%.1fs):\n%s", elapsed, error[-2000:])
+            raw = (result.stderr or "") + "\n" + (result.stdout or "")
+            error = _extract_compile_errors(raw)
+            log.error("Build failed (%.1fs):\n%s", elapsed, error)
             return BuildResult(success=False, error=error, elapsed=elapsed)
 
         log.info("Build succeeded in %.1fs", elapsed)
@@ -229,6 +259,7 @@ def compile_and_run(
 
 def main():
     import argparse
+    from ..config import Config
 
     logging.basicConfig(
         level=logging.INFO,
@@ -236,10 +267,10 @@ def main():
         datefmt="%H:%M:%S",
     )
 
+    cfg = Config()  # picks up defaults (zephyr_base, chipyard_path)
+
     p = argparse.ArgumentParser(description="Compile and run a kernel on Spike")
     p.add_argument("kernel", help="Kernel name (e.g. qs8-vaddc)")
-    p.add_argument("--zephyr-base", type=Path, default=DEFAULT_ZEPHYR_BASE)
-    p.add_argument("--chipyard-path", default=DEFAULT_CHIPYARD_PATH)
     p.add_argument("--app-dir", type=Path, default=DEFAULT_APP_DIR)
     p.add_argument("--build-dir", type=Path, default=DEFAULT_BUILD_DIR)
     p.add_argument("--harness-dir", type=Path, default=DEFAULT_HARNESS_DIR)
@@ -248,8 +279,11 @@ def main():
     p.add_argument("--build-only", action="store_true", help="Skip Spike run")
     args = p.parse_args()
 
+    zephyr_base = cfg.zephyr_base
+    chipyard_path = cfg.chipyard_path
+
     build_result = build_kernel(
-        args.kernel, args.zephyr_base, args.app_dir, args.build_dir, args.harness_dir
+        args.kernel, zephyr_base, args.app_dir, args.build_dir, args.harness_dir
     )
     print(f"Build: {'PASS' if build_result.success else 'FAIL'} ({build_result.elapsed:.1f}s)")
     if not build_result.success:
@@ -260,7 +294,7 @@ def main():
         exit(0)
 
     run_result = run_spike(
-        args.build_dir, args.chipyard_path, args.spike_isa, args.spike_timeout
+        args.build_dir, chipyard_path, args.spike_isa, args.spike_timeout
     )
     print(f"Spike: {'PASS' if run_result.passed else 'FAIL'} ({run_result.elapsed:.1f}s)")
     if run_result.output:

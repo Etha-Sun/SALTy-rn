@@ -31,6 +31,7 @@ import logging
 import re
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -49,6 +50,43 @@ logging.basicConfig(
     datefmt="%H:%M:%S",
 )
 log = logging.getLogger("pipeline")
+
+LOGS_DIR = PROJECT_ROOT / "logs"
+
+
+def _setup_run_logging() -> Path:
+    """Create a timestamped run directory under logs/ and add a file handler."""
+    run_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_dir = LOGS_DIR / run_id
+    run_dir.mkdir(parents=True, exist_ok=True)
+
+    # File handler for the full run log
+    run_log = run_dir / "run.log"
+    fh = logging.FileHandler(run_log)
+    fh.setLevel(logging.DEBUG)
+    fh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S"))
+    logging.getLogger().addHandler(fh)
+
+    log.info("Run log: %s", run_log)
+    return run_dir
+
+
+def _setup_kernel_logging(run_dir: Path, kernel_name: str) -> logging.FileHandler:
+    """Add a per-kernel file handler. Returns the handler so it can be removed later."""
+    kernel_dir = run_dir / kernel_name
+    kernel_dir.mkdir(parents=True, exist_ok=True)
+
+    kh = logging.FileHandler(kernel_dir / "kernel.log")
+    kh.setLevel(logging.DEBUG)
+    kh.setFormatter(logging.Formatter("%(asctime)s [%(levelname)s] %(message)s", datefmt="%H:%M:%S"))
+    logging.getLogger().addHandler(kh)
+    return kh
+
+
+def _teardown_kernel_logging(handler: logging.FileHandler):
+    """Remove and close a per-kernel file handler."""
+    logging.getLogger().removeHandler(handler)
+    handler.close()
 
 
 # ---------------------------------------------------------------------------
@@ -296,6 +334,7 @@ def main():
         args.thinking = None
 
     cfg = Config.from_env_and_args(args)
+    run_dir = _setup_run_logging()
 
     log.info("Pipeline config: source=%s target=%s model=%s", cfg.source, cfg.target, cfg.model)
     log.info("Directories: source=%s target=%s", cfg.source_dir, cfg.target_dir)
@@ -331,7 +370,9 @@ def main():
 
     results = []
     for kernel_path in kernel_files:
+        kh = _setup_kernel_logging(run_dir, kernel_path.stem)
         result = translate_kernel(kernel_path, cfg, client, tools, tracker)
+        _teardown_kernel_logging(kh)
         results.append(result)
 
     total = len(results)
