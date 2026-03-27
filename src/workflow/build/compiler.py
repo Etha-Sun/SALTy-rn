@@ -12,6 +12,7 @@ import logging
 import re
 import shutil
 import subprocess
+import tempfile
 import time
 from dataclasses import dataclass
 from pathlib import Path
@@ -52,27 +53,31 @@ class RunResult:
 def _extract_compile_errors(raw: str) -> str:
     """Pull actual compiler diagnostics out of cmake/ninja build log.
 
-    Keeps lines that contain ': error:', ': warning:', 'undefined reference',
-    or 'fatal error', plus surrounding context lines (the 'In file included
-    from' / 'In function' breadcrumbs).  Falls back to the last 1500 chars of
-    the raw log if no diagnostics are found.
+    Keeps lines that contain ': error:', 'undefined reference', etc.
+    plus surrounding context lines.  Falls back to the last 40 non-junk
+    lines if no diagnostics are found.
     """
-    patterns = re.compile(
+    diag = re.compile(
         r"(: error:|: fatal error:|undefined reference"
         r"|In file included from|In function|: note:)"
     )
     lines = raw.splitlines()
     keep = set()
     for i, line in enumerate(lines):
-        if patterns.search(line):
-            # grab a small window around each diagnostic
+        if diag.search(line):
             for j in range(max(0, i - 2), min(len(lines), i + 3)):
                 keep.add(j)
 
     if keep:
         extracted = "\n".join(lines[i] for i in sorted(keep))
-        # cap at a reasonable size for a repair prompt
         return extracted[:3000]
+
+    # Fallback: skip gcc command lines (very long, start with path to gcc)
+    # and cmake/ninja progress lines, keep the rest
+    junk = re.compile(r"(^\[?\d+/\d+\]|riscv64.*-gcc |^--|^Loading )")
+    useful = [l for l in lines if l.strip() and not junk.search(l)]
+    if useful:
+        return "\n".join(useful[-40:])[:3000]
 
     return raw[-1500:]
 
@@ -111,6 +116,9 @@ def build_kernel(
     pristine_flag = "" if _has_cached_build(build_dir) else "-p"
     log.info("Building %s: pristine=%s", kernel_name, bool(pristine_flag))
 
+    build_log = build_dir / "build.log"
+    build_log.parent.mkdir(parents=True, exist_ok=True)
+
     cmd = (
         f"cd {zephyr_base} && "
         f"source scripts/set_envvars_sdk.sh && "
@@ -120,21 +128,22 @@ def build_kernel(
         f"-d {build_dir} {app_dir} "
         f"-DXNNPACK_ENABLE_RISCV_VECTOR=ON "
         f"-DXNNPACK_ENABLE_RISCV_GEMMINI=OFF "
-        f"2>&1"
+        f"> {build_log} 2>&1"
     )
 
     t0 = time.perf_counter()
     try:
-        result = subprocess.run(
-            cmd, shell=True, executable="/bin/bash",
-            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-            text=True, timeout=300,
+        returncode = subprocess.call(
+            cmd, shell=True, executable="/bin/bash", timeout=300,
         )
         elapsed = time.perf_counter() - t0
 
-        if result.returncode != 0:
-            error = _extract_compile_errors(result.stdout or "")
+        raw = build_log.read_text() if build_log.exists() else ""
+
+        if returncode != 0:
+            error = _extract_compile_errors(raw)
             log.error("Build failed (%.1fs):\n%s", elapsed, error)
+            log.info("Full build log: %s", build_log)
             return BuildResult(success=False, error=error, elapsed=elapsed)
 
         log.info("Build succeeded in %.1fs", elapsed)
