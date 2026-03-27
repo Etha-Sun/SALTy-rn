@@ -171,18 +171,29 @@ def build_kernel(
 
 
 def run_spike(
+    kernel_name: str = "",
     build_dir: Path = DEFAULT_BUILD_DIR,
     chipyard_path: str = DEFAULT_CHIPYARD_PATH,
     isa: str = DEFAULT_SPIKE_ISA,
     timeout: int = DEFAULT_SPIKE_TIMEOUT,
 ) -> RunResult:
-    """Run the compiled ELF on Spike simulator."""
+    """Run the compiled ELF on Spike simulator.
+
+    Output is written to a log file so partial output is preserved on timeout.
+    """
     elf_path = build_dir / "zephyr" / "zephyr.elf"
     if not elf_path.exists():
         return RunResult(success=False, error=f"ELF not found: {elf_path}")
 
     if not chipyard_path:
         return RunResult(success=False, error="CHIPYARD_PATH not set")
+
+    # Spike log goes alongside the build logs
+    name = kernel_name or "unknown"
+    logs_dir = PROJECT_ROOT / "logs" / "builds" / name
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    from datetime import datetime
+    spike_log = logs_dir / f"spike_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log"
 
     cmd = (
         f"cd {chipyard_path} && "
@@ -193,37 +204,52 @@ def run_spike(
 
     t0 = time.perf_counter()
     try:
-        result = subprocess.run(
-            cmd, shell=True, executable="/bin/bash",
-            capture_output=True, text=True, timeout=timeout,
-        )
-        elapsed = time.perf_counter() - t0
+        with open(spike_log, "w") as logf:
+            proc = subprocess.Popen(
+                cmd, shell=True, executable="/bin/bash",
+                stdout=logf, stderr=subprocess.STDOUT,
+            )
+            try:
+                proc.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                proc.kill()
+                proc.wait()
 
-        if result.returncode != 0:
-            error = result.stderr or result.stdout
-            log.error("Spike failed (%.1fs, exit=%d):\n%s",
-                      elapsed, result.returncode, error[-2000:])
+        elapsed = time.perf_counter() - t0
+        output = spike_log.read_text() if spike_log.exists() else ""
+
+        # Timed out
+        if proc.returncode == -9 or proc.returncode is None:
+            log.error("Spike timed out (%.1fs): %s", elapsed, spike_log)
             return RunResult(
-                success=False, output=result.stdout, error=error, elapsed=elapsed,
+                success=False, output=output,
+                error=f"Spike timed out ({timeout}s). Partial output:\n{output[-2000:]}",
+                elapsed=elapsed,
             )
 
-        passed = "PASS" in result.stdout
-        failed = "FAIL" in result.stdout
+        # Crashed (non-zero exit)
+        if proc.returncode != 0:
+            log.error("Spike failed (%.1fs, exit=%d): %s",
+                      elapsed, proc.returncode, spike_log)
+            return RunResult(
+                success=False, output=output, error=output[-2000:], elapsed=elapsed,
+            )
+
+        # Completed — check for PASS/FAIL
+        passed = "PASS" in output
+        failed = "FAIL" in output
 
         if passed:
             log.info("Spike: PASS (%.1fs)", elapsed)
         elif failed:
-            log.warning("Spike: FAIL (%.1fs)\n%s", elapsed, result.stdout[-2000:])
+            log.warning("Spike: FAIL (%.1fs)\n%s", elapsed, output[-2000:])
         else:
             log.warning("Spike: no PASS/FAIL in output (%.1fs)", elapsed)
 
         return RunResult(
-            success=True, output=result.stdout, passed=passed, elapsed=elapsed,
+            success=True, output=output, passed=passed, elapsed=elapsed,
         )
 
-    except subprocess.TimeoutExpired:
-        elapsed = time.perf_counter() - t0
-        return RunResult(success=False, error=f"Spike timed out ({timeout}s)", elapsed=elapsed)
     except Exception as e:
         elapsed = time.perf_counter() - t0
         return RunResult(success=False, error=str(e), elapsed=elapsed)
@@ -244,7 +270,7 @@ def compile_and_run(
     if not build.success:
         return build, None
 
-    run = run_spike(build_dir, chipyard_path, spike_isa, spike_timeout)
+    run = run_spike(kernel_name, build_dir, chipyard_path, spike_isa, spike_timeout)
     return build, run
 
 
@@ -287,7 +313,7 @@ def main():
         exit(0)
 
     run_result = run_spike(
-        args.build_dir, chipyard_path, args.spike_isa, args.spike_timeout
+        args.kernel, args.build_dir, chipyard_path, args.spike_isa, args.spike_timeout
     )
     print(f"Spike: {'PASS' if run_result.passed else 'FAIL'} ({run_result.elapsed:.1f}s)")
     if run_result.output:

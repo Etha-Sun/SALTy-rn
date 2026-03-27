@@ -95,22 +95,43 @@ def load_translation_prompt(
     )
 
 
-def build_repair_prompt(
+def build_compile_repair_prompt(
+    source: str,
+    translated_code: str,
+    error: str,
+) -> str:
+    """Fill the compilation repair prompt (no NEON source needed).
+
+    Args:
+        source: Source language directory name (e.g. "Neon")
+        translated_code: The failed translated code
+        error: Compilation error message
+    """
+    src_dir = _source_dir(source)
+    template = _load_file(src_dir / "compilation_repair.md")
+    return (
+        template
+        .replace("{target_code}", translated_code)
+        .replace("{error}", error)
+    )
+
+
+def build_execution_repair_prompt(
     source: str,
     source_code: str,
     translated_code: str,
     error: str,
 ) -> str:
-    """Fill the repair prompt template with the actual code and error.
+    """Fill the execution repair prompt (includes NEON source as ground truth).
 
     Args:
         source: Source language directory name (e.g. "Neon")
         source_code: The original source code
         translated_code: The failed translated code
-        error: Compilation/execution error message
+        error: Execution/verification failure message
     """
     src_dir = _source_dir(source)
-    template = _load_file(src_dir / "compilation_repair.md")
+    template = _load_file(src_dir / "execution_repair.md")
     return (
         template
         .replace("{source_code}", source_code)

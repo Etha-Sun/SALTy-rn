@@ -38,7 +38,13 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = SCRIPT_DIR.parent.parent  # src/workflow/ -> SALT/
 
 from .config import Config, TranslationResult
-from .prompts_pkg import load_reference_docs, load_translation_prompt, build_intrinsics_tools
+from .prompts_pkg import (
+    load_reference_docs,
+    load_translation_prompt,
+    build_compile_repair_prompt,
+    build_execution_repair_prompt,
+    build_intrinsics_tools,
+)
 from .status import StatusTracker
 
 # ---------------------------------------------------------------------------
@@ -138,6 +144,48 @@ def find_kernel_by_name(source_dir: Path, name: str) -> Path | None:
 # Translation
 # ---------------------------------------------------------------------------
 
+def _call_llm(client, prompt: str, system: str, tools: dict, cfg: Config,
+              temperature: float | None = None, thinking: str | None = None) -> str:
+    """Call the LLM with or without tools. Returns raw response text."""
+    temp = temperature if temperature is not None else cfg.temperature
+    think = thinking if thinking is not None else cfg.thinking
+
+    if tools:
+        return client.chat_with_tools(
+            prompt=prompt, tools=tools, system=system,
+            temperature=temp, thinking=think,
+        )
+    else:
+        return client.chat(
+            prompt=prompt, system=system,
+            temperature=temp, thinking=think,
+        )
+
+
+def _compile_and_run(kernel_name: str, cfg: Config):
+    """Compile the kernel and optionally run on Spike. Returns (build_result, run_result)."""
+    from .build import build_kernel, run_spike
+
+    if not cfg.zephyr_base or not Path(cfg.zephyr_base).exists():
+        log.info("Skipping compilation (zephyr not found at %s)", cfg.zephyr_base)
+        return None, None
+
+    log.info("Compiling %s...", kernel_name)
+    build_result = build_kernel(kernel_name, zephyr_base=cfg.zephyr_base)
+
+    if not build_result.success:
+        return build_result, None
+
+    log.info("Compilation passed (%.1fs)", build_result.elapsed)
+
+    if not cfg.chipyard_path:
+        log.info("Skipping Spike (CHIPYARD_PATH not set)")
+        return build_result, None
+
+    run_result = run_spike(kernel_name=kernel_name, chipyard_path=cfg.chipyard_path)
+    return build_result, run_result
+
+
 def translate_kernel(
     kernel_path: Path,
     cfg: Config,
@@ -145,17 +193,13 @@ def translate_kernel(
     tools: dict[str, callable],
     tracker: StatusTracker,
 ) -> TranslationResult:
-    """Translate a single kernel file from source ISA to target ISA.
+    """Translate a single kernel with compile/run repair loop.
 
-    The model can call intrinsics search tools during translation to
-    look up NEON/RVV operation semantics as needed.
-
-    Steps:
-        1. Read source kernel
-        2. Build translation prompt
-        3. Call LLM with tools (model decides when to search intrinsics)
-        4. Write output to target dir
-        5. Update status
+    Flow:
+        1. Initial LLM translation
+        2. Compile → if fail, compilation repair (no NEON source, RVV intrinsics ref only)
+        3. Run on Spike → if fail, execution repair (NEON source + full reference docs)
+        4. Repeat up to max_retries total across both repair types
     """
     kernel_name = kernel_path.stem
     log.info("Translating: %s", kernel_name)
@@ -172,7 +216,7 @@ def translate_kernel(
     source_code = kernel_path.read_text()
     log.info("Read source: %s (%d chars)", kernel_path.name, len(source_code))
 
-    # 2. Build prompts
+    # 2. Build initial translation prompts
     params_section = extract_params(source_code)
     if params_section:
         log.info("Extracted params struct (%d chars)", len(params_section))
@@ -182,33 +226,12 @@ def translate_kernel(
     # 3. Dry run check
     if cfg.dry_run:
         log.info("[DRY RUN] Would call LLM for %s", kernel_name)
-        log.info("[DRY RUN] System prompt: %d chars", len(system_prompt))
-        log.info("[DRY RUN] User prompt: %d chars", len(user_prompt))
-        log.info("[DRY RUN] Tools: %s", "disabled" if not tools else list(tools.keys()))
         return TranslationResult(kernel_name=kernel_name, success=False)
 
-    # 4. Call LLM
+    # 4. Initial translation
     try:
         t0 = time.perf_counter()
-        if tools:
-            log.info("Calling LLM with tools: model=%s thinking=%s tools=%s",
-                     cfg.model, cfg.thinking, list(tools.keys()))
-            response = client.chat_with_tools(
-                prompt=user_prompt,
-                tools=tools,
-                system=system_prompt,
-                temperature=cfg.temperature,
-                thinking=cfg.thinking,
-            )
-        else:
-            log.info("Calling LLM (no tools): model=%s thinking=%s",
-                     cfg.model, cfg.thinking)
-            response = client.chat(
-                prompt=user_prompt,
-                system=system_prompt,
-                temperature=cfg.temperature,
-                thinking=cfg.thinking,
-            )
+        response = _call_llm(client, user_prompt, system_prompt, tools, cfg)
         elapsed = time.perf_counter() - t0
         translated_code = extract_code(response)
         log.info("Got translation: %d chars in %.1fs", len(translated_code), elapsed)
@@ -216,69 +239,116 @@ def translate_kernel(
         log.error("LLM call failed for %s: %s", kernel_name, e)
         tracker.update(kernel_name, generated=False, attempts=1, error=str(e))
         return TranslationResult(
-            kernel_name=kernel_name, success=False,
-            attempts=1, error=str(e),
+            kernel_name=kernel_name, success=False, attempts=1, error=str(e),
         )
 
-    # 5. Write output
+    # 5. Write output + repair loop
     cfg.target_dir.mkdir(parents=True, exist_ok=True)
     output_path = cfg.target_dir / kernel_path.name
     output_path.write_text(translated_code)
     log.info("Wrote translation: %s", output_path)
-
-    # 6. Update status (generated, not yet compiled)
     tracker.update(kernel_name, generated=True, attempts=1)
 
-    # 7. Compile (if zephyr_base exists on disk)
-    from .build import build_kernel, run_spike
-    if cfg.zephyr_base and Path(cfg.zephyr_base).exists():
-        log.info("Compiling %s...", kernel_name)
-        build_result = build_kernel(kernel_name, zephyr_base=cfg.zephyr_base)
+    # Pre-load reference docs for execution repairs (full docs, not rules-only)
+    exec_system_prompt = load_reference_docs(cfg.source, rules_only=False)
+    # Compilation repairs use only the target ISA intrinsics reference
+    compile_system_prompt = load_reference_docs(cfg.source, rules_only=True)
 
-        if not build_result.success:
-            log.error("Compilation failed for %s", kernel_name)
-            tracker.update(kernel_name, compiled=False, error=build_result.error)
+    attempts = 1  # initial translation counts as attempt 1
+    last_error = ""
+
+    for attempt in range(2, cfg.max_retries + 1):
+        # --- Compile ---
+        build_result, run_result = _compile_and_run(kernel_name, cfg)
+
+        if build_result is None:
+            # No Zephyr available — translation succeeded, just untested
+            tracker.update(kernel_name, generated=True, attempts=attempts)
             return TranslationResult(
-                kernel_name=kernel_name, success=False,
-                attempts=1, output_file=str(output_path),
-                error=f"compile_error: {build_result.error}",
+                kernel_name=kernel_name, success=True,
+                attempts=attempts, output_file=str(output_path),
             )
 
-        tracker.update(kernel_name, compiled=True)
-        log.info("Compilation passed (%.1fs)", build_result.elapsed)
+        if not build_result.success:
+            last_error = f"compile_error: {build_result.error}"
+            log.error("Attempt %d: compilation failed for %s", attempt, kernel_name)
 
-        # 8. Run on Spike (if chipyard_path is set)
-        if cfg.chipyard_path:
-            run_result = run_spike(chipyard_path=cfg.chipyard_path)
+            # Compilation repair: higher temp, no thinking, minimal context
+            repair_prompt = build_compile_repair_prompt(
+                cfg.source, translated_code, build_result.error,
+            )
+            try:
+                response = _call_llm(
+                    client, repair_prompt, compile_system_prompt, {},
+                    cfg, temperature=cfg.repair_temperature, thinking=None,
+                )
+                translated_code = extract_code(response)
+                output_path.write_text(translated_code)
+                attempts = attempt
+                log.info("Attempt %d: wrote compile repair (%d chars)", attempt, len(translated_code))
+                continue  # retry compile
+            except Exception as e:
+                log.error("Compile repair LLM call failed: %s", e)
+                last_error = str(e)
+                break
 
-            if run_result.passed:
-                log.info("Spike run: PASS (%.1fs)", run_result.elapsed)
-            elif not run_result.success:
-                log.error("Spike run failed: %s", run_result.error[:500])
-                tracker.update(kernel_name, error=f"runtime_error: {run_result.error[:500]}")
-                return TranslationResult(
-                    kernel_name=kernel_name, success=False,
-                    attempts=1, output_file=str(output_path),
-                    error=f"runtime_error: {run_result.error[:500]}",
-                )
-            else:
-                log.warning("Spike run: FAIL (wrong output)")
-                tracker.update(kernel_name, error=f"wrong_output: {run_result.output[:500]}")
-                return TranslationResult(
-                    kernel_name=kernel_name, success=False,
-                    attempts=1, output_file=str(output_path),
-                    error=f"wrong_output: {run_result.output[:500]}",
-                )
+        # --- Run on Spike ---
+        if run_result is None:
+            # No Spike available — compiled OK, just not run-tested
+            tracker.update(kernel_name, compiled=True, attempts=attempts)
+            return TranslationResult(
+                kernel_name=kernel_name, success=True,
+                attempts=attempts, output_file=str(output_path),
+            )
+
+        if run_result.passed:
+            log.info("Spike: PASS (%.1fs)", run_result.elapsed)
+            tracker.update(kernel_name, compiled=True, attempts=attempt)
+            return TranslationResult(
+                kernel_name=kernel_name, success=True,
+                attempts=attempt, output_file=str(output_path),
+            )
+
+        # Execution failure — wrong output or crash/timeout
+        if run_result.success:
+            # Ran but wrong output
+            last_error = f"wrong_output: {run_result.output}"
+            log.warning("Attempt %d: Spike FAIL (wrong output)", attempt)
         else:
-            log.info("Skipping Spike (CHIPYARD_PATH not set)")
-    else:
-        log.info("Skipping compilation (zephyr not found at %s)", cfg.zephyr_base)
+            # Crash or timeout
+            last_error = f"runtime_error: {run_result.error}"
+            log.error("Attempt %d: Spike error: %s", attempt, run_result.error[:200])
 
+        # Execution repair: thinking=medium, temp=1.0 (Gemini recommended with thinking),
+        # full reference docs + NEON source
+        error_for_prompt = run_result.output if run_result.success else run_result.error
+        repair_prompt = build_execution_repair_prompt(
+            cfg.source, source_code, translated_code, error_for_prompt,
+        )
+        try:
+            response = _call_llm(
+                client, repair_prompt, exec_system_prompt, {},
+                cfg, temperature=1.0, thinking="medium",
+            )
+            translated_code = extract_code(response)
+            output_path.write_text(translated_code)
+            attempts = attempt
+            log.info("Attempt %d: wrote execution repair (%d chars)", attempt, len(translated_code))
+            continue  # retry compile + run
+        except Exception as e:
+            log.error("Execution repair LLM call failed: %s", e)
+            last_error = str(e)
+            break
+    else:
+        # Exhausted all retries
+        log.error("Exhausted %d attempts for %s", cfg.max_retries, kernel_name)
+
+    # If we reach here, all retries were exhausted or an error broke the loop
+    tracker.update(kernel_name, attempts=attempts, error=last_error)
     return TranslationResult(
-        kernel_name=kernel_name,
-        success=True,
-        attempts=1,
-        output_file=str(output_path),
+        kernel_name=kernel_name, success=False,
+        attempts=attempts, output_file=str(output_path),
+        error=last_error,
     )
 
 
@@ -366,7 +436,6 @@ def main():
             log.error("No kernel files found in %s", cfg.source_dir)
             sys.exit(1)
         log.info("Batch mode: found %d kernels", len(kernel_files))
-        sys.exit(1)
 
     results = []
     for kernel_path in kernel_files:
