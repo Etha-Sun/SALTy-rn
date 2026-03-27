@@ -5,18 +5,8 @@
 #include <assert.h>
 #include <riscv_vector.h>
 #include <zephyr/sys/reboot.h>
-
-struct xnn_qs8_add_minmax_params {
-    struct {
-        int32_t bias;
-        int32_t a_multiplier;
-        int32_t b_multiplier;
-        uint32_t shift;
-        int32_t output_min;
-        int32_t output_max;
-        int32_t output_zero_point;
-    } scalar;
-};
+#include "src/xnnpack/common.h"
+#include "src/xnnpack/microparams-init.h"
 
 // Generated RVV kernel (from kernels/target/)
 #include "qs8-vaddc.c"

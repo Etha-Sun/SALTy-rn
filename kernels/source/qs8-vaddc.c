@@ -1,13 +1,19 @@
-/* struct xnn_qs8_add_minmax_params {
-    struct {
-        int32_t bias;
-        int32_t a_multiplier;
-        int32_t b_multiplier;
-        uint32_t shift;
-        int32_t output_min;
-        int32_t output_max;
-        int32_t output_zero_point;
-    } scalar;
+/* 
+
+struct xnn_qs8_add_minmax_params {
+  struct {
+    int8_t a_zero_point;
+    int8_t b_zero_point;
+    int32_t bias;
+    int32_t a_multiplier;
+    int32_t b_multiplier;
+    int32_t shift;
+    int16_t output_zero_point;
+    int8_t output_min;
+    int8_t output_max;
+  } scalar;
+};
+
 };
 */
 void test_neon(

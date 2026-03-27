@@ -119,20 +119,21 @@ def build_kernel(
         f"west build {pristine_flag} -b spike_riscv64 "
         f"-d {build_dir} {app_dir} "
         f"-DXNNPACK_ENABLE_RISCV_VECTOR=ON "
-        f"-DXNNPACK_ENABLE_RISCV_GEMMINI=OFF"
+        f"-DXNNPACK_ENABLE_RISCV_GEMMINI=OFF "
+        f"2>&1"
     )
 
     t0 = time.perf_counter()
     try:
         result = subprocess.run(
             cmd, shell=True, executable="/bin/bash",
-            capture_output=True, text=True, timeout=300,
+            stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, timeout=300,
         )
         elapsed = time.perf_counter() - t0
 
         if result.returncode != 0:
-            raw = (result.stderr or "") + "\n" + (result.stdout or "")
-            error = _extract_compile_errors(raw)
+            error = _extract_compile_errors(result.stdout or "")
             log.error("Build failed (%.1fs):\n%s", elapsed, error)
             return BuildResult(success=False, error=error, elapsed=elapsed)
 
