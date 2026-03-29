@@ -65,12 +65,15 @@ def load_reference_docs(source: str, rules_only: bool = False) -> str:
         else _REFERENCE_DOCS
     )
     docs = []
+    loaded = []
     for name, label in docs_to_load:
         path = src_dir / name
         if path.exists():
             docs.append(f"--- {label} ---\n{path.read_text()}")
+            loaded.append(name)
         else:
             log.warning("Reference doc not found, skipping: %s", path)
+    log.info("Loaded reference docs: %s", ", ".join(loaded) if loaded else "(none)")
     return "\n\n".join(docs)
 
 
