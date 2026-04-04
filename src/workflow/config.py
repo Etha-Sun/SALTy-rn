@@ -21,17 +21,18 @@ class Config:
     thinking: str | None = None  # Gemini thinking level (low/medium/high) or None
 
     # Verification
-    verification_model: str = ""   # LLM for harness inference (buffer sizes, params). Empty = use 'model'
+    verification_model: str = "gemini-3.1-pro-preview"   # LLM for harness inference (buffer sizes, params). Empty = use 'model'
 
     # Zephyr / Spike
     # zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
     # chipyard_path: str = ""
     zephyr_base: str = "/scratch/kchern2/SALTy-rn/third_party/zephyr"
-    chipyard_path: str = "/scratch/kchern2/chipyard-salty"
+    chipyard_path: str = "/scratch/kchern2/SALTy-rn/third_party/chipyard-salty"
 
 
     # Pipeline
-    max_retries: int = 5
+    max_compile_retries: int = 5
+    max_verification_retries: int = 5
     kernels_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "kernels")
     dry_run: bool = False
     skip_existing: bool = False
@@ -63,7 +64,8 @@ class Config:
         cfg.zephyr_base = args.zephyr_base or os.environ.get("ZEPHYR_BASE", cfg.zephyr_base)
         cfg.chipyard_path = args.chipyard_path or os.environ.get("CHIPYARD_PATH", cfg.chipyard_path)
         # Pipeline
-        cfg.max_retries = args.max_retries
+        cfg.max_compile_retries = args.max_compile_retries
+        cfg.max_verification_retries = args.max_verification_retries
         cfg.dry_run = args.dry_run
         cfg.skip_existing = args.skip_existing
         cfg.rules_only = args.rules_only

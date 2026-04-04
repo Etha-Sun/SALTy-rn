@@ -255,9 +255,9 @@ def translate_kernel(
 
     Flow:
         1. Initial LLM translation
-        2. Compile → if fail, compilation repair (no NEON source, RVV intrinsics ref only)
-        3. Run on Spike → if fail, execution repair (NEON source + full reference docs)
-        4. Repeat up to max_retries total across both repair types
+        2. Compile → if fail, compilation repair (up to max_compile_retries)
+        3. Run on Spike → if fail, execution repair (uses compile retry budget)
+        4. Formal verification → if counterexample, verification repair (up to max_verification_retries)
     """
     kernel_name = kernel_path.stem
     log.info("Translating: %s", kernel_name)
@@ -313,9 +313,11 @@ def translate_kernel(
     compile_system_prompt = load_reference_docs(cfg.source, rules_only=True)
 
     attempts = 1  # initial translation counts as attempt 1
+    compile_attempts = 0
+    verification_attempts = 0
     last_error = ""
 
-    for attempt in range(2, cfg.max_retries + 1):
+    while True:
         # --- Compile ---
         build_result, run_result = _compile_and_run(kernel_name, cfg)
 
@@ -328,8 +330,17 @@ def translate_kernel(
             )
 
         if not build_result.success:
+            compile_attempts += 1
+            if compile_attempts > cfg.max_compile_retries:
+                log.error("Exhausted %d compile repair attempts for %s",
+                          cfg.max_compile_retries, kernel_name)
+                last_error = f"compile_error: {build_result.error}"
+                break
+
             last_error = f"compile_error: {build_result.error}"
-            log.error("Attempt %d: compilation failed for %s", attempt, kernel_name)
+            attempts += 1
+            log.error("Compile repair %d/%d: compilation failed for %s",
+                      compile_attempts, cfg.max_compile_retries, kernel_name)
 
             # Compilation repair: higher temp, no thinking, minimal context
             repair_prompt = build_compile_repair_prompt(
@@ -342,8 +353,8 @@ def translate_kernel(
                 )
                 translated_code = extract_code(response)
                 output_path.write_text(translated_code)
-                attempts = attempt
-                log.info("Attempt %d: wrote compile repair (%d chars)", attempt, len(translated_code))
+                log.info("Compile repair %d/%d: wrote repair (%d chars)",
+                         compile_attempts, cfg.max_compile_retries, len(translated_code))
                 continue  # retry compile
             except Exception as e:
                 log.error("Compile repair LLM call failed: %s", e)
@@ -391,12 +402,21 @@ def translate_kernel(
                 )
 
             if verdict == "COUNTEREXAMPLE":
+                verification_attempts += 1
+                if verification_attempts > cfg.max_verification_retries:
+                    log.error("Exhausted %d verification repair attempts for %s",
+                              cfg.max_verification_retries, kernel_name)
+                    ce = verify_result.get("counterexample", {})
+                    last_error = f"formal_verification_counterexample: {_format_counterexample(ce)}"
+                    break
+
                 # Formal verification found a bug that Spike missed
                 ce = verify_result.get("counterexample", {})
-                # Format counterexample as human-readable text for the LLM
                 ce_text = _format_counterexample(ce)
                 last_error = f"formal_verification_counterexample: {ce_text}"
-                log.error("Attempt %d: formal verification COUNTEREXAMPLE:\n%s", attempt, ce_text)
+                attempts += 1
+                log.error("Verification repair %d/%d: COUNTEREXAMPLE:\n%s",
+                          verification_attempts, cfg.max_verification_retries, ce_text)
 
                 # Repair using the verification-specific prompt
                 repair_prompt = build_verification_repair_prompt(
@@ -409,8 +429,10 @@ def translate_kernel(
                     )
                     translated_code = extract_code(response)
                     output_path.write_text(translated_code)
-                    attempts = attempt
-                    log.info("Attempt %d: wrote verification repair (%d chars)", attempt, len(translated_code))
+                    log.info("Verification repair %d/%d: wrote repair (%d chars)",
+                             verification_attempts, cfg.max_verification_retries, len(translated_code))
+                    # Reset compile attempts since verification repair may introduce compile errors
+                    compile_attempts = 0
                     continue  # retry compile + run + verify
                 except Exception as e:
                     log.error("Verification repair LLM call failed: %s", e)
@@ -427,17 +449,25 @@ def translate_kernel(
             )
 
         # Execution failure — wrong output or crash/timeout
-        if run_result.success:
-            # Ran but wrong output
-            last_error = f"wrong_output: {run_result.output}"
-            log.warning("Attempt %d: Spike FAIL (wrong output)", attempt)
-        else:
-            # Crash or timeout
-            last_error = f"runtime_error: {run_result.error}"
-            log.error("Attempt %d: Spike error: %s", attempt, run_result.error[:200])
+        compile_attempts += 1
+        if compile_attempts > cfg.max_compile_retries:
+            log.error("Exhausted %d compile/execution repair attempts for %s",
+                      cfg.max_compile_retries, kernel_name)
+            last_error = (f"wrong_output: {run_result.output}" if run_result.success
+                          else f"runtime_error: {run_result.error}")
+            break
 
-        # Execution repair: thinking=medium, temp=1.0 (Gemini recommended with thinking),
-        # full reference docs + NEON source
+        if run_result.success:
+            last_error = f"wrong_output: {run_result.output}"
+            log.warning("Compile repair %d/%d: Spike FAIL (wrong output)",
+                        compile_attempts, cfg.max_compile_retries)
+        else:
+            last_error = f"runtime_error: {run_result.error}"
+            log.error("Compile repair %d/%d: Spike error: %s",
+                      compile_attempts, cfg.max_compile_retries, run_result.error[:200])
+
+        # Execution repair: thinking=medium, temp=1.0, full reference docs + NEON source
+        attempts += 1
         error_for_prompt = run_result.output if run_result.success else run_result.error
         repair_prompt = build_execution_repair_prompt(
             cfg.source, source_code, translated_code, error_for_prompt,
@@ -449,18 +479,15 @@ def translate_kernel(
             )
             translated_code = extract_code(response)
             output_path.write_text(translated_code)
-            attempts = attempt
-            log.info("Attempt %d: wrote execution repair (%d chars)", attempt, len(translated_code))
+            log.info("Compile repair %d/%d: wrote execution repair (%d chars)",
+                     compile_attempts, cfg.max_compile_retries, len(translated_code))
             continue  # retry compile + run
         except Exception as e:
             log.error("Execution repair LLM call failed: %s", e)
             last_error = str(e)
             break
-    else:
-        # Exhausted all retries
-        log.error("Exhausted %d attempts for %s", cfg.max_retries, kernel_name)
 
-    # If we reach here, all retries were exhausted or an error broke the loop
+    # If we reach here, retries were exhausted or an error broke the loop
     tracker.update(kernel_name, attempts=attempts, error=last_error)
     return TranslationResult(
         kernel_name=kernel_name, success=False,
@@ -491,7 +518,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--repair-temperature", type=float, default=0.3)
     p.add_argument("--thinking", default="none",
                     help="Gemini thinking level (low/medium/high/none)")
-    p.add_argument("--max-retries", type=int, default=5)
+    p.add_argument("--max-compile-retries", type=int, default=5,
+                    help="Max repair attempts for compile/execution errors")
+    p.add_argument("--max-verification-retries", type=int, default=5,
+                    help="Max repair attempts for formal verification failures")
 
     # Build / simulation
     p.add_argument("--zephyr-base", default="", help="Path to Zephyr SDK")
