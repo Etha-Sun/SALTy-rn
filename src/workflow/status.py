@@ -11,11 +11,12 @@ class StatusTracker:
     """Read/write kernel status from kernels/status.json.
 
     Each kernel entry tracks:
-        generated:  bool  - LLM produced output
-        compiled:   bool  - passed Zephyr/Spike compilation
-        verified:   bool  - passed formal verification
-        attempts:   int   - number of generation/repair attempts
-        error:      str   - last error message (if any)
+        generated:           bool  - LLM produced output
+        compiled:            bool  - passed Zephyr/Spike compilation
+        verified:            bool  - passed formal verification (bitwuzla)
+        max_verified_batch:  int   - largest batch size verified (0 if not verified)
+        attempts:            int   - number of generation/repair attempts
+        error:               str   - last error message (if any)
     """
 
     def __init__(self, status_file: Path):
@@ -23,7 +24,7 @@ class StatusTracker:
         self._data: dict[str, dict] = {}
         self._load()
 
-    _VALID_FIELDS = {"generated", "compiled", "verified", "attempts", "error"}
+    _VALID_FIELDS = {"generated", "compiled", "verified", "max_verified_batch", "attempts", "error"}
 
     def _load(self):
         if self._path.exists():
@@ -46,6 +47,7 @@ class StatusTracker:
             "generated": False,
             "compiled": False,
             "verified": False,
+            "max_verified_batch": 0,
             "attempts": 0,
             "error": "",
         })

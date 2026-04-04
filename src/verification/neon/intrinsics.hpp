@@ -2602,7 +2602,6 @@ inline int64x2_t vzip2q_s64(const int64x2_t& a, const int64x2_t& b) {
     auto& tm=g_ctx->tm; std::array<Term,2> l={a.getLane(1),b.getLane(1)}; return int64x2_t(tm,l);
 }
 
-// vzip (ARMv7-style, returns pair)
 inline VectorTuple<int32x2_t, 2> vzip_s32(const int32x2_t& a, const int32x2_t& b) {
     auto& tm=g_ctx->tm; VectorTuple<int32x2_t, 2> r;
     std::array<Term,2> l0={a.getLane(0),b.getLane(0)}, l1={a.getLane(1),b.getLane(1)};

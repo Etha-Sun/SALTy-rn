@@ -143,6 +143,30 @@ def build_execution_repair_prompt(
     )
 
 
+def build_verification_repair_prompt(
+    source: str,
+    source_code: str,
+    translated_code: str,
+    counterexample: str,
+) -> str:
+    """Fill the verification repair prompt (bitwuzla counterexample).
+
+    Args:
+        source: Source language directory name (e.g. "Neon")
+        source_code: The original source code
+        translated_code: The failed translated code
+        counterexample: JSON counterexample from bitwuzla
+    """
+    src_dir = _source_dir(source)
+    template = _load_file(src_dir / "verification_repair.md")
+    return (
+        template
+        .replace("{source_code}", source_code)
+        .replace("{target_code}", translated_code)
+        .replace("{error}", counterexample)
+    )
+
+
 if __name__ == "__main__":
     import argparse
 

@@ -23,8 +23,8 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent  # src/workflow/build/ -> SALT/
 # Defaults
 DEFAULT_ZEPHYR_BASE = PROJECT_ROOT / "third_party" / "zephyr"
 DEFAULT_CHIPYARD_PATH = ""  # e.g. /scratch/kchern2/chipyard
-DEFAULT_APP_DIR = PROJECT_ROOT / "build" / "xnnpack-kernel" / "app"
-DEFAULT_BUILD_DIR = PROJECT_ROOT / "build" / "xnnpack-kernel" / "build"
+DEFAULT_TEMPLATE_DIR = PROJECT_ROOT / "build" / "templates" / "xnnpack-kernel"
+DEFAULT_SLOTS_DIR = PROJECT_ROOT / "build" / "slots"
 DEFAULT_HARNESS_DIR = PROJECT_ROOT / "kernels" / "harness"
 DEFAULT_SPIKE_ISA = "rv64gcv_zvl512b_zicntr"
 DEFAULT_SPIKE_TIMEOUT = 15
@@ -88,6 +88,35 @@ def _extract_compile_errors(raw: str) -> str:
     return raw[-1500:]
 
 
+def _get_build_slot(slot_id: int = 0,
+                     template_dir: Path = DEFAULT_TEMPLATE_DIR,
+                     slots_dir: Path = DEFAULT_SLOTS_DIR) -> tuple[Path, Path]:
+    """Get or create a build slot from the template.
+
+    Returns (app_dir, build_dir) for the slot.
+    If the slot doesn't exist, copies the template into it.
+    If the slot exists, reuses it (no copy, no pristine build needed).
+    """
+    slot_dir = slots_dir / f"slot_{slot_id}"
+    app_dir = slot_dir / "app"
+    build_dir = slot_dir / "build"
+
+    if not app_dir.exists():
+        if not template_dir.exists():
+            raise FileNotFoundError(
+                f"Zephyr app template not found at {template_dir}. "
+                f"Create it with CMakeLists.txt, prj.conf, and src/ directory.")
+        log.info("Creating build slot %d from template: %s -> %s",
+                 slot_id, template_dir, slot_dir)
+        slot_dir.mkdir(parents=True, exist_ok=True)
+        shutil.copytree(template_dir, app_dir)
+    else:
+        log.info("Reusing existing build slot %d: %s", slot_id, slot_dir)
+
+    build_dir.mkdir(parents=True, exist_ok=True)
+    return app_dir, build_dir
+
+
 def _has_cached_build(build_dir: Path) -> bool:
     """Check if a previous build exists that can be incrementally updated."""
     return (build_dir / "build.ninja").exists() or (build_dir / "Makefile").exists()
@@ -109,12 +138,16 @@ def _install_harness(kernel_name: str, harness_dir: Path, app_dir: Path) -> bool
 def build_kernel(
     kernel_name: str,
     zephyr_base: Path | str = DEFAULT_ZEPHYR_BASE,
-    app_dir: Path = DEFAULT_APP_DIR,
-    build_dir: Path = DEFAULT_BUILD_DIR,
+    slot_id: int = 0,
     harness_dir: Path = DEFAULT_HARNESS_DIR,
 ) -> BuildResult:
-    """Copy harness into place and compile via west build."""
+    """Copy harness into place and compile via west build.
+
+    Uses build slot system: template is copied to slot on first use,
+    reused on subsequent builds (incremental, no pristine).
+    """
     zephyr_base = Path(zephyr_base)
+    app_dir, build_dir = _get_build_slot(slot_id)
 
     if not _install_harness(kernel_name, harness_dir, app_dir):
         return BuildResult(success=False, error=f"Harness not found for '{kernel_name}'")
@@ -172,7 +205,7 @@ def build_kernel(
 
 def run_spike(
     kernel_name: str = "",
-    build_dir: Path = DEFAULT_BUILD_DIR,
+    build_dir: Path = None,
     chipyard_path: str = DEFAULT_CHIPYARD_PATH,
     isa: str = DEFAULT_SPIKE_ISA,
     timeout: int = DEFAULT_SPIKE_TIMEOUT,
@@ -181,6 +214,8 @@ def run_spike(
 
     Output is written to a log file so partial output is preserved on timeout.
     """
+    if build_dir is None:
+        _, build_dir = _get_build_slot(0)
     elf_path = build_dir / "zephyr" / "zephyr.elf"
     if not elf_path.exists():
         return RunResult(success=False, error=f"ELF not found: {elf_path}")
@@ -259,17 +294,17 @@ def compile_and_run(
     kernel_name: str,
     zephyr_base: Path | str = DEFAULT_ZEPHYR_BASE,
     chipyard_path: str = DEFAULT_CHIPYARD_PATH,
-    app_dir: Path = DEFAULT_APP_DIR,
-    build_dir: Path = DEFAULT_BUILD_DIR,
+    slot_id: int = 0,
     harness_dir: Path = DEFAULT_HARNESS_DIR,
     spike_isa: str = DEFAULT_SPIKE_ISA,
     spike_timeout: int = DEFAULT_SPIKE_TIMEOUT,
 ) -> tuple[BuildResult, RunResult | None]:
     """Build the kernel and run it on Spike if build succeeds."""
-    build = build_kernel(kernel_name, zephyr_base, app_dir, build_dir, harness_dir)
+    build = build_kernel(kernel_name, zephyr_base, slot_id=slot_id, harness_dir=harness_dir)
     if not build.success:
         return build, None
 
+    _, build_dir = _get_build_slot(slot_id)
     run = run_spike(kernel_name, build_dir, chipyard_path, spike_isa, spike_timeout)
     return build, run
 
@@ -290,8 +325,7 @@ def main():
     p.add_argument("kernel", help="Kernel name (e.g. qs8-vaddc)")
     p.add_argument("--zephyr-base", default=None, help="Path to Zephyr (default: from config/env)")
     p.add_argument("--chipyard-path", default=None, help="Path to Chipyard (default: from config/env)")
-    p.add_argument("--app-dir", type=Path, default=DEFAULT_APP_DIR)
-    p.add_argument("--build-dir", type=Path, default=DEFAULT_BUILD_DIR)
+    p.add_argument("--slot", type=int, default=0, help="Build slot ID (for parallel builds)")
     p.add_argument("--harness-dir", type=Path, default=DEFAULT_HARNESS_DIR)
     p.add_argument("--spike-isa", default=DEFAULT_SPIKE_ISA)
     p.add_argument("--spike-timeout", type=int, default=DEFAULT_SPIKE_TIMEOUT)
@@ -302,7 +336,7 @@ def main():
     chipyard_path = args.chipyard_path or cfg.chipyard_path
 
     build_result = build_kernel(
-        args.kernel, zephyr_base, args.app_dir, args.build_dir, args.harness_dir
+        args.kernel, zephyr_base, slot_id=args.slot, harness_dir=args.harness_dir
     )
     print(f"Build: {'PASS' if build_result.success else 'FAIL'} ({build_result.elapsed:.1f}s)")
     if not build_result.success:
@@ -312,8 +346,9 @@ def main():
     if args.build_only:
         exit(0)
 
+    _, build_dir = _get_build_slot(args.slot)
     run_result = run_spike(
-        args.kernel, args.build_dir, chipyard_path, args.spike_isa, args.spike_timeout
+        args.kernel, build_dir, chipyard_path, args.spike_isa, args.spike_timeout
     )
     print(f"Spike: {'PASS' if run_result.passed else 'FAIL'} ({run_result.elapsed:.1f}s)")
     if run_result.output:

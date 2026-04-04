@@ -43,6 +43,7 @@ from .prompts_pkg import (
     load_translation_prompt,
     build_compile_repair_prompt,
     build_execution_repair_prompt,
+    build_verification_repair_prompt,
     build_intrinsics_tools,
 )
 from .status import StatusTracker
@@ -144,6 +145,63 @@ def find_kernel_by_name(source_dir: Path, name: str) -> Path | None:
 # Translation
 # ---------------------------------------------------------------------------
 
+def _format_counterexample(ce: dict) -> str:
+    """Format a bitwuzla counterexample as human-readable text for LLM repair."""
+    lines = []
+    batch = ce.get("batch", "?")
+    fi = ce.get("fail_index", "?")
+    lines.append(f"At batch={batch}, element index {fi} produces different outputs:")
+    lines.append("")
+
+    # Print inputs
+    for k, v in ce.items():
+        if k.endswith("_at_fail"):
+            name = k.replace("_at_fail", "")
+            lines.append(f"  {name}[{fi}] = {v}")
+        elif k in ("input_b",):
+            lines.append(f"  {k} = {v} (scalar broadcast)")
+
+    lines.append("")
+    neon_out = ce.get("neon_out", "?")
+    rvv_out = ce.get("rvv_out", "?")
+    lines.append(f"  NEON output[{fi}] = {neon_out}")
+    lines.append(f"  RVV  output[{fi}] = {rvv_out}")
+    lines.append("")
+    lines.append(f"Expected: {neon_out}, Got: {rvv_out}")
+    return "\n".join(lines)
+
+
+def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict | None:
+    """Run bitwuzla-based formal verification on the kernel pair.
+
+    Returns verification result dict, or None only if bitwuzla is not installed.
+    Errors during verification are propagated as results, not swallowed.
+    """
+    try:
+        from .verification.orchestrator import verify_kernel
+    except ImportError:
+        log.warning("Formal verification module not available")
+        return None
+
+    # Use verification-specific LLM for buffer size inference if needed
+    try:
+        verification_llm = cfg.create_verification_llm_client()
+    except Exception:
+        verification_llm = None
+
+    result = verify_kernel(
+        neon_path=str(kernel_path),
+        rvv_path=str(output_path),
+        kernel_name=kernel_name,
+        vlen=256,
+        per_batch_timeout=60,
+        max_batch=1000,
+        llm_client=verification_llm,
+    )
+    import json
+    return json.loads(result.to_json())
+
+
 def _call_llm(client, prompt: str, system: str, tools: dict, cfg: Config,
               temperature: float | None = None, thinking: str | None = None) -> str:
     """Call the LLM with or without tools. Returns raw response text."""
@@ -204,9 +262,9 @@ def translate_kernel(
     kernel_name = kernel_path.stem
     log.info("Translating: %s", kernel_name)
 
-    # Skip if already generated and skip_existing is set
-    if cfg.skip_existing and tracker.is_generated(kernel_name):
-        log.info("Skipping %s (already generated)", kernel_name)
+    # Skip if already verified and skip_existing is set
+    if cfg.skip_existing and tracker.is_verified(kernel_name):
+        log.info("Skipping %s (already verified)", kernel_name)
         return TranslationResult(
             kernel_name=kernel_name, success=True,
             output_file=str(cfg.target_dir / kernel_path.name),
@@ -303,10 +361,69 @@ def translate_kernel(
 
         if run_result.passed:
             log.info("Spike: PASS (%.1fs)", run_result.elapsed)
-            tracker.update(kernel_name, compiled=True, attempts=attempt)
+
+            # --- Formal verification via bitwuzla ---
+            verify_result = _run_formal_verification(
+                kernel_path, output_path, kernel_name, cfg)
+
+            if verify_result is None:
+                # Verification not available (bitwuzla not installed, etc.)
+                log.warning("Formal verification unavailable — skipping")
+                tracker.update(kernel_name, compiled=True, attempts=attempts)
+                return TranslationResult(
+                    kernel_name=kernel_name, success=True,
+                    attempts=attempts, output_file=str(output_path),
+                )
+
+            verdict = verify_result.get("verdict", "")
+            log.info("Formal verification: %s (max_batch=%d)",
+                     verdict, verify_result.get("max_verified_batch", 0))
+
+            max_batch = verify_result.get("max_verified_batch", 0)
+
+            if verdict in ("ALL_PASSED", "PARTIAL") and max_batch > 0:
+                # Bounded verification succeeded up to max_batch
+                tracker.update(kernel_name, compiled=True, verified=True,
+                               max_verified_batch=max_batch, attempts=attempts)
+                return TranslationResult(
+                    kernel_name=kernel_name, success=True,
+                    attempts=attempts, output_file=str(output_path),
+                )
+
+            if verdict == "COUNTEREXAMPLE":
+                # Formal verification found a bug that Spike missed
+                ce = verify_result.get("counterexample", {})
+                # Format counterexample as human-readable text for the LLM
+                ce_text = _format_counterexample(ce)
+                last_error = f"formal_verification_counterexample: {ce_text}"
+                log.error("Attempt %d: formal verification COUNTEREXAMPLE:\n%s", attempt, ce_text)
+
+                # Repair using the verification-specific prompt
+                repair_prompt = build_verification_repair_prompt(
+                    cfg.source, source_code, translated_code, ce_text,
+                )
+                try:
+                    response = _call_llm(
+                        client, repair_prompt, exec_system_prompt, {},
+                        cfg, temperature=1.0, thinking="medium",
+                    )
+                    translated_code = extract_code(response)
+                    output_path.write_text(translated_code)
+                    attempts = attempt
+                    log.info("Attempt %d: wrote verification repair (%d chars)", attempt, len(translated_code))
+                    continue  # retry compile + run + verify
+                except Exception as e:
+                    log.error("Verification repair LLM call failed: %s", e)
+                    last_error = str(e)
+                    break
+
+            # Other verdicts (COMPILE_ERROR, MISSING_INTRINSIC, etc.)
+            # Treat as non-blocking — Spike already passed
+            log.warning("Formal verification: %s — accepting based on Spike pass", verdict)
+            tracker.update(kernel_name, compiled=True, attempts=attempts)
             return TranslationResult(
                 kernel_name=kernel_name, success=True,
-                attempts=attempt, output_file=str(output_path),
+                attempts=attempts, output_file=str(output_path),
             )
 
         # Execution failure — wrong output or crash/timeout

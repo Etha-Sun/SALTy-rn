@@ -20,6 +20,9 @@ class Config:
     repair_temperature: float = 0.3
     thinking: str | None = None  # Gemini thinking level (low/medium/high) or None
 
+    # Verification
+    verification_model: str = ""   # LLM for harness inference (buffer sizes, params). Empty = use 'model'
+
     # Zephyr / Spike
     # zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
     # chipyard_path: str = ""
@@ -69,9 +72,16 @@ class Config:
         return cfg
 
     def create_llm_client(self):
-        """Create an LLMClient from this config."""
+        """Create an LLMClient for translation from this config."""
         from .llm import LLMClient
         return LLMClient.from_model_string(self.model)
+
+    def create_verification_llm_client(self):
+        """Create an LLMClient for verification tasks (buffer inference, invariants).
+        Falls back to the translation model if verification_model is not set."""
+        from .llm import LLMClient
+        model = self.verification_model or self.model
+        return LLMClient.from_model_string(model)
 
 
 @dataclass
