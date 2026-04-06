@@ -6,11 +6,13 @@ a complete C++ file that runs both kernels symbolically and compares outputs.
 """
 
 import logging
+import re
 from pathlib import Path
 
 from .sig_parser import ArgRole, parse_signature, classify_args, refine_with_source
 from .size_inferrer import HarnessSpec, BufferSpec, infer_buffer_sizes, resolve_unknown_sizes_with_llm
-from .param_configs import generate_configs, config_to_cpp
+from .param_configs import (generate_configs, config_to_cpp,
+                            get_verify_prologue, get_kernel_prologue, get_params_fields)
 
 log = logging.getLogger("pipeline")
 
@@ -23,6 +25,7 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
                                  kernel_name: str = "",
                                  params_init: str = "",
                                  param_configs: list[tuple[str, str]] = None,
+                                 symbolic_params: bool = False,
                                  vlen: int = 256,
                                  llm_client=None) -> str:
     """End-to-end: parse → validate → infer → generate.
@@ -30,6 +33,9 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
     param_configs: list of (config_name, init_code) pairs. If provided,
                    overrides params_init. If neither is provided and the kernel
                    has params, auto-generates edge-case configs.
+    symbolic_params: if True, params are backed by a SymbolicBuffer and
+                     kernel source is rewritten to use SymbolicScalar<T>.
+                     Proves equivalence for ALL valid params in one query.
     """
     neon_source = Path(neon_path).read_text()
     rvv_source = Path(rvv_path).read_text()
@@ -60,7 +66,11 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
         spec = resolve_unknown_sizes_with_llm(spec, neon_source, rvv_source, llm_client)
 
     # Build param configs
-    if param_configs is None:
+    if symbolic_params:
+        # Symbolic mode: single config with zeroed params (concrete values unused)
+        param_configs = [("symbolic", "")]
+        log.info("Symbolic params mode for %s", spec.params_type)
+    elif param_configs is None:
         if params_init:
             param_configs = [("default", params_init)]
         elif spec.params_type:
@@ -73,7 +83,7 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
             param_configs = [("default", "")]
 
     # Generate
-    return _generate(spec, neon_source, rvv_source, param_configs)
+    return _generate(spec, neon_source, rvv_source, param_configs, symbolic_params)
 
 
 # ---------------------------------------------------------------------------
@@ -98,7 +108,7 @@ def _validate_signatures(neon_sig, rvv_sig):
 # ---------------------------------------------------------------------------
 
 def _generate(spec: HarnessSpec, neon_source: str, rvv_source: str,
-              configs: list[tuple[str, str]]) -> str:
+              configs: list[tuple[str, str]], symbolic_params: bool = False) -> str:
     """Assemble the complete C++ harness."""
     # Validate spec
     unknown = [b for b in spec.buffers if b.size_expr == "UNKNOWN"]
@@ -109,14 +119,169 @@ def _generate(spec: HarnessSpec, neon_source: str, rvv_source: str,
     if not output_bufs:
         raise ValueError("No output buffers — cannot verify")
 
+    # Rewrite kernel sources for symbolic params
+    if symbolic_params and spec.params_type:
+        neon_source = _rewrite_params_symbolic(neon_source, spec.params_type)
+        rvv_source = _rewrite_params_symbolic(rvv_source, spec.params_type)
+
     parts = [
         _emit_header(),
         _emit_kernel("neon_kernel", neon_source, ["arm_neon.h"]),
         _emit_kernel("rvv_kernel", rvv_source, ["riscv_vector.h"]),
-        _emit_verify(spec),
+        _emit_verify(spec, symbolic_params),
         _emit_main(spec, configs),
     ]
     return "\n".join(parts)
+
+
+def _rewrite_params_symbolic(source: str, params_type: str) -> str:
+    """Rewrite kernel source to use SymbolicScalar for params access.
+
+    Replaces params->member.field value reads with sym_field variables.
+    Leaves &params->member.field (address-of for vld1_dup) untouched.
+    Injects SymbolicScalar declarations at the start of the function body.
+    """
+    fields = get_params_fields(params_type)
+    if not fields:
+        return source
+
+    # Inject kernel prologue after the first '{' of the function body
+    kernel_prologue = get_kernel_prologue(params_type)
+    if kernel_prologue:
+        # Find the function's opening brace (skip struct/comment braces)
+        # Look for the pattern: ) { or ) XNN_OOB_READS {
+        match = re.search(r'\)\s*(?:XNN_OOB_READS)?\s*\{', source)
+        if match:
+            insert_pos = match.end()
+            source = source[:insert_pos] + "\n" + kernel_prologue + source[insert_pos:]
+
+    # Also handle scalar inputs (e.g., *input_b → sym_input_b)
+    # Inject: SymbolicScalar<int8_t> sym_input_b(g_ctx->findBuffer(input_b), 0);
+    # for each scalar broadcast input detected by the * dereference pattern
+    scalar_inputs = re.findall(r'(?<=\W)\*\s*(input_\w+)\b', source)
+    if scalar_inputs:
+        scalar_lines = []
+        for inp_name in set(scalar_inputs):
+            # Infer type from the function signature
+            sig_match = re.search(rf'const\s+(\w+)\s*\*\s*(?:restrict\s+)?{inp_name}\b', source)
+            inp_type = sig_match.group(1) if sig_match else "int8_t"
+            scalar_lines.append(
+                f"    SymbolicScalar<{inp_type}> sym_{inp_name}"
+                f"(g_ctx->findBuffer({inp_name}), 0);")
+        # Insert after the kernel prologue (or after opening brace if no prologue)
+        match2 = re.search(r'\)\s*(?:XNN_OOB_READS)?\s*\{', source)
+        if match2:
+            # Find end of the injected prologue (look for the blank line after it)
+            prologue_end = source.find("\n\n", match2.end())
+            if prologue_end > 0:
+                insert_pos = prologue_end + 1
+            else:
+                insert_pos = match2.end()
+            source = source[:insert_pos] + "\n".join(scalar_lines) + "\n" + source[insert_pos:]
+
+    # Build regex for params access — handles both nested (params->member.field)
+    # and flat (params->field) structs.
+    field_names = [fn for _, fn in fields]
+    # Match: params->member.field OR params->field (for flat structs)
+    # Capture the final field name in group "fname"
+    params_access = r'params->(?:\w+\.)?(?P<fname>' + '|'.join(re.escape(f) for f in field_names) + r')\b'
+
+    # Pattern 1: vdup[q]_n_TYPE(params_access)
+    source = re.sub(
+        r'(v(?:dup|mov)[q]?_n_\w+)\(' + params_access + r'\)',
+        lambda m: f'{m.group(1)}(sym_{m.group("fname")})',
+        source
+    )
+
+    # Pattern 2: vdup[q]_n_TYPE(-params_access)
+    source = re.sub(
+        r'(v(?:dup|mov)[q]?_n_\w+)\(-' + params_access + r'\)',
+        lambda m: f'{m.group(1)}(-sym_{m.group("fname")})',
+        source
+    )
+
+    # Pattern 3: vdup[q]_n_TYPE((TYPE) params_access)
+    source = re.sub(
+        r'(v(?:dup|mov)[q]?_n_\w+)\(\((\w+)\)\s*' + params_access + r'\)',
+        lambda m: f'{m.group(1)}(sym_{m.group("fname")}.cast<{m.group(2)}>())',
+        source
+    )
+
+    # Pattern 4: (TYPE) params_access — cast outside vdup
+    source = re.sub(
+        r'\((\w+)\)\s*(?<!&)' + params_access,
+        lambda m: f'sym_{m.group("fname")}.cast<{m.group(1)}>()',
+        source
+    )
+
+    # Pattern 5: remaining value reads — SKIP address-of (&) uses
+    source = re.sub(
+        r'(?<!&)' + params_access,
+        lambda m: f'sym_{m.group("fname")}',
+        source
+    )
+
+    # Pattern 6: scalar deref — covers *input_b, input_b[0], *(input_b + 0)
+    # Require non-word char before * to avoid matching pointer declarations (int8_t* input_b)
+    # 6a: *input_b
+    source = re.sub(
+        r'(?<=\W)\*\s*(input_\w+)\b',
+        lambda m: f'sym_{m.group(1)}',
+        source
+    )
+    # 6b: input_b[0] or input_b[index]
+    source = re.sub(
+        r'\b(input_\w+)\s*\[\s*0\s*\]',
+        lambda m: f'sym_{m.group(1)}',
+        source
+    )
+    # 6c: *(input_b + 0)
+    source = re.sub(
+        r'\*\s*\(\s*(input_\w+)\s*\+\s*0\s*\)',
+        lambda m: f'sym_{m.group(1)}',
+        source
+    )
+
+    # Pattern 7: C-style casts on sym_ variables → .cast<TYPE>()
+    source = re.sub(
+        r'\((\w+)\)\s*(sym_\w+)(?!\.)',
+        lambda m: f'{m.group(2)}.cast<{m.group(1)}>()',
+        source
+    )
+
+    # Pattern 8: const TYPE var = expr → auto var = expr
+    # Iteratively propagate symbolic taint through variable assignments.
+    symbolic_vars = set(re.findall(r'\bsym_\w+', source))
+    assign_pat = re.compile(r'^(\s*)(?:const\s+)?\w+\s+(\w+)\s*=\s*(.+);', re.MULTILINE)
+    changed = True
+    while changed:
+        changed = False
+        lines = source.split('\n')
+        for i, line in enumerate(lines):
+            m = assign_pat.match(line)
+            if not m:
+                continue
+            indent, varname, rhs = m.group(1), m.group(2), m.group(3)
+            if varname in symbolic_vars:
+                continue  # already handled
+            for sv in symbolic_vars:
+                if re.search(rf'\b{re.escape(sv)}\b', rhs):
+                    lines[i] = f'{indent}auto {varname} = {rhs};'
+                    symbolic_vars.add(varname)
+                    changed = True
+                    break
+        source = '\n'.join(lines)
+
+    # Post-rewrite residual check — catch both nested and flat access
+    residual = re.findall(r'(?<!&)params->\w+', source)
+    # Filter out the function signature (const struct TYPE* params) — that's not an access
+    residual = [r for r in residual if r != 'params']
+    if residual:
+        raise ValueError(
+            f"Symbolic params rewrite incomplete — {len(residual)} raw access(es) "
+            f"remain: {residual[:5]}. Manual fixup or LLM-assisted rewrite needed.")
+
+    return source
 
 
 def _emit_header() -> str:
@@ -142,7 +307,7 @@ def _emit_kernel(namespace: str, source: str, strip_headers: list[str]) -> str:
     return f"namespace {namespace} {{\n{cleaned}\n}} // namespace {namespace}\n"
 
 
-def _emit_verify(spec: HarnessSpec) -> str:
+def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False) -> str:
     """Generate the verify() function."""
     output_bufs = [b for b in spec.buffers if b.role == ArgRole.OUTPUT]
     input_bufs = [b for b in spec.buffers if b.role in (ArgRole.INPUT_ARRAY, ArgRole.INPUT_SCALAR)]
@@ -201,6 +366,12 @@ def _emit_verify(spec: HarnessSpec) -> str:
     for buf in spec.buffers:
         L.extend(_emit_buffer_register(buf, spec))
     L.append("")
+
+    # Symbolic params: register buffer + assert constraints (in verify scope)
+    if symbolic_params and spec.params_type:
+        prologue = get_verify_prologue(spec.params_type)
+        if prologue:
+            L.append(prologue)
 
     # Call both kernels
     neon_args = _build_call_args(spec, "neon")

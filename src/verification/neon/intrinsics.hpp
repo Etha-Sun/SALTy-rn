@@ -2661,4 +2661,66 @@ inline VectorTuple<float32x4_t, 2> vuzpq_f32(const float32x4_t& a, const float32
     r.val[0]=float32x4_t(tm,l0); r.val[1]=float32x4_t(tm,l1); return r;
 }
 
+// ===========================================================================
+// SymbolicScalar<T> overloads for vdup/vmov — enables symbolic params
+// ===========================================================================
+inline int8x8_t vdup_n_s8(SymbolicScalar<int8_t> v) {
+    std::array<Term, 8> l; l.fill(v.term());
+    return int8x8_t(g_ctx->tm, l);
+}
+inline uint8x8_t vdup_n_u8(SymbolicScalar<uint8_t> v) {
+    std::array<Term, 8> l; l.fill(v.term());
+    return uint8x8_t(g_ctx->tm, l);
+}
+inline int16x4_t vdup_n_s16(SymbolicScalar<int16_t> v) {
+    std::array<Term, 4> l; l.fill(v.term());
+    return int16x4_t(g_ctx->tm, l);
+}
+inline int8x16_t vdupq_n_s8(SymbolicScalar<int8_t> v) {
+    std::array<Term, 16> l; l.fill(v.term());
+    return int8x16_t(g_ctx->tm, l);
+}
+inline uint8x16_t vdupq_n_u8(SymbolicScalar<uint8_t> v) {
+    std::array<Term, 16> l; l.fill(v.term());
+    return uint8x16_t(g_ctx->tm, l);
+}
+inline int16x8_t vdupq_n_s16(SymbolicScalar<int16_t> v) {
+    std::array<Term, 8> l; l.fill(v.term());
+    return int16x8_t(g_ctx->tm, l);
+}
+inline uint16x8_t vdupq_n_u16(SymbolicScalar<uint16_t> v) {
+    std::array<Term, 8> l; l.fill(v.term());
+    return uint16x8_t(g_ctx->tm, l);
+}
+inline int32x4_t vdupq_n_s32(SymbolicScalar<int32_t> v) {
+    std::array<Term, 4> l; l.fill(v.term());
+    return int32x4_t(g_ctx->tm, l);
+}
+inline uint32x4_t vdupq_n_u32(SymbolicScalar<uint32_t> v) {
+    std::array<Term, 4> l; l.fill(v.term());
+    return uint32x4_t(g_ctx->tm, l);
+}
+inline int32x2_t vdup_n_s32(SymbolicScalar<int32_t> v) {
+    std::array<Term, 2> l; l.fill(v.term());
+    return int32x2_t(g_ctx->tm, l);
+}
+// vmov aliases
+inline int8x16_t vmovq_n_s8(SymbolicScalar<int8_t> v)   { return vdupq_n_s8(v); }
+inline int16x8_t vmovq_n_s16(SymbolicScalar<int16_t> v)  { return vdupq_n_s16(v); }
+inline int32x4_t vmovq_n_s32(SymbolicScalar<int32_t> v)  { return vdupq_n_s32(v); }
+inline uint8x16_t vmovq_n_u8(SymbolicScalar<uint8_t> v)  { return vdupq_n_u8(v); }
+inline uint16x8_t vmovq_n_u16(SymbolicScalar<uint16_t> v){ return vdupq_n_u16(v); }
+inline uint32x4_t vmovq_n_u32(SymbolicScalar<uint32_t> v){ return vdupq_n_u32(v); }
+
+// FP vdup with SymbolicScalar<float>
+inline float32x4_t vdupq_n_f32(SymbolicScalar<float> v) {
+    std::array<Term, 4> l; l.fill(v.term());
+    return float32x4_t(g_ctx->tm, l);
+}
+inline float32x2_t vdup_n_f32(SymbolicScalar<float> v) {
+    std::array<Term, 2> l; l.fill(v.term());
+    return float32x2_t(g_ctx->tm, l);
+}
+inline float32x4_t vmovq_n_f32(SymbolicScalar<float> v) { return vdupq_n_f32(v); }
+
 } // namespace salt

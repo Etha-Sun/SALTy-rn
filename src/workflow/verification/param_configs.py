@@ -9,6 +9,18 @@ from dataclasses import dataclass
 from itertools import product
 
 # ---------------------------------------------------------------------------
+# Valid range per integer type (used to filter edge values)
+# ---------------------------------------------------------------------------
+TYPE_RANGE = {
+    "int8_t":      (-128, 127),
+    "uint8_t":     (0, 255),
+    "int16_t":     (-32768, 32767),
+    "uint16_t":    (0, 65535),
+    "int32_t":     (-2147483648, 2147483647),
+    "uint32_t":    (0, 4294967295),
+}
+
+# ---------------------------------------------------------------------------
 # Edge values per field type
 # ---------------------------------------------------------------------------
 EDGE_VALUES = {
@@ -304,10 +316,30 @@ PARAMS_FIELDS = {
 
 
 def get_edge_values(field_type: str, field_name: str) -> list:
-    """Get edge-case values for a field, preferring semantic over generic."""
+    """Get edge-case values for a field, preferring semantic over generic.
+
+    Filters values to the valid range of field_type so e.g. negative values
+    are never used for uint8_t fields.
+    """
     if field_name in FIELD_EDGES:
-        return FIELD_EDGES[field_name]
-    return EDGE_VALUES.get(field_type, [0])
+        values = FIELD_EDGES[field_name]
+    else:
+        values = EDGE_VALUES.get(field_type, [0])
+
+    bounds = TYPE_RANGE.get(field_type)
+    if bounds is not None:
+        lo, hi = bounds
+        values = [v for v in values if lo <= v <= hi]
+        if not values:
+            # All semantic values were out of range — pick type-appropriate default
+            if "min" in field_name:
+                values = [lo]
+            elif "max" in field_name:
+                values = [hi]
+            else:
+                values = [max(lo, 0)]
+
+    return values if values else [0]
 
 
 def generate_configs(params_type: str, max_configs: int = 10) -> list[dict]:
@@ -373,6 +405,137 @@ def config_to_cpp(params_type: str, config: dict) -> str:
         else:
             lines.append(f"    {prefix}.{fname} = {val};")
     return "\n".join(lines)
+
+
+# ---------------------------------------------------------------------------
+# Validity constraints for symbolic params (field_name → field_name or const)
+# ---------------------------------------------------------------------------
+PARAM_CONSTRAINTS = {
+    "xnn_qs8_add_minmax_params": [
+        ("BV_SLE", "output_min", "output_max"),
+        ("BV_SGE", "shift", 0),
+        ("BV_SLE", "shift", 31),
+        ("BV_SGT", "a_multiplier", 0),
+        ("BV_SGT", "b_multiplier", 0),
+    ],
+    "xnn_qu8_add_minmax_params": [
+        ("BV_ULE", "output_min", "output_max"),
+        ("BV_SGE", "shift", 0),
+        ("BV_SLE", "shift", 31),
+        ("BV_SGT", "a_multiplier", 0),
+        ("BV_SGT", "b_multiplier", 0),
+    ],
+    "xnn_qs8_mul_minmax_params": [
+        ("BV_SLE", "output_min", "output_max"),
+    ],
+    "xnn_qs8_conv_minmax_params": [
+        ("BV_SLE", "output_min", "output_max"),
+    ],
+    "xnn_qs8_qc8w_conv_minmax_params": [
+        ("BV_SLE", "output_min", "output_max"),
+    ],
+    "xnn_qu8_conv_minmax_params": [
+        ("BV_ULE", "output_min", "output_max"),
+    ],
+    "xnn_qs8_lrelu_params": [
+        ("BV_SGT", "positive_multiplier", 0),
+        ("BV_SGT", "negative_multiplier", 0),
+    ],
+    "xnn_qs8_cvt_params": [
+        ("BV_SGT", "multiplier", 0),
+    ],
+    "xnn_s8_minmax_params": [
+        ("BV_SLE", "min", "max"),
+    ],
+    "xnn_u8_minmax_params": [
+        ("BV_ULE", "min", "max"),
+    ],
+}
+
+
+def get_verify_prologue(params_type: str) -> str:
+    """Generate C++ code for verify() — register params buffer + assert constraints.
+
+    This goes in verify(), after other buffer registrations, before kernel calls.
+    The constraints reference fields by loading from the buffer directly.
+    """
+    clean_type = params_type.replace("struct ", "").replace("union ", "").strip()
+    spec = PARAMS_FIELDS.get(clean_type)
+    if not spec or not spec["fields"]:
+        return ""
+
+    member = spec["member"]
+    fields = spec["fields"]
+    lines = []
+
+    # Register symbolic buffer for params
+    lines.append("    // --- Symbolic params buffer ---")
+    lines.append(f"    auto& _sym_params_buf = ctx.registerBuffer(\"params\", sizeof({clean_type}));")
+    lines.append(f"    _sym_params_buf.bind(&params);")
+
+    # Assert validity constraints using inline loads from the buffer
+    constraints = PARAM_CONSTRAINTS.get(clean_type, [])
+    if constraints:
+        lines.append("    // Validity constraints")
+        for constraint in constraints:
+            kind = constraint[0]
+            lhs_name = constraint[1]
+            rhs = constraint[2]
+            # Get LHS field info
+            lhs_type = next((ft for ft, fn in fields if fn == lhs_name), "int32_t")
+            lhs_bits = {"int8_t": 8, "uint8_t": 8, "int16_t": 16, "uint16_t": 16,
+                        "int32_t": 32, "uint32_t": 32}.get(lhs_type, 32)
+            lhs_member = f"{member}.{lhs_name}" if member else lhs_name
+            lhs_term = f"_sym_params_buf.loadScalar(offsetof({clean_type}, {lhs_member}), {lhs_bits})"
+            if isinstance(rhs, str):
+                rhs_type = next((ft for ft, fn in fields if fn == rhs), "int32_t")
+                rhs_bits = {"int8_t": 8, "uint8_t": 8, "int16_t": 16, "uint16_t": 16,
+                            "int32_t": 32, "uint32_t": 32}.get(rhs_type, 32)
+                rhs_member = f"{member}.{rhs}" if member else rhs
+                rhs_term = f"_sym_params_buf.loadScalar(offsetof({clean_type}, {rhs_member}), {rhs_bits})"
+            else:
+                rhs_term = f"mk_bv_val(ctx.tm, {lhs_bits}, {rhs})"
+            lines.append(
+                f"    ctx.solver->assert_formula("
+                f"ctx.tm.mk_term(Kind::{kind}, {{{lhs_term}, {rhs_term}}}));")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def get_kernel_prologue(params_type: str) -> str:
+    """Generate C++ code injected at the start of each kernel function body.
+
+    Declares SymbolicScalar<T> for each field using g_ctx->findBuffer(params).
+    """
+    clean_type = params_type.replace("struct ", "").replace("union ", "").strip()
+    spec = PARAMS_FIELDS.get(clean_type)
+    if not spec or not spec["fields"]:
+        return ""
+
+    member = spec["member"]
+    fields = spec["fields"]
+    lines = []
+
+    lines.append("    // --- Symbolic params (auto-injected) ---")
+    lines.append(f"    auto& _sym_params_buf = g_ctx->findBuffer(params);")
+    for ftype, fname in fields:
+        member_path = f"{member}.{fname}" if member else fname
+        lines.append(
+            f"    SymbolicScalar<{ftype}> sym_{fname}"
+            f"(_sym_params_buf, offsetof({clean_type}, {member_path}));")
+    lines.append("")
+
+    return "\n".join(lines)
+
+
+def get_params_fields(params_type: str) -> list[tuple[str, str]]:
+    """Return [(field_type, field_name), ...] for a params struct."""
+    clean_type = params_type.replace("struct ", "").replace("union ", "").strip()
+    spec = PARAMS_FIELDS.get(clean_type)
+    if not spec:
+        return []
+    return list(spec["fields"])
 
 
 # ---------------------------------------------------------------------------

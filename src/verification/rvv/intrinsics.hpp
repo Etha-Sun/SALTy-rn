@@ -2525,4 +2525,163 @@ inline vint32m1_t __riscv_vwredsum_vs_i16m4_i32m1(const vint16m4_t& src, const v
 #undef RVV_MINMAX_VX
 #undef RVV_MINMAX_VV
 
+// ===========================================================================
+// SymbolicScalar<T> overloads for _vx_ intrinsics — enables symbolic params
+// ===========================================================================
+
+// --- rounded_shift_right_symbolic: ITE cascade for symbolic shift amount ---
+// Constraint: 0 <= shift <= 31 must be asserted via PARAM_CONSTRAINTS.
+// Builds a 31-deep ITE tree reusing the concrete rounded_shift_right per branch.
+inline Term rounded_shift_right_symbolic(TermManager& tm, Term val, Term shift_term,
+                                          size_t bits, unsigned vxrm, bool is_signed) {
+    // shift==0 case: identity
+    Term result = val;
+    // Build ITE chain from s=31 down to s=1
+    for (size_t s = 31; s >= 1; s--) {
+        Term concrete_shifted = rounded_shift_right(tm, val, s, bits, vxrm, is_signed);
+        Term eq = tm.mk_term(Kind::EQUAL,
+            {shift_term, mk_bv_val(tm, bits, static_cast<int64_t>(s))});
+        result = tm.mk_term(Kind::ITE, {eq, concrete_shifted, result});
+    }
+    return result;
+}
+
+// --- vwsub_vx ---
+inline vint16m4_t __riscv_vwsub_vx_i16m4(const vint8m2_t& op1,
+                                           SymbolicScalar<int8_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term op2_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op2.term()}, {8}); // 8→16
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op1.getElement(i)}, {8});
+        result.push_back(tm.mk_term(Kind::BV_SUB, {a_ext, op2_ext}));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// --- vmv_v_x ---
+inline vint32m8_t __riscv_vmv_v_x_i32m8(SymbolicScalar<int32_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 32, std::vector<Term>(vl, v.term()));
+}
+inline vint32m4_t __riscv_vmv_v_x_i32m4(SymbolicScalar<int32_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 32, std::vector<Term>(vl, v.term()));
+}
+inline vint32m1_t __riscv_vmv_v_x_i32m1(SymbolicScalar<int32_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 32, std::vector<Term>(vl, v.term()));
+}
+inline vint16m1_t __riscv_vmv_v_x_i16m1(SymbolicScalar<int16_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 16, std::vector<Term>(vl, v.term()));
+}
+inline vint16m2_t __riscv_vmv_v_x_i16m2(SymbolicScalar<int16_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 16, std::vector<Term>(vl, v.term()));
+}
+inline vint8m1_t __riscv_vmv_v_x_i8m1(SymbolicScalar<int8_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 8, std::vector<Term>(vl, v.term()));
+}
+
+// --- vmacc_vx ---
+inline vint32m8_t __riscv_vmacc_vx_i32m8(const vint32m8_t& vd,
+                                           SymbolicScalar<int32_t> rs1,
+                                           const vint32m8_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term prod = tm.mk_term(Kind::BV_MUL, {rs1.term(), vs2.getElement(i)});
+        result.push_back(tm.mk_term(Kind::BV_ADD, {vd.getElement(i), prod}));
+    }
+    return RVVVector(tm, 32, result);
+}
+inline vint32m4_t __riscv_vmacc_vx_i32m4(const vint32m4_t& vd,
+                                           SymbolicScalar<int32_t> rs1,
+                                           const vint32m4_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term prod = tm.mk_term(Kind::BV_MUL, {rs1.term(), vs2.getElement(i)});
+        result.push_back(tm.mk_term(Kind::BV_ADD, {vd.getElement(i), prod}));
+    }
+    return RVVVector(tm, 32, result);
+}
+
+// --- vssra_vx (symbolic shift via ITE cascade) ---
+inline vint32m8_t __riscv_vssra_vx_i32m8(const vint32m8_t& op1,
+                                           SymbolicScalar<int32_t> shift,
+                                           unsigned vxrm, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        result.push_back(rounded_shift_right_symbolic(
+            tm, op1.getElement(i), shift.term(), 32, vxrm, /*is_signed=*/true));
+    }
+    return RVVVector(tm, 32, result);
+}
+inline vint32m4_t __riscv_vssra_vx_i32m4(const vint32m4_t& op1,
+                                           SymbolicScalar<int32_t> shift,
+                                           unsigned vxrm, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        result.push_back(rounded_shift_right_symbolic(
+            tm, op1.getElement(i), shift.term(), 32, vxrm, /*is_signed=*/true));
+    }
+    return RVVVector(tm, 32, result);
+}
+
+// --- vsadd_vx ---
+inline vint16m4_t __riscv_vsadd_vx_i16m4(const vint16m4_t& op1,
+                                           SymbolicScalar<int16_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op1.getElement(i)}, {16});
+        Term b_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op2.term()}, {16});
+        Term sum = tm.mk_term(Kind::BV_ADD, {a_ext, b_ext});
+        result.push_back(signed_clip(tm, sum, 32, 16));
+    }
+    return RVVVector(tm, 16, result);
+}
+inline vint16m2_t __riscv_vsadd_vx_i16m2(const vint16m2_t& op1,
+                                           SymbolicScalar<int16_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op1.getElement(i)}, {16});
+        Term b_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op2.term()}, {16});
+        Term sum = tm.mk_term(Kind::BV_ADD, {a_ext, b_ext});
+        result.push_back(signed_clip(tm, sum, 32, 16));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// --- vmax_vx / vmin_vx ---
+inline vint8m2_t __riscv_vmax_vx_i8m2(const vint8m2_t& op1,
+                                        SymbolicScalar<int8_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cond = tm.mk_term(Kind::BV_SGE, {op1.getElement(i), op2.term()});
+        result.push_back(tm.mk_term(Kind::ITE, {cond, op1.getElement(i), op2.term()}));
+    }
+    return RVVVector(tm, 8, result);
+}
+inline vint8m2_t __riscv_vmin_vx_i8m2(const vint8m2_t& op1,
+                                        SymbolicScalar<int8_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cond = tm.mk_term(Kind::BV_SLE, {op1.getElement(i), op2.term()});
+        result.push_back(tm.mk_term(Kind::ITE, {cond, op1.getElement(i), op2.term()}));
+    }
+    return RVVVector(tm, 8, result);
+}
+
 } // namespace salt

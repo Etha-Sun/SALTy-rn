@@ -212,22 +212,4 @@ using int16x8x2_t  = VectorTuple<int16x8_t, 2>;
 using int32x2x2_t  = VectorTuple<int32x2_t, 2>;
 using int32x4x2_t  = VectorTuple<int32x4_t, 2>;
 
-// ---------------------------------------------------------------------------
-// SymbolicScalar — for scalar extraction from vectors (reductions, vmv_x_s)
-// ---------------------------------------------------------------------------
-struct SymbolicScalar {
-    int64_t concrete;
-    Term term;
-    size_t bits;
-
-    SymbolicScalar(int64_t val, Term t, size_t bits)
-        : concrete(val), term(t), bits(bits) {}
-    SymbolicScalar() : concrete(0), bits(0) {}
-
-    operator int8_t()  const { return static_cast<int8_t>(concrete); }
-    operator int16_t() const { return static_cast<int16_t>(concrete); }
-    operator int32_t() const { return static_cast<int32_t>(concrete); }
-    operator int64_t() const { return concrete; }
-};
-
 } // namespace salt

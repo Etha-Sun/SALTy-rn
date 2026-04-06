@@ -236,6 +236,7 @@ def verify_kernel(neon_path: str, rvv_path: str,
                    kernel_name: str = "",
                    params_init: str = "",
                    param_configs: list[tuple[str, str]] = None,
+                   symbolic_params: bool = False,
                    vlen: int = 256,
                    per_batch_timeout: int = 60,
                    max_batch: int = DEFAULT_MAX_BATCH,
@@ -244,6 +245,7 @@ def verify_kernel(neon_path: str, rvv_path: str,
 
     If neither params_init nor param_configs is provided, auto-generates
     edge-case configs from the params struct definition.
+    symbolic_params: if True, proves equivalence for ALL valid params.
     """
     from .harness_gen import generate_harness_from_files
 
@@ -258,6 +260,7 @@ def verify_kernel(neon_path: str, rvv_path: str,
             kernel_name=kernel_name,
             params_init=params_init,
             param_configs=param_configs,
+            symbolic_params=symbolic_params,
             vlen=vlen,
             llm_client=llm_client,
         )
@@ -304,6 +307,8 @@ def main():
     p.add_argument("--vlen", type=int, default=256, help="Target VLEN in bits")
     p.add_argument("--timeout", type=int, default=60, help="Per-batch timeout in seconds")
     p.add_argument("--max-batch", type=int, default=DEFAULT_MAX_BATCH, help="Max batch size")
+    p.add_argument("--symbolic-params", action="store_true",
+                   help="Use symbolic params (proves for ALL valid params)")
     args = p.parse_args()
 
     params_init = args.params_init
@@ -313,6 +318,7 @@ def main():
     result = verify_kernel(
         args.neon, args.rvv,
         params_init=params_init,
+        symbolic_params=args.symbolic_params,
         vlen=args.vlen,
         per_batch_timeout=args.timeout,
         max_batch=args.max_batch,
