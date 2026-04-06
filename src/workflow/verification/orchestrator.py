@@ -155,8 +155,8 @@ def run_verification(bin_path: Path, kernel_name: str,
     env["DYLD_LIBRARY_PATH"] = "/usr/local/lib"
     env["LD_LIBRARY_PATH"] = "/usr/local/lib"
 
-    # Overall timeout: generous upper bound (scales with number of configs)
-    overall_timeout = max(max_batch * 20, per_batch_timeout * 100)
+    # Overall timeout: scale with per-batch timeout and batch count
+    overall_timeout = max(max_batch * 20, per_batch_timeout * max_batch, 600)
 
     t0 = time.perf_counter()
     try:

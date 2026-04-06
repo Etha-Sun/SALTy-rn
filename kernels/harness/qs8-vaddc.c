@@ -37,7 +37,10 @@ void reference_qs8_vaddc(
         int32_t a_i32 = (int32_t)input_a[i];
         int32_t result = a_i32 * a_multiplier;
         result = result + bias;
-        result = result >> shift;
+        // Rounding shift right (matches NEON vrshlq behavior)
+        if (shift > 0) {
+            result = (result + (1 << (shift - 1))) >> shift;
+        }
         result = result + output_zero_point;
 
         if (result < output_min) result = output_min;
@@ -62,9 +65,9 @@ int main() {
 
     // Initialize parameters
     params_storage.scalar.bias = 0;
-    params_storage.scalar.a_multiplier = 1;
-    params_storage.scalar.b_multiplier = 1;
-    params_storage.scalar.shift = 0;
+    params_storage.scalar.a_multiplier = 3;
+    params_storage.scalar.b_multiplier = 2;
+    params_storage.scalar.shift = 4;
     params_storage.scalar.output_min = -128;
     params_storage.scalar.output_max = 127;
     params_storage.scalar.output_zero_point = 0;

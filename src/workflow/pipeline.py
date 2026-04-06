@@ -189,13 +189,19 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
     except Exception:
         verification_llm = None
 
+    # 2D kernels (stride-based) are heavier for the solver
+    source_text = kernel_path.read_text()
+    is_2d = "stride" in source_text and "channels" in source_text
+    per_batch_timeout = 300 if is_2d else 60  # 5 min per batch for 2D
+    max_batch = 64 if is_2d else 1000
+
     result = verify_kernel(
         neon_path=str(kernel_path),
         rvv_path=str(output_path),
         kernel_name=kernel_name,
         vlen=256,
-        per_batch_timeout=60,
-        max_batch=1000,
+        per_batch_timeout=per_batch_timeout,
+        max_batch=max_batch,
         llm_client=verification_llm,
     )
     import json
@@ -274,37 +280,52 @@ def translate_kernel(
     source_code = kernel_path.read_text()
     log.info("Read source: %s (%d chars)", kernel_path.name, len(source_code))
 
-    # 2. Build initial translation prompts
-    params_section = extract_params(source_code)
-    if params_section:
-        log.info("Extracted params struct (%d chars)", len(params_section))
-    system_prompt = load_reference_docs(cfg.source, rules_only=cfg.rules_only)
-    user_prompt = load_translation_prompt(cfg.source, source_code, params_section)
-
-    # 3. Dry run check
-    if cfg.dry_run:
-        log.info("[DRY RUN] Would call LLM for %s", kernel_name)
-        return TranslationResult(kernel_name=kernel_name, success=False)
-
-    # 4. Initial translation
-    try:
-        t0 = time.perf_counter()
-        response = _call_llm(client, user_prompt, system_prompt, tools, cfg)
-        elapsed = time.perf_counter() - t0
-        translated_code = extract_code(response)
-        log.info("Got translation: %d chars in %.1fs", len(translated_code), elapsed)
-    except Exception as e:
-        log.error("LLM call failed for %s: %s", kernel_name, e)
-        tracker.update(kernel_name, generated=False, attempts=1, error=str(e))
-        return TranslationResult(
-            kernel_name=kernel_name, success=False, attempts=1, error=str(e),
-        )
-
-    # 5. Write output + repair loop
     cfg.target_dir.mkdir(parents=True, exist_ok=True)
     output_path = cfg.target_dir / kernel_path.name
-    output_path.write_text(translated_code)
-    log.info("Wrote translation: %s", output_path)
+
+    if cfg.skip_translation:
+        # Skip LLM, use existing target kernel
+        if not output_path.exists():
+            log.error("--skip-translation but target not found: %s", output_path)
+            return TranslationResult(
+                kernel_name=kernel_name, success=False, attempts=0,
+                error=f"Target file not found: {output_path}",
+            )
+        translated_code = output_path.read_text()
+        log.info("Skipping translation, using existing target: %s (%d chars)",
+                 output_path, len(translated_code))
+    else:
+        # 2. Build initial translation prompts
+        params_section = extract_params(source_code)
+        if params_section:
+            log.info("Extracted params struct (%d chars)", len(params_section))
+        system_prompt = load_reference_docs(cfg.source, rules_only=cfg.rules_only)
+        user_prompt = load_translation_prompt(cfg.source, source_code, params_section)
+
+        # 3. Dry run check
+        if cfg.dry_run:
+            log.info("[DRY RUN] Would call LLM for %s", kernel_name)
+            return TranslationResult(kernel_name=kernel_name, success=False)
+
+        # 4. Initial translation
+        try:
+            log.info("Starting initial LLM translation for %s (model=%s, tools=%s)",
+                     kernel_name, cfg.model, bool(tools))
+            t0 = time.perf_counter()
+            response = _call_llm(client, user_prompt, system_prompt, tools, cfg)
+            elapsed = time.perf_counter() - t0
+            translated_code = extract_code(response)
+            log.info("Got translation: %d chars in %.1fs", len(translated_code), elapsed)
+        except Exception as e:
+            log.error("LLM call failed for %s: %s", kernel_name, e)
+            tracker.update(kernel_name, generated=False, attempts=1, error=str(e))
+            return TranslationResult(
+                kernel_name=kernel_name, success=False, attempts=1, error=str(e),
+            )
+
+        output_path.write_text(translated_code)
+        log.info("Wrote translation: %s", output_path)
+
     tracker.update(kernel_name, generated=True, attempts=1)
 
     # Pre-load reference docs for execution repairs (full docs, not rules-only)
@@ -316,6 +337,42 @@ def translate_kernel(
     compile_attempts = 0
     verification_attempts = 0
     last_error = ""
+
+    # Skip straight to verification if already compiled+passed and --skip-spike is set
+    if cfg.skip_spike and tracker.get(kernel_name).get("compiled", False):
+        log.info("Skipping compile+Spike for %s (already passed), jumping to verification", kernel_name)
+
+        verify_result = _run_formal_verification(kernel_path, output_path, kernel_name, cfg)
+
+        if verify_result is None:
+            log.warning("Formal verification unavailable — skipping")
+            tracker.update(kernel_name, compiled=True, attempts=attempts)
+            return TranslationResult(
+                kernel_name=kernel_name, success=True,
+                attempts=attempts, output_file=str(output_path),
+            )
+
+        verdict = verify_result.get("verdict", "")
+        max_batch = verify_result.get("max_verified_batch", 0)
+        log.info("Formal verification: %s (max_batch=%d)", verdict, max_batch)
+
+        if verdict in ("ALL_PASSED", "PARTIAL") and max_batch > 0:
+            tracker.update(kernel_name, compiled=True, verified=True,
+                           max_verified_batch=max_batch, attempts=attempts)
+            return TranslationResult(
+                kernel_name=kernel_name, success=True,
+                attempts=attempts, output_file=str(output_path),
+            )
+
+        if verdict != "COUNTEREXAMPLE":
+            log.warning("Formal verification: %s — accepting based on prior Spike pass", verdict)
+            tracker.update(kernel_name, compiled=True, attempts=attempts)
+            return TranslationResult(
+                kernel_name=kernel_name, success=True,
+                attempts=attempts, output_file=str(output_path),
+            )
+
+        # COUNTEREXAMPLE — fall through to the repair loop below
 
     while True:
         # --- Compile ---
@@ -539,6 +596,10 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Enable intrinsics search tools (model can look up op-semantics)")
     p.add_argument("--rules-only", action="store_true",
                     help="Only include translation rules as reference (skip background docs)")
+    p.add_argument("--skip-translation", action="store_true",
+                    help="Skip LLM translation, start from compile+run+verify using existing target kernel")
+    p.add_argument("--skip-spike", action="store_true",
+                    help="Skip compile+Spike if kernel already passed (compiled=true in status.json)")
 
     return p
 

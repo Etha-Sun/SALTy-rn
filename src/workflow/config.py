@@ -27,7 +27,7 @@ class Config:
     # zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
     # chipyard_path: str = ""
     zephyr_base: str = "/scratch/kchern2/SALTy-rn/third_party/zephyr"
-    chipyard_path: str = "/scratch/kchern2/SALTy-rn/third_party/chipyard-salty"
+    chipyard_path: str = "/scratch/kchern2/SALTy-rn/third_party/chipyard"
 
 
     # Pipeline
@@ -37,6 +37,8 @@ class Config:
     dry_run: bool = False
     skip_existing: bool = False
     rules_only: bool = False
+    skip_translation: bool = False
+    skip_spike: bool = False
 
     @property
     def source_dir(self) -> Path:
@@ -69,6 +71,8 @@ class Config:
         cfg.dry_run = args.dry_run
         cfg.skip_existing = args.skip_existing
         cfg.rules_only = args.rules_only
+        cfg.skip_translation = args.skip_translation
+        cfg.skip_spike = args.skip_spike
         if args.kernels_dir:
             cfg.kernels_dir = Path(args.kernels_dir)
         return cfg

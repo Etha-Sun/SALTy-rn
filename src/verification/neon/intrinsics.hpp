@@ -119,6 +119,11 @@ inline void vst1_lane_u32(void* ptr, const uint32x2_t& val, int lane) {
     buf.storeScalar(buf.ptrToByteOffset(ptr), val.getLane(lane), 32);
 }
 
+inline void vst1_lane_f32(float* ptr, const float32x2_t& val, int lane) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeScalar(buf.ptrToByteOffset(ptr), val.getLane(lane), 32);
+}
+
 // ===========================================================================
 // GET_LOW / GET_HIGH — extract D register from Q register
 // get_low: lanes [0..N/2-1], get_high: lanes [N/2..N-1]
@@ -816,9 +821,7 @@ inline float32x2_t vdup_n_f32(float value) {
     // Create FP value from float
     Sort fp32 = tm.mk_fp_sort(8, 24);
     // Use string conversion for exactness
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%.9e", static_cast<double>(value));
-    Term val = tm.mk_fp_value(fp32, rm, buf);
+    Term val = mk_fp32_from_float(tm, value);
     Term bv = store_fp32_as_bv(tm, val);
     std::array<Term, 2> lanes;
     lanes.fill(bv);
@@ -829,9 +832,7 @@ inline float32x4_t vdupq_n_f32(float value) {
     auto& tm = g_ctx->tm;
     Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%.9e", static_cast<double>(value));
-    Term val = tm.mk_fp_value(fp32, rm, buf);
+    Term val = mk_fp32_from_float(tm, value);
     Term bv = store_fp32_as_bv(tm, val);
     std::array<Term, 4> lanes;
     lanes.fill(bv);
@@ -1638,8 +1639,7 @@ inline float32x4_t vsetq_lane_f32(float val, const float32x4_t& v, int lane) {
     auto result = v;
     auto& tm = g_ctx->tm;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)val);
-    Term fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term fp = mk_fp32_from_float(tm, val);
     result.setLane(lane, store_fp32_as_bv(tm, fp));
     return result;
 }

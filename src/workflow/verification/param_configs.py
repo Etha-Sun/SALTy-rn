@@ -369,7 +369,7 @@ def config_to_cpp(params_type: str, config: dict) -> str:
         val = config.get(fname, 0)
         prefix = f"params.{member}" if member else "params"
         if ftype in ("float", "xnn_float16"):
-            lines.append(f"    {prefix}.{fname} = {val}f;")
+            lines.append(f"    {prefix}.{fname} = {float(val)}f;")
         else:
             lines.append(f"    {prefix}.{fname} = {val};")
     return "\n".join(lines)

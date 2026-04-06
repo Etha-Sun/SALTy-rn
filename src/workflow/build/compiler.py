@@ -23,7 +23,7 @@ PROJECT_ROOT = SCRIPT_DIR.parent.parent.parent  # src/workflow/build/ -> SALT/
 # Defaults
 DEFAULT_ZEPHYR_BASE = PROJECT_ROOT / "third_party" / "zephyr"
 DEFAULT_CHIPYARD_PATH = ""  # e.g. /scratch/kchern2/chipyard
-DEFAULT_TEMPLATE_DIR = PROJECT_ROOT / "build" / "templates" / "xnnpack-kernel"
+DEFAULT_TEMPLATE_DIR = PROJECT_ROOT / "build" / "templates" / "xnnpack-kernel" / "app"
 DEFAULT_SLOTS_DIR = PROJECT_ROOT / "build" / "slots"
 DEFAULT_HARNESS_DIR = PROJECT_ROOT / "kernels" / "harness"
 DEFAULT_SPIKE_ISA = "rv64gcv_zvl512b_zicntr"

@@ -329,9 +329,17 @@ inline vuint16m4_t __riscv_vssrl_vx_u16m4(const vuint16m4_t& op1, size_t shift,
                                             unsigned vxrm, size_t vl) {
     return rvv_vssrl_impl(op1, shift, vxrm, vl, 16);
 }
+inline vuint8m1_t __riscv_vssrl_vx_u8m1(const vuint8m1_t& op1, size_t shift,
+                                          unsigned vxrm, size_t vl) {
+    return rvv_vssrl_impl(op1, shift, vxrm, vl, 8);
+}
 inline vuint8m2_t __riscv_vssrl_vx_u8m2(const vuint8m2_t& op1, size_t shift,
                                           unsigned vxrm, size_t vl) {
     return rvv_vssrl_impl(op1, shift, vxrm, vl, 8);
+}
+inline vuint16m2_t __riscv_vssrl_vx_u16m2(const vuint16m2_t& op1, size_t shift,
+                                            unsigned vxrm, size_t vl) {
+    return rvv_vssrl_impl(op1, shift, vxrm, vl, 16);
 }
 
 // Additional LMUL variants of vssra
@@ -430,6 +438,22 @@ inline vuint8m2_t __riscv_vaaddu_vx_u8m2(const vuint8m2_t& op1, uint8_t op2,
                                            unsigned vxrm, size_t vl) {
     return rvv_vaadd_vx_impl(op1, op2, vxrm, vl, 8, false);
 }
+inline vint16m4_t __riscv_vaadd_vx_i16m4(const vint16m4_t& op1, int16_t op2,
+                                           unsigned vxrm, size_t vl) {
+    return rvv_vaadd_vx_impl(op1, op2, vxrm, vl, 16, true);
+}
+inline vint32m8_t __riscv_vaadd_vx_i32m8(const vint32m8_t& op1, int32_t op2,
+                                           unsigned vxrm, size_t vl) {
+    return rvv_vaadd_vx_impl(op1, op2, vxrm, vl, 32, true);
+}
+inline vuint16m4_t __riscv_vaaddu_vx_u16m4(const vuint16m4_t& op1, uint16_t op2,
+                                             unsigned vxrm, size_t vl) {
+    return rvv_vaadd_vx_impl(op1, op2, vxrm, vl, 16, false);
+}
+inline vuint32m8_t __riscv_vaaddu_vx_u32m8(const vuint32m8_t& op1, uint32_t op2,
+                                             unsigned vxrm, size_t vl) {
+    return rvv_vaadd_vx_impl(op1, op2, vxrm, vl, 32, false);
+}
 
 // ===========================================================================
 // VNCLIPU — Unsigned Narrowing Clip with rounding
@@ -464,6 +488,30 @@ inline vuint8m1_t __riscv_vnclipu_wx_u8m1(const vuint16m2_t& op1, size_t shift,
 }
 
 inline vuint16m2_t __riscv_vnclipu_wx_u16m2(const vuint32m4_t& op1, size_t shift,
+                                              unsigned vxrm, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term shifted = rounded_shift_right(tm, op1.getElement(i), shift, 32,
+                                            vxrm, /*is_signed=*/false);
+        result.push_back(unsigned_clip(tm, shifted, 32, 16));
+    }
+    return RVVVector(tm, 16, result);
+}
+inline vuint8m2_t __riscv_vnclipu_wx_u8m2(const vuint16m4_t& op1, size_t shift,
+                                            unsigned vxrm, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term shifted = rounded_shift_right(tm, op1.getElement(i), shift, 16,
+                                            vxrm, /*is_signed=*/false);
+        result.push_back(unsigned_clip(tm, shifted, 16, 8));
+    }
+    return RVVVector(tm, 8, result);
+}
+inline vuint16m4_t __riscv_vnclipu_wx_u16m4(const vuint32m8_t& op1, size_t shift,
                                               unsigned vxrm, size_t vl) {
     auto& tm = g_ctx->tm;
     std::vector<Term> result;
@@ -523,19 +571,37 @@ inline vint8m1_t __riscv_vnclip_wx_i8m1(const vint16m2_t& op1, size_t shift,
     }
     return RVVVector(tm, 8, result);
 }
-
-// vssra additional variants
-inline vint32m4_t __riscv_vssra_vx_i32m4(const vint32m4_t& op1, size_t shift,
-                                           unsigned vxrm, size_t vl) {
+inline vint8m4_t __riscv_vnclip_wx_i8m4(const vint16m8_t& op1, size_t shift,
+                                          unsigned vxrm, size_t vl) {
     auto& tm = g_ctx->tm;
     std::vector<Term> result;
     result.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
-        result.push_back(rounded_shift_right(tm, op1.getElement(i), shift, 32,
+        Term shifted = rounded_shift_right(tm, op1.getElement(i), shift, 16,
+                                            vxrm, /*is_signed=*/true);
+        result.push_back(signed_clip(tm, shifted, 16, 8));
+    }
+    return RVVVector(tm, 8, result);
+}
+
+// vssra additional variants — generic impl
+inline RVVVector rvv_vssra_impl(const RVVVector& op1, size_t shift,
+                                 unsigned vxrm, size_t vl, size_t bits) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        result.push_back(rounded_shift_right(tm, op1.getElement(i), shift, bits,
                                               vxrm, /*is_signed=*/true));
     }
-    return RVVVector(tm, 32, result);
+    return RVVVector(tm, bits, result);
 }
+inline vint8m1_t  __riscv_vssra_vx_i8m1(const vint8m1_t& op1, size_t shift, unsigned vxrm, size_t vl)   { return rvv_vssra_impl(op1, shift, vxrm, vl, 8); }
+inline vint8m2_t  __riscv_vssra_vx_i8m2(const vint8m2_t& op1, size_t shift, unsigned vxrm, size_t vl)   { return rvv_vssra_impl(op1, shift, vxrm, vl, 8); }
+inline vint16m2_t __riscv_vssra_vx_i16m2(const vint16m2_t& op1, size_t shift, unsigned vxrm, size_t vl) { return rvv_vssra_impl(op1, shift, vxrm, vl, 16); }
+inline vint32m1_t __riscv_vssra_vx_i32m1(const vint32m1_t& op1, size_t shift, unsigned vxrm, size_t vl) { return rvv_vssra_impl(op1, shift, vxrm, vl, 32); }
+inline vint32m2_t __riscv_vssra_vx_i32m2(const vint32m2_t& op1, size_t shift, unsigned vxrm, size_t vl) { return rvv_vssra_impl(op1, shift, vxrm, vl, 32); }
+inline vint32m4_t __riscv_vssra_vx_i32m4(const vint32m4_t& op1, size_t shift, unsigned vxrm, size_t vl) { return rvv_vssra_impl(op1, shift, vxrm, vl, 32); }
 
 // ===========================================================================
 // PHASE 3: Floating-point RVV intrinsics
@@ -563,12 +629,15 @@ inline Term rvv_store_fp32_as_bv(TermManager& tm, Term fp_val) {
 inline RVVVector rvv_fp32_binop(const RVVVector& a, const RVVVector& b, Kind op, size_t vl) {
     auto& tm = g_ctx->tm;
     Term rm = g_ctx->fp.rounding_mode;
+    // Per RVV spec: FP_MAX/FP_MIN are comparison-based (no rounding mode).
+    // FP_ADD/FP_SUB/FP_MUL/FP_DIV are arithmetic (need rounding mode).
+    bool needs_rm = (op != Kind::FP_MAX && op != Kind::FP_MIN);
     std::vector<Term> result;
     result.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
         Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
-        Term res_fp = tm.mk_term(op, {rm, a_fp, b_fp});
+        Term res_fp = needs_rm ? tm.mk_term(op, {rm, a_fp, b_fp}) : tm.mk_term(op, {a_fp, b_fp});
         result.push_back(rvv_store_fp32_as_bv(tm, res_fp));
     }
     return RVVVector(tm, 32, result);
@@ -599,6 +668,14 @@ inline void __riscv_vse32_v_f32m1(float* ptr, const vfloat32m1_t& val, size_t vl
     buf.storeRVV(buf.ptrToByteOffset(ptr), val);
 }
 inline void __riscv_vse32_v_f32m2(float* ptr, const vfloat32m2_t& val, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeRVV(buf.ptrToByteOffset(ptr), val);
+}
+inline void __riscv_vse32_v_f32m4(float* ptr, const vfloat32m4_t& val, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeRVV(buf.ptrToByteOffset(ptr), val);
+}
+inline void __riscv_vse32_v_f32m8(float* ptr, const vfloat32m8_t& val, size_t vl) {
     auto& buf = g_ctx->findBuffer(ptr);
     buf.storeRVV(buf.ptrToByteOffset(ptr), val);
 }
@@ -636,9 +713,7 @@ inline vfloat32m2_t __riscv_vfmul_vf_f32m2(const vfloat32m2_t& a, float b, size_
     auto& tm = g_ctx->tm;
     Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%.9e", static_cast<double>(b));
-    Term b_fp = tm.mk_fp_value(fp32, rm, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
 
     std::vector<Term> result;
     result.reserve(vl);
@@ -695,7 +770,19 @@ inline vfloat32m1_t __riscv_vfnmsac_vv_f32m1(const vfloat32m1_t& vd, const vfloa
 inline vfloat32m1_t __riscv_vfmin_vv_f32m1(const vfloat32m1_t& a, const vfloat32m1_t& b, size_t vl) {
     return rvv_fp32_binop(a, b, Kind::FP_MIN, vl);
 }
+inline vfloat32m2_t __riscv_vfmin_vv_f32m2(const vfloat32m2_t& a, const vfloat32m2_t& b, size_t vl) {
+    return rvv_fp32_binop(a, b, Kind::FP_MIN, vl);
+}
+inline vfloat32m4_t __riscv_vfmin_vv_f32m4(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) {
+    return rvv_fp32_binop(a, b, Kind::FP_MIN, vl);
+}
 inline vfloat32m1_t __riscv_vfmax_vv_f32m1(const vfloat32m1_t& a, const vfloat32m1_t& b, size_t vl) {
+    return rvv_fp32_binop(a, b, Kind::FP_MAX, vl);
+}
+inline vfloat32m2_t __riscv_vfmax_vv_f32m2(const vfloat32m2_t& a, const vfloat32m2_t& b, size_t vl) {
+    return rvv_fp32_binop(a, b, Kind::FP_MAX, vl);
+}
+inline vfloat32m4_t __riscv_vfmax_vv_f32m4(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) {
     return rvv_fp32_binop(a, b, Kind::FP_MAX, vl);
 }
 
@@ -734,6 +821,42 @@ inline vfloat32m1_t __riscv_vfsqrt_v_f32m1(const vfloat32m1_t& a, size_t vl) {
         result.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_SQRT, {rm, a_fp})));
     }
     return RVVVector(tm, 32, result);
+}
+
+// FP ABS m2, m4
+inline vfloat32m2_t __riscv_vfabs_v_f32m2(const vfloat32m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_ABS, {rvv_load_as_fp32(tm, a.getElement(i))})));
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vfabs_v_f32m4(const vfloat32m4_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_ABS, {rvv_load_as_fp32(tm, a.getElement(i))})));
+    return RVVVector(tm, 32, r);
+}
+// FP NEG m2, m4
+inline vfloat32m2_t __riscv_vfneg_v_f32m2(const vfloat32m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_NEG, {rvv_load_as_fp32(tm, a.getElement(i))})));
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vfneg_v_f32m4(const vfloat32m4_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_NEG, {rvv_load_as_fp32(tm, a.getElement(i))})));
+    return RVVVector(tm, 32, r);
+}
+// FP SQRT m2, m4
+inline vfloat32m2_t __riscv_vfsqrt_v_f32m2(const vfloat32m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_SQRT, {rm, rvv_load_as_fp32(tm, a.getElement(i))})));
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vfsqrt_v_f32m4(const vfloat32m4_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_SQRT, {rm, rvv_load_as_fp32(tm, a.getElement(i))})));
+    return RVVVector(tm, 32, r);
 }
 
 // ===========================================================================
@@ -799,9 +922,7 @@ inline vfloat32m1_t __riscv_vfmv_v_f_f32m1(float src, size_t vl) {
     auto& tm = g_ctx->tm;
     Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32];
-    snprintf(buf, sizeof(buf), "%.9e", static_cast<double>(src));
-    Term fp = tm.mk_fp_value(fp32, rm, buf);
+    Term fp = mk_fp32_from_float(tm, src);
     Term bv = rvv_store_fp32_as_bv(tm, fp);
     std::vector<Term> result(vl, bv);
     return RVVVector(tm, 32, result);
@@ -833,45 +954,108 @@ inline RVVVector __riscv_##name(const RVVVector& a, scalar_type op2, size_t vl) 
 }
 
 // VADD vv
+RVV_BIN_VV(vadd_vv_i8m1,  BV_ADD, 8)
+RVV_BIN_VV(vadd_vv_i8m2,  BV_ADD, 8)
+RVV_BIN_VV(vadd_vv_i16m2, BV_ADD, 16)
+RVV_BIN_VV(vadd_vv_i16m4, BV_ADD, 16)
 RVV_BIN_VV(vadd_vv_i32m1, BV_ADD, 32)
+RVV_BIN_VV(vadd_vv_i32m2, BV_ADD, 32)
 RVV_BIN_VV(vadd_vv_i32m4, BV_ADD, 32)
+RVV_BIN_VV(vadd_vv_i32m8, BV_ADD, 32)
+RVV_BIN_VV(vadd_vv_u8m1,  BV_ADD, 8)
+RVV_BIN_VV(vadd_vv_u8m2,  BV_ADD, 8)
+RVV_BIN_VV(vadd_vv_u16m2, BV_ADD, 16)
+RVV_BIN_VV(vadd_vv_u16m4, BV_ADD, 16)
+RVV_BIN_VV(vadd_vv_u32m1, BV_ADD, 32)
+RVV_BIN_VV(vadd_vv_u32m2, BV_ADD, 32)
 RVV_BIN_VV(vadd_vv_u32m4, BV_ADD, 32)
 // VADD vx
-RVV_BIN_VX(vadd_vx_i16m2, BV_ADD, 16, int16_t)
-RVV_BIN_VX(vadd_vx_i32m2, BV_ADD, 32, int32_t)
-RVV_BIN_VX(vadd_vx_i32m4, BV_ADD, 32, int32_t)
-RVV_BIN_VX(vadd_vx_i32m8, BV_ADD, 32, int32_t)
-RVV_BIN_VX(vadd_vx_u32m1, BV_ADD, 32, uint32_t)
+RVV_BIN_VX(vadd_vx_i8m1,   BV_ADD, 8,  int8_t)
+RVV_BIN_VX(vadd_vx_i8m2,   BV_ADD, 8,  int8_t)
+RVV_BIN_VX(vadd_vx_i16m1,  BV_ADD, 16, int16_t)
+RVV_BIN_VX(vadd_vx_i16m2,  BV_ADD, 16, int16_t)
+RVV_BIN_VX(vadd_vx_i16m4,  BV_ADD, 16, int16_t)
+RVV_BIN_VX(vadd_vx_i32m1,  BV_ADD, 32, int32_t)
+RVV_BIN_VX(vadd_vx_i32m2,  BV_ADD, 32, int32_t)
+RVV_BIN_VX(vadd_vx_i32m4,  BV_ADD, 32, int32_t)
+RVV_BIN_VX(vadd_vx_i32m8,  BV_ADD, 32, int32_t)
+RVV_BIN_VX(vadd_vx_u8m1,   BV_ADD, 8,  uint8_t)
+RVV_BIN_VX(vadd_vx_u8m2,   BV_ADD, 8,  uint8_t)
+RVV_BIN_VX(vadd_vx_u16m2,  BV_ADD, 16, uint16_t)
+RVV_BIN_VX(vadd_vx_u16m4,  BV_ADD, 16, uint16_t)
+RVV_BIN_VX(vadd_vx_u32m1,  BV_ADD, 32, uint32_t)
+RVV_BIN_VX(vadd_vx_u32m2,  BV_ADD, 32, uint32_t)
+RVV_BIN_VX(vadd_vx_u32m4,  BV_ADD, 32, uint32_t)
 // VSUB vv
+RVV_BIN_VV(vsub_vv_i8m1,  BV_SUB, 8)
+RVV_BIN_VV(vsub_vv_i8m2,  BV_SUB, 8)
 RVV_BIN_VV(vsub_vv_i16m2, BV_SUB, 16)
+RVV_BIN_VV(vsub_vv_i16m4, BV_SUB, 16)
+RVV_BIN_VV(vsub_vv_i32m1, BV_SUB, 32)
+RVV_BIN_VV(vsub_vv_i32m2, BV_SUB, 32)
 RVV_BIN_VV(vsub_vv_i32m4, BV_SUB, 32)
+RVV_BIN_VV(vsub_vv_i32m8, BV_SUB, 32)
 // VSUB vx
 RVV_BIN_VX(vsub_vx_i8m1,   BV_SUB, 8,  int8_t)
+RVV_BIN_VX(vsub_vx_i8m2,   BV_SUB, 8,  int8_t)
 RVV_BIN_VX(vsub_vx_i16m1,  BV_SUB, 16, int16_t)
 RVV_BIN_VX(vsub_vx_i16m2,  BV_SUB, 16, int16_t)
 RVV_BIN_VX(vsub_vx_i16m4,  BV_SUB, 16, int16_t)
 RVV_BIN_VX(vsub_vx_i16mf2, BV_SUB, 16, int16_t)
+RVV_BIN_VX(vsub_vx_i32m1,  BV_SUB, 32, int32_t)
+RVV_BIN_VX(vsub_vx_i32m2,  BV_SUB, 32, int32_t)
 RVV_BIN_VX(vsub_vx_i32m4,  BV_SUB, 32, int32_t)
+RVV_BIN_VX(vsub_vx_i32m8,  BV_SUB, 32, int32_t)
 // VMUL vv
+RVV_BIN_VV(vmul_vv_i32m1, BV_MUL, 32)
+RVV_BIN_VV(vmul_vv_i32m2, BV_MUL, 32)
 RVV_BIN_VV(vmul_vv_i32m4, BV_MUL, 32)
 RVV_BIN_VV(vmul_vv_i32m8, BV_MUL, 32)
+// VMUL vx
+RVV_BIN_VX(vmul_vx_i32m1, BV_MUL, 32, int32_t)
+RVV_BIN_VX(vmul_vx_i32m2, BV_MUL, 32, int32_t)
+RVV_BIN_VX(vmul_vx_i32m4, BV_MUL, 32, int32_t)
+RVV_BIN_VX(vmul_vx_i32m8, BV_MUL, 32, int32_t)
 // VAND
 RVV_BIN_VV(vand_vv_i8m1,   BV_AND, 8)
+RVV_BIN_VV(vand_vv_i8m2,   BV_AND, 8)
+RVV_BIN_VV(vand_vv_i32m4,  BV_AND, 32)
 RVV_BIN_VX(vand_vx_i8m1,   BV_AND, 8,  int8_t)
+RVV_BIN_VX(vand_vx_i8m2,   BV_AND, 8,  int8_t)
+RVV_BIN_VX(vand_vx_i32m1,  BV_AND, 32, int32_t)
 RVV_BIN_VX(vand_vx_i32m4,  BV_AND, 32, int32_t)
+RVV_BIN_VX(vand_vx_i32m8,  BV_AND, 32, int32_t)
+RVV_BIN_VX(vand_vx_u16m2,  BV_AND, 16, uint16_t)
 RVV_BIN_VX(vand_vx_u16m4,  BV_AND, 16, uint16_t)
 RVV_BIN_VX(vand_vx_u16m8,  BV_AND, 16, uint16_t)
 // VOR
-RVV_BIN_VV(vor_vv_u8m1, BV_OR, 8)
+RVV_BIN_VV(vor_vv_i8m1,  BV_OR, 8)
+RVV_BIN_VV(vor_vv_i8m2,  BV_OR, 8)
+RVV_BIN_VV(vor_vv_u8m1,  BV_OR, 8)
+RVV_BIN_VV(vor_vv_u8m2,  BV_OR, 8)
+RVV_BIN_VX(vor_vx_i8m1,  BV_OR, 8,  int8_t)
+RVV_BIN_VX(vor_vx_i8m2,  BV_OR, 8,  int8_t)
+RVV_BIN_VX(vor_vx_u8m1,  BV_OR, 8,  uint8_t)
+RVV_BIN_VX(vor_vx_u8m2,  BV_OR, 8,  uint8_t)
 // VXOR
-RVV_BIN_VV(vxor_vv_i8m1, BV_XOR, 8)
+RVV_BIN_VV(vxor_vv_i8m1,  BV_XOR, 8)
+RVV_BIN_VV(vxor_vv_i8m2,  BV_XOR, 8)
+RVV_BIN_VX(vxor_vx_i8m1,  BV_XOR, 8,  int8_t)
+RVV_BIN_VX(vxor_vx_i8m2,  BV_XOR, 8,  int8_t)
 // VRSUB (reverse subtract: op2 - a[i])
-inline RVVVector __riscv_vrsub_vx_i16m2(const RVVVector& a, int16_t op2, size_t vl) {
-    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 16, op2);
+inline RVVVector rvv_vrsub_vx_impl(const RVVVector& a, int64_t op2, size_t vl, size_t bits) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, bits, op2);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_SUB, {bv, a.getElement(i)}));
-    return RVVVector(tm, 16, r);
+    return RVVVector(tm, bits, r);
 }
+inline RVVVector __riscv_vrsub_vx_i8m1(const RVVVector& a, int8_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 8); }
+inline RVVVector __riscv_vrsub_vx_i8m2(const RVVVector& a, int8_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 8); }
+inline RVVVector __riscv_vrsub_vx_i16m1(const RVVVector& a, int16_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 16); }
+inline RVVVector __riscv_vrsub_vx_i16m2(const RVVVector& a, int16_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 16); }
+inline RVVVector __riscv_vrsub_vx_i16m4(const RVVVector& a, int16_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 16); }
+inline RVVVector __riscv_vrsub_vx_i32m1(const RVVVector& a, int32_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 32); }
+inline RVVVector __riscv_vrsub_vx_i32m4(const RVVVector& a, int32_t op2, size_t vl) { return rvv_vrsub_vx_impl(a, op2, vl, 32); }
 // VSLL (shift left)
 #define RVV_SLL_VX(name, bits, stype)                                         \
 inline RVVVector __riscv_##name(const RVVVector& a, stype op2, size_t vl) {  \
@@ -882,11 +1066,19 @@ inline RVVVector __riscv_##name(const RVVVector& a, stype op2, size_t vl) {  \
     return RVVVector(tm, bits, r);                                            \
 }
 RVV_SLL_VX(vsll_vx_i8m1,  8,  size_t)
+RVV_SLL_VX(vsll_vx_i8m2,  8,  size_t)
 RVV_SLL_VX(vsll_vx_i16m1, 16, size_t)
 RVV_SLL_VX(vsll_vx_i16m2, 16, size_t)
 RVV_SLL_VX(vsll_vx_i16m4, 16, size_t)
 RVV_SLL_VX(vsll_vx_i32m1, 32, size_t)
+RVV_SLL_VX(vsll_vx_i32m2, 32, size_t)
 RVV_SLL_VX(vsll_vx_i32m4, 32, size_t)
+RVV_SLL_VX(vsll_vx_i32m8, 32, size_t)
+RVV_SLL_VX(vsll_vx_u8m1,  8,  size_t)
+RVV_SLL_VX(vsll_vx_u8m2,  8,  size_t)
+RVV_SLL_VX(vsll_vx_u16m2, 16, size_t)
+RVV_SLL_VX(vsll_vx_u16m4, 16, size_t)
+RVV_SLL_VX(vsll_vx_u32m1, 32, size_t)
 RVV_SLL_VX(vsll_vx_u32m4, 32, size_t)
 // VSRA (arithmetic shift right)
 #define RVV_SRA_VX(name, bits)                                                \
@@ -897,15 +1089,28 @@ inline RVVVector __riscv_##name(const RVVVector& a, size_t shift, size_t vl) { \
         r.push_back(tm.mk_term(Kind::BV_ASHR, {a.getElement(i), sh}));      \
     return RVVVector(tm, bits, r);                                            \
 }
+RVV_SRA_VX(vsra_vx_i16m2, 16)
+RVV_SRA_VX(vsra_vx_i16m4, 16)
+RVV_SRA_VX(vsra_vx_i32m1, 32)
+RVV_SRA_VX(vsra_vx_i32m2, 32)
 RVV_SRA_VX(vsra_vx_i32m4, 32)
 RVV_SRA_VX(vsra_vx_i32m8, 32)
 // VSRL (logical shift right)
-inline RVVVector __riscv_vsrl_vx_u8m1(const RVVVector& a, size_t shift, size_t vl) {
-    auto& tm = g_ctx->tm; Term sh = mk_bv_val(tm, 8, shift);
-    std::vector<Term> r; r.reserve(vl);
-    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_SHR, {a.getElement(i), sh}));
-    return RVVVector(tm, 8, r);
+#define RVV_SRL_VX(name, bits)                                                \
+inline RVVVector __riscv_##name(const RVVVector& a, size_t shift, size_t vl) { \
+    auto& tm = g_ctx->tm; Term sh = mk_bv_val(tm, bits, shift);             \
+    std::vector<Term> r; r.reserve(vl);                                       \
+    for (size_t i = 0; i < vl; i++)                                           \
+        r.push_back(tm.mk_term(Kind::BV_SHR, {a.getElement(i), sh}));      \
+    return RVVVector(tm, bits, r);                                            \
 }
+RVV_SRL_VX(vsrl_vx_u8m1,  8)
+RVV_SRL_VX(vsrl_vx_u8m2,  8)
+RVV_SRL_VX(vsrl_vx_u16m1, 16)
+RVV_SRL_VX(vsrl_vx_u16m2, 16)
+RVV_SRL_VX(vsrl_vx_u16m4, 16)
+RVV_SRL_VX(vsrl_vx_u32m1, 32)
+RVV_SRL_VX(vsrl_vx_u32m4, 32)
 
 // ---------------------------------------------------------------------------
 // Integer max/min (signed/unsigned, vv and vx)
@@ -929,14 +1134,32 @@ inline RVVVector __riscv_##name(const RVVVector& a, const RVVVector& b, size_t v
     }                                                                          \
     return RVVVector(tm, bits, r);                                            \
 }
+RVV_MINMAX_VX(vmax_vx_i8m1,   BV_SGE, 8,  int8_t)
+RVV_MINMAX_VX(vmax_vx_i16m2,  BV_SGE, 16, int16_t)
+RVV_MINMAX_VX(vmax_vx_i16m4,  BV_SGE, 16, int16_t)
 RVV_MINMAX_VX(vmax_vx_i32m1,  BV_SGE, 32, int32_t)
+RVV_MINMAX_VX(vmax_vx_i32m2,  BV_SGE, 32, int32_t)
 RVV_MINMAX_VX(vmax_vx_i32m4,  BV_SGE, 32, int32_t)
+RVV_MINMAX_VX(vmax_vx_i32m8,  BV_SGE, 32, int32_t)
+RVV_MINMAX_VX(vmin_vx_i8m1,   BV_SLE, 8,  int8_t)
+RVV_MINMAX_VX(vmin_vx_i16m2,  BV_SLE, 16, int16_t)
+RVV_MINMAX_VX(vmin_vx_i16m4,  BV_SLE, 16, int16_t)
 RVV_MINMAX_VX(vmin_vx_i32m1,  BV_SLE, 32, int32_t)
+RVV_MINMAX_VX(vmin_vx_i32m2,  BV_SLE, 32, int32_t)
 RVV_MINMAX_VX(vmin_vx_i32m4,  BV_SLE, 32, int32_t)
+RVV_MINMAX_VX(vmin_vx_i32m8,  BV_SLE, 32, int32_t)
 RVV_MINMAX_VX(vminu_vx_u32m1, BV_ULE, 32, uint32_t)
+RVV_MINMAX_VX(vminu_vx_u32m4, BV_ULE, 32, uint32_t)
 RVV_MINMAX_VX(vmaxu_vx_u32m1, BV_UGE, 32, uint32_t)
+RVV_MINMAX_VX(vmaxu_vx_u32m4, BV_UGE, 32, uint32_t)
+RVV_MINMAX_VV(vmax_vv_i32m1,  BV_SGE, 32)
+RVV_MINMAX_VV(vmax_vv_i32m2,  BV_SGE, 32)
 RVV_MINMAX_VV(vmax_vv_i32m4,  BV_SGE, 32)
+RVV_MINMAX_VV(vmax_vv_i32m8,  BV_SGE, 32)
+RVV_MINMAX_VV(vmin_vv_i32m1,  BV_SLE, 32)
+RVV_MINMAX_VV(vmin_vv_i32m2,  BV_SLE, 32)
 RVV_MINMAX_VV(vmin_vv_i32m4,  BV_SLE, 32)
+RVV_MINMAX_VV(vmin_vv_i32m8,  BV_SLE, 32)
 
 // ---------------------------------------------------------------------------
 // Widening ops: WMACC, WMUL, WADD, WSUB, WCVT
@@ -996,6 +1219,8 @@ inline RVVVector rvv_vwmacc_vx_impl(const RVVVector& acc, int64_t rs1, const RVV
 inline vint32m1_t __riscv_vwmacc_vv_i32m1(const vint32m1_t& acc, const vint16mf2_t& a, const vint16mf2_t& b, size_t vl) { return rvv_vwmacc_vv_impl(acc,a,b,vl,16); }
 inline vint32m4_t __riscv_vwmacc_vv_i32m4(const vint32m4_t& acc, const vint16m2_t& a, const vint16m2_t& b, size_t vl) { return rvv_vwmacc_vv_impl(acc,a,b,vl,16); }
 inline vint32m4_t __riscv_vwmacc_vx_i32m4(const vint32m4_t& acc, int16_t rs1, const vint16m2_t& b, size_t vl) { return rvv_vwmacc_vx_impl(acc,rs1,b,vl,16); }
+inline vint32m8_t __riscv_vwmacc_vv_i32m8(const vint32m8_t& acc, const vint16m4_t& a, const vint16m4_t& b, size_t vl) { return rvv_vwmacc_vv_impl(acc,a,b,vl,16); }
+inline vint32m1_t __riscv_vwmacc_vx_i32m1(const vint32m1_t& acc, int16_t rs1, const vint16mf2_t& b, size_t vl) { return rvv_vwmacc_vx_impl(acc,rs1,b,vl,16); }
 inline vint32m8_t __riscv_vwmacc_vx_i32m8(const vint32m8_t& acc, int16_t rs1, const vint16m4_t& b, size_t vl) { return rvv_vwmacc_vx_impl(acc,rs1,b,vl,16); }
 
 // VWADD: widening add
@@ -1012,7 +1237,29 @@ inline RVVVector rvv_vwadd_vx_impl(const RVVVector& a, int64_t b, size_t vl, siz
     return RVVVector(tm, wide, r);
 }
 inline vint16m2_t __riscv_vwadd_vx_i16m2(const vint8m1_t& a, int8_t b, size_t vl) { return rvv_vwadd_vx_impl(a,b,vl,8,true); }
+inline vint16m4_t __riscv_vwadd_vx_i16m4(const vint8m2_t& a, int8_t b, size_t vl) { return rvv_vwadd_vx_impl(a,b,vl,8,true); }
+inline vint32m2_t __riscv_vwadd_vx_i32m2(const vint16m1_t& a, int16_t b, size_t vl) { return rvv_vwadd_vx_impl(a,b,vl,16,true); }
 inline vint32m4_t __riscv_vwadd_vx_i32m4(const vint16m2_t& a, int16_t b, size_t vl) { return rvv_vwadd_vx_impl(a,b,vl,16,true); }
+inline vint32m8_t __riscv_vwadd_vx_i32m8(const vint16m4_t& a, int16_t b, size_t vl) { return rvv_vwadd_vx_impl(a,b,vl,16,true); }
+
+// VWADD_VV: widening add (both narrow)
+inline RVVVector rvv_vwadd_vv_impl(const RVVVector& a, const RVVVector& b, size_t vl, size_t narrow_bits, bool is_signed) {
+    auto& tm = g_ctx->tm; size_t wide = narrow_bits * 2;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term ae = is_signed ? tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {narrow_bits})
+                            : tm.mk_term(Kind::BV_ZERO_EXTEND, {a.getElement(i)}, {narrow_bits});
+        Term be = is_signed ? tm.mk_term(Kind::BV_SIGN_EXTEND, {b.getElement(i)}, {narrow_bits})
+                            : tm.mk_term(Kind::BV_ZERO_EXTEND, {b.getElement(i)}, {narrow_bits});
+        r.push_back(tm.mk_term(Kind::BV_ADD, {ae, be}));
+    }
+    return RVVVector(tm, wide, r);
+}
+inline vint16m2_t __riscv_vwadd_vv_i16m2(const vint8m1_t& a, const vint8m1_t& b, size_t vl) { return rvv_vwadd_vv_impl(a,b,vl,8,true); }
+inline vint32m4_t __riscv_vwadd_vv_i32m4(const vint16m2_t& a, const vint16m2_t& b, size_t vl) { return rvv_vwadd_vv_impl(a,b,vl,16,true); }
+inline vint32m8_t __riscv_vwadd_vv_i32m8(const vint16m4_t& a, const vint16m4_t& b, size_t vl) { return rvv_vwadd_vv_impl(a,b,vl,16,true); }
+inline vuint16m2_t __riscv_vwaddu_vv_u16m2(const vuint8m1_t& a, const vuint8m1_t& b, size_t vl) { return rvv_vwadd_vv_impl(a,b,vl,8,false); }
+inline vuint32m4_t __riscv_vwaddu_vv_u32m4(const vuint16m2_t& a, const vuint16m2_t& b, size_t vl) { return rvv_vwadd_vv_impl(a,b,vl,16,false); }
 
 // VWADD_WV: wide + narrow (result stays wide)
 inline RVVVector rvv_vwadd_wv_impl(const RVVVector& a, const RVVVector& b, size_t vl, size_t narrow_bits, bool is_signed) {
@@ -1027,6 +1274,7 @@ inline RVVVector rvv_vwadd_wv_impl(const RVVVector& a, const RVVVector& b, size_
 }
 inline vint16m2_t __riscv_vwadd_wv_i16m2(const vint16m2_t& a, const vint8m1_t& b, size_t vl) { return rvv_vwadd_wv_impl(a,b,vl,8,true); }
 inline vint32m4_t __riscv_vwadd_wv_i32m4(const vint32m4_t& a, const vint16m2_t& b, size_t vl) { return rvv_vwadd_wv_impl(a,b,vl,16,true); }
+inline vint32m8_t __riscv_vwadd_wv_i32m8(const vint32m8_t& a, const vint16m4_t& b, size_t vl) { return rvv_vwadd_wv_impl(a,b,vl,16,true); }
 inline vuint16m2_t __riscv_vwaddu_wv_u16m2(const vuint16m2_t& a, const vuint8m1_t& b, size_t vl) { return rvv_vwadd_wv_impl(a,b,vl,8,false); }
 inline vuint32m4_t __riscv_vwaddu_wv_u32m4(const vuint32m4_t& a, const vuint16m2_t& b, size_t vl) { return rvv_vwadd_wv_impl(a,b,vl,16,false); }
 
@@ -1051,6 +1299,35 @@ inline vint16m2_t __riscv_vwsub_vx_i16m2(const vint8m1_t& a, int8_t b, size_t vl
     return RVVVector(tm, 16, r);
 }
 
+// VWSUB additional variants
+inline vint16m4_t __riscv_vwsub_vv_i16m4(const vint8m2_t& a, const vint8m2_t& b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term ae = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {8});
+        Term be = tm.mk_term(Kind::BV_SIGN_EXTEND, {b.getElement(i)}, {8});
+        r.push_back(tm.mk_term(Kind::BV_SUB, {ae, be}));
+    }
+    return RVVVector(tm, 16, r);
+}
+inline vint32m4_t __riscv_vwsub_vv_i32m4(const vint16m2_t& a, const vint16m2_t& b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term ae = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {16});
+        Term be = tm.mk_term(Kind::BV_SIGN_EXTEND, {b.getElement(i)}, {16});
+        r.push_back(tm.mk_term(Kind::BV_SUB, {ae, be}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vint32m8_t __riscv_vwsub_vv_i32m8(const vint16m4_t& a, const vint16m4_t& b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term ae = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {16});
+        Term be = tm.mk_term(Kind::BV_SIGN_EXTEND, {b.getElement(i)}, {16});
+        r.push_back(tm.mk_term(Kind::BV_SUB, {ae, be}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
 // VWCVT / VWCVTU: widening conversion (sign/zero extend)
 inline vint16m2_t __riscv_vwcvt_x_x_v_i16m2(const vint8m1_t& a, size_t vl) {
     auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
@@ -1066,6 +1343,26 @@ inline vuint16m2_t __riscv_vwcvtu_x_x_v_u16m2(const vuint8m1_t& a, size_t vl) {
     auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_ZERO_EXTEND, {a.getElement(i)}, {8}));
     return RVVVector(tm, 16, r);
+}
+inline vint16m4_t __riscv_vwcvt_x_x_v_i16m4(const vint8m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {8}));
+    return RVVVector(tm, 16, r);
+}
+inline vint32m4_t __riscv_vwcvt_x_x_v_i32m4(const vint16m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {16}));
+    return RVVVector(tm, 32, r);
+}
+inline vuint16m4_t __riscv_vwcvtu_x_x_v_u16m4(const vuint8m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_ZERO_EXTEND, {a.getElement(i)}, {8}));
+    return RVVVector(tm, 16, r);
+}
+inline vuint32m4_t __riscv_vwcvtu_x_x_v_u32m4(const vuint16m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_ZERO_EXTEND, {a.getElement(i)}, {16}));
+    return RVVVector(tm, 32, r);
 }
 
 // VSEXT additional variants
@@ -1106,7 +1403,9 @@ inline RVVVector rvv_vncvt_impl(const RVVVector& a, size_t vl, size_t narrow_bit
     return RVVVector(tm, narrow_bits, r);
 }
 inline vint16m2_t __riscv_vncvt_x_x_w_i16m2(const vint32m4_t& a, size_t vl) { return rvv_vncvt_impl(a, vl, 16); }
+inline vint16m4_t __riscv_vncvt_x_x_w_i16m4(const vint32m8_t& a, size_t vl) { return rvv_vncvt_impl(a, vl, 16); }
 inline vint8m1_t  __riscv_vncvt_x_x_w_i8m1(const vint16m2_t& a, size_t vl)  { return rvv_vncvt_impl(a, vl, 8); }
+inline vint8m2_t  __riscv_vncvt_x_x_w_i8m2(const vint16m4_t& a, size_t vl)  { return rvv_vncvt_impl(a, vl, 8); }
 
 inline RVVVector rvv_vnsra_impl(const RVVVector& a, size_t shift, size_t vl, size_t wide_bits, size_t narrow_bits) {
     auto& tm = g_ctx->tm;
@@ -1118,6 +1417,9 @@ inline RVVVector rvv_vnsra_impl(const RVVVector& a, size_t shift, size_t vl, siz
     return RVVVector(tm, narrow_bits, r);
 }
 inline vint16m2_t __riscv_vnsra_wx_i16m2(const vint32m4_t& a, size_t shift, size_t vl) { return rvv_vnsra_impl(a,shift,vl,32,16); }
+inline vint16m4_t __riscv_vnsra_wx_i16m4(const vint32m8_t& a, size_t shift, size_t vl) { return rvv_vnsra_impl(a,shift,vl,32,16); }
+inline vint8m1_t  __riscv_vnsra_wx_i8m1(const vint16m2_t& a, size_t shift, size_t vl) { return rvv_vnsra_impl(a,shift,vl,16,8); }
+inline vint8m2_t  __riscv_vnsra_wx_i8m2(const vint16m4_t& a, size_t shift, size_t vl) { return rvv_vnsra_impl(a,shift,vl,16,8); }
 
 // ---------------------------------------------------------------------------
 // Loads/stores (remaining variants)
@@ -1138,15 +1440,44 @@ inline void __riscv_vse32_v_i32m4(int32_t* p, const vint32m4_t& v, size_t vl) { 
 inline void __riscv_vse8_v_i8m1(int8_t* p, const vint8m1_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
 inline void __riscv_vse8_v_u8m1(uint8_t* p, const vuint8m1_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
 
+// Additional integer load variants
+inline vint8m4_t   __riscv_vle8_v_i8m4(const int8_t* p, size_t vl)     { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,8); }
+inline vuint8m2_t  __riscv_vle8_v_u8m2(const uint8_t* p, size_t vl)    { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,8); }
+inline vuint8m4_t  __riscv_vle8_v_u8m4(const uint8_t* p, size_t vl)    { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,8); }
+inline vint16m4_t  __riscv_vle16_v_i16m4(const int16_t* p, size_t vl)  { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,16); }
+inline vuint16m2_t __riscv_vle16_v_u16m2(const uint16_t* p, size_t vl) { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,16); }
+inline vuint16m4_t __riscv_vle16_v_u16m4(const uint16_t* p, size_t vl) { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,16); }
+inline vint32m2_t  __riscv_vle32_v_i32m2(const int32_t* p, size_t vl)  { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,32); }
+inline vint32m8_t  __riscv_vle32_v_i32m8(const int32_t* p, size_t vl)  { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,32); }
+inline vuint32m2_t __riscv_vle32_v_u32m2(const uint32_t* p, size_t vl) { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,32); }
+inline vuint32m4_t __riscv_vle32_v_u32m4(const uint32_t* p, size_t vl) { auto& b=g_ctx->findBuffer(p); return b.loadRVV(b.ptrToByteOffset(p),vl,32); }
+
+// Additional integer store variants
+inline void __riscv_vse8_v_i8m4(int8_t* p, const vint8m4_t& v, size_t vl)     { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse8_v_u8m2(uint8_t* p, const vuint8m2_t& v, size_t vl)   { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse8_v_u8m4(uint8_t* p, const vuint8m4_t& v, size_t vl)   { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse16_v_i16m4(int16_t* p, const vint16m4_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse16_v_u16m1(uint16_t* p, const vuint16m1_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse16_v_u16m2(uint16_t* p, const vuint16m2_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse16_v_u16m4(uint16_t* p, const vuint16m4_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse32_v_i32m2(int32_t* p, const vint32m2_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse32_v_i32m8(int32_t* p, const vint32m8_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse32_v_u32m1(uint32_t* p, const vuint32m1_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse32_v_u32m2(uint32_t* p, const vuint32m2_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+inline void __riscv_vse32_v_u32m4(uint32_t* p, const vuint32m4_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
+
 // ---------------------------------------------------------------------------
 // VMACC additional variants
 // ---------------------------------------------------------------------------
-inline vint32m4_t __riscv_vmacc_vx_i32m4(const vint32m4_t& vd, int32_t rs1, const vint32m4_t& vs2, size_t vl) {
-    auto& tm = g_ctx->tm; Term rs = mk_bv_val(tm, 32, rs1);
+inline RVVVector rvv_vmacc_vx_impl(const RVVVector& vd, int64_t rs1, const RVVVector& vs2, size_t vl, size_t bits) {
+    auto& tm = g_ctx->tm; Term rs = mk_bv_val(tm, bits, rs1);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::BV_ADD, {vd.getElement(i), tm.mk_term(Kind::BV_MUL, {rs, vs2.getElement(i)})}));
-    return RVVVector(tm, 32, r);
+    return RVVVector(tm, bits, r);
 }
+inline vint32m1_t __riscv_vmacc_vx_i32m1(const vint32m1_t& vd, int32_t rs1, const vint32m1_t& vs2, size_t vl) { return rvv_vmacc_vx_impl(vd, rs1, vs2, vl, 32); }
+inline vint32m2_t __riscv_vmacc_vx_i32m2(const vint32m2_t& vd, int32_t rs1, const vint32m2_t& vs2, size_t vl) { return rvv_vmacc_vx_impl(vd, rs1, vs2, vl, 32); }
+inline vint32m4_t __riscv_vmacc_vx_i32m4(const vint32m4_t& vd, int32_t rs1, const vint32m4_t& vs2, size_t vl) { return rvv_vmacc_vx_impl(vd, rs1, vs2, vl, 32); }
 
 // ---------------------------------------------------------------------------
 // VMV broadcast (remaining LMUL)
@@ -1156,6 +1487,11 @@ inline vint32m4_t __riscv_vmv_v_x_i32m4(int32_t v, size_t vl) { auto& tm=g_ctx->
 inline vint16m1_t __riscv_vmv_v_x_i16m1(int16_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,16,v); return RVVVector(tm,16,std::vector<Term>(vl,val)); }
 inline vint16m2_t __riscv_vmv_v_x_i16m2(int16_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,16,v); return RVVVector(tm,16,std::vector<Term>(vl,val)); }
 inline vint8m1_t  __riscv_vmv_v_x_i8m1(int8_t v, size_t vl)   { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,8,v); return RVVVector(tm,8,std::vector<Term>(vl,val)); }
+inline vint8m2_t  __riscv_vmv_v_x_i8m2(int8_t v, size_t vl)   { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,8,v); return RVVVector(tm,8,std::vector<Term>(vl,val)); }
+inline vint16m4_t __riscv_vmv_v_x_i16m4(int16_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,16,v); return RVVVector(tm,16,std::vector<Term>(vl,val)); }
+inline vint32m2_t __riscv_vmv_v_x_i32m2(int32_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,32,v); return RVVVector(tm,32,std::vector<Term>(vl,val)); }
+inline vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,32,static_cast<int64_t>(v)); return RVVVector(tm,32,std::vector<Term>(vl,val)); }
+inline vuint32m4_t __riscv_vmv_v_x_u32m4(uint32_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,32,static_cast<int64_t>(v)); return RVVVector(tm,32,std::vector<Term>(vl,val)); }
 
 // VSADD additional variants
 inline vint16m1_t __riscv_vsadd_vx_i16m1(const vint16m1_t& a, int16_t b, size_t vl) {
@@ -1168,6 +1504,45 @@ inline vint16m2_t __riscv_vsadd_vx_i16m2(const vint16m2_t& a, int16_t b, size_t 
     auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,16,b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{16});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{16});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_ADD,{ae,be}),32,16));}
+    return RVVVector(tm,16,r);
+}
+// VSADD i8 variants
+inline vint8m1_t __riscv_vsadd_vx_i8m1(const vint8m1_t& a, int8_t b, size_t vl) {
+    auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,8,b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{8});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{8});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_ADD,{ae,be}),16,8));}
+    return RVVVector(tm,8,r);
+}
+inline vint8m2_t __riscv_vsadd_vx_i8m2(const vint8m2_t& a, int8_t b, size_t vl) {
+    auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,8,b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{8});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{8});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_ADD,{ae,be}),16,8));}
+    return RVVVector(tm,8,r);
+}
+// VSADD i32 variants
+inline vint32m1_t __riscv_vsadd_vx_i32m1(const vint32m1_t& a, int32_t b, size_t vl) {
+    auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,32,b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{32});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{32});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_ADD,{ae,be}),64,32));}
+    return RVVVector(tm,32,r);
+}
+inline vint32m4_t __riscv_vsadd_vx_i32m4(const vint32m4_t& a, int32_t b, size_t vl) {
+    auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,32,b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{32});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{32});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_ADD,{ae,be}),64,32));}
+    return RVVVector(tm,32,r);
+}
+// VSSUB additional
+inline vint16m1_t __riscv_vssub_vx_i16m1(const vint16m1_t& a, int16_t b, size_t vl) {
+    auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,16,b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{16});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{16});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_SUB,{ae,be}),32,16));}
+    return RVVVector(tm,16,r);
+}
+inline vint16m2_t __riscv_vssub_vx_i16m2(const vint16m2_t& a, int16_t b, size_t vl) {
+    auto& tm=g_ctx->tm; Term bv=mk_bv_val(tm,16,b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i=0;i<vl;i++){Term ae=tm.mk_term(Kind::BV_SIGN_EXTEND,{a.getElement(i)},{16});Term be=tm.mk_term(Kind::BV_SIGN_EXTEND,{bv},{16});r.push_back(signed_clip(tm,tm.mk_term(Kind::BV_SUB,{ae,be}),32,16));}
     return RVVVector(tm,16,r);
 }
 // VSSUB
@@ -1196,6 +1571,18 @@ inline RVVVector rvv_vmerge_vxm_impl(const RVVVector& a, int64_t b, const MaskVe
         r.push_back(tm.mk_term(Kind::ITE, {sel, bv, a.getElement(i)}));
     }
     return RVVVector(tm, bits, r);
+}
+
+// vmerge_vvm: merge two vectors based on mask — mask=1 picks b, mask=0 picks a
+inline vfloat32m1_t __riscv_vmerge_vvm_f32m1(const vfloat32m1_t& a, const vfloat32m1_t& b, const vbool32_t& mask, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.getElement(i), a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
 }
 
 // ---------------------------------------------------------------------------
@@ -1313,8 +1700,7 @@ inline vfloat32m4_t __riscv_vfmul_vv_f32m4(const vfloat32m4_t& a, const vfloat32
 inline vfloat32m1_t __riscv_vfmul_vf_f32m1(const vfloat32m1_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, rm, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1325,8 +1711,7 @@ inline vfloat32m1_t __riscv_vfmul_vf_f32m1(const vfloat32m1_t& a, float b, size_
 inline vfloat32m4_t __riscv_vfmul_vf_f32m4(const vfloat32m4_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, rm, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1337,8 +1722,7 @@ inline vfloat32m4_t __riscv_vfmul_vf_f32m4(const vfloat32m4_t& a, float b, size_
 inline vfloat32m8_t __riscv_vfmul_vf_f32m8(const vfloat32m8_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, rm, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1346,6 +1730,38 @@ inline vfloat32m8_t __riscv_vfmul_vf_f32m8(const vfloat32m8_t& a, float b, size_
     }
     return RVVVector(tm, 32, r);
 }
+
+// FP arithmetic additional LMUL
+inline vfloat32m8_t __riscv_vfadd_vv_f32m8(const vfloat32m8_t& a, const vfloat32m8_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_ADD,vl); }
+inline vfloat32m8_t __riscv_vfsub_vv_f32m8(const vfloat32m8_t& a, const vfloat32m8_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_SUB,vl); }
+inline vfloat32m8_t __riscv_vfmul_vv_f32m8(const vfloat32m8_t& a, const vfloat32m8_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_MUL,vl); }
+inline vfloat32m2_t __riscv_vfdiv_vv_f32m2(const vfloat32m2_t& a, const vfloat32m2_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_DIV,vl); }
+inline vfloat32m4_t __riscv_vfdiv_vv_f32m4(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_DIV,vl); }
+
+// FP scalar add/sub (_vf) variants
+inline RVVVector rvv_fp32_binop_vf(const RVVVector& a, float b, Kind op, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    Term b_fp = mk_fp32_from_float(tm, b);
+    bool needs_rm = (op != Kind::FP_MAX && op != Kind::FP_MIN);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term res_fp = needs_rm ? tm.mk_term(op, {rm, a_fp, b_fp}) : tm.mk_term(op, {a_fp, b_fp});
+        r.push_back(rvv_store_fp32_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m1_t __riscv_vfadd_vf_f32m1(const vfloat32m1_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_ADD,vl); }
+inline vfloat32m2_t __riscv_vfadd_vf_f32m2(const vfloat32m2_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_ADD,vl); }
+inline vfloat32m4_t __riscv_vfadd_vf_f32m4(const vfloat32m4_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_ADD,vl); }
+inline vfloat32m8_t __riscv_vfadd_vf_f32m8(const vfloat32m8_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_ADD,vl); }
+inline vfloat32m1_t __riscv_vfsub_vf_f32m1(const vfloat32m1_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_SUB,vl); }
+inline vfloat32m2_t __riscv_vfsub_vf_f32m2(const vfloat32m2_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_SUB,vl); }
+inline vfloat32m4_t __riscv_vfsub_vf_f32m4(const vfloat32m4_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_SUB,vl); }
+inline vfloat32m8_t __riscv_vfsub_vf_f32m8(const vfloat32m8_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_SUB,vl); }
+inline vfloat32m1_t __riscv_vfdiv_vf_f32m1(const vfloat32m1_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_DIV,vl); }
+inline vfloat32m2_t __riscv_vfdiv_vf_f32m2(const vfloat32m2_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_DIV,vl); }
+inline vfloat32m4_t __riscv_vfdiv_vf_f32m4(const vfloat32m4_t& a, float b, size_t vl) { return rvv_fp32_binop_vf(a,b,Kind::FP_DIV,vl); }
 
 // FP FMA additional
 inline vfloat32m4_t __riscv_vfmacc_vv_f32m4(const vfloat32m4_t& vd, const vfloat32m4_t& vs1, const vfloat32m4_t& vs2, size_t vl) {
@@ -1359,11 +1775,125 @@ inline vfloat32m4_t __riscv_vfmacc_vv_f32m4(const vfloat32m4_t& vd, const vfloat
     }
     return RVVVector(tm, 32, r);
 }
+// vfmadd: vd = vd * vs1 + vs2
+inline vfloat32m1_t __riscv_vfmadd_vv_f32m1(const vfloat32m1_t& vd, const vfloat32m1_t& vs1,
+                                              const vfloat32m1_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v1 = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, vd_fp, v1, v2})));
+    }
+    return RVVVector(tm, 32, r);
+}
+// vfmadd m4: vd = vd * vs1 + vs2
+inline vfloat32m4_t __riscv_vfmadd_vv_f32m4(const vfloat32m4_t& vd, const vfloat32m4_t& vs1,
+                                              const vfloat32m4_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v1 = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, vd_fp, v1, v2})));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// vfmacc vv m2, m8
+inline vfloat32m2_t __riscv_vfmacc_vv_f32m2(const vfloat32m2_t& vd, const vfloat32m2_t& vs1, const vfloat32m2_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v1 = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, v1, v2, vd_fp})));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m8_t __riscv_vfmacc_vv_f32m8(const vfloat32m8_t& vd, const vfloat32m8_t& vs1, const vfloat32m8_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v1 = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, v1, v2, vd_fp})));
+    }
+    return RVVVector(tm, 32, r);
+}
+// vfnmsac additional (m2, m4)
+inline vfloat32m2_t __riscv_vfnmsac_vv_f32m2(const vfloat32m2_t& vd, const vfloat32m2_t& vs1,
+                                               const vfloat32m2_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp32(tm, vs2.getElement(i));
+        Term neg_vs1 = tm.mk_term(Kind::FP_NEG, {vs1_fp});
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, neg_vs1, vs2_fp, vd_fp})));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vfnmsac_vv_f32m4(const vfloat32m4_t& vd, const vfloat32m4_t& vs1,
+                                               const vfloat32m4_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp32(tm, vs2.getElement(i));
+        Term neg_vs1 = tm.mk_term(Kind::FP_NEG, {vs1_fp});
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, neg_vs1, vs2_fp, vd_fp})));
+    }
+    return RVVVector(tm, 32, r);
+}
+// vfmadd m2
+inline vfloat32m2_t __riscv_vfmadd_vv_f32m2(const vfloat32m2_t& vd, const vfloat32m2_t& vs1,
+                                              const vfloat32m2_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v1 = rvv_load_as_fp32(tm, vs1.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, vd_fp, v1, v2})));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// vfmacc vf additional (m2, m8)
+inline vfloat32m2_t __riscv_vfmacc_vf_f32m2(const vfloat32m2_t& vd, float rs1, const vfloat32m2_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    Term rs1_fp = mk_fp32_from_float(tm, rs1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, rs1_fp, v2, vd_fp})));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m8_t __riscv_vfmacc_vf_f32m8(const vfloat32m8_t& vd, float rs1, const vfloat32m8_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    Term rs1_fp = mk_fp32_from_float(tm, rs1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
+        Term v2 = rvv_load_as_fp32(tm, vs2.getElement(i));
+        r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_FMA, {rm, rs1_fp, v2, vd_fp})));
+    }
+    return RVVVector(tm, 32, r);
+}
+
 inline vfloat32m1_t __riscv_vfmacc_vf_f32m1(const vfloat32m1_t& vd, float rs1, const vfloat32m1_t& vs2, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)rs1);
-    Term rs1_fp = tm.mk_fp_value(fp32, rm, buf);
+    Term rs1_fp = mk_fp32_from_float(tm, rs1);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
@@ -1375,8 +1905,7 @@ inline vfloat32m1_t __riscv_vfmacc_vf_f32m1(const vfloat32m1_t& vd, float rs1, c
 inline vfloat32m4_t __riscv_vfmacc_vf_f32m4(const vfloat32m4_t& vd, float rs1, const vfloat32m4_t& vs2, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)rs1);
-    Term rs1_fp = tm.mk_fp_value(fp32, rm, buf);
+    Term rs1_fp = mk_fp32_from_float(tm, rs1);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term vd_fp = rvv_load_as_fp32(tm, vd.getElement(i));
@@ -1389,8 +1918,7 @@ inline vfloat32m4_t __riscv_vfmacc_vf_f32m4(const vfloat32m4_t& vd, float rs1, c
 // FP min/max scalar
 inline vfloat32m1_t __riscv_vfmin_vf_f32m1(const vfloat32m1_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1400,8 +1928,7 @@ inline vfloat32m1_t __riscv_vfmin_vf_f32m1(const vfloat32m1_t& a, float b, size_
 }
 inline vfloat32m1_t __riscv_vfmax_vf_f32m1(const vfloat32m1_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1409,20 +1936,83 @@ inline vfloat32m1_t __riscv_vfmax_vf_f32m1(const vfloat32m1_t& a, float b, size_
     }
     return RVVVector(tm, 32, r);
 }
+inline vfloat32m2_t __riscv_vfmin_vf_f32m2(const vfloat32m2_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MIN, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp})));
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m2_t __riscv_vfmax_vf_f32m2(const vfloat32m2_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MAX, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp})));
+    return RVVVector(tm, 32, r);
+}
 inline vfloat32m4_t __riscv_vfmin_vf_f32m4(const vfloat32m4_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MIN, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp})));
     return RVVVector(tm, 32, r);
 }
 inline vfloat32m4_t __riscv_vfmax_vf_f32m4(const vfloat32m4_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MAX, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp})));
+    return RVVVector(tm, 32, r);
+}
+
+// FP min/max masked-undisturbed (_mu): where mask bit is 0, keep merge value
+// FP min/max masked-undisturbed — m1
+inline vfloat32m1_t __riscv_vfmax_vf_f32m1_mu(const vbool32_t& mask, const vfloat32m1_t& merge,
+                                                const vfloat32m1_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
+    Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term active = tm.mk_term(Kind::EQUAL, {mask.getBit(i), mk_bv_val(tm, 1, 1)});
+        Term computed = rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MAX, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp}));
+        r.push_back(tm.mk_term(Kind::ITE, {active, computed, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m1_t __riscv_vfmin_vf_f32m1_mu(const vbool32_t& mask, const vfloat32m1_t& merge,
+                                                const vfloat32m1_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
+    Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term active = tm.mk_term(Kind::EQUAL, {mask.getBit(i), mk_bv_val(tm, 1, 1)});
+        Term computed = rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MIN, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp}));
+        r.push_back(tm.mk_term(Kind::ITE, {active, computed, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// FP min/max masked-undisturbed — m4
+inline vfloat32m4_t __riscv_vfmax_vf_f32m4_mu(const vbool8_t& mask, const vfloat32m4_t& merge,
+                                                const vfloat32m4_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
+    Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term active = tm.mk_term(Kind::EQUAL, {mask.getBit(i), mk_bv_val(tm, 1, 1)});
+        Term computed = rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MAX, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp}));
+        r.push_back(tm.mk_term(Kind::ITE, {active, computed, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vfmin_vf_f32m4_mu(const vbool8_t& mask, const vfloat32m4_t& merge,
+                                                const vfloat32m4_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
+    Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term active = tm.mk_term(Kind::EQUAL, {mask.getBit(i), mk_bv_val(tm, 1, 1)});
+        Term computed = rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MIN, {rvv_load_as_fp32(tm, a.getElement(i)), b_fp}));
+        r.push_back(tm.mk_term(Kind::ITE, {active, computed, merge.getElement(i)}));
+    }
     return RVVVector(tm, 32, r);
 }
 
@@ -1445,7 +2035,31 @@ inline vint32m4_t __riscv_vfcvt_rtz_x_f_v_i32m4(const vfloat32m4_t& a, size_t vl
     for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::FP_TO_SBV, {rtz, rvv_load_as_fp32(tm, a.getElement(i))}, {32}));
     return RVVVector(tm, 32, r);
 }
+inline vfloat32m2_t __riscv_vfcvt_f_x_v_f32m2(const vint32m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(rvv_store_fp32_as_bv(tm, tm.mk_term(Kind::FP_TO_FP_FROM_SBV, {rm, a.getElement(i)}, {8, 24})));
+    return RVVVector(tm, 32, r);
+}
+inline vint32m2_t __riscv_vfcvt_rtz_x_f_v_i32m2(const vfloat32m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; Term rtz = tm.mk_rm_value(RoundingMode::RTZ);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::FP_TO_SBV, {rtz, rvv_load_as_fp32(tm, a.getElement(i))}, {32}));
+    return RVVVector(tm, 32, r);
+}
+inline vint32m8_t __riscv_vfcvt_rtz_x_f_v_i32m8(const vfloat32m8_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; Term rtz = tm.mk_rm_value(RoundingMode::RTZ);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::FP_TO_SBV, {rtz, rvv_load_as_fp32(tm, a.getElement(i))}, {32}));
+    return RVVVector(tm, 32, r);
+}
 inline vint32m2_t __riscv_vfcvt_x_f_v_i32m2(const vfloat32m2_t& a, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::FP_TO_SBV, {rm, rvv_load_as_fp32(tm, a.getElement(i))}, {32}));
+    return RVVVector(tm, 32, r);
+}
+inline vint32m4_t __riscv_vfcvt_x_f_v_i32m4(const vfloat32m4_t& a, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(tm.mk_term(Kind::FP_TO_SBV, {rm, rvv_load_as_fp32(tm, a.getElement(i))}, {32}));
@@ -1455,22 +2069,62 @@ inline vint32m2_t __riscv_vfcvt_x_f_v_i32m2(const vfloat32m2_t& a, size_t vl) {
 // FP broadcast additional
 inline vfloat32m2_t __riscv_vfmv_v_f_f32m2(float src, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)src);
-    Term bv = rvv_store_fp32_as_bv(tm, tm.mk_fp_value(fp32, rm, buf));
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, src));
     return RVVVector(tm, 32, std::vector<Term>(vl, bv));
 }
 inline vfloat32m4_t __riscv_vfmv_v_f_f32m4(float src, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)src);
-    Term bv = rvv_store_fp32_as_bv(tm, tm.mk_fp_value(fp32, rm, buf));
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, src));
     return RVVVector(tm, 32, std::vector<Term>(vl, bv));
+}
+inline vfloat32m8_t __riscv_vfmv_v_f_f32m8(float src, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Sort fp32 = tm.mk_fp_sort(8, 24);
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, src));
+    return RVVVector(tm, 32, std::vector<Term>(vl, bv));
+}
+
+// FP equality compare (mask producing) — m1
+inline MaskVector __riscv_vmfeq_vv_f32m1_b32(const vfloat32m1_t& a, const vfloat32m1_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// FP not-equal compare (mask producing) — for NaN detection: vmfne(x,x) is true iff x is NaN
+inline MaskVector __riscv_vmfne_vv_f32m1_b32(const vfloat32m1_t& a, const vfloat32m1_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
+        // NOT equal → flip the result
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 0), mk_bv_val(tm, 1, 1)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmfne_vv_f32m4_b8(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 0), mk_bv_val(tm, 1, 1)}));
+    }
+    return MaskVector(tm, bits);
 }
 
 // FP compare (mask producing)
 inline MaskVector __riscv_vmflt_vf_f32m1_b32(const vfloat32m1_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> bits; bits.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1481,8 +2135,7 @@ inline MaskVector __riscv_vmflt_vf_f32m1_b32(const vfloat32m1_t& a, float b, siz
 }
 inline MaskVector __riscv_vmfgt_vf_f32m1_b32(const vfloat32m1_t& a, float b, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term b_fp = tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf);
+    Term b_fp = mk_fp32_from_float(tm, b);
     std::vector<Term> bits; bits.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
@@ -1498,6 +2151,19 @@ inline MaskVector __riscv_vmfgt_vv_f32m1_b32(const vfloat32m1_t& a, const vfloat
         Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
         Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
         Term cmp = tm.mk_term(Kind::FP_GT, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// FP equality compare (mask producing)
+inline MaskVector __riscv_vmfeq_vv_f32m4_b8(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
         bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
     }
     return MaskVector(tm, bits);
@@ -1535,8 +2201,19 @@ inline MaskVector __riscv_vmsltu_vx_u32m4_b8(const vuint32m4_t& a, uint32_t b, s
 // VFMERGE
 inline vfloat32m1_t __riscv_vfmerge_vfm_f32m1(const vfloat32m1_t& a, float b, const MaskVector& mask, size_t vl) {
     auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
-    char buf[32]; snprintf(buf, sizeof(buf), "%.9e", (double)b);
-    Term bv = rvv_store_fp32_as_bv(tm, tm.mk_fp_value(fp32, g_ctx->fp.rounding_mode, buf));
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, b));
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, bv, a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+inline vfloat32m4_t __riscv_vfmerge_vfm_f32m4(const vfloat32m4_t& a, float b, const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Sort fp32 = tm.mk_fp_sort(8, 24);
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, b));
     Term one = mk_bv_val(tm, 1, 1);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
@@ -1566,24 +2243,285 @@ inline vint32m1_t __riscv_vredsum_vs_i32m4_i32m1(const vint32m4_t& src, const vi
 }
 
 // VSMUL (fractional multiply with saturation)
-inline vint16m2_t __riscv_vsmul_vx_i16m2(const vint16m2_t& a, int16_t b, unsigned vxrm, size_t vl) {
-    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 16, b);
+inline RVVVector rvv_vsmul_vx_impl(const RVVVector& a, int64_t b, unsigned vxrm, size_t vl, size_t bits) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, bits, b);
+    size_t wide = bits * 2;
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
-        Term ae = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {16});
-        Term be = tm.mk_term(Kind::BV_SIGN_EXTEND, {bv}, {16});
+        Term ae = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {bits});
+        Term be = tm.mk_term(Kind::BV_SIGN_EXTEND, {bv}, {bits});
         Term prod = tm.mk_term(Kind::BV_MUL, {ae, be});
-        // Shift right by SEW-1 = 15 with rounding
-        Term shifted = rounded_shift_right(tm, prod, 15, 32, vxrm, true);
-        r.push_back(signed_clip(tm, shifted, 32, 16));
+        Term shifted = rounded_shift_right(tm, prod, bits - 1, wide, vxrm, true);
+        r.push_back(signed_clip(tm, shifted, wide, bits));
     }
+    return RVVVector(tm, bits, r);
+}
+inline vint16m1_t __riscv_vsmul_vx_i16m1(const vint16m1_t& a, int16_t b, unsigned vxrm, size_t vl) { return rvv_vsmul_vx_impl(a, b, vxrm, vl, 16); }
+inline vint16m2_t __riscv_vsmul_vx_i16m2(const vint16m2_t& a, int16_t b, unsigned vxrm, size_t vl) { return rvv_vsmul_vx_impl(a, b, vxrm, vl, 16); }
+inline vint16m4_t __riscv_vsmul_vx_i16m4(const vint16m4_t& a, int16_t b, unsigned vxrm, size_t vl) { return rvv_vsmul_vx_impl(a, b, vxrm, vl, 16); }
+inline vint32m1_t __riscv_vsmul_vx_i32m1(const vint32m1_t& a, int32_t b, unsigned vxrm, size_t vl) { return rvv_vsmul_vx_impl(a, b, vxrm, vl, 32); }
+inline vint32m4_t __riscv_vsmul_vx_i32m4(const vint32m4_t& a, int32_t b, unsigned vxrm, size_t vl) { return rvv_vsmul_vx_impl(a, b, vxrm, vl, 32); }
+
+// ---------------------------------------------------------------------------
+// Additional VMERGE int variants
+// ---------------------------------------------------------------------------
+inline vint32m1_t __riscv_vmerge_vxm_i32m1(const vint32m1_t& a, int32_t b, const MaskVector& mask, size_t vl) {
+    return rvv_vmerge_vxm_impl(a, b, mask, vl, 32);
+}
+inline vint32m4_t __riscv_vmerge_vxm_i32m4(const vint32m4_t& a, int32_t b, const MaskVector& mask, size_t vl) {
+    return rvv_vmerge_vxm_impl(a, b, mask, vl, 32);
+}
+inline vint16m2_t __riscv_vmerge_vxm_i16m2(const vint16m2_t& a, int16_t b, const MaskVector& mask, size_t vl) {
+    return rvv_vmerge_vxm_impl(a, b, mask, vl, 16);
+}
+inline vint8m1_t __riscv_vmerge_vxm_i8m1(const vint8m1_t& a, int8_t b, const MaskVector& mask, size_t vl) {
+    return rvv_vmerge_vxm_impl(a, b, mask, vl, 8);
+}
+
+// vmerge_vvm for float m2, m4
+inline vfloat32m2_t __riscv_vmerge_vvm_f32m2(const vfloat32m2_t& a, const vfloat32m2_t& b, const vbool16_t& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.getElement(i), a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vmerge_vvm_f32m4(const vfloat32m4_t& a, const vfloat32m4_t& b, const vbool8_t& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.getElement(i), a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// ---------------------------------------------------------------------------
+// Additional VFMERGE variants
+// ---------------------------------------------------------------------------
+inline vfloat32m2_t __riscv_vfmerge_vfm_f32m2(const vfloat32m2_t& a, float b, const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, b));
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, bv, a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m8_t __riscv_vfmerge_vfm_f32m8(const vfloat32m8_t& a, float b, const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term bv = rvv_store_fp32_as_bv(tm, mk_fp32_from_float(tm, b));
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, bv, a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// ---------------------------------------------------------------------------
+// Additional VID variants
+// ---------------------------------------------------------------------------
+inline RVVVector __riscv_vid_v_u8m1(size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(mk_bv_val(tm, 8, i));
+    return RVVVector(tm, 8, r);
+}
+inline RVVVector __riscv_vid_v_u32m4(size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(mk_bv_val(tm, 32, i));
+    return RVVVector(tm, 32, r);
+}
+
+// ---------------------------------------------------------------------------
+// Additional VSLIDEDOWN int variants
+// ---------------------------------------------------------------------------
+inline vint16m1_t  __riscv_vslidedown_vx_i16m1(const vint16m1_t& a, size_t off, size_t vl) { return rvv_vslidedown_impl(a,off,vl,16); }
+inline vint32m4_t  __riscv_vslidedown_vx_i32m4(const vint32m4_t& a, size_t off, size_t vl) { return rvv_vslidedown_impl(a,off,vl,32); }
+inline vuint32m4_t __riscv_vslidedown_vx_u32m4(const vuint32m4_t& a, size_t off, size_t vl) { return rvv_vslidedown_impl(a,off,vl,32); }
+
+// Additional VSLIDEUP int variants
+inline vint32m1_t  __riscv_vslideup_vx_i32m1(const vint32m1_t& dst, const vint32m1_t& src, size_t off, size_t vl) { return rvv_vslideup_impl(dst,src,off,vl,32); }
+inline vint8m1_t   __riscv_vslideup_vx_i8m1(const vint8m1_t& dst, const vint8m1_t& src, size_t off, size_t vl) { return rvv_vslideup_impl(dst,src,off,vl,8); }
+inline vint16m1_t  __riscv_vslideup_vx_i16m1(const vint16m1_t& dst, const vint16m1_t& src, size_t off, size_t vl) { return rvv_vslideup_impl(dst,src,off,vl,16); }
+
+// ---------------------------------------------------------------------------
+// Additional VSLIDE1DOWN variants
+// ---------------------------------------------------------------------------
+inline vint16m1_t __riscv_vslide1down_vx_i16m1(const vint16m1_t& a, int16_t b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl - 1; i++) r.push_back(a.getElement(i + 1));
+    r.push_back(mk_bv_val(tm, 16, b));
     return RVVVector(tm, 16, r);
+}
+inline vuint16m1_t __riscv_vslide1down_vx_u16m1(const vuint16m1_t& a, uint16_t b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl - 1; i++) r.push_back(a.getElement(i + 1));
+    r.push_back(mk_bv_val(tm, 16, b));
+    return RVVVector(tm, 16, r);
+}
+
+// ---------------------------------------------------------------------------
+// Additional VRGATHER variants
+// ---------------------------------------------------------------------------
+inline vint32m1_t __riscv_vrgather_vv_i32m1(const vint32m1_t& s, const vuint32m1_t& i, size_t vl) { return rvv_vrgather_vv_impl(s,i,vl,32); }
+inline vint16m1_t __riscv_vrgather_vv_i16m1(const vint16m1_t& s, const vuint16m1_t& i, size_t vl) { return rvv_vrgather_vv_impl(s,i,vl,16); }
+inline vint8m1_t  __riscv_vrgather_vv_i8m1(const vint8m1_t& s, const vuint8m1_t& i, size_t vl) { return rvv_vrgather_vv_impl(s,i,vl,8); }
+
+// ---------------------------------------------------------------------------
+// Additional VREINTERPRET variants
+// ---------------------------------------------------------------------------
+inline RVVVector __riscv_vreinterpret_v_i16m1_u16m1(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_i8m2_u8m2(const RVVVector& a)   { return a; }
+inline RVVVector __riscv_vreinterpret_v_u8m2_i8m2(const RVVVector& a)   { return a; }
+inline RVVVector __riscv_vreinterpret_v_i32m1_u32m1(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_u32m1_i32m1(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_i32m2_u32m2(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_u32m2_i32m2(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_f32m1_u32m1(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_u32m1_f32m1(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_f32m4_u32m4(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_u32m4_f32m4(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_i16m2_u16m2(const RVVVector& a) { return a; }
+
+// ---------------------------------------------------------------------------
+// Additional VSETVLMAX variants
+// ---------------------------------------------------------------------------
+inline size_t __riscv_vsetvlmax_e8m1()  { return g_ctx->vlen / 8; }
+inline size_t __riscv_vsetvlmax_e16m1() { return g_ctx->vlen / 16; }
+inline size_t __riscv_vsetvlmax_e32m2() { return g_ctx->vlen / 32 * 2; }
+inline size_t __riscv_vsetvlmax_e32m4() { return g_ctx->vlen / 32 * 4; }
+
+// ---------------------------------------------------------------------------
+// Additional FP compare variants (mask producing)
+// ---------------------------------------------------------------------------
+inline MaskVector __riscv_vmflt_vf_f32m4_b8(const vfloat32m4_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LT, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmfgt_vf_f32m4_b8(const vfloat32m4_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_GT, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmflt_vv_f32m1_b32(const vfloat32m1_t& a, const vfloat32m1_t& b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LT, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmfgt_vv_f32m4_b8(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_GT, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmfle_vf_f32m1_b32(const vfloat32m1_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LEQ, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmfge_vf_f32m1_b32(const vfloat32m1_t& a, float b, size_t vl) {
+    auto& tm = g_ctx->tm; Term b_fp = mk_fp32_from_float(tm, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_GEQ, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// ---------------------------------------------------------------------------
+// Additional integer compare variants (mask producing)
+// ---------------------------------------------------------------------------
+inline MaskVector __riscv_vmslt_vx_i32m4_b8(const vint32m4_t& a, int32_t b, size_t vl) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 32, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), bv});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmslt_vx_i32m1_b32(const vint32m1_t& a, int32_t b, size_t vl) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 32, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), bv});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmsltu_vx_u8m1_b8(const vuint8m1_t& a, uint8_t b, size_t vl) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 8, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_ULT, {a.getElement(i), bv});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// ---------------------------------------------------------------------------
+// Additional VREDSUM / VWREDSUM variants
+// ---------------------------------------------------------------------------
+inline vint32m1_t __riscv_vredsum_vs_i32m1_i32m1(const vint32m1_t& src, const vint32m1_t& init, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term acc = init.getElement(0);
+    for (size_t i = 0; i < vl; i++) acc = tm.mk_term(Kind::BV_ADD, {acc, src.getElement(i)});
+    return RVVVector(tm, 32, std::vector<Term>{acc});
+}
+inline vint32m1_t __riscv_vredsum_vs_i32m8_i32m1(const vint32m8_t& src, const vint32m1_t& init, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term acc = init.getElement(0);
+    for (size_t i = 0; i < vl; i++) acc = tm.mk_term(Kind::BV_ADD, {acc, src.getElement(i)});
+    return RVVVector(tm, 32, std::vector<Term>{acc});
+}
+inline vint32m1_t __riscv_vwredsum_vs_i16m4_i32m1(const vint16m4_t& src, const vint32m1_t& init, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term acc = init.getElement(0);
+    for (size_t i = 0; i < vl; i++) {
+        Term ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {src.getElement(i)}, {16});
+        acc = tm.mk_term(Kind::BV_ADD, {acc, ext});
+    }
+    return RVVVector(tm, 32, std::vector<Term>{acc});
 }
 
 #undef RVV_BIN_VV
 #undef RVV_BIN_VX
 #undef RVV_SLL_VX
 #undef RVV_SRA_VX
+#undef RVV_SRL_VX
 #undef RVV_MINMAX_VX
 #undef RVV_MINMAX_VV
 

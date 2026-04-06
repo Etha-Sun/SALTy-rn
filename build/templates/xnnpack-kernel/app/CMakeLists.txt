@@ -33,7 +33,7 @@ target_include_directories(app PRIVATE ${XNNPACK_DIR}/include)
 target_include_directories(app PRIVATE ${XNNPACK_DIR}/src)
 
 # Generated RVV kernels (so harness can #include "kernel.c")
-target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/../../../kernels/target)
+target_include_directories(app PRIVATE ${CMAKE_SOURCE_DIR}/../../../../kernels/target)
 
 # Link XNNPACK and pthreadpool
 target_link_libraries(app PRIVATE XNNPACK pthreadpool)

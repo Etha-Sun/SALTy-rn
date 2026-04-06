@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Optional
 
 from .sig_parser import FuncSignature, FuncArg, ArgRole, ElemType
+from .kernel_profiles import get_profile, KernelProfile
 
 log = logging.getLogger("pipeline")
 
@@ -42,6 +43,9 @@ class HarnessSpec:
     needs_llm: bool = False     # True if LLM was needed to infer sizes
     vlen: int = 256
     arg_order: list[dict] = None  # original arg order: [{"name": ..., "role": ArgRole}]
+    layout: str = "1D"          # "1D" (flat batch) or "2D" (rows x channels)
+    secondary_dim: str = ""     # name of the secondary dimension arg (e.g., "channels")
+    profile: Optional[KernelProfile] = None  # optional kernel-specific profile
 
 
 def infer_buffer_sizes(sig: FuncSignature, kernel_name: str = "",
@@ -107,16 +111,29 @@ def infer_buffer_sizes(sig: FuncSignature, kernel_name: str = "",
                 note=f"output buffer, {arg.elem_type.c_type}[batch]",
             ))
         elif arg.role == ArgRole.WEIGHTS:
-            # Size depends on kernel dimensions — needs LLM
-            needs_llm = True
-            buffers.append(BufferSpec(
-                arg_name=arg.name,
-                role=ArgRole.WEIGHTS,
-                elem_type=arg.elem_type,
-                size_expr="UNKNOWN",
-                is_symbolic=True,
-                note="weight buffer — size needs LLM inference",
-            ))
+            # Try known weight size patterns before falling back to LLM
+            weight_size = _infer_weight_size(kernel_name, arg, sig)
+            if weight_size:
+                profile = get_profile(kernel_name)
+                is_concrete = profile and profile.concrete_weights is not None
+                buffers.append(BufferSpec(
+                    arg_name=arg.name,
+                    role=ArgRole.WEIGHTS,
+                    elem_type=arg.elem_type,
+                    size_expr=weight_size,
+                    is_symbolic=not is_concrete,
+                    note=f"weight buffer — profile: {weight_size}" if profile else f"weight buffer — inferred: {weight_size}",
+                ))
+            else:
+                needs_llm = True
+                buffers.append(BufferSpec(
+                    arg_name=arg.name,
+                    role=ArgRole.WEIGHTS,
+                    elem_type=arg.elem_type,
+                    size_expr="UNKNOWN",
+                    is_symbolic=True,
+                    note="weight buffer — size needs LLM inference",
+                ))
         elif arg.role == ArgRole.INDIRECT_INPUT:
             needs_llm = True
             buffers.append(BufferSpec(
@@ -149,6 +166,17 @@ def infer_buffer_sizes(sig: FuncSignature, kernel_name: str = "",
     # Preserve original argument order for call generation
     arg_order = [{"name": a.name, "role": a.role} for a in sig.args]
 
+    # Check for kernel profile first, then fall back to auto-detection
+    profile = get_profile(kernel_name)
+    if profile:
+        layout = profile.layout
+        secondary = profile.secondary_dim
+    else:
+        # Auto-detect 2D: row x channels kernels with stride-based access
+        has_strides = any(a.role == ArgRole.STRIDE for a in sig.args)
+        secondary = "channels" if "channels" in scalar_args else ""
+        layout = "2D" if has_strides and secondary else "1D"
+
     return HarnessSpec(
         kernel_name=kernel_name,
         neon_func_name=sig.name,
@@ -161,6 +189,9 @@ def infer_buffer_sizes(sig: FuncSignature, kernel_name: str = "",
         element_kind=element_kind,
         needs_llm=needs_llm,
         arg_order=arg_order,
+        layout=layout,
+        secondary_dim=secondary,
+        profile=profile,
     )
 
 
@@ -210,6 +241,19 @@ def resolve_unknown_sizes_with_llm(spec: HarnessSpec, neon_source: str,
 # Helpers
 # ---------------------------------------------------------------------------
 
+def _infer_weight_size(kernel_name: str, arg: 'FuncArg', sig: 'FuncSignature') -> Optional[str]:
+    """Try to infer weight buffer size from known kernel patterns.
+
+    Checks kernel profiles first, then returns None for LLM fallback.
+    Returns a C++ size expression in bytes, or None if unknown.
+    """
+    profile = get_profile(kernel_name)
+    if profile and profile.weight_size:
+        return profile.weight_size
+
+    return None
+
+
 def _default_scalar_value(name: str) -> str:
     """Provide sensible default concrete values for scalar size arguments."""
     defaults = {
@@ -230,6 +274,9 @@ def _default_stride_value(name: str, sig: FuncSignature) -> str:
     if name == "a_stride":
         return "kc" if any(a.name == "kc" for a in sig.args) else "16"
     if name in ("cm_stride", "output_stride"):
+        # For verification soundness, stride must == channels so rows are packed
+        if any(a.name == "channels" for a in sig.args):
+            return "channels"
         return "nc" if any(a.name == "nc" for a in sig.args) else "8"
     if name == "cn_stride":
         return "1"
