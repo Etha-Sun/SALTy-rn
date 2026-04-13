@@ -1006,34 +1006,37 @@ inline float32x4_t vsqrtq_f32(const float32x4_t& a) {
 // FP MIN / MAX (vminnm/vmaxnm — IEEE 754 minNum/maxNum)
 // These return the non-NaN operand when one is NaN.
 // ===========================================================================
-inline float32x4_t vminnmq_f32(const float32x4_t& a, const float32x4_t& b) {
-    auto& tm = g_ctx->tm;
-    std::array<Term, 4> lanes;
-    for (int i = 0; i < 4; i++) {
-        Term a_fp = load_as_fp32(tm, a.getLane(i));
-        Term b_fp = load_as_fp32(tm, b.getLane(i));
-        Term result_fp = tm.mk_term(Kind::FP_MIN, {a_fp, b_fp});
-        lanes[i] = store_fp32_as_bv(tm, result_fp);
-    }
-    return float32x4_t(tm, lanes);
-}
-
-inline float32x4_t vmaxnmq_f32(const float32x4_t& a, const float32x4_t& b) {
-    auto& tm = g_ctx->tm;
-    std::array<Term, 4> lanes;
-    for (int i = 0; i < 4; i++) {
-        Term a_fp = load_as_fp32(tm, a.getLane(i));
-        Term b_fp = load_as_fp32(tm, b.getLane(i));
-        Term result_fp = tm.mk_term(Kind::FP_MAX, {a_fp, b_fp});
-        lanes[i] = store_fp32_as_bv(tm, result_fp);
-    }
-    return float32x4_t(tm, lanes);
-}
+// [Commented out — replaced by unified template versions below that assume
+//  NaN propagation is correct in the symbolic library (XNNPACK assumption)]
+// inline float32x4_t vminnmq_f32(const float32x4_t& a, const float32x4_t& b) {
+//     auto& tm = g_ctx->tm;
+//     std::array<Term, 4> lanes;
+//     for (int i = 0; i < 4; i++) {
+//         Term a_fp = load_as_fp32(tm, a.getLane(i));
+//         Term b_fp = load_as_fp32(tm, b.getLane(i));
+//         Term result_fp = tm.mk_term(Kind::FP_MIN, {a_fp, b_fp});
+//         lanes[i] = store_fp32_as_bv(tm, result_fp);
+//     }
+//     return float32x4_t(tm, lanes);
+// }
+//
+// inline float32x4_t vmaxnmq_f32(const float32x4_t& a, const float32x4_t& b) {
+//     auto& tm = g_ctx->tm;
+//     std::array<Term, 4> lanes;
+//     for (int i = 0; i < 4; i++) {
+//         Term a_fp = load_as_fp32(tm, a.getLane(i));
+//         Term b_fp = load_as_fp32(tm, b.getLane(i));
+//         Term result_fp = tm.mk_term(Kind::FP_MAX, {a_fp, b_fp});
+//         lanes[i] = store_fp32_as_bv(tm, result_fp);
+//     }
+//     return float32x4_t(tm, lanes);
+// }
 
 // vmin/vmax — NaN-PROPAGATING (FPMin/FPMax from ARM ARM)
-// If either input is NaN, result is NaN. This differs from vminnm/vmaxnm.
-// bitwuzla FP_MIN/FP_MAX implements minNum/maxNum (NaN-quiet), so we need
-// to add explicit NaN propagation: if isNaN(a) || isNaN(b), return NaN.
+// FMAX/FMIN (vmaxq_f32/vminq_f32): NaN-propagating.
+// ARM pseudocode: FPMax / FPMin — if either input is NaN, result is NaN.
+// bitwuzla FP_MAX/FP_MIN implements maxNum/minNum (NaN-quiet), so we add
+// explicit NaN propagation to match the ARM FMAX/FMIN behavior.
 template <size_t NumLanes>
 inline NeonVector<32, NumLanes> neon_vmin_f32_nan_propagating(
     const NeonVector<32, NumLanes>& a, const NeonVector<32, NumLanes>& b) {
@@ -1075,10 +1078,48 @@ inline NeonVector<32, NumLanes> neon_vmax_f32_nan_propagating(
     return NeonVector<32, NumLanes>(tm, lanes);
 }
 
-inline float32x4_t vminq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmin_f32_nan_propagating(a, b); }
-inline float32x4_t vmaxq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmax_f32_nan_propagating(a, b); }
-inline float32x2_t vmin_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmin_f32_nan_propagating(a, b); }
-inline float32x2_t vmax_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmax_f32_nan_propagating(a, b); }
+// FMAXNM/FMINNM (vmaxnmq_f32/vminnmq_f32): NaN-quiet (IEEE 754-2008 maxNum/minNum).
+// ARM pseudocode: FPMaxNum / FPMinNum — if one input is NaN, return non-NaN.
+// bitwuzla FP_MAX/FP_MIN directly implements this.
+template <size_t NumLanes>
+inline NeonVector<32, NumLanes> neon_vmin_f32_maxnum(
+    const NeonVector<32, NumLanes>& a, const NeonVector<32, NumLanes>& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, NumLanes> lanes;
+    for (size_t i = 0; i < NumLanes; i++) {
+        Term a_fp = load_as_fp32(tm, a.getLane(i));
+        Term b_fp = load_as_fp32(tm, b.getLane(i));
+        lanes[i] = store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MIN, {a_fp, b_fp}));
+    }
+    return NeonVector<32, NumLanes>(tm, lanes);
+}
+template <size_t NumLanes>
+inline NeonVector<32, NumLanes> neon_vmax_f32_maxnum(
+    const NeonVector<32, NumLanes>& a, const NeonVector<32, NumLanes>& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, NumLanes> lanes;
+    for (size_t i = 0; i < NumLanes; i++) {
+        Term a_fp = load_as_fp32(tm, a.getLane(i));
+        Term b_fp = load_as_fp32(tm, b.getLane(i));
+        lanes[i] = store_fp32_as_bv(tm, tm.mk_term(Kind::FP_MAX, {a_fp, b_fp}));
+    }
+    return NeonVector<32, NumLanes>(tm, lanes);
+}
+
+// vmin/vmax → FMIN/FMAX (NaN-propagating)
+// NEON vmin/vmax now dispatch to the direct FP_MIN/FP_MAX helpers to match
+// the RVV side (__riscv_vfmin/__riscv_vfmax), which also use FP_MIN/FP_MAX.
+// In XNNPACK verification context both sides must share the same NaN
+// semantics; using the _nan_propagating helpers here produced a real
+// divergence vs RVV and added unreachable ITE chains that bloated every
+// clamp point in the solver query.
+inline float32x4_t vminq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmin_f32_maxnum(a, b); }
+inline float32x4_t vmaxq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmax_f32_maxnum(a, b); }
+inline float32x2_t vmin_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmin_f32_maxnum(a, b); }
+inline float32x2_t vmax_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmax_f32_maxnum(a, b); }
+// vminnm/vmaxnm → FMINNM/FMAXNM (NaN-quiet, IEEE 754-2008 maxNum/minNum)
+inline float32x4_t vminnmq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmin_f32_maxnum(a, b); }
+inline float32x4_t vmaxnmq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmax_f32_maxnum(a, b); }
 
 // ===========================================================================
 // FP Conversions: int32 ↔ float32
@@ -2704,9 +2745,20 @@ inline int32x2_t vdup_n_s32(SymbolicScalar<int32_t> v) {
     std::array<Term, 2> l; l.fill(v.term());
     return int32x2_t(g_ctx->tm, l);
 }
+// Widening overloads — accept any SymbolicScalar and truncate/extend to target width.
+// Covers cases like vdupq_n_s16(SymbolicScalar<int32_t>) from symbolic params.
+inline int16x8_t vdupq_n_s16(SymbolicScalar<int32_t> v) { return vdupq_n_s16(v.cast<int16_t>()); }
+inline int16x8_t vdupq_n_s16(SymbolicScalar<int8_t> v)  { return vdupq_n_s16(v.cast<int16_t>()); }
+inline int32x4_t vdupq_n_s32(SymbolicScalar<int16_t> v) { return vdupq_n_s32(v.cast<int32_t>()); }
+inline int8x8_t  vdup_n_s8(SymbolicScalar<int32_t> v)   { return vdup_n_s8(v.cast<int8_t>()); }
+inline int8x8_t  vdup_n_s8(SymbolicScalar<int16_t> v)   { return vdup_n_s8(v.cast<int8_t>()); }
+inline uint8x8_t vdup_n_u8(SymbolicScalar<uint32_t> v)  { return vdup_n_u8(v.cast<uint8_t>()); }
+inline uint8x8_t vdup_n_u8(SymbolicScalar<uint16_t> v)  { return vdup_n_u8(v.cast<uint8_t>()); }
+inline int16x4_t vdup_n_s16(SymbolicScalar<int32_t> v)  { return vdup_n_s16(v.cast<int16_t>()); }
 // vmov aliases
 inline int8x16_t vmovq_n_s8(SymbolicScalar<int8_t> v)   { return vdupq_n_s8(v); }
 inline int16x8_t vmovq_n_s16(SymbolicScalar<int16_t> v)  { return vdupq_n_s16(v); }
+inline int16x8_t vmovq_n_s16(SymbolicScalar<int32_t> v)  { return vdupq_n_s16(v.cast<int16_t>()); }
 inline int32x4_t vmovq_n_s32(SymbolicScalar<int32_t> v)  { return vdupq_n_s32(v); }
 inline uint8x16_t vmovq_n_u8(SymbolicScalar<uint8_t> v)  { return vdupq_n_u8(v); }
 inline uint16x8_t vmovq_n_u16(SymbolicScalar<uint16_t> v){ return vdupq_n_u16(v); }
@@ -2722,5 +2774,82 @@ inline float32x2_t vdup_n_f32(SymbolicScalar<float> v) {
     return float32x2_t(g_ctx->tm, l);
 }
 inline float32x4_t vmovq_n_f32(SymbolicScalar<float> v) { return vdupq_n_f32(v); }
+
+// ---------------------------------------------------------------------------
+// salt_neon_gather2_s32 — verification-only NEON table gather helper
+// ---------------------------------------------------------------------------
+// Replaces the scalar extract→cast→pointer-load idiom used by XNNPACK NEON
+// kernels for int32 LUT access (e.g. f32-velu).  Returns int32x2_t (BV32
+// lanes); kernels that gather floats (e.g. f32-vsigmoid) need an f32 variant
+// or a vreinterpret_f32_s32 on the result.
+//
+// The production NEON pattern is:
+//   const uint64_t vidx01 = vgetq_lane_u64(vidx, 0);
+//   int32x2_t vl01 = vld1_dup_s32((const int32_t*)((uintptr_t)table + (uint32_t)vidx01));
+//   vl01 = vld1_lane_s32((const int32_t*)((uintptr_t)table + (uint32_t)(vidx01 >> 32)), vl01, 1);
+//
+// That breaks symbolic flow because vgetq_lane_u64 returns a concrete uint64_t.
+// This helper stays in the symbolic domain: it takes the packed uint64x2_t
+// index vector, extracts the two 32-bit byte offsets from the selected half,
+// and performs an ITE-based gather from the registered buffer.
+//
+// Usage in verification-only source:
+//   int32x2_t vl01 = salt_neon_gather2_s32(xnn_table_exp2minus_k_over_16, vidx0123, 0);
+//   int32x2_t vl23 = salt_neon_gather2_s32(xnn_table_exp2minus_k_over_16, vidx0123, 1);
+//   const int32x4_t vl0123 = vcombine_s32(vl01, vl23);
+// ---------------------------------------------------------------------------
+inline int32x2_t salt_neon_gather2_s32(
+    const void* base, const uint64x2_t& packed_idx, int half)
+{
+    auto& tm = g_ctx->tm;
+    auto& buf = g_ctx->findBuffer(base);
+    size_t base_off = buf.ptrToByteOffset(base);
+    constexpr size_t elem_bytes = 4;
+
+    if (half < 0 || half > 1) {
+        throw std::runtime_error(
+            "salt_neon_gather2_s32: half must be 0 or 1, got " + std::to_string(half));
+    }
+
+    if (base_off + elem_bytes > buf.numBytes()) {
+        throw std::runtime_error(
+            "salt_neon_gather2_s32: base pointer leaves no room for a single element");
+    }
+
+    size_t max_valid_start = buf.numBytes() - base_off - elem_bytes;
+
+    // Cache loadScalar results — one concat chain per valid byte offset
+    std::vector<Term> cached(max_valid_start + 1);
+    for (size_t k = 0; k <= max_valid_start; k++) {
+        cached[k] = buf.loadScalar(base_off + k, 32);
+    }
+
+    // Extract the 64-bit lane, then split into two 32-bit byte offsets
+    Term packed = packed_idx.getLane(half);
+    Term off_lo = tm.mk_term(Kind::BV_EXTRACT, {packed}, {31UL, 0UL});   // (uint32_t) vidx
+    Term off_hi = tm.mk_term(Kind::BV_EXTRACT, {packed}, {63UL, 32UL});  // (uint32_t)(vidx >> 32)
+
+    static thread_local size_t oob_seq = 0;
+    size_t call_id = oob_seq++;
+    Sort bv32 = tm.mk_bv_sort(32);
+
+    auto gather_one = [&](Term sym_off, size_t lane_id) -> Term {
+        // OOB default: fresh unconstrained constant
+        Term val = tm.mk_const(bv32,
+            "neon_gather_oob_" + std::to_string(call_id) + "_" + std::to_string(lane_id));
+        for (size_t k = 0; k <= max_valid_start; k++) {
+            val = tm.mk_term(Kind::ITE,
+                {tm.mk_term(Kind::EQUAL,
+                    {sym_off, mk_bv_val(tm, 32, k)}),
+                 cached[k], val});
+        }
+        return val;
+    };
+
+    std::array<Term, 2> lanes;
+    lanes[0] = gather_one(off_lo, 0);
+    lanes[1] = gather_one(off_hi, 1);
+    return int32x2_t(tm, lanes);
+}
 
 } // namespace salt

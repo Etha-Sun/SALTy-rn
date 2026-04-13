@@ -95,8 +95,11 @@ public:
     SymbolicScalar(SymbolicBuffer& buf, size_t byte_offset) {
         if constexpr (Tr::is_fp) {
             Term bv = buf.loadScalar(byte_offset, Tr::bits);
-            term_ = g_ctx->tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv},
-                                       {Tr::sort(g_ctx->tm)});
+            // FP_TO_FP_FROM_BV takes {exponent_bits, significand_bits}
+            if constexpr (Tr::bits == 32)
+                term_ = g_ctx->tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv}, {8, 24});
+            else
+                term_ = g_ctx->tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
         } else {
             term_ = buf.loadScalar(byte_offset, Tr::bits);
         }
@@ -213,5 +216,33 @@ public:
     // NO implicit operator T(), Use concrete_zero() only when you explicitly need a C-compatible dummy.
     T concrete_zero() const { return T(0); }
 };
+
+// ---------------------------------------------------------------------------
+// Free-standing operators: concrete op SymbolicScalar (and vice versa).
+// Needed because C++ won't implicitly convert the LHS of a member operator.
+// ---------------------------------------------------------------------------
+template<typename T>
+SymbolicScalar<T> operator+(T lhs, SymbolicScalar<T> rhs) { return SymbolicScalar<T>(lhs) + rhs; }
+template<typename T>
+SymbolicScalar<T> operator-(T lhs, SymbolicScalar<T> rhs) { return SymbolicScalar<T>(lhs) - rhs; }
+template<typename T>
+SymbolicScalar<T> operator*(T lhs, SymbolicScalar<T> rhs) { return SymbolicScalar<T>(lhs) * rhs; }
+
+// Cross-type: int32_t op SymbolicScalar<int16_t>, etc.
+// Widens the concrete side to match the symbolic type.
+template<typename L, typename R>
+auto operator-(L lhs, SymbolicScalar<R> rhs) -> std::enable_if_t<!std::is_same_v<L,R> && !SymTraits<L>::is_fp && !SymTraits<R>::is_fp,
+    SymbolicScalar<std::conditional_t<(sizeof(L) >= sizeof(R)), L, R>>>
+{
+    using Wide = std::conditional_t<(sizeof(L) >= sizeof(R)), L, R>;
+    return SymbolicScalar<Wide>(static_cast<Wide>(lhs)) - rhs.template cast<Wide>();
+}
+template<typename L, typename R>
+auto operator+(L lhs, SymbolicScalar<R> rhs) -> std::enable_if_t<!std::is_same_v<L,R> && !SymTraits<L>::is_fp && !SymTraits<R>::is_fp,
+    SymbolicScalar<std::conditional_t<(sizeof(L) >= sizeof(R)), L, R>>>
+{
+    using Wide = std::conditional_t<(sizeof(L) >= sizeof(R)), L, R>;
+    return SymbolicScalar<Wide>(static_cast<Wide>(lhs)) + rhs.template cast<Wide>();
+}
 
 } // namespace salt

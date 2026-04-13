@@ -1079,7 +1079,9 @@ RVV_SLL_VX(vsll_vx_u8m2,  8,  size_t)
 RVV_SLL_VX(vsll_vx_u16m2, 16, size_t)
 RVV_SLL_VX(vsll_vx_u16m4, 16, size_t)
 RVV_SLL_VX(vsll_vx_u32m1, 32, size_t)
+RVV_SLL_VX(vsll_vx_u32m2, 32, size_t)
 RVV_SLL_VX(vsll_vx_u32m4, 32, size_t)
+RVV_SLL_VX(vsll_vx_u32m8, 32, size_t)
 // VSRA (arithmetic shift right)
 #define RVV_SRA_VX(name, bits)                                                \
 inline RVVVector __riscv_##name(const RVVVector& a, size_t shift, size_t vl) { \
@@ -1467,6 +1469,73 @@ inline void __riscv_vse32_v_u32m2(uint32_t* p, const vuint32m2_t& v, size_t vl) 
 inline void __riscv_vse32_v_u32m4(uint32_t* p, const vuint32m4_t& v, size_t vl) { auto& b=g_ctx->findBuffer(p); b.storeRVV(b.ptrToByteOffset(p),v); }
 
 // ---------------------------------------------------------------------------
+// vluxei32 — indexed (gather) load with symbolic byte offsets
+// ---------------------------------------------------------------------------
+// Pure semantic model: no solver assertions added.  OOB offsets yield a fresh
+// unconstrained symbolic constant per lane (never aliases a real table entry).
+// Entry terms are cached so loadScalar concat chains are built once per call.
+//
+// NOTE: the OOB model collapses all distinct OOB offsets for a given lane to
+// one value.  This is sound when OOB is unreachable (the common case for LUT
+// kernels) but is not a fully faithful generic memory model.
+// ---------------------------------------------------------------------------
+inline RVVVector rvv_vluxei32_impl(
+    const void* base, const RVVVector& byte_offsets,
+    size_t vl, size_t elem_bits)
+{
+    auto& tm = g_ctx->tm;
+    auto& buf = g_ctx->findBuffer(base);
+    size_t base_off = buf.ptrToByteOffset(base);
+    size_t elem_bytes = elem_bits / 8;
+
+    // Concrete guard: buffer must hold at least one element from base
+    if (base_off + elem_bytes > buf.numBytes()) {
+        throw std::runtime_error(
+            "vluxei32: base pointer leaves no room for a single element");
+    }
+
+    size_t max_valid_start = buf.numBytes() - base_off - elem_bytes;
+
+    // Cache loadScalar results — one concat chain per valid byte offset
+    std::vector<Term> cached(max_valid_start + 1);
+    for (size_t k = 0; k <= max_valid_start; k++) {
+        cached[k] = buf.loadScalar(base_off + k, elem_bits);
+    }
+
+    // Unique counter for OOB variable names across calls
+    static thread_local size_t oob_seq = 0;
+    size_t call_id = oob_seq++;
+
+    std::vector<Term> result;
+    result.reserve(vl);
+    Sort elem_sort = tm.mk_bv_sort(elem_bits);
+
+    for (size_t i = 0; i < vl; i++) {
+        Term sym_off = byte_offsets.getElement(i);
+
+        // OOB default: fresh unconstrained constant per lane per call
+        Term val = tm.mk_const(elem_sort,
+            "vlux_oob_" + std::to_string(call_id) + "_" + std::to_string(i));
+
+        // ITE chain over every valid byte offset
+        for (size_t k = 0; k <= max_valid_start; k++) {
+            val = tm.mk_term(Kind::ITE,
+                {tm.mk_term(Kind::EQUAL,
+                    {sym_off, mk_bv_val(tm, 32, k)}),
+                 cached[k], val});
+        }
+        result.push_back(val);
+    }
+    return RVVVector(tm, elem_bits, result);
+}
+
+// i32 overloads (sufficient for f32-velu LUT; add u32/f32 when needed)
+inline vint32m1_t __riscv_vluxei32_v_i32m1(const int32_t* base, vuint32m1_t off, size_t vl) { return rvv_vluxei32_impl(base, off, vl, 32); }
+inline vint32m2_t __riscv_vluxei32_v_i32m2(const int32_t* base, vuint32m2_t off, size_t vl) { return rvv_vluxei32_impl(base, off, vl, 32); }
+inline vint32m4_t __riscv_vluxei32_v_i32m4(const int32_t* base, vuint32m4_t off, size_t vl) { return rvv_vluxei32_impl(base, off, vl, 32); }
+inline vint32m8_t __riscv_vluxei32_v_i32m8(const int32_t* base, vuint32m8_t off, size_t vl) { return rvv_vluxei32_impl(base, off, vl, 32); }
+
+// ---------------------------------------------------------------------------
 // VMACC additional variants
 // ---------------------------------------------------------------------------
 inline RVVVector rvv_vmacc_vx_impl(const RVVVector& vd, int64_t rs1, const RVVVector& vs2, size_t vl, size_t bits) {
@@ -1661,6 +1730,13 @@ inline RVVVector __riscv_vreinterpret_v_u16m2_i16m2(const RVVVector& a){ return 
 inline RVVVector __riscv_vreinterpret_v_u32m4_i32m4(const RVVVector& a){ return a; }
 inline RVVVector __riscv_vreinterpret_v_i32m4_u32m4(const RVVVector& a){ return a; }
 inline RVVVector __riscv_vreinterpret_v_i32m4_f32m4(const RVVVector& a){ return a; }
+// m8 reinterprets — bit-level no-ops on the underlying BV terms
+inline RVVVector __riscv_vreinterpret_v_f32m8_i32m8(const RVVVector& a){ return a; }
+inline RVVVector __riscv_vreinterpret_v_f32m8_u32m8(const RVVVector& a){ return a; }
+inline RVVVector __riscv_vreinterpret_v_i32m8_u32m8(const RVVVector& a){ return a; }
+inline RVVVector __riscv_vreinterpret_v_i32m8_f32m8(const RVVVector& a){ return a; }
+inline RVVVector __riscv_vreinterpret_v_u32m8_i32m8(const RVVVector& a){ return a; }
+inline RVVVector __riscv_vreinterpret_v_u32m8_f32m8(const RVVVector& a){ return a; }
 // u32m1 <-> u8m1: reinterpret 32-bit elements as 8-bit (different element count)
 // This is a no-op on the underlying bitvector — just change elem_bits
 inline RVVVector __riscv_vreinterpret_v_u32m1_u8m1(const RVVVector& a) { return a; }
@@ -1737,6 +1813,7 @@ inline vfloat32m8_t __riscv_vfsub_vv_f32m8(const vfloat32m8_t& a, const vfloat32
 inline vfloat32m8_t __riscv_vfmul_vv_f32m8(const vfloat32m8_t& a, const vfloat32m8_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_MUL,vl); }
 inline vfloat32m2_t __riscv_vfdiv_vv_f32m2(const vfloat32m2_t& a, const vfloat32m2_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_DIV,vl); }
 inline vfloat32m4_t __riscv_vfdiv_vv_f32m4(const vfloat32m4_t& a, const vfloat32m4_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_DIV,vl); }
+inline vfloat32m8_t __riscv_vfdiv_vv_f32m8(const vfloat32m8_t& a, const vfloat32m8_t& b, size_t vl) { return rvv_fp32_binop(a,b,Kind::FP_DIV,vl); }
 
 // FP scalar add/sub (_vf) variants
 inline RVVVector rvv_fp32_binop_vf(const RVVVector& a, float b, Kind op, size_t vl) {
@@ -2120,6 +2197,17 @@ inline MaskVector __riscv_vmfne_vv_f32m4_b8(const vfloat32m4_t& a, const vfloat3
     }
     return MaskVector(tm, bits);
 }
+inline MaskVector __riscv_vmfne_vv_f32m8_b4(const vfloat32m8_t& a, const vfloat32m8_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp32(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 0), mk_bv_val(tm, 1, 1)}));
+    }
+    return MaskVector(tm, bits);
+}
 
 // FP compare (mask producing)
 inline MaskVector __riscv_vmflt_vf_f32m1_b32(const vfloat32m1_t& a, float b, size_t vl) {
@@ -2277,6 +2365,9 @@ inline vint16m2_t __riscv_vmerge_vxm_i16m2(const vint16m2_t& a, int16_t b, const
 inline vint8m1_t __riscv_vmerge_vxm_i8m1(const vint8m1_t& a, int8_t b, const MaskVector& mask, size_t vl) {
     return rvv_vmerge_vxm_impl(a, b, mask, vl, 8);
 }
+inline vint16m4_t __riscv_vmerge_vxm_i16m4(const vint16m4_t& a, int16_t b, const MaskVector& mask, size_t vl) {
+    return rvv_vmerge_vxm_impl(a, b, mask, vl, 16);
+}
 
 // vmerge_vvm for float m2, m4
 inline vfloat32m2_t __riscv_vmerge_vvm_f32m2(const vfloat32m2_t& a, const vfloat32m2_t& b, const vbool16_t& mask, size_t vl) {
@@ -2289,6 +2380,15 @@ inline vfloat32m2_t __riscv_vmerge_vvm_f32m2(const vfloat32m2_t& a, const vfloat
     return RVVVector(tm, 32, r);
 }
 inline vfloat32m4_t __riscv_vmerge_vvm_f32m4(const vfloat32m4_t& a, const vfloat32m4_t& b, const vbool8_t& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.getElement(i), a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m8_t __riscv_vmerge_vvm_f32m8(const vfloat32m8_t& a, const vfloat32m8_t& b, const vbool4_t& mask, size_t vl) {
     auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
@@ -2491,6 +2591,15 @@ inline MaskVector __riscv_vmsltu_vx_u8m1_b8(const vuint8m1_t& a, uint8_t b, size
     }
     return MaskVector(tm, bits);
 }
+inline MaskVector __riscv_vmslt_vx_i16m4_b4(const vint16m4_t& a, int16_t b, size_t vl) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 16, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), bv});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
 
 // ---------------------------------------------------------------------------
 // Additional VREDSUM / VWREDSUM variants
@@ -2546,6 +2655,34 @@ inline Term rounded_shift_right_symbolic(TermManager& tm, Term val, Term shift_t
     return result;
 }
 
+// --- vrsub_vx (symbolic) ---
+inline vint16m4_t __riscv_vrsub_vx_i16m4(const vint16m4_t& a,
+                                           SymbolicScalar<int16_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++)
+        r.push_back(tm.mk_term(Kind::BV_SUB, {op2.term(), a.getElement(i)}));
+    return RVVVector(tm, 16, r);
+}
+
+// --- vmerge_vxm (symbolic) ---
+inline vint16m4_t __riscv_vmerge_vxm_i16m4(const vint16m4_t& a,
+                                             SymbolicScalar<int16_t> b,
+                                             const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.term(), a.getElement(i)}));
+    }
+    return RVVVector(tm, 16, r);
+}
+
+// --- vmv_v_x (symbolic i16m4) ---
+inline vint16m4_t __riscv_vmv_v_x_i16m4(SymbolicScalar<int16_t> v, size_t vl) {
+    return RVVVector(g_ctx->tm, 16, std::vector<Term>(vl, v.term()));
+}
 // --- vwsub_vx ---
 inline vint16m4_t __riscv_vwsub_vx_i16m4(const vint8m2_t& op1,
                                            SymbolicScalar<int8_t> op2, size_t vl) {
@@ -2607,6 +2744,14 @@ inline vint32m4_t __riscv_vmacc_vx_i32m4(const vint32m4_t& vd,
 }
 
 // --- vssra_vx (symbolic shift via ITE cascade) ---
+// Helper: extracts low 32 bits from a symbolic shift term of any width
+inline Term _shift_to_32(TermManager& tm, Term t, size_t src_bits) {
+    if (src_bits > 32)
+        return tm.mk_term(Kind::BV_EXTRACT, {t}, {31UL, 0UL});
+    if (src_bits < 32)
+        return tm.mk_term(Kind::BV_ZERO_EXTEND, {t}, {32 - src_bits});
+    return t;
+}
 inline vint32m8_t __riscv_vssra_vx_i32m8(const vint32m8_t& op1,
                                            SymbolicScalar<int32_t> shift,
                                            unsigned vxrm, size_t vl) {
@@ -2630,6 +2775,19 @@ inline vint32m4_t __riscv_vssra_vx_i32m4(const vint32m4_t& op1,
             tm, op1.getElement(i), shift.term(), 32, vxrm, /*is_signed=*/true));
     }
     return RVVVector(tm, 32, result);
+}
+// size_t (uint64) overloads — truncate shift to 32 bits, delegate
+inline vint32m8_t __riscv_vssra_vx_i32m8(const vint32m8_t& op1,
+                                           SymbolicScalar<size_t> shift,
+                                           unsigned vxrm, size_t vl) {
+    Term s32 = _shift_to_32(g_ctx->tm, shift.term(), 64);
+    return __riscv_vssra_vx_i32m8(op1, SymbolicScalar<int32_t>(s32), vxrm, vl);
+}
+inline vint32m4_t __riscv_vssra_vx_i32m4(const vint32m4_t& op1,
+                                           SymbolicScalar<size_t> shift,
+                                           unsigned vxrm, size_t vl) {
+    Term s32 = _shift_to_32(g_ctx->tm, shift.term(), 64);
+    return __riscv_vssra_vx_i32m4(op1, SymbolicScalar<int32_t>(s32), vxrm, vl);
 }
 
 // --- vsadd_vx ---
@@ -2683,5 +2841,383 @@ inline vint8m2_t __riscv_vmin_vx_i8m2(const vint8m2_t& op1,
     }
     return RVVVector(tm, 8, result);
 }
+
+// ===========================================================================
+// SymbolicScalar — BV binary _vx_ generic helpers
+// ===========================================================================
+inline RVVVector rvv_sym_bv_binop_vx(const RVVVector& a, Term b, Kind op, size_t vl, size_t bits) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++)
+        r.push_back(tm.mk_term(op, {a.getElement(i), b}));
+    return RVVVector(tm, bits, r);
+}
+inline RVVVector rvv_sym_bv_rsub_vx(const RVVVector& a, Term b, size_t vl, size_t bits) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++)
+        r.push_back(tm.mk_term(Kind::BV_SUB, {b, a.getElement(i)}));
+    return RVVVector(tm, bits, r);
+}
+
+// --- vadd_vx ---
+inline vint32m1_t __riscv_vadd_vx_i32m1(const vint32m1_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ADD, vl, 32); }
+inline vint32m2_t __riscv_vadd_vx_i32m2(const vint32m2_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ADD, vl, 32); }
+inline vint32m4_t __riscv_vadd_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ADD, vl, 32); }
+inline vint32m8_t __riscv_vadd_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ADD, vl, 32); }
+inline vint16m4_t __riscv_vadd_vx_i16m4(const vint16m4_t& a, SymbolicScalar<int16_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ADD, vl, 16); }
+
+// --- vsub_vx ---
+inline vint32m4_t __riscv_vsub_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_SUB, vl, 32); }
+inline vint32m8_t __riscv_vsub_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_SUB, vl, 32); }
+inline vuint32m4_t __riscv_vsub_vx_u32m4(const vuint32m4_t& a, SymbolicScalar<uint32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_SUB, vl, 32); }
+inline vuint32m8_t __riscv_vsub_vx_u32m8(const vuint32m8_t& a, SymbolicScalar<uint32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_SUB, vl, 32); }
+
+// --- vrsub_vx (additional LMUL) ---
+inline vint8m1_t  __riscv_vrsub_vx_i8m1(const vint8m1_t& a, SymbolicScalar<int8_t> b, size_t vl)   { return rvv_sym_bv_rsub_vx(a, b.term(), vl, 8); }
+inline vint8m2_t  __riscv_vrsub_vx_i8m2(const vint8m2_t& a, SymbolicScalar<int8_t> b, size_t vl)   { return rvv_sym_bv_rsub_vx(a, b.term(), vl, 8); }
+inline vint16m2_t __riscv_vrsub_vx_i16m2(const vint16m2_t& a, SymbolicScalar<int16_t> b, size_t vl) { return rvv_sym_bv_rsub_vx(a, b.term(), vl, 16); }
+inline vint32m4_t __riscv_vrsub_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_rsub_vx(a, b.term(), vl, 32); }
+
+// --- vmul_vx ---
+inline vint32m1_t __riscv_vmul_vx_i32m1(const vint32m1_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_MUL, vl, 32); }
+inline vint32m4_t __riscv_vmul_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_MUL, vl, 32); }
+inline vint32m8_t __riscv_vmul_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_MUL, vl, 32); }
+
+// --- vand_vx ---
+inline vint32m4_t __riscv_vand_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_AND, vl, 32); }
+inline vint32m8_t __riscv_vand_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_AND, vl, 32); }
+
+// --- vxor_vx ---
+inline vint32m4_t __riscv_vxor_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_XOR, vl, 32); }
+inline vint32m8_t __riscv_vxor_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_XOR, vl, 32); }
+
+// --- vmax_vx / vmin_vx (i32) ---
+inline vint32m4_t __riscv_vmax_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term c = tm.mk_term(Kind::BV_SGE, {a.getElement(i), b.term()});
+        r.push_back(tm.mk_term(Kind::ITE, {c, a.getElement(i), b.term()}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vint32m8_t __riscv_vmax_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term c = tm.mk_term(Kind::BV_SGE, {a.getElement(i), b.term()});
+        r.push_back(tm.mk_term(Kind::ITE, {c, a.getElement(i), b.term()}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vint32m4_t __riscv_vmin_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term c = tm.mk_term(Kind::BV_SLE, {a.getElement(i), b.term()});
+        r.push_back(tm.mk_term(Kind::ITE, {c, a.getElement(i), b.term()}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vint32m8_t __riscv_vmin_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term c = tm.mk_term(Kind::BV_SLE, {a.getElement(i), b.term()});
+        r.push_back(tm.mk_term(Kind::ITE, {c, a.getElement(i), b.term()}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// --- vsra_vx (symbolic shift) ---
+inline vint32m4_t __riscv_vsra_vx_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ASHR, vl, 32);
+}
+inline vint32m8_t __riscv_vsra_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_ASHR, vl, 32);
+}
+
+// --- vsll_vx (symbolic shift) ---
+inline vint16m4_t __riscv_vsll_vx_i16m4(const vint16m4_t& a, SymbolicScalar<int16_t> b, size_t vl) {
+    return rvv_sym_bv_binop_vx(a, b.term(), Kind::BV_SHL, vl, 16);
+}
+
+// --- vwmul_vx (widening multiply, symbolic) ---
+inline vint32m4_t __riscv_vwmul_vx_i32m4(const vint16m2_t& a, SymbolicScalar<int16_t> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term b_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {b.term()}, {16});
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {16});
+        r.push_back(tm.mk_term(Kind::BV_MUL, {a_ext, b_ext}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vint32m8_t __riscv_vwmul_vx_i32m8(const vint16m4_t& a, SymbolicScalar<int16_t> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term b_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {b.term()}, {16});
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {a.getElement(i)}, {16});
+        r.push_back(tm.mk_term(Kind::BV_MUL, {a_ext, b_ext}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// --- vwsub_vx (additional LMUL) ---
+inline vint16m2_t __riscv_vwsub_vx_i16m2(const vint8m1_t& op1, SymbolicScalar<int8_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term op2_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op2.term()}, {8});
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_SIGN_EXTEND, {op1.getElement(i)}, {8});
+        r.push_back(tm.mk_term(Kind::BV_SUB, {a_ext, op2_ext}));
+    }
+    return RVVVector(tm, 16, r);
+}
+
+// --- vwsubu_vx (unsigned widening subtract) ---
+inline vuint16m2_t __riscv_vwsubu_vx_u16m2(const vuint8m1_t& op1, SymbolicScalar<uint8_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term op2_ext = tm.mk_term(Kind::BV_ZERO_EXTEND, {op2.term()}, {8});
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_ZERO_EXTEND, {op1.getElement(i)}, {8});
+        r.push_back(tm.mk_term(Kind::BV_SUB, {a_ext, op2_ext}));
+    }
+    return RVVVector(tm, 16, r);
+}
+inline vuint16m4_t __riscv_vwsubu_vx_u16m4(const vuint8m2_t& op1, SymbolicScalar<uint8_t> op2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term op2_ext = tm.mk_term(Kind::BV_ZERO_EXTEND, {op2.term()}, {8});
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_ext = tm.mk_term(Kind::BV_ZERO_EXTEND, {op1.getElement(i)}, {8});
+        r.push_back(tm.mk_term(Kind::BV_SUB, {a_ext, op2_ext}));
+    }
+    return RVVVector(tm, 16, r);
+}
+
+// --- vmslt_vx (symbolic compare, mask-producing) ---
+inline MaskVector __riscv_vmslt_vx_i16m4_b4(const vint16m4_t& a, SymbolicScalar<int16_t> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), b.term()});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmslt_vx_i32m4_b8(const vint32m4_t& a, SymbolicScalar<int32_t> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), b.term()});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// --- vmerge_vxm (additional symbolic LMUL) ---
+inline vint32m4_t __riscv_vmerge_vxm_i32m4(const vint32m4_t& a, SymbolicScalar<int32_t> b, const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.term(), a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vint32m8_t __riscv_vmerge_vxm_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.term(), a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// ===========================================================================
+// SymbolicScalar — FP _vf_ generic helper
+// ===========================================================================
+inline RVVVector rvv_sym_fp32_binop_vf(const RVVVector& a, Term b_fp, Kind op, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    bool needs_rm = (op != Kind::FP_MAX && op != Kind::FP_MIN);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term res = needs_rm ? tm.mk_term(op, {rm, a_fp, b_fp}) : tm.mk_term(op, {a_fp, b_fp});
+        r.push_back(rvv_store_fp32_as_bv(tm, res));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// --- vfadd_vf ---
+inline vfloat32m1_t __riscv_vfadd_vf_f32m1(const vfloat32m1_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_ADD, vl); }
+inline vfloat32m2_t __riscv_vfadd_vf_f32m2(const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_ADD, vl); }
+inline vfloat32m4_t __riscv_vfadd_vf_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_ADD, vl); }
+inline vfloat32m8_t __riscv_vfadd_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_ADD, vl); }
+
+// --- vfmul_vf ---
+inline vfloat32m1_t __riscv_vfmul_vf_f32m1(const vfloat32m1_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MUL, vl); }
+inline vfloat32m2_t __riscv_vfmul_vf_f32m2(const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MUL, vl); }
+inline vfloat32m4_t __riscv_vfmul_vf_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MUL, vl); }
+inline vfloat32m8_t __riscv_vfmul_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MUL, vl); }
+
+// --- vfmul_vf _mu (masked, undisturbed) ---
+inline vfloat32m1_t __riscv_vfmul_vf_f32m1_mu(const vbool32_t& mask, const vfloat32m1_t& merge,
+                                                 const vfloat32m1_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_MUL, {rm, a_fp, b.term()});
+        Term res_bv = rvv_store_fp32_as_bv(tm, res_fp);
+        r.push_back(tm.mk_term(Kind::ITE, {sel, res_bv, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m2_t __riscv_vfmul_vf_f32m2_mu(const vbool16_t& mask, const vfloat32m2_t& merge,
+                                                 const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_MUL, {rm, a_fp, b.term()});
+        Term res_bv = rvv_store_fp32_as_bv(tm, res_fp);
+        r.push_back(tm.mk_term(Kind::ITE, {sel, res_bv, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m4_t __riscv_vfmul_vf_f32m4_mu(const vbool8_t& mask, const vfloat32m4_t& merge,
+                                                 const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_MUL, {rm, a_fp, b.term()});
+        Term res_bv = rvv_store_fp32_as_bv(tm, res_fp);
+        r.push_back(tm.mk_term(Kind::ITE, {sel, res_bv, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vfloat32m8_t __riscv_vfmul_vf_f32m8_mu(const vbool4_t& mask, const vfloat32m8_t& merge,
+                                                 const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode; Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_MUL, {rm, a_fp, b.term()});
+        Term res_bv = rvv_store_fp32_as_bv(tm, res_fp);
+        r.push_back(tm.mk_term(Kind::ITE, {sel, res_bv, merge.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// --- vfmin_vf / vfmax_vf ---
+inline vfloat32m1_t __riscv_vfmin_vf_f32m1(const vfloat32m1_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MIN, vl); }
+inline vfloat32m2_t __riscv_vfmin_vf_f32m2(const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MIN, vl); }
+inline vfloat32m4_t __riscv_vfmin_vf_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MIN, vl); }
+inline vfloat32m8_t __riscv_vfmin_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MIN, vl); }
+inline vfloat32m1_t __riscv_vfmax_vf_f32m1(const vfloat32m1_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MAX, vl); }
+inline vfloat32m2_t __riscv_vfmax_vf_f32m2(const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MAX, vl); }
+inline vfloat32m4_t __riscv_vfmax_vf_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MAX, vl); }
+inline vfloat32m8_t __riscv_vfmax_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FP_MAX, vl); }
+
+// --- vmflt_vf (symbolic FP compare, mask-producing) ---
+inline MaskVector __riscv_vmflt_vf_f32m1_b32(const vfloat32m1_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LT, {a_fp, b.term()});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmflt_vf_f32m2_b16(const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LT, {a_fp, b.term()});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmflt_vf_f32m4_b8(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LT, {a_fp, b.term()});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmflt_vf_f32m8_b4(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp32(tm, a.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_LT, {a_fp, b.term()});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// --- vfmerge_vfm (symbolic FP merge) ---
+inline vfloat32m4_t __riscv_vfmerge_vfm_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, const MaskVector& mask, size_t vl) {
+    auto& tm = g_ctx->tm; Term one = mk_bv_val(tm, 1, 1);
+    Term b_bv = rvv_store_fp32_as_bv(tm, b.term());
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b_bv, a.getElement(i)}));
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// ===========================================================================
+// Widening cast overloads — accept wider SymbolicScalar types and truncate.
+// Must be AFTER base SymbolicScalar overloads so the targets are visible.
+// ===========================================================================
+
+// vmv_v_x: int32 → int16/int8
+inline vint16m4_t __riscv_vmv_v_x_i16m4(SymbolicScalar<int32_t> v, size_t vl) { return __riscv_vmv_v_x_i16m4(v.cast<int16_t>(), vl); }
+inline vint16m2_t __riscv_vmv_v_x_i16m2(SymbolicScalar<int32_t> v, size_t vl) { return __riscv_vmv_v_x_i16m2(v.cast<int16_t>(), vl); }
+inline vint16m1_t __riscv_vmv_v_x_i16m1(SymbolicScalar<int32_t> v, size_t vl) { return __riscv_vmv_v_x_i16m1(v.cast<int16_t>(), vl); }
+inline vint8m1_t  __riscv_vmv_v_x_i8m1(SymbolicScalar<int32_t> v, size_t vl)  { return __riscv_vmv_v_x_i8m1(v.cast<int8_t>(), vl); }
+inline vint8m1_t  __riscv_vmv_v_x_i8m1(SymbolicScalar<int16_t> v, size_t vl)  { return __riscv_vmv_v_x_i8m1(v.cast<int8_t>(), vl); }
+
+// vrsub_vx
+inline vint16m4_t __riscv_vrsub_vx_i16m4(const vint16m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vrsub_vx_i16m4(a, b.cast<int16_t>(), vl); }
+inline vint16m2_t __riscv_vrsub_vx_i16m2(const vint16m2_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vrsub_vx_i16m2(a, b.cast<int16_t>(), vl); }
+
+// vmerge_vxm
+inline vint16m4_t __riscv_vmerge_vxm_i16m4(const vint16m4_t& a, SymbolicScalar<int32_t> b, const MaskVector& mask, size_t vl) { return __riscv_vmerge_vxm_i16m4(a, b.cast<int16_t>(), mask, vl); }
+
+// vsadd_vx
+inline vint16m4_t __riscv_vsadd_vx_i16m4(const vint16m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vsadd_vx_i16m4(a, b.cast<int16_t>(), vl); }
+inline vint16m2_t __riscv_vsadd_vx_i16m2(const vint16m2_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vsadd_vx_i16m2(a, b.cast<int16_t>(), vl); }
+
+// vmax_vx / vmin_vx: int32/int16 → int8
+inline vint8m2_t __riscv_vmax_vx_i8m2(const vint8m2_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vmax_vx_i8m2(a, b.cast<int8_t>(), vl); }
+inline vint8m2_t __riscv_vmax_vx_i8m2(const vint8m2_t& a, SymbolicScalar<int16_t> b, size_t vl) { return __riscv_vmax_vx_i8m2(a, b.cast<int8_t>(), vl); }
+inline vint8m2_t __riscv_vmin_vx_i8m2(const vint8m2_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vmin_vx_i8m2(a, b.cast<int8_t>(), vl); }
+inline vint8m2_t __riscv_vmin_vx_i8m2(const vint8m2_t& a, SymbolicScalar<int16_t> b, size_t vl) { return __riscv_vmin_vx_i8m2(a, b.cast<int8_t>(), vl); }
+
+// vmslt_vx
+inline MaskVector __riscv_vmslt_vx_i16m4_b4(const vint16m4_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vmslt_vx_i16m4_b4(a, b.cast<int16_t>(), vl); }
+
+// vwsub_vx: int32 → int8
+inline vint16m4_t __riscv_vwsub_vx_i16m4(const vint8m2_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vwsub_vx_i16m4(a, b.cast<int8_t>(), vl); }
+inline vint16m2_t __riscv_vwsub_vx_i16m2(const vint8m1_t& a, SymbolicScalar<int32_t> b, size_t vl) { return __riscv_vwsub_vx_i16m2(a, b.cast<int8_t>(), vl); }
+
+// vwsubu_vx: uint32 → uint8
+inline vuint16m2_t __riscv_vwsubu_vx_u16m2(const vuint8m1_t& a, SymbolicScalar<uint32_t> b, size_t vl) { return __riscv_vwsubu_vx_u16m2(a, b.cast<uint8_t>(), vl); }
+inline vuint16m4_t __riscv_vwsubu_vx_u16m4(const vuint8m2_t& a, SymbolicScalar<uint32_t> b, size_t vl) { return __riscv_vwsubu_vx_u16m4(a, b.cast<uint8_t>(), vl); }
 
 } // namespace salt

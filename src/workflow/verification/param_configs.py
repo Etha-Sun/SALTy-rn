@@ -453,11 +453,15 @@ PARAM_CONSTRAINTS = {
 }
 
 
-def get_verify_prologue(params_type: str) -> str:
+def get_verify_prologue(params_type: str, param_ranges: dict = None) -> str:
     """Generate C++ code for verify() — register params buffer + assert constraints.
 
     This goes in verify(), after other buffer registrations, before kernel calls.
     The constraints reference fields by loading from the buffer directly.
+
+    param_ranges: optional dict mapping field names to (min, max) tuples.
+        When provided (from KernelProfile), range constraints are emitted for
+        each listed field, restricting the solver to defined values.
     """
     clean_type = params_type.replace("struct ", "").replace("union ", "").strip()
     spec = PARAMS_FIELDS.get(clean_type)
@@ -468,12 +472,22 @@ def get_verify_prologue(params_type: str) -> str:
     fields = spec["fields"]
     lines = []
 
+    TYPE_BITS = {"int8_t": 8, "uint8_t": 8, "int16_t": 16, "uint16_t": 16,
+                 "int32_t": 32, "uint32_t": 32, "float": 32}
+    SIGNED_TYPES = {"int8_t", "int16_t", "int32_t"}
+
+    def _field_term(fname):
+        ftype = next((ft for ft, fn in fields if fn == fname), "int32_t")
+        bits = TYPE_BITS.get(ftype, 32)
+        fmember = f"{member}.{fname}" if member else fname
+        return f"_sym_params_buf.loadScalar(offsetof({clean_type}, {fmember}), {bits})", bits, ftype
+
     # Register symbolic buffer for params
     lines.append("    // --- Symbolic params buffer ---")
     lines.append(f"    auto& _sym_params_buf = ctx.registerBuffer(\"params\", sizeof({clean_type}));")
     lines.append(f"    _sym_params_buf.bind(&params);")
 
-    # Assert validity constraints using inline loads from the buffer
+    # Assert validity constraints (from PARAM_CONSTRAINTS)
     constraints = PARAM_CONSTRAINTS.get(clean_type, [])
     if constraints:
         lines.append("    // Validity constraints")
@@ -481,23 +495,29 @@ def get_verify_prologue(params_type: str) -> str:
             kind = constraint[0]
             lhs_name = constraint[1]
             rhs = constraint[2]
-            # Get LHS field info
-            lhs_type = next((ft for ft, fn in fields if fn == lhs_name), "int32_t")
-            lhs_bits = {"int8_t": 8, "uint8_t": 8, "int16_t": 16, "uint16_t": 16,
-                        "int32_t": 32, "uint32_t": 32}.get(lhs_type, 32)
-            lhs_member = f"{member}.{lhs_name}" if member else lhs_name
-            lhs_term = f"_sym_params_buf.loadScalar(offsetof({clean_type}, {lhs_member}), {lhs_bits})"
+            lhs_term, lhs_bits, _ = _field_term(lhs_name)
             if isinstance(rhs, str):
-                rhs_type = next((ft for ft, fn in fields if fn == rhs), "int32_t")
-                rhs_bits = {"int8_t": 8, "uint8_t": 8, "int16_t": 16, "uint16_t": 16,
-                            "int32_t": 32, "uint32_t": 32}.get(rhs_type, 32)
-                rhs_member = f"{member}.{rhs}" if member else rhs
-                rhs_term = f"_sym_params_buf.loadScalar(offsetof({clean_type}, {rhs_member}), {rhs_bits})"
+                rhs_term, _, _ = _field_term(rhs)
             else:
                 rhs_term = f"mk_bv_val(ctx.tm, {lhs_bits}, {rhs})"
             lines.append(
                 f"    ctx.solver->assert_formula("
                 f"ctx.tm.mk_term(Kind::{kind}, {{{lhs_term}, {rhs_term}}}));")
+
+    # Assert param_ranges (from KernelProfile)
+    if param_ranges:
+        lines.append("    // Range constraints (from kernel profile)")
+        for fname, (lo, hi) in param_ranges.items():
+            term, bits, ftype = _field_term(fname)
+            is_signed = ftype in SIGNED_TYPES
+            ge_kind = "BV_SGE" if is_signed else "BV_UGE"
+            le_kind = "BV_SLE" if is_signed else "BV_ULE"
+            lines.append(
+                f"    ctx.solver->assert_formula("
+                f"ctx.tm.mk_term(Kind::{ge_kind}, {{{term}, mk_bv_val(ctx.tm, {bits}, {lo})}}));")
+            lines.append(
+                f"    ctx.solver->assert_formula("
+                f"ctx.tm.mk_term(Kind::{le_kind}, {{{term}, mk_bv_val(ctx.tm, {bits}, {hi})}}));")
     lines.append("")
 
     return "\n".join(lines)

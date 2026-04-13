@@ -47,6 +47,13 @@ class HarnessSpec:
     secondary_dim: str = ""     # name of the secondary dimension arg (e.g., "channels")
     profile: Optional[KernelProfile] = None  # optional kernel-specific profile
 
+    # True if the kernel's `batch` argument is measured in BYTES (e.g. f32-velu
+    # with `assert(batch % sizeof(float) == 0)`), not in elements.  When set:
+    #   - the generated sweep starts at elem_bytes and steps by elem_bytes
+    #     (so invalid sub-element batches are never tested)
+    #   - the output comparison uses `batch / elem_bytes` as the element count
+    batch_is_bytes: bool = False
+
 
 def infer_buffer_sizes(sig: FuncSignature, kernel_name: str = "",
                        source: str = "") -> HarnessSpec:

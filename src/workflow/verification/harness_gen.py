@@ -13,6 +13,7 @@ from .sig_parser import ArgRole, parse_signature, classify_args, refine_with_sou
 from .size_inferrer import HarnessSpec, BufferSpec, infer_buffer_sizes, resolve_unknown_sizes_with_llm
 from .param_configs import (generate_configs, config_to_cpp,
                             get_verify_prologue, get_kernel_prologue, get_params_fields)
+from .kernel_profiles import get_profile
 
 log = logging.getLogger("pipeline")
 
@@ -65,6 +66,34 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
     if spec.needs_llm and llm_client:
         spec = resolve_unknown_sizes_with_llm(spec, neon_source, rvv_source, llm_client)
 
+    # Detect byte-count batch convention: kernels that assert
+    # `batch % sizeof(T) == 0` measure batch in bytes, not elements.
+    # The sweep must then start/step at elem_bytes and the output comparison
+    # must use `batch / elem_bytes` as the element count.
+    #
+    # NOTE: This is a regex heuristic on the NEON source text, not a sound
+    # detection.  False positives (`batch` as a substring of another name, or
+    # the pattern appearing in a comment) and false negatives (a byte-count
+    # kernel that happens to omit the explicit `% sizeof(T)` assertion) are
+    # both possible.  Works for current XNNPACK kernels because they follow a
+    # consistent idiom; a kernel profile override field is the right
+    # long-term fix when a second case forces it.
+    ba = re.escape(spec.batch_arg)
+    if re.search(rf'{ba}\s*%\s*sizeof\s*\(', neon_source) or \
+       re.search(rf'{ba}\s*/\s*sizeof\s*\(', neon_source):
+        spec.batch_is_bytes = True
+        log.info("Detected byte-count batch convention for %s (elem_bytes=%d)",
+                 kernel_name, spec.elem_bytes)
+
+    # Check kernel profile for symbolic_params override
+    profile = get_profile(kernel_name or neon_sig.name)
+    param_ranges = None
+    if not symbolic_params and profile and profile.symbolic_params:
+        symbolic_params = True
+        param_ranges = profile.param_ranges
+        log.info("Profile enables symbolic params for %s (ranges: %s)",
+                 kernel_name, param_ranges)
+
     # Build param configs
     if symbolic_params:
         # Symbolic mode: single config with zeroed params (concrete values unused)
@@ -83,7 +112,8 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
             param_configs = [("default", "")]
 
     # Generate
-    return _generate(spec, neon_source, rvv_source, param_configs, symbolic_params)
+    return _generate(spec, neon_source, rvv_source, param_configs,
+                     symbolic_params, param_ranges)
 
 
 # ---------------------------------------------------------------------------
@@ -108,7 +138,8 @@ def _validate_signatures(neon_sig, rvv_sig):
 # ---------------------------------------------------------------------------
 
 def _generate(spec: HarnessSpec, neon_source: str, rvv_source: str,
-              configs: list[tuple[str, str]], symbolic_params: bool = False) -> str:
+              configs: list[tuple[str, str]], symbolic_params: bool = False,
+              param_ranges: dict = None) -> str:
     """Assemble the complete C++ harness."""
     # Validate spec
     unknown = [b for b in spec.buffers if b.size_expr == "UNKNOWN"]
@@ -124,11 +155,17 @@ def _generate(spec: HarnessSpec, neon_source: str, rvv_source: str,
         neon_source = _rewrite_params_symbolic(neon_source, spec.params_type)
         rvv_source = _rewrite_params_symbolic(rvv_source, spec.params_type)
 
+    # Rewrite NEON LUT gathers and strip RVV extern table declarations
+    tables = spec.profile.lookup_tables if spec.profile and spec.profile.lookup_tables else None
+    if tables:
+        neon_source = _rewrite_neon_lut_gathers(neon_source, tables)
+        rvv_source = _strip_lut_externs(rvv_source, tables)
+
     parts = [
         _emit_header(),
         _emit_kernel("neon_kernel", neon_source, ["arm_neon.h"]),
         _emit_kernel("rvv_kernel", rvv_source, ["riscv_vector.h"]),
-        _emit_verify(spec, symbolic_params),
+        _emit_verify(spec, symbolic_params, param_ranges),
         _emit_main(spec, configs),
     ]
     return "\n".join(parts)
@@ -243,9 +280,22 @@ def _rewrite_params_symbolic(source: str, params_type: str) -> str:
     )
 
     # Pattern 7: C-style casts on sym_ variables → .cast<TYPE>()
+    # 7a: (TYPE) sym_var
     source = re.sub(
         r'\((\w+)\)\s*(sym_\w+)(?!\.)',
         lambda m: f'{m.group(2)}.cast<{m.group(1)}>()',
+        source
+    )
+    # 7b: (TYPE)(-sym_var) → (-sym_var).cast<TYPE>()
+    source = re.sub(
+        r'\((\w+)\)\s*\(\s*-(sym_\w+)\s*\)',
+        lambda m: f'(-{m.group(2)}).cast<{m.group(1)}>()',
+        source
+    )
+    # 7c: (TYPE)(sym_expr) where sym_expr contains a sym_ var — generic fallback
+    source = re.sub(
+        r'\((\w+)\)\s*\(([^)]*\bsym_\w+[^)]*)\)',
+        lambda m: f'({m.group(2)}).cast<{m.group(1)}>()',
         source
     )
 
@@ -272,6 +322,24 @@ def _rewrite_params_symbolic(source: str, params_type: str) -> str:
                     break
         source = '\n'.join(lines)
 
+    # Pattern 9: Re-run C-style cast rewriting on ALL propagated symbolic vars.
+    # Pattern 7 only caught sym_* prefix; now we know all tainted var names.
+    for sv in symbolic_vars:
+        if sv.startswith('sym_'):
+            continue  # already handled by Pattern 7
+        # 9a: (TYPE) var → var.cast<TYPE>()
+        source = re.sub(
+            rf'\((\w+)\)\s*\b({re.escape(sv)})\b(?!\.)',
+            lambda m: f'{m.group(2)}.cast<{m.group(1)}>()',
+            source
+        )
+        # 9b: (TYPE)(-var) → (-var).cast<TYPE>()
+        source = re.sub(
+            rf'\((\w+)\)\s*\(\s*-\s*({re.escape(sv)})\s*\)',
+            lambda m: f'(-{m.group(2)}).cast<{m.group(1)}>()',
+            source
+        )
+
     # Post-rewrite residual check — catch both nested and flat access
     residual = re.findall(r'(?<!&)params->\w+', source)
     # Filter out the function signature (const struct TYPE* params) — that's not an access
@@ -282,6 +350,163 @@ def _rewrite_params_symbolic(source: str, params_type: str) -> str:
             f"remain: {residual[:5]}. Manual fixup or LLM-assisted rewrite needed.")
 
     return source
+
+
+def _strip_lut_externs(source: str, tables: list) -> str:
+    """Remove `extern` declarations for LUT symbols.
+
+    The tables are defined as `static const` in xnn_minimal.h (included via
+    salt.hpp), so any `extern const ... table[...]` line in the kernel source
+    would create a conflicting declaration. Strip those lines.
+    """
+    for tbl in tables:
+        sym = tbl["symbol"]
+        # Match: extern const TYPE sym[...];  (possibly spanning whitespace)
+        pattern = rf'extern\s+const\s+\w+\s+{re.escape(sym)}\s*\[[^\]]*\]\s*;\s*\n?'
+        source = re.sub(pattern, '', source)
+    return source
+
+
+_KNOWN_LUT_IDIOMS = {"neon_s32_dup_lane"}
+
+
+def _rewrite_neon_lut_gathers(source: str, tables: list) -> str:
+    """Rewrite NEON LUT gather idioms into calls to the matching salt helper.
+
+    Each table entry must declare an "idiom" field.  The only supported value
+    is currently "neon_s32_dup_lane" (used by f32-velu).
+
+    ---- neon_s32_dup_lane ----
+    The idiom appears interleaved in f32-velu (not as contiguous triplets):
+
+        const uint64_t vidxA = vgetq_lane_u64(PACKED, 0);
+        const uint64_t vidxB = vgetq_lane_u64(PACKED, 1);
+        int32x2_t vlA = vld1_dup_s32((const int32_t*) ((uintptr_t) TABLE + (uint32_t) vidxA));
+        int32x2_t vlB = vld1_dup_s32((const int32_t*) ((uintptr_t) TABLE + (uint32_t) vidxB));
+        vlA = vld1_lane_s32((const int32_t*) ((uintptr_t) TABLE + (uint32_t) (vidxA >> 32)), vlA, 1);
+        vlB = vld1_lane_s32((const int32_t*) ((uintptr_t) TABLE + (uint32_t) (vidxB >> 32)), vlB, 1);
+
+    Rewritten by name correlation, not position:
+        1. Scan `const uint64_t IDX = vgetq_lane_u64(PACKED, HALF);`
+           to build IDX → (PACKED, HALF) map.
+        2. Replace `int32x2_t VL = vld1_dup_s32(...(uint32_t) IDX...);`
+           with `int32x2_t VL = salt_neon_gather2_s32(::TABLE, PACKED, HALF);`
+        3. Delete the matching `VL = vld1_lane_s32(...(uint32_t)(IDX >> 32)..., VL, 1);`
+        4. Delete the now-unused `const uint64_t IDX = vgetq_lane_u64(...);`
+
+    Fail-fast residual check: if any `(uintptr_t) TABLE + (uint32_t)` cast is
+    still present for a declared table, raise ValueError.
+    """
+    for tbl in tables:
+        sym = tbl["symbol"]
+        idiom = tbl.get("idiom")
+        if idiom is None:
+            raise ValueError(
+                f"LUT entry for {sym} is missing required 'idiom' field. "
+                f"Known idioms: {sorted(_KNOWN_LUT_IDIOMS)}")
+        if idiom not in _KNOWN_LUT_IDIOMS:
+            raise ValueError(
+                f"LUT entry for {sym} declares unknown idiom '{idiom}'. "
+                f"Known idioms: {sorted(_KNOWN_LUT_IDIOMS)}. "
+                f"Add a new rewrite path in _rewrite_neon_lut_gathers to "
+                f"support a new gather shape.")
+        # Dispatch per idiom. Only neon_s32_dup_lane is implemented today.
+        assert idiom == "neon_s32_dup_lane"
+
+        esym = re.escape(sym)
+
+        # Pass 1: build idx → (packed, half) map
+        idx_map = {}
+        getlane_pat = re.compile(
+            r'const\s+uint64_t\s+(\w+)\s*=\s*vgetq_lane_u64\s*\(\s*'
+            r'(\w+)\s*,\s*(\d+)\s*\)\s*;')
+        for m in getlane_pat.finditer(source):
+            idx_map[m.group(1)] = (m.group(2), m.group(3))
+
+        consumed_idxs = set()
+
+        # Pass 2: rewrite vld1_dup_s32 load into salt_neon_gather2_s32
+        dup_pat = re.compile(
+            r'int32x2_t\s+(?P<vl>\w+)\s*=\s*vld1_dup_s32\s*\(\s*'
+            r'\(\s*const\s+int32_t\s*\*\s*\)\s*'
+            r'\(\s*\(\s*uintptr_t\s*\)\s*' + esym + r'\s*\+\s*'
+            r'\(\s*uint32_t\s*\)\s*(?P<idx>\w+)\s*\)\s*\)\s*;')
+
+        def _dup_replace(m):
+            idx = m.group("idx")
+            if idx not in idx_map:
+                return m.group(0)  # not a LUT idx we recognize, leave alone
+            packed, half = idx_map[idx]
+            consumed_idxs.add(idx)
+            return (f'int32x2_t {m.group("vl")} = salt_neon_gather2_s32('
+                    f'::{sym}, {packed}, {half});')
+
+        source = dup_pat.sub(_dup_replace, source)
+
+        # Pass 3: delete the matching vld1_lane_s32 line (now redundant —
+        # salt_neon_gather2_s32 already loaded both lanes)
+        lane_pat = re.compile(
+            r'[ \t]*(\w+)\s*=\s*vld1_lane_s32\s*\(\s*'
+            r'\(\s*const\s+int32_t\s*\*\s*\)\s*'
+            r'\(\s*\(\s*uintptr_t\s*\)\s*' + esym + r'\s*\+\s*'
+            r'\(\s*uint32_t\s*\)\s*\(\s*(\w+)\s*>>\s*32\s*\)\s*\)\s*,\s*'
+            r'\1\s*,\s*1\s*\)\s*;\s*\n?')
+
+        def _lane_replace(m):
+            idx = m.group(2)
+            if idx not in consumed_idxs:
+                return m.group(0)
+            return ''
+
+        source = lane_pat.sub(_lane_replace, source)
+
+        # Pass 4: delete the now-unused `const uint64_t IDX = vgetq_lane_u64(...)`
+        # declarations for consumed idxs.
+        def _decl_replace(m):
+            if m.group(1) not in consumed_idxs:
+                return m.group(0)
+            return ''
+
+        decl_pat = re.compile(
+            r'[ \t]*const\s+uint64_t\s+(\w+)\s*=\s*vgetq_lane_u64\s*\(\s*'
+            r'\w+\s*,\s*\d+\s*\)\s*;\s*\n?')
+        source = decl_pat.sub(_decl_replace, source)
+
+        # Fail-fast residual check: the original idiom must be fully rewritten.
+        residual_pat = re.compile(
+            r'\(\s*uintptr_t\s*\)\s*' + esym + r'\s*\+\s*\(\s*uint32_t\s*\)')
+        if residual_pat.search(source):
+            raise ValueError(
+                f"LUT gather rewrite incomplete for {sym}: the original "
+                f"(uintptr_t){sym} + (uint32_t) idiom is still present after "
+                f"rewriting. The scalar extract→cast→pointer-load pattern in "
+                f"this kernel does not match the expected shape.")
+
+    return source
+
+
+def _emit_lut_registration(tables: list) -> str:
+    """Generate C++ code to register each LUT as a concrete SymbolicBuffer
+    with byte-level constraints. Follows the same pattern used for concrete
+    weights in _emit_buffer_register.
+    """
+    if not tables:
+        return ""
+    lines = ["    // Lookup tables — registered as concrete buffers"]
+    for tbl in tables:
+        sym = tbl["symbol"]
+        num_bytes = tbl["entries"] * tbl["elem_bytes"]
+        buf_name = sym  # buffer name derived from symbol, not hardcoded
+        lines.append(f"    auto& sym_{sym} = ctx.registerBuffer(\"{buf_name}\", {num_bytes});")
+        lines.append(f"    sym_{sym}.bind(::{sym});")
+        lines.append(f"    for (size_t _i = 0; _i < {num_bytes}; _i++) {{")
+        lines.append(f"        Term _tbyte = sym_{sym}.loadScalar(_i, 8);")
+        lines.append(f"        Term _tcval = ctx.tm.mk_bv_value_uint64("
+                     f"ctx.tm.mk_bv_sort(8), ((const uint8_t*)::{sym})[_i]);")
+        lines.append(f"        ctx.solver->assert_formula("
+                     f"ctx.tm.mk_term(Kind::EQUAL, {{_tbyte, _tcval}}));")
+        lines.append(f"    }}")
+    return "\n".join(lines)
 
 
 def _emit_header() -> str:
@@ -307,7 +532,8 @@ def _emit_kernel(namespace: str, source: str, strip_headers: list[str]) -> str:
     return f"namespace {namespace} {{\n{cleaned}\n}} // namespace {namespace}\n"
 
 
-def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False) -> str:
+def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
+                  param_ranges: dict = None) -> str:
     """Generate the verify() function."""
     output_bufs = [b for b in spec.buffers if b.role == ArgRole.OUTPUT]
     input_bufs = [b for b in spec.buffers if b.role in (ArgRole.INPUT_ARRAY, ArgRole.INPUT_SCALAR)]
@@ -369,9 +595,43 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False) -> str:
 
     # Symbolic params: register buffer + assert constraints (in verify scope)
     if symbolic_params and spec.params_type:
-        prologue = get_verify_prologue(spec.params_type)
+        prologue = get_verify_prologue(spec.params_type, param_ranges)
         if prologue:
             L.append(prologue)
+
+    # Lookup tables: register as concrete buffers with byte constraints
+    if spec.profile and spec.profile.lookup_tables:
+        L.append(_emit_lut_registration(spec.profile.lookup_tables))
+        L.append("")
+
+    # Input range constraint: restrict each f32/f64 input lane to a finite
+    # range.  Excludes NaN/inf/subnormal by construction (FP comparisons
+    # return false for NaN) — big speedup for FP-heavy kernels.
+    if spec.profile and spec.profile.input_range and not is_2d:
+        lo, hi = spec.profile.input_range
+        lbrace, rbrace = "{", "}"
+        for buf in input_bufs:
+            if buf.role != ArgRole.INPUT_ARRAY:
+                continue
+            ek = buf.elem_type.element_kind
+            if ek not in ("F32", "F64"):
+                continue
+            be = buf.elem_type.byte_size or 4
+            bits = be * 8
+            L.append(f"    // Input range constraint on '{buf.arg_name}': [{lo}, {hi}]")
+            L.append(f"    {lbrace}")
+            L.append(f"        Term _lo = mk_fp32_from_float(ctx.tm, {lo}f);")
+            L.append(f"        Term _hi = mk_fp32_from_float(ctx.tm, {hi}f);")
+            L.append(f"        for (size_t _i = 0; _i < padded; _i++) {lbrace}")
+            L.append(f"            Term _bv = sym_{buf.arg_name}.loadScalar(_i * {be}, {bits});")
+            L.append(f"            Term _fp = load_as_fp32(ctx.tm, _bv);")
+            L.append(f"            ctx.solver->assert_formula(ctx.tm.mk_term(Kind::AND, {lbrace}")
+            L.append(f"                ctx.tm.mk_term(Kind::FP_GEQ, {lbrace}_fp, _lo{rbrace}),")
+            L.append(f"                ctx.tm.mk_term(Kind::FP_LEQ, {lbrace}_fp, _hi{rbrace})")
+            L.append(f"            {rbrace}));")
+            L.append(f"        {rbrace}")
+            L.append(f"    {rbrace}")
+        L.append("")
 
     # Call both kernels
     neon_args = _build_call_args(spec, "neon")
@@ -401,7 +661,9 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False) -> str:
         L.append(f"    for (size_t _i = 1; _i < _row_eqs.size(); _i++)")
         L.append(f"        equiv = ctx.tm.mk_term(Kind::AND, {lbrace}equiv, _row_eqs[_i]{rbrace});")
     else:
-        cmp_count = ba
+        # For byte-count batch kernels, comparison count is batch / elem_bytes
+        # so we only compare bytes the kernel actually wrote.
+        cmp_count = f"({ba} / {eb})" if spec.batch_is_bytes else ba
         if len(output_bufs) == 1:
             L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{out0.arg_name}_neon, sym_{out0.arg_name}_rvv,")
             L.append(f"                                {cmp_count}, {eb}, ElementKind::{spec.element_kind});")
@@ -409,12 +671,17 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False) -> str:
             for i, ob in enumerate(output_bufs):
                 obe = ob.elem_type.byte_size or 1
                 ok = ob.elem_type.element_kind
+                ob_cmp_count = f"({ba} / {obe})" if spec.batch_is_bytes else ba
                 if i == 0:
-                    L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {cmp_count}, {obe}, ElementKind::{ok});")
+                    L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {ob_cmp_count}, {obe}, ElementKind::{ok});")
                 else:
-                    L.append(f"    equiv = ctx.tm.mk_term(Kind::AND, {{equiv, buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {cmp_count}, {obe}, ElementKind::{ok})}});")
+                    L.append(f"    equiv = ctx.tm.mk_term(Kind::AND, {{equiv, buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {ob_cmp_count}, {obe}, ElementKind::{ok})}});")
 
     L.append(f"    ctx.solver->assert_formula(ctx.tm.mk_term(Kind::NOT, {{equiv}}));")
+    # Progress line so the user sees activity even when a single check_sat()
+    # is slow.  Status SOLVING appears before the solver starts; the matching
+    # VERIFIED / COUNTEREXAMPLE / TIMEOUT line is emitted when it returns.
+    L.append(f'    printf("{{\\"status\\":\\"SOLVING\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {ba}, vlen, config_id);')
     L.append(f"    Result result = ctx.solver->check_sat();")
     L.append(f"")
 
@@ -444,7 +711,12 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False) -> str:
     else:
         for ob in output_bufs:
             obe = ob.elem_type.byte_size or 1
-            L.append(f'    for (size_t _i = 0; _i < {ba}; _i++) {{')
+            # For byte-count batch kernels, scan only the elements the kernel
+            # actually wrote (batch / elem_bytes), not `batch` elements.
+            # Otherwise the witness loop reads unwritten symbolic bytes and
+            # reports bogus fail_index values for any real counterexample.
+            scan_count = f"({ba} / {obe})" if spec.batch_is_bytes else ba
+            L.append(f'    for (size_t _i = 0; _i < {scan_count}; _i++) {{')
             L.append(f'        Term _n = ctx.solver->get_value(sym_{ob.arg_name}_neon.loadScalar(_i * {obe}, {obe*8}));')
             L.append(f'        Term _r = ctx.solver->get_value(sym_{ob.arg_name}_rvv.loadScalar(_i * {obe}, {obe*8}));')
             L.append(f'        if (_n.value<std::string>(10) != _r.value<std::string>(10)) {{ fi = _i; fail_buf = "{ob.arg_name}"; goto found_mismatch; }}')
@@ -752,15 +1024,23 @@ def _build_call_args(spec: HarnessSpec, variant: str) -> list[str]:
 
 
 def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
-    """Generate main() — loops over param configs, each running a batch sweep."""
+    """Generate main() — interleaved: for each batch size, run all configs.
+
+    This finds bugs faster by testing all param combos at small batch sizes
+    before moving to larger ones, giving broader coverage earlier.
+    """
     has_params = bool(spec.params_type)
     ba = spec.batch_arg
     is_2d = spec.layout == "2D"
     sd = spec.secondary_dim
+    num_configs = len(configs)
 
     L = []
     L.append("")
     L.append("int main(int argc, char** argv) {")
+    L.append("    // Force line-buffered stdout so status lines appear immediately")
+    L.append("    // when the harness is driven by a pipe (e.g. orchestrator).")
+    L.append("    setvbuf(stdout, NULL, _IOLBF, 0);")
     L.append('    if (argc < 3) { fprintf(stderr, "Usage: %s <start> <end> [vlen] [timeout]\\n", argv[0]); return 2; }')
     L.append("    size_t start = (size_t)atoi(argv[1]);")
     L.append("    size_t end   = (size_t)atoi(argv[2]);")
@@ -771,7 +1051,6 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
     if is_2d:
         sweep = spec.profile.channel_sweep if spec.profile and spec.profile.channel_sweep else [16]
         dual = spec.profile.dual_weight_layout if spec.profile else None
-        # Emit _vlmax if any sweep entry is a string expression that needs it
         has_expr = any(isinstance(v, str) for v in sweep)
         if has_expr and dual:
             L.append(f"    size_t _vlmax = {dual['rvv_tile_expr']};")
@@ -780,23 +1059,72 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
         L.append(f"    size_t num_{sd}_sizes = sizeof({sd}_sizes) / sizeof({sd}_sizes[0]);")
         L.append("")
 
-    for cfg_name, cfg_init in configs:
-        L.append(f"    // --- {cfg_name} ---")
-        L.append("    {")
-
-        if has_params:
-            L.append(f"        {spec.params_type} params{{}};")
+    # Initialize all param configs upfront
+    if has_params and num_configs > 1:
+        for idx, (cfg_name, cfg_init) in enumerate(configs):
+            L.append(f"    // {cfg_name}")
+            L.append(f"    {spec.params_type} params_{idx}{{}};")
             if cfg_init.strip():
                 for init_line in cfg_init.strip().split("\n"):
-                    L.append(f"        {init_line.lstrip()}")
+                    # Replace "params." with "params_N."
+                    L.append(f"    {init_line.lstrip().replace('params.', f'params_{idx}.')}")
             else:
-                L.append("        memset(&params, 0, sizeof(params));")
+                L.append(f"    memset(&params_{idx}, 0, sizeof(params_{idx}));")
+        L.append("")
+        # Build arrays of params pointers and config names
+        ptrs = ", ".join(f"&params_{i}" for i in range(num_configs))
+        names = ", ".join(f'"{cfg_name}"' for cfg_name, _ in configs)
+        L.append(f"    const {spec.params_type}* _params_list[] = {{{ptrs}}};")
+        L.append(f"    const char* _config_names[] = {{{names}}};")
+        L.append(f"    const int _num_configs = {num_configs};")
+        L.append("")
+    elif has_params:
+        # Single config (e.g., symbolic mode)
+        cfg_name, cfg_init = configs[0]
+        L.append(f"    {spec.params_type} params{{}};")
+        if cfg_init.strip():
+            for init_line in cfg_init.strip().split("\n"):
+                L.append(f"    {init_line.lstrip()}")
+        else:
+            L.append("    memset(&params, 0, sizeof(params));")
+        L.append("")
 
+    # Outer loop: batch sizes
+    if is_2d:
+        L.append(f"  for (size_t _ci = 0; _ci < num_{sd}_sizes; _ci++) {{")
+        L.append(f"    size_t {sd} = {sd}_sizes[_ci];")
+
+    # For byte-count batch kernels, sweep in elem_bytes steps and align
+    # the start to avoid invalid sub-element batches.
+    if spec.batch_is_bytes:
+        step = spec.elem_bytes
+        L.append(f"    size_t _start_aligned = start < {step} ? {step} : (start + {step} - 1) / {step} * {step};")
+        L.append(f"    for (size_t {ba} = _start_aligned; {ba} <= end; {ba} += {step}) {{")
+    else:
+        L.append(f"    for (size_t {ba} = start; {ba} <= end; {ba}++) {{")
+
+    # Inner loop: all configs at this batch size
+    if has_params and num_configs > 1:
+        L.append(f"        for (int _cfg = 0; _cfg < _num_configs; _cfg++) {{")
         if is_2d:
-            # Outer loop over channel sizes
-            L.append(f"      for (size_t _ci = 0; _ci < num_{sd}_sizes; _ci++) {{")
-            L.append(f"        size_t {sd} = {sd}_sizes[_ci];")
-            # Build config id that includes channel size
+            L.append(f'            char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "%s_{sd}%zu", _config_names[_cfg], {sd});')
+            vcall = f'verify({ba}, {sd}, vlen, *_params_list[_cfg], _cfgbuf)'
+        else:
+            vcall = f'verify({ba}, vlen, *_params_list[_cfg], _config_names[_cfg])'
+        L.append(f"            auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"            bool ok = {vcall};")
+        L.append(f"            double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"            if (!ok) return 1;")
+        L.append(f"            if (timeout > 0 && secs > timeout) {{")
+        cfg_id = '_cfgbuf' if is_2d else '_config_names[_cfg]'
+        L.append(f'                printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"seconds\\":%.1f,\\"config\\":\\"%s\\"}}\\n", {ba}, secs, {cfg_id});')
+        L.append(f"                goto done;")
+        L.append(f"            }}")
+        L.append(f"        }}")
+    else:
+        # Single config
+        cfg_name = configs[0][0] if configs else "default"
+        if is_2d:
             L.append(f'        char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_{sd}%zu", {sd});')
             if has_params:
                 vcall = f'verify({ba}, {sd}, vlen, params, _cfgbuf)'
@@ -807,26 +1135,23 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
                 vcall = f'verify({ba}, vlen, params, "{cfg_name}")'
             else:
                 vcall = f'verify({ba}, vlen, "{cfg_name}")'
-
-        L.append(f"        for (size_t {ba} = start; {ba} <= end; {ba}++) {{")
-        L.append(f"            auto t0 = std::chrono::steady_clock::now();")
-        L.append(f"            bool ok = {vcall};")
-        L.append(f"            double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
-        L.append(f"            if (!ok) return 1;")
-        L.append(f"            if (timeout > 0 && secs > timeout) {{")
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
         cfg_id = '_cfgbuf' if is_2d else f'"{cfg_name}"'
-        L.append(f'                printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"seconds\\":%.1f,\\"config\\":\\"%s\\"}}\\n", {ba}, secs, {cfg_id});')
-        L.append(f"                break;")
-        L.append(f"            }}")
+        L.append(f'            printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"seconds\\":%.1f,\\"config\\":\\"%s\\"}}\\n", {ba}, secs, {cfg_id});')
+        L.append(f"            goto done;")
         L.append(f"        }}")
 
-        if is_2d:
-            L.append(f"      }}")  # close channel sweep loop
+    L.append(f"    }}")  # close batch loop
 
-        L.append("    }")
-        L.append("")
+    if is_2d:
+        L.append(f"  }}")  # close channel sweep loop
 
-    L.append(f'    printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"start\\":%zu,\\"end\\":%zu,\\"configs\\":%d}}\\n", start, end, {len(configs)});')
+    L.append("done:")
+    L.append(f'    printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"start\\":%zu,\\"end\\":%zu,\\"configs\\":%d}}\\n", start, end, {num_configs});')
     L.append("    return 0;")
     L.append("}")
     L.append("")

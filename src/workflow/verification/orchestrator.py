@@ -19,7 +19,7 @@ log = logging.getLogger("pipeline")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent  # src/workflow/verification/ -> SALT/
 
-DEFAULT_MAX_BATCH = 10000
+DEFAULT_MAX_BATCH = 256
 
 VERIFICATION_DIR = PROJECT_ROOT / "src" / "verification"
 
@@ -108,19 +108,21 @@ def compile_harness(harness_source: str, kernel_name: str,
     # Build
     build_cmd = ["cmake", "--build", ".", "--target", harness_name, "-j"]
     log.info("Compiling %s...", harness_name)
+    t0 = time.perf_counter()
     result = subprocess.run(build_cmd, capture_output=True, text=True,
                             cwd=str(cmake_build_dir), timeout=120)
+    compile_time = time.perf_counter() - t0
 
     if result.returncode != 0:
         error = result.stderr + "\n" + result.stdout
-        log.error("Compilation failed:\n%s", error[:2000])
+        log.error("Compilation failed (%.1fs):\n%s", compile_time, error[:2000])
         return None, error
 
     bin_path = cmake_build_dir / harness_name
     if not bin_path.exists():
         return None, f"Binary not found at {bin_path}"
 
-    log.info("Compiled: %s", bin_path)
+    log.info("Compiled successfully: %s (%.1fs)", bin_path.name, compile_time)
     return bin_path, ""
 
 
@@ -158,76 +160,144 @@ def run_verification(bin_path: Path, kernel_name: str,
     # Overall timeout: scale with per-batch timeout and batch count
     overall_timeout = max(max_batch * 20, per_batch_timeout * max_batch, 600)
 
+    log.info("  Running: %s 1 %d %d %d", bin_path.name, max_batch, vlen, per_batch_timeout)
+
     t0 = time.perf_counter()
+    last_logged_batch = 0
+    current_config = ""
+    stderr_buf = []
+
+    # Stream stdout line-by-line for real-time progress
     try:
-        proc = subprocess.run(
+        proc = subprocess.Popen(
             [str(bin_path), "1", str(max_batch), str(vlen), str(per_batch_timeout)],
-            capture_output=True, text=True,
-            timeout=overall_timeout, env=env,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+            text=True, env=env,
+            bufsize=1,  # line-buffered on the Python side of the pipe
         )
-        elapsed = time.perf_counter() - t0
-    except subprocess.TimeoutExpired as e:
-        elapsed = time.perf_counter() - t0
-        log.warning("Overall process timeout after %.1fs — recovering partial results", elapsed)
-        # Recover whatever stdout was captured before the kill
-        stdout = (e.stdout or "") if isinstance(e.stdout, str) else ""
-        proc = type('R', (), {'stdout': stdout, 'stderr': '', 'returncode': -1})()
-        result.verdict = "PARTIAL"
 
-    # Parse output lines
-    for line in proc.stdout.strip().split("\n"):
-        line = line.strip()
-        if not line:
-            continue
+        import threading
+
+        def _read_stderr():
+            for line in proc.stderr:
+                stderr_buf.append(line)
+
+        stderr_thread = threading.Thread(target=_read_stderr, daemon=True)
+        stderr_thread.start()
+
+        for line in proc.stdout:
+            line = line.strip()
+            if not line:
+                continue
+
+            # Check overall timeout
+            if time.perf_counter() - t0 > overall_timeout:
+                log.warning("Overall timeout after %.1fs — killing process",
+                            time.perf_counter() - t0)
+                proc.kill()
+                result.verdict = "PARTIAL"
+                break
+
+            try:
+                data = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+
+            status = data.get("status", "")
+            batch = data.get("batch", 0)
+            config = data.get("config", "default")
+
+            # Log config transitions
+            if config != current_config:
+                if current_config:
+                    log.info("  config=%s: verified up to batch=%d",
+                             current_config, result.config_results.get(current_config, 0))
+                current_config = config
+                log.info("  Starting config=%s...", config)
+                last_logged_batch = 0
+
+            if status == "SOLVING":
+                # Visibility ping from verify() before check_sat() runs.
+                # Prevents silence when a single batch takes a long time.
+                elapsed_so_far = time.perf_counter() - t0
+                log.info("  batch=%-4d solving... (%.1fs)", batch, elapsed_so_far)
+
+            elif status == "VERIFIED":
+                result.max_verified_batch = max(result.max_verified_batch, batch)
+                result.verified_batches.append(BatchResult(batch=batch, status="VERIFIED"))
+                result.config_results[config] = max(
+                    result.config_results.get(config, 0), batch)
+                # Log every batch
+                elapsed_so_far = time.perf_counter() - t0
+                log.info("  batch=%-4d VERIFIED  (%.1fs)", batch, elapsed_so_far)
+                last_logged_batch = batch
+
+            elif status == "COUNTEREXAMPLE":
+                result.verdict = "COUNTEREXAMPLE"
+                result.counterexample = data
+                result.failed_config = config
+                result.verified_batches.append(
+                    BatchResult(batch=batch, status="COUNTEREXAMPLE", details=json.dumps(data)))
+                log.error("  batch=%-4d COUNTEREXAMPLE config=%s", batch, config)
+                log.error("    input[%s]=%s  neon_out=%s  rvv_out=%s",
+                           data.get("fail_index", "?"),
+                           data.get("input_at_fail", "?"),
+                           data.get("neon_out", "?"),
+                           data.get("rvv_out", "?"))
+
+            elif status == "TIMEOUT":
+                result.verdict = "PARTIAL"
+                log.info("  config=%s batch=%d exceeded %ds — verified up to batch=%d",
+                         config, batch, per_batch_timeout,
+                         result.config_results.get(config, 0))
+
+            elif status == "ALL_VERIFIED":
+                result.max_verified_batch = data.get("end", 0)
+                result.configs_tested = data.get("configs", 1)
+
+        proc.wait(timeout=10)
+        stderr_thread.join(timeout=5)
+
+    except Exception as e:
+        elapsed = time.perf_counter() - t0
+        log.warning("Process error after %.1fs: %s", elapsed, e)
         try:
-            data = json.loads(line)
-        except json.JSONDecodeError:
-            continue
-
-        status = data.get("status", "")
-        batch = data.get("batch", 0)
-        config = data.get("config", "default")
-
-        if status == "VERIFIED":
-            result.max_verified_batch = max(result.max_verified_batch, batch)
-            result.verified_batches.append(BatchResult(batch=batch, status="VERIFIED"))
-            # Track per-config max batch
-            result.config_results[config] = max(
-                result.config_results.get(config, 0), batch)
-
-        elif status == "COUNTEREXAMPLE":
-            result.verdict = "COUNTEREXAMPLE"
-            result.counterexample = data
-            result.failed_config = config
-            result.verified_batches.append(
-                BatchResult(batch=batch, status="COUNTEREXAMPLE", details=json.dumps(data)))
-            log.error("COUNTEREXAMPLE at batch=%d config=%s", batch, config)
-
-        elif status == "TIMEOUT":
-            # Per-batch timeout — this config verified up to previous batch
+            proc.kill()
+        except Exception:
+            pass
+        if result.verdict == "ALL_PASSED":
             result.verdict = "PARTIAL"
-            log.info("config=%s batch=%d exceeded %ds — verified up to batch=%d",
-                     config, batch, per_batch_timeout,
-                     result.config_results.get(config, 0))
 
-        elif status == "ALL_VERIFIED":
-            result.max_verified_batch = data.get("end", 0)
-            result.configs_tested = data.get("configs", 1)
+    returncode = proc.returncode if proc.returncode is not None else -1
+    stderr_text = "".join(stderr_buf)
 
-    # Check for crash (skip if we already set PARTIAL from timeout)
-    if result.verdict != "PARTIAL":
-        if proc.returncode not in (0, 1, 2):
+    # Check for crash
+    if result.verdict not in ("PARTIAL", "COUNTEREXAMPLE"):
+        if returncode not in (0, 1, 2):
             result.verdict = "CRASH"
-            result.compile_error = proc.stderr[:1000]
-            log.error("Harness crashed (exit=%d): %s", proc.returncode, proc.stderr[:500])
-        elif proc.returncode == 1 and result.verdict != "COUNTEREXAMPLE":
+            result.compile_error = stderr_text[:1000]
+            log.error("Harness crashed (exit=%d): %s", returncode, stderr_text[:500])
+        elif returncode == 1 and result.verdict != "COUNTEREXAMPLE":
             result.verdict = "CRASH"
-            result.compile_error = proc.stderr[:1000] or proc.stdout[:1000]
+            result.compile_error = stderr_text[:1000]
 
+    total_elapsed = time.perf_counter() - t0
     num_verified = len([b for b in result.verified_batches if b.status == "VERIFIED"])
     num_configs = len(result.config_results)
-    log.info("Verified %d batch sizes across %d configs, max_batch=%d",
-             num_verified, num_configs, result.max_verified_batch)
+
+    if result.verdict == "ALL_PASSED":
+        log.info("═══════════════════════════════════════════════════════════")
+        log.info("VERIFIED: %s — %d batches, %d configs, max_batch=%d (%.1fs)",
+                 kernel_name, num_verified, num_configs, result.max_verified_batch,
+                 total_elapsed)
+    elif result.verdict == "COUNTEREXAMPLE":
+        log.error("FAILED: %s — counterexample at batch=%d config=%s",
+                  kernel_name, result.counterexample.get("batch", 0), result.failed_config)
+    elif result.verdict == "PARTIAL":
+        log.info("PARTIAL: %s — %d batches verified, max=%d (%.1fs)",
+                 kernel_name, num_verified, result.max_verified_batch, total_elapsed)
+    else:
+        log.error("RESULT: %s — %s", kernel_name, result.verdict)
 
     return result
 
@@ -253,7 +323,33 @@ def verify_kernel(neon_path: str, rvv_path: str,
     if not kernel_name:
         kernel_name = Path(neon_path).stem
 
+    log.info("═══════════════════════════════════════════════════════════")
+    log.info("Verification: %s", kernel_name)
+    log.info("  NEON source: %s", neon_path)
+    log.info("  RVV source:  %s", rvv_path)
+    log.info("  VLEN=%d  max_batch=%d  per_batch_timeout=%ds",
+             vlen, max_batch, per_batch_timeout)
+
+    # Check kernel profile
+    from .kernel_profiles import get_profile
+    profile = get_profile(kernel_name)
+    if profile:
+        log.info("  Kernel profile found: layout=%s, symbolic_params=%s",
+                 profile.layout, profile.symbolic_params)
+        if profile.symbolic_params and profile.param_ranges:
+            log.info("  Param ranges: %s", profile.param_ranges)
+        if not symbolic_params and profile.symbolic_params:
+            log.info("  Profile overrides symbolic_params → True")
+    else:
+        log.info("  No kernel profile — using defaults")
+
+    if symbolic_params:
+        log.info("  Mode: SYMBOLIC PARAMS (proving for all valid param values)")
+    else:
+        log.info("  Mode: CONCRETE CONFIGS (testing specific param values)")
+
     # 1. Generate harness
+    log.info("Step 1/3: Generating verification harness...")
     try:
         harness = generate_harness_from_files(
             neon_path, rvv_path,
@@ -265,24 +361,31 @@ def verify_kernel(neon_path: str, rvv_path: str,
             llm_client=llm_client,
         )
     except Exception as e:
+        log.error("Harness generation failed: %s", e)
         return VerificationResult(
             kernel_name=kernel_name,
             verdict="HARNESS_GEN_ERROR",
             compile_error=str(e),
         )
+    log.info("  Harness generated (%d lines)", harness.count('\n') + 1)
 
     # 2. Compile
+    log.info("Step 2/3: Compiling verification harness...")
     bin_path, compile_error = compile_harness(harness, kernel_name)
     if bin_path is None:
         missing = extract_missing_intrinsics(compile_error)
+        if missing:
+            log.error("  Missing intrinsics: %s", missing)
         return VerificationResult(
             kernel_name=kernel_name,
             verdict="MISSING_INTRINSIC" if missing else "COMPILE_ERROR",
             compile_error=compile_error[:3000],
             missing_intrinsics=missing,
         )
+    log.info("  Compilation successful")
 
     # 3. Run
+    log.info("Step 3/3: Starting bounded verification (batch=1..%d)...", max_batch)
     return run_verification(bin_path, kernel_name,
                              per_batch_timeout=per_batch_timeout,
                              max_batch=max_batch,

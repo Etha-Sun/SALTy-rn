@@ -132,12 +132,21 @@ def find_kernels(source_dir: Path) -> list[Path]:
 
 
 def find_kernel_by_name(source_dir: Path, name: str) -> Path | None:
-    """Find a kernel file by name (without extension)."""
+    """Find a kernel file by name (without extension).
+
+    Prefers exact match (name.c) over substring glob (*name*.c)
+    to avoid e.g. 'qs8-vadd' matching 'qs8-vaddc.c'.
+    """
+    # 1. Exact match
     for ext in [".c", ".cpp"]:
-        for pattern in [f"*{name}*{ext}"]:
-            matches = list(source_dir.glob(pattern))
-            if matches:
-                return matches[0]
+        exact = source_dir / f"{name}{ext}"
+        if exact.exists():
+            return exact
+    # 2. Substring glob fallback — pick shortest filename to prefer exact-ish matches
+    for ext in [".c", ".cpp"]:
+        matches = list(source_dir.glob(f"*{name}*{ext}"))
+        if matches:
+            return min(matches, key=lambda p: len(p.name))
     return None
 
 
@@ -183,6 +192,8 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
         log.warning("Formal verification module not available")
         return None
 
+    log.info("Starting formal verification for %s", kernel_name)
+
     # Use verification-specific LLM for buffer size inference if needed
     try:
         verification_llm = cfg.create_verification_llm_client()
@@ -193,7 +204,11 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
     source_text = kernel_path.read_text()
     is_2d = "stride" in source_text and "channels" in source_text
     per_batch_timeout = 300 if is_2d else 60  # 5 min per batch for 2D
-    max_batch = 64 if is_2d else 1000
+    max_batch = 64 if is_2d else 256
+
+    if is_2d:
+        log.info("  2D kernel detected — per_batch_timeout=%ds, max_batch=%d",
+                 per_batch_timeout, max_batch)
 
     result = verify_kernel(
         neon_path=str(kernel_path),
@@ -205,7 +220,10 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
         llm_client=verification_llm,
     )
     import json
-    return json.loads(result.to_json())
+    result_dict = json.loads(result.to_json())
+    log.info("Formal verification complete: %s → %s",
+             kernel_name, result_dict.get("verdict", "UNKNOWN"))
+    return result_dict
 
 
 def _call_llm(client, prompt: str, system: str, tools: dict, cfg: Config,
