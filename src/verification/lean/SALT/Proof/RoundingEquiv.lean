@@ -1,20 +1,3 @@
-/-
-  SALT.Proof.RoundingEquiv — The load-bearing proof.
-
-  Proves that NEON's 64-bit-widen rounding shift and RVV's bit-extract
-  rounding shift produce identical results for all 32-bit inputs and
-  valid shift amounts (0..31).
-
-  NEON: truncate32((sext64(x) + (1 << (shift-1))) >>> shift)
-  RVV:  (x >>> shift) + zext32(x[shift-1])
-
-  Strategy: case-split on the 32 possible shift values, then use bv_decide
-  (SAT-based BitVec decision procedure) for each concrete case.
-
-  Reference:
-    src/verification/neon/intrinsics.hpp:228-266
-    src/verification/rvv/intrinsics.hpp:33-57
--/
 import SALT.Intrinsics.Neon
 import SALT.Intrinsics.RVV
 import Std.Tactic.BVDecide
@@ -24,14 +7,10 @@ namespace SALT.Proof.RoundingEquiv
 open SALT.Intrinsics.Neon
 open SALT.Intrinsics.RVV
 
-/-- Main theorem: NEON and RVV rounding shift produce identical results
-    for all 32-bit inputs and all shift amounts in [0, 31].
+-- ============================================================================
+-- Rounding shift equivalence
+-- ============================================================================
 
-    This is the soundness linchpin — without it, we'd only be proving
-    equivalence of normalized models, not equivalence of the real kernels.
-
-    Proof: case-split on shift (0..31), each case discharged by bv_decide
-    (SAT-based BitVec decision procedure over 32+64 bit formulas). -/
 theorem rounding_shift_equiv (x : BitVec 32) (shift : Nat)
     (h_bound : shift ≤ 31) :
     neonRoundingShiftRight x shift = rvvRoundingShiftRight x shift := by

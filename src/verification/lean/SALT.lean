@@ -1,10 +1,11 @@
 import SALT.Basic
-import SALT.Params
 import SALT.Intrinsics.Neon
 import SALT.Intrinsics.RVV
-import SALT.Kernel.Neon
-import SALT.Kernel.RVV
 import SALT.Proof.RoundingEquiv
-import SALT.Proof.IterationEquiv
-import SALT.Proof.ChunkEquiv
-import SALT.Proof.Equivalence
+import SALT.Kernel.QS8.Params
+import SALT.Kernel.QS8VAddC.Neon
+import SALT.Kernel.QS8VAddC.RVV
+import SALT.Kernel.QS8VAddC.Equivalence
+import SALT.Kernel.QS8VAdd.Neon
+import SALT.Kernel.QS8VAdd.RVV
+import SALT.Kernel.QS8VAdd.Equivalence
