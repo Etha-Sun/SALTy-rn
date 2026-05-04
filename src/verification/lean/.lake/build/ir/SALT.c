@@ -1,6 +1,6 @@
 // Lean compiler output
 // Module: SALT
-// Imports: public import Init public import SALT.Basic public import SALT.Params public import SALT.Intrinsics.Neon public import SALT.Intrinsics.RVV public import SALT.Kernel.Neon public import SALT.Kernel.RVV public import SALT.Proof.RoundingEquiv public import SALT.Proof.IterationEquiv public import SALT.Proof.ChunkEquiv public import SALT.Proof.Equivalence
+// Imports: public import Init public import SALT.Basic public import SALT.Intrinsics.Neon public import SALT.Intrinsics.RVV public import SALT.Proof.RoundingEquiv public import SALT.Kernel.QS8.Params public import SALT.Kernel.QS8VAddC.Neon public import SALT.Kernel.QS8VAddC.RVV public import SALT.Kernel.QS8VAddC.Equivalence public import SALT.Kernel.QS8VAdd.Neon public import SALT.Kernel.QS8VAdd.RVV public import SALT.Kernel.QS8VAdd.Equivalence
 #include <lean/lean.h>
 #if defined(__clang__)
 #pragma clang diagnostic ignored "-Wunused-parameter"
@@ -15,15 +15,16 @@ extern "C" {
 #endif
 lean_object* initialize_Init(uint8_t builtin);
 lean_object* initialize_SALT_SALT_Basic(uint8_t builtin);
-lean_object* initialize_SALT_SALT_Params(uint8_t builtin);
 lean_object* initialize_SALT_SALT_Intrinsics_Neon(uint8_t builtin);
 lean_object* initialize_SALT_SALT_Intrinsics_RVV(uint8_t builtin);
-lean_object* initialize_SALT_SALT_Kernel_Neon(uint8_t builtin);
-lean_object* initialize_SALT_SALT_Kernel_RVV(uint8_t builtin);
 lean_object* initialize_SALT_SALT_Proof_RoundingEquiv(uint8_t builtin);
-lean_object* initialize_SALT_SALT_Proof_IterationEquiv(uint8_t builtin);
-lean_object* initialize_SALT_SALT_Proof_ChunkEquiv(uint8_t builtin);
-lean_object* initialize_SALT_SALT_Proof_Equivalence(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8_Params(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8VAddC_Neon(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8VAddC_RVV(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8VAddC_Equivalence(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8VAdd_Neon(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8VAdd_RVV(uint8_t builtin);
+lean_object* initialize_SALT_SALT_Kernel_QS8VAdd_Equivalence(uint8_t builtin);
 static bool _G_initialized = false;
 LEAN_EXPORT lean_object* initialize_SALT_SALT(uint8_t builtin) {
 lean_object * res;
@@ -35,31 +36,34 @@ lean_dec_ref(res);
 res = initialize_SALT_SALT_Basic(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_SALT_SALT_Params(builtin);
-if (lean_io_result_is_error(res)) return res;
-lean_dec_ref(res);
 res = initialize_SALT_SALT_Intrinsics_Neon(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 res = initialize_SALT_SALT_Intrinsics_RVV(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_SALT_SALT_Kernel_Neon(builtin);
-if (lean_io_result_is_error(res)) return res;
-lean_dec_ref(res);
-res = initialize_SALT_SALT_Kernel_RVV(builtin);
-if (lean_io_result_is_error(res)) return res;
-lean_dec_ref(res);
 res = initialize_SALT_SALT_Proof_RoundingEquiv(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_SALT_SALT_Proof_IterationEquiv(builtin);
+res = initialize_SALT_SALT_Kernel_QS8_Params(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_SALT_SALT_Proof_ChunkEquiv(builtin);
+res = initialize_SALT_SALT_Kernel_QS8VAddC_Neon(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
-res = initialize_SALT_SALT_Proof_Equivalence(builtin);
+res = initialize_SALT_SALT_Kernel_QS8VAddC_RVV(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_SALT_SALT_Kernel_QS8VAddC_Equivalence(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_SALT_SALT_Kernel_QS8VAdd_Neon(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_SALT_SALT_Kernel_QS8VAdd_RVV(builtin);
+if (lean_io_result_is_error(res)) return res;
+lean_dec_ref(res);
+res = initialize_SALT_SALT_Kernel_QS8VAdd_Equivalence(builtin);
 if (lean_io_result_is_error(res)) return res;
 lean_dec_ref(res);
 return lean_io_result_mk_ok(lean_box(0));
