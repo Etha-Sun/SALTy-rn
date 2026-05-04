@@ -26,6 +26,12 @@ class ArgRole(Enum):
     UNKNOWN = auto()        # couldn't classify
 
 
+# Roles that carry a scalar value (not a pointer).  Used by shape planners
+# and the call-args emitter to filter to "args that can be bound to a C++
+# expression" without re-listing the enum members each time.
+SCALAR_VALUE_ROLES = frozenset({ArgRole.BATCH, ArgRole.SCALAR_SIZE, ArgRole.STRIDE})
+
+
 class ElemType(Enum):
     """Element type inferred from C pointer type."""
     INT8 = ("int8_t", 1, "SINT")
@@ -34,6 +40,7 @@ class ElemType(Enum):
     UINT16 = ("uint16_t", 2, "UINT")
     INT32 = ("int32_t", 4, "SINT")
     UINT32 = ("uint32_t", 4, "UINT")
+    FLOAT16 = ("xnn_float16", 2, "F16")
     FLOAT = ("float", 4, "F32")
     VOID = ("void", 0, "UNKNOWN")
     OTHER = ("other", 0, "UNKNOWN")
@@ -83,6 +90,7 @@ _TYPE_MAP = {
     "uint16_t": ElemType.UINT16,
     "int32_t": ElemType.INT32,
     "uint32_t": ElemType.UINT32,
+    "xnn_float16": ElemType.FLOAT16,
     "float": ElemType.FLOAT,
     "void": ElemType.VOID,
 }
@@ -331,28 +339,36 @@ def _is_scalar_broadcast(kernel_name: str) -> bool:
 # ---------------------------------------------------------------------------
 # Source-level analysis for scalar vs array detection
 # ---------------------------------------------------------------------------
+def _strip_c_comments(source: str) -> str:
+    """Remove /* ... */ and // ... comments before text scanning.
+
+    Without this, a `{` inside a leading doc comment is mistaken for the
+    function body's opening brace, and downstream regex checks see the
+    function signature itself (treating `TYPE* name` as a scalar deref).
+    """
+    source = re.sub(r'/\*.*?\*/', '', source, flags=re.DOTALL)
+    source = re.sub(r'//[^\n]*', '', source)
+    return source
+
+
 def detect_scalar_broadcast_from_source(source: str, arg_name: str) -> bool:
     """Detect if a pointer argument is used as scalar (dereferenced once, never advanced).
 
     Only scans the function body (after the opening brace), not the signature.
     Returns True if the arg is likely scalar broadcast, False if array.
     """
-    # Extract function body only (after first '{')
+    source = _strip_c_comments(source)
     brace_pos = source.find('{')
     if brace_pos == -1:
         return False
     body = source[brace_pos:]
 
-    # Check: does the body advance the pointer? (arg_name += N)
     if re.search(rf'{arg_name}\s*\+\=', body):
         return False
-    # Check: does it dereference as *arg_name (scalar read)?
     if re.search(rf'\*\s*{arg_name}\b', body):
         return True
-    # Check: does it use it in vld1_dup (broadcast load)?
     if re.search(rf'vld1[q]?_dup_\w+\s*\(\s*{arg_name}\s*\)', body):
         return True
-    # Default: assume array
     return False
 
 

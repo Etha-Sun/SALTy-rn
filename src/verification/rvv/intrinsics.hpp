@@ -57,30 +57,30 @@ inline Term rounded_shift_right(TermManager& tm, Term val, size_t shift,
     }
 
     if (vxrm == __RISCV_VXRM_RNE) {
-        // RNE: add rounding bit only if result would be odd or lower bits nonzero
-        // r = v[shift-1] & (v[shift-2:0] != 0 || result[0] == 1)
+        // RNE: round up iff round_bit=1 AND (lower bits nonzero OR result odd).
+        // For shift==1 there are no lower bits, so the OR collapses to result_odd.
+        Term result_bit0 = tm.mk_term(Kind::BV_EXTRACT, {shifted}, {0UL, 0UL});
+        Term result_odd = tm.mk_term(Kind::EQUAL,
+            {result_bit0, tm.mk_bv_value_uint64(tm.mk_bv_sort(1), 1)});
+        Term tie_breaker;
         if (shift >= 2) {
             Term lower = tm.mk_term(Kind::BV_EXTRACT, {val},
                                       {static_cast<uint64_t>(shift - 2), 0UL});
             Term lower_zero = tm.mk_term(Kind::EQUAL,
                 {lower, tm.mk_bv_value_uint64(tm.mk_bv_sort(shift - 1), 0)});
-            Term result_bit0 = tm.mk_term(Kind::BV_EXTRACT, {shifted}, {0UL, 0UL});
-            Term result_odd = tm.mk_term(Kind::EQUAL,
-                {result_bit0, tm.mk_bv_value_uint64(tm.mk_bv_sort(1), 1)});
-            Term should_round = tm.mk_term(Kind::AND, {
-                tm.mk_term(Kind::EQUAL, {round_bit, tm.mk_bv_value_uint64(tm.mk_bv_sort(1), 1)}),
-                tm.mk_term(Kind::OR, {
-                    tm.mk_term(Kind::NOT, {lower_zero}),
-                    result_odd
-                })
-            });
-            Term one = tm.mk_bv_value_uint64(sort, 1);
-            Term zero = tm.mk_bv_value_uint64(sort, 0);
-            Term adj = tm.mk_term(Kind::ITE, {should_round, one, zero});
-            return tm.mk_term(Kind::BV_ADD, {shifted, adj});
+            tie_breaker = tm.mk_term(Kind::OR,
+                {tm.mk_term(Kind::NOT, {lower_zero}), result_odd});
+        } else {
+            tie_breaker = result_odd;
         }
-        // shift==1: RNE same as RNU
-        return tm.mk_term(Kind::BV_ADD, {shifted, round_ext});
+        Term should_round = tm.mk_term(Kind::AND, {
+            tm.mk_term(Kind::EQUAL, {round_bit, tm.mk_bv_value_uint64(tm.mk_bv_sort(1), 1)}),
+            tie_breaker
+        });
+        Term one = tm.mk_bv_value_uint64(sort, 1);
+        Term zero = tm.mk_bv_value_uint64(sort, 0);
+        Term adj = tm.mk_term(Kind::ITE, {should_round, one, zero});
+        return tm.mk_term(Kind::BV_ADD, {shifted, adj});
     }
 
     // ROD: if any truncated bits are nonzero, set bit 0 of result to 1
@@ -1561,6 +1561,7 @@ inline vint16m4_t __riscv_vmv_v_x_i16m4(int16_t v, size_t vl) { auto& tm=g_ctx->
 inline vint32m2_t __riscv_vmv_v_x_i32m2(int32_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,32,v); return RVVVector(tm,32,std::vector<Term>(vl,val)); }
 inline vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,32,static_cast<int64_t>(v)); return RVVVector(tm,32,std::vector<Term>(vl,val)); }
 inline vuint32m4_t __riscv_vmv_v_x_u32m4(uint32_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,32,static_cast<int64_t>(v)); return RVVVector(tm,32,std::vector<Term>(vl,val)); }
+inline vuint16m1_t __riscv_vmv_v_x_u16m1(uint16_t v, size_t vl) { auto& tm=g_ctx->tm; Term val=mk_bv_val(tm,16,static_cast<int64_t>(v)); return RVVVector(tm,16,std::vector<Term>(vl,val)); }
 
 // VSADD additional variants
 inline vint16m1_t __riscv_vsadd_vx_i16m1(const vint16m1_t& a, int16_t b, size_t vl) {
@@ -1745,6 +1746,13 @@ inline RVVVector __riscv_vreinterpret_v_u32m1_u8m1(const RVVVector& a) { return 
 // VID: index vector (vid[i] = i)
 // ---------------------------------------------------------------------------
 inline RVVVector __riscv_vid_v_u32m1(size_t vl) {
+    auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) r.push_back(mk_bv_val(tm, 32, i));
+    return RVVVector(tm, 32, r);
+}
+// LMUL=m2 variant — logically identical for our model: vl elements of 32 bits.
+// The underlying register group size doesn't affect the symbolic semantics.
+inline RVVVector __riscv_vid_v_u32m2(size_t vl) {
     auto& tm = g_ctx->tm; std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) r.push_back(mk_bv_val(tm, 32, i));
     return RVVVector(tm, 32, r);
@@ -2264,6 +2272,37 @@ inline MaskVector __riscv_vmslt_vx_i16m2_b8(const vint16m2_t& a, int16_t b, size
     for (size_t i = 0; i < vl; i++) {
         Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), bv});
         bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// i32m2 signed compare against scalar — produces b16 mask (EEW=32, ratio=2 → b16).
+// Used by conv-hwc2chw gather-style bounds checks.
+inline MaskVector __riscv_vmslt_vx_i32m2_b16(const vint32m2_t& a, int32_t b, size_t vl) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 32, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SLT, {a.getElement(i), bv});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+inline MaskVector __riscv_vmsge_vx_i32m2_b16(const vint32m2_t& a, int32_t b, size_t vl) {
+    auto& tm = g_ctx->tm; Term bv = mk_bv_val(tm, 32, b);
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cmp = tm.mk_term(Kind::BV_SGE, {a.getElement(i), bv});
+        bits.push_back(tm.mk_term(Kind::ITE, {cmp, mk_bv_val(tm, 1, 1), mk_bv_val(tm, 1, 0)}));
+    }
+    return MaskVector(tm, bits);
+}
+// Bitwise AND of two b16 masks.  b16 is just the MaskVector alias for 1-bit
+// per element; `vl` truncates to the active lane count.
+inline MaskVector __riscv_vmand_mm_b16(const MaskVector& a, const MaskVector& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        bits.push_back(tm.mk_term(Kind::BV_AND, {a.getBit(i), b.getBit(i)}));
     }
     return MaskVector(tm, bits);
 }
@@ -3219,5 +3258,484 @@ inline vint16m2_t __riscv_vwsub_vx_i16m2(const vint8m1_t& a, SymbolicScalar<int3
 // vwsubu_vx: uint32 → uint8
 inline vuint16m2_t __riscv_vwsubu_vx_u16m2(const vuint8m1_t& a, SymbolicScalar<uint32_t> b, size_t vl) { return __riscv_vwsubu_vx_u16m2(a, b.cast<uint8_t>(), vl); }
 inline vuint16m4_t __riscv_vwsubu_vx_u16m4(const vuint8m2_t& a, SymbolicScalar<uint32_t> b, size_t vl) { return __riscv_vwsubu_vx_u16m4(a, b.cast<uint8_t>(), vl); }
+
+// ===========================================================================
+// PHASE 4: Float16 (FP16) RVV intrinsics
+// ===========================================================================
+
+// FP16 helpers: BV16 ↔ FP16 (5-bit exponent, 11-bit significand)
+inline Term rvv_load_as_fp16(TermManager& tm, Term bv) {
+    return tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
+}
+
+inline size_t& rvv_fp16_bv_counter() {
+    static size_t counter = 0;
+    return counter;
+}
+
+inline Term rvv_store_fp16_as_bv(TermManager& tm, Term fp_val) {
+    Sort bv16 = tm.mk_bv_sort(16);
+    Term bv = tm.mk_const(bv16, "_rvv_fp16_2bv_" + std::to_string(rvv_fp16_bv_counter()++));
+    Term fp_from_bv = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
+    g_ctx->solver->assert_formula(tm.mk_term(Kind::EQUAL, {fp_from_bv, fp_val}));
+    return bv;
+}
+
+// Helper: apply binary FP16 op element-wise
+inline RVVVector rvv_fp16_binop(const RVVVector& a, const RVVVector& b, Kind op, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    bool needs_rm = (op != Kind::FP_MAX && op != Kind::FP_MIN);
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp16(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp16(tm, b.getElement(i));
+        Term res_fp = needs_rm ? tm.mk_term(op, {rm, a_fp, b_fp}) : tm.mk_term(op, {a_fp, b_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// ===========================================================================
+// VLE / VSE for float16
+// ===========================================================================
+inline vfloat16m1_t __riscv_vle16_v_f16m1(const _Float16* ptr, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    return buf.loadRVV(buf.ptrToByteOffset(ptr), vl, 16);
+}
+inline vfloat16m2_t __riscv_vle16_v_f16m2(const _Float16* ptr, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    return buf.loadRVV(buf.ptrToByteOffset(ptr), vl, 16);
+}
+inline vfloat16m4_t __riscv_vle16_v_f16m4(const _Float16* ptr, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    return buf.loadRVV(buf.ptrToByteOffset(ptr), vl, 16);
+}
+inline vfloat16m8_t __riscv_vle16_v_f16m8(const _Float16* ptr, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    return buf.loadRVV(buf.ptrToByteOffset(ptr), vl, 16);
+}
+
+inline void __riscv_vse16_v_f16m1(_Float16* ptr, const vfloat16m1_t& val, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeRVV(buf.ptrToByteOffset(ptr), val);
+}
+inline void __riscv_vse16_v_f16m2(_Float16* ptr, const vfloat16m2_t& val, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeRVV(buf.ptrToByteOffset(ptr), val);
+}
+inline void __riscv_vse16_v_f16m4(_Float16* ptr, const vfloat16m4_t& val, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeRVV(buf.ptrToByteOffset(ptr), val);
+}
+inline void __riscv_vse16_v_f16m8(_Float16* ptr, const vfloat16m8_t& val, size_t vl) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeRVV(buf.ptrToByteOffset(ptr), val);
+}
+
+// ---------------------------------------------------------------------------
+// FP16 strided + tuple stores
+// ---------------------------------------------------------------------------
+
+// vfloatN mxK tuple types — a struct of K vectors, addressed by index via
+// __riscv_vset_v_*/__riscv_vget_v_*.
+struct vfloat16m1x2_t {
+    vfloat16m1_t val[2];
+    vfloat16m1x2_t() = default;
+    vfloat16m1x2_t(const vfloat16m1_t& v0, const vfloat16m1_t& v1) : val{v0, v1} {}
+};
+
+// x3 variant — used by conv-hwc2chw segmented gather to hold the 3 input
+// channels loaded per spatial pixel.
+struct vfloat16m1x3_t {
+    vfloat16m1_t val[3];
+    vfloat16m1x3_t() = default;
+    vfloat16m1x3_t(const vfloat16m1_t& v0, const vfloat16m1_t& v1, const vfloat16m1_t& v2)
+        : val{v0, v1, v2} {}
+};
+
+// vget: return tuple.val[index].  Overload for x3.
+inline vfloat16m1_t __riscv_vget_v_f16m1x3_f16m1(const vfloat16m1x3_t& src,
+                                                   size_t index) {
+    return src.val[index];
+}
+
+// vluxseg3ei32: indexed unordered segmented load, nseg=3, EEW=32 indices.
+// For each lane i:  val[seg][i] = *(elem_t*)((char*)base + byte_off[i] + seg*2)
+// The 3 segments are contiguous in memory (channel-major), so shifting `base`
+// by `seg` (in _Float16 units = 2 bytes) reuses the scalar gather impl.
+inline vfloat16m1x3_t __riscv_vluxseg3ei32_v_f16m1x3(const _Float16* base,
+                                                      const vuint32m2_t& byte_off,
+                                                      size_t vl) {
+    RVVVector s0 = rvv_vluxei32_impl(base + 0, byte_off, vl, 16);
+    RVVVector s1 = rvv_vluxei32_impl(base + 1, byte_off, vl, 16);
+    RVVVector s2 = rvv_vluxei32_impl(base + 2, byte_off, vl, 16);
+    return vfloat16m1x3_t(s0, s1, s2);
+}
+
+// vmerge_vvm f16m1: mask=1 picks b, mask=0 picks a.  Mirrors the f32 variant
+// at ~:1647 but with 16-bit elements.
+inline vfloat16m1_t __riscv_vmerge_vvm_f16m1(const vfloat16m1_t& a,
+                                               const vfloat16m1_t& b,
+                                               const vbool16_t& mask, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term sel = tm.mk_term(Kind::EQUAL, {mask.getBit(i), one});
+        r.push_back(tm.mk_term(Kind::ITE, {sel, b.getElement(i), a.getElement(i)}));
+    }
+    return RVVVector(tm, 16, r);
+}
+
+// vset: dest[index] = val, return the new tuple.
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vset_v_f16m1_f16m1x2.
+inline vfloat16m1x2_t __riscv_vset_v_f16m1_f16m1x2(vfloat16m1x2_t dest,
+                                                    size_t index,
+                                                    const vfloat16m1_t& val) {
+    dest.val[index] = val;
+    return dest;
+}
+
+// vsse16: strided store.  bstride is in BYTES.
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vsse16_v_f16m1
+// (note: the op-semantics snippet omits the stride; RVV spec is
+//  `*(elem_t*)((char*)base + i * bstride) = value[i]`).
+inline void __riscv_vsse16_v_f16m1(_Float16* base, ptrdiff_t bstride,
+                                     const vfloat16m1_t& value, size_t vl) {
+    auto& buf = g_ctx->findBuffer(base);
+    ptrdiff_t base_off = static_cast<ptrdiff_t>(buf.ptrToByteOffset(base));
+    for (size_t i = 0; i < vl; i++) {
+        ptrdiff_t off = base_off + static_cast<ptrdiff_t>(i) * bstride;
+        buf.storeScalar(static_cast<size_t>(off), value.getElement(i), 16);
+    }
+}
+
+// vsse16 m4 — identical shape to m1, wider vector.
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vsse16_v_f16m4.
+inline void __riscv_vsse16_v_f16m4(_Float16* base, ptrdiff_t bstride,
+                                     const vfloat16m4_t& value, size_t vl) {
+    auto& buf = g_ctx->findBuffer(base);
+    ptrdiff_t base_off = static_cast<ptrdiff_t>(buf.ptrToByteOffset(base));
+    for (size_t i = 0; i < vl; i++) {
+        ptrdiff_t off = base_off + static_cast<ptrdiff_t>(i) * bstride;
+        buf.storeScalar(static_cast<size_t>(off), value.getElement(i), 16);
+    }
+}
+
+// vssseg2e16: strided segment store, nseg=2.  For each i in [0, vl):
+//   *(base + i*bstride + 0*elem_bytes) = v_tuple.val[0][i]
+//   *(base + i*bstride + 1*elem_bytes) = v_tuple.val[1][i]
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vssseg2e16_v_f16m1x2
+// (op-semantics is a stub; behavior follows the RVV 1.0 spec).
+inline void __riscv_vssseg2e16_v_f16m1x2(_Float16* base, ptrdiff_t bstride,
+                                           const vfloat16m1x2_t& v_tuple,
+                                           size_t vl) {
+    auto& buf = g_ctx->findBuffer(base);
+    ptrdiff_t base_off = static_cast<ptrdiff_t>(buf.ptrToByteOffset(base));
+    for (size_t i = 0; i < vl; i++) {
+        ptrdiff_t off = base_off + static_cast<ptrdiff_t>(i) * bstride;
+        buf.storeScalar(static_cast<size_t>(off),     v_tuple.val[0].getElement(i), 16);
+        buf.storeScalar(static_cast<size_t>(off) + 2, v_tuple.val[1].getElement(i), 16);
+    }
+}
+
+// ===========================================================================
+// FP16 arithmetic: add, sub, mul, div (vector-vector)
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfadd_vv_f16m1(const vfloat16m1_t& a, const vfloat16m1_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_ADD, vl); }
+inline vfloat16m2_t __riscv_vfadd_vv_f16m2(const vfloat16m2_t& a, const vfloat16m2_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_ADD, vl); }
+inline vfloat16m4_t __riscv_vfadd_vv_f16m4(const vfloat16m4_t& a, const vfloat16m4_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_ADD, vl); }
+inline vfloat16m8_t __riscv_vfadd_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_ADD, vl); }
+
+inline vfloat16m1_t __riscv_vfsub_vv_f16m1(const vfloat16m1_t& a, const vfloat16m1_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_SUB, vl); }
+inline vfloat16m2_t __riscv_vfsub_vv_f16m2(const vfloat16m2_t& a, const vfloat16m2_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_SUB, vl); }
+inline vfloat16m4_t __riscv_vfsub_vv_f16m4(const vfloat16m4_t& a, const vfloat16m4_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_SUB, vl); }
+inline vfloat16m8_t __riscv_vfsub_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_SUB, vl); }
+
+inline vfloat16m1_t __riscv_vfmul_vv_f16m1(const vfloat16m1_t& a, const vfloat16m1_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MUL, vl); }
+inline vfloat16m2_t __riscv_vfmul_vv_f16m2(const vfloat16m2_t& a, const vfloat16m2_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MUL, vl); }
+inline vfloat16m4_t __riscv_vfmul_vv_f16m4(const vfloat16m4_t& a, const vfloat16m4_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MUL, vl); }
+inline vfloat16m8_t __riscv_vfmul_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MUL, vl); }
+
+inline vfloat16m1_t __riscv_vfdiv_vv_f16m1(const vfloat16m1_t& a, const vfloat16m1_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_DIV, vl); }
+inline vfloat16m2_t __riscv_vfdiv_vv_f16m2(const vfloat16m2_t& a, const vfloat16m2_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_DIV, vl); }
+inline vfloat16m4_t __riscv_vfdiv_vv_f16m4(const vfloat16m4_t& a, const vfloat16m4_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_DIV, vl); }
+inline vfloat16m8_t __riscv_vfdiv_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_DIV, vl); }
+
+// ===========================================================================
+// FP16 scalar variants (_vf): vector op scalar
+// ===========================================================================
+// Note: `_Float16` is a struct wrapper in context.hpp, not GCC's native type,
+// so C++ won't convert a `float` literal to it.  Kernels passing `0.0f` etc.
+// need a `float` overload (see `__riscv_vfmacc_vf_f16m1` for the pattern).
+inline RVVVector rvv_fp16_binop_vf(const RVVVector& a, _Float16 b, Kind op, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    Term b_fp = mk_fp16_from_f16(tm, b);
+    bool needs_rm = (op != Kind::FP_MAX && op != Kind::FP_MIN);
+    std::vector<Term> r;
+    r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp16(tm, a.getElement(i));
+        Term res_fp = needs_rm ? tm.mk_term(op, {rm, a_fp, b_fp}) : tm.mk_term(op, {a_fp, b_fp});
+        r.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, r);
+}
+
+inline vfloat16m1_t __riscv_vfadd_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_ADD, vl); }
+inline vfloat16m2_t __riscv_vfadd_vf_f16m2(const vfloat16m2_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_ADD, vl); }
+inline vfloat16m4_t __riscv_vfadd_vf_f16m4(const vfloat16m4_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_ADD, vl); }
+inline vfloat16m8_t __riscv_vfadd_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_ADD, vl); }
+
+inline vfloat16m1_t __riscv_vfsub_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_SUB, vl); }
+inline vfloat16m2_t __riscv_vfsub_vf_f16m2(const vfloat16m2_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_SUB, vl); }
+inline vfloat16m4_t __riscv_vfsub_vf_f16m4(const vfloat16m4_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_SUB, vl); }
+inline vfloat16m8_t __riscv_vfsub_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_SUB, vl); }
+
+inline vfloat16m1_t __riscv_vfmul_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MUL, vl); }
+inline vfloat16m2_t __riscv_vfmul_vf_f16m2(const vfloat16m2_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MUL, vl); }
+inline vfloat16m4_t __riscv_vfmul_vf_f16m4(const vfloat16m4_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MUL, vl); }
+inline vfloat16m8_t __riscv_vfmul_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MUL, vl); }
+
+inline vfloat16m1_t __riscv_vfdiv_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_DIV, vl); }
+inline vfloat16m2_t __riscv_vfdiv_vf_f16m2(const vfloat16m2_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_DIV, vl); }
+inline vfloat16m4_t __riscv_vfdiv_vf_f16m4(const vfloat16m4_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_DIV, vl); }
+inline vfloat16m8_t __riscv_vfdiv_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_DIV, vl); }
+
+// ===========================================================================
+// FP16 MIN / MAX (vector-vector)
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfmin_vv_f16m1(const vfloat16m1_t& a, const vfloat16m1_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MIN, vl); }
+inline vfloat16m2_t __riscv_vfmin_vv_f16m2(const vfloat16m2_t& a, const vfloat16m2_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MIN, vl); }
+inline vfloat16m4_t __riscv_vfmin_vv_f16m4(const vfloat16m4_t& a, const vfloat16m4_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MIN, vl); }
+inline vfloat16m8_t __riscv_vfmin_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MIN, vl); }
+
+inline vfloat16m1_t __riscv_vfmax_vv_f16m1(const vfloat16m1_t& a, const vfloat16m1_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MAX, vl); }
+inline vfloat16m2_t __riscv_vfmax_vv_f16m2(const vfloat16m2_t& a, const vfloat16m2_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MAX, vl); }
+inline vfloat16m4_t __riscv_vfmax_vv_f16m4(const vfloat16m4_t& a, const vfloat16m4_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MAX, vl); }
+inline vfloat16m8_t __riscv_vfmax_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) { return rvv_fp16_binop(a, b, Kind::FP_MAX, vl); }
+
+// ===========================================================================
+// FP16 MIN / MAX (vector-scalar)
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfmin_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MIN, vl); }
+inline vfloat16m2_t __riscv_vfmin_vf_f16m2(const vfloat16m2_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MIN, vl); }
+inline vfloat16m4_t __riscv_vfmin_vf_f16m4(const vfloat16m4_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MIN, vl); }
+inline vfloat16m8_t __riscv_vfmin_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MIN, vl); }
+
+inline vfloat16m1_t __riscv_vfmax_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MAX, vl); }
+inline vfloat16m2_t __riscv_vfmax_vf_f16m2(const vfloat16m2_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MAX, vl); }
+inline vfloat16m4_t __riscv_vfmax_vf_f16m4(const vfloat16m4_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MAX, vl); }
+inline vfloat16m8_t __riscv_vfmax_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) { return rvv_fp16_binop_vf(a, b, Kind::FP_MAX, vl); }
+
+// ===========================================================================
+// FP16 FMA: vfmadd — vd = vd * vs1 + vs2
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfmadd_vv_f16m1(const vfloat16m1_t& vd, const vfloat16m1_t& vs1,
+                                              const vfloat16m1_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp16(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        // vfmadd: vd = vd * vs1 + vs2 → FMA(vd, vs1, vs2)
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, vd_fp, vs1_fp, vs2_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+inline vfloat16m2_t __riscv_vfmadd_vv_f16m2(const vfloat16m2_t& vd, const vfloat16m2_t& vs1,
+                                              const vfloat16m2_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp16(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, vd_fp, vs1_fp, vs2_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+inline vfloat16m4_t __riscv_vfmadd_vv_f16m4(const vfloat16m4_t& vd, const vfloat16m4_t& vs1,
+                                              const vfloat16m4_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp16(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, vd_fp, vs1_fp, vs2_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// ===========================================================================
+// FP16 FMA: vfmacc — vd = vd + vs1 * vs2
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfmacc_vv_f16m1(const vfloat16m1_t& vd, const vfloat16m1_t& vs1,
+                                              const vfloat16m1_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp16(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        // vfmacc: vd = vd + vs1 * vs2 → FMA(vs1, vs2, vd)
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, vs1_fp, vs2_fp, vd_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// FP16 vfmacc_vf — vd = vd + rs1 * vs2  (scalar multiplier broadcast)
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vfmacc_vf_f16m1.
+// `_Float16` has an implicit `float` constructor (see context.hpp), so
+// callers passing `0.0f` or ternaries like `(cond ? _Float16 : 0.0f)`
+// resolve without casts.
+inline vfloat16m1_t __riscv_vfmacc_vf_f16m1(const vfloat16m1_t& vd, _Float16 rs1,
+                                              const vfloat16m1_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    Term rs1_fp = mk_fp16_from_f16(tm, rs1);
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, rs1_fp, vs2_fp, vd_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// vfmacc_vf m4 — identical shape to m1, wider vector.
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vfmacc_vf_f16m4.
+inline vfloat16m4_t __riscv_vfmacc_vf_f16m4(const vfloat16m4_t& vd, _Float16 rs1,
+                                              const vfloat16m4_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    Term rs1_fp = mk_fp16_from_f16(tm, rs1);
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, rs1_fp, vs2_fp, vd_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// FP16 vmfne_vv — mask of {i : op1[i] != op2[i]}.  Used for NaN detection
+// (vmfne(x,x) is true iff x is NaN).  Mirrors the f32 equivalents above.
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vmfne_vv_f16m1_b16.
+inline MaskVector __riscv_vmfne_vv_f16m1_b16(const vfloat16m1_t& a,
+                                               const vfloat16m1_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> bits; bits.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp16(tm, a.getElement(i));
+        Term b_fp = rvv_load_as_fp16(tm, b.getElement(i));
+        Term cmp = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
+        bits.push_back(tm.mk_term(Kind::ITE,
+                       {cmp, mk_bv_val(tm, 1, 0), mk_bv_val(tm, 1, 1)}));
+    }
+    return MaskVector(tm, bits);
+}
+
+// FP16 ↔ u16 reinterpret — same bit-width, same storage, just a type change.
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vreinterpret_v_f16m1_u16m1
+// (and its reverse).
+inline RVVVector __riscv_vreinterpret_v_f16m1_u16m1(const RVVVector& a) { return a; }
+inline RVVVector __riscv_vreinterpret_v_u16m1_f16m1(const RVVVector& a) { return a; }
+
+// u16 merge-with-scalar: res[i] = mask[i] ? op2 : op1[i].
+// Semantics per op-semantics/rvv-intrinsics.md §__riscv_vmerge_vxm_u16m1.
+// Reuses the generic rvv_vmerge_vxm_impl at ~:1634.
+inline vuint16m1_t __riscv_vmerge_vxm_u16m1(const vuint16m1_t& op1, uint16_t op2,
+                                              const MaskVector& mask, size_t vl) {
+    return rvv_vmerge_vxm_impl(op1, op2, mask, vl, 16);
+}
+
+// ===========================================================================
+// FP16 FMA: vfnmsac — vd = vd - vs1 * vs2
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfnmsac_vv_f16m1(const vfloat16m1_t& vd, const vfloat16m1_t& vs1,
+                                               const vfloat16m1_t& vs2, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term vd_fp = rvv_load_as_fp16(tm, vd.getElement(i));
+        Term vs1_fp = rvv_load_as_fp16(tm, vs1.getElement(i));
+        Term vs2_fp = rvv_load_as_fp16(tm, vs2.getElement(i));
+        Term neg_vs1 = tm.mk_term(Kind::FP_NEG, {vs1_fp});
+        Term res_fp = tm.mk_term(Kind::FP_FMA, {rm, neg_vs1, vs2_fp, vd_fp});
+        result.push_back(rvv_store_fp16_as_bv(tm, res_fp));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// ===========================================================================
+// FP16 ABS / NEG / SQRT
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfabs_v_f16m1(const vfloat16m1_t& a, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp16(tm, a.getElement(i));
+        result.push_back(rvv_store_fp16_as_bv(tm, tm.mk_term(Kind::FP_ABS, {a_fp})));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+inline vfloat16m1_t __riscv_vfneg_v_f16m1(const vfloat16m1_t& a, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp16(tm, a.getElement(i));
+        result.push_back(rvv_store_fp16_as_bv(tm, tm.mk_term(Kind::FP_NEG, {a_fp})));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+inline vfloat16m1_t __riscv_vfsqrt_v_f16m1(const vfloat16m1_t& a, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> result;
+    result.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term a_fp = rvv_load_as_fp16(tm, a.getElement(i));
+        result.push_back(rvv_store_fp16_as_bv(tm, tm.mk_term(Kind::FP_SQRT, {rm, a_fp})));
+    }
+    return RVVVector(tm, 16, result);
+}
+
+// ===========================================================================
+// FP16 broadcast scalar to vector
+// ===========================================================================
+inline vfloat16m1_t __riscv_vfmv_v_f_f16m1(_Float16 src, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term bv = tm.mk_bv_value_uint64(tm.mk_bv_sort(16), src.value);
+    std::vector<Term> elems(vl, bv);
+    return RVVVector(tm, 16, elems);
+}
 
 } // namespace salt

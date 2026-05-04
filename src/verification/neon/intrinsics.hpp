@@ -1653,6 +1653,7 @@ inline void vst1q_u8(uint8_t* p, const uint8x16_t& v) { auto& b=g_ctx->findBuffe
 inline void vst1q_u16(uint16_t* p, const uint16x8_t& v){auto& b=g_ctx->findBuffer(p); b.storeNeon<16,8>(b.ptrToByteOffset(p),v); }
 inline void vst1q_u32(uint32_t* p, const uint32x4_t& v){auto& b=g_ctx->findBuffer(p); b.storeNeon<32,4>(b.ptrToByteOffset(p),v); }
 inline void vst1_u8(uint8_t* p, const uint8x8_t& v)    { auto& b=g_ctx->findBuffer(p); b.storeNeon<8,8>(b.ptrToByteOffset(p),v); }
+inline void vst1_u16(uint16_t* p, const uint16x4_t& v) { auto& b=g_ctx->findBuffer(p); b.storeNeon<16,4>(b.ptrToByteOffset(p),v); }
 
 // ---------------------------------------------------------------------------
 // 4.6 COMBINE / GET_LOW / GET_HIGH (remaining variants)
@@ -2850,6 +2851,256 @@ inline int32x2_t salt_neon_gather2_s32(
     lanes[0] = gather_one(off_lo, 0);
     lanes[1] = gather_one(off_hi, 1);
     return int32x2_t(tm, lanes);
+}
+
+// ===========================================================================
+// PHASE 4: Float16 (FP16) NEON intrinsics
+// ===========================================================================
+
+// FP16 helpers: BV16 ↔ FP16 (5-bit exponent, 11-bit significand)
+inline Term load_as_fp16(TermManager& tm, Term bv16) {
+    return tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv16}, {5, 11});
+}
+
+inline size_t& fp16_bv_counter() {
+    static size_t counter = 0;
+    return counter;
+}
+
+inline Term store_fp16_as_bv(TermManager& tm, Term fp_val) {
+    Sort bv16 = tm.mk_bv_sort(16);
+    Term bv = tm.mk_const(bv16, "_fp16_2bv_" + std::to_string(fp16_bv_counter()++));
+    Term fp_from_bv = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
+    g_ctx->solver->assert_formula(tm.mk_term(Kind::EQUAL, {fp_from_bv, fp_val}));
+    return bv;
+}
+
+// ---------------------------------------------------------------------------
+// FP16 REINTERPRET — same element width (16-bit), just repackage type
+// ---------------------------------------------------------------------------
+inline float16x8_t vreinterpretq_f16_u16(const uint16x8_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) lanes[i] = a.getLane(i);
+    return float16x8_t(tm, lanes);
+}
+
+inline uint16x8_t vreinterpretq_u16_f16(const float16x8_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) lanes[i] = a.getLane(i);
+    return uint16x8_t(tm, lanes);
+}
+
+inline uint16x4_t vreinterpret_u16_f16(const float16x4_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) lanes[i] = a.getLane(i);
+    return uint16x4_t(tm, lanes);
+}
+
+// float16x4_t (4×16) → uint32x2_t (2×32): pack pairs of 16-bit lanes into 32-bit (little-endian)
+inline uint32x2_t vreinterpret_u32_f16(const float16x4_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 2> lanes;
+    for (int i = 0; i < 2; i++)
+        lanes[i] = tm.mk_term(Kind::BV_CONCAT, {a.getLane(i*2+1), a.getLane(i*2)});
+    return uint32x2_t(tm, lanes);
+}
+
+// ---------------------------------------------------------------------------
+// FP16 GET_LOW / GET_HIGH
+// ---------------------------------------------------------------------------
+inline float16x4_t vget_low_f16(const float16x8_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) lanes[i] = a.getLane(i);
+    return float16x4_t(tm, lanes);
+}
+
+inline float16x4_t vget_high_f16(const float16x8_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) lanes[i] = a.getLane(i + 4);
+    return float16x4_t(tm, lanes);
+}
+
+// ---------------------------------------------------------------------------
+// FP16 EXT (extract / rotate)
+// ---------------------------------------------------------------------------
+inline float16x4_t vext_f16(const float16x4_t& a, const float16x4_t& b, int n) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        int idx = i + n;
+        lanes[i] = (idx < 4) ? a.getLane(idx) : b.getLane(idx - 4);
+    }
+    return float16x4_t(tm, lanes);
+}
+
+// ---------------------------------------------------------------------------
+// FP16 binary op helper
+// ---------------------------------------------------------------------------
+template <size_t NumLanes>
+inline NeonVector<16, NumLanes> fp16_binop(
+    const NeonVector<16, NumLanes>& a, const NeonVector<16, NumLanes>& b, Kind op) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::array<Term, NumLanes> lanes;
+    for (size_t i = 0; i < NumLanes; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        Term b_fp = load_as_fp16(tm, b.getLane(i));
+        Term result_fp = tm.mk_term(op, {rm, a_fp, b_fp});
+        lanes[i] = store_fp16_as_bv(tm, result_fp);
+    }
+    return NeonVector<16, NumLanes>(tm, lanes);
+}
+
+// ---------------------------------------------------------------------------
+// FP16 ADD / SUB / MUL / DIV
+// ---------------------------------------------------------------------------
+inline float16x8_t vaddq_f16(const float16x8_t& a, const float16x8_t& b) { return fp16_binop(a, b, Kind::FP_ADD); }
+inline float16x4_t vadd_f16 (const float16x4_t& a, const float16x4_t& b) { return fp16_binop(a, b, Kind::FP_ADD); }
+inline float16x8_t vsubq_f16(const float16x8_t& a, const float16x8_t& b) { return fp16_binop(a, b, Kind::FP_SUB); }
+inline float16x4_t vsub_f16 (const float16x4_t& a, const float16x4_t& b) { return fp16_binop(a, b, Kind::FP_SUB); }
+inline float16x8_t vmulq_f16(const float16x8_t& a, const float16x8_t& b) { return fp16_binop(a, b, Kind::FP_MUL); }
+inline float16x4_t vmul_f16 (const float16x4_t& a, const float16x4_t& b) { return fp16_binop(a, b, Kind::FP_MUL); }
+inline float16x8_t vdivq_f16(const float16x8_t& a, const float16x8_t& b) { return fp16_binop(a, b, Kind::FP_DIV); }
+
+// ---------------------------------------------------------------------------
+// FP16 FMA (fused): vfmaq_f16(a, b, c) = a + b*c
+// ---------------------------------------------------------------------------
+inline float16x8_t vfmaq_f16(const float16x8_t& a, const float16x8_t& b, const float16x8_t& c) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        Term b_fp = load_as_fp16(tm, b.getLane(i));
+        Term c_fp = load_as_fp16(tm, c.getLane(i));
+        // FP_FMA: b*c + a (fused, one rounding)
+        Term result_fp = tm.mk_term(Kind::FP_FMA, {rm, b_fp, c_fp, a_fp});
+        lanes[i] = store_fp16_as_bv(tm, result_fp);
+    }
+    return float16x8_t(tm, lanes);
+}
+
+inline float16x4_t vfma_f16(const float16x4_t& a, const float16x4_t& b, const float16x4_t& c) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        Term b_fp = load_as_fp16(tm, b.getLane(i));
+        Term c_fp = load_as_fp16(tm, c.getLane(i));
+        Term result_fp = tm.mk_term(Kind::FP_FMA, {rm, b_fp, c_fp, a_fp});
+        lanes[i] = store_fp16_as_bv(tm, result_fp);
+    }
+    return float16x4_t(tm, lanes);
+}
+
+// FP16 FMA by lane: result[i] = a[i] + b[i] * v[lane]   (A64, FMLA Vd.4H,Vn.4H,Vm.H[lane])
+inline float16x4_t vfma_lane_f16(const float16x4_t& a, const float16x4_t& b,
+                                  const float16x4_t& v, int lane) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    Term v_fp = load_as_fp16(tm, v.getLane(lane));
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        Term b_fp = load_as_fp16(tm, b.getLane(i));
+        Term result_fp = tm.mk_term(Kind::FP_FMA, {rm, b_fp, v_fp, a_fp});
+        lanes[i] = store_fp16_as_bv(tm, result_fp);
+    }
+    return float16x4_t(tm, lanes);
+}
+
+// 4-lane bit-cast (same width, different element-type view).  Matches the
+// existing 8-lane vreinterpretq_f16_u16 at ~2881.
+inline float16x4_t vreinterpret_f16_u16(const uint16x4_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) lanes[i] = a.getLane(i);
+    return float16x4_t(tm, lanes);
+}
+
+// Two-register structure returned by vzip_f16 / vld2_f16 etc.
+struct float16x4x2_t {
+    float16x4_t val[2];
+    float16x4x2_t(const float16x4_t& v0, const float16x4_t& v1) : val{v0, v1} {}
+};
+
+// ZIP1/ZIP2 interleave:
+//   val[0] = { a[0], b[0], a[1], b[1] }
+//   val[1] = { a[2], b[2], a[3], b[3] }
+inline float16x4x2_t vzip_f16(const float16x4_t& a, const float16x4_t& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lo, hi;
+    for (int i = 0; i < 2; i++) {
+        lo[2 * i]     = a.getLane(i);
+        lo[2 * i + 1] = b.getLane(i);
+        hi[2 * i]     = a.getLane(i + 2);
+        hi[2 * i + 1] = b.getLane(i + 2);
+    }
+    return float16x4x2_t(float16x4_t(tm, lo), float16x4_t(tm, hi));
+}
+
+// ---------------------------------------------------------------------------
+// FP16 MIN / MAX (use FP_MIN/FP_MAX — matches RVV semantics, see f32 comment)
+// ---------------------------------------------------------------------------
+template <size_t NumLanes>
+inline NeonVector<16, NumLanes> neon_vmin_f16_maxnum(
+    const NeonVector<16, NumLanes>& a, const NeonVector<16, NumLanes>& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, NumLanes> lanes;
+    for (size_t i = 0; i < NumLanes; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        Term b_fp = load_as_fp16(tm, b.getLane(i));
+        lanes[i] = store_fp16_as_bv(tm, tm.mk_term(Kind::FP_MIN, {a_fp, b_fp}));
+    }
+    return NeonVector<16, NumLanes>(tm, lanes);
+}
+template <size_t NumLanes>
+inline NeonVector<16, NumLanes> neon_vmax_f16_maxnum(
+    const NeonVector<16, NumLanes>& a, const NeonVector<16, NumLanes>& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, NumLanes> lanes;
+    for (size_t i = 0; i < NumLanes; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        Term b_fp = load_as_fp16(tm, b.getLane(i));
+        lanes[i] = store_fp16_as_bv(tm, tm.mk_term(Kind::FP_MAX, {a_fp, b_fp}));
+    }
+    return NeonVector<16, NumLanes>(tm, lanes);
+}
+
+inline float16x8_t vminq_f16(const float16x8_t& a, const float16x8_t& b) { return neon_vmin_f16_maxnum(a, b); }
+inline float16x8_t vmaxq_f16(const float16x8_t& a, const float16x8_t& b) { return neon_vmax_f16_maxnum(a, b); }
+inline float16x4_t vmin_f16(const float16x4_t& a, const float16x4_t& b)  { return neon_vmin_f16_maxnum(a, b); }
+inline float16x4_t vmax_f16(const float16x4_t& a, const float16x4_t& b)  { return neon_vmax_f16_maxnum(a, b); }
+inline float16x8_t vminnmq_f16(const float16x8_t& a, const float16x8_t& b) { return neon_vmin_f16_maxnum(a, b); }
+inline float16x8_t vmaxnmq_f16(const float16x8_t& a, const float16x8_t& b) { return neon_vmax_f16_maxnum(a, b); }
+
+// ---------------------------------------------------------------------------
+// FP16 ABS / NEG
+// ---------------------------------------------------------------------------
+inline float16x8_t vabsq_f16(const float16x8_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        lanes[i] = store_fp16_as_bv(tm, tm.mk_term(Kind::FP_ABS, {a_fp}));
+    }
+    return float16x8_t(tm, lanes);
+}
+
+inline float16x8_t vnegq_f16(const float16x8_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 8> lanes;
+    for (int i = 0; i < 8; i++) {
+        Term a_fp = load_as_fp16(tm, a.getLane(i));
+        lanes[i] = store_fp16_as_bv(tm, tm.mk_term(Kind::FP_NEG, {a_fp}));
+    }
+    return float16x8_t(tm, lanes);
 }
 
 } // namespace salt

@@ -113,13 +113,17 @@ def extract_params(source_code: str) -> str:
 
 
 def extract_code(response: str) -> str:
-    """Extract C code from LLM response, stripping markdown fences if present."""
-    # Try to extract from ```c ... ``` blocks
+    """Extract C code from LLM response, stripping markdown fences and any
+    `#include` directives.  Salt's harness inlines the kernel source into
+    a namespace block; upstream-style includes (e.g. `<riscv_vector.h>`,
+    `"src/xnnpack/common.h"`) either don't resolve on salt's include path
+    or duplicate symbols salt already shims, so they get dropped here."""
     match = re.search(r'```(?:c|cpp)?\n(.*?)```', response, re.DOTALL)
-    if match:
-        return match.group(1).strip()
-    # If no fences, assume the whole response is code
-    return response.strip()
+    code = match.group(1).strip() if match else response.strip()
+    # Strip every `#include <...>` and `#include "..."` line.
+    code = re.sub(r'^[ \t]*#\s*include\s+[<"][^>"]+[>"][ \t]*\n?',
+                  '', code, flags=re.MULTILINE)
+    return code.strip()
 
 
 def find_kernels(source_dir: Path) -> list[Path]:
@@ -200,15 +204,19 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
     except Exception:
         verification_llm = None
 
-    # 2D kernels (stride-based) are heavier for the solver
+    # 2D kernels (stride-based) cap at smaller max_batch since each batch is heavier.
     source_text = kernel_path.read_text()
     is_2d = "stride" in source_text and "channels" in source_text
-    per_batch_timeout = 300 if is_2d else 60  # 5 min per batch for 2D
-    max_batch = 64 if is_2d else 256
-
-    if is_2d:
-        log.info("  2D kernel detected — per_batch_timeout=%ds, max_batch=%d",
-                 per_batch_timeout, max_batch)
+    per_batch_timeout = cfg.verification_timeout
+    if cfg.verification_batch > 0:
+        # Single-batch mode — pin both ends.
+        min_batch = max_batch = cfg.verification_batch
+        log.info("  Single-batch mode: batch=%d", cfg.verification_batch)
+    else:
+        min_batch = 1
+        max_batch = 64 if is_2d else 256
+        if is_2d:
+            log.info("  2D kernel detected — max_batch=%d", max_batch)
 
     result = verify_kernel(
         neon_path=str(kernel_path),
@@ -217,6 +225,8 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
         vlen=256,
         per_batch_timeout=per_batch_timeout,
         max_batch=max_batch,
+        min_batch=min_batch,
+        backend=cfg.verification_backend,
         llm_client=verification_llm,
     )
     import json
@@ -597,6 +607,12 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Max repair attempts for compile/execution errors")
     p.add_argument("--max-verification-retries", type=int, default=5,
                     help="Max repair attempts for formal verification failures")
+    p.add_argument("--backend", choices=["bitwuzla", "cvc5"], default="bitwuzla",
+                    help="SMT backend for formal verification (cvc5 is much faster on f16 chained-FMA)")
+    p.add_argument("--verification-timeout", type=int, default=600,
+                    help="Per-batch verification timeout in seconds (also enforced inside the solver via tlimit-per). Default: 600 (10 min).  0 = no timeout (run until cvc5 returns).")
+    p.add_argument("--verify-batch", type=int, default=0,
+                    help="Run ONLY this batch size in verification (skip the 1..max sweep). 0 = sweep (default).")
 
     # Build / simulation
     p.add_argument("--zephyr-base", default="", help="Path to Zephyr SDK")

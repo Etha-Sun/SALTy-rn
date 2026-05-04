@@ -15,10 +15,6 @@ from typing import Optional
 @dataclass
 class KernelProfile:
     """Verification profile for a kernel type."""
-    # Layout
-    layout: str = "1D"              # "1D" or "2D"
-    secondary_dim: str = ""         # name of secondary dimension arg (e.g., "channels", "nc")
-
     # Buffer sizing
     weight_size: str = ""           # C++ expression for weight buffer size in bytes (empty = use LLM)
 
@@ -81,6 +77,12 @@ class KernelProfile:
     #                     f32-velu.  Rewritten to salt_neon_gather2_s32.
     # Unknown idioms cause harness generation to fail loudly.
     lookup_tables: Optional[list] = None
+
+    # SPATIAL_HWC_CHW override: bypasses the XNNPACK name-regex parse.
+    # Use this when the function has been renamed away from the
+    # `<kH>x<kW>s<stride>p<pad>c<in_ch>x<out_tile>` naming convention.
+    # Keys: kh, kw, stride, pad, in_ch, out_tile (all ints).
+    conv_shape: Optional[dict] = None
 
 
 # ---------------------------------------------------------------------------
@@ -256,8 +258,6 @@ KERNEL_PROFILES: dict[str, KernelProfile] = {
     # 2D kernels
     # -----------------------------------------------------------------
     "vmulcaddcfma": KernelProfile(
-        layout="2D",
-        secondary_dim="channels",
         weight_size="((channels + 15) / 16) * 32",  # NEON buffer size
         channel_sweep=[16, "_vlmax * 4", "_vlmax * 4 + 8"],
         pad_bytes=16,
@@ -271,8 +271,6 @@ KERNEL_PROFILES: dict[str, KernelProfile] = {
         },
     ),
     "vmulcaddc": KernelProfile(
-        layout="2D",
-        secondary_dim="channels",
         weight_size="((channels + 15) / 16) * 32",  # NEON buffer size
         channel_sweep=[ "_vlmax * 4 + 8"],
         pad_bytes=16,
@@ -284,6 +282,28 @@ KERNEL_PROFILES: dict[str, KernelProfile] = {
             "biases": [-0.3, 0.7, 1.5, -1.0, 0.4, -0.8, 2.1, -0.6],
             "symbolic_weights": False,
         },
+    ),
+    "f16-vmulcaddc": KernelProfile(
+        weight_size="((channels + 15) / 16) * 32",  # NEON buffer: 8 scales + 8 biases per block
+        channel_sweep=["_vlmax * 2 + 8"],
+        pad_bytes=16,
+        dual_weight_layout={
+            "neon_tile": 8,
+            "rvv_tile_expr": "(vlen / 16) * 1",  # VLMAX for e16m1
+            "elem_bytes": 2,
+            "scales": [0.8, 1.2, -0.5, 2.0, 0.3, -1.1, 0.9, 1.5],
+            "biases": [-0.3, 0.7, 1.5, -1.0, 0.4, -0.8, 2.1, -0.6],
+            "symbolic_weights": False,
+        },
+    ),
+    # -----------------------------------------------------------------
+    # SPATIAL conv kernels
+    # -----------------------------------------------------------------
+    # The upstream function is xnn_f16_conv_hwc2chw_ukernel_3x3s2p1c3x4__*
+    # but the verification source may be renamed; carry the shape directly.
+    "f16-conv-hwc2chw": KernelProfile(
+        conv_shape={"kh": 3, "kw": 3, "stride": 2, "pad": 1,
+                     "in_ch": 3, "out_tile": 4},
     ),
 }
 

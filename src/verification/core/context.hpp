@@ -12,7 +12,59 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <unordered_map>
 #include <vector>
+
+// _Float16 for symbolic verification when the compiler doesn't provide it.
+// Layout-compatible with xnn_float16 (struct path, XNN_HAVE_FLOAT16=0).
+// Implicit `float` constructor lets C++ kernel sources — including ternaries
+// like `(cond ? some_f16 : 0.0f)` — resolve without explicit casts.
+// Hand-rolled float→fp16 bit conversion because `__fp16` is ARM-only on GCC
+// and this header compiles on x86 for the verification harness.  Uses
+// round-toward-zero (truncation) on the mantissa; exact for representable
+// values (0.0f, 1.0f, small integers) which is the common literal case.
+#ifndef __FLT16_MAX__
+struct _Float16 {
+    uint16_t value;
+    _Float16() = default;
+    // `explicit` so integer literals don't create ambiguity with the
+    // implicit `float` ctor below.  Braced init (`_Float16{0x3C00}`) still
+    // works; `_Float16 x = 0` routes to the `float` ctor and becomes 0.0f.
+    explicit constexpr _Float16(uint16_t v) : value(v) {}
+    _Float16(float f) {
+        uint32_t x;
+        __builtin_memcpy(&x, &f, sizeof(x));
+        uint16_t sign = static_cast<uint16_t>((x >> 31) << 15);
+        int32_t  exp32 = static_cast<int32_t>((x >> 23) & 0xFFu);
+        uint32_t mant  = x & 0x7FFFFFu;
+        if (exp32 == 0xFF) {                  // inf or NaN
+            value = sign | 0x7C00u | (mant ? 0x0200u : 0);
+            return;
+        }
+        int32_t exp16 = exp32 - 127 + 15;
+        if (exp16 >= 31) { value = sign | 0x7C00u; return; }           // overflow
+        if (exp16 <= 0) {
+            if (exp16 < -10) { value = sign; return; }                  // underflow
+            mant |= 0x800000u;
+            value = sign | static_cast<uint16_t>(mant >> (14 - exp16));
+            return;
+        }
+        value = sign | static_cast<uint16_t>(exp16 << 10)
+              | static_cast<uint16_t>(mant >> 13);
+    }
+
+    // Copy-ctor / copy-assign / dtor are declared here and defined out-of-line
+    // in symbolic_buffer.hpp (needs SymbolicBuffer's full definition).
+    // They route scalar reads from registered SymbolicBuffers through a
+    // thread-local Term map so `pi[0]`-style raw dereferences of symbolic
+    // memory propagate the symbolic Term rather than the concrete backing
+    // bytes.  sizeof(_Float16) stays at 2 so `(_Float16*)ptr` arithmetic is
+    // unaffected.
+    _Float16(const _Float16& other);
+    _Float16& operator=(const _Float16& other);
+    ~_Float16();
+};
+#endif
 
 namespace salt {
 
@@ -49,6 +101,10 @@ class SymbolicBuffer;
 // ---------------------------------------------------------------------------
 // VerificationContext
 // ---------------------------------------------------------------------------
+// Backend-agnostic check_sat() result.  Mirrors the cvc5 backend's enum so
+// emitted harness code is portable across backends.
+enum class CheckResult { Sat, Unsat, Unknown };
+
 struct VerificationContext {
     TermManager tm;
     Options opts;
@@ -72,19 +128,80 @@ struct VerificationContext {
     // Find which buffer owns a given pointer (for load/store intrinsics)
     SymbolicBuffer& findBuffer(const void* ptr);
 
+    // Non-throwing lookup — returns nullptr if ptr is not in any registered
+    // buffer.  Used by `_Float16`'s copy-ctor / copy-assign, which must
+    // tolerate stack-local source addresses.
+    SymbolicBuffer* findBufferSafe(const void* ptr) noexcept;
+
     // Helper: commonly used sorts
     Sort bv_sort(size_t bits) { return tm.mk_bv_sort(bits); }
     Sort fp32_sort() { return tm.mk_fp_sort(8, 24); }
     Sort fp16_sort() { return tm.mk_fp_sort(5, 11); }
 
-    // Helper: create a BV constant from a uint64
+    // -----------------------------------------------------------------
+    // Backend-agnostic helper API — mirrors src/verification_cvc5/core
+    // /context.hpp so generated harness code is portable across backends.
+    // Emitted harness code MUST go through these helpers; never call
+    // `tm.mk_*` or `solver->*` directly from generated code.
+    // -----------------------------------------------------------------
+
+    // BV constructors
     Term bv_val(size_t bits, uint64_t val) {
         return tm.mk_bv_value_uint64(tm.mk_bv_sort(bits), val);
     }
-
-    // Helper: create a named symbolic BV constant
     Term bv_const(size_t bits, const std::string& name) {
         return tm.mk_const(tm.mk_bv_sort(bits), name);
+    }
+
+    // Logical / equality
+    Term equal(Term a, Term b)  { return tm.mk_term(Kind::EQUAL, {a, b}); }
+    Term land_(Term a, Term b)  { return tm.mk_term(Kind::AND,   {a, b}); }
+    Term lor_ (Term a, Term b)  { return tm.mk_term(Kind::OR,    {a, b}); }
+    Term lnot_(Term t)          { return tm.mk_term(Kind::NOT,   {t});    }
+    Term ite  (Term c, Term t, Term e) { return tm.mk_term(Kind::ITE, {c, t, e}); }
+
+    // BV comparisons (for symbolic-param validity / range constraints)
+    Term bv_sgt(Term a, Term b) { return tm.mk_term(Kind::BV_SGT, {a, b}); }
+    Term bv_sge(Term a, Term b) { return tm.mk_term(Kind::BV_SGE, {a, b}); }
+    Term bv_slt(Term a, Term b) { return tm.mk_term(Kind::BV_SLT, {a, b}); }
+    Term bv_sle(Term a, Term b) { return tm.mk_term(Kind::BV_SLE, {a, b}); }
+    Term bv_ugt(Term a, Term b) { return tm.mk_term(Kind::BV_UGT, {a, b}); }
+    Term bv_uge(Term a, Term b) { return tm.mk_term(Kind::BV_UGE, {a, b}); }
+    Term bv_ult(Term a, Term b) { return tm.mk_term(Kind::BV_ULT, {a, b}); }
+    Term bv_ule(Term a, Term b) { return tm.mk_term(Kind::BV_ULE, {a, b}); }
+
+    // FP comparisons (for param range constraints)
+    Term fp16_geq(Term a, Term b) { return tm.mk_term(Kind::FP_GEQ, {a, b}); }
+    Term fp16_leq(Term a, Term b) { return tm.mk_term(Kind::FP_LEQ, {a, b}); }
+    // Reinterpret a 16-bit BV as an IEEE-754 binary16 FP term.
+    Term fp16_from_bv(Term bv16) {
+        return tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv16}, {5, 11});
+    }
+
+    // Asserts
+    void assert_(Term formula)        { solver->assert_formula(formula); }
+    void assert_eq(Term t, Term v)    { solver->assert_formula(equal(t, v)); }
+
+    // Solving
+    CheckResult check() {
+        Result r = solver->check_sat();
+        if (r == Result::UNSAT) return CheckResult::Unsat;
+        if (r == Result::SAT)   return CheckResult::Sat;
+        return CheckResult::Unknown;
+    }
+    // Base-10 BV value as string (for CEX printing).
+    std::string value_str(Term t) {
+        return solver->get_value(t).value<std::string>(10);
+    }
+
+    // Per-query timeout in milliseconds.  bitwuzla applies time-limit options
+    // at solver construction time, so we re-build the solver here.  This
+    // means: call set_query_timeout_ms BEFORE adding any assertions.
+    void set_query_timeout_ms(uint64_t ms) {
+        opts.set(Option::TIME_LIMIT_PER, ms);
+        // Rebuild the solver so the new option takes effect.  Safe iff
+        // no assertions have been added yet (precondition documented above).
+        solver = std::make_unique<Bitwuzla>(tm, opts);
     }
 };
 
@@ -92,6 +209,14 @@ struct VerificationContext {
 // Global context pointer — intrinsics access solver via this
 // ---------------------------------------------------------------------------
 inline thread_local VerificationContext* g_ctx = nullptr;
+
+// ---------------------------------------------------------------------------
+// Thread-local scalar-term side channel.
+// Populated by `_Float16`'s copy-ctor / copy-assign when the source address
+// lives inside a registered SymbolicBuffer; consumed by `mk_fp16_from_f16`.
+// Keyed on the destination object's address; cleared by the destructor.
+// ---------------------------------------------------------------------------
+inline thread_local std::unordered_map<const void*, Term> g_scalar_terms;
 
 // ---------------------------------------------------------------------------
 // Helper: create a BV value from a signed int64, masking to the sort width.
@@ -127,6 +252,21 @@ inline Term mk_fp32_from_float(TermManager& tm, float value) {
     char buf[64];
     snprintf(buf, sizeof(buf), "%.17f", static_cast<double>(value));
     return tm.mk_fp_value(fp32, rm, buf);
+}
+
+// ---------------------------------------------------------------------------
+// Helper: create an FP16 term from a _Float16 value.
+// Takes by `const&` so the caller's address is preserved — if the scalar
+// originated from a registered SymbolicBuffer (via `pi[0]`-style raw
+// dereference), `_Float16`'s copy-ctor recorded its Term in g_scalar_terms
+// keyed on the parameter's address.  Otherwise fall back to the concrete
+// bit-pattern → fp16 conversion.
+// ---------------------------------------------------------------------------
+inline Term mk_fp16_from_f16(TermManager& tm, const _Float16& value) {
+    auto it = g_scalar_terms.find(&value);
+    if (it != g_scalar_terms.end()) return it->second;
+    Term bv = tm.mk_bv_value_uint64(tm.mk_bv_sort(16), value.value);
+    return tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
 }
 
 } // namespace salt

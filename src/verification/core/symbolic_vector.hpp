@@ -148,6 +148,10 @@ using vfloat32m1_t = RVVVector;
 using vfloat32m2_t = RVVVector;
 using vfloat32m4_t = RVVVector;
 using vfloat32m8_t = RVVVector;
+using vfloat16m1_t = RVVVector;
+using vfloat16m2_t = RVVVector;
+using vfloat16m4_t = RVVVector;
+using vfloat16m8_t = RVVVector;
 
 // Fractional LMUL types (mf2, mf4, mf8)
 using vint8mf2_t   = RVVVector;

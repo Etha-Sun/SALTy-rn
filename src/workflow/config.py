@@ -4,6 +4,7 @@ import argparse
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
+from typing import Optional
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -18,7 +19,7 @@ class Config:
     model: str = "gemini-3.1-pro-preview-customtools"
     temperature: float = 0.1
     repair_temperature: float = 0.3
-    thinking: str | None = None  # Gemini thinking level (low/medium/high) or None
+    thinking: Optional[str] = None  # Gemini thinking level (low/medium/high) or None
 
     # Verification
     verification_model: str = "gemini-3.1-pro-preview"   # LLM for harness inference (buffer sizes, params). Empty = use 'model'
@@ -33,6 +34,9 @@ class Config:
     # Pipeline
     max_compile_retries: int = 5
     max_verification_retries: int = 5
+    verification_backend: str = "bitwuzla"   # 'bitwuzla' or 'cvc5'
+    verification_timeout: int = 600          # per-batch timeout (s); default 10 min, 0 = no limit
+    verification_batch: int = 0              # if >0, run ONLY this batch size; 0 = sweep
     kernels_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "kernels")
     dry_run: bool = False
     skip_existing: bool = False
@@ -68,6 +72,9 @@ class Config:
         # Pipeline
         cfg.max_compile_retries = args.max_compile_retries
         cfg.max_verification_retries = args.max_verification_retries
+        cfg.verification_backend = args.backend
+        cfg.verification_timeout = args.verification_timeout
+        cfg.verification_batch = getattr(args, "verify_batch", 0)
         cfg.dry_run = args.dry_run
         cfg.skip_existing = args.skip_existing
         cfg.rules_only = args.rules_only

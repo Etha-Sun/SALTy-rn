@@ -487,22 +487,20 @@ def get_verify_prologue(params_type: str, param_ranges: dict = None) -> str:
     lines.append(f"    auto& _sym_params_buf = ctx.registerBuffer(\"params\", sizeof({clean_type}));")
     lines.append(f"    _sym_params_buf.bind(&params);")
 
-    # Assert validity constraints (from PARAM_CONSTRAINTS)
+    # Assert validity constraints (from PARAM_CONSTRAINTS).
+    # PARAM_CONSTRAINTS uses BV_SGT etc. as the bitwuzla Kind name; the helper
+    # method names are the same string lowercased.
     constraints = PARAM_CONSTRAINTS.get(clean_type, [])
     if constraints:
         lines.append("    // Validity constraints")
         for constraint in constraints:
-            kind = constraint[0]
-            lhs_name = constraint[1]
-            rhs = constraint[2]
+            kind, lhs_name, rhs = constraint[0], constraint[1], constraint[2]
             lhs_term, lhs_bits, _ = _field_term(lhs_name)
             if isinstance(rhs, str):
                 rhs_term, _, _ = _field_term(rhs)
             else:
-                rhs_term = f"mk_bv_val(ctx.tm, {lhs_bits}, {rhs})"
-            lines.append(
-                f"    ctx.solver->assert_formula("
-                f"ctx.tm.mk_term(Kind::{kind}, {{{lhs_term}, {rhs_term}}}));")
+                rhs_term = f"ctx.bv_val({lhs_bits}, {rhs})"
+            lines.append(f"    ctx.assert_(ctx.{kind.lower()}({lhs_term}, {rhs_term}));")
 
     # Assert param_ranges (from KernelProfile)
     if param_ranges:
@@ -510,14 +508,10 @@ def get_verify_prologue(params_type: str, param_ranges: dict = None) -> str:
         for fname, (lo, hi) in param_ranges.items():
             term, bits, ftype = _field_term(fname)
             is_signed = ftype in SIGNED_TYPES
-            ge_kind = "BV_SGE" if is_signed else "BV_UGE"
-            le_kind = "BV_SLE" if is_signed else "BV_ULE"
-            lines.append(
-                f"    ctx.solver->assert_formula("
-                f"ctx.tm.mk_term(Kind::{ge_kind}, {{{term}, mk_bv_val(ctx.tm, {bits}, {lo})}}));")
-            lines.append(
-                f"    ctx.solver->assert_formula("
-                f"ctx.tm.mk_term(Kind::{le_kind}, {{{term}, mk_bv_val(ctx.tm, {bits}, {hi})}}));")
+            ge_helper = "bv_sge" if is_signed else "bv_uge"
+            le_helper = "bv_sle" if is_signed else "bv_ule"
+            lines.append(f"    ctx.assert_(ctx.{ge_helper}({term}, ctx.bv_val({bits}, {lo})));")
+            lines.append(f"    ctx.assert_(ctx.{le_helper}({term}, ctx.bv_val({bits}, {hi})));")
     lines.append("")
 
     return "\n".join(lines)

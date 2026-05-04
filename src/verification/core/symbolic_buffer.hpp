@@ -167,4 +167,62 @@ inline SymbolicBuffer& VerificationContext::findBuffer(const void* ptr) {
     throw std::runtime_error("No buffer found for pointer");
 }
 
+inline SymbolicBuffer* VerificationContext::findBufferSafe(const void* ptr) noexcept {
+    for (auto* buf : registered_buffers) {
+        if (buf->contains(ptr)) return buf;
+    }
+    return nullptr;
+}
+
 } // namespace salt
+
+// ---------------------------------------------------------------------------
+// _Float16 copy-ctor / copy-assign / dtor — out-of-line so they can use the
+// full SymbolicBuffer definition.  See context.hpp for the declaration.
+// ---------------------------------------------------------------------------
+#ifndef __FLT16_MAX__
+inline _Float16::_Float16(const _Float16& other) : value(other.value) {
+    if (!salt::g_ctx) return;
+    // Propagate Term if source already carries one (temporary, param, etc.).
+    auto it = salt::g_scalar_terms.find(&other);
+    if (it != salt::g_scalar_terms.end()) {
+        salt::g_scalar_terms.insert_or_assign(this, it->second);
+        return;
+    }
+    // Source address lives in a registered symbolic buffer → load its Term.
+    if (auto* buf = salt::g_ctx->findBufferSafe(&other)) {
+        bitwuzla::Term bv = buf->loadScalar(buf->ptrToByteOffset(&other), 16);
+        bitwuzla::Term fp = salt::g_ctx->tm.mk_term(
+            bitwuzla::Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
+        salt::g_scalar_terms.insert_or_assign(this, fp);
+    }
+}
+
+inline _Float16& _Float16::operator=(const _Float16& other) {
+    if (this == &other) return *this;
+    value = other.value;
+    if (!salt::g_ctx) return *this;
+    auto it = salt::g_scalar_terms.find(&other);
+    if (it != salt::g_scalar_terms.end()) {
+        salt::g_scalar_terms.insert_or_assign(this, it->second);
+        return *this;
+    }
+    if (auto* buf = salt::g_ctx->findBufferSafe(&other)) {
+        bitwuzla::Term bv = buf->loadScalar(buf->ptrToByteOffset(&other), 16);
+        bitwuzla::Term fp = salt::g_ctx->tm.mk_term(
+            bitwuzla::Kind::FP_TO_FP_FROM_BV, {bv}, {5, 11});
+        salt::g_scalar_terms.insert_or_assign(this, fp);
+    } else {
+        // Concrete source — clear any stale entry from a prior assignment.
+        salt::g_scalar_terms.erase(this);
+    }
+    return *this;
+}
+
+inline _Float16::~_Float16() {
+    // Unconditional erase — g_ctx may have been cleared while objects of
+    // static/thread-local lifetime are still alive; leaking map entries
+    // would cause cross-run contamination.
+    if (!salt::g_scalar_terms.empty()) salt::g_scalar_terms.erase(this);
+}
+#endif
