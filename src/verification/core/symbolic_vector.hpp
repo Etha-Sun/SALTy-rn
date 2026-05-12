@@ -77,6 +77,11 @@ using uint64x2_t  = NeonVector<64, 2>;
 using float32x4_t = NeonVector<32, 4>;
 using float16x8_t = NeonVector<16, 8>;
 using float16x4_t = NeonVector<16, 4>;
+// BF16: 1 sign + 8 exp + 7 mant (16 bits). Lanes hold the raw IEEE pattern;
+// conversion to fp32 is shift-left-16 (top half of an fp32 BV).
+using bfloat16x4_t = NeonVector<16, 4>;
+using bfloat16x8_t = NeonVector<16, 8>;
+using bfloat16_t   = uint16_t;
 
 // ---------------------------------------------------------------------------
 // RVVVector — dynamic lane count
@@ -215,5 +220,6 @@ using int16x4x2_t  = VectorTuple<int16x4_t, 2>;
 using int16x8x2_t  = VectorTuple<int16x8_t, 2>;
 using int32x2x2_t  = VectorTuple<int32x2_t, 2>;
 using int32x4x2_t  = VectorTuple<int32x4_t, 2>;
+using uint8x16x4_t = VectorTuple<uint8x16_t, 4>;
 
 } // namespace salt

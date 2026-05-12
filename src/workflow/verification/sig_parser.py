@@ -40,8 +40,12 @@ class ElemType(Enum):
     UINT16 = ("uint16_t", 2, "UINT")
     INT32 = ("int32_t", 4, "SINT")
     UINT32 = ("uint32_t", 4, "UINT")
+    INT64 = ("int64_t", 8, "SINT")
+    UINT64 = ("uint64_t", 8, "UINT")
     FLOAT16 = ("xnn_float16", 2, "F16")
+    BFLOAT16 = ("xnn_bfloat16", 2, "BF16")
     FLOAT = ("float", 4, "F32")
+    DOUBLE = ("double", 8, "F64")
     VOID = ("void", 0, "UNKNOWN")
     OTHER = ("other", 0, "UNKNOWN")
 
@@ -90,18 +94,20 @@ _TYPE_MAP = {
     "uint16_t": ElemType.UINT16,
     "int32_t": ElemType.INT32,
     "uint32_t": ElemType.UINT32,
+    "int64_t": ElemType.INT64,
+    "uint64_t": ElemType.UINT64,
     "xnn_float16": ElemType.FLOAT16,
+    "xnn_bfloat16": ElemType.BFLOAT16,
     "float": ElemType.FLOAT,
+    "double": ElemType.DOUBLE,
     "void": ElemType.VOID,
 }
 
 
 def _infer_elem_type(base_type: str) -> ElemType:
-    """Infer ElemType from the base C type string."""
-    for key, et in _TYPE_MAP.items():
-        if key in base_type:
-            return et
-    return ElemType.OTHER
+    """Infer ElemType from the base C type string. Exact match — substring
+    would alias `int8_t ⊂ uint8_t` and silently mis-classify unsigned types."""
+    return _TYPE_MAP.get(base_type, ElemType.OTHER)
 
 
 # ---------------------------------------------------------------------------
@@ -291,7 +297,7 @@ def _classify_one_arg(arg: FuncArg, sig: FuncSignature, kernel_name: str) -> Arg
 
     # --- Const pointer: input or weights ---
     if arg.is_const and arg.is_pointer:
-        if 'weight' in name or name == 'w':
+        if 'weight' in name or name == 'w' or name == 'w_ptr':
             return ArgRole.WEIGHTS
         if name == 'zero':
             return ArgRole.ZERO_BUFFER

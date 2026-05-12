@@ -17,6 +17,12 @@ class StatusTracker:
         max_verified_batch:  int   - largest batch size verified (0 if not verified)
         attempts:            int   - number of generation/repair attempts
         error:               str   - last error message (if any)
+
+    Autocomp post-verify optimization fields (populated only when --optimize):
+        optimized:           bool  - autocomp produced an optimized variant
+        optimized_cycles:    int   - measured cycle count for the best candidate
+        optimized_verified:  bool  - re-verified against the original NEON
+        optimized_max_batch: int   - max batch verified for the optimized variant
     """
 
     def __init__(self, status_file: Path):
@@ -24,7 +30,11 @@ class StatusTracker:
         self._data: dict[str, dict] = {}
         self._load()
 
-    _VALID_FIELDS = {"generated", "compiled", "verified", "max_verified_batch", "attempts", "error"}
+    _VALID_FIELDS = {
+        "generated", "compiled", "verified",
+        "max_verified_batch", "attempts", "error",
+        "optimized", "optimized_cycles", "optimized_verified", "optimized_max_batch",
+    }
 
     def _load(self):
         if self._path.exists():
@@ -50,6 +60,10 @@ class StatusTracker:
             "max_verified_batch": 0,
             "attempts": 0,
             "error": "",
+            "optimized": False,
+            "optimized_cycles": None,
+            "optimized_verified": False,
+            "optimized_max_batch": 0,
         })
 
     def update(self, kernel: str, **fields):

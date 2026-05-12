@@ -44,6 +44,22 @@ class Config:
     skip_translation: bool = False
     skip_spike: bool = False
 
+    # Autocomp optimization (post-verify)
+    optimize: bool = False                          # gate: run autocomp after a verified translation
+    optimize_prob_id: int = -1                      # autocomp prob_id (single-kernel mode)
+    optimize_map_file: Path = field(               # batch-mode kernel→prob_id map
+        default_factory=lambda: PROJECT_ROOT / "kernels" / "optimize_map.json"
+    )
+    autocomp_models: list[str] = field(default_factory=lambda: [
+        "anthropic::claude-opus-4-5-20251101",
+    ])
+    autocomp_iterations: int = 8
+    autocomp_beam_size: int = 4
+    autocomp_num_plan_candidates: int = 4
+    autocomp_num_code_candidates: int = 2
+    autocomp_vlen: int = 512
+    autocomp_dlen: int = 256
+
     @property
     def source_dir(self) -> Path:
         return self.kernels_dir / "source"
@@ -80,6 +96,17 @@ class Config:
         cfg.rules_only = args.rules_only
         cfg.skip_translation = args.skip_translation
         cfg.skip_spike = args.skip_spike
+        # Autocomp opt-in
+        cfg.optimize = getattr(args, "optimize", False)
+        cfg.optimize_prob_id = getattr(args, "prob_id", -1)
+        if getattr(args, "optimize_map", None):
+            cfg.optimize_map_file = Path(args.optimize_map)
+        if getattr(args, "autocomp_iterations", None) is not None:
+            cfg.autocomp_iterations = args.autocomp_iterations
+        if getattr(args, "autocomp_beam_size", None) is not None:
+            cfg.autocomp_beam_size = args.autocomp_beam_size
+        if getattr(args, "autocomp_model", None):
+            cfg.autocomp_models = list(args.autocomp_model)
         if args.kernels_dir:
             cfg.kernels_dir = Path(args.kernels_dir)
         return cfg

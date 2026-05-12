@@ -9,6 +9,8 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <cstring>
 #include <map>
 #include <memory>
@@ -84,7 +86,7 @@ struct FPProfile {
 // Element kind — for the comparison helper
 // ---------------------------------------------------------------------------
 enum class ElementKind {
-    SINT, UINT, F16, F32, F64, MASK,
+    SINT, UINT, F16, BF16, F32, F64, MASK,
 };
 
 class SymbolicBuffer; // forward decl
@@ -112,10 +114,64 @@ struct VerificationContext {
         // cvc5 1.3.x.  Enable unconditionally — kernels that don't touch fp16
         // are unaffected.
         solver->setOption("fp-exp", "true");
+        // Opt-in stats: SALT_STATS=1 enables cvc5 internal counters and
+        // print_stats() dumps them.  Off by default — has measurable overhead.
+        if (const char* s = std::getenv("SALT_STATS"); s && std::string(s) == "1") {
+            solver->setOption("stats", "true");
+            solver->setOption("stats-internal", "true");
+        }
+        // Opt-in solver-option override: SALT_CVC5_OPTIONS="key1=val1,key2=val2"
+        // applies arbitrary cvc5 setOption calls before any assertions, so the
+        // user can A/B test --bv-solver=bitblast etc. without rebuilding.
+        if (const char* opts = std::getenv("SALT_CVC5_OPTIONS"); opts && *opts) {
+            std::string s = opts;
+            size_t pos = 0;
+            while (pos < s.size()) {
+                size_t comma = s.find(',', pos);
+                std::string kv = s.substr(pos, comma == std::string::npos ? std::string::npos : comma - pos);
+                size_t eq = kv.find('=');
+                if (eq != std::string::npos) {
+                    std::string k = kv.substr(0, eq), v = kv.substr(eq + 1);
+                    try {
+                        solver->setOption(k, v);
+                        std::fprintf(stderr, "[SALT_CVC5_OPTIONS] set %s=%s\n", k.c_str(), v.c_str());
+                    } catch (const std::exception& e) {
+                        std::fprintf(stderr, "[SALT_CVC5_OPTIONS] FAILED %s=%s: %s\n", k.c_str(), v.c_str(), e.what());
+                    }
+                }
+                if (comma == std::string::npos) break;
+                pos = comma + 1;
+            }
+            std::fflush(stderr);
+        }
         fp.rounding_mode = tm.mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
+        // Drop any stale entries left over from a previous fixture's
+        // VerificationContext.  Without this, _Float16's copy-ctor (and any
+        // future scalar side-channel) can re-use a Term tied to a destroyed
+        // TermManager, triggering "term not associated with this term manager".
+        // Definition is later in this file — call via the helper.
+        clear_scalar_terms();
+    }
+
+    // Forward-declared helper; definition follows g_scalar_terms below.
+    static void clear_scalar_terms();
+
+    void print_stats(FILE* out = stderr) {
+        if (const char* s = std::getenv("SALT_STATS"); !s || std::string(s) != "1") return;
+        std::fprintf(out, "=== cvc5 statistics ===\n");
+        auto stats = solver->getStatistics();
+        std::fprintf(out, "%s", stats.toString().c_str());
+        std::fprintf(out, "=== end stats ===\n");
+        std::fflush(out);
     }
 
     SymbolicBuffer& registerBuffer(const std::string& name, size_t num_bytes);
+    // Read-only concrete buffer: loads return BV constants synthesized from
+    // `data`; no symbolic byte vars are created.  Stores throw — kernels must
+    // not write to a buffer registered concretely.  Replaces the
+    // registerBuffer + per-byte assert_eq idiom used for w_ptr/params/LUTs.
+    SymbolicBuffer& registerConcreteBuffer(const std::string& name,
+                                            const void* data, size_t num_bytes);
     SymbolicBuffer& findBuffer(const void* ptr);
     SymbolicBuffer* findBufferSafe(const void* ptr) noexcept;
 
@@ -158,6 +214,8 @@ struct VerificationContext {
     // FP comparisons (for param range constraints)
     Term fp16_geq(Term a, Term b) { return tm.mkTerm(Kind::FLOATINGPOINT_GEQ, {a, b}); }
     Term fp16_leq(Term a, Term b) { return tm.mkTerm(Kind::FLOATINGPOINT_LEQ, {a, b}); }
+    Term fp32_geq(Term a, Term b) { return tm.mkTerm(Kind::FLOATINGPOINT_GEQ, {a, b}); }
+    Term fp32_leq(Term a, Term b) { return tm.mkTerm(Kind::FLOATINGPOINT_LEQ, {a, b}); }
     // Reinterpret a 16-bit BV as an IEEE-754 binary16 FP term.
     Term fp16_from_bv(Term bv16) {
         Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {5, 11});
@@ -194,6 +252,8 @@ inline thread_local VerificationContext* g_ctx = nullptr;
 
 // Scalar-term side channel for _Float16's copy-ctor (see symbolic_buffer.hpp).
 inline thread_local std::unordered_map<const void*, Term> g_scalar_terms;
+
+inline void VerificationContext::clear_scalar_terms() { g_scalar_terms.clear(); }
 
 // ---------------------------------------------------------------------------
 // Helper: BV value from signed int64, masked to width

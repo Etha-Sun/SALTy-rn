@@ -14,6 +14,7 @@ from typing import Optional
 
 from .sig_parser import FuncSignature, FuncArg, ArgRole, ElemType, SCALAR_VALUE_ROLES
 from .kernel_profiles import get_profile, KernelProfile
+from .source_facts import MemoryLayout
 
 log = logging.getLogger("pipeline")
 
@@ -28,6 +29,43 @@ class Shape(Enum):
     FLAT_1D = auto()
     ROW_CHAN_2D = auto()
     SPATIAL_HWC_CHW = auto()
+    # GEMM_DIRECT_FP: float/bf16 GEMMs with `mr/nc/kc` + direct `const T* a` +
+    # `cm_stride/cn_stride` + packed weights. Sibling shapes for quantized
+    # output and indirect input get added when those kernels land.
+    GEMM_DIRECT_FP = auto()
+    # REDUCE_1D: N→k reductions where k is small (1 for rsum/qs8-rsum, 2 for
+    # rminmax).  Same kernel-side signature as FLAT_1D (single batch + flat
+    # input + small output + params) but the OUTPUT semantics differ: the
+    # kernel reads-modifies-writes a small fixed-size accumulator that the
+    # caller pre-initializes (e.g. {0.0f} for rsum, {+INF, -INF} for minmax).
+    # Discriminated from FLAT_1D by an explicit profile.reduce field.
+    REDUCE_1D = auto()
+    # TRANSPOSE_2D: in-place 2D transpose with byte-strides.  Canonical
+    # signature: (input, output, input_stride, output_stride, block_width,
+    # block_height).  output[r][c] = input[c][r] for r ∈ [0, block_width),
+    # c ∈ [0, block_height).  Pure BV (no FP).  Sweep is the cross product of
+    # block_width × block_height fixtures from profile.transpose.blocks.
+    TRANSPOSE_2D = auto()
+    # POOL_INDIRECT: pooling kernels (max-pool, avg-pool) with indirect input.
+    # Canonical signature: (output_pixels, kernel_elements, channels,
+    # const T** input, input_offset, input_pixel_stride, T* output,
+    # input_increment, output_increment, params).  `input` is an array of
+    # `kernel_elements` row pointers; each row holds `channels` elements at
+    # `input_offset` byte offset.  Sibling shape POOL_INDIRECT_AVG handles
+    # avgpool's extra zero/multiplier args.
+    POOL_INDIRECT = auto()
+    # BILINEAR_INDIRECT: bilinear-interp kernels with indirect input.
+    # Canonical signature: (output_pixels, channels, const T** input,
+    # input_offset, const TW* weights, T* output, output_increment).
+    # `input` is `output_pixels * 4` row pointers (TL, TR, BL, BR per pixel);
+    # `weights` is `output_pixels * 2` values (αh, αv per pixel).  Distinguished
+    # from POOL_INDIRECT by the presence of a `weights` arg + absence of
+    # `kernel_elements`.
+    BILINEAR_INDIRECT = auto()
+    # DWCONV_INDIRECT: depthwise conv; bake-time kernel_size; sweeps channels + output_width.
+    DWCONV_INDIRECT = auto()
+    # IGEMM_INDIRECT_FP: indirect-input GEMM (conv-via-im2col); bake-time ks/nr; sweeps mr/nc/kc.
+    IGEMM_INDIRECT_FP = auto()
     UNCLASSIFIED = auto()
 
 
@@ -49,18 +87,28 @@ class DimSpec:
 
 @dataclass
 class BufferSpec:
-    """Specification for one symbolic buffer in the harness."""
+    """Specification for one symbolic buffer in the harness.
+
+    `layout` describes the buffer's physical layout (flat / split). Orthogonal
+    to ShapePlan (which describes the verifier sweep dimensions).
+    """
     arg_name: str
     role: ArgRole
     elem_type: ElemType
     size_expr: str       # C++ expression for byte size (e.g., "batch * 1", "kc * nc * 4")
     is_symbolic: bool    # True = symbolic (solver explores all values), False = concrete/zero
     note: str = ""
+    layout: MemoryLayout = field(default_factory=MemoryLayout)
 
 
 @dataclass
 class ShapePlan:
-    """Deterministic plan for driving a kernel of a known shape."""
+    """Deterministic plan for driving a kernel of a known shape.
+
+    Describes how the verifier sweeps dimensions. Orthogonal to MemoryLayout
+    on each BufferSpec (which describes how individual buffers are laid out
+    in physical storage).
+    """
     shape: Shape
     sweep_dims: list[DimSpec] = field(default_factory=list)
     arg_bindings: dict[str, str] = field(default_factory=dict)
@@ -93,6 +141,7 @@ class HarnessSpec:
     vlen: int = 256
     arg_order: list[dict] = None
     profile: Optional[KernelProfile] = None
+    batch_unit_bytes: int = 1   # multiplier at kernel call site; 1 = batch is element count
 
     @property
     def sweep_arg(self) -> str:
@@ -109,6 +158,34 @@ class HarnessSpec:
     @property
     def is_spatial(self) -> bool:
         return self.shape_plan.shape == Shape.SPATIAL_HWC_CHW
+
+    @property
+    def is_gemm(self) -> bool:
+        return self.shape_plan.shape == Shape.GEMM_DIRECT_FP
+
+    @property
+    def is_reduce(self) -> bool:
+        return self.shape_plan.shape == Shape.REDUCE_1D
+
+    @property
+    def is_transpose(self) -> bool:
+        return self.shape_plan.shape == Shape.TRANSPOSE_2D
+
+    @property
+    def is_pool(self) -> bool:
+        return self.shape_plan.shape == Shape.POOL_INDIRECT
+
+    @property
+    def is_bilinear(self) -> bool:
+        return self.shape_plan.shape == Shape.BILINEAR_INDIRECT
+
+    @property
+    def is_dwconv(self) -> bool:
+        return self.shape_plan.shape == Shape.DWCONV_INDIRECT
+
+    @property
+    def is_igemm(self) -> bool:
+        return self.shape_plan.shape == Shape.IGEMM_INDIRECT_FP
 
     @property
     def secondary_dim(self) -> str:
@@ -131,6 +208,18 @@ def classify_shape(sig: FuncSignature,
     """
     arg_names = {a.name for a in sig.args}
 
+    # IGEMM_INDIRECT_FP: mr+nc+kc + ks + indirect `a` (const T**).
+    # Check before GEMM_DIRECT_FP since both have the mr/nc/kc trio.
+    has_gemm_dims = {"mr", "nc", "kc"}.issubset(arg_names)
+    has_gemm_strides = {"cm_stride", "cn_stride"}.issubset(arg_names)
+    has_indirect = any(a.is_double_pointer for a in sig.args)
+    if has_gemm_dims and "ks" in arg_names and has_indirect:
+        return Shape.IGEMM_INDIRECT_FP
+
+    # GEMM_DIRECT_FP: mr+nc+kc + cm_stride+cn_stride + direct (non-indirect) input.
+    if has_gemm_dims and has_gemm_strides and not has_indirect:
+        return Shape.GEMM_DIRECT_FP
+
     # SPATIAL: HWC→CHW conv kernels have both `input_height` and `input_width`.
     # These are the load-bearing spatial dims — no other shape uses both.
     if "input_height" in arg_names and "input_width" in arg_names:
@@ -142,6 +231,41 @@ def classify_shape(sig: FuncSignature,
     has_stride = any(a.role == ArgRole.STRIDE for a in sig.args)
     if has_rows and has_channels and has_stride:
         return Shape.ROW_CHAN_2D
+
+    # TRANSPOSE_2D: 2D transpose with strided input/output.  All four
+    # transpose-specific arg names must be present (no overlap with any other
+    # shape — no need for a profile gate).
+    if {"block_width", "block_height", "input_stride", "output_stride"}.issubset(arg_names):
+        return Shape.TRANSPOSE_2D
+
+    # DWCONV_INDIRECT: depthwise conv — has `output_width`+`channels`+`weights`+
+    # `const T**` + `input_stride`+`input_pixel_stride`.  Distinct from
+    # POOL (no `kernel_elements`) and BILINEAR (uses `output_pixels`, not `output_width`).
+    # Check before POOL/BILINEAR; gated on profile.dwconv being set.
+    if (profile is not None and getattr(profile, "dwconv", None) is not None
+            and {"output_width", "channels", "weights"}.issubset(arg_names)
+            and any(a.is_double_pointer for a in sig.args)):
+        return Shape.DWCONV_INDIRECT
+
+    # BILINEAR_INDIRECT: ibilinear kernels — same `output_pixels`+`channels`+
+    # `const T**` as POOL, but with a `weights` array and NO `kernel_elements`.
+    # Check this BEFORE POOL_INDIRECT.
+    if ({"output_pixels", "channels", "weights"}.issubset(arg_names)
+            and "kernel_elements" not in arg_names
+            and any(a.is_double_pointer for a in sig.args)):
+        return Shape.BILINEAR_INDIRECT
+
+    # POOL_INDIRECT: pooling kernels with indirect input.  Discriminator: the
+    # canonical pool arg trio + a `const T**` input arg.  GEMM/IGEMM also use
+    # const T** but they have mr/nc/kc — checked above already.
+    if ({"output_pixels", "kernel_elements", "channels"}.issubset(arg_names)
+            and any(a.is_double_pointer for a in sig.args)):
+        return Shape.POOL_INDIRECT
+
+    # REDUCE_1D: profile-declared reduction (rsum / rminmax / etc.).  Same
+    # surface signature as FLAT_1D — discriminated only by profile.reduce.
+    if profile is not None and getattr(profile, "reduce", None) is not None:
+        return Shape.REDUCE_1D
 
     # FLAT_1D: kernels with a single batch-ish scalar and flat input/output.
     # Require a BATCH-role arg and no strides (strides → 2D or spatial).
@@ -171,6 +295,20 @@ def build_shape_plan(shape: Shape, sig: FuncSignature,
         return _row_chan_2d_plan(sig, profile, scalar_args)
     if shape == Shape.SPATIAL_HWC_CHW:
         return _spatial_hwc_chw_plan(sig, profile, kernel_name)
+    if shape == Shape.GEMM_DIRECT_FP:
+        return _gemm_direct_fp_plan(sig, profile, scalar_args)
+    if shape == Shape.REDUCE_1D:
+        return _reduce_1d_plan(sig, profile, scalar_args)
+    if shape == Shape.TRANSPOSE_2D:
+        return _transpose_2d_plan(sig, profile, scalar_args)
+    if shape == Shape.POOL_INDIRECT:
+        return _pool_indirect_plan(sig, profile, scalar_args)
+    if shape == Shape.BILINEAR_INDIRECT:
+        return _bilinear_indirect_plan(sig, profile, scalar_args)
+    if shape == Shape.DWCONV_INDIRECT:
+        return _dwconv_indirect_plan(sig, profile, scalar_args)
+    if shape == Shape.IGEMM_INDIRECT_FP:
+        return _igemm_indirect_fp_plan(sig, profile, scalar_args)
     return _unclassified_plan(sig)
 
 
@@ -313,10 +451,12 @@ def _spatial_hwc_chw_plan(sig: FuncSignature, profile: Optional[KernelProfile],
     stride, pad = conv["stride"], conv["pad"]
     in_ch, out_tile = conv["in_ch"], conv["out_tile"]
 
+    oc_override = profile.spatial_output_channels if profile and profile.spatial_output_channels else None
+    oc_values = oc_override or [m * out_tile for m in _SPATIAL_OUT_CHAN_MULTIPLIERS]
     sweep = [
         DimSpec(name="output_rows", unit="elements", step=1),
         DimSpec(name="output_channels", unit="elements",
-                values=[m * out_tile for m in _SPATIAL_OUT_CHAN_MULTIPLIERS],
+                values=oc_values,
                 step=out_tile),
     ]
 
@@ -344,7 +484,11 @@ def _spatial_hwc_chw_plan(sig: FuncSignature, profile: Optional[KernelProfile],
         # adjacent allocation.  Same idea as ROW_CHAN_2D's `pad_bytes` field.
         f"size_t input_bytes = input_height * input_width * input_channels * {eb} + 32;",
         f"size_t zero_bytes = input_width * input_channels * {eb} + 32;",
-        f"size_t weights_bytes = output_channels * (kernel_h * kernel_w * input_channels + 1) * {eb} + 32;",
+        # XNNPACK reserves a full out_tile-sized weight group regardless of
+        # output_channels, so size by ceil(output_channels / out_tile) tiles.
+        # Each tile carries out_tile biases + out_tile * kH * kW * IC weights.
+        f"size_t out_tiles = (output_channels + {out_tile - 1}) / {out_tile};",
+        f"size_t weights_bytes = out_tiles * {out_tile} * (kernel_h * kernel_w * input_channels + 1) * {eb} + 32;",
         f"size_t output_bytes = output_channels * output_channel_stride_bytes + 32;",
     ]
 
@@ -409,6 +553,640 @@ def _unclassified_plan(sig: FuncSignature) -> ShapePlan:
     return ShapePlan(
         shape=Shape.UNCLASSIFIED,
         unresolved=["sweep_dims", "arg_bindings", "buffer_plans"],
+    )
+
+
+def _gemm_direct_fp_plan(sig: FuncSignature,
+                          profile: Optional[KernelProfile],
+                          scalar_args: dict) -> ShapePlan:
+    """GEMM_DIRECT_FP: triple sweep over (mr, nc, kc) with packed weights.
+
+    The profile's `gemm` dict is required — buffer sizes and strides are
+    kernel-specific (each tile shape packs weights differently).
+    """
+    if not profile or not profile.gemm:
+        return ShapePlan(
+            shape=Shape.GEMM_DIRECT_FP,
+            unresolved=["profile.gemm — required for GEMM_DIRECT_FP"],
+        )
+    g = profile.gemm
+
+    dims = g["dims"]   # {"mr": [...], "nc": [...], "kc": [...]}
+    sweep = [
+        DimSpec(name="mr", unit="elements", values=dims["mr"]),
+        DimSpec(name="nc", unit="elements", values=dims["nc"]),
+        DimSpec(name="kc", unit="elements", values=dims["kc"]),
+    ]
+
+    strides = g["strides"]
+    sizes   = g["buffer_sizes"]
+    overrides = g.get("arg_bindings", {})
+
+    # Stride locals declared at top of verify() so the output-compare loop
+    # can reference cm_stride / cn_stride by name (matches the spatial pattern).
+    alloc_decls: list[str] = []
+    for sname, expr in strides.items():
+        alloc_decls.append(f"size_t {sname} = {expr};")
+
+    # Bind every scalar arg. Priority: profile arg_bindings > sweep dims (mr/nc/kc) >
+    # strides > scalar_args default. arg_bindings is essential when the kernel arg's
+    # unit differs from the sweep variable (e.g. kc-bytes vs kc-elements).
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in overrides:
+            bindings[n] = overrides[n]
+        elif n in ("mr", "nc", "kc"):
+            bindings[n] = n
+        elif n in strides:
+            bindings[n] = n  # local var of the same name
+        else:
+            bindings[n] = scalar_args.get(n, "0")
+
+    # Buffer plans — one per pointer arg. Profile names match sig arg names.
+    buf_plans: dict[str, BufferSpec] = {}
+    is_concrete = bool(g.get("concrete_weights", False))
+    for a in sig.args:
+        if a.role not in (ArgRole.INPUT_ARRAY, ArgRole.OUTPUT, ArgRole.WEIGHTS):
+            continue
+        if a.name not in sizes:
+            continue  # unresolved — caller will surface
+        symbolic = a.role != ArgRole.WEIGHTS or not is_concrete
+        buf_plans[a.name] = BufferSpec(
+            arg_name=a.name,
+            role=a.role,
+            elem_type=a.elem_type,
+            size_expr=sizes[a.name],
+            is_symbolic=symbolic,
+        )
+
+    unresolved = []
+    missing_sizes = [a.name for a in sig.args
+                     if a.role in (ArgRole.INPUT_ARRAY, ArgRole.OUTPUT, ArgRole.WEIGHTS)
+                        and a.name not in sizes]
+    if missing_sizes:
+        unresolved.append(f"buffer_sizes:{','.join(missing_sizes)}")
+
+    return ShapePlan(
+        shape=Shape.GEMM_DIRECT_FP,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        unresolved=unresolved,
+    )
+
+
+def _reduce_1d_plan(sig: FuncSignature,
+                     profile: Optional[KernelProfile],
+                     scalar_args: dict) -> ShapePlan:
+    """REDUCE_1D: single sweep dim = batch; output is a small fixed-size
+    accumulator (1-2 scalars).  Caller-initialized per profile.reduce.output_init.
+
+    Profile dict shape (see kernel_profiles.KernelProfile.reduce):
+      n_outputs:    1 or 2 — number of scalar outputs the kernel writes
+      output_init:  list of C literals (length = n_outputs) for caller init
+      batch_unit:   "bytes" or "elements" — what the kernel's batch arg measures
+    """
+    if not profile or not profile.reduce:
+        return ShapePlan(
+            shape=Shape.REDUCE_1D,
+            unresolved=["profile.reduce — required for REDUCE_1D"],
+        )
+    r = profile.reduce
+    n_outputs = r.get("n_outputs", 1)
+    batch_unit = r.get("batch_unit", "bytes")
+    sweep_values = r.get("sweep", [1, 2, 3, 4, 5, 7, 8, 9, 15, 16, 17])
+
+    input_arrays = [a for a in sig.args if a.role == ArgRole.INPUT_ARRAY]
+    in_arg = input_arrays[0] if input_arrays else None
+    out_arg = sig.output_args[0] if sig.output_args else None
+    in_eb = (in_arg.elem_type.byte_size or 4) if in_arg else 4
+    out_eb = (out_arg.elem_type.byte_size or 4) if out_arg else 4
+
+    batch_name = sig.batch_arg.name if sig.batch_arg else "batch"
+    sweep = [DimSpec(name=batch_name, unit="elements", values=sweep_values)]
+
+    # Bind every scalar arg.  IMPORTANT: don't multiply BATCH by elem_bytes
+    # here even when batch_unit=="bytes" — `_build_call_args` already does that
+    # via `spec.batch_unit_bytes` (auto-detected from `batch / sizeof(T)` in
+    # the kernel source).  Doing it twice gives `batch * elem_bytes^2`.
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        if a.role == ArgRole.BATCH:
+            bindings[a.name] = batch_name
+        else:
+            bindings[a.name] = scalar_args.get(a.name, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    if in_arg:
+        # Buffer size MUST match `padded * elem_bytes` so the input_range loop
+        # (which reads `padded` lanes) stays in bounds.  Adding 16 elements to
+        # batch is enough headroom for any SIMD tail over-read.
+        buf_plans[in_arg.name] = BufferSpec(
+            arg_name=in_arg.name,
+            role=ArgRole.INPUT_ARRAY,
+            elem_type=in_arg.elem_type,
+            size_expr=f"({batch_name} + 16) * {in_eb}",
+            is_symbolic=True,
+        )
+    if out_arg:
+        buf_plans[out_arg.name] = BufferSpec(
+            arg_name=out_arg.name,
+            role=ArgRole.OUTPUT,
+            elem_type=out_arg.elem_type,
+            size_expr=f"{n_outputs * out_eb}",
+            # Symbolic bytes are allocated normally; the harness immediately
+            # overwrites them with the concrete init values from profile.reduce
+            # before calling the kernel.  So the kernel sees concrete init,
+            # accumulates symbolically, and the post-call value is what we
+            # compare.  is_symbolic=True keeps the storage normal-mutable.
+            is_symbolic=True,
+        )
+
+    # alloc_decls: one local for the input-buffer count.
+    alloc_decls = [
+        f"size_t padded = {batch_name} + 16;  // tail slack for SIMD over-read",
+    ]
+
+    return ShapePlan(
+        shape=Shape.REDUCE_1D,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+    )
+
+
+def _transpose_2d_plan(sig: FuncSignature,
+                        profile: Optional[KernelProfile],
+                        scalar_args: dict) -> ShapePlan:
+    """TRANSPOSE_2D: in-place 2D transpose with byte-strided input/output.
+
+    Profile dict shape (see kernel_profiles.KernelProfile.transpose):
+      elem_bytes:  int (1, 2, 4, 8)
+      blocks:      list of (block_width, block_height) tuples — fixtures.
+
+    Strides are bound to packed values (no padding) so the shape verifies the
+    contiguous-row case.  Sibling shapes for padded/strided cases land later.
+    """
+    if not profile or not profile.transpose:
+        return ShapePlan(
+            shape=Shape.TRANSPOSE_2D,
+            unresolved=["profile.transpose — required for TRANSPOSE_2D"],
+        )
+    t = profile.transpose
+    eb = t["elem_bytes"]
+    blocks = t["blocks"]   # list of (bw, bh) tuples
+
+    # Two sweep dims iterated as a paired list (not cross product) — the
+    # `blocks` array gives explicit (bw, bh) pairs.  The harness will iterate
+    # i in 0..N-1 and pull both from the array, which lets us pick exactly the
+    # corner cases we want.  We model this as one logical "block_idx" sweep
+    # with 'values' = list of indices.
+    sweep = [
+        DimSpec(name="block_width",  unit="elements",
+                values=[bw for bw, _ in blocks]),
+        DimSpec(name="block_height", unit="elements",
+                values=[bh for _, bh in blocks]),
+    ]
+
+    # Stride locals declared at top of verify().  Packed layout = no padding,
+    # so input_stride = block_width * elem_bytes and output_stride =
+    # block_height * elem_bytes.
+    alloc_decls = [
+        f"size_t input_stride  = block_width  * {eb};",
+        f"size_t output_stride = block_height * {eb};",
+    ]
+
+    # Bind every scalar arg.
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n == "block_width":      bindings[n] = "block_width"
+        elif n == "block_height":   bindings[n] = "block_height"
+        elif n == "input_stride":   bindings[n] = "input_stride"
+        elif n == "output_stride":  bindings[n] = "output_stride"
+        else:                       bindings[n] = scalar_args.get(n, "0")
+
+    # Buffer plans.
+    # Input is `block_height` rows of `block_width` elements (packed).
+    # Output is `block_width` rows of `block_height` elements (packed).
+    # Both reach the same byte count = block_width * block_height * elem_bytes.
+    # +32B slack for SIMD tail over-reads/writes.
+    buf_plans: dict[str, BufferSpec] = {}
+    in_arg = next((a for a in sig.args if a.role == ArgRole.INPUT_ARRAY), None)
+    out_arg = sig.output_args[0] if sig.output_args else None
+    body_bytes = f"block_width * block_height * {eb} + 32"
+    if in_arg:
+        buf_plans[in_arg.name] = BufferSpec(
+            arg_name=in_arg.name,
+            role=ArgRole.INPUT_ARRAY,
+            elem_type=in_arg.elem_type,
+            size_expr=body_bytes,
+            is_symbolic=True,
+        )
+    if out_arg:
+        buf_plans[out_arg.name] = BufferSpec(
+            arg_name=out_arg.name,
+            role=ArgRole.OUTPUT,
+            elem_type=out_arg.elem_type,
+            size_expr=body_bytes,
+            is_symbolic=True,
+        )
+
+    return ShapePlan(
+        shape=Shape.TRANSPOSE_2D,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+    )
+
+
+def _pool_indirect_plan(sig: FuncSignature,
+                         profile: Optional[KernelProfile],
+                         scalar_args: dict) -> ShapePlan:
+    """POOL_INDIRECT: pooling with indirect input pointers.
+
+    Profile dict shape (see kernel_profiles.KernelProfile.pool):
+      elem_bytes:               int (1, 2, 4)
+      kernel_elements_values:   list of fixed kernel sizes (e.g. [9])
+      channels_values:          list of channel counts to sweep
+      output_pixels_values:     list of output pixel counts (default [1])
+
+    Buffer plans:
+      input:   INDIRECT_INPUT — kernel_elements row pointers, each row holds
+               channels * elem_bytes bytes (we set input_offset = 0).
+      output:  flat OUTPUT of output_pixels * channels * elem_bytes bytes.
+    """
+    if not profile or not profile.pool:
+        return ShapePlan(
+            shape=Shape.POOL_INDIRECT,
+            unresolved=["profile.pool — required for POOL_INDIRECT"],
+        )
+    p = profile.pool
+    eb = p["elem_bytes"]
+    ke_vals = p.get("kernel_elements_values", [9])
+    ch_vals = p.get("channels_values", [1, 4, 8, 16])
+    op_vals = p.get("output_pixels_values", [1])
+
+    # Three sweep dims iterated as a paired/cross-product list — but for the
+    # first iteration we use single-dim sweeps via three lists.  For initial
+    # support, fix output_pixels = ke_vals[0] and sweep channels only.
+    sweep = [
+        DimSpec(name="channels",        unit="elements", values=ch_vals),
+        DimSpec(name="output_pixels",   unit="elements", values=op_vals),
+        DimSpec(name="kernel_elements", unit="elements", values=ke_vals),
+    ]
+
+    # alloc_decls: simple bytes math.  We choose input_offset = 0 (kernel reads
+    # from the row pointer directly).  input_pixel_stride/input_increment/
+    # output_increment are zero for output_pixels=1 (single output position);
+    # generalize to non-zero only when output_pixels > 1.
+    alloc_decls = [
+        f"size_t channel_bytes = channels * {eb};",
+        f"size_t input_offset = 0;",
+        f"size_t input_pixel_stride = channel_bytes;",
+        f"size_t input_increment = 0;",
+        f"size_t output_increment = 0;",
+    ]
+
+    # Bind every scalar arg.
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("channels", "output_pixels", "kernel_elements"):
+            bindings[n] = n
+        elif n == "input_offset":           bindings[n] = "input_offset"
+        elif n == "input_pixel_stride":     bindings[n] = "input_pixel_stride"
+        elif n == "input_increment":        bindings[n] = "input_increment"
+        elif n == "output_increment":       bindings[n] = "output_increment"
+        else:                                bindings[n] = scalar_args.get(n, "0")
+
+    # Buffer plans.
+    buf_plans: dict[str, BufferSpec] = {}
+    in_arg = next((a for a in sig.args if a.role == ArgRole.INDIRECT_INPUT), None)
+    out_arg = sig.output_args[0] if sig.output_args else None
+    if in_arg:
+        # n_ptrs = kernel_elements; each row = channel_bytes (+slack).
+        # The existing INDIRECT_INPUT decl emit reads `count_name` for row size.
+        buf_plans[in_arg.name] = BufferSpec(
+            arg_name=in_arg.name,
+            role=ArgRole.INDIRECT_INPUT,
+            elem_type=in_arg.elem_type,
+            size_expr="kernel_elements",   # ← row count for n_ptrs
+            is_symbolic=True,
+        )
+    if out_arg:
+        buf_plans[out_arg.name] = BufferSpec(
+            arg_name=out_arg.name,
+            role=ArgRole.OUTPUT,
+            elem_type=out_arg.elem_type,
+            size_expr="output_pixels * channel_bytes + 32",
+            is_symbolic=True,
+        )
+
+    # avgpool variants: `zero` (ZERO_BUFFER, sized to a channel) +
+    # `multiplier` (INPUT_SCALAR, 1 element) extra args.  Add explicit plans
+    # so the default `padded * eb` sizing (which has no `padded` here) is
+    # bypassed.
+    for a in sig.args:
+        if a.role == ArgRole.ZERO_BUFFER:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.ZERO_BUFFER,
+                elem_type=a.elem_type,
+                size_expr=f"channels * {(a.elem_type.byte_size or 1)} + 32",
+                is_symbolic=False,
+            )
+        # INPUT_SCALAR uses the existing 1-element default size (eb bytes) —
+        # no plan override needed.
+
+    # count_name drives per-row buffer sizing in INDIRECT_INPUT register/decl.
+    return ShapePlan(
+        shape=Shape.POOL_INDIRECT,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="channels",
+        count_name="channels",
+    )
+
+
+def _bilinear_indirect_plan(sig: FuncSignature,
+                              profile: Optional[KernelProfile],
+                              scalar_args: dict) -> ShapePlan:
+    """BILINEAR_INDIRECT: bilinear interp with indirect input + weights.
+
+    Profile dict shape (see kernel_profiles.KernelProfile.bilinear):
+      elem_bytes:           int (1, 2, 4) — input/output element size.
+      weight_elem_bytes:    int (2 or 4) — Q15 int16 for integer ibilinear,
+                            float for fp variants.
+      channels_values:      list of channel-count fixtures.
+      output_pixels_values: list of output-pixel counts (default [1]).
+    """
+    if not profile or not profile.bilinear:
+        return ShapePlan(
+            shape=Shape.BILINEAR_INDIRECT,
+            unresolved=["profile.bilinear — required for BILINEAR_INDIRECT"],
+        )
+    b = profile.bilinear
+    eb = b["elem_bytes"]
+    web = b.get("weight_elem_bytes", eb)
+    ch_vals = b.get("channels_values", [1, 4, 8])
+    op_vals = b.get("output_pixels_values", [1])
+
+    sweep = [
+        DimSpec(name="channels",      unit="elements", values=ch_vals),
+        DimSpec(name="output_pixels", unit="elements", values=op_vals),
+    ]
+
+    alloc_decls = [
+        f"size_t channel_bytes = channels * {eb};",
+        f"size_t input_offset = 0;",
+        f"size_t output_increment = 0;",
+    ]
+
+    # Bind every scalar arg.
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("channels", "output_pixels"):  bindings[n] = n
+        elif n == "input_offset":               bindings[n] = "input_offset"
+        elif n == "output_increment":           bindings[n] = "output_increment"
+        else:                                   bindings[n] = scalar_args.get(n, "0")
+
+    # Buffer plans.
+    in_arg = next((a for a in sig.args if a.role == ArgRole.INDIRECT_INPUT), None)
+    out_arg = sig.output_args[0] if sig.output_args else None
+    buf_plans: dict[str, BufferSpec] = {}
+    if in_arg:
+        # 4 row pointers per output pixel (TL, TR, BL, BR).
+        buf_plans[in_arg.name] = BufferSpec(
+            arg_name=in_arg.name,
+            role=ArgRole.INDIRECT_INPUT,
+            elem_type=in_arg.elem_type,
+            size_expr="output_pixels * 4",   # n_ptrs count
+            is_symbolic=True,
+        )
+    if out_arg:
+        buf_plans[out_arg.name] = BufferSpec(
+            arg_name=out_arg.name,
+            role=ArgRole.OUTPUT,
+            elem_type=out_arg.elem_type,
+            size_expr="output_pixels * channel_bytes + 32",
+            is_symbolic=True,
+        )
+    # weights buffer: a plain INPUT_ARRAY of `output_pixels * 2` weight elements.
+    for a in sig.args:
+        if a.role == ArgRole.WEIGHTS or (a.role == ArgRole.INPUT_ARRAY and a.name == "weights"):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name,
+                role=ArgRole.INPUT_ARRAY,
+                elem_type=a.elem_type,
+                size_expr=f"output_pixels * 2 * {web} + 16",
+                is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.BILINEAR_INDIRECT,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="channels",
+        count_name="channels",
+    )
+
+
+def _igemm_indirect_fp_plan(sig: FuncSignature,
+                             profile: Optional[KernelProfile],
+                             scalar_args: dict) -> ShapePlan:
+    """IGEMM_INDIRECT_FP: GEMM with indirect input pointers + bake-time ks."""
+    if not profile or not profile.igemm:
+        return ShapePlan(
+            shape=Shape.IGEMM_INDIRECT_FP,
+            unresolved=["profile.igemm — required for IGEMM_INDIRECT_FP"],
+        )
+    g = profile.igemm
+    dims = g["dims"]
+    ks = g["ks"]
+    sweep = [
+        DimSpec(name="mr", unit="elements", values=dims["mr"]),
+        DimSpec(name="nc", unit="elements", values=dims["nc"]),
+        DimSpec(name="kc", unit="elements", values=dims["kc"]),
+    ]
+
+    strides = g.get("strides", {})
+    sizes   = g.get("buffer_sizes", {})
+    overrides = g.get("arg_bindings", {})
+
+    alloc_decls: list[str] = []
+    for sname, expr in strides.items():
+        alloc_decls.append(f"size_t {sname} = {expr};")
+    alloc_decls.append(f"size_t a_offset = 0;")
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in overrides:                    bindings[n] = overrides[n]
+        elif n in ("mr", "nc", "kc"):         bindings[n] = n
+        elif n == "ks":                       bindings[n] = str(ks)
+        elif n in strides:                    bindings[n] = n
+        elif n == "a_offset":                 bindings[n] = "a_offset"
+        else:                                  bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    a_arg = next((x for x in sig.args if x.role == ArgRole.INDIRECT_INPUT), None)
+    if a_arg:
+        # n_ptrs = mr * ks (per upstream IGEMM).  Each row holds kc elements.
+        buf_plans[a_arg.name] = BufferSpec(
+            arg_name=a_arg.name,
+            role=ArgRole.INDIRECT_INPUT,
+            elem_type=a_arg.elem_type,
+            size_expr=f"mr * {ks}",
+            is_symbolic=True,
+        )
+    for a in sig.args:
+        if a.role in (ArgRole.WEIGHTS, ArgRole.OUTPUT, ArgRole.INPUT_ARRAY):
+            if a.name in sizes:
+                buf_plans[a.name] = BufferSpec(
+                    arg_name=a.name,
+                    role=a.role,
+                    elem_type=a.elem_type,
+                    size_expr=sizes[a.name],
+                    is_symbolic=True,
+                )
+        elif a.role == ArgRole.ZERO_BUFFER:
+            eb = g["elem_bytes"]
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.ZERO_BUFFER,
+                elem_type=a.elem_type,
+                size_expr=f"kc * {eb} + 32",
+                is_symbolic=False,
+            )
+
+    unresolved = []
+    missing = [a.name for a in sig.args
+               if a.role in (ArgRole.WEIGHTS, ArgRole.OUTPUT)
+                  and a.name not in sizes]
+    if missing:
+        unresolved.append(f"buffer_sizes:{','.join(missing)}")
+
+    return ShapePlan(
+        shape=Shape.IGEMM_INDIRECT_FP,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="kc",
+        count_name="kc",
+        unresolved=unresolved,
+    )
+
+
+def _dwconv_indirect_plan(sig: FuncSignature,
+                          profile: Optional[KernelProfile],
+                          scalar_args: dict) -> ShapePlan:
+    """DWCONV_INDIRECT: depthwise conv with indirect input rows + packed weights."""
+    if not profile or not profile.dwconv:
+        return ShapePlan(
+            shape=Shape.DWCONV_INDIRECT,
+            unresolved=["profile.dwconv — required for DWCONV_INDIRECT"],
+        )
+    d = profile.dwconv
+    eb = d["elem_bytes"]
+    web = d.get("weight_elem_bytes", eb)
+    ks = d["kernel_size"]
+    ch_vals = d.get("channels_values", [1, 4])
+    ow_vals = d.get("output_width_values", [1])
+
+    sweep = [
+        DimSpec(name="channels",     unit="elements", values=ch_vals),
+        DimSpec(name="output_width", unit="elements", values=ow_vals),
+    ]
+
+    alloc_decls = [
+        f"size_t channel_bytes = channels * {eb};",
+        f"size_t input_offset = 0;",
+        f"size_t input_pixel_stride = 0;",
+        f"size_t output_increment = 0;",
+        f"intptr_t input_stride_bytes = 0;",
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("channels", "output_width"):    bindings[n] = n
+        elif n == "input_stride":                bindings[n] = "input_stride_bytes"
+        elif n == "input_offset":                bindings[n] = "input_offset"
+        elif n == "input_pixel_stride":          bindings[n] = "input_pixel_stride"
+        elif n == "output_increment":            bindings[n] = "output_increment"
+        else:                                    bindings[n] = scalar_args.get(n, "0")
+
+    in_arg  = next((a for a in sig.args if a.role == ArgRole.INDIRECT_INPUT), None)
+    out_arg = sig.output_args[0] if sig.output_args else None
+    buf_plans: dict[str, BufferSpec] = {}
+    if in_arg:
+        # n_ptrs = output_width × kernel_size; per-row size driven by count_name (channels).
+        buf_plans[in_arg.name] = BufferSpec(
+            arg_name=in_arg.name,
+            role=ArgRole.INDIRECT_INPUT,
+            elem_type=in_arg.elem_type,
+            size_expr=f"output_width * {ks}",
+            is_symbolic=True,
+        )
+    if out_arg:
+        buf_plans[out_arg.name] = BufferSpec(
+            arg_name=out_arg.name,
+            role=ArgRole.OUTPUT,
+            elem_type=out_arg.elem_type,
+            size_expr="output_width * channel_bytes + 32",
+            is_symbolic=True,
+        )
+    # Weights: bias[C] + kernel_size × C kernel weights = (1+ks)*C elements.
+    # Zero buffer: a channel-sized buffer of zeros (used by padding-row branch,
+    # which we don't actually exercise — but the kernel may still read it).
+    for a in sig.args:
+        if a.role == ArgRole.WEIGHTS or (a.role == ArgRole.INPUT_ARRAY and a.name == "weights"):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name,
+                role=ArgRole.INPUT_ARRAY,
+                elem_type=a.elem_type,
+                size_expr=f"channels * (1 + {ks}) * {web} + 32",
+                is_symbolic=True,
+            )
+        elif a.role == ArgRole.ZERO_BUFFER:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.ZERO_BUFFER,
+                elem_type=a.elem_type,
+                size_expr=f"channels * {eb} + 32",
+                is_symbolic=False,
+            )
+
+    return ShapePlan(
+        shape=Shape.DWCONV_INDIRECT,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="channels",
+        count_name="channels",
     )
 
 

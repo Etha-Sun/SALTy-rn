@@ -27,6 +27,7 @@ Environment Variables:
 """
 
 import argparse
+import json
 import logging
 import re
 import sys
@@ -182,6 +183,66 @@ def _format_counterexample(ce: dict) -> str:
     lines.append("")
     lines.append(f"Expected: {neon_out}, Got: {rvv_out}")
     return "\n".join(lines)
+
+
+def _resolve_prob_id(kernel_name: str, cfg: Config) -> int | None:
+    """Resolve autocomp prob_id for a kernel. Returns None if unmapped.
+
+    Single-kernel mode: cfg.optimize_prob_id (set via --prob-id).
+    Batch mode: read cfg.optimize_map_file as {kernel_name: prob_id}.
+    """
+    if cfg.optimize_prob_id >= 0:
+        return cfg.optimize_prob_id
+    if cfg.optimize_map_file.exists():
+        try:
+            mapping = json.loads(cfg.optimize_map_file.read_text())
+            pid = mapping.get(kernel_name)
+            if pid is not None:
+                return int(pid)
+        except (OSError, ValueError, json.JSONDecodeError) as e:
+            log.warning("Could not read optimize map %s: %s", cfg.optimize_map_file, e)
+    return None
+
+
+def _optimize_and_reverify(kernel_path: Path, kernel_name: str,
+                            cfg: Config, tracker: StatusTracker) -> None:
+    """Run autocomp on the verified RVV, then re-verify the optimized output."""
+    if not tracker.is_verified(kernel_name):
+        log.info("Skipping --optimize for %s (not verified)", kernel_name)
+        return
+
+    prob_id = _resolve_prob_id(kernel_name, cfg)
+    if prob_id is None:
+        log.warning("Skipping --optimize for %s (no prob_id; pass --prob-id or populate %s)",
+                    kernel_name, cfg.optimize_map_file)
+        return
+
+    from .optimize.bridge import optimize_kernel
+    opt = optimize_kernel(kernel_name, prob_id, cfg)
+    if not opt.success:
+        tracker.update(kernel_name, optimized=False, error=f"optimize_failed: {opt.error}")
+        return
+
+    tracker.update(kernel_name, optimized=True, optimized_cycles=opt.cycles)
+
+    # Re-verify the optimized RVV against the original NEON
+    log.info("Re-verifying optimized kernel against NEON baseline...")
+    verify_result = _run_formal_verification(
+        kernel_path, opt.optimized_path, kernel_name, cfg)
+    if verify_result is None:
+        log.warning("Re-verification unavailable for optimized %s", kernel_name)
+        return
+
+    verdict = verify_result.get("verdict", "")
+    max_batch = verify_result.get("max_verified_batch", 0)
+    log.info("Re-verification: %s (max_batch=%d)", verdict, max_batch)
+    optimized_verified = verdict in ("ALL_PASSED", "PARTIAL") and max_batch > 0
+    tracker.update(kernel_name,
+                   optimized_verified=optimized_verified,
+                   optimized_max_batch=max_batch)
+    if not optimized_verified:
+        log.error("Optimized %s FAILED re-verification (verdict=%s); baseline at kernels/target/ is unchanged",
+                  kernel_name, verdict)
 
 
 def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict | None:
@@ -635,6 +696,20 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--skip-spike", action="store_true",
                     help="Skip compile+Spike if kernel already passed (compiled=true in status.json)")
 
+    # Autocomp post-verify optimization (opt-in)
+    p.add_argument("--optimize", action="store_true",
+                    help="After successful verification, run autocomp on the verified RVV and re-verify the result")
+    p.add_argument("--prob-id", dest="prob_id", type=int, default=-1,
+                    help="Autocomp prob_id (single-kernel mode). Required with --optimize unless --optimize-map is provided.")
+    p.add_argument("--optimize-map", dest="optimize_map", type=str, default="",
+                    help="Path to JSON {kernel_name: prob_id} for batch --optimize")
+    p.add_argument("--autocomp-iterations", dest="autocomp_iterations", type=int, default=None,
+                    help="Autocomp beam-search iterations (default: 8)")
+    p.add_argument("--autocomp-beam-size", dest="autocomp_beam_size", type=int, default=None,
+                    help="Autocomp beam size (default: 4)")
+    p.add_argument("--autocomp-model", dest="autocomp_model", action="append", default=None,
+                    help="Provider::model for autocomp (repeatable). Defaults to Config.autocomp_models.")
+
     return p
 
 
@@ -683,6 +758,11 @@ def main():
     for kernel_path in kernel_files:
         kh = _setup_kernel_logging(run_dir, kernel_path.stem)
         result = translate_kernel(kernel_path, cfg, client, tools, tracker)
+        if cfg.optimize and result.success:
+            try:
+                _optimize_and_reverify(kernel_path, kernel_path.stem, cfg, tracker)
+            except Exception:
+                log.exception("Optimization stage crashed for %s", kernel_path.stem)
         _teardown_kernel_logging(kh)
         results.append(result)
 

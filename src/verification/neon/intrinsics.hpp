@@ -4,6 +4,7 @@
 // Implementations follow ARM ARM pseudocode from op-semantics/neon-intrinsics.md.
 
 #include "../core/context.hpp"
+#include "../core/fp_bf16.hpp"
 #include "../core/symbolic_buffer.hpp"
 #include "../core/symbolic_vector.hpp"
 
@@ -1654,6 +1655,9 @@ inline void vst1q_u16(uint16_t* p, const uint16x8_t& v){auto& b=g_ctx->findBuffe
 inline void vst1q_u32(uint32_t* p, const uint32x4_t& v){auto& b=g_ctx->findBuffer(p); b.storeNeon<32,4>(b.ptrToByteOffset(p),v); }
 inline void vst1_u8(uint8_t* p, const uint8x8_t& v)    { auto& b=g_ctx->findBuffer(p); b.storeNeon<8,8>(b.ptrToByteOffset(p),v); }
 inline void vst1_u16(uint16_t* p, const uint16x4_t& v) { auto& b=g_ctx->findBuffer(p); b.storeNeon<16,4>(b.ptrToByteOffset(p),v); }
+inline void vst1_lane_u8(uint8_t* p, const uint8x8_t& v, int lane) {
+    auto& b=g_ctx->findBuffer(p); b.storeScalar(b.ptrToByteOffset(p), v.getLane(lane), 8);
+}
 
 // ---------------------------------------------------------------------------
 // 4.6 COMBINE / GET_LOW / GET_HIGH (remaining variants)
@@ -3101,6 +3105,126 @@ inline float16x8_t vnegq_f16(const float16x8_t& a) {
         lanes[i] = store_fp16_as_bv(tm, tm.mk_term(Kind::FP_NEG, {a_fp}));
     }
     return float16x8_t(tm, lanes);
+}
+
+// ===========================================================================
+// BF16 (Brain Float 16) — bf16-gemm support.  Mirrors cvc5 tree;
+// see src/verification_cvc5/neon/intrinsics.hpp for design notes.
+// ===========================================================================
+
+inline uint16x8_t vceqq_u16(const uint16x8_t& a, const uint16x8_t& b) {
+    return neon_vceq_impl(a, b);
+}
+
+inline float32x4_t vpaddq_f32(const float32x4_t& a, const float32x4_t& b) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    auto pair = [&](Term x_bv, Term y_bv) {
+        Term sum_fp = tm.mk_term(Kind::FP_ADD,
+                                  {rm, load_as_fp32(tm, x_bv), load_as_fp32(tm, y_bv)});
+        return store_fp32_as_bv(tm, sum_fp);
+    };
+    std::array<Term, 4> l;
+    l[0] = pair(a.getLane(0), a.getLane(1));
+    l[1] = pair(a.getLane(2), a.getLane(3));
+    l[2] = pair(b.getLane(0), b.getLane(1));
+    l[3] = pair(b.getLane(2), b.getLane(3));
+    return float32x4_t(tm, l);
+}
+
+// ---- BF16 reinterprets (no-op on lanes) -----------------------------------
+inline bfloat16x4_t vreinterpret_bf16_u16(const uint16x4_t& a) {
+    std::array<Term, 4> l;
+    for (int i = 0; i < 4; i++) l[i] = a.getLane(i);
+    return bfloat16x4_t(g_ctx->tm, l);
+}
+inline uint16x4_t vreinterpret_u16_bf16(const bfloat16x4_t& a) {
+    std::array<Term, 4> l;
+    for (int i = 0; i < 4; i++) l[i] = a.getLane(i);
+    return uint16x4_t(g_ctx->tm, l);
+}
+inline bfloat16x8_t vreinterpretq_bf16_u16(const uint16x8_t& a) {
+    std::array<Term, 8> l;
+    for (int i = 0; i < 8; i++) l[i] = a.getLane(i);
+    return bfloat16x8_t(g_ctx->tm, l);
+}
+inline uint16x8_t vreinterpretq_u16_bf16(const bfloat16x8_t& a) {
+    std::array<Term, 8> l;
+    for (int i = 0; i < 8; i++) l[i] = a.getLane(i);
+    return uint16x8_t(g_ctx->tm, l);
+}
+inline uint32x2_t vreinterpret_u32_bf16(const bfloat16x4_t& a) {
+    return vreinterpret_u32_u16(vreinterpret_u16_bf16(a));
+}
+
+// ---- BF16 loads / stores --------------------------------------------------
+inline bfloat16x8_t vld1q_bf16(const bfloat16_t* p) {
+    auto& b = g_ctx->findBuffer(p);
+    return b.loadNeon<16, 8>(b.ptrToByteOffset(p));
+}
+inline bfloat16x4_t vld1_bf16(const bfloat16_t* p) {
+    auto& b = g_ctx->findBuffer(p);
+    return b.loadNeon<16, 4>(b.ptrToByteOffset(p));
+}
+inline bfloat16x4_t vld1_lane_bf16(const bfloat16_t* p,
+                                    const bfloat16x4_t& v, int lane) {
+    auto r = v;
+    auto& b = g_ctx->findBuffer(p);
+    r.setLane(lane, b.loadScalar(b.ptrToByteOffset(p), 16));
+    return r;
+}
+inline void vst1_bf16(bfloat16_t* p, const bfloat16x4_t& v) {
+    auto& b = g_ctx->findBuffer(p);
+    b.storeNeon<16, 4>(b.ptrToByteOffset(p), v);
+}
+inline void vst1_lane_bf16(bfloat16_t* p, const bfloat16x4_t& v, int lane) {
+    auto& b = g_ctx->findBuffer(p);
+    b.storeScalar(b.ptrToByteOffset(p), v.getLane(lane), 16);
+}
+
+// ---- BF16 ↔ FP32 conversions ----------------------------------------------
+inline float32x4_t vcvt_f32_bf16(const bfloat16x4_t& a) {
+    auto& tm = g_ctx->tm;
+    Term zero16 = mk_bv_val(tm, 16, 0);
+    std::array<Term, 4> l;
+    for (int i = 0; i < 4; i++) {
+        l[i] = tm.mk_term(Kind::BV_CONCAT, {a.getLane(i), zero16});
+    }
+    return float32x4_t(tm, l);
+}
+
+inline bfloat16x4_t vcvt_bf16_f32(const float32x4_t& a) {
+    auto& tm = g_ctx->tm;
+    Term bias_lo = mk_bv_val(tm, 32, 0x7FFF);
+    std::array<Term, 4> l;
+    for (int i = 0; i < 4; i++) {
+        Term fp = load_as_fp32(tm, a.getLane(i));
+        Term bv = store_fp32_as_bv(tm, fp);
+        // round_bit = (bv >> 16) & 1 — extract bit 16 then zero-extend to 32.
+        Term round_bit_1 = tm.mk_term(Kind::BV_EXTRACT, {bv}, {16, 16});
+        Term round_bit   = tm.mk_term(Kind::BV_CONCAT,
+                                       {mk_bv_val(tm, 31, 0), round_bit_1});
+        Term sum1 = tm.mk_term(Kind::BV_ADD, {bv, bias_lo});
+        Term sum2 = tm.mk_term(Kind::BV_ADD, {sum1, round_bit});
+        l[i] = tm.mk_term(Kind::BV_EXTRACT, {sum2}, {31, 16});
+    }
+    return bfloat16x4_t(tm, l);
+}
+
+// Arm BFDOT contract (per ARM ARM): Round-to-Odd, FZ subnormal in/out, default-NaN.
+// Delegates to bfdot_lane_strict in fp_bf16.hpp for strict-Arm semantics.
+inline float32x4_t vbfdotq_f32(const float32x4_t& r,
+                                const bfloat16x8_t& a,
+                                const bfloat16x8_t& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> out;
+    for (int i = 0; i < 4; i++) {
+        out[i] = bfdot_lane_strict(tm,
+                                    r.getLane(i),
+                                    a.getLane(2*i),     b.getLane(2*i),
+                                    a.getLane(2*i + 1), b.getLane(2*i + 1));
+    }
+    return float32x4_t(tm, out);
 }
 
 } // namespace salt

@@ -110,6 +110,13 @@ struct xnn_f16_minmax_params {
   } scalar;
 };
 
+struct xnn_bf16_minmax_params {
+  struct {
+    float min;
+    float max;
+  } scalar;
+};
+
 // BFloat16 type definition
 struct xnn_bfloat16 {
   uint16_t value;
@@ -394,6 +401,26 @@ struct xnn_f32_qs8_cvt_params {
 struct xnn_f32_default_params {
   char _;  // Dummy member variable to comply with the C standard
 };
+struct xnn_f32_scale_params {
+  struct {
+    float scale;
+  } scalar;
+};
+struct xnn_f32_scaleminmax_params {
+  struct {
+    float scale;
+    float min;
+    float max;
+  } scalar;
+};
+struct xnn_f16_scaleminmax_params {
+  struct {
+    xnn_float16 scale;
+    xnn_float16 min;
+    xnn_float16 max;
+  } scalar;
+};
+// xnn_qs8_rsum_params already declared above (line ~257) — do not redefine.
 struct xnn_f16_default_params {
   char _;  // Dummy member variable to comply with the C standard
 };

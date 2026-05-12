@@ -17,49 +17,28 @@ using namespace bitwuzla;
 // ---------------------------------------------------------------------------
 // Per-element comparison
 //   SINT/UINT/MASK → raw BV equality
-//   F16/F32/F64    → NaN-equivalent: isNaN(a) ? isNaN(b) : bit-exact
+//   F16/BF16/F32/F64 → both_nan OR fp_eq (FP-aware: +0 == -0; NaN-vs-NaN
+//                       accepted via both_nan; everything else IEEE-equal)
 // ---------------------------------------------------------------------------
+inline Term _fp_element_equal(TermManager& tm, Term a, Term b, uint64_t eb, uint64_t sb) {
+    Term a_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {a}, {eb, sb});
+    Term b_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {b}, {eb, sb});
+    Term a_nan = tm.mk_term(Kind::FP_IS_NAN, {a_fp});
+    Term b_nan = tm.mk_term(Kind::FP_IS_NAN, {b_fp});
+    Term both_nan = tm.mk_term(Kind::AND, {a_nan, b_nan});
+    Term fp_eq = tm.mk_term(Kind::FP_EQUAL, {a_fp, b_fp});
+    return tm.mk_term(Kind::OR, {both_nan, fp_eq});
+}
+
 inline Term element_equal(TermManager& tm, Term a, Term b, ElementKind kind) {
     switch (kind) {
     case ElementKind::SINT:
     case ElementKind::UINT:
-    case ElementKind::MASK:
-        return tm.mk_term(Kind::EQUAL, {a, b});
-
-    case ElementKind::F32: {
-        // Interpret BV as IEEE 754 float32 for NaN check
-        Sort fp32 = tm.mk_fp_sort(8, 24);
-        Term a_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {a}, {8, 24});
-        Term b_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {b}, {8, 24});
-        Term a_nan = tm.mk_term(Kind::FP_IS_NAN, {a_fp});
-        Term b_nan = tm.mk_term(Kind::FP_IS_NAN, {b_fp});
-        Term both_nan = tm.mk_term(Kind::AND, {a_nan, b_nan});
-        Term bit_eq = tm.mk_term(Kind::EQUAL, {a, b});
-        // NaN-equivalent: both NaN OR bit-exact
-        return tm.mk_term(Kind::OR, {both_nan, bit_eq});
-    }
-
-    case ElementKind::F16: {
-        Sort fp16 = tm.mk_fp_sort(5, 11);
-        Term a_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {a}, {5, 11});
-        Term b_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {b}, {5, 11});
-        Term a_nan = tm.mk_term(Kind::FP_IS_NAN, {a_fp});
-        Term b_nan = tm.mk_term(Kind::FP_IS_NAN, {b_fp});
-        Term both_nan = tm.mk_term(Kind::AND, {a_nan, b_nan});
-        Term bit_eq = tm.mk_term(Kind::EQUAL, {a, b});
-        return tm.mk_term(Kind::OR, {both_nan, bit_eq});
-    }
-
-    case ElementKind::F64: {
-        Sort fp64 = tm.mk_fp_sort(11, 53);
-        Term a_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {a}, {11, 53});
-        Term b_fp = tm.mk_term(Kind::FP_TO_FP_FROM_BV, {b}, {11, 53});
-        Term a_nan = tm.mk_term(Kind::FP_IS_NAN, {a_fp});
-        Term b_nan = tm.mk_term(Kind::FP_IS_NAN, {b_fp});
-        Term both_nan = tm.mk_term(Kind::AND, {a_nan, b_nan});
-        Term bit_eq = tm.mk_term(Kind::EQUAL, {a, b});
-        return tm.mk_term(Kind::OR, {both_nan, bit_eq});
-    }
+    case ElementKind::MASK: return tm.mk_term(Kind::EQUAL, {a, b});
+    case ElementKind::F16:  return _fp_element_equal(tm, a, b, 5, 11);
+    case ElementKind::BF16: return _fp_element_equal(tm, a, b, 8, 8);
+    case ElementKind::F32:  return _fp_element_equal(tm, a, b, 8, 24);
+    case ElementKind::F64:  return _fp_element_equal(tm, a, b, 11, 53);
     }
     __builtin_unreachable();
 }

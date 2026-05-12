@@ -21,6 +21,34 @@ log = logging.getLogger("pipeline")
 
 
 # ---------------------------------------------------------------------------
+# Status JSON emit helpers — single source of truth for harness stdout lines.
+# Each returns a C++ `printf(...);` statement string. Args are C expressions
+# (variable names) the caller wants interpolated.
+# ---------------------------------------------------------------------------
+
+def _emit_solving(ba: str, cfg: str) -> str:
+    return (f'printf("{{\\"status\\":\\"SOLVING\\",\\"batch\\":%zu,'
+            f'\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {ba}, vlen, {cfg});')
+
+def _emit_verified(ba: str, cfg: str) -> str:
+    return (f'printf("{{\\"status\\":\\"VERIFIED\\",\\"batch\\":%zu,'
+            f'\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {ba}, vlen, {cfg});')
+
+def _emit_solver_timeout(ba: str, cfg: str) -> str:
+    return (f'printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,'
+            f'\\"vlen\\":%zu,\\"config\\":\\"%s\\",'
+            f'\\"reason\\":\\"solver-unknown\\"}}\\n", {ba}, vlen, {cfg});')
+
+def _emit_wall_timeout(ba: str, secs: str, cfg: str) -> str:
+    return (f'printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,'
+            f'\\"seconds\\":%.1f,\\"config\\":\\"%s\\"}}\\n", {ba}, {secs}, {cfg});')
+
+def _emit_all_verified(start: str, end: str, num_configs: int) -> str:
+    return (f'printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"start\\":%zu,'
+            f'\\"end\\":%zu,\\"configs\\":%d}}\\n", {start}, {end}, {num_configs});')
+
+
+# ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
@@ -79,18 +107,32 @@ def generate_harness_from_files(neon_path: str, rvv_path: str,
     from .llm_shape_advisor import advise_shape_plan
     advise_shape_plan(spec.shape_plan, neon_sig, neon_source, llm_client)
 
-    # Detect byte-count batch convention: kernels that assert
-    # `batch % sizeof(T) == 0` measure batch in bytes, not elements.
-    # Regex heuristic on the NEON source — works because XNNPACK kernels
-    # follow a consistent idiom.  A kernel profile override is the right
-    # long-term fix when a second case forces it.
-    ba = re.escape(spec.sweep_arg)
-    if re.search(rf'{ba}\s*%\s*sizeof\s*\(', neon_source) or \
-       re.search(rf'{ba}\s*/\s*sizeof\s*\(', neon_source):
-        if spec.shape_plan.sweep_dims:
-            spec.shape_plan.sweep_dims[0].unit = "bytes"
-        log.info("Detected byte-count batch convention for %s (elem_bytes=%d)",
-                 kernel_name, spec.elem_bytes)
+    # Source-fact extraction. Precedence: profile.buffer_layouts (if set) wins
+    # over regex-inferred layouts. Profile entries are passed into both lints
+    # so a profile override can rescue patterns the regex misses (alias case)
+    # and RVV split-arithmetic for profile-declared buffers isn't rejected.
+    # harness_gen.py never inspects source directly — all detection lives in
+    # source_facts.py.
+    from .source_facts import extract_source_facts, lint_rvv_against_neon
+    profile_layouts = (spec.profile.buffer_layouts
+                       if spec.profile and spec.profile.buffer_layouts else {})
+    facts = extract_source_facts(
+        neon_source, spec.sweep_arg,
+        known_buffers={buf.arg_name for buf in spec.buffers},
+        profile_layouts=profile_layouts,
+    )
+    lint_rvv_against_neon(rvv_source, spec.sweep_arg, facts,
+                           profile_layouts=profile_layouts)
+    spec.batch_unit_bytes = facts.batch_unit_bytes
+    for buf in spec.buffers:
+        if buf.arg_name in profile_layouts:
+            buf.layout = profile_layouts[buf.arg_name]
+        elif buf.arg_name in facts.buffer_layouts:
+            buf.layout = facts.buffer_layouts[buf.arg_name]
+        # buf.size_expr stays as-is (one plane); emit sites scale by
+        # buf.layout.planes. Single source of truth for layout sizing.
+    if facts.evidence:
+        log.info("Source facts for %s: %s", kernel_name, "; ".join(facts.evidence))
 
     # Check kernel profile for symbolic_params override
     profile = get_profile(kernel_name or neon_sig.name)
@@ -136,7 +178,12 @@ def _validate_signatures(neon_sig, rvv_sig):
         if na.is_pointer != ra.is_pointer:
             raise ValueError(f"Arg {i} pointer mismatch: NEON '{na.name}' vs RVV '{ra.name}'")
         if na.is_pointer and na.base_type != ra.base_type:
-            raise ValueError(f"Arg {i} type mismatch: NEON {na.base_type}* vs RVV {ra.base_type}*")
+            # `void*` is a generic byte-buffer pointer; either side using it is
+            # compatible with any concrete element type on the other side at the
+            # symbolic-byte-buffer level the harness operates on.
+            if na.base_type != "void" and ra.base_type != "void":
+                raise ValueError(
+                    f"Arg {i} type mismatch: NEON {na.base_type}* vs RVV {ra.base_type}*")
         if na.is_pointer and na.is_const != ra.is_const:
             raise ValueError(f"Arg {i} const mismatch: NEON '{na.name}' vs RVV '{ra.name}'")
 
@@ -159,16 +206,27 @@ def _generate(spec: HarnessSpec, neon_source: str, rvv_source: str,
     if not output_bufs:
         raise ValueError("No output buffers — cannot verify")
 
-    # Rewrite kernel sources for symbolic params
-    if symbolic_params and spec.params_type:
-        neon_source = _rewrite_params_symbolic(neon_source, spec.params_type)
-        rvv_source = _rewrite_params_symbolic(rvv_source, spec.params_type)
-
-    # Rewrite NEON LUT gathers and strip RVV extern table declarations
+    # Apply named source transforms. Implicit triggers populate the run list;
+    # profile.required_transforms enforces fail-closed expectations.
+    # The runner consults each transform's REGISTRY targets to decide which
+    # source(s) it applies to — so a NEON-only required transform won't
+    # falsely fail on the RVV source.
+    from .source_transforms import apply_transforms
     tables = spec.profile.lookup_tables if spec.profile and spec.profile.lookup_tables else None
+    declared = list(spec.profile.required_transforms) if spec.profile else []
+    auto = []
+    if symbolic_params and spec.params_type:
+        auto.append("symbolic_params")
     if tables:
-        neon_source = _rewrite_neon_lut_gathers(neon_source, tables)
-        rvv_source = _strip_lut_externs(rvv_source, tables)
+        auto.append("neon_lut_gathers")
+        auto.append("strip_lut_externs")
+    run_list = list(dict.fromkeys(declared + auto))
+    ctx = {"params_type": spec.params_type, "tables": tables}
+    required = set(declared)
+    neon_source, _ = apply_transforms(neon_source, run_list, ctx,
+                                       target="neon", required=required)
+    rvv_source, _ = apply_transforms(rvv_source, run_list, ctx,
+                                       target="rvv", required=required)
 
     parts = [
         _emit_header(backend=backend),
@@ -501,18 +559,12 @@ def _emit_lut_registration(tables: list) -> str:
     """
     if not tables:
         return ""
-    lines = ["    // Lookup tables — registered as concrete buffers"]
+    lines = ["    // Lookup tables — registered as concrete read-only buffers"]
     for tbl in tables:
         sym = tbl["symbol"]
         num_bytes = tbl["entries"] * tbl["elem_bytes"]
         buf_name = sym  # buffer name derived from symbol, not hardcoded
-        lines.append(f"    auto& sym_{sym} = ctx.registerBuffer(\"{buf_name}\", {num_bytes});")
-        lines.append(f"    sym_{sym}.bind(::{sym});")
-        lines.append(f"    for (size_t _i = 0; _i < {num_bytes}; _i++) {{")
-        lines.append(f"        Term _tbyte = sym_{sym}.loadScalar(_i, 8);")
-        lines.append(f"        Term _tcval = ctx.bv_val(8, ((const uint8_t*)::{sym})[_i]);")
-        lines.append(f"        ctx.assert_eq(_tbyte, _tcval);")
-        lines.append(f"    }}")
+        lines.append(f"    auto& sym_{sym} = ctx.registerConcreteBuffer(\"{buf_name}\", ::{sym}, {num_bytes});")
     return "\n".join(lines)
 
 
@@ -547,38 +599,16 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
                   per_query_timeout_ms: int = 600000) -> str:
     """Generate the verify() function."""
     output_bufs = [b for b in spec.buffers if b.role == ArgRole.OUTPUT]
-    input_bufs = [b for b in spec.buffers if b.role in (ArgRole.INPUT_ARRAY, ArgRole.INPUT_SCALAR)]
+    input_bufs = [b for b in spec.buffers
+                  if b.role in (ArgRole.INPUT_ARRAY, ArgRole.INPUT_SCALAR, ArgRole.INDIRECT_INPUT)]
 
-    out0 = output_bufs[0]
-    eb = out0.elem_type.byte_size or 1
     ba = spec.sweep_arg
     has_params = bool(spec.params_type)
-    is_2d = spec.is_2d
-    is_spatial = spec.is_spatial
-    sd = spec.secondary_dim  # "" for FLAT_1D, "channels" for ROW_CHAN_2D, etc.
-
-    # For SPATIAL, the second sweep dim becomes the second verify parameter.
-    spatial_sd = (spec.shape_plan.sweep_dims[1].name
-                  if is_spatial and len(spec.shape_plan.sweep_dims) >= 2 else "")
+    sd = spec.secondary_dim
 
     L = []  # lines
 
-    # Function signature — 2D / SPATIAL kernels pass extra sweep dims as params.
-    if is_spatial:
-        if has_params:
-            L.append(f"bool verify(size_t {ba}, size_t {spatial_sd}, size_t vlen, const {spec.params_type}& params, const char* config_id) {{")
-        else:
-            L.append(f"bool verify(size_t {ba}, size_t {spatial_sd}, size_t vlen, const char* config_id) {{")
-    elif is_2d:
-        if has_params:
-            L.append(f"bool verify(size_t {ba}, size_t {sd}, size_t vlen, const {spec.params_type}& params, const char* config_id) {{")
-        else:
-            L.append(f"bool verify(size_t {ba}, size_t {sd}, size_t vlen, const char* config_id) {{")
-    else:
-        if has_params:
-            L.append(f"bool verify(size_t {ba}, size_t vlen, const {spec.params_type}& params, const char* config_id) {{")
-        else:
-            L.append(f"bool verify(size_t {ba}, size_t vlen, const char* config_id) {{")
+    L.append(_emit_verify_signature(spec))
 
     L.append(f"    VerificationContext ctx(vlen);")
     L.append(f"    g_ctx = &ctx;")
@@ -586,13 +616,16 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
     # bitwuzla backend can rebuild the solver with the new option in place.
     L.append(f"    ctx.set_query_timeout_ms({per_query_timeout_ms});")
 
-    # Scalar-arg local decls.  SPATIAL skips this loop entirely — alloc_decls
-    # + arg_bindings carry all the scalar-arg values.
-    if not is_spatial:
+    # Scalar-arg local decls.  Shapes that carry args via alloc_decls +
+    # arg_bindings skip this loop entirely.
+    if (not spec.is_spatial and not spec.is_gemm and not spec.is_reduce
+            and not spec.is_transpose and not spec.is_pool
+            and not spec.is_bilinear and not spec.is_dwconv
+            and not spec.is_igemm):
         for arg_name, arg_val in spec.scalar_args.items():
-            if is_2d and arg_name == sd:
+            if spec.is_2d and arg_name == sd:
                 continue  # already a function parameter
-            elif is_2d and arg_name in ("input_stride", "output_stride"):
+            elif spec.is_2d and arg_name in ("input_stride", "output_stride"):
                 # Use padded stride so each row has room for NEON tail over-reads
                 L.append(f"    size_t {arg_name} = {sd} + 16;  // padded stride")
             else:
@@ -616,18 +649,11 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
         if prologue:
             L.append(prologue)
 
-    # Concrete params: register as buffer so pointer-based param access works
-    # (e.g. f16 kernels do vld1q_dup_u16(&params->scalar.min))
+    # Concrete params: register as concrete read-only buffer so pointer-based
+    # param access works (e.g. f16 kernels do vld1q_dup_u16(&params->scalar.min))
     if not symbolic_params and has_params:
-        lbrace, rbrace = "{", "}"
-        L.append(f"    // Register params as buffer for pointer-based intrinsic access")
-        L.append(f"    auto& sym_params = ctx.registerBuffer(\"params\", sizeof(params));")
-        L.append(f"    sym_params.bind(&params);")
-        L.append(f"    for (size_t _i = 0; _i < sizeof(params); _i++) {lbrace}")
-        L.append(f"        Term _pb = sym_params.loadScalar(_i, 8);")
-        L.append(f"        Term _cv = ctx.bv_val(8, ((const uint8_t*)&params)[_i]);")
-        L.append(f"        ctx.assert_eq(_pb, _cv);")
-        L.append(f"    {rbrace}")
+        L.append(f"    // Register params as concrete buffer for pointer-based intrinsic access")
+        L.append(f"    auto& sym_params = ctx.registerConcreteBuffer(\"params\", &params, sizeof(params));")
         L.append(f"")
 
     # Lookup tables: register as concrete buffers with byte constraints
@@ -638,20 +664,23 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
     # Input range constraint: restrict each f32/f64 input lane to a finite
     # range.  Excludes NaN/inf/subnormal by construction (FP comparisons
     # return false for NaN) — big speedup for FP-heavy kernels.
-    if spec.profile and spec.profile.input_range and not is_2d:
+    if spec.profile and spec.profile.input_range and not spec.is_2d and not spec.is_gemm:
         lo, hi = spec.profile.input_range
         lbrace, rbrace = "{", "}"
         for buf in input_bufs:
             if buf.role != ArgRole.INPUT_ARRAY:
                 continue
             ek = buf.elem_type.element_kind
-            if ek not in ("F32", "F64"):
-                continue
+            if ek != "F32":
+                raise ValueError(
+                    f"input_range on '{buf.arg_name}' has element kind '{ek}' but "
+                    f"only F32 is supported. Add fp64 helpers (mk_fp64_from_double, "
+                    f"load_as_fp64, ctx.fp64_geq/leq) to both backends and remove "
+                    f"this check before re-enabling F64."
+                )
             be = buf.elem_type.byte_size or 4
             bits = be * 8
             L.append(f"    // Input range constraint on '{buf.arg_name}': [{lo}, {hi}]")
-            L.append(f"    // NOTE: Uses bitwuzla-only helpers mk_fp32_from_float/load_as_fp32.")
-            L.append(f"    // Switch to ctx.fp32_geq / ctx.fp32_from_bv when the cvc5 path needs this.")
             L.append(f"    {lbrace}")
             L.append(f"        Term _lo = mk_fp32_from_float(ctx.tm, {lo}f);")
             L.append(f"        Term _hi = mk_fp32_from_float(ctx.tm, {hi}f);")
@@ -659,95 +688,52 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
             L.append(f"            Term _bv = sym_{buf.arg_name}.loadScalar(_i * {be}, {bits});")
             L.append(f"            Term _fp = load_as_fp32(ctx.tm, _bv);")
             L.append(f"            ctx.assert_(ctx.land_(")
-            L.append(f"                ctx.tm.mk_term(Kind::FP_GEQ, {lbrace}_fp, _lo{rbrace}),")
-            L.append(f"                ctx.tm.mk_term(Kind::FP_LEQ, {lbrace}_fp, _hi{rbrace})")
+            L.append(f"                ctx.fp32_geq(_fp, _lo),")
+            L.append(f"                ctx.fp32_leq(_fp, _hi)")
             L.append(f"            ));")
             L.append(f"        {rbrace}")
             L.append(f"    {rbrace}")
         L.append("")
 
+    # Phase markers — opt-in via SALT_PHASES=1.  Times each major phase to
+    # stderr so we can pinpoint where verification spends its time.
+    L.append(f'    auto _t_phase = std::chrono::steady_clock::now();')
+    L.append(f'    auto _phase_mark = [&](const char* tag) {{')
+    L.append(f'        if (const char* s = std::getenv("SALT_PHASES"); !s || std::string(s) != "1") return;')
+    L.append(f'        auto _now = std::chrono::steady_clock::now();')
+    L.append(f'        double _ms = std::chrono::duration<double, std::milli>(_now - _t_phase).count();')
+    L.append(f'        fprintf(stderr, "[PHASE %s] +%.1f ms (config=%s)\\n", tag, _ms, config_id);')
+    L.append(f'        fflush(stderr);')
+    L.append(f'        _t_phase = _now;')
+    L.append(f'    }};')
+    L.append(f'    _phase_mark("setup_done");')
+
     # Call both kernels
     neon_args = _build_call_args(spec, "neon")
     rvv_args = _build_call_args(spec, "rvv")
     L.append(f"    neon_kernel::{spec.neon_func_name}({', '.join(neon_args)});")
+    L.append(f'    _phase_mark("neon_kernel_done");')
     L.append(f"    rvv_kernel::{spec.rvv_func_name}({', '.join(rvv_args)});")
+    L.append(f'    _phase_mark("rvv_kernel_done");')
     L.append("")
 
-    # Compare all outputs
-    if is_spatial:
-        # SPATIAL CHW walk: outer c × y × x using stride bytes from alloc_decls.
-        lbrace, rbrace = "{", "}"
-        L.append(f"    std::vector<Term> _chw_eqs;")
-        L.append(f"    for (size_t _c = 0; _c < {spatial_sd}; _c++) {lbrace}")
-        L.append(f"      size_t _cof = _c * output_channel_stride_bytes;")
-        L.append(f"      for (size_t _y = 0; _y < {ba}; _y++) {lbrace}")
-        L.append(f"        size_t _yof = _cof + _y * output_height_stride_bytes;")
-        L.append(f"        for (size_t _x = 0; _x < output_width; _x++) {lbrace}")
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            L.append(f"          size_t _off = _yof + _x * {obe};")
-            L.append(f"          Term _n = sym_{ob.arg_name}_neon.loadScalar(_off, {obe*8});")
-            L.append(f"          Term _rv = sym_{ob.arg_name}_rvv.loadScalar(_off, {obe*8});")
-            L.append(f"          _chw_eqs.push_back(element_equal(ctx.tm, _n, _rv, ElementKind::{spec.element_kind}));")
-        L.append(f"        {rbrace}")
-        L.append(f"      {rbrace}")
-        L.append(f"    {rbrace}")
-        L.append(f"    Term equiv = _chw_eqs[0];")
-        L.append(f"    for (size_t _i = 1; _i < _chw_eqs.size(); _i++)")
-        L.append(f"        equiv = ctx.land_(equiv, _chw_eqs[_i]);")
-    elif is_2d:
-        # 2D: compare per-row, skipping stride padding between rows
-        lbrace, rbrace = "{", "}"
-        L.append(f"    // Compare output rows accounting for stride padding")
-        L.append(f"    std::vector<Term> _row_eqs;")
-        L.append(f"    for (size_t _r = 0; _r < {ba}; _r++) {lbrace}")
-        L.append(f"        size_t _row_off = _r * padded_row_bytes;")
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            ok = ob.elem_type.element_kind
-            L.append(f"        for (size_t _c = 0; _c < num_elems_per_row; _c++) {lbrace}")
-            L.append(f"            Term _n = sym_{ob.arg_name}_neon.loadScalar(_row_off + _c * {obe}, {obe*8});")
-            L.append(f"            Term _rv = sym_{ob.arg_name}_rvv.loadScalar(_row_off + _c * {obe}, {obe*8});")
-            L.append(f"            _row_eqs.push_back(element_equal(ctx.tm, _n, _rv, ElementKind::{spec.element_kind}));")
-            L.append(f"        {rbrace}")
-        L.append(f"    {rbrace}")
-        L.append(f"    Term equiv = _row_eqs[0];")
-        L.append(f"    for (size_t _i = 1; _i < _row_eqs.size(); _i++)")
-        L.append(f"        equiv = ctx.land_(equiv, _row_eqs[_i]);")
-    else:
-        # For byte-count batch kernels, comparison count is batch / elem_bytes
-        # so we only compare bytes the kernel actually wrote.
-        cmp_count = f"({ba} / {eb})" if spec.sweep_is_bytes else ba
-        if len(output_bufs) == 1:
-            L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{out0.arg_name}_neon, sym_{out0.arg_name}_rvv,")
-            L.append(f"                                {cmp_count}, {eb}, ElementKind::{spec.element_kind});")
-        else:
-            for i, ob in enumerate(output_bufs):
-                obe = ob.elem_type.byte_size or 1
-                ok = ob.elem_type.element_kind
-                ob_cmp_count = f"({ba} / {obe})" if spec.sweep_is_bytes else ba
-                if i == 0:
-                    L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {ob_cmp_count}, {obe}, ElementKind::{ok});")
-                else:
-                    L.append(f"    equiv = ctx.land_(equiv, buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {ob_cmp_count}, {obe}, ElementKind::{ok}));")
+    L.extend(_emit_output_comparison(spec, output_bufs, ba))
+    L.append(f'    _phase_mark("equiv_formula_built");')
 
     L.append(f"    ctx.assert_(ctx.lnot_(equiv));")
-    # Progress line so the user sees activity even when a single check_sat()
-    # is slow.  Status SOLVING appears before the solver starts; the matching
-    # VERIFIED / COUNTEREXAMPLE / TIMEOUT line is emitted when it returns.
-    L.append(f'    printf("{{\\"status\\":\\"SOLVING\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {ba}, vlen, config_id);')
+    L.append(f'    _phase_mark("assert_done");')
+    L.append(f"    {_emit_solving(ba, 'config_id')}")
     L.append(f"    CheckResult result = ctx.check();")
+    L.append(f'    _phase_mark("check_done");')
+    L.append(f"    ctx.print_stats();")
     L.append(f"")
 
-    # UNSAT → verified
     L.append(f'    if (result == CheckResult::Unsat) {{')
-    L.append(f'        printf("{{\\"status\\":\\"VERIFIED\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {ba}, vlen, config_id);')
+    L.append(f"        {_emit_verified(ba, 'config_id')}")
     L.append(f'        return true;')
     L.append(f'    }}')
-    # UNKNOWN → solver hit its query timeout (or other unknown).  Report and
-    # treat as not-verified, but do not crash — outer loop may continue.
     L.append(f'    if (result == CheckResult::Unknown) {{')
-    L.append(f'        printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\",\\"reason\\":\\"solver-unknown\\"}}\\n", {ba}, vlen, config_id);')
+    L.append(f"        {_emit_solver_timeout(ba, 'config_id')}")
     L.append(f'        return false;')
     L.append(f'    }}')
     L.append(f"")
@@ -756,116 +742,12 @@ def _emit_verify(spec: HarnessSpec, symbolic_params: bool = False,
     L.append(f'    size_t fi = 0;')
     L.append(f'    const char* fail_buf = "";')
 
-    if is_spatial:
-        lbrace, rbrace = "{", "}"
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            L.append(f'    for (size_t _c = 0; _c < {spatial_sd}; _c++) {lbrace}')
-            L.append(f'      size_t _cof = _c * output_channel_stride_bytes;')
-            L.append(f'      for (size_t _y = 0; _y < {ba}; _y++) {lbrace}')
-            L.append(f'        size_t _yof = _cof + _y * output_height_stride_bytes;')
-            L.append(f'        for (size_t _x = 0; _x < output_width; _x++) {lbrace}')
-            L.append(f'          size_t _off = _yof + _x * {obe};')
-            L.append(f'          std::string _n  = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_off, {obe*8}));')
-            L.append(f'          std::string _r2 = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_off, {obe*8}));')
-            L.append(f'          if (_n != _r2) {lbrace} fi = (_c * {ba} + _y) * output_width + _x; fail_buf = "{ob.arg_name}"; goto found_mismatch; {rbrace}')
-            L.append(f'        {rbrace}')
-            L.append(f'      {rbrace}')
-            L.append(f'    {rbrace}')
-    elif is_2d:
-        lbrace, rbrace = "{", "}"
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            L.append(f'    for (size_t _r = 0; _r < {ba}; _r++) {lbrace}')
-            L.append(f'      size_t _roff = _r * padded_row_bytes;')
-            L.append(f'      for (size_t _c = 0; _c < num_elems_per_row; _c++) {lbrace}')
-            L.append(f'        std::string _n  = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_roff + _c * {obe}, {obe*8}));')
-            L.append(f'        std::string _r2 = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_roff + _c * {obe}, {obe*8}));')
-            L.append(f'        if (_n != _r2) {lbrace} fi = _r * num_elems_per_row + _c; fail_buf = "{ob.arg_name}"; goto found_mismatch; {rbrace}')
-            L.append(f'      {rbrace}')
-            L.append(f'    {rbrace}')
-    else:
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            # For byte-count batch kernels, scan only the elements the kernel
-            # actually wrote (batch / elem_bytes), not `batch` elements.
-            # Otherwise the witness loop reads unwritten symbolic bytes and
-            # reports bogus fail_index values for any real counterexample.
-            scan_count = f"({ba} / {obe})" if spec.sweep_is_bytes else ba
-            L.append(f'    for (size_t _i = 0; _i < {scan_count}; _i++) {{')
-            L.append(f'        std::string _n = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_i * {obe}, {obe*8}));')
-            L.append(f'        std::string _r = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_i * {obe}, {obe*8}));')
-            L.append(f'        if (_n != _r) {{ fi = _i; fail_buf = "{ob.arg_name}"; goto found_mismatch; }}')
-            L.append(f'    }}')
+    L.extend(_emit_witness_scan(spec, output_bufs, ba))
 
     L.append(f'    found_mismatch:')
     L.append(f'    printf("{{\\"status\\":\\"COUNTEREXAMPLE\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\",\\"fail_index\\":%zu,\\"fail_output\\":\\"%s\\",", {ba}, vlen, config_id, fi, fail_buf);')
 
-    if is_spatial:
-        # Dump every symbolic INPUT_ARRAY buffer as a JSON array of halfwords.
-        # Many inputs feed each output of a conv, so there's no single
-        # "causative" input to pick — print them all for post-hoc decoding.
-        for buf in input_bufs:
-            if buf.role != ArgRole.INPUT_ARRAY:
-                continue
-            be = buf.elem_type.byte_size or 1
-            bits = be * 8
-            L.append(f'    printf("\\"{buf.arg_name}\\":[");')
-            L.append(f'    {lbrace} size_t _n = ({buf.size_expr}) / {be};')
-            L.append(f'      for (size_t _i = 0; _i < _n; _i++) {lbrace}')
-            L.append(f'        printf("%s%s", _i ? "," : "",')
-            L.append(f'               ctx.value_str(sym_{buf.arg_name}.loadScalar(_i * {be}, {bits})).c_str());')
-            L.append(f'      {rbrace}')
-            L.append(f'    {rbrace}')
-            L.append(f'    printf("],");')
-            # Also emit an `input[0]` fallback the legacy orchestrator parses.
-            L.append(f'    printf("\\"{buf.arg_name}_at_fail\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(0, {bits})).c_str());')
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {lbrace}')
-            L.append(f'        size_t _fc = fi / ({ba} * output_width);')
-            L.append(f'        size_t _fr = (fi / output_width) % {ba};')
-            L.append(f'        size_t _fx = fi % output_width;')
-            L.append(f'        size_t _foff = _fc * output_channel_stride_bytes + _fr * output_height_stride_bytes + _fx * {obe};')
-            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
-            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
-            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_foff, {obe*8})).c_str());')
-            L.append(f'    {rbrace}')
-    elif is_2d:
-        # Use strided offset for input/output value printing
-        for buf in input_bufs:
-            be = buf.elem_type.byte_size or 1
-            if buf.role == ArgRole.INPUT_SCALAR:
-                L.append(f'    printf("\\"{buf.arg_name}\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(0, {be*8})).c_str());')
-            else:
-                L.append(f'    {lbrace} size_t _fr = fi / num_elems_per_row; size_t _fc = fi % num_elems_per_row;')
-                L.append(f'      size_t _foff = _fr * padded_row_bytes + _fc * {be};')
-                L.append(f'      printf("\\"{buf.arg_name}_at_fail\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(_foff, {be*8})).c_str()); {rbrace}')
-
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {lbrace}')
-            L.append(f'        size_t _fr = fi / num_elems_per_row; size_t _fc = fi % num_elems_per_row;')
-            L.append(f'        size_t _foff = _fr * padded_row_bytes + _fc * {obe};')
-            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
-            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
-            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_foff, {obe*8})).c_str());')
-            L.append(f'    {rbrace}')
-    else:
-        for buf in input_bufs:
-            be = buf.elem_type.byte_size or 1
-            if buf.role == ArgRole.INPUT_SCALAR:
-                L.append(f'    printf("\\"{buf.arg_name}\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(0, {be*8})).c_str());')
-            else:
-                L.append(f'    printf("\\"{buf.arg_name}_at_fail\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(fi * {be}, {be*8})).c_str());')
-
-        for ob in output_bufs:
-            obe = ob.elem_type.byte_size or 1
-            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
-            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
-            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(fi * {obe}, {obe*8})).c_str(),')
-            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(fi * {obe}, {obe*8})).c_str());')
-            L.append(f'    }}')
+    L.extend(_emit_counterexample_payload(spec, input_bufs, output_bufs, ba))
 
     L.append(f'    printf("}}\\n");')
     L.append(f"    return false;")
@@ -887,6 +769,9 @@ def _emit_buffer_decl(buf: BufferSpec, spec: HarnessSpec = None) -> list[str]:
                   else spec.shape_plan.alloc_count_name)
     zero_count = (f"({per_buf.size_expr}) / sizeof({ct})" if per_buf
                   else spec.shape_plan.count_name)
+    if buf.layout.planes > 1:
+        elem_count = f"({elem_count}) * {buf.layout.planes}"
+        zero_count = f"({zero_count}) * {buf.layout.planes}"
 
     if buf.role == ArgRole.INPUT_SCALAR:
         return [f"    {ct} {n}_val = 0;"]
@@ -933,6 +818,8 @@ def _emit_buffer_register(buf: BufferSpec, spec: HarnessSpec = None) -> list[str
         padded_bytes = per_buf.size_expr
     else:
         padded_bytes = f"{spec.shape_plan.alloc_count_name} * {eb}"
+    if buf.layout.planes > 1:
+        padded_bytes = f"({padded_bytes}) * {buf.layout.planes}"
 
     if buf.role == ArgRole.INPUT_SCALAR:
         return [f"    auto& sym_{n} = ctx.registerBuffer(\"{n}\", {eb});",
@@ -941,10 +828,32 @@ def _emit_buffer_register(buf: BufferSpec, spec: HarnessSpec = None) -> list[str
         return [f"    auto& sym_{n} = ctx.registerBuffer(\"{n}\", {padded_bytes});",
                 f"    sym_{n}.bind({n}_arr.data());"]
     elif buf.role == ArgRole.OUTPUT:
-        return [f"    auto& sym_{n}_neon = ctx.registerBuffer(\"{n}_neon\", {padded_bytes});",
+        lines = [f"    auto& sym_{n}_neon = ctx.registerBuffer(\"{n}_neon\", {padded_bytes});",
                 f"    sym_{n}_neon.bind({n}_neon_arr.data());",
                 f"    auto& sym_{n}_rvv = ctx.registerBuffer(\"{n}_rvv\", {padded_bytes});",
                 f"    sym_{n}_rvv.bind({n}_rvv_arr.data());"]
+        # REDUCE_1D: store concrete init values into both output buffers so the
+        # kernel's read-modify-write accumulation has a defined starting point.
+        # The init values come from the profile (e.g. ["0.5f"] for rsum).
+        if spec and spec.is_reduce and spec.profile and spec.profile.reduce:
+            r = spec.profile.reduce
+            inits = r.get("output_init", ["0"])
+            bits = (buf.elem_type.byte_size or 4) * 8
+            ct = buf.elem_type.c_type or "float"
+            lines.append(f"    // REDUCE_1D: pre-initialize output buffer with profile.reduce.output_init")
+            lines.append(f"    {{")
+            for i, lit in enumerate(inits):
+                lines.append(f"        {n}_neon_arr[{i}] = ({ct}){lit};")
+                lines.append(f"        {n}_rvv_arr[{i}]  = ({ct}){lit};")
+                lines.append(f"        // Mirror init into the symbolic buffer so the kernel's")
+                lines.append(f"        // first read sees a concrete BV constant.")
+                lines.append(f"        {{ uint{bits}_t _ib;")
+                lines.append(f"          memcpy(&_ib, &{n}_neon_arr[{i}], {bits//8});")
+                lines.append(f"          Term _iv = ctx.bv_val({bits}, _ib);")
+                lines.append(f"          sym_{n}_neon.storeScalar({i * (buf.elem_type.byte_size or 4)}, _iv, {bits});")
+                lines.append(f"          sym_{n}_rvv.storeScalar({i * (buf.elem_type.byte_size or 4)},  _iv, {bits}); }}")
+            lines.append(f"    }}")
+        return lines
     elif buf.role == ArgRole.ZERO_BUFFER:
         # Force every byte to a concrete 0 BV so salt's symbolic view matches
         # real-hardware behavior.  Without this, kernels that blindly vld from
@@ -1037,20 +946,8 @@ def _emit_buffer_register(buf: BufferSpec, spec: HarnessSpec = None) -> list[str
                 lines.append(f"            _pos += 2 * _vl; _ch += _vl; _rem -= _vl;")
                 lines.append(f"        {rbrace}")
                 lines.append(f"    {rbrace}")
-                lines.append(f"    auto& sym_{n}_neon = ctx.registerBuffer(\"{n}_neon\", {n}_neon_size);")
-                lines.append(f"    sym_{n}_neon.bind({n}_neon_arr.data());")
-                lines.append(f"    for (size_t _i = 0; _i < {n}_neon_size; _i++) {lbrace}")
-                lines.append(f"        Term _wb = sym_{n}_neon.loadScalar(_i, 8);")
-                lines.append(f"        Term _cv = ctx.bv_val(8, ((uint8_t*){n}_neon_arr.data())[_i]);")
-                lines.append(f"        ctx.assert_eq(_wb, _cv);")
-                lines.append(f"    {rbrace}")
-                lines.append(f"    auto& sym_{n}_rvv = ctx.registerBuffer(\"{n}_rvv\", {n}_rvv_size);")
-                lines.append(f"    sym_{n}_rvv.bind({n}_rvv_arr.data());")
-                lines.append(f"    for (size_t _i = 0; _i < {n}_rvv_size; _i++) {lbrace}")
-                lines.append(f"        Term _wb = sym_{n}_rvv.loadScalar(_i, 8);")
-                lines.append(f"        Term _cv = ctx.bv_val(8, ((uint8_t*){n}_rvv_arr.data())[_i]);")
-                lines.append(f"        ctx.assert_eq(_wb, _cv);")
-                lines.append(f"    {rbrace}")
+                lines.append(f"    auto& sym_{n}_neon = ctx.registerConcreteBuffer(\"{n}_neon\", {n}_neon_arr.data(), {n}_neon_size);")
+                lines.append(f"    auto& sym_{n}_rvv  = ctx.registerConcreteBuffer(\"{n}_rvv\",  {n}_rvv_arr.data(),  {n}_rvv_size);")
             return lines
         elif buf.is_symbolic:
             return [f"    auto& sym_{n} = ctx.registerBuffer(\"{n}\", {n}_size);",
@@ -1077,17 +974,14 @@ def _emit_buffer_register(buf: BufferSpec, spec: HarnessSpec = None) -> list[str
                 # Generic fallback: sequential values
                 lines.append(f"    for (size_t _i = 0; _i < {n}_arr.size(); _i++) {n}_arr[_i] = ({ct})((_i + 1) * 0.5f);")
 
-            lines.extend([
-                    f"    auto& sym_{n} = ctx.registerBuffer(\"{n}\", {n}_size);",
-                    f"    sym_{n}.bind({n}_arr.data());",
-                    f"    for (size_t _i = 0; _i < {n}_size; _i++) {lbrace}",
-                    f"        Term _wbyte = sym_{n}.loadScalar(_i, 8);",
-                    f"        Term _cval = ctx.bv_val(8, ((uint8_t*){n}_arr.data())[_i]);",
-                    f"        ctx.assert_eq(_wbyte, _cval);",
-                    f"    {rbrace}"])
+            lines.append(
+                f"    auto& sym_{n} = ctx.registerConcreteBuffer(\"{n}\", {n}_arr.data(), {n}_size);")
             return lines
     elif buf.role == ArgRole.INDIRECT_INPUT:
-        count = "total_elems" if is_2d else "padded"
+        # Per-row buffer size = count_name * elem_bytes.  ROW_CHAN_2D's
+        # `total_elems` and FLAT_1D's `padded` are special cases of count_name;
+        # prefer the shape_plan field which works for POOL_INDIRECT too.
+        count = spec.shape_plan.count_name or ("total_elems" if spec.is_2d else "padded")
         return [f"    for (size_t _r = 0; _r < {n}_nptrs; _r++) {{",
                 f"        auto& sym_row = ctx.registerBuffer(\"{n}_\" + std::to_string(_r), {count} * {eb});",
                 f"        sym_row.bind({n}_rows[_r].data());",
@@ -1108,9 +1002,10 @@ def _build_call_args(spec: HarnessSpec, variant: str) -> list[str]:
             continue
 
         if role in SCALAR_VALUE_ROLES:
-            # Plan bindings are authoritative for classified kernels.
-            # UNCLASSIFIED kernels with missing bindings get a literal "0".
-            args.append(plan_bindings.get(name, spec.scalar_args.get(name, "0")))
+            val = plan_bindings.get(name, spec.scalar_args.get(name, "0"))
+            if role == ArgRole.BATCH and spec.batch_unit_bytes > 1:
+                val = f"({val} * {spec.batch_unit_bytes})"
+            args.append(val)
             continue
 
         if role == ArgRole.INPUT_ARRAY:
@@ -1124,18 +1019,13 @@ def _build_call_args(spec: HarnessSpec, variant: str) -> list[str]:
         elif role == ArgRole.WEIGHTS:
             dual = spec.profile and spec.profile.dual_weight_layout
             buf = next((b for b in spec.buffers if b.arg_name == name), None)
-            if dual:
-                # Each kernel gets its own weight buffer
-                suffix = "neon" if variant == "neon" else "rvv"
-                if buf and buf.elem_type.c_type and buf.elem_type.c_type != "uint8_t":
-                    args.append(f"(const {buf.elem_type.c_type}*){name}_{suffix}_arr.data()")
-                else:
-                    args.append(f"(const void*){name}_{suffix}_arr.data()")
+            suffix = ("_" + variant) if dual else ""
+            # vector<uint8_t>::data() is uint8_t* — implicitly converts to
+            # both const uint8_t* and const void*, so no cast needed.
+            if buf and buf.elem_type.c_type and buf.elem_type.c_type != "uint8_t":
+                args.append(f"(const {buf.elem_type.c_type}*){name}{suffix}_arr.data()")
             else:
-                if buf and buf.elem_type.c_type and buf.elem_type.c_type != "uint8_t":
-                    args.append(f"(const {buf.elem_type.c_type}*){name}_arr.data()")
-                else:
-                    args.append(f"(const void*){name}_arr.data()")
+                args.append(f"{name}{suffix}_arr.data()")
         elif role == ArgRole.INDIRECT_INPUT:
             args.append(f"{name}_ptrs.data()")
         else:
@@ -1143,36 +1033,498 @@ def _build_call_args(spec: HarnessSpec, variant: str) -> list[str]:
     return args
 
 
-def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
-    """Generate main() — interleaved: for each batch size, run all configs.
+def _spatial_sd(spec: HarnessSpec) -> str:
+    return (spec.shape_plan.sweep_dims[1].name
+            if spec.is_spatial and len(spec.shape_plan.sweep_dims) >= 2 else "")
 
-    This finds bugs faster by testing all param combos at small batch sizes
-    before moving to larger ones, giving broader coverage earlier.
-    """
+
+def _emit_verify_signature(spec: HarnessSpec) -> str:
+    """Site 1: verify() signature line. 6-way branch on (shape) × (has_params)."""
     has_params = bool(spec.params_type)
+    params = f"const {spec.params_type}& params, " if has_params else ""
+    if spec.is_gemm or spec.is_igemm:
+        # GEMM/IGEMM share the same three sweep dims: mr, nc, kc.
+        return f"bool verify(size_t mr, size_t nc, size_t kc, size_t vlen, {params}const char* config_id) {{"
+    if spec.is_transpose:
+        # TRANSPOSE_2D: paired (block_width, block_height) sweep.
+        return f"bool verify(size_t block_width, size_t block_height, size_t vlen, {params}const char* config_id) {{"
+    if spec.is_pool:
+        # POOL_INDIRECT: triple sweep over (channels, output_pixels, kernel_elements).
+        return f"bool verify(size_t channels, size_t output_pixels, size_t kernel_elements, size_t vlen, {params}const char* config_id) {{"
+    if spec.is_bilinear:
+        # BILINEAR_INDIRECT: 2-dim sweep over (channels, output_pixels).
+        return f"bool verify(size_t channels, size_t output_pixels, size_t vlen, {params}const char* config_id) {{"
+    if spec.is_dwconv:
+        # DWCONV_INDIRECT: 2-dim sweep over (channels, output_width).
+        return f"bool verify(size_t channels, size_t output_width, size_t vlen, {params}const char* config_id) {{"
     ba = spec.sweep_arg
-    is_2d = spec.is_2d
-    is_spatial = spec.is_spatial
-    sd = spec.secondary_dim
-    # Second sweep dim name for SPATIAL — the verify() function's extra param.
-    spatial_sd = (spec.shape_plan.sweep_dims[1].name
-                  if is_spatial and len(spec.shape_plan.sweep_dims) >= 2 else "")
-    num_configs = len(configs)
+    extra_dim = (_spatial_sd(spec) if spec.is_spatial
+                 else spec.secondary_dim if spec.is_2d else "")
+    extra = f"size_t {extra_dim}, " if extra_dim else ""
+    return f"bool verify(size_t {ba}, {extra}size_t vlen, {params}const char* config_id) {{"
 
+
+def _emit_output_comparison(spec: HarnessSpec, output_bufs: list, ba: str) -> list:
+    """Site 2: build the `equiv` Term comparing all output bytes the kernel wrote."""
     L = []
-    L.append("")
-    L.append("int main(int argc, char** argv) {")
-    L.append("    // Force line-buffered stdout so status lines appear immediately")
-    L.append("    // when the harness is driven by a pipe (e.g. orchestrator).")
-    L.append("    setvbuf(stdout, NULL, _IOLBF, 0);")
-    L.append('    if (argc < 3) { fprintf(stderr, "Usage: %s <start> <end> [vlen] [timeout]\\n", argv[0]); return 2; }')
-    L.append("    size_t start = (size_t)atoi(argv[1]);")
-    L.append("    size_t end   = (size_t)atoi(argv[2]);")
-    L.append(f"    size_t vlen  = (argc > 3) ? (size_t)atoi(argv[3]) : {spec.vlen};")
-    L.append("    double timeout = (argc > 4) ? atof(argv[4]) : 0;")
-    L.append("")
+    if spec.is_transpose:
+        # TRANSPOSE_2D: output is `block_width` rows of `block_height` elems
+        # (packed, no padding).  Compare every element against the rvv side.
+        eb = spec.profile.transpose["elem_bytes"]
+        out0 = output_bufs[0]
+        L.append(f"    std::vector<Term> _trn_eqs;")
+        L.append(f"    for (size_t _r = 0; _r < block_width; _r++) {{")
+        L.append(f"      for (size_t _c = 0; _c < block_height; _c++) {{")
+        L.append(f"        size_t _off = _r * output_stride + _c * {eb};")
+        L.append(f"        Term _n = sym_{out0.arg_name}_neon.loadScalar(_off, {eb*8});")
+        L.append(f"        Term _r2 = sym_{out0.arg_name}_rvv .loadScalar(_off, {eb*8});")
+        L.append(f"        _trn_eqs.push_back(element_equal(ctx.tm, _n, _r2, ElementKind::{out0.elem_type.element_kind}));")
+        L.append(f"      }}")
+        L.append(f"    }}")
+        L.append(f"    Term equiv = _trn_eqs[0];")
+        L.append(f"    for (size_t _i = 1; _i < _trn_eqs.size(); _i++)")
+        L.append(f"        equiv = ctx.land_(equiv, _trn_eqs[_i]);")
+        return L
+    if spec.is_pool or spec.is_bilinear or spec.is_dwconv:
+        # POOL/BILINEAR/DWCONV: output is N × channels (packed).  N is
+        # output_pixels for POOL/BILINEAR, output_width for DWCONV.
+        if spec.is_pool:
+            eb = spec.profile.pool["elem_bytes"]; tag = "pool"; n_var = "output_pixels"
+        elif spec.is_bilinear:
+            eb = spec.profile.bilinear["elem_bytes"]; tag = "bil"; n_var = "output_pixels"
+        else:
+            eb = spec.profile.dwconv["elem_bytes"]; tag = "dwc"; n_var = "output_width"
+        out0 = output_bufs[0]
+        L.append(f"    std::vector<Term> _{tag}_eqs;")
+        L.append(f"    for (size_t _p = 0; _p < {n_var}; _p++) {{")
+        L.append(f"      for (size_t _c = 0; _c < channels; _c++) {{")
+        L.append(f"        size_t _off = _p * channel_bytes + _c * {eb};")
+        L.append(f"        Term _n = sym_{out0.arg_name}_neon.loadScalar(_off, {eb*8});")
+        L.append(f"        Term _r2 = sym_{out0.arg_name}_rvv .loadScalar(_off, {eb*8});")
+        L.append(f"        _{tag}_eqs.push_back(element_equal(ctx.tm, _n, _r2, ElementKind::{out0.elem_type.element_kind}));")
+        L.append(f"      }}")
+        L.append(f"    }}")
+        L.append(f"    Term equiv = _{tag}_eqs[0];")
+        L.append(f"    for (size_t _i = 1; _i < _{tag}_eqs.size(); _i++)")
+        L.append(f"        equiv = ctx.land_(equiv, _{tag}_eqs[_i]);")
+        return L
+    if spec.is_reduce:
+        # REDUCE_1D: compare exactly n_outputs scalars at offset i * elem_bytes.
+        n_out = spec.profile.reduce.get("n_outputs", 1) if spec.profile and spec.profile.reduce else 1
+        out0 = output_bufs[0]
+        eb = out0.elem_type.byte_size or 4
+        L.append(f"    std::vector<Term> _red_eqs;")
+        for i in range(n_out):
+            L.append(f"    {{ Term _n{i} = sym_{out0.arg_name}_neon.loadScalar({i * eb}, {eb*8});")
+            L.append(f"      Term _r{i} = sym_{out0.arg_name}_rvv .loadScalar({i * eb}, {eb*8});")
+            L.append(f"      _red_eqs.push_back(element_equal(ctx.tm, _n{i}, _r{i}, ElementKind::{out0.elem_type.element_kind})); }}")
+        L.append(f"    Term equiv = _red_eqs[0];")
+        L.append(f"    for (size_t _i = 1; _i < _red_eqs.size(); _i++)")
+        L.append(f"        equiv = ctx.land_(equiv, _red_eqs[_i]);")
+        return L
+    if spec.is_gemm or spec.is_igemm:
+        # Tile-aware compare: c[m * cm_stride + (n / tile_n) * cn_stride
+        #                       + (n % tile_n) * elem_bytes]
+        if spec.is_gemm:
+            g = spec.profile.gemm; tile_n = g["weight_tile_n"]; eb = g["elem_bytes"]
+        else:
+            g = spec.profile.igemm; tile_n = g["nr"]; eb = g["elem_bytes"]
+        L.append(f"    std::vector<Term> _gemm_eqs;")
+        L.append(f"    for (size_t _m = 0; _m < mr; _m++) {{")
+        L.append(f"      size_t _mof = _m * cm_stride;")
+        L.append(f"      for (size_t _n = 0; _n < nc; _n++) {{")
+        L.append(f"        size_t _off = _mof + (_n / {tile_n}) * cn_stride + (_n % {tile_n}) * {eb};")
+        for ob in output_bufs:
+            L.append(f"        Term _n_t = sym_{ob.arg_name}_neon.loadScalar(_off, {eb*8});")
+            L.append(f"        Term _r_t = sym_{ob.arg_name}_rvv.loadScalar(_off, {eb*8});")
+            L.append(f"        _gemm_eqs.push_back(element_equal(ctx.tm, _n_t, _r_t, ElementKind::{spec.element_kind}));")
+        L.append(f"      }}")
+        L.append(f"    }}")
+        L.append(f"    Term equiv = _gemm_eqs[0];")
+        L.append(f"    for (size_t _i = 1; _i < _gemm_eqs.size(); _i++)")
+        L.append(f"        equiv = ctx.land_(equiv, _gemm_eqs[_i]);")
+        return L
+    if spec.is_spatial:
+        spatial_sd = _spatial_sd(spec)
+        L.append(f"    std::vector<Term> _chw_eqs;")
+        L.append(f"    for (size_t _c = 0; _c < {spatial_sd}; _c++) {{")
+        L.append(f"      size_t _cof = _c * output_channel_stride_bytes;")
+        L.append(f"      for (size_t _y = 0; _y < {ba}; _y++) {{")
+        L.append(f"        size_t _yof = _cof + _y * output_height_stride_bytes;")
+        L.append(f"        for (size_t _x = 0; _x < output_width; _x++) {{")
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f"          size_t _off = _yof + _x * {obe};")
+            L.append(f"          Term _n = sym_{ob.arg_name}_neon.loadScalar(_off, {obe*8});")
+            L.append(f"          Term _rv = sym_{ob.arg_name}_rvv.loadScalar(_off, {obe*8});")
+            L.append(f"          _chw_eqs.push_back(element_equal(ctx.tm, _n, _rv, ElementKind::{spec.element_kind}));")
+        L.append(f"        }}")
+        L.append(f"      }}")
+        L.append(f"    }}")
+        L.append(f"    Term equiv = _chw_eqs[0];")
+        L.append(f"    for (size_t _i = 1; _i < _chw_eqs.size(); _i++)")
+        L.append(f"        equiv = ctx.land_(equiv, _chw_eqs[_i]);")
+    elif spec.is_2d:
+        L.append(f"    // Compare output rows accounting for stride padding")
+        L.append(f"    std::vector<Term> _row_eqs;")
+        L.append(f"    for (size_t _r = 0; _r < {ba}; _r++) {{")
+        L.append(f"        size_t _row_off = _r * padded_row_bytes;")
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f"        for (size_t _c = 0; _c < num_elems_per_row; _c++) {{")
+            L.append(f"            Term _n = sym_{ob.arg_name}_neon.loadScalar(_row_off + _c * {obe}, {obe*8});")
+            L.append(f"            Term _rv = sym_{ob.arg_name}_rvv.loadScalar(_row_off + _c * {obe}, {obe*8});")
+            L.append(f"            _row_eqs.push_back(element_equal(ctx.tm, _n, _rv, ElementKind::{spec.element_kind}));")
+            L.append(f"        }}")
+        L.append(f"    }}")
+        L.append(f"    Term equiv = _row_eqs[0];")
+        L.append(f"    for (size_t _i = 1; _i < _row_eqs.size(); _i++)")
+        L.append(f"        equiv = ctx.land_(equiv, _row_eqs[_i]);")
+    else:
+        out0 = output_bufs[0]
+        eb = out0.elem_type.byte_size or 1
+        def _cmp(buf):
+            return f"({ba} * {buf.layout.planes})" if buf.layout.planes > 1 else ba
+        if len(output_bufs) == 1:
+            L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{out0.arg_name}_neon, sym_{out0.arg_name}_rvv,")
+            L.append(f"                                {_cmp(out0)}, {eb}, ElementKind::{spec.element_kind});")
+        else:
+            for i, ob in enumerate(output_bufs):
+                obe = ob.elem_type.byte_size or 1
+                ok = ob.elem_type.element_kind
+                if i == 0:
+                    L.append(f"    Term equiv = buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {_cmp(ob)}, {obe}, ElementKind::{ok});")
+                else:
+                    L.append(f"    equiv = ctx.land_(equiv, buffers_equal(ctx.tm, sym_{ob.arg_name}_neon, sym_{ob.arg_name}_rvv, {_cmp(ob)}, {obe}, ElementKind::{ok}));")
+    return L
 
-    if is_2d:
+
+def _emit_witness_scan(spec: HarnessSpec, output_bufs: list, ba: str) -> list:
+    """Site 3: scan output buffers for the first byte where neon != rvv."""
+    L = []
+    if spec.is_transpose:
+        eb = spec.profile.transpose["elem_bytes"]
+        out0 = output_bufs[0]
+        L.append(f'    for (size_t _r = 0; _r < block_width; _r++) {{')
+        L.append(f'      for (size_t _c = 0; _c < block_height; _c++) {{')
+        L.append(f'        size_t _off = _r * output_stride + _c * {eb};')
+        L.append(f'        std::string _ns = ctx.value_str(sym_{out0.arg_name}_neon.loadScalar(_off, {eb*8}));')
+        L.append(f'        std::string _rs = ctx.value_str(sym_{out0.arg_name}_rvv .loadScalar(_off, {eb*8}));')
+        L.append(f'        if (_ns != _rs) {{ fi = _r * block_height + _c; fail_buf = "{out0.arg_name}"; goto found_mismatch; }}')
+        L.append(f'      }}')
+        L.append(f'    }}')
+        return L
+    if spec.is_pool or spec.is_bilinear or spec.is_dwconv:
+        if spec.is_pool:
+            eb = spec.profile.pool["elem_bytes"]; n_var = "output_pixels"
+        elif spec.is_bilinear:
+            eb = spec.profile.bilinear["elem_bytes"]; n_var = "output_pixels"
+        else:
+            eb = spec.profile.dwconv["elem_bytes"]; n_var = "output_width"
+        out0 = output_bufs[0]
+        L.append(f'    for (size_t _p = 0; _p < {n_var}; _p++) {{')
+        L.append(f'      for (size_t _c = 0; _c < channels; _c++) {{')
+        L.append(f'        size_t _off = _p * channel_bytes + _c * {eb};')
+        L.append(f'        std::string _ns = ctx.value_str(sym_{out0.arg_name}_neon.loadScalar(_off, {eb*8}));')
+        L.append(f'        std::string _rs = ctx.value_str(sym_{out0.arg_name}_rvv .loadScalar(_off, {eb*8}));')
+        L.append(f'        if (_ns != _rs) {{ fi = _p * channels + _c; fail_buf = "{out0.arg_name}"; goto found_mismatch; }}')
+        L.append(f'      }}')
+        L.append(f'    }}')
+        return L
+    if spec.is_reduce:
+        n_out = spec.profile.reduce.get("n_outputs", 1) if spec.profile and spec.profile.reduce else 1
+        out0 = output_bufs[0]
+        eb = out0.elem_type.byte_size or 4
+        for i in range(n_out):
+            L.append(f'    {{ std::string _ns = ctx.value_str(sym_{out0.arg_name}_neon.loadScalar({i * eb}, {eb*8}));')
+            L.append(f'      std::string _rs = ctx.value_str(sym_{out0.arg_name}_rvv .loadScalar({i * eb}, {eb*8}));')
+            L.append(f'      if (_ns != _rs) {{ fi = {i}; fail_buf = "{out0.arg_name}"; goto found_mismatch; }} }}')
+        return L
+    if spec.is_gemm or spec.is_igemm:
+        if spec.is_gemm:
+            g = spec.profile.gemm; tile_n = g["weight_tile_n"]; eb = g["elem_bytes"]
+        else:
+            g = spec.profile.igemm; tile_n = g["nr"]; eb = g["elem_bytes"]
+        for ob in output_bufs:
+            L.append(f'    for (size_t _m = 0; _m < mr; _m++) {{')
+            L.append(f'      size_t _mof = _m * cm_stride;')
+            L.append(f'      for (size_t _n = 0; _n < nc; _n++) {{')
+            L.append(f'        size_t _off = _mof + (_n / {tile_n}) * cn_stride + (_n % {tile_n}) * {eb};')
+            L.append(f'        std::string _n_s = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_off, {eb*8}));')
+            L.append(f'        std::string _r_s = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_off, {eb*8}));')
+            L.append(f'        if (_n_s != _r_s) {{ fi = _m * nc + _n; fail_buf = "{ob.arg_name}"; goto found_mismatch; }}')
+            L.append(f'      }}')
+            L.append(f'    }}')
+        return L
+    if spec.is_spatial:
+        spatial_sd = _spatial_sd(spec)
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f'    for (size_t _c = 0; _c < {spatial_sd}; _c++) {{')
+            L.append(f'      size_t _cof = _c * output_channel_stride_bytes;')
+            L.append(f'      for (size_t _y = 0; _y < {ba}; _y++) {{')
+            L.append(f'        size_t _yof = _cof + _y * output_height_stride_bytes;')
+            L.append(f'        for (size_t _x = 0; _x < output_width; _x++) {{')
+            L.append(f'          size_t _off = _yof + _x * {obe};')
+            L.append(f'          std::string _n  = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_off, {obe*8}));')
+            L.append(f'          std::string _r2 = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_off, {obe*8}));')
+            L.append(f'          if (_n != _r2) {{ fi = (_c * {ba} + _y) * output_width + _x; fail_buf = "{ob.arg_name}"; goto found_mismatch; }}')
+            L.append(f'        }}')
+            L.append(f'      }}')
+            L.append(f'    }}')
+    elif spec.is_2d:
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f'    for (size_t _r = 0; _r < {ba}; _r++) {{')
+            L.append(f'      size_t _roff = _r * padded_row_bytes;')
+            L.append(f'      for (size_t _c = 0; _c < num_elems_per_row; _c++) {{')
+            L.append(f'        std::string _n  = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_roff + _c * {obe}, {obe*8}));')
+            L.append(f'        std::string _r2 = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_roff + _c * {obe}, {obe*8}));')
+            L.append(f'        if (_n != _r2) {{ fi = _r * num_elems_per_row + _c; fail_buf = "{ob.arg_name}"; goto found_mismatch; }}')
+            L.append(f'      }}')
+            L.append(f'    }}')
+    else:
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            scan_n = f"({ba} * {ob.layout.planes})" if ob.layout.planes > 1 else ba
+            L.append(f'    for (size_t _i = 0; _i < {scan_n}; _i++) {{')
+            L.append(f'        std::string _n = ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_i * {obe}, {obe*8}));')
+            L.append(f'        std::string _r = ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_i * {obe}, {obe*8}));')
+            L.append(f'        if (_n != _r) {{ fi = _i; fail_buf = "{ob.arg_name}"; goto found_mismatch; }}')
+            L.append(f'    }}')
+    return L
+
+
+def _emit_counterexample_payload(spec: HarnessSpec, input_bufs: list,
+                                  output_bufs: list, ba: str) -> list:
+    """Site 4: print symbolic input values + neon/rvv outputs at fail_index."""
+    L = []
+    if spec.is_transpose:
+        # Print every input element of the bw×bh block, then the failing output.
+        eb = spec.profile.transpose["elem_bytes"]
+        for buf in input_bufs:
+            if buf.role != ArgRole.INPUT_ARRAY:
+                continue
+            be = buf.elem_type.byte_size or eb
+            L.append(f'    printf("\\"{buf.arg_name}\\":[");')
+            L.append(f'    for (size_t _c = 0; _c < block_height; _c++) {{')
+            L.append(f'      for (size_t _r = 0; _r < block_width; _r++) {{')
+            L.append(f'        size_t _off = _c * input_stride + _r * {be};')
+            L.append(f'        printf("%s%s", (_c==0 && _r==0) ? "" : ",",')
+            L.append(f'               ctx.value_str(sym_{buf.arg_name}.loadScalar(_off, {be*8})).c_str());')
+            L.append(f'      }}')
+            L.append(f'    }}')
+            L.append(f'    printf("],");')
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or eb
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'        size_t _fr = fi / block_height;')
+            L.append(f'        size_t _fc = fi % block_height;')
+            L.append(f'        size_t _foff = _fr * output_stride + _fc * {obe};')
+            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv .loadScalar(_foff, {obe*8})).c_str());')
+            L.append(f'    }}')
+        return L
+    if spec.is_pool or spec.is_bilinear or spec.is_dwconv:
+        # Print indirect-row grid + failing output position.
+        if spec.is_pool:
+            eb = spec.profile.pool["elem_bytes"]; n_rows_expr = "kernel_elements"
+        elif spec.is_bilinear:
+            eb = spec.profile.bilinear["elem_bytes"]; n_rows_expr = "(output_pixels * 4)"
+        else:
+            eb = spec.profile.dwconv["elem_bytes"]
+            ks = spec.profile.dwconv["kernel_size"]
+            n_rows_expr = f"(output_width * {ks})"
+        for buf in input_bufs:
+            if buf.role != ArgRole.INDIRECT_INPUT:
+                continue
+            be = buf.elem_type.byte_size or eb
+            L.append(f'    printf("\\"{buf.arg_name}\\":[");')
+            L.append(f'    for (size_t _k = 0; _k < {n_rows_expr}; _k++) {{')
+            L.append(f'      auto& _row = ctx.findBuffer({buf.arg_name}_rows[_k].data());')
+            L.append(f'      for (size_t _c = 0; _c < channels; _c++) {{')
+            L.append(f'        bool _first = (_k == 0 && _c == 0);')
+            L.append(f'        printf("%s%s", _first ? "" : ",",')
+            L.append(f'               ctx.value_str(_row.loadScalar(_c * {be}, {be*8})).c_str());')
+            L.append(f'      }}')
+            L.append(f'    }}')
+            L.append(f'    printf("],");')
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or eb
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'        size_t _fp = fi / channels;')
+            L.append(f'        size_t _fc = fi % channels;')
+            L.append(f'        size_t _foff = _fp * channel_bytes + _fc * {obe};')
+            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv .loadScalar(_foff, {obe*8})).c_str());')
+            L.append(f'    }}')
+        return L
+    if spec.is_reduce:
+        # Print every input lane (small in REDUCE_1D — typically ≤17) plus the
+        # failing output slot's neon/rvv values.
+        for buf in input_bufs:
+            if buf.role != ArgRole.INPUT_ARRAY:
+                continue
+            be = buf.elem_type.byte_size or 4
+            L.append(f'    printf("\\"{buf.arg_name}\\":[");')
+            L.append(f'    for (size_t _i = 0; _i < {ba}; _i++) {{')
+            L.append(f'      printf("%s%s", _i ? "," : "",')
+            L.append(f'             ctx.value_str(sym_{buf.arg_name}.loadScalar(_i * {be}, {be*8})).c_str());')
+            L.append(f'    }}')
+            L.append(f'    printf("],");')
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 4
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'        size_t _foff = fi * {obe};')
+            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv .loadScalar(_foff, {obe*8})).c_str());')
+            L.append(f'    }}')
+        return L
+    if spec.is_gemm or spec.is_igemm:
+        # fi is the logical (m * nc + n) index from the witness scan.
+        if spec.is_gemm:
+            g = spec.profile.gemm; tile_n = g["weight_tile_n"]; eb = g["elem_bytes"]
+        else:
+            g = spec.profile.igemm; tile_n = g["nr"]; eb = g["elem_bytes"]
+            ks = g["ks"]
+        for buf in input_bufs:
+            be = buf.elem_type.byte_size or 1
+            if spec.is_igemm and buf.role == ArgRole.INDIRECT_INPUT:
+                # Print all mr*ks rows × kc elements of indirect `a`.
+                L.append(f'    printf("\\"{buf.arg_name}\\":[");')
+                L.append(f'    for (size_t _k = 0; _k < mr * {ks}; _k++) {{')
+                L.append(f'      auto& _row = ctx.findBuffer({buf.arg_name}_rows[_k].data());')
+                L.append(f'      for (size_t _i = 0; _i < kc; _i++) {{')
+                L.append(f'        bool _first = (_k == 0 && _i == 0);')
+                L.append(f'        printf("%s%s", _first ? "" : ",",')
+                L.append(f'               ctx.value_str(_row.loadScalar(_i * {be}, {be*8})).c_str());')
+                L.append(f'      }}')
+                L.append(f'    }}')
+                L.append(f'    printf("],");')
+            elif buf.role == ArgRole.INPUT_ARRAY:
+                # Direct GEMM: print first kc elements of `a`.
+                L.append(f'    printf("\\"{buf.arg_name}_first_kc\\":[");')
+                L.append(f'    for (size_t _i = 0; _i < kc; _i++) {{')
+                L.append(f'      printf("%s%s", _i ? "," : "",')
+                L.append(f'             ctx.value_str(sym_{buf.arg_name}.loadScalar(_i * {be}, {be*8})).c_str());')
+                L.append(f'    }}')
+                L.append(f'    printf("],");')
+        for ob in output_bufs:
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'      size_t _fm = fi / nc, _fn = fi % nc;')
+            L.append(f'      size_t _foff = _fm * cm_stride + (_fn / {tile_n}) * cn_stride + (_fn % {tile_n}) * {eb};')
+            L.append(f'      printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'             ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {eb*8})).c_str(),')
+            L.append(f'             ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_foff, {eb*8})).c_str());')
+            L.append(f'    }}')
+        return L
+    if spec.is_spatial:
+        spatial_sd = _spatial_sd(spec)
+        for buf in input_bufs:
+            if buf.role != ArgRole.INPUT_ARRAY:
+                continue
+            be = buf.elem_type.byte_size or 1
+            bits = be * 8
+            L.append(f'    printf("\\"{buf.arg_name}\\":[");')
+            L.append(f'    {{ size_t _n = ({buf.size_expr}) / {be};')
+            L.append(f'      for (size_t _i = 0; _i < _n; _i++) {{')
+            L.append(f'        printf("%s%s", _i ? "," : "",')
+            L.append(f'               ctx.value_str(sym_{buf.arg_name}.loadScalar(_i * {be}, {bits})).c_str());')
+            L.append(f'      }}')
+            L.append(f'    }}')
+            L.append(f'    printf("],");')
+            L.append(f'    printf("\\"{buf.arg_name}_at_fail\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(0, {bits})).c_str());')
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'        size_t _fc = fi / ({ba} * output_width);')
+            L.append(f'        size_t _fr = (fi / output_width) % {ba};')
+            L.append(f'        size_t _fx = fi % output_width;')
+            L.append(f'        size_t _foff = _fc * output_channel_stride_bytes + _fr * output_height_stride_bytes + _fx * {obe};')
+            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_foff, {obe*8})).c_str());')
+            L.append(f'    }}')
+    elif spec.is_2d:
+        for buf in input_bufs:
+            be = buf.elem_type.byte_size or 1
+            if buf.role == ArgRole.INPUT_SCALAR:
+                L.append(f'    printf("\\"{buf.arg_name}\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(0, {be*8})).c_str());')
+            else:
+                L.append(f'    {{ size_t _fr = fi / num_elems_per_row; size_t _fc = fi % num_elems_per_row;')
+                L.append(f'      size_t _foff = _fr * padded_row_bytes + _fc * {be};')
+                L.append(f'      printf("\\"{buf.arg_name}_at_fail\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(_foff, {be*8})).c_str()); }}')
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'        size_t _fr = fi / num_elems_per_row; size_t _fc = fi % num_elems_per_row;')
+            L.append(f'        size_t _foff = _fr * padded_row_bytes + _fc * {obe};')
+            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(_foff, {obe*8})).c_str(),')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(_foff, {obe*8})).c_str());')
+            L.append(f'    }}')
+    else:
+        for buf in input_bufs:
+            be = buf.elem_type.byte_size or 1
+            if buf.role == ArgRole.INPUT_SCALAR:
+                L.append(f'    printf("\\"{buf.arg_name}\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(0, {be*8})).c_str());')
+            else:
+                L.append(f'    printf("\\"{buf.arg_name}_at_fail\\":%s,", ctx.value_str(sym_{buf.arg_name}.loadScalar(fi * {be}, {be*8})).c_str());')
+        for ob in output_bufs:
+            obe = ob.elem_type.byte_size or 1
+            L.append(f'    if (std::string(fail_buf) == "{ob.arg_name}") {{')
+            L.append(f'        printf("\\"neon_out\\":%s,\\"rvv_out\\":%s",')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_neon.loadScalar(fi * {obe}, {obe*8})).c_str(),')
+            L.append(f'               ctx.value_str(sym_{ob.arg_name}_rvv.loadScalar(fi * {obe}, {obe*8})).c_str());')
+            L.append(f'    }}')
+    return L
+
+
+def _emit_outer_sweep_setup(spec: HarnessSpec) -> list:
+    """Site 5: per-shape sweep array for the secondary dim. Empty for FLAT_1D."""
+    L = []
+    if spec.is_reduce:
+        # Single-dim fixture array — sweep values come straight from profile.reduce.
+        d = spec.shape_plan.sweep_dims[0]
+        vals_str = ", ".join(str(v) for v in (d.values or []))
+        L.append(f"    size_t {d.name}_sizes[] = {{{vals_str}}};")
+        L.append(f"    size_t num_{d.name}_sizes = sizeof({d.name}_sizes) / sizeof({d.name}_sizes[0]);")
+        L.append("")
+        return L
+    if spec.is_transpose:
+        # Two PAIRED arrays (not cross product) — index N picks (bw[N], bh[N]).
+        bw_dim, bh_dim = spec.shape_plan.sweep_dims[0], spec.shape_plan.sweep_dims[1]
+        bw_str = ", ".join(str(v) for v in (bw_dim.values or []))
+        bh_str = ", ".join(str(v) for v in (bh_dim.values or []))
+        L.append(f"    size_t block_width_sizes[]  = {{{bw_str}}};")
+        L.append(f"    size_t block_height_sizes[] = {{{bh_str}}};")
+        L.append(f"    size_t num_blocks = sizeof(block_width_sizes) / sizeof(block_width_sizes[0]);")
+        L.append("")
+        return L
+    if spec.is_pool or spec.is_bilinear or spec.is_dwconv:
+        # POOL: 3 dims (channels × output_pixels × kernel_elements).
+        # BILINEAR: 2 dims (channels × output_pixels).
+        # DWCONV: 2 dims (channels × output_width).
+        # Same emission shape — one independent array per sweep dim.
+        for d in spec.shape_plan.sweep_dims:
+            vals_str = ", ".join(str(v) for v in (d.values or []))
+            L.append(f"    size_t {d.name}_sizes[] = {{{vals_str}}};")
+            L.append(f"    size_t num_{d.name}_sizes = sizeof({d.name}_sizes) / sizeof({d.name}_sizes[0]);")
+        L.append("")
+        return L
+    if spec.is_gemm or spec.is_igemm:
+        # Three independent fixture arrays — verifier iterates the cross-product.
+        for d in spec.shape_plan.sweep_dims:
+            vals_str = ", ".join(str(v) for v in (d.values or []))
+            L.append(f"    size_t {d.name}_sizes[] = {{{vals_str}}};")
+            L.append(f"    size_t num_{d.name}_sizes = sizeof({d.name}_sizes) / sizeof({d.name}_sizes[0]);")
+        L.append("")
+        return L
+    if spec.is_2d:
+        sd = spec.secondary_dim
         sweep = spec.profile.channel_sweep if spec.profile and spec.profile.channel_sweep else [16]
         dual = spec.profile.dual_weight_layout if spec.profile else None
         has_expr = any(isinstance(v, str) for v in sweep)
@@ -1182,35 +1534,39 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
         L.append(f"    size_t {sd}_sizes[] = {{{sweep_str}}};")
         L.append(f"    size_t num_{sd}_sizes = sizeof({sd}_sizes) / sizeof({sd}_sizes[0]);")
         L.append("")
-    elif is_spatial:
-        # SPATIAL's second sweep dim (output_channels) carries explicit values.
+    elif spec.is_spatial:
+        spatial_sd = _spatial_sd(spec)
         vals = spec.shape_plan.sweep_dims[1].values or [4, 8]
         sweep_str = ", ".join(str(v) for v in vals)
         L.append(f"    size_t {spatial_sd}_sizes[] = {{{sweep_str}}};")
         L.append(f"    size_t num_{spatial_sd}_sizes = sizeof({spatial_sd}_sizes) / sizeof({spatial_sd}_sizes[0]);")
         L.append("")
+    return L
 
-    # Initialize all param configs upfront
-    if has_params and num_configs > 1:
+
+def _emit_params_setup(spec: HarnessSpec, configs: list) -> list:
+    """Site 6: param struct init — sweep (multi) or single, or none."""
+    L = []
+    if not spec.params_type:
+        return L
+    num_configs = len(configs)
+    if num_configs > 1:
         for idx, (cfg_name, cfg_init) in enumerate(configs):
             L.append(f"    // {cfg_name}")
             L.append(f"    {spec.params_type} params_{idx}{{}};")
             if cfg_init.strip():
                 for init_line in cfg_init.strip().split("\n"):
-                    # Replace "params." with "params_N."
                     L.append(f"    {init_line.lstrip().replace('params.', f'params_{idx}.')}")
             else:
                 L.append(f"    memset(&params_{idx}, 0, sizeof(params_{idx}));")
         L.append("")
-        # Build arrays of params pointers and config names
         ptrs = ", ".join(f"&params_{i}" for i in range(num_configs))
         names = ", ".join(f'"{cfg_name}"' for cfg_name, _ in configs)
         L.append(f"    const {spec.params_type}* _params_list[] = {{{ptrs}}};")
         L.append(f"    const char* _config_names[] = {{{names}}};")
         L.append(f"    const int _num_configs = {num_configs};")
         L.append("")
-    elif has_params:
-        # Single config (e.g., symbolic mode)
+    else:
         cfg_name, cfg_init = configs[0]
         L.append(f"    {spec.params_type} params{{}};")
         if cfg_init.strip():
@@ -1219,31 +1575,199 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
         else:
             L.append("    memset(&params, 0, sizeof(params));")
         L.append("")
+    return L
 
-    # Outer loop: secondary sweep dim (2D: channels values; SPATIAL: output_channels values).
-    if is_2d:
+
+def _emit_outer_loop_open(spec: HarnessSpec) -> list:
+    """Site 7: outer for-loop wrapping the secondary dim sweep."""
+    L = []
+    if spec.is_reduce:
+        d = spec.shape_plan.sweep_dims[0]
+        L.append(f"  for (size_t _{d.name}i = 0; _{d.name}i < num_{d.name}_sizes; _{d.name}i++) {{")
+        L.append(f"    size_t {d.name} = {d.name}_sizes[_{d.name}i];")
+        return L
+    if spec.is_transpose:
+        # One outer loop, paired indexing into both arrays.
+        L.append(f"  for (size_t _bi = 0; _bi < num_blocks; _bi++) {{")
+        L.append(f"    size_t block_width  = block_width_sizes[_bi];")
+        L.append(f"    size_t block_height = block_height_sizes[_bi];")
+        return L
+    if spec.is_pool or spec.is_bilinear or spec.is_dwconv:
+        # Nested cross product — POOL has 3 dims, BILINEAR/DWCONV have 2.
+        for d in spec.shape_plan.sweep_dims:
+            n = d.name
+            L.append(f"  for (size_t _{n}i = 0; _{n}i < num_{n}_sizes; _{n}i++) {{")
+            L.append(f"    size_t {n} = {n}_sizes[_{n}i];")
+        return L
+    if spec.is_gemm or spec.is_igemm:
+        # Triple-nested fixture iteration. Closed by _emit_main with one `}}`
+        # per opened loop.
+        for d in spec.shape_plan.sweep_dims:
+            n = d.name
+            L.append(f"  for (size_t _{n}i = 0; _{n}i < num_{n}_sizes; _{n}i++) {{")
+            L.append(f"    size_t {n} = {n}_sizes[_{n}i];")
+        return L
+    if spec.is_2d:
+        sd = spec.secondary_dim
         L.append(f"  for (size_t _ci = 0; _ci < num_{sd}_sizes; _ci++) {{")
         L.append(f"    size_t {sd} = {sd}_sizes[_ci];")
-    elif is_spatial:
+    elif spec.is_spatial:
+        spatial_sd = _spatial_sd(spec)
         L.append(f"  for (size_t _ci = 0; _ci < num_{spatial_sd}_sizes; _ci++) {{")
         L.append(f"    size_t {spatial_sd} = {spatial_sd}_sizes[_ci];")
+    return L
 
-    # For byte-count batch kernels, sweep in elem_bytes steps and align
-    # the start to avoid invalid sub-element batches.
-    if spec.sweep_is_bytes:
-        step = spec.elem_bytes
-        L.append(f"    size_t _start_aligned = start < {step} ? {step} : (start + {step} - 1) / {step} * {step};")
-        L.append(f"    for (size_t {ba} = _start_aligned; {ba} <= end; {ba} += {step}) {{")
-    else:
-        L.append(f"    for (size_t {ba} = start; {ba} <= end; {ba}++) {{")
 
-    outer_dim = sd if is_2d else (spatial_sd if is_spatial else "")
-    two_dim_verify = is_2d or is_spatial
+def _emit_verify_call_block(spec: HarnessSpec, configs: list) -> list:
+    """Site 8: per-batch verify() call + timing + per-batch timeout check."""
+    L = []
+    has_params = bool(spec.params_type)
+    num_configs = len(configs)
 
-    # Inner loop: all configs at this batch size
+    if spec.is_bilinear:
+        cfg_name = configs[0][0] if configs else "default"
+        L.append(f'        char _cfgbuf[80]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_ch%zu_op%zu", channels, output_pixels);')
+        if has_params:
+            vcall = 'verify(channels, output_pixels, vlen, params, _cfgbuf)'
+        else:
+            vcall = 'verify(channels, output_pixels, vlen, _cfgbuf)'
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
+        L.append(f"            {_emit_wall_timeout('channels', 'secs', '_cfgbuf')}")
+        L.append(f"            return 0;")
+        L.append(f"        }}")
+        return L
+
+    if spec.is_dwconv:
+        cfg_name = configs[0][0] if configs else "default"
+        L.append(f'        char _cfgbuf[80]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_ch%zu_ow%zu", channels, output_width);')
+        if has_params:
+            vcall = 'verify(channels, output_width, vlen, params, _cfgbuf)'
+        else:
+            vcall = 'verify(channels, output_width, vlen, _cfgbuf)'
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
+        L.append(f"            {_emit_wall_timeout('channels', 'secs', '_cfgbuf')}")
+        L.append(f"            return 0;")
+        L.append(f"        }}")
+        return L
+
+    if spec.is_pool:
+        if has_params and num_configs > 1:
+            L.append(f"        for (int _cfg = 0; _cfg < _num_configs; _cfg++) {{")
+            L.append(f'            char _cfgbuf[80]; snprintf(_cfgbuf, sizeof(_cfgbuf), "%s_ch%zu_op%zu_ke%zu", _config_names[_cfg], channels, output_pixels, kernel_elements);')
+            vcall = 'verify(channels, output_pixels, kernel_elements, vlen, *_params_list[_cfg], _cfgbuf)'
+            L.append(f"            auto t0 = std::chrono::steady_clock::now();")
+            L.append(f"            bool ok = {vcall};")
+            L.append(f"            double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+            L.append(f"            if (!ok) return 1;")
+            L.append(f"            if (timeout > 0 && secs > timeout) {{")
+            L.append(f"                {_emit_wall_timeout('channels', 'secs', '_cfgbuf')}")
+            L.append(f"                return 0;")
+            L.append(f"            }}")
+            L.append(f"        }}")
+            return L
+
+        cfg_name = configs[0][0] if configs else "default"
+        L.append(f'        char _cfgbuf[80]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_ch%zu_op%zu_ke%zu", channels, output_pixels, kernel_elements);')
+        if has_params:
+            vcall = 'verify(channels, output_pixels, kernel_elements, vlen, params, _cfgbuf)'
+        else:
+            vcall = 'verify(channels, output_pixels, kernel_elements, vlen, _cfgbuf)'
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
+        L.append(f"            {_emit_wall_timeout('channels', 'secs', '_cfgbuf')}")
+        L.append(f"            return 0;")
+        L.append(f"        }}")
+        return L
+
+    if spec.is_transpose:
+        cfg_name = configs[0][0] if configs else "default"
+        L.append(f'        char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_bw%zu_bh%zu", block_width, block_height);')
+        if has_params:
+            vcall = 'verify(block_width, block_height, vlen, params, _cfgbuf)'
+        else:
+            vcall = 'verify(block_width, block_height, vlen, _cfgbuf)'
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
+        L.append(f"            {_emit_wall_timeout('block_width', 'secs', '_cfgbuf')}")
+        L.append(f"            return 0;")
+        L.append(f"        }}")
+        return L
+
+    if spec.is_reduce:
+        # REDUCE_1D: verify(batch, vlen, [params,] config_id).
+        # Multi-config: iterate _params_list (built by _emit_params_setup).
+        d_name = spec.shape_plan.sweep_dims[0].name
+        if has_params and num_configs > 1:
+            L.append(f"        for (int _cfg = 0; _cfg < _num_configs; _cfg++) {{")
+            L.append(f'            char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "%s_{d_name}%zu", _config_names[_cfg], {d_name});')
+            vcall = f'verify({d_name}, vlen, *_params_list[_cfg], _cfgbuf)'
+            L.append(f"            auto t0 = std::chrono::steady_clock::now();")
+            L.append(f"            bool ok = {vcall};")
+            L.append(f"            double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+            L.append(f"            if (!ok) return 1;")
+            L.append(f"            if (timeout > 0 && secs > timeout) {{")
+            L.append(f"                {_emit_wall_timeout(d_name, 'secs', '_cfgbuf')}")
+            L.append(f"                return 0;")
+            L.append(f"            }}")
+            L.append(f"        }}")
+            return L
+        cfg_name = configs[0][0] if configs else "default"
+        L.append(f'        char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_{d_name}%zu", {d_name});')
+        if has_params:
+            vcall = f'verify({d_name}, vlen, params, _cfgbuf)'
+        else:
+            vcall = f'verify({d_name}, vlen, _cfgbuf)'
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
+        L.append(f"            {_emit_wall_timeout(d_name, 'secs', '_cfgbuf')}")
+        L.append(f"            return 0;")
+        L.append(f"        }}")
+        return L
+
+    if spec.is_gemm or spec.is_igemm:
+        # GEMM/IGEMM call: verify(mr, nc, kc, vlen, [params,] config_id)
+        cfg_name = configs[0][0] if configs else "default"
+        L.append(f'        char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_mr%zu_nc%zu_kc%zu", mr, nc, kc);')
+        if has_params:
+            vcall = 'verify(mr, nc, kc, vlen, params, _cfgbuf)'
+        else:
+            vcall = 'verify(mr, nc, kc, vlen, _cfgbuf)'
+        L.append(f"        auto t0 = std::chrono::steady_clock::now();")
+        L.append(f"        bool ok = {vcall};")
+        L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
+        L.append(f"        if (!ok) return 1;")
+        L.append(f"        if (timeout > 0 && secs > timeout) {{")
+        L.append(f"            {_emit_wall_timeout('mr', 'secs', '_cfgbuf')}")
+        L.append(f"            return 0;")
+        L.append(f"        }}")
+        return L
+
+    ba = spec.sweep_arg
+    spatial_sd = _spatial_sd(spec)
+    outer_dim = (spec.secondary_dim if spec.is_2d
+                 else spatial_sd if spec.is_spatial else "")
+    two_dim = spec.is_2d or spec.is_spatial
+
     if has_params and num_configs > 1:
         L.append(f"        for (int _cfg = 0; _cfg < _num_configs; _cfg++) {{")
-        if two_dim_verify:
+        if two_dim:
             L.append(f'            char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "%s_{outer_dim}%zu", _config_names[_cfg], {outer_dim});')
             vcall = f'verify({ba}, {outer_dim}, vlen, *_params_list[_cfg], _cfgbuf)'
         else:
@@ -1253,15 +1777,14 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
         L.append(f"            double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
         L.append(f"            if (!ok) return 1;")
         L.append(f"            if (timeout > 0 && secs > timeout) {{")
-        cfg_id = '_cfgbuf' if two_dim_verify else '_config_names[_cfg]'
-        L.append(f'                printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"seconds\\":%.1f,\\"config\\":\\"%s\\"}}\\n", {ba}, secs, {cfg_id});')
-        L.append(f"                goto done;")
+        cfg_id = '_cfgbuf' if two_dim else '_config_names[_cfg]'
+        L.append(f"                {_emit_wall_timeout(ba, 'secs', cfg_id)}")
+        L.append(f"                return 0;")
         L.append(f"            }}")
         L.append(f"        }}")
     else:
-        # Single config
         cfg_name = configs[0][0] if configs else "default"
-        if two_dim_verify:
+        if two_dim:
             L.append(f'        char _cfgbuf[64]; snprintf(_cfgbuf, sizeof(_cfgbuf), "{cfg_name}_{outer_dim}%zu", {outer_dim});')
             if has_params:
                 vcall = f'verify({ba}, {outer_dim}, vlen, params, _cfgbuf)'
@@ -1277,18 +1800,71 @@ def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
         L.append(f"        double secs = std::chrono::duration<double>(std::chrono::steady_clock::now() - t0).count();")
         L.append(f"        if (!ok) return 1;")
         L.append(f"        if (timeout > 0 && secs > timeout) {{")
-        cfg_id = '_cfgbuf' if two_dim_verify else f'"{cfg_name}"'
-        L.append(f'            printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"seconds\\":%.1f,\\"config\\":\\"%s\\"}}\\n", {ba}, secs, {cfg_id});')
-        L.append(f"            goto done;")
+        cfg_id = '_cfgbuf' if two_dim else f'"{cfg_name}"'
+        L.append(f"            {_emit_wall_timeout(ba, 'secs', cfg_id)}")
+        L.append(f"            return 0;")
         L.append(f"        }}")
+    return L
 
-    L.append(f"    }}")  # close batch loop
 
-    if is_2d or is_spatial:
-        L.append(f"  }}")  # close outer sweep loop
+def _emit_main(spec: HarnessSpec, configs: list[tuple[str, str]]) -> str:
+    """main() — for each batch size, run all configs (interleaved for early bug discovery)."""
+    num_configs = len(configs)
 
-    L.append("done:")
-    L.append(f'    printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"start\\":%zu,\\"end\\":%zu,\\"configs\\":%d}}\\n", start, end, {num_configs});')
+    L = []
+    L.append("")
+    L.append("int main(int argc, char** argv) {")
+    L.append("    setvbuf(stdout, NULL, _IOLBF, 0);")
+    if (spec.is_gemm or spec.is_reduce or spec.is_transpose
+            or spec.is_pool or spec.is_bilinear or spec.is_dwconv
+            or spec.is_igemm):
+        # Fixture-driven shapes: fixtures replace start/end, but accept the
+        # same arg layout as non-GEMM kernels (`<start> <end> [vlen] [timeout]`)
+        # so the orchestrator's invocation works unchanged.
+        L.append('    if (argc < 3) { fprintf(stderr, "Usage: %s <start> <end> [vlen] [timeout]\\n", argv[0]); return 2; }')
+        L.append("    (void)atoi(argv[1]);  // start — ignored, fixtures drive sweep")
+        L.append("    (void)atoi(argv[2]);  // end   — ignored")
+        L.append(f"    size_t vlen  = (argc > 3) ? (size_t)atoi(argv[3]) : {spec.vlen};")
+        L.append("    double timeout = (argc > 4) ? atof(argv[4]) : 0;")
+    else:
+        L.append('    if (argc < 3) { fprintf(stderr, "Usage: %s <start> <end> [vlen] [timeout]\\n", argv[0]); return 2; }')
+        L.append("    size_t start = (size_t)atoi(argv[1]);")
+        L.append("    size_t end   = (size_t)atoi(argv[2]);")
+        L.append(f"    size_t vlen  = (argc > 3) ? (size_t)atoi(argv[3]) : {spec.vlen};")
+        L.append("    double timeout = (argc > 4) ? atof(argv[4]) : 0;")
+    L.append("")
+    L.extend(_emit_outer_sweep_setup(spec))
+    L.extend(_emit_params_setup(spec, configs))
+    L.extend(_emit_outer_loop_open(spec))
+    if (spec.is_gemm or spec.is_reduce or spec.is_transpose
+            or spec.is_pool or spec.is_bilinear or spec.is_dwconv
+            or spec.is_igemm):
+        # The fixture-driven loop(s) opened by _emit_outer_loop_open need
+        # closing.  GEMM/IGEMM/POOL/BILINEAR/DWCONV open one `{` per sweep dim
+        # (cross product); REDUCE_1D/TRANSPOSE_2D open one.
+        L.extend(_emit_verify_call_block(spec, configs))
+        n_loops = (len(spec.shape_plan.sweep_dims)
+                   if (spec.is_gemm or spec.is_pool or spec.is_bilinear
+                       or spec.is_dwconv or spec.is_igemm) else 1)
+        for _ in range(n_loops):
+            L.append("  }")
+        # Use first/last fixture of the outermost dim as start/end strings for
+        # the all-verified message.
+        outer = spec.shape_plan.sweep_dims[0]
+        first = outer.values[0] if outer.values else 1
+        last  = outer.values[-1] if outer.values else 1
+        L.append(f"    {_emit_all_verified(str(first), str(last), num_configs)}")
+        L.append("    return 0;")
+        L.append("}")
+        L.append("")
+        return "\n".join(L)
+    ba = spec.sweep_arg
+    L.append(f"    for (size_t {ba} = start; {ba} <= end; {ba}++) {{")
+    L.extend(_emit_verify_call_block(spec, configs))
+    L.append(f"    }}")
+    if spec.is_2d or spec.is_spatial:
+        L.append(f"  }}")
+    L.append(f"    {_emit_all_verified('start', 'end', num_configs)}")
     L.append("    return 0;")
     L.append("}")
     L.append("")

@@ -50,6 +50,10 @@ FIELD_EDGES = {
     "positive_multiplier": [1, 100],
     "negative_multiplier": [1, 50],
 
+    # (FP scale duplicate removed — already declared lower in this dict at
+    # line ~73 with [0.5, 1.0, 2.0].  Kept here so the comment about 0.0
+    # masking RSUM bugs survives a future move.)
+
     # Zero points — 0 is common, test nonzero
     "a_zero_point":      [0, 1, -5],
     "b_zero_point":      [0, 1, 5],
@@ -190,6 +194,28 @@ PARAMS_FIELDS = {
         "member": None,
         "fields": [],
     },
+    "xnn_f32_scale_params": {
+        "member": "scalar",
+        "fields": [
+            ("float", "scale"),
+        ],
+    },
+    "xnn_f32_scaleminmax_params": {
+        "member": "scalar",
+        "fields": [
+            ("float", "scale"),
+            ("float", "min"),
+            ("float", "max"),
+        ],
+    },
+    "xnn_f16_scaleminmax_params": {
+        "member": "scalar",
+        "fields": [
+            ("xnn_float16", "scale"),
+            ("xnn_float16", "min"),
+            ("xnn_float16", "max"),
+        ],
+    },
     # --- s8/u8 minmax ---
     "xnn_s8_minmax_params": {
         "member": "scalar",
@@ -266,6 +292,14 @@ PARAMS_FIELDS = {
     },
     # --- f16 params (use float edges; xnn_float16 wraps uint16_t) ---
     "xnn_f16_minmax_params": {
+        "member": "scalar",
+        "fields": [
+            ("float", "min"),
+            ("float", "max"),
+        ],
+    },
+    # --- bf16 params (xnn_bfloat16 ctor takes float; clamp values are fp32) ---
+    "xnn_bf16_minmax_params": {
         "member": "scalar",
         "fields": [
             ("float", "min"),

@@ -44,6 +44,22 @@ using uint16x8_t  = NeonVector<16, 8>;
 using uint32x2_t  = NeonVector<32, 2>;
 using float16x4_t = NeonVector<16, 4>;
 using float16x8_t = NeonVector<16, 8>;
+// Additional aliases used by the LUT gather path (f32-velu and similar).
+using uint64x2_t  = NeonVector<64, 2>;
+using int32x2_t   = NeonVector<32, 2>;
+using int32x4_t   = NeonVector<32, 4>;
+using float32x4_t = NeonVector<32, 4>;
+// 8-bit aliases used by x8-lut and other byte-level kernels.
+using uint8x8_t   = NeonVector<8, 8>;
+using uint8x16_t  = NeonVector<8, 16>;
+// 64-bit single-lane vector (used by x64-transposec).
+using uint64x1_t  = NeonVector<64, 1>;
+using int64x1_t   = NeonVector<64, 1>;
+// BF16: 1 sign + 8 exp + 7 mant (16 bits). Lanes hold the raw IEEE pattern;
+// conversion to fp32 is shift-left-16 (top half of an fp32 BV).
+using bfloat16x4_t = NeonVector<16, 4>;
+using bfloat16x8_t = NeonVector<16, 8>;
+using bfloat16_t   = uint16_t;
 
 // RVVVector — dynamic width
 class RVVVector {
@@ -89,5 +105,10 @@ struct VectorTuple {
     VecType& operator[](size_t i) { return val[i]; }
     const VecType& operator[](size_t i) const { return val[i]; }
 };
+
+// NEON multi-vector type aliases.
+using uint8x16x4_t = VectorTuple<uint8x16_t, 4>;
+using uint32x2x2_t = VectorTuple<uint32x2_t, 2>;
+using int32x2x2_t  = VectorTuple<int32x2_t,  2>;
 
 } // namespace salt_cvc5

@@ -7,6 +7,8 @@
 
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
+#include <cstdlib>
 #include <functional>
 #include <map>
 #include <memory>
@@ -88,6 +90,7 @@ enum class ElementKind {
     SINT,   // signed integer (BV, arithmetic shift)
     UINT,   // unsigned integer (BV, logical shift)
     F16,    // IEEE 754 binary16
+    BF16,   // BFloat16 (8 exp + 8 sb incl. hidden)
     F32,    // IEEE 754 binary32
     F64,    // IEEE 754 binary64
     MASK,   // 1-bit per element
@@ -118,12 +121,50 @@ struct VerificationContext {
 
     explicit VerificationContext(size_t vlen) : vlen(vlen) {
         opts.set(Option::PRODUCE_MODELS, true);
+        // Opt-in solver-option override: SALT_BZLA_OPTIONS="key1=val1,key2=val2"
+        // applies arbitrary bitwuzla setOption calls (numeric or string options)
+        // before the Bitwuzla instance is built.
+        if (const char* s = std::getenv("SALT_BZLA_OPTIONS"); s && *s) {
+            std::string ss = s;
+            size_t pos = 0;
+            while (pos < ss.size()) {
+                size_t comma = ss.find(',', pos);
+                std::string kv = ss.substr(pos, comma == std::string::npos ? std::string::npos : comma - pos);
+                size_t eq = kv.find('=');
+                if (eq != std::string::npos) {
+                    std::string k = kv.substr(0, eq), v = kv.substr(eq + 1);
+                    try { opts.set(k, v); std::fprintf(stderr, "[SALT_BZLA_OPTIONS] set %s=%s\n", k.c_str(), v.c_str()); }
+                    catch (const std::exception& e) { std::fprintf(stderr, "[SALT_BZLA_OPTIONS] FAILED %s=%s: %s\n", k.c_str(), v.c_str(), e.what()); }
+                }
+                if (comma == std::string::npos) break;
+                pos = comma + 1;
+            }
+            std::fflush(stderr);
+        }
         solver = std::make_unique<Bitwuzla>(tm, opts);
         fp.rounding_mode = tm.mk_rm_value(RoundingMode::RNE);
     }
 
+    void print_stats(FILE* out = stderr) {
+        if (const char* s = std::getenv("SALT_STATS"); !s || std::string(s) != "1") return;
+        std::fprintf(out, "=== bitwuzla statistics ===\n");
+        auto stats = solver->statistics();
+        for (const auto& [k, v] : stats) {
+            std::fprintf(out, "%s = %s\n", k.c_str(), v.c_str());
+        }
+        std::fprintf(out, "=== end stats ===\n");
+        std::fflush(out);
+    }
+
     // Create and register a buffer by name
     SymbolicBuffer& registerBuffer(const std::string& name, size_t num_bytes);
+
+    // Read-only concrete buffer: loads return BV constants synthesized from
+    // `data`; no symbolic byte vars are created.  Stores throw — kernels must
+    // not write to a buffer registered concretely.  Replaces the
+    // registerBuffer + per-byte assert_eq idiom used for w_ptr/params/LUTs.
+    SymbolicBuffer& registerConcreteBuffer(const std::string& name,
+                                            const void* data, size_t num_bytes);
 
     // Find which buffer owns a given pointer (for load/store intrinsics)
     SymbolicBuffer& findBuffer(const void* ptr);
@@ -173,6 +214,8 @@ struct VerificationContext {
     // FP comparisons (for param range constraints)
     Term fp16_geq(Term a, Term b) { return tm.mk_term(Kind::FP_GEQ, {a, b}); }
     Term fp16_leq(Term a, Term b) { return tm.mk_term(Kind::FP_LEQ, {a, b}); }
+    Term fp32_geq(Term a, Term b) { return tm.mk_term(Kind::FP_GEQ, {a, b}); }
+    Term fp32_leq(Term a, Term b) { return tm.mk_term(Kind::FP_LEQ, {a, b}); }
     // Reinterpret a 16-bit BV as an IEEE-754 binary16 FP term.
     Term fp16_from_bv(Term bv16) {
         return tm.mk_term(Kind::FP_TO_FP_FROM_BV, {bv16}, {5, 11});
