@@ -126,6 +126,13 @@ inline int32x2_t vadd_s32(const int32x2_t& a, const int32x2_t& b) {
         lanes[i] = tm.mkTerm(Kind::BITVECTOR_ADD, {a.getLane(i), b.getLane(i)});
     return int32x2_t(tm, lanes);
 }
+inline int32x2_t vmul_s32(const int32x2_t& a, const int32x2_t& b) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 2> lanes;
+    for (size_t i = 0; i < 2; i++)
+        lanes[i] = tm.mkTerm(Kind::BITVECTOR_MULT, {a.getLane(i), b.getLane(i)});
+    return int32x2_t(tm, lanes);
+}
 inline int32x2_t vget_low_s32(const int32x4_t& a) {
     auto& tm = g_ctx->tm;
     std::array<Term, 2> lanes = {a.getLane(0), a.getLane(1)};
@@ -665,6 +672,36 @@ inline int32x4_t  vandq_s32(const int32x4_t& a, const int32x4_t& b)  { return ne
 inline uint16x4_t vand_u16 (const uint16x4_t& a, const uint16x4_t& b){ return neon_vand_impl(a,b); }
 inline uint16x8_t vandq_u16(const uint16x8_t& a, const uint16x8_t& b){ return neon_vand_impl(a,b); }
 inline uint32x4_t vandq_u32(const uint32x4_t& a, const uint32x4_t& b){ return neon_vand_impl(a,b); }
+inline uint8x8_t  vand_u8  (const uint8x8_t&  a, const uint8x8_t&  b){ return neon_vand_impl(a,b); }
+template <size_t B, size_t N>
+inline NeonVector<B,N> neon_vshl_n_impl(const NeonVector<B,N>& a, uint32_t n) {
+    auto& tm = g_ctx->tm; std::array<Term, N> lanes;
+    Term shift = mk_bv_val(tm, B, n);
+    for (size_t i = 0; i < N; i++)
+        lanes[i] = tm.mkTerm(Kind::BITVECTOR_SHL, {a.getLane(i), shift});
+    return NeonVector<B,N>(tm, lanes);
+}
+template <size_t B, size_t N>
+inline NeonVector<B,N> neon_vshr_n_signed_impl(const NeonVector<B,N>& a, uint32_t n) {
+    auto& tm = g_ctx->tm; std::array<Term, N> lanes;
+    Term shift = mk_bv_val(tm, B, n);
+    for (size_t i = 0; i < N; i++)
+        lanes[i] = tm.mkTerm(Kind::BITVECTOR_ASHR, {a.getLane(i), shift});
+    return NeonVector<B,N>(tm, lanes);
+}
+inline uint8x8_t vshl_n_u8(const uint8x8_t& a, uint32_t n) { return neon_vshl_n_impl(a, n); }
+inline int8x8_t  vshr_n_s8(const int8x8_t& a, uint32_t n)  { return neon_vshr_n_signed_impl(a, n); }
+// Same-bitwidth reinterprets — types differ but BV layout is identical.
+inline int8x8_t  vreinterpret_s8_u8(const uint8x8_t& a) {
+    auto& tm = g_ctx->tm; std::array<Term, 8> lanes;
+    for (size_t i = 0; i < 8; i++) lanes[i] = a.getLane(i);
+    return int8x8_t(tm, lanes);
+}
+inline uint8x8_t vreinterpret_u8_s8(const int8x8_t& a) {
+    auto& tm = g_ctx->tm; std::array<Term, 8> lanes;
+    for (size_t i = 0; i < 8; i++) lanes[i] = a.getLane(i);
+    return uint8x8_t(tm, lanes);
+}
 inline uint16x8_t vbicq_u16(const uint16x8_t& a, const uint16x8_t& b){ return neon_vbic_impl(a,b); }
 inline uint32x4_t vbicq_u32(const uint32x4_t& a, const uint32x4_t& b){ return neon_vbic_impl(a,b); }
 
@@ -1789,6 +1826,48 @@ inline uint16x8_t vceqq_u16(const uint16x8_t& a, const uint16x8_t& b) {
         l[i] = tm.mkTerm(Kind::ITE, {eq, ones, zeros});
     }
     return uint16x8_t(tm, l);
+}
+// vceq_u8: element-wise equality, returns 0xFF on equal else 0x00 (8-lane).
+inline uint8x8_t vceq_u8(const uint8x8_t& a, const uint8x8_t& b) {
+    auto& tm = g_ctx->tm;
+    Term ones  = mk_bv_val(tm, 8, (int64_t)0xFF);
+    Term zeros = mk_bv_val(tm, 8, (int64_t)0);
+    std::array<Term, 8> l;
+    for (int i = 0; i < 8; i++) {
+        Term eq = tm.mkTerm(Kind::EQUAL, {a.getLane(i), b.getLane(i)});
+        l[i] = tm.mkTerm(Kind::ITE, {eq, ones, zeros});
+    }
+    return uint8x8_t(tm, l);
+}
+// vbsl_u8: bitwise select.  result[i] = (m[i] & a[i]) | (~m[i] & b[i]).
+inline uint8x8_t vbsl_u8(const uint8x8_t& m, const uint8x8_t& a, const uint8x8_t& b) {
+    return neon_vbsl_impl(m, a, b);
+}
+// vlut4_u8: 4-entry table lookup.  result[i] = T[idx[i] & 3].
+// Verifier-only helper modeling a small variant of vqtbl1q_u8.
+inline uint8x8_t vlut4_u8(const uint8x8_t& idx,
+                          uint8_t T0, uint8_t T1, uint8_t T2, uint8_t T3) {
+    auto& tm = g_ctx->tm;
+    Term mask3 = mk_bv_val(tm, 8, (int64_t)3);
+    Term k0 = mk_bv_val(tm, 8, (int64_t)0);
+    Term k1 = mk_bv_val(tm, 8, (int64_t)1);
+    Term k2 = mk_bv_val(tm, 8, (int64_t)2);
+    Term v0 = mk_bv_val(tm, 8, (int64_t)T0);
+    Term v1 = mk_bv_val(tm, 8, (int64_t)T1);
+    Term v2 = mk_bv_val(tm, 8, (int64_t)T2);
+    Term v3 = mk_bv_val(tm, 8, (int64_t)T3);
+    std::array<Term, 8> l;
+    for (int i = 0; i < 8; i++) {
+        Term masked = tm.mkTerm(Kind::BITVECTOR_AND, {idx.getLane(i), mask3});
+        Term ite = tm.mkTerm(Kind::ITE,
+                    {tm.mkTerm(Kind::EQUAL, {masked, k0}), v0,
+                     tm.mkTerm(Kind::ITE,
+                       {tm.mkTerm(Kind::EQUAL, {masked, k1}), v1,
+                        tm.mkTerm(Kind::ITE,
+                          {tm.mkTerm(Kind::EQUAL, {masked, k2}), v2, v3})})});
+        l[i] = ite;
+    }
+    return uint8x8_t(tm, l);
 }
 
 // vpaddq_f32: pairwise add. Output = [a0+a1, a2+a3, b0+b1, b2+b3].

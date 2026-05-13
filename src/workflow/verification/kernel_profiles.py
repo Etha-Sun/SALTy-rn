@@ -194,6 +194,56 @@ class KernelProfile:
     #   "arg_bindings" {arg_name: "C expr"} — overrides for byte/element conversion.
     igemm: Optional[dict] = None
 
+    # REDUCE_2D verification profile (Shape.REDUCE_2D).
+    # Required:
+    #   "elem_bytes"        int (4 for f32, 2 for f16)
+    # Optional:
+    #   "channels_values"   list[int] — channel-count fixtures.
+    #   "rows_values"       list[int] — row-count fixtures.
+    reduce_2d: Optional[dict] = None
+
+    # PACK_W verification profile (Shape.PACK_W).
+    # Required: "elem_bytes" int.
+    # Optional: "nc_values", "kc_values" — sweep value lists.
+    pack_w: Optional[dict] = None
+
+    # PRELU verification profile (Shape.PRELU).
+    # Required: "elem_bytes" int.
+    # Optional: "channels_values", "rows_values" — sweep value lists.
+    prelu: Optional[dict] = None
+
+    # GEMM_GROUP_FP verification profile (Shape.GEMM_GROUP_FP).
+    # Required: "elem_bytes" int.
+    # Optional: "g_values", "mr_values", "nc_values", "kc_values" — sweep value lists.
+    gemm_group: Optional[dict] = None
+
+    # CONCAT2 verification profile (Shape.CONCAT2).
+    # Required: "elem_bytes" int.
+    # Optional: "na_values", "nb_values" — sweep value lists.
+    concat2: Optional[dict] = None
+
+    # ZIP_2 verification profile (Shape.ZIP_2).
+    # Required: "elem_bytes" int.
+    # Optional: "n_values" — sweep value list.
+    zip_2: Optional[dict] = None
+
+    # SPLIT_2 verification profile (Shape.SPLIT_2).
+    # Required: "elem_bytes" int.
+    # Optional: "na_values", "nb_values" — sweep value lists.
+    split_2: Optional[dict] = None
+
+    # OUTER_PRODUCT verification profile (Shape.OUTER_PRODUCT).
+    # Required: "elem_bytes" int.
+    # Optional: "m_values", "n_values" — sweep value lists.
+    outer_product: Optional[dict] = None
+
+    # GEMM_QC4W verification profile (Shape.GEMM_QC4W).
+    # Same shape as gemm; w buffer is 4-bit packed (kc * nc / 2 bytes).
+    gemm_qc4w: Optional[dict] = None
+
+    # VLUT verification profile (Shape.VLUT). 4-entry hardcoded table.
+    vlut: Optional[dict] = None
+
 
 # ---------------------------------------------------------------------------
 # Registry
@@ -660,10 +710,10 @@ KERNEL_PROFILES: dict[str, KernelProfile] = {
             "elem_bytes": 4,
             "nr": 4,
             "ks": 1,
-            "dims": {"mr": [1], "nc": [4], "kc": [4, 8]},
-            "strides": {"cm_stride": "0", "cn_stride": "16"},
+            "dims": {"mr": [1, 2], "nc": [4, 8], "kc": [4, 8]},
+            "strides": {"cm_stride": "nc * 4", "cn_stride": "16"},
             "buffer_sizes": {
-                "w": "4 * (1 + kc) * 4 + 32",
+                "w": "nc * (1 + kc) * 4 + 32",
                 "c": "mr * nc * 4 + 32",
             },
         },
@@ -673,13 +723,122 @@ KERNEL_PROFILES: dict[str, KernelProfile] = {
             "elem_bytes": 4,
             "nr": 4,
             "ks": 3,
-            "dims": {"mr": [1], "nc": [4], "kc": [4]},
-            "strides": {"cm_stride": "0", "cn_stride": "16"},
+            "dims": {"mr": [1, 2], "nc": [4], "kc": [4]},
+            "strides": {"cm_stride": "nc * 4", "cn_stride": "16"},
             "buffer_sizes": {
-                "w": "4 * (1 + 3 * kc) * 4 + 32",
+                "w": "nc * (1 + 3 * kc) * 4 + 32",
                 "c": "mr * nc * 4 + 32",
             },
         },
+    ),
+    "f32-rdsum-2d": KernelProfile(
+        reduce_2d={
+            "elem_bytes": 4,
+            "channels_values": [1, 4],
+            "rows_values": [2, 3],
+        },
+    ),
+    "f32-packw": KernelProfile(
+        pack_w={
+            "elem_bytes": 4,
+            "nc_values": [4, 8],
+            "kc_values": [2, 4],
+        },
+    ),
+    "qs8-gemm-int32": KernelProfile(
+        gemm={
+            "elem_bytes": 4,
+            "weight_tile_n": 4,
+            "dims": {"mr": [1], "nc": [4], "kc": [2, 4]},
+            "strides": {"cm_stride": "0", "cn_stride": "16"},
+            "buffer_sizes": {
+                "a": "kc + 32",
+                "w": "nc * kc + 32",
+                "c": "mr * nc * 4 + 32",
+            },
+        },
+    ),
+    "qs8-igemm-int32": KernelProfile(
+        igemm={
+            "elem_bytes": 4,
+            "nr": 4,
+            "ks": 1,
+            "dims": {"mr": [1], "nc": [4], "kc": [2, 4]},
+            "strides": {"cm_stride": "0", "cn_stride": "16"},
+            "buffer_sizes": {
+                "w": "nc * kc + 32",
+                "c": "mr * nc * 4 + 32",
+            },
+        },
+    ),
+    "qs8-dwconv-int32": KernelProfile(
+        dwconv={
+            "elem_bytes": 1,
+            "weight_elem_bytes": 1,
+            "output_elem_bytes": 4,
+            "kernel_size": 3,
+            "channels_values": [1, 4],
+            "output_width_values": [1],
+        },
+    ),
+    "f32-prelu": KernelProfile(
+        prelu={
+            "elem_bytes": 4,
+            "channels_values": [2, 4],
+            "rows_values": [1, 2],
+        },
+    ),
+    "f32-gemm-group": KernelProfile(
+        gemm_group={
+            "elem_bytes": 4,
+            "g_values": [1, 2],
+            "mr_values": [1],
+            "nc_values": [4],
+            "kc_values": [4],
+        },
+    ),
+    "f32-concat2": KernelProfile(
+        concat2={
+            "elem_bytes": 4,
+            "na_values": [2, 4],
+            "nb_values": [2, 4],
+        },
+    ),
+    "f32-zip2": KernelProfile(
+        zip_2={
+            "elem_bytes": 4,
+            "n_values": [2, 4],
+        },
+    ),
+    "f32-split2": KernelProfile(
+        split_2={
+            "elem_bytes": 4,
+            "na_values": [2, 4],
+            "nb_values": [2, 4],
+        },
+    ),
+    "f32-outer-product": KernelProfile(
+        outer_product={
+            "elem_bytes": 4,
+            "m_values": [2, 4],
+            "n_values": [2, 4],
+        },
+    ),
+    "qs8-qc4w-int32": KernelProfile(
+        gemm_qc4w={
+            "elem_bytes": 4,
+            "weight_tile_n": 4,
+            "dims": {"mr": [1], "nc": [4], "kc": [2, 4]},
+            "strides": {"cm_stride": "0", "cn_stride": "16"},
+            "buffer_sizes": {
+                "a": "kc + 32",
+                "w": "(kc * nc / 2) + 32",
+                "c": "mr * nc * 4 + 32",
+            },
+        },
+    ),
+    "x8-lut4": KernelProfile(
+        vlut={"n_values": [2, 4, 8]},
     ),
 }
 

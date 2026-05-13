@@ -2622,6 +2622,58 @@ inline vint32m1_t __riscv_vadd_vv_i32m1(const vint32m1_t& a, const vint32m1_t& b
         r.push_back(fold_bvadd(tm, a.getElement(i), b.getElement(i)));
     return RVVVector(tm, 32, r);
 }
+inline vint32m1_t __riscv_vmul_vv_i32m1(const vint32m1_t& a, const vint32m1_t& b, size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++)
+        r.push_back(fold_bvmul(tm, a.getElement(i), b.getElement(i)));
+    return RVVVector(tm, 32, r);
+}
+inline vuint8m1_t __riscv_vsll_vx_u8m1(const vuint8m1_t& a, uint8_t n, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term shift = mk_bv_val(tm, 8, n);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++)
+        r.push_back(tm.mkTerm(Kind::BITVECTOR_SHL, {a.getElement(i), shift}));
+    return RVVVector(tm, 8, r);
+}
+inline vint8m1_t __riscv_vsra_vx_i8m1(const vint8m1_t& a, uint8_t n, size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term shift = mk_bv_val(tm, 8, n);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++)
+        r.push_back(tm.mkTerm(Kind::BITVECTOR_ASHR, {a.getElement(i), shift}));
+    return RVVVector(tm, 8, r);
+}
+inline vint8m1_t  __riscv_vreinterpret_v_u8m1_i8m1(const vuint8m1_t& a) { return a; }
+inline vuint8m1_t __riscv_vreinterpret_v_i8m1_u8m1(const vint8m1_t& a)  { return a; }
+// __riscv_vlut4_u8m1: 4-entry table lookup. result[i] = T[idx[i] & 3].
+// Verifier-only helper modeling a small variant of vrgather_vv_u8m1.
+inline vuint8m1_t __riscv_vlut4_u8m1(const vuint8m1_t& idx,
+                                      uint8_t T0, uint8_t T1, uint8_t T2, uint8_t T3,
+                                      size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term mask3 = mk_bv_val(tm, 8, (int64_t)3);
+    Term k0 = mk_bv_val(tm, 8, (int64_t)0);
+    Term k1 = mk_bv_val(tm, 8, (int64_t)1);
+    Term k2 = mk_bv_val(tm, 8, (int64_t)2);
+    Term v0 = mk_bv_val(tm, 8, (int64_t)T0);
+    Term v1 = mk_bv_val(tm, 8, (int64_t)T1);
+    Term v2 = mk_bv_val(tm, 8, (int64_t)T2);
+    Term v3 = mk_bv_val(tm, 8, (int64_t)T3);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term masked = tm.mkTerm(Kind::BITVECTOR_AND, {idx.getElement(i), mask3});
+        Term ite = tm.mkTerm(Kind::ITE,
+                    {tm.mkTerm(Kind::EQUAL, {masked, k0}), v0,
+                     tm.mkTerm(Kind::ITE,
+                       {tm.mkTerm(Kind::EQUAL, {masked, k1}), v1,
+                        tm.mkTerm(Kind::ITE,
+                          {tm.mkTerm(Kind::EQUAL, {masked, k2}), v2, v3})})});
+        r.push_back(ite);
+    }
+    return RVVVector(tm, 8, r);
+}
 // vsext_vf4: sign-extend each i8 lane to i32 (4× widening).  vl is the
 // destination lane count.
 inline vint32m1_t __riscv_vsext_vf4_i32m1(const vint8m1_t& a, size_t vl) {

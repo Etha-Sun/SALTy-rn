@@ -66,6 +66,27 @@ class Shape(Enum):
     DWCONV_INDIRECT = auto()
     # IGEMM_INDIRECT_FP: indirect-input GEMM (conv-via-im2col); bake-time ks/nr; sweeps mr/nc/kc.
     IGEMM_INDIRECT_FP = auto()
+    # REDUCE_2D: image-wide reduction (rows × channels → channels) with row-stride.
+    REDUCE_2D = auto()
+    # PACK_W: GEMM weight prepack — flat (bias[nc] + weights[nc*kc]) → tiled output.
+    PACK_W = auto()
+    # PRELU: per-channel parametric ReLU; rows × channels with channels-wide weights.
+    PRELU = auto()
+    # GEMM_GROUP_FP: grouped GEMM (g independent GEMMs); sweeps g + mr + nc + kc.
+    GEMM_GROUP_FP = auto()
+    # CONCAT2: concatenate two arrays — output size = na + nb.
+    CONCAT2 = auto()
+    # ZIP_2: interleave two equal-length arrays — output[2i]=a[i], output[2i+1]=b[i].
+    ZIP_2 = auto()
+    # SPLIT_2: split one input into two outputs — a[0..na-1] = x[0..na-1], b[0..nb-1] = x[na..na+nb-1].
+    SPLIT_2 = auto()
+    # OUTER_PRODUCT: outer product of two vectors — y[i*n + j] = a[i] * b[j], output size = m*n.
+    OUTER_PRODUCT = auto()
+    # GEMM_QC4W: quantized GEMM with 4-bit packed weights (qc4w family).  int8 in,
+    # int32 out; weights are 2 nibbles per byte, sign-extended at unpack time.
+    GEMM_QC4W = auto()
+    # VLUT: byte-table lookup. y[i] = table[x[i] & mask]; symbolic input, concrete table.
+    VLUT = auto()
     UNCLASSIFIED = auto()
 
 
@@ -188,6 +209,46 @@ class HarnessSpec:
         return self.shape_plan.shape == Shape.IGEMM_INDIRECT_FP
 
     @property
+    def is_reduce_2d(self) -> bool:
+        return self.shape_plan.shape == Shape.REDUCE_2D
+
+    @property
+    def is_pack_w(self) -> bool:
+        return self.shape_plan.shape == Shape.PACK_W
+
+    @property
+    def is_prelu(self) -> bool:
+        return self.shape_plan.shape == Shape.PRELU
+
+    @property
+    def is_gemm_group(self) -> bool:
+        return self.shape_plan.shape == Shape.GEMM_GROUP_FP
+
+    @property
+    def is_concat2(self) -> bool:
+        return self.shape_plan.shape == Shape.CONCAT2
+
+    @property
+    def is_zip_2(self) -> bool:
+        return self.shape_plan.shape == Shape.ZIP_2
+
+    @property
+    def is_split_2(self) -> bool:
+        return self.shape_plan.shape == Shape.SPLIT_2
+
+    @property
+    def is_outer_product(self) -> bool:
+        return self.shape_plan.shape == Shape.OUTER_PRODUCT
+
+    @property
+    def is_gemm_qc4w(self) -> bool:
+        return self.shape_plan.shape == Shape.GEMM_QC4W
+
+    @property
+    def is_vlut(self) -> bool:
+        return self.shape_plan.shape == Shape.VLUT
+
+    @property
     def secondary_dim(self) -> str:
         """Name of the second sweep dim (empty for FLAT_1D / UNCLASSIFIED)."""
         if len(self.shape_plan.sweep_dims) >= 2:
@@ -216,6 +277,16 @@ def classify_shape(sig: FuncSignature,
     if has_gemm_dims and "ks" in arg_names and has_indirect:
         return Shape.IGEMM_INDIRECT_FP
 
+    # GEMM_GROUP_FP: mr+nc+kc + g (group dim).  Check before GEMM_DIRECT_FP.
+    if has_gemm_dims and "g" in arg_names and not has_indirect:
+        return Shape.GEMM_GROUP_FP
+
+    # GEMM_QC4W: profile-gated qc4w variant of GEMM_DIRECT_FP shape.
+    if (has_gemm_dims and has_gemm_strides and not has_indirect
+            and profile is not None
+            and getattr(profile, "gemm_qc4w", None) is not None):
+        return Shape.GEMM_QC4W
+
     # GEMM_DIRECT_FP: mr+nc+kc + cm_stride+cn_stride + direct (non-indirect) input.
     if has_gemm_dims and has_gemm_strides and not has_indirect:
         return Shape.GEMM_DIRECT_FP
@@ -224,6 +295,41 @@ def classify_shape(sig: FuncSignature,
     # These are the load-bearing spatial dims — no other shape uses both.
     if "input_height" in arg_names and "input_width" in arg_names:
         return Shape.SPATIAL_HWC_CHW
+
+    # REDUCE_2D: profile-declared image-wide reduction (rows × channels → channels).
+    # Same surface signature as ROW_CHAN_2D — discriminated only by profile.reduce_2d.
+    # Check before ROW_CHAN_2D.
+    if profile is not None and getattr(profile, "reduce_2d", None) is not None:
+        return Shape.REDUCE_2D
+
+    # PACK_W: profile-declared GEMM weight prepack.
+    if profile is not None and getattr(profile, "pack_w", None) is not None:
+        return Shape.PACK_W
+
+    # PRELU: profile-declared per-channel parametric ReLU.  Same rows+channels+
+    # stride surface as ROW_CHAN_2D — discriminated only by profile.prelu.
+    if profile is not None and getattr(profile, "prelu", None) is not None:
+        return Shape.PRELU
+
+    # CONCAT2: profile-declared two-input concatenation.
+    if profile is not None and getattr(profile, "concat2", None) is not None:
+        return Shape.CONCAT2
+
+    # ZIP_2: profile-declared two-input interleave.
+    if profile is not None and getattr(profile, "zip_2", None) is not None:
+        return Shape.ZIP_2
+
+    # SPLIT_2: profile-declared single-input two-output split.
+    if profile is not None and getattr(profile, "split_2", None) is not None:
+        return Shape.SPLIT_2
+
+    # OUTER_PRODUCT: profile-declared two-vector outer product.
+    if profile is not None and getattr(profile, "outer_product", None) is not None:
+        return Shape.OUTER_PRODUCT
+
+    # VLUT: profile-declared byte table lookup.
+    if profile is not None and getattr(profile, "vlut", None) is not None:
+        return Shape.VLUT
 
     # ROW_CHAN_2D: kernels with `rows` + `channels` + at least one stride arg.
     has_rows = "rows" in arg_names
@@ -309,6 +415,26 @@ def build_shape_plan(shape: Shape, sig: FuncSignature,
         return _dwconv_indirect_plan(sig, profile, scalar_args)
     if shape == Shape.IGEMM_INDIRECT_FP:
         return _igemm_indirect_fp_plan(sig, profile, scalar_args)
+    if shape == Shape.REDUCE_2D:
+        return _reduce_2d_plan(sig, profile, scalar_args)
+    if shape == Shape.PACK_W:
+        return _pack_w_plan(sig, profile, scalar_args)
+    if shape == Shape.PRELU:
+        return _prelu_plan(sig, profile, scalar_args)
+    if shape == Shape.GEMM_GROUP_FP:
+        return _gemm_group_fp_plan(sig, profile, scalar_args)
+    if shape == Shape.CONCAT2:
+        return _concat2_plan(sig, profile, scalar_args)
+    if shape == Shape.ZIP_2:
+        return _zip_2_plan(sig, profile, scalar_args)
+    if shape == Shape.SPLIT_2:
+        return _split_2_plan(sig, profile, scalar_args)
+    if shape == Shape.OUTER_PRODUCT:
+        return _outer_product_plan(sig, profile, scalar_args)
+    if shape == Shape.GEMM_QC4W:
+        return _gemm_qc4w_plan(sig, profile, scalar_args)
+    if shape == Shape.VLUT:
+        return _vlut_plan(sig, profile, scalar_args)
     return _unclassified_plan(sig)
 
 
@@ -1010,6 +1136,560 @@ def _bilinear_indirect_plan(sig: FuncSignature,
     )
 
 
+def _vlut_plan(sig: FuncSignature,
+               profile: Optional[KernelProfile],
+               scalar_args: dict) -> ShapePlan:
+    """VLUT: byte table lookup. y[i] = table[x[i] & mask]."""
+    if not profile or not profile.vlut:
+        return ShapePlan(
+            shape=Shape.VLUT,
+            unresolved=["profile.vlut — required for VLUT"],
+        )
+    p = profile.vlut
+    n_vals = p.get("n_values", [2, 4])
+
+    sweep = [DimSpec(name="n", unit="elements", values=n_vals)]
+
+    bindings: dict[str, str] = {}
+    for ax in sig.args:
+        if ax.role not in SCALAR_VALUE_ROLES:
+            continue
+        if ax.name == "n":   bindings[ax.name] = ax.name
+        else:                bindings[ax.name] = scalar_args.get(ax.name, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for ax in sig.args:
+        if ax.role == ArgRole.INPUT_ARRAY and ax.name == "x":
+            buf_plans[ax.name] = BufferSpec(
+                arg_name=ax.name, role=ax.role, elem_type=ax.elem_type,
+                size_expr="n + 32", is_symbolic=True,
+            )
+        elif ax.role == ArgRole.OUTPUT and ax.name == "y":
+            buf_plans[ax.name] = BufferSpec(
+                arg_name=ax.name, role=ArgRole.OUTPUT, elem_type=ax.elem_type,
+                size_expr="n + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.VLUT,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="n",
+        count_name="n",
+    )
+
+
+def _gemm_qc4w_plan(sig: FuncSignature,
+                    profile: Optional[KernelProfile],
+                    scalar_args: dict) -> ShapePlan:
+    """GEMM_QC4W: GEMM with 4-bit packed weights — int8 in, int32 out, w_packed bytes hold 2 nibbles."""
+    if not profile or not profile.gemm_qc4w:
+        return ShapePlan(
+            shape=Shape.GEMM_QC4W,
+            unresolved=["profile.gemm_qc4w — required for GEMM_QC4W"],
+        )
+    g = profile.gemm_qc4w
+    dims = g["dims"]
+    sweep = [
+        DimSpec(name="mr", unit="elements", values=dims["mr"]),
+        DimSpec(name="nc", unit="elements", values=dims["nc"]),
+        DimSpec(name="kc", unit="elements", values=dims["kc"]),
+    ]
+
+    strides = g.get("strides", {})
+    sizes   = g.get("buffer_sizes", {})
+
+    alloc_decls: list[str] = []
+    for sname, expr in strides.items():
+        alloc_decls.append(f"size_t {sname} = {expr};")
+
+    bindings: dict[str, str] = {}
+    for ax in sig.args:
+        if ax.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = ax.name
+        if n in ("mr", "nc", "kc"):    bindings[n] = n
+        elif n in strides:              bindings[n] = n
+        else:                            bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for ax in sig.args:
+        if ax.role in (ArgRole.INPUT_ARRAY, ArgRole.WEIGHTS, ArgRole.OUTPUT) and ax.name in sizes:
+            buf_plans[ax.name] = BufferSpec(
+                arg_name=ax.name, role=ax.role, elem_type=ax.elem_type,
+                size_expr=sizes[ax.name], is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.GEMM_QC4W,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="kc",
+        count_name="kc",
+    )
+
+
+def _outer_product_plan(sig: FuncSignature,
+                        profile: Optional[KernelProfile],
+                        scalar_args: dict) -> ShapePlan:
+    """OUTER_PRODUCT: y[i*n + j] = a[i] * b[j]; output size = m*n."""
+    if not profile or not profile.outer_product:
+        return ShapePlan(
+            shape=Shape.OUTER_PRODUCT,
+            unresolved=["profile.outer_product — required for OUTER_PRODUCT"],
+        )
+    p = profile.outer_product
+    eb = p["elem_bytes"]
+    m_vals = p.get("m_values", [2, 4])
+    n_vals = p.get("n_values", [2, 4])
+
+    sweep = [
+        DimSpec(name="m", unit="elements", values=m_vals),
+        DimSpec(name="n", unit="elements", values=n_vals),
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        nm = a.name
+        if nm in ("m", "n"):    bindings[nm] = nm
+        else:                    bindings[nm] = scalar_args.get(nm, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.role == ArgRole.INPUT_ARRAY and a.name == "a":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"m * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.INPUT_ARRAY and a.name == "b":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"n * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"m * n * {eb} + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.OUTER_PRODUCT,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="m",
+        count_name="m",
+    )
+
+
+def _split_2_plan(sig: FuncSignature,
+                  profile: Optional[KernelProfile],
+                  scalar_args: dict) -> ShapePlan:
+    """SPLIT_2: split one input of size na+nb into two outputs of sizes na and nb."""
+    if not profile or not profile.split_2:
+        return ShapePlan(
+            shape=Shape.SPLIT_2,
+            unresolved=["profile.split_2 — required for SPLIT_2"],
+        )
+    p = profile.split_2
+    eb = p["elem_bytes"]
+    na_vals = p.get("na_values", [2, 4])
+    nb_vals = p.get("nb_values", [2, 4])
+
+    sweep = [
+        DimSpec(name="na", unit="elements", values=na_vals),
+        DimSpec(name="nb", unit="elements", values=nb_vals),
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("na", "nb"):    bindings[n] = n
+        else:                     bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.role == ArgRole.INPUT_ARRAY and a.name == "x":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"(na + nb) * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT and a.name == "a":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"na * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT and a.name == "b":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"nb * {eb} + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.SPLIT_2,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="na",
+        count_name="na",
+    )
+
+
+def _zip_2_plan(sig: FuncSignature,
+                profile: Optional[KernelProfile],
+                scalar_args: dict) -> ShapePlan:
+    """ZIP_2: interleave two equal-length arrays — output size = 2n."""
+    if not profile or not profile.zip_2:
+        return ShapePlan(
+            shape=Shape.ZIP_2,
+            unresolved=["profile.zip_2 — required for ZIP_2"],
+        )
+    p = profile.zip_2
+    eb = p["elem_bytes"]
+    n_vals = p.get("n_values", [2, 4])
+
+    sweep = [DimSpec(name="n", unit="elements", values=n_vals)]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        if a.name == "n":   bindings[a.name] = a.name
+        else:               bindings[a.name] = scalar_args.get(a.name, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.role == ArgRole.INPUT_ARRAY and a.name in ("a", "b"):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"n * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"2 * n * {eb} + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.ZIP_2,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="n",
+        count_name="n",
+    )
+
+
+def _concat2_plan(sig: FuncSignature,
+                  profile: Optional[KernelProfile],
+                  scalar_args: dict) -> ShapePlan:
+    """CONCAT2: concatenate two arrays — output size = na + nb."""
+    if not profile or not profile.concat2:
+        return ShapePlan(
+            shape=Shape.CONCAT2,
+            unresolved=["profile.concat2 — required for CONCAT2"],
+        )
+    p = profile.concat2
+    eb = p["elem_bytes"]
+    na_vals = p.get("na_values", [2, 4])
+    nb_vals = p.get("nb_values", [2, 4])
+
+    sweep = [
+        DimSpec(name="na", unit="elements", values=na_vals),
+        DimSpec(name="nb", unit="elements", values=nb_vals),
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("na", "nb"):    bindings[n] = n
+        else:                     bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.role == ArgRole.INPUT_ARRAY and a.name == "a":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"na * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.INPUT_ARRAY and a.name == "b":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"nb * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"(na + nb) * {eb} + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.CONCAT2,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="na",
+        count_name="na",
+    )
+
+
+def _gemm_group_fp_plan(sig: FuncSignature,
+                         profile: Optional[KernelProfile],
+                         scalar_args: dict) -> ShapePlan:
+    """GEMM_GROUP_FP: g independent GEMMs in one call."""
+    if not profile or not getattr(profile, "gemm_group", None):
+        return ShapePlan(
+            shape=Shape.GEMM_GROUP_FP,
+            unresolved=["profile.gemm_group — required for GEMM_GROUP_FP"],
+        )
+    p = profile.gemm_group
+    eb = p["elem_bytes"]
+    g_vals = p.get("g_values", [1, 2])
+    mr_vals = p.get("mr_values", [1])
+    nc_vals = p.get("nc_values", [4])
+    kc_vals = p.get("kc_values", [4])
+
+    sweep = [
+        DimSpec(name="g",  unit="elements", values=g_vals),
+        DimSpec(name="mr", unit="elements", values=mr_vals),
+        DimSpec(name="nc", unit="elements", values=nc_vals),
+        DimSpec(name="kc", unit="elements", values=kc_vals),
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("g", "mr", "nc", "kc"):  bindings[n] = n
+        else:                              bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.name == "a" and a.role in (ArgRole.INPUT_ARRAY, ArgRole.WEIGHTS):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"g * mr * kc * {eb} + 32", is_symbolic=True,
+            )
+        elif a.name == "w" and a.role in (ArgRole.WEIGHTS, ArgRole.INPUT_ARRAY):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"g * kc * nc * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"g * mr * nc * {eb} + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.GEMM_GROUP_FP,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="kc",
+        count_name="kc",
+    )
+
+
+def _prelu_plan(sig: FuncSignature,
+                profile: Optional[KernelProfile],
+                scalar_args: dict) -> ShapePlan:
+    """PRELU: per-channel parametric ReLU."""
+    if not profile or not profile.prelu:
+        return ShapePlan(
+            shape=Shape.PRELU,
+            unresolved=["profile.prelu — required for PRELU"],
+        )
+    p = profile.prelu
+    eb = p["elem_bytes"]
+    ch_vals = p.get("channels_values", [2, 4])
+    rows_vals = p.get("rows_values", [1, 2])
+
+    sweep = [
+        DimSpec(name="channels", unit="elements", values=ch_vals),
+        DimSpec(name="rows",     unit="elements", values=rows_vals),
+    ]
+
+    alloc_decls = [
+        f"size_t channel_bytes = channels * {eb};",
+        f"size_t row_stride_bytes = channel_bytes;",
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("rows", "channels"):                         bindings[n] = n
+        elif n in ("input_stride", "output_stride"):          bindings[n] = "row_stride_bytes"
+        else:                                                  bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.role == ArgRole.INPUT_ARRAY and a.name == "x":
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"rows * channel_bytes + 32", is_symbolic=True,
+            )
+        elif (a.name == "w" and a.role in (ArgRole.WEIGHTS, ArgRole.INPUT_ARRAY)):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"channel_bytes + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"rows * channel_bytes + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.PRELU,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="channels",
+        count_name="channels",
+    )
+
+
+def _pack_w_plan(sig: FuncSignature,
+                 profile: Optional[KernelProfile],
+                 scalar_args: dict) -> ShapePlan:
+    """PACK_W: GEMM weight prepack — flat (bias[nc] + weights[nc*kc]) → tiled output."""
+    if not profile or not profile.pack_w:
+        return ShapePlan(
+            shape=Shape.PACK_W,
+            unresolved=["profile.pack_w — required for PACK_W"],
+        )
+    p = profile.pack_w
+    eb = p["elem_bytes"]
+    nc_vals = p.get("nc_values", [4, 8])
+    kc_vals = p.get("kc_values", [4, 8])
+
+    sweep = [
+        DimSpec(name="nc", unit="elements", values=nc_vals),
+        DimSpec(name="kc", unit="elements", values=kc_vals),
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("nc", "kc"):    bindings[n] = n
+        else:                     bindings[n] = scalar_args.get(n, "0")
+
+    buf_plans: dict[str, BufferSpec] = {}
+    for a in sig.args:
+        if a.name == "weights" and a.role in (ArgRole.WEIGHTS, ArgRole.INPUT_ARRAY):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"nc * kc * {eb} + 32", is_symbolic=True,
+            )
+        elif a.name == "bias" and a.role in (ArgRole.WEIGHTS, ArgRole.INPUT_ARRAY):
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=a.role, elem_type=a.elem_type,
+                size_expr=f"nc * {eb} + 32", is_symbolic=True,
+            )
+        elif a.role == ArgRole.OUTPUT:
+            buf_plans[a.name] = BufferSpec(
+                arg_name=a.name, role=ArgRole.OUTPUT, elem_type=a.elem_type,
+                size_expr=f"nc * (1 + kc) * {eb} + 32", is_symbolic=True,
+            )
+
+    return ShapePlan(
+        shape=Shape.PACK_W,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=[],
+        alloc_count_name="nc",
+        count_name="nc",
+    )
+
+
+def _reduce_2d_plan(sig: FuncSignature,
+                    profile: Optional[KernelProfile],
+                    scalar_args: dict) -> ShapePlan:
+    """REDUCE_2D: image-wide reduction (rows × channels → channels)."""
+    if not profile or not profile.reduce_2d:
+        return ShapePlan(
+            shape=Shape.REDUCE_2D,
+            unresolved=["profile.reduce_2d — required for REDUCE_2D"],
+        )
+    r = profile.reduce_2d
+    eb = r["elem_bytes"]
+    ch_vals = r.get("channels_values", [1, 4])
+    rows_vals = r.get("rows_values", [2, 3])
+
+    sweep = [
+        DimSpec(name="channels", unit="elements", values=ch_vals),
+        DimSpec(name="rows",     unit="elements", values=rows_vals),
+    ]
+
+    alloc_decls = [
+        f"size_t channel_bytes = channels * {eb};",
+        f"size_t input_stride_bytes = channel_bytes;",
+    ]
+
+    bindings: dict[str, str] = {}
+    for a in sig.args:
+        if a.role not in SCALAR_VALUE_ROLES:
+            continue
+        n = a.name
+        if n in ("rows", "channels"):    bindings[n] = n
+        elif n == "input_stride":         bindings[n] = "input_stride_bytes"
+        else:                              bindings[n] = scalar_args.get(n, "0")
+
+    in_arg = next((a for a in sig.args
+                   if a.role == ArgRole.INPUT_ARRAY and a.name == "input"), None)
+    out_arg = sig.output_args[0] if sig.output_args else None
+    buf_plans: dict[str, BufferSpec] = {}
+    if in_arg:
+        buf_plans[in_arg.name] = BufferSpec(
+            arg_name=in_arg.name,
+            role=ArgRole.INPUT_ARRAY,
+            elem_type=in_arg.elem_type,
+            size_expr=f"rows * channel_bytes + 32",
+            is_symbolic=True,
+        )
+    if out_arg:
+        buf_plans[out_arg.name] = BufferSpec(
+            arg_name=out_arg.name,
+            role=ArgRole.OUTPUT,
+            elem_type=out_arg.elem_type,
+            size_expr=f"channel_bytes + 32",
+            is_symbolic=True,
+        )
+
+    return ShapePlan(
+        shape=Shape.REDUCE_2D,
+        sweep_dims=sweep,
+        arg_bindings=bindings,
+        buffer_plans=buf_plans,
+        alloc_decls=alloc_decls,
+        alloc_count_name="channels",
+        count_name="channels",
+    )
+
+
 def _igemm_indirect_fp_plan(sig: FuncSignature,
                              profile: Optional[KernelProfile],
                              scalar_args: dict) -> ShapePlan:
@@ -1110,6 +1790,7 @@ def _dwconv_indirect_plan(sig: FuncSignature,
     d = profile.dwconv
     eb = d["elem_bytes"]
     web = d.get("weight_elem_bytes", eb)
+    oeb = d.get("output_elem_bytes", eb)
     ks = d["kernel_size"]
     ch_vals = d.get("channels_values", [1, 4])
     ow_vals = d.get("output_width_values", [1])
@@ -1156,7 +1837,7 @@ def _dwconv_indirect_plan(sig: FuncSignature,
             arg_name=out_arg.name,
             role=ArgRole.OUTPUT,
             elem_type=out_arg.elem_type,
-            size_expr="output_width * channel_bytes + 32",
+            size_expr=f"output_width * channels * {oeb} + 32",
             is_symbolic=True,
         )
     # Weights: bias[C] + kernel_size × C kernel weights = (1+ks)*C elements.
