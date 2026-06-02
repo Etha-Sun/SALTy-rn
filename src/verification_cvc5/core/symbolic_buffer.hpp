@@ -16,21 +16,22 @@
 namespace salt_cvc5 {
 
 class SymbolicBuffer {
-    std::vector<Term> bytes_;       // empty when concrete_ptr_ is set
+    mutable std::vector<Term> bytes_;  // lazily minted on first touch; empty when concrete_ptr_
     size_t num_bytes_;
     uintptr_t base_addr_ = 0;
     TermManager* tm_;
     std::string name_;
     const uint8_t* concrete_ptr_ = nullptr;  // non-null → read-only concrete
+    uint8_t buffer_id_ = 0;         // unique [1..31] for scalar-ref sentinel decoding
+    static inline thread_local uint8_t s_next_id_ = 1;
 public:
     const std::string& name() const { return name_; }
+    uint8_t bufferId() const { return buffer_id_; }
     SymbolicBuffer(TermManager& tm, size_t num_bytes, const std::string& name)
         : num_bytes_(num_bytes), tm_(&tm), name_(name) {
-        Sort bv8 = tm.mkBitVectorSort(8);
-        bytes_.reserve(num_bytes);
-        for (size_t i = 0; i < num_bytes; i++) {
-            bytes_.push_back(tm.mkConst(bv8, name + "_b" + std::to_string(i)));
-        }
+        buffer_id_ = s_next_id_;
+        s_next_id_ = (s_next_id_ >= 31) ? 1 : (s_next_id_ + 1);
+        bytes_.resize(num_bytes);  // null Terms; each byte minted on first getByte()
     }
 
     // Concrete read-only ctor: skips per-byte symbolic constants entirely;
@@ -44,6 +45,21 @@ public:
           concrete_ptr_(reinterpret_cast<const uint8_t*>(concrete_data)) {}
 
     void bind(const void* ptr) { base_addr_ = reinterpret_cast<uintptr_t>(ptr); }
+
+    // Bind buffer and write NaN-payload sentinels at each fp32 lane so that
+    // scalar reads (`float x = *p++;`) carry buffer_id + offset through the
+    // bits.  mk_fp32_from_float decodes the sentinel and recovers the
+    // symbolic Term via loadScalar.  Use when the kernel reads floats from
+    // this buffer scalar-wise and passes them to `_vf_` vector intrinsics.
+    void bindScalarRef(void* ptr) {
+        base_addr_ = reinterpret_cast<uintptr_t>(ptr);
+        uint32_t* fp = reinterpret_cast<uint32_t*>(ptr);
+        size_t n_lanes = num_bytes_ / 4;
+        for (size_t i = 0; i < n_lanes; i++) {
+            uint32_t off = static_cast<uint32_t>(i) & 0xFFFFu;
+            fp[i] = 0x7FE00000u | (static_cast<uint32_t>(buffer_id_) << 16) | off;
+        }
+    }
     uintptr_t baseAddr() const { return base_addr_; }
     size_t numBytes() const { return num_bytes_; }
     bool isConcrete() const { return concrete_ptr_ != nullptr; }
@@ -56,12 +72,22 @@ public:
         return addr >= base_addr_ && addr < base_addr_ + num_bytes_;
     }
 
+    void _oob(size_t offset, const char* op) const {
+        throw std::runtime_error("buffer '" + name_ + "' OOB " + op + " at " +
+                                 std::to_string(offset) + " (capacity " +
+                                 std::to_string(num_bytes_) + ") — fixture too small");
+    }
     Term getByte(size_t offset) const {
         if (concrete_ptr_) return tm_->mkBitVector(8, (uint64_t)concrete_ptr_[offset]);
+        if (offset >= num_bytes_) _oob(offset, "read");
+        if (bytes_[offset].isNull())  // lazily mint the symbolic byte on first touch
+            bytes_[offset] = tm_->mkConst(tm_->mkBitVectorSort(8),
+                                          name_ + "_b" + std::to_string(offset));
         return bytes_[offset];
     }
     void setByte(size_t offset, Term val) {
         if (concrete_ptr_) throw std::runtime_error("setByte on concrete buffer: " + name_);
+        if (offset >= num_bytes_) _oob(offset, "setByte");
         bytes_[offset] = val;
     }
 
@@ -83,10 +109,10 @@ public:
             }
             return result;
         }
-        Term result = bytes_[byte_offset];
+        Term result = getByte(byte_offset);   // lazy: mints on first touch
         for (size_t i = 1; i < n_bytes; i++) {
             result = tm_->mkTerm(Kind::BITVECTOR_CONCAT,
-                                 {bytes_[byte_offset + i], result});
+                                 {getByte(byte_offset + i), result});
         }
         return result;
     }
@@ -95,6 +121,7 @@ public:
         if (concrete_ptr_) throw std::runtime_error("storeScalar on concrete buffer: " + name_);
         size_t n_bytes = bits / 8;
         for (size_t i = 0; i < n_bytes; i++) {
+            if (byte_offset + i >= num_bytes_) _oob(byte_offset + i, "write");
             uint32_t lo = static_cast<uint32_t>(i * 8);
             uint32_t hi = lo + 7;
             Op op = tm_->mkOp(Kind::BITVECTOR_EXTRACT, {hi, lo});
@@ -122,6 +149,7 @@ public:
         size_t elem_bytes = ElemBits / 8;
         for (size_t i = 0; i < NumLanes; i++) {
             if constexpr (ElemBits == 8) {
+                if (byte_offset + i >= num_bytes_) _oob(byte_offset + i, "write");
                 bytes_[byte_offset + i] = vec.getLane(i);
             } else {
                 storeScalar(byte_offset + i * elem_bytes, vec.getLane(i), ElemBits);
@@ -144,8 +172,10 @@ public:
         if (concrete_ptr_) throw std::runtime_error("storeRVV on concrete buffer: " + name_);
         size_t elem_bytes = vec.elemBits() / 8;
         for (size_t i = 0; i < vec.getVL(); i++) {
-            if (vec.elemBits() == 8) bytes_[byte_offset + i] = vec.getElement(i);
-            else storeScalar(byte_offset + i * elem_bytes, vec.getElement(i), vec.elemBits());
+            if (vec.elemBits() == 8) {
+                if (byte_offset + i >= num_bytes_) _oob(byte_offset + i, "write");
+                bytes_[byte_offset + i] = vec.getElement(i);
+            } else storeScalar(byte_offset + i * elem_bytes, vec.getElement(i), vec.elemBits());
         }
     }
 };
@@ -185,6 +215,13 @@ inline SymbolicBuffer& VerificationContext::findBuffer(const void* ptr) {
 inline SymbolicBuffer* VerificationContext::findBufferSafe(const void* ptr) noexcept {
     for (auto* buf : registered_buffers) {
         if (buf->contains(ptr)) return buf;
+    }
+    return nullptr;
+}
+
+inline SymbolicBuffer* VerificationContext::findBufferById(uint8_t id) noexcept {
+    for (auto* buf : registered_buffers) {
+        if (buf->bufferId() == id) return buf;
     }
     return nullptr;
 }

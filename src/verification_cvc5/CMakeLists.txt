@@ -45,6 +45,7 @@ target_compile_options(salt_cvc5_headers INTERFACE
     -Wno-unused-private-field
     -Wno-format
     -Wno-sign-compare
+    -fno-operator-names
 )
 
 add_executable(verify_f16_conv_hwc2chw_cvc5

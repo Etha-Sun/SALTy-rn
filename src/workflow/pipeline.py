@@ -160,7 +160,7 @@ def find_kernel_by_name(source_dir: Path, name: str) -> Path | None:
 # ---------------------------------------------------------------------------
 
 def _format_counterexample(ce: dict) -> str:
-    """Format a bitwuzla counterexample as human-readable text for LLM repair."""
+    """Format a solver counterexample as human-readable text for LLM repair."""
     lines = []
     batch = ce.get("batch", "?")
     fi = ce.get("fail_index", "?")
@@ -246,10 +246,12 @@ def _optimize_and_reverify(kernel_path: Path, kernel_name: str,
 
 
 def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict | None:
-    """Run bitwuzla-based formal verification on the kernel pair.
+    """Run formal verification (v2 engine, cvc5) on the kernel pair.
 
-    Returns verification result dict, or None only if bitwuzla is not installed.
-    Errors during verification are propagated as results, not swallowed.
+    Returns the verification result dict, or None only if the module is missing.
+    Errors during verification are propagated as results, not swallowed. The v2
+    engine needs no LLM (it either matches a fixture/template or returns
+    UNSUPPORTED) — buffer sizing is over-allocation + lazy symbolic bytes.
     """
     try:
         from .verification.orchestrator import verify_kernel
@@ -258,12 +260,6 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
         return None
 
     log.info("Starting formal verification for %s", kernel_name)
-
-    # Use verification-specific LLM for buffer size inference if needed
-    try:
-        verification_llm = cfg.create_verification_llm_client()
-    except Exception:
-        verification_llm = None
 
     # 2D kernels (stride-based) cap at smaller max_batch since each batch is heavier.
     source_text = kernel_path.read_text()
@@ -288,7 +284,7 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
         max_batch=max_batch,
         min_batch=min_batch,
         backend=cfg.verification_backend,
-        llm_client=verification_llm,
+        input_range=cfg.verification_input_range,
     )
     import json
     result_dict = json.loads(result.to_json())
@@ -519,7 +515,7 @@ def translate_kernel(
         if run_result.passed:
             log.info("Spike: PASS (%.1fs)", run_result.elapsed)
 
-            # --- Formal verification via bitwuzla ---
+            # --- Formal verification (v2 engine, cvc5) ---
             verify_result = _run_formal_verification(
                 kernel_path, output_path, kernel_name, cfg)
 
@@ -668,12 +664,15 @@ def build_parser() -> argparse.ArgumentParser:
                     help="Max repair attempts for compile/execution errors")
     p.add_argument("--max-verification-retries", type=int, default=5,
                     help="Max repair attempts for formal verification failures")
-    p.add_argument("--backend", choices=["bitwuzla", "cvc5"], default="bitwuzla",
-                    help="SMT backend for formal verification (cvc5 is much faster on f16 chained-FMA)")
     p.add_argument("--verification-timeout", type=int, default=600,
                     help="Per-batch verification timeout in seconds (also enforced inside the solver via tlimit-per). Default: 600 (10 min).  0 = no timeout (run until cvc5 returns).")
     p.add_argument("--verify-batch", type=int, default=0,
                     help="Run ONLY this batch size in verification (skip the 1..max sweep). 0 = sweep (default).")
+    p.add_argument("--input-range", default="",
+                    help="Constrain F32 verification inputs to a finite band 'LO,HI' (e.g. -1,1). "
+                         "Needed for FP-multiply families (gemm/igemm/dwconv/vmulcaddc/ibilinear), which "
+                         "otherwise counterexample on the inherent NaN-in-min/max ISA difference. "
+                         "Tags the verdict config:finite. Use '=' to pass a leading '-': --input-range=-1,1")
 
     # Build / simulation
     p.add_argument("--zephyr-base", default="", help="Path to Zephyr SDK")

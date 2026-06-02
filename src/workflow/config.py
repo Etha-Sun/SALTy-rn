@@ -34,9 +34,10 @@ class Config:
     # Pipeline
     max_compile_retries: int = 5
     max_verification_retries: int = 5
-    verification_backend: str = "bitwuzla"   # 'bitwuzla' or 'cvc5'
+    verification_backend: str = "cvc5"       # v2 engine is cvc5-only (emits the cvc5 salt.hpp harness)
     verification_timeout: int = 600          # per-batch timeout (s); default 10 min, 0 = no limit
     verification_batch: int = 0              # if >0, run ONLY this batch size; 0 = sweep
+    verification_input_range: tuple = None   # (lo, hi) finite F32 band for FP-multiply families; None = full domain
     kernels_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "kernels")
     dry_run: bool = False
     skip_existing: bool = False
@@ -88,9 +89,13 @@ class Config:
         # Pipeline
         cfg.max_compile_retries = args.max_compile_retries
         cfg.max_verification_retries = args.max_verification_retries
-        cfg.verification_backend = args.backend
+        cfg.verification_backend = getattr(args, "backend", "cvc5")  # v2 is cvc5-only
         cfg.verification_timeout = args.verification_timeout
         cfg.verification_batch = getattr(args, "verify_batch", 0)
+        _ir = getattr(args, "input_range", "")
+        if _ir:
+            lo, hi = _ir.split(",")
+            cfg.verification_input_range = (float(lo), float(hi))
         cfg.dry_run = args.dry_run
         cfg.skip_existing = args.skip_existing
         cfg.rules_only = args.rules_only

@@ -50,18 +50,17 @@ class OptimizeResult:
 # ---------------------------------------------------------------------------
 
 def _entry_function_name(rvv_source: str) -> str:
-    """Parse the entry function name via sig_parser (single source of truth)."""
-    from ..verification.sig_parser import parse_signature
-    sig = parse_signature(rvv_source)
-    if sig is None:
+    """Extract the entry function name — the unique `void <name>(` definition."""
+    m = re.search(r'\bvoid\s+(\w+)\s*\(', rvv_source)
+    if m is None:
         raise ValueError("Could not parse RVV function signature")
-    return sig.name
+    return m.group(1)
 
 
 def _rename_void_function(source: str, old: str, new: str) -> str:
     """Rename the unique `void <old>(` definition to `void <new>(`.
 
-    Matches sig_parser's pattern (`void` entry only). Fails on ambiguity.
+    Matches the `void <name>(` entry pattern only. Fails on ambiguity.
     """
     pattern = re.compile(r'(\bvoid\s+)' + re.escape(old) + r'(\s*\()')
     matches = pattern.findall(source)

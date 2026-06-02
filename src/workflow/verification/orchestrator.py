@@ -353,15 +353,21 @@ def verify_kernel(neon_path: str, rvv_path: str,
                    per_batch_timeout: int = 600,
                    max_batch: int = DEFAULT_MAX_BATCH,
                    min_batch: int = 1,
-                   backend: str = "bitwuzla",
+                   backend: str = "cvc5",
+                   input_range: tuple = None,
                    llm_client=None) -> VerificationResult:
-    """Full pipeline: parse → infer → generate → compile → run.
+    """Full pipeline: generate (v2 engine) → compile → run.
 
-    If neither params_init nor param_configs is provided, auto-generates
-    edge-case configs from the params struct definition.
-    symbolic_params: if True, proves equivalence for ALL valid params.
+    The generator (src/workflow/verification/engine) is the sole engine: a libclang
+    frontend + uniform/fixture-family template. (It replaced an older Shape-tree /
+    size_inferrer / profile pipeline, now removed.)
+    cvc5-only (the harness includes the cvc5 salt.hpp shims).
+
+    symbolic_params: prove for ALL valid params (else concrete edge configs).
+    input_range: (lo, hi) constrains F32 inputs to a finite band — needed for the
+      FP-multiply families (gemm/igemm/dwconv/vmulcaddc/ibilinear); the verdict is
+      tagged config:finite to record the weakened claim. None = full domain.
     """
-    from .harness_gen import generate_harness_from_files
 
     # Always derive kernel_name from filename if not provided
     if not kernel_name:
@@ -375,45 +381,27 @@ def verify_kernel(neon_path: str, rvv_path: str,
     log.info("  VLEN=%d  max_batch=%d  per_batch_timeout=%ds",
              vlen, max_batch, per_batch_timeout)
 
-    # Check kernel profile
-    from .kernel_profiles import get_profile
-    profile = get_profile(kernel_name)
-    if profile:
-        log.info("  Kernel profile found: symbolic_params=%s",
-                 profile.symbolic_params)
-        if profile.symbolic_params and profile.param_ranges:
-            log.info("  Param ranges: %s", profile.param_ranges)
-        if not symbolic_params and profile.symbolic_params:
-            log.info("  Profile overrides symbolic_params → True")
-    else:
-        log.info("  No kernel profile — using defaults")
+    params_mode = "symbolic" if symbolic_params else "concrete"
+    log.info("  Mode: params=%s%s", params_mode,
+             f", input-range={input_range}" if input_range else " (full domain)")
 
-    if symbolic_params:
-        log.info("  Mode: SYMBOLIC PARAMS (proving for all valid param values)")
-    else:
-        log.info("  Mode: CONCRETE CONFIGS (testing specific param values)")
-
-    # 1. Generate harness
-    log.info("Step 1/3: Generating verification harness...")
+    # 1. Generate harness (v2 engine — the only engine)
+    log.info("Step 1/3: Generating verification harness (v2)...")
     try:
-        harness = generate_harness_from_files(
-            neon_path, rvv_path,
-            kernel_name=kernel_name,
-            params_init=params_init,
-            param_configs=param_configs,
-            symbolic_params=symbolic_params,
-            vlen=vlen,
-            backend=backend,
-            per_query_timeout_ms=per_batch_timeout * 1000,
-            llm_client=llm_client,
+        from .engine.emit import generate_harness
+        harness = generate_harness(
+            neon_path, rvv_path, kernel_name,
+            params_mode=params_mode,
+            input_range=input_range,
         )
+    except NotImplementedError as e:
+        log.warning("Kernel not yet supported by v2 engine: %s", e)
+        return VerificationResult(
+            kernel_name=kernel_name, verdict="UNSUPPORTED", compile_error=str(e))
     except Exception as e:
         log.error("Harness generation failed: %s", e)
         return VerificationResult(
-            kernel_name=kernel_name,
-            verdict="HARNESS_GEN_ERROR",
-            compile_error=str(e),
-        )
+            kernel_name=kernel_name, verdict="HARNESS_GEN_ERROR", compile_error=str(e))
     log.info("  Harness generated (%d lines)", harness.count('\n') + 1)
 
     # 2. Compile
@@ -463,13 +451,22 @@ def main():
     p.add_argument("--symbolic-params", action="store_true",
                    help="Use symbolic params (proves for ALL valid params)")
     p.add_argument("--backend", choices=sorted(VERIFICATION_DIRS.keys()),
-                   default="bitwuzla",
-                   help="SMT backend (default: bitwuzla; cvc5 is much faster on f16 chained-FMA)")
+                   default="cvc5",
+                   help="SMT backend (default: cvc5; the v2 engine is cvc5-only)")
+    p.add_argument("--input-range", default="",
+                   help="Constrain F32 inputs to a finite band 'LO,HI' (e.g. -1,1) — "
+                        "needed for FP-multiply families; tags the verdict config:finite. "
+                        "Use '=' to avoid argparse eating a leading '-': --input-range=-1,1")
     args = p.parse_args()
 
     params_init = args.params_init
     if args.params_file:
         params_init = Path(args.params_file).read_text()
+
+    input_range = None
+    if args.input_range:
+        lo, hi = args.input_range.split(",")
+        input_range = (float(lo), float(hi))
 
     min_batch = args.batch if args.batch > 0 else 1
     max_batch = args.batch if args.batch > 0 else args.max_batch
@@ -482,6 +479,7 @@ def main():
         max_batch=max_batch,
         min_batch=min_batch,
         backend=args.backend,
+        input_range=input_range,
     )
 
     print(result.to_json())
