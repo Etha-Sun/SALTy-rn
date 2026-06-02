@@ -174,6 +174,7 @@ struct VerificationContext {
                                             const void* data, size_t num_bytes);
     SymbolicBuffer& findBuffer(const void* ptr);
     SymbolicBuffer* findBufferSafe(const void* ptr) noexcept;
+    SymbolicBuffer* findBufferById(uint8_t id) noexcept;
 
     Sort bv_sort(size_t bits) { return tm.mkBitVectorSort(static_cast<uint32_t>(bits)); }
     Sort fp32_sort() { return tm.mkFloatingPointSort(8, 24); }

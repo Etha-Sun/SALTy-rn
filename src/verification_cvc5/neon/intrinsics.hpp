@@ -178,6 +178,11 @@ inline uint32x2_t vget_low_u32(const uint32x4_t& a) {
     std::array<Term, 2> lanes = {a.getLane(0), a.getLane(1)};
     return uint32x2_t(tm, lanes);
 }
+inline uint32x2_t vget_high_u32(const uint32x4_t& a) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 2> lanes = {a.getLane(2), a.getLane(3)};
+    return uint32x2_t(tm, lanes);
+}
 inline uint32x2_t vadd_u32(const uint32x2_t& a, const uint32x2_t& b) {
     auto& tm = g_ctx->tm;
     std::array<Term, 2> lanes;
@@ -419,6 +424,21 @@ inline Term store_fp32_as_bv(TermManager& tm, Term fp_val) {
 inline Term mk_fp32_from_float(TermManager& tm, float v) {
     uint32_t bits;
     std::memcpy(&bits, &v, sizeof(bits));
+    // Scalar-ref sentinel: high 11 bits == 0x7FE => qNaN with marker bit 21 set.
+    // Payload = (buffer_id : 5 bits)(offset_in_lanes : 16 bits).  See
+    // SymbolicBuffer::bindScalarRef.  Redirect the constant Term to the
+    // symbolic Term stored in the buffer at the recorded lane offset.
+    if ((bits & 0xFFE00000u) == 0x7FE00000u) {
+        uint8_t buf_id = static_cast<uint8_t>((bits >> 16) & 0x1Fu);
+        uint32_t lane = bits & 0xFFFFu;
+        if (g_ctx && buf_id != 0) {
+            if (auto* buf = g_ctx->findBufferById(buf_id)) {
+                Term bv = buf->loadScalar(lane * 4, 32);
+                Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
+                return tm.mkTerm(op, {bv});
+            }
+        }
+    }
     Term bv = tm.mkBitVector(32, static_cast<uint64_t>(bits));
     Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
     return tm.mkTerm(op, {bv});
@@ -471,6 +491,20 @@ inline float32x4_t vdupq_n_f32(float v) {
     return float32x4_t(tm, lanes);
 }
 inline float32x4_t vmovq_n_f32(float v) { return vdupq_n_f32(v); }
+// vdupq_lane_f32: broadcast lane `lane` of a 2-lane vector to all 4 lanes.
+inline float32x4_t vdupq_lane_f32(const float32x2_t& v, int lane) {
+    auto& tm = g_ctx->tm;
+    Term bv = v.getLane(lane);
+    std::array<Term, 4> lanes; lanes.fill(bv);
+    return float32x4_t(tm, lanes);
+}
+// vdupq_laneq_f32: broadcast lane `lane` of a 4-lane vector to all 4 lanes.
+inline float32x4_t vdupq_laneq_f32(const float32x4_t& v, int lane) {
+    auto& tm = g_ctx->tm;
+    Term bv = v.getLane(lane);
+    std::array<Term, 4> lanes; lanes.fill(bv);
+    return float32x4_t(tm, lanes);
+}
 
 // ---------------------------------------------------------------------------
 // VLD1 / VST1 — full vector loads/stores
@@ -479,16 +513,92 @@ inline int8x8_t   vld1_s8 (const int8_t*  p)  { auto& b = g_ctx->findBuffer(p); 
 inline int8x16_t  vld1q_s8(const int8_t*  p)  { auto& b = g_ctx->findBuffer(p); return b.loadNeon<8, 16>(b.ptrToByteOffset(p)); }
 inline uint16x8_t vld1q_u16(const uint16_t* p){ auto& b = g_ctx->findBuffer(p); return b.loadNeon<16, 8>(b.ptrToByteOffset(p)); }
 inline float32x4_t vld1q_f32(const float* p)  { auto& b = g_ctx->findBuffer(p); return b.loadNeon<32, 4>(b.ptrToByteOffset(p)); }
+inline uint32x4_t vld1q_u32(const uint32_t* p){
+    // Fallback for static-const rodata LUTs (e.g. dwconv2d-chw mask_table)
+    // not registered as SymbolicBuffer — read concrete u32 lanes verbatim.
+    if (auto* b = g_ctx->findBufferSafe(p)) return b->loadNeon<32, 4>(b->ptrToByteOffset(p));
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) lanes[i] = tm.mkBitVector(32, (uint64_t)p[i]);
+    return uint32x4_t(tm, lanes);
+}
 
 inline void vst1_s8 (int8_t* p,  const int8x8_t&  v) { auto& b = g_ctx->findBuffer(p); b.storeNeon<8, 8>(b.ptrToByteOffset(p), v); }
 inline void vst1q_s8(int8_t* p,  const int8x16_t& v) { auto& b = g_ctx->findBuffer(p); b.storeNeon<8, 16>(b.ptrToByteOffset(p), v); }
 inline void vst1_u16(uint16_t* p,const uint16x4_t& v){ auto& b = g_ctx->findBuffer(p); b.storeNeon<16, 4>(b.ptrToByteOffset(p), v); }
 inline void vst1q_u16(uint16_t* p,const uint16x8_t& v){auto& b = g_ctx->findBuffer(p); b.storeNeon<16, 8>(b.ptrToByteOffset(p), v); }
 inline void vst1q_f32(float* p,  const float32x4_t& v){auto& b = g_ctx->findBuffer(p); b.storeNeon<32, 4>(b.ptrToByteOffset(p), v); }
+inline void vst1q_u32(uint32_t* p, const uint32x4_t& v){auto& b = g_ctx->findBuffer(p); b.storeNeon<32, 4>(b.ptrToByteOffset(p), v); }
 inline void vst1_f32 (float* p,  const float32x2_t& v){auto& b = g_ctx->findBuffer(p); b.storeNeon<32, 2>(b.ptrToByteOffset(p), v); }
 inline void vst1_lane_f32(float* ptr, const float32x2_t& val, int lane) {
     auto& buf = g_ctx->findBuffer(ptr);
     buf.storeScalar(buf.ptrToByteOffset(ptr), val.getLane(lane), 32);
+}
+inline void vst1q_lane_f32(float* ptr, const float32x4_t& val, int lane) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    buf.storeScalar(buf.ptrToByteOffset(ptr), val.getLane(lane), 32);
+}
+inline float32x4_t vld1q_lane_f32(const float* ptr, const float32x4_t& src, int lane) {
+    auto& buf = g_ctx->findBuffer(ptr);
+    Term loaded = buf.loadScalar(buf.ptrToByteOffset(ptr), 32);
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) lanes[i] = (i == lane) ? loaded : src.getLane(i);
+    return float32x4_t(g_ctx->tm, lanes);
+}
+// vfmaq_laneq_f32: r[i] = a[i] + b[i] * c[lane]  (single FMA rounding)
+inline float32x4_t vfmaq_laneq_f32(const float32x4_t& a, const float32x4_t& b, const float32x4_t& c, int lane) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    Term cf_lane = load_as_fp32(tm, c.getLane(lane));
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        Term af = load_as_fp32(tm, a.getLane(i));
+        Term bf = load_as_fp32(tm, b.getLane(i));
+        Term res = tm.mkTerm(Kind::FLOATINGPOINT_FMA, {rm, bf, cf_lane, af});
+        lanes[i] = store_fp32_as_bv(tm, res);
+    }
+    return float32x4_t(tm, lanes);
+}
+// vfmaq_lane_f32: r[i] = a[i] + b[i] * c[lane]  with c as 2-lane vector
+inline float32x4_t vfmaq_lane_f32(const float32x4_t& a, const float32x4_t& b, const float32x2_t& c, int lane) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    Term cf_lane = load_as_fp32(tm, c.getLane(lane));
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        Term af = load_as_fp32(tm, a.getLane(i));
+        Term bf = load_as_fp32(tm, b.getLane(i));
+        Term res = tm.mkTerm(Kind::FLOATINGPOINT_FMA, {rm, bf, cf_lane, af});
+        lanes[i] = store_fp32_as_bv(tm, res);
+    }
+    return float32x4_t(tm, lanes);
+}
+// vextq_f32: concatenate {a,b} and extract 4 lanes starting at `n`.
+inline float32x4_t vextq_f32(const float32x4_t& a, const float32x4_t& b, int n) {
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        int idx = n + i;
+        lanes[i] = (idx < 4) ? a.getLane(idx) : b.getLane(idx - 4);
+    }
+    return float32x4_t(g_ctx->tm, lanes);
+}
+// vreinterpretq_u32_f32 / vreinterpretq_f32_u32: bitcast between fp32 and u32 lanes.
+// Lanes hold raw 32-bit BV Terms either way, so this is identity at the Term level.
+inline uint32x4_t vreinterpretq_u32_f32(const float32x4_t& v) {
+    std::array<Term, 4> lanes = {v.getLane(0), v.getLane(1), v.getLane(2), v.getLane(3)};
+    return uint32x4_t(g_ctx->tm, lanes);
+}
+inline float32x4_t vreinterpretq_f32_u32(const uint32x4_t& v) {
+    std::array<Term, 4> lanes = {v.getLane(0), v.getLane(1), v.getLane(2), v.getLane(3)};
+    return float32x4_t(g_ctx->tm, lanes);
+}
+// vzip1q_f32: result = {a[0], b[0], a[1], b[1]}
+inline float32x4_t vzip1q_f32(const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes = {a.getLane(0), b.getLane(0), a.getLane(1), b.getLane(1)};
+    return float32x4_t(g_ctx->tm, lanes);
+}
+// vzip2q_f32: result = {a[2], b[2], a[3], b[3]}
+inline float32x4_t vzip2q_f32(const float32x4_t& a, const float32x4_t& b) {
+    std::array<Term, 4> lanes = {a.getLane(2), b.getLane(2), a.getLane(3), b.getLane(3)};
+    return float32x4_t(g_ctx->tm, lanes);
 }
 
 // vld1 / vld1_dup / vget_lane / vpadd / vadd for float32x2_t (used by f32-rsum tail).
@@ -722,6 +832,7 @@ inline NeonVector<B,N> neon_vbsl_impl(const M& mask, const NeonVector<B,N>& a, c
 }
 inline uint16x4_t vbsl_u16(const uint16x4_t& m, const uint16x4_t& a, const uint16x4_t& b)  { return neon_vbsl_impl(m,a,b); }
 inline uint16x8_t vbslq_u16(const uint16x8_t& m, const uint16x8_t& a, const uint16x8_t& b) { return neon_vbsl_impl(m,a,b); }
+inline uint32x4_t vbslq_u32(const uint32x4_t& m, const uint32x4_t& a, const uint32x4_t& b) { return neon_vbsl_impl(m,a,b); }
 inline int16x8_t  vbslq_s16(const uint16x8_t& m, const int16x8_t& a, const int16x8_t& b)   { return neon_vbsl_impl<16,8,uint16x8_t>(m,a,b); }
 inline float32x4_t vbslq_f32(const uint32x4_t& m, const float32x4_t& a, const float32x4_t& b) { return neon_vbsl_impl<32,4,uint32x4_t>(m,a,b); }
 inline float16x4_t vbsl_f16(const uint16x4_t& m, const float16x4_t& a, const float16x4_t& b)  { return neon_vbsl_impl<16,4,uint16x4_t>(m,a,b); }
@@ -1190,6 +1301,19 @@ inline float32x4_t vmlaq_f32(const float32x4_t& a, const float32x4_t& b, const f
         Term cf = load_as_fp32(tm, c.getLane(i));
         Term prod = tm.mkTerm(Kind::FLOATINGPOINT_MULT, {rm, bf, cf});
         Term res = tm.mkTerm(Kind::FLOATINGPOINT_ADD, {rm, af, prod});
+        lanes[i] = store_fp32_as_bv(tm, res);
+    }
+    return float32x4_t(tm, lanes);
+}
+inline float32x4_t vmlsq_f32(const float32x4_t& a, const float32x4_t& b, const float32x4_t& c) {
+    auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
+    std::array<Term, 4> lanes;
+    for (int i = 0; i < 4; i++) {
+        Term af = load_as_fp32(tm, a.getLane(i));
+        Term bf = load_as_fp32(tm, b.getLane(i));
+        Term cf = load_as_fp32(tm, c.getLane(i));
+        Term prod = tm.mkTerm(Kind::FLOATINGPOINT_MULT, {rm, bf, cf});
+        Term res = tm.mkTerm(Kind::FLOATINGPOINT_SUB, {rm, af, prod});
         lanes[i] = store_fp32_as_bv(tm, res);
     }
     return float32x4_t(tm, lanes);

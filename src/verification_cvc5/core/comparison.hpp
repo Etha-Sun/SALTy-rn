@@ -69,4 +69,32 @@ inline Term buffers_equal(TermManager& tm,
     return result;
 }
 
+// Strided 2D logical output region: compares rows×cols elements at affine
+// offsets r*row_stride + c*col_stride (bytes), ignoring everything in between
+// (e.g. row padding). Used for non-contiguous outputs (transpose, GEMM).
+inline Term buffers_equal_strided(TermManager& tm,
+                                  const SymbolicBuffer& a,
+                                  const SymbolicBuffer& b,
+                                  size_t rows, size_t cols,
+                                  size_t row_stride, size_t col_stride,
+                                  size_t elem_bytes,
+                                  ElementKind kind) {
+    size_t elem_bits = elem_bytes * 8;
+    std::vector<Term> equalities;
+    equalities.reserve(rows * cols);
+    for (size_t r = 0; r < rows; r++) {
+        for (size_t c = 0; c < cols; c++) {
+            size_t off = r * row_stride + c * col_stride;
+            equalities.push_back(element_equal(tm, a.loadScalar(off, elem_bits),
+                                               b.loadScalar(off, elem_bits), kind));
+        }
+    }
+    if (equalities.empty()) return tm.mkTrue();
+    Term result = equalities[0];
+    for (size_t i = 1; i < equalities.size(); i++) {
+        result = tm.mkTerm(Kind::AND, {result, equalities[i]});
+    }
+    return result;
+}
+
 } // namespace salt_cvc5
