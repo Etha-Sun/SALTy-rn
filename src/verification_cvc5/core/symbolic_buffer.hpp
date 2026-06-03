@@ -228,10 +228,9 @@ inline SymbolicBuffer* VerificationContext::findBufferById(uint8_t id) noexcept 
 
 } // namespace salt_cvc5
 
-// _Float16 copy-ctor / copy-assign / dtor — out-of-line so they can use the
+// salt_float16 copy-ctor / copy-assign / dtor — out-of-line so they can use the
 // full SymbolicBuffer definition.  See context.hpp for the declaration.
-#ifndef __FLT16_MAX__
-inline _Float16::_Float16(const _Float16& other) : value(other.value) {
+inline salt_float16::salt_float16(const salt_float16& other) : value(other.value) {
     if (!salt_cvc5::g_ctx) return;
     auto it = salt_cvc5::g_scalar_terms.find(&other);
     if (it != salt_cvc5::g_scalar_terms.end()) {
@@ -247,7 +246,7 @@ inline _Float16::_Float16(const _Float16& other) : value(other.value) {
     }
 }
 
-inline _Float16& _Float16::operator=(const _Float16& other) {
+inline salt_float16& salt_float16::operator=(const salt_float16& other) {
     if (this == &other) return *this;
     value = other.value;
     if (!salt_cvc5::g_ctx) return *this;
@@ -268,7 +267,6 @@ inline _Float16& _Float16::operator=(const _Float16& other) {
     return *this;
 }
 
-inline _Float16::~_Float16() {
+inline salt_float16::~salt_float16() {
     if (!salt_cvc5::g_scalar_terms.empty()) salt_cvc5::g_scalar_terms.erase(this);
 }
-#endif

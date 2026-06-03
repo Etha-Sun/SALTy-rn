@@ -328,7 +328,7 @@ inline vfloat16m1_t __riscv_vfsub_vv_f16m1(const vfloat16m1_t& a, const vfloat16
     return rvv_fp16_binop(a, b, Kind::FLOATINGPOINT_SUB, vl);
 }
 // vlse16 stride=0 broadcast load for f16m1.
-inline vfloat16m1_t __riscv_vlse16_v_f16m1(const _Float16* p, ptrdiff_t stride, size_t vl) {
+inline vfloat16m1_t __riscv_vlse16_v_f16m1(const salt_float16* p, ptrdiff_t stride, size_t vl) {
     auto& tm = g_ctx->tm;
     auto& b = g_ctx->findBuffer(p);
     size_t base = b.ptrToByteOffset(p);
@@ -343,7 +343,7 @@ inline vfloat16m1_t __riscv_vlse16_v_f16m1(const _Float16* p, ptrdiff_t stride, 
     return RVVVector(tm, 16, lanes);
 }
 inline vfloat16m1_t __riscv_vlse16_v_f16m1(const xnn_float16* p, ptrdiff_t stride, size_t vl) {
-    return __riscv_vlse16_v_f16m1(reinterpret_cast<const _Float16*>(p), stride, vl);
+    return __riscv_vlse16_v_f16m1(reinterpret_cast<const salt_float16*>(p), stride, vl);
 }
 
 // vfmacc: vd = vd + vs1 * vs2 → FMA(vs1, vs2, vd)
@@ -365,21 +365,21 @@ inline vfloat16m1_t __riscv_vfmacc_vv_f16m1(const vfloat16m1_t& vd, const vfloat
 // ===========================================================================
 // VLE16 / VSE16 — full vector load/store (FP16 vector)
 // ===========================================================================
-inline vfloat16m1_t __riscv_vle16_v_f16m1(const _Float16* ptr, size_t vl) {
+inline vfloat16m1_t __riscv_vle16_v_f16m1(const salt_float16* ptr, size_t vl) {
     auto& buf = g_ctx->findBuffer(ptr);
     return buf.loadRVV(buf.ptrToByteOffset(ptr), vl, 16);
 }
-inline void __riscv_vse16_v_f16m1(_Float16* ptr, const vfloat16m1_t& val, size_t vl) {
+inline void __riscv_vse16_v_f16m1(salt_float16* ptr, const vfloat16m1_t& val, size_t vl) {
     auto& buf = g_ctx->findBuffer(ptr);
     buf.storeRVV(buf.ptrToByteOffset(ptr), val);
 }
 // xnn_float16 thin overloads — kernels that don't pre-cast (e.g. f16-vmulcaddc)
-// pass xnn_float16* directly. Layout-compatible with _Float16 (asserted in salt.hpp).
+// pass xnn_float16* directly. Layout-compatible with salt_float16 (asserted in salt.hpp).
 inline vfloat16m1_t __riscv_vle16_v_f16m1(const xnn_float16* ptr, size_t vl) {
-    return __riscv_vle16_v_f16m1(reinterpret_cast<const _Float16*>(ptr), vl);
+    return __riscv_vle16_v_f16m1(reinterpret_cast<const salt_float16*>(ptr), vl);
 }
 inline void __riscv_vse16_v_f16m1(xnn_float16* ptr, const vfloat16m1_t& val, size_t vl) {
-    __riscv_vse16_v_f16m1(reinterpret_cast<_Float16*>(ptr), val, vl);
+    __riscv_vse16_v_f16m1(reinterpret_cast<salt_float16*>(ptr), val, vl);
 }
 
 // ===========================================================================
@@ -438,8 +438,8 @@ inline RVVVector rvv_vluxei32_impl(const void* base, const RVVVector& byte_offse
 
 // vluxseg3ei32: indexed unordered segmented load, nseg=3, EEW=32 indices.
 // 3 channels are contiguous in memory, so shifting `base` by `seg` (in
-// _Float16 units = 2 bytes) reuses the scalar gather.
-inline vfloat16m1x3_t __riscv_vluxseg3ei32_v_f16m1x3(const _Float16* base,
+// salt_float16 units = 2 bytes) reuses the scalar gather.
+inline vfloat16m1x3_t __riscv_vluxseg3ei32_v_f16m1x3(const salt_float16* base,
                                                       const vuint32m2_t& byte_off,
                                                       size_t vl) {
     RVVVector s0 = rvv_vluxei32_impl(base + 0, byte_off, vl, 16);
@@ -991,11 +991,11 @@ inline RVVVector rvv_fp16_binop_vf_term(const RVVVector& a, Term b_fp, Kind op, 
     }
     return RVVVector(tm, 16, r);
 }
-inline vfloat16m1_t __riscv_vfmin_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) {
+inline vfloat16m1_t __riscv_vfmin_vf_f16m1(const vfloat16m1_t& a, salt_float16 b, size_t vl) {
     auto& tm = g_ctx->tm;
     return rvv_fp16_binop_vf_term(a, mk_fp16_from_f16(tm, b), Kind::FLOATINGPOINT_MIN, vl);
 }
-inline vfloat16m1_t __riscv_vfmax_vf_f16m1(const vfloat16m1_t& a, _Float16 b, size_t vl) {
+inline vfloat16m1_t __riscv_vfmax_vf_f16m1(const vfloat16m1_t& a, salt_float16 b, size_t vl) {
     auto& tm = g_ctx->tm;
     return rvv_fp16_binop_vf_term(a, mk_fp16_from_f16(tm, b), Kind::FLOATINGPOINT_MAX, vl);
 }
@@ -1428,7 +1428,7 @@ inline size_t __riscv_vsetvl_e16m8(size_t avl) {
     return _rvv_vsetvl(avl, 16, 8);
 }
 
-inline vfloat16m8_t __riscv_vfmv_v_f_f16m8(_Float16 src, size_t vl) {
+inline vfloat16m8_t __riscv_vfmv_v_f_f16m8(salt_float16 src, size_t vl) {
     auto& tm = g_ctx->tm;
     Term bv = rvv_store_fp16_as_bv(tm, mk_fp16_from_f16(tm, src));
     return RVVVector(tm, 16, std::vector<Term>(vl, bv));
@@ -1443,15 +1443,15 @@ inline vfloat16m8_t __riscv_vfsub_vv_f16m8(const vfloat16m8_t& a, const vfloat16
 inline vfloat16m8_t __riscv_vfmul_vv_f16m8(const vfloat16m8_t& a, const vfloat16m8_t& b, size_t vl) {
     return rvv_fp16_binop(a, b, Kind::FLOATINGPOINT_MULT, vl);
 }
-inline vfloat16m8_t __riscv_vfmul_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) {
+inline vfloat16m8_t __riscv_vfmul_vf_f16m8(const vfloat16m8_t& a, salt_float16 b, size_t vl) {
     auto& tm = g_ctx->tm;
     return rvv_fp16_binop_vf_term(a, mk_fp16_from_f16(tm, b), Kind::FLOATINGPOINT_MULT, vl);
 }
-inline vfloat16m8_t __riscv_vfmin_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) {
+inline vfloat16m8_t __riscv_vfmin_vf_f16m8(const vfloat16m8_t& a, salt_float16 b, size_t vl) {
     auto& tm = g_ctx->tm;
     return rvv_fp16_binop_vf_term(a, mk_fp16_from_f16(tm, b), Kind::FLOATINGPOINT_MIN, vl);
 }
-inline vfloat16m8_t __riscv_vfmax_vf_f16m8(const vfloat16m8_t& a, _Float16 b, size_t vl) {
+inline vfloat16m8_t __riscv_vfmax_vf_f16m8(const vfloat16m8_t& a, salt_float16 b, size_t vl) {
     auto& tm = g_ctx->tm;
     return rvv_fp16_binop_vf_term(a, mk_fp16_from_f16(tm, b), Kind::FLOATINGPOINT_MAX, vl);
 }
@@ -1470,7 +1470,7 @@ inline vfloat16m8_t __riscv_vfmacc_vv_f16m8(const vfloat16m8_t& vd, const vfloat
     }
     return RVVVector(tm, 16, r);
 }
-inline vfloat16m8_t __riscv_vfmacc_vf_f16m8(const vfloat16m8_t& vd, _Float16 vs1,
+inline vfloat16m8_t __riscv_vfmacc_vf_f16m8(const vfloat16m8_t& vd, salt_float16 vs1,
                                               const vfloat16m8_t& vs2, size_t vl) {
     auto& tm = g_ctx->tm; Term rm = g_ctx->fp.rounding_mode;
     Term vs1_fp = mk_fp16_from_f16(tm, vs1);
@@ -1485,19 +1485,19 @@ inline vfloat16m8_t __riscv_vfmacc_vf_f16m8(const vfloat16m8_t& vd, _Float16 vs1
 }
 
 // Memory ops — m8 mirrors of the m1 versions.
-inline vfloat16m8_t __riscv_vle16_v_f16m8(const _Float16* ptr, size_t vl) {
+inline vfloat16m8_t __riscv_vle16_v_f16m8(const salt_float16* ptr, size_t vl) {
     auto& buf = g_ctx->findBuffer(ptr);
     return buf.loadRVV(buf.ptrToByteOffset(ptr), vl, 16);
 }
-inline void __riscv_vse16_v_f16m8(_Float16* ptr, const vfloat16m8_t& val, size_t vl) {
+inline void __riscv_vse16_v_f16m8(salt_float16* ptr, const vfloat16m8_t& val, size_t vl) {
     auto& buf = g_ctx->findBuffer(ptr);
     buf.storeRVV(buf.ptrToByteOffset(ptr), val);
 }
 inline vfloat16m8_t __riscv_vle16_v_f16m8(const xnn_float16* ptr, size_t vl) {
-    return __riscv_vle16_v_f16m8(reinterpret_cast<const _Float16*>(ptr), vl);
+    return __riscv_vle16_v_f16m8(reinterpret_cast<const salt_float16*>(ptr), vl);
 }
 inline void __riscv_vse16_v_f16m8(xnn_float16* ptr, const vfloat16m8_t& val, size_t vl) {
-    __riscv_vse16_v_f16m8(reinterpret_cast<_Float16*>(ptr), val, vl);
+    __riscv_vse16_v_f16m8(reinterpret_cast<salt_float16*>(ptr), val, vl);
 }
 
 // Reinterpret f16 ↔ u16 — RVVVector is type-erased, so these are no-ops.
@@ -2849,7 +2849,7 @@ inline vfloat16m1x2_t __riscv_vset_v_f16m1_f16m1x2(vfloat16m1x2_t dest, size_t i
 // ---------------------------------------------------------------------------
 // vsse16: strided store. bstride is in BYTES.
 // ---------------------------------------------------------------------------
-inline void __riscv_vsse16_v_f16m1(_Float16* base, ptrdiff_t bstride,
+inline void __riscv_vsse16_v_f16m1(salt_float16* base, ptrdiff_t bstride,
                                    const vfloat16m1_t& value, size_t vl) {
     auto& buf = g_ctx->findBuffer(base);
     ptrdiff_t base_off = (ptrdiff_t)buf.ptrToByteOffset(base);
@@ -2858,7 +2858,7 @@ inline void __riscv_vsse16_v_f16m1(_Float16* base, ptrdiff_t bstride,
         buf.storeScalar((size_t)off, value.getElement(i), 16);
     }
 }
-inline void __riscv_vsse16_v_f16m4(_Float16* base, ptrdiff_t bstride,
+inline void __riscv_vsse16_v_f16m4(salt_float16* base, ptrdiff_t bstride,
                                    const vfloat16m4_t& value, size_t vl) {
     auto& buf = g_ctx->findBuffer(base);
     ptrdiff_t base_off = (ptrdiff_t)buf.ptrToByteOffset(base);
@@ -2871,7 +2871,7 @@ inline void __riscv_vsse16_v_f16m4(_Float16* base, ptrdiff_t bstride,
 // vssseg2e16: strided segment store, nseg=2.
 //   *(base + i*bstride + 0*elem_bytes) = v_tuple.val[0][i]
 //   *(base + i*bstride + 1*elem_bytes) = v_tuple.val[1][i]
-inline void __riscv_vssseg2e16_v_f16m1x2(_Float16* base, ptrdiff_t bstride,
+inline void __riscv_vssseg2e16_v_f16m1x2(salt_float16* base, ptrdiff_t bstride,
                                           const vfloat16m1x2_t& v_tuple, size_t vl) {
     auto& buf = g_ctx->findBuffer(base);
     ptrdiff_t base_off = (ptrdiff_t)buf.ptrToByteOffset(base);

@@ -34,13 +34,15 @@ class Config:
     # Pipeline
     max_compile_retries: int = 5
     max_verification_retries: int = 5
-    verification_backend: str = "cvc5"       # v2 engine is cvc5-only (emits the cvc5 salt.hpp harness)
-    verification_timeout: int = 600          # per-batch timeout (s); default 10 min, 0 = no limit
+    verification_backend: str = "auto"       # portfolio: cvc5 harness, route per-query (BV→bitwuzla, FP→cvc5); falls back to cvc5 if bitwuzla absent
+    verification_timeout: int = 600          # TOTAL wall-clock budget (s) for the batch sweep; default 10 min, 0 = no budget
     verification_batch: int = 0              # if >0, run ONLY this batch size; 0 = sweep
     verification_input_range: tuple = None   # (lo, hi) finite F32 band for FP-multiply families; None = full domain
+    verification_symbolic_params: bool = False  # prove for ALL valid params (default: concrete edge configs)
     kernels_dir: Path = field(default_factory=lambda: PROJECT_ROOT / "kernels")
     dry_run: bool = False
     skip_existing: bool = False
+    jobs: int = 1                            # --batch: kernels to translate+verify concurrently (1 = sequential)
     rules_only: bool = False
     skip_translation: bool = False
     skip_spike: bool = False
@@ -89,7 +91,7 @@ class Config:
         # Pipeline
         cfg.max_compile_retries = args.max_compile_retries
         cfg.max_verification_retries = args.max_verification_retries
-        cfg.verification_backend = getattr(args, "backend", "cvc5")  # v2 is cvc5-only
+        cfg.verification_backend = getattr(args, "backend", "auto")  # portfolio by default
         cfg.verification_timeout = args.verification_timeout
         cfg.verification_batch = getattr(args, "verify_batch", 0)
         _ir = getattr(args, "input_range", "")
@@ -98,6 +100,8 @@ class Config:
             cfg.verification_input_range = (float(lo), float(hi))
         cfg.dry_run = args.dry_run
         cfg.skip_existing = args.skip_existing
+        cfg.jobs = max(1, getattr(args, "jobs", 1))
+        cfg.verification_symbolic_params = getattr(args, "symbolic_params", False)
         cfg.rules_only = args.rules_only
         cfg.skip_translation = args.skip_translation
         cfg.skip_spike = args.skip_spike

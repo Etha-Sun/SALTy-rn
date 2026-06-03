@@ -17,7 +17,7 @@
 #include <unordered_map>
 #include <vector>
 
-// _Float16 for symbolic verification when the compiler doesn't provide it.
+// salt_float16 for symbolic verification when the compiler doesn't provide it.
 // Layout-compatible with xnn_float16 (struct path, XNN_HAVE_FLOAT16=0).
 // Implicit `float` constructor lets C++ kernel sources — including ternaries
 // like `(cond ? some_f16 : 0.0f)` — resolve without explicit casts.
@@ -25,15 +25,14 @@
 // and this header compiles on x86 for the verification harness.  Uses
 // round-toward-zero (truncation) on the mantissa; exact for representable
 // values (0.0f, 1.0f, small integers) which is the common literal case.
-#ifndef __FLT16_MAX__
-struct _Float16 {
+struct salt_float16 {
     uint16_t value;
-    _Float16() = default;
+    salt_float16() = default;
     // `explicit` so integer literals don't create ambiguity with the
-    // implicit `float` ctor below.  Braced init (`_Float16{0x3C00}`) still
-    // works; `_Float16 x = 0` routes to the `float` ctor and becomes 0.0f.
-    explicit constexpr _Float16(uint16_t v) : value(v) {}
-    _Float16(float f) {
+    // implicit `float` ctor below.  Braced init (`salt_float16{0x3C00}`) still
+    // works; `salt_float16 x = 0` routes to the `float` ctor and becomes 0.0f.
+    explicit constexpr salt_float16(uint16_t v) : value(v) {}
+    salt_float16(float f) {
         uint32_t x;
         __builtin_memcpy(&x, &f, sizeof(x));
         uint16_t sign = static_cast<uint16_t>((x >> 31) << 15);
@@ -60,12 +59,19 @@ struct _Float16 {
     // They route scalar reads from registered SymbolicBuffers through a
     // thread-local Term map so `pi[0]`-style raw dereferences of symbolic
     // memory propagate the symbolic Term rather than the concrete backing
-    // bytes.  sizeof(_Float16) stays at 2 so `(_Float16*)ptr` arithmetic is
+    // bytes.  sizeof(salt_float16) stays at 2 so `(salt_float16*)ptr` arithmetic is
     // unaffected.
-    _Float16(const _Float16& other);
-    _Float16& operator=(const _Float16& other);
-    ~_Float16();
+    salt_float16(const salt_float16& other);
+    salt_float16& operator=(const salt_float16& other);
+    ~salt_float16();
 };
+
+// Compat: where the compiler has NO native _Float16 (e.g. GCC ≤11 on x86-64),
+// let inlined kernel code that names `_Float16` resolve to our symbolic struct.
+// Where _Float16 IS native (GCC ≥12), kernels use the native scalar (f16 kernel
+// support is Phase-3); the shim itself uses salt_float16 and is unaffected.
+#ifndef __FLT16_MAX__
+typedef salt_float16 _Float16;
 #endif
 
 namespace salt {
@@ -170,7 +176,7 @@ struct VerificationContext {
     SymbolicBuffer& findBuffer(const void* ptr);
 
     // Non-throwing lookup — returns nullptr if ptr is not in any registered
-    // buffer.  Used by `_Float16`'s copy-ctor / copy-assign, which must
+    // buffer.  Used by `salt_float16`'s copy-ctor / copy-assign, which must
     // tolerate stack-local source addresses.
     SymbolicBuffer* findBufferSafe(const void* ptr) noexcept;
 
@@ -255,7 +261,7 @@ inline thread_local VerificationContext* g_ctx = nullptr;
 
 // ---------------------------------------------------------------------------
 // Thread-local scalar-term side channel.
-// Populated by `_Float16`'s copy-ctor / copy-assign when the source address
+// Populated by `salt_float16`'s copy-ctor / copy-assign when the source address
 // lives inside a registered SymbolicBuffer; consumed by `mk_fp16_from_f16`.
 // Keyed on the destination object's address; cleared by the destructor.
 // ---------------------------------------------------------------------------
@@ -298,14 +304,14 @@ inline Term mk_fp32_from_float(TermManager& tm, float value) {
 }
 
 // ---------------------------------------------------------------------------
-// Helper: create an FP16 term from a _Float16 value.
+// Helper: create an FP16 term from a salt_float16 value.
 // Takes by `const&` so the caller's address is preserved — if the scalar
 // originated from a registered SymbolicBuffer (via `pi[0]`-style raw
-// dereference), `_Float16`'s copy-ctor recorded its Term in g_scalar_terms
+// dereference), `salt_float16`'s copy-ctor recorded its Term in g_scalar_terms
 // keyed on the parameter's address.  Otherwise fall back to the concrete
 // bit-pattern → fp16 conversion.
 // ---------------------------------------------------------------------------
-inline Term mk_fp16_from_f16(TermManager& tm, const _Float16& value) {
+inline Term mk_fp16_from_f16(TermManager& tm, const salt_float16& value) {
     auto it = g_scalar_terms.find(&value);
     if (it != g_scalar_terms.end()) return it->second;
     Term bv = tm.mk_bv_value_uint64(tm.mk_bv_sort(16), value.value);

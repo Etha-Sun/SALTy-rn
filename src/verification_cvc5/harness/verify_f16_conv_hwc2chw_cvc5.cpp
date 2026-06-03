@@ -551,7 +551,7 @@ void test__rvv(
 
       size_t ow = output_width;
       size_t ow_done = 0;
-      const _Float16* i_ptrs[5] = {(const _Float16*)i0, (const _Float16*)i1, (const _Float16*)i2, (const _Float16*)i3, (const _Float16*)i4};
+      const salt_float16* i_ptrs[5] = {(const salt_float16*)i0, (const salt_float16*)i1, (const salt_float16*)i2, (const salt_float16*)i3, (const salt_float16*)i4};
 
       while (ow > 0) {
         size_t vl = __riscv_vsetvl_e16m1(ow);
@@ -603,10 +603,10 @@ void test__rvv(
           bool load1[3];
 
           for (int ky = 0; ky < 3; ky++) {
-            const _Float16* ptr0 = i_ptrs[ky];
-            const _Float16* ptr1 = i_ptrs[ky + 2];
-            load0[ky] = (ptr0 != (const _Float16*)zero);
-            load1[ky] = (ptr1 != (const _Float16*)zero);
+            const salt_float16* ptr0 = i_ptrs[ky];
+            const salt_float16* ptr1 = i_ptrs[ky + 2];
+            load0[ky] = (ptr0 != (const salt_float16*)zero);
+            load1[ky] = (ptr1 != (const salt_float16*)zero);
 
             if (load0[ky]) {
               if (ky == 0) in0_seg0 = __riscv_vluxseg3ei32_v_f16m1x3(ptr0, v_off, vl);
@@ -688,7 +688,7 @@ void test__rvv(
         do { \
             acc = __riscv_vfmax_vv_f16m1(acc, vmin_v, vl); \
             acc = __riscv_vfmin_vv_f16m1(acc, vmax_v, vl); \
-            __riscv_vse16_v_f16m1((_Float16*)ptr, acc, vl); \
+            __riscv_vse16_v_f16m1((salt_float16*)ptr, acc, vl); \
             ptr += vl; \
         } while (0)
 

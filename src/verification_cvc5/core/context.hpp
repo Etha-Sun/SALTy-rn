@@ -17,21 +17,22 @@
 #include <stdexcept>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
+#include <unistd.h>   // unlink (external-solver temp file)
 
-// _Float16 — same shim as the bitwuzla tree (option (a) from the plan: a fresh
+// salt_float16 — same shim as the bitwuzla tree (option (a) from the plan: a fresh
 // struct in this tree, completely independent from the one in src/verification).
 // Layout-compatible with xnn_float16 (struct path, XNN_HAVE_FLOAT16=0).
-#ifndef __FLT16_MAX__
-struct _Float16 {
+struct salt_float16 {
     uint16_t value;
-    _Float16() = default;
-    explicit constexpr _Float16(uint16_t v) : value(v) {}
-    // Implicit xnn_float16 → _Float16 — required because kernels (e.g. f16-vmulcaddc)
+    salt_float16() = default;
+    explicit constexpr salt_float16(uint16_t v) : value(v) {}
+    // Implicit xnn_float16 → salt_float16 — required because kernels (e.g. f16-vmulcaddc)
     // pass xnn_float16 scalar args to _vf_f16 intrinsics.  Layout-compat is asserted
     // in salt.hpp.  Non-explicit on purpose: makes the conversion implicit.
-    _Float16(xnn_float16 v) : value(v.value) {}
-    _Float16(float f) {
+    salt_float16(xnn_float16 v) : value(v.value) {}
+    salt_float16(float f) {
         uint32_t x;
         __builtin_memcpy(&x, &f, sizeof(x));
         uint16_t sign = static_cast<uint16_t>((x >> 31) << 15);
@@ -54,10 +55,17 @@ struct _Float16 {
     }
     // See symbolic_buffer.hpp for the out-of-line copy-ctor / dtor that
     // implement the scalar-Term side channel.
-    _Float16(const _Float16& other);
-    _Float16& operator=(const _Float16& other);
-    ~_Float16();
+    salt_float16(const salt_float16& other);
+    salt_float16& operator=(const salt_float16& other);
+    ~salt_float16();
 };
+
+// Compat: where the compiler has NO native _Float16 (e.g. GCC ≤11 on x86-64),
+// let inlined kernel code that names `_Float16` resolve to our symbolic struct.
+// Where _Float16 IS native (GCC ≥12), kernels use the native scalar — f16 kernel
+// support is Phase-3 — but the shim itself uses salt_float16 and is unaffected.
+#ifndef __FLT16_MAX__
+typedef salt_float16 _Float16;
 #endif
 
 namespace salt_cvc5 {
@@ -107,6 +115,14 @@ struct VerificationContext {
     std::map<std::string, std::unique_ptr<SymbolicBuffer>> buffers;
     std::vector<SymbolicBuffer*> registered_buffers;
 
+    // UF-abstraction (§9c.E): SALT_UF_ABSTRACT=mul,fma,... replaces those FP ops
+    // with a shared uninterpreted function on BOTH kernels (the rewrite is applied
+    // to the asserted formula, so it's symmetric by construction).  Sound but
+    // incomplete: UNSAT-under-abstraction ⇒ concrete equivalence; SAT may be a
+    // spurious artifact of an op the abstraction over-generalized.
+    std::string uf_ops_;
+    std::unordered_map<std::string, Term> uf_syms_;   // "op@sort" → function symbol
+
     explicit VerificationContext(size_t vlen_) : vlen(vlen_) {
         solver = std::make_unique<Solver>(tm);
         solver->setOption("produce-models", "true");
@@ -144,9 +160,14 @@ struct VerificationContext {
             }
             std::fflush(stderr);
         }
+        if (const char* u = std::getenv("SALT_UF_ABSTRACT"); u && *u) {
+            uf_ops_ = u;
+            std::fprintf(stderr, "[SALT_UF_ABSTRACT] abstracting FP ops: %s\n", u);
+            std::fflush(stderr);
+        }
         fp.rounding_mode = tm.mkRoundingMode(RoundingMode::ROUND_NEAREST_TIES_TO_EVEN);
         // Drop any stale entries left over from a previous fixture's
-        // VerificationContext.  Without this, _Float16's copy-ctor (and any
+        // VerificationContext.  Without this, salt_float16's copy-ctor (and any
         // future scalar side-channel) can re-use a Term tied to a destroyed
         // TermManager, triggering "term not associated with this term manager".
         // Definition is later in this file — call via the helper.
@@ -223,25 +244,190 @@ struct VerificationContext {
         return tm.mkTerm(op, {bv16});
     }
 
-    // Asserts
-    void assert_(Term formula)     { solver->assertFormula(formula); }
-    void assert_eq(Term t, Term v) { solver->assertFormula(equal(t, v)); }
+    // -----------------------------------------------------------------
+    // UF-abstraction rewrite (§9c.E)
+    // -----------------------------------------------------------------
+    bool uf_has(const char* op) const { return uf_ops_.find(op) != std::string::npos; }
 
-    // Solving
-    CheckResult check() {
+    // Shared uninterpreted function symbol for (op, FP sort), arity-typed.  One
+    // symbol per (op,sort) for the whole context ⇒ both kernels' occurrences are
+    // the SAME function ⇒ congruence proves equivalence.
+    Term uf_sym(const std::string& op, const Sort& s, size_t arity) {
+        std::string key = op + "@" + s.toString();
+        auto it = uf_syms_.find(key);
+        if (it != uf_syms_.end()) return it->second;
+        std::vector<Sort> dom(arity, s);
+        Term f = tm.mkConst(tm.mkFunctionSort(dom, s),
+                            "uf_" + op + "_" + std::to_string(uf_syms_.size()));
+        uf_syms_[key] = f;
+        return f;
+    }
+
+    Term uf_rewrite_rec(const Term& t, std::unordered_map<uint64_t, Term>& memo) {
+        if (t.getNumChildren() == 0) return t;          // const / var / rounding mode
+        auto it = memo.find(t.getId());
+        if (it != memo.end()) return it->second;
+        std::vector<Term> ch;
+        ch.reserve(t.getNumChildren());
+        for (const Term& c : t) ch.push_back(uf_rewrite_rec(c, memo));
+        Kind k = t.getKind();
+        Term out;
+        // FP arith children are [rm, operands…]; the UF drops the (constant) rm.
+        if (k == Kind::FLOATINGPOINT_MULT && uf_has("mul"))
+            out = tm.mkTerm(Kind::APPLY_UF, {uf_sym("mul", t.getSort(), 2), ch[1], ch[2]});
+        else if (k == Kind::FLOATINGPOINT_FMA && uf_has("fma"))
+            out = tm.mkTerm(Kind::APPLY_UF, {uf_sym("fma", t.getSort(), 3), ch[1], ch[2], ch[3]});
+        else if (k == Kind::FLOATINGPOINT_ADD && uf_has("add"))
+            out = tm.mkTerm(Kind::APPLY_UF, {uf_sym("add", t.getSort(), 2), ch[1], ch[2]});
+        else if (k == Kind::FLOATINGPOINT_SUB && uf_has("sub"))
+            out = tm.mkTerm(Kind::APPLY_UF, {uf_sym("sub", t.getSort(), 2), ch[1], ch[2]});
+        else if (t.hasOp())
+            out = tm.mkTerm(t.getOp(), ch);
+        else
+            out = tm.mkTerm(k, ch);
+        memo[t.getId()] = out;
+        return out;
+    }
+
+    Term uf_rewrite(const Term& formula) {
+        if (uf_ops_.empty()) return formula;
+        std::unordered_map<uint64_t, Term> memo;
+        return uf_rewrite_rec(formula, memo);
+    }
+
+    // Asserts
+    void assert_(Term formula)     { solver->assertFormula(uf_rewrite(formula)); }
+    void assert_eq(Term t, Term v) { solver->assertFormula(uf_rewrite(equal(t, v))); }
+
+    // Serialize the current assertion stack to a self-contained SMT-LIB2 string.
+    // Free constants are collected by DFS (Kind::CONSTANT); literals (FP consts,
+    // rounding modes) are inlined by Term::toString() and need no declaration.
+    std::string serialize_smt2() {
+        std::vector<Term> assertions = solver->getAssertions();
+        std::map<uint64_t, Term> consts;          // dedup by id, sorted for stable output
+        std::unordered_set<uint64_t> visited;
+        std::vector<Term> stack(assertions.begin(), assertions.end());
+        while (!stack.empty()) {
+            Term t = stack.back(); stack.pop_back();
+            if (!visited.insert(t.getId()).second) continue;
+            if (t.getKind() == Kind::CONSTANT) consts.emplace(t.getId(), t);
+            for (const Term& c : t) stack.push_back(c);
+        }
+        std::string s = "(set-logic ALL)\n";
+        for (const auto& kv : consts)
+            s += "(declare-fun " + kv.second.toString() + " () "
+               + kv.second.getSort().toString() + ")\n";
+        for (const Term& a : assertions)
+            s += "(assert " + a.toString() + ")\n";
+        s += "(check-sat)\n";
+        return s;
+    }
+
+    // Benchmark hook: gated by SALT_DUMP_SMT2=<dir>, writes each query to
+    // <dir>/q<N>.smt2 so cvc5 and bitwuzla can be timed on identical formulas.
+    void dump_smt2_if_requested() {
+        const char* dir = std::getenv("SALT_DUMP_SMT2");
+        if (!dir || !*dir) return;
+        static int counter = 0;
+        std::string path = std::string(dir) + "/q" + std::to_string(counter++) + ".smt2";
+        if (FILE* f = std::fopen(path.c_str(), "w")) {
+            std::string s = serialize_smt2();
+            std::fwrite(s.data(), 1, s.size(), f);
+            std::fclose(f);
+        }
+    }
+
+    // True if any subterm of the assertion stack has a FloatingPoint sort.  Used
+    // by the auto-router: pure-BV queries go to bitwuzla, FP queries to cvc5.
+    bool query_has_fp() {
+        std::vector<Term> stack;
+        for (const Term& a : solver->getAssertions()) stack.push_back(a);
+        std::unordered_set<uint64_t> seen;
+        while (!stack.empty()) {
+            Term t = stack.back(); stack.pop_back();
+            if (!seen.insert(t.getId()).second) continue;
+            if (t.getSort().isFloatingPoint()) return true;
+            for (const Term& c : t) stack.push_back(c);
+        }
+        return false;
+    }
+
+    // Solve the current query with an external solver binary (bitwuzla) on the
+    // serialized SMT2.  Returns Unsat/Sat/Unknown; never populates a cvc5 model.
+    CheckResult solve_external(const char* bin) {
+        std::string smt2 = serialize_smt2();
+        const char* td = std::getenv("TMPDIR");
+        std::string dir = (td && *td) ? td : "/tmp";
+        std::string tmpl = dir + "/salt_route_XXXXXX";
+        std::vector<char> path(tmpl.begin(), tmpl.end()); path.push_back('\0');
+        int fd = mkstemp(path.data());
+        if (fd < 0) return CheckResult::Unknown;
+        if (FILE* tf = fdopen(fd, "w")) {
+            std::fwrite(smt2.data(), 1, smt2.size(), tf);
+            std::fclose(tf);
+        } else { close(fd); unlink(path.data()); return CheckResult::Unknown; }
+        std::string cmd = bin;
+        if (query_timeout_ms_ > 0) cmd += " -t " + std::to_string(query_timeout_ms_);
+        cmd += " "; cmd += path.data(); cmd += " 2>/dev/null";
+        CheckResult res = CheckResult::Unknown;
+        if (FILE* pp = popen(cmd.c_str(), "r")) {
+            char buf[64];
+            while (std::fgets(buf, sizeof(buf), pp)) {
+                std::string line(buf);
+                if (line.rfind("unsat", 0) == 0)   { res = CheckResult::Unsat;   break; }
+                if (line.rfind("sat", 0) == 0)      { res = CheckResult::Sat;     break; }
+                if (line.rfind("unknown", 0) == 0)  { res = CheckResult::Unknown; break; }
+            }
+            pclose(pp);
+        }
+        unlink(path.data());
+        return res;
+    }
+
+    // In-process cvc5 solve — the source of truth for SAT models (value_str /
+    // getValue require it).  The auto-router only ever returns Sat via this path.
+    CheckResult check_cvc5() {
         Result r = solver->checkSat();
         if (r.isUnsat()) return CheckResult::Unsat;
         if (r.isSat())   return CheckResult::Sat;
         return CheckResult::Unknown;
     }
+
+    // Solving.  SALT_BACKEND=auto routes by query class (pure-BV→bitwuzla via
+    // SALT_BITWUZLA, FP→cvc5) with on-Unknown fallback to the other solver.
+    // INVARIANT: a Sat return always leaves the cvc5 solver holding a model, so
+    // bitwuzla may only short-circuit the Unsat (verified) path.
+    CheckResult check() {
+        dump_smt2_if_requested();
+        const char* mode = std::getenv("SALT_BACKEND");
+        const char* bwz  = std::getenv("SALT_BITWUZLA");
+        bool have_bwz = bwz && *bwz;
+        if (!mode || std::string(mode) != "auto" || !have_bwz)
+            return check_cvc5();
+
+        if (query_has_fp()) {                       // FP → cvc5 primary
+            CheckResult r = check_cvc5();
+            if (r != CheckResult::Unknown) return r;          // definitive (model on Sat)
+            // cvc5 timed out — bitwuzla rarely helps on FP, but try for an Unsat.
+            if (solve_external(bwz) == CheckResult::Unsat) return CheckResult::Unsat;
+            return CheckResult::Unknown;            // no cvc5 model for a Sat → honest TIMEOUT
+        }
+        // pure BV → bitwuzla primary
+        CheckResult rb = solve_external(bwz);
+        if (rb == CheckResult::Unsat) return CheckResult::Unsat;  // fast verified — the win
+        return check_cvc5();                        // Sat/Unknown → cvc5 for model + fallback
+    }
+
     // Base-10 BV value as string (for CEX printing).
     std::string value_str(Term t) {
         return solver->getValue(t).getBitVectorValue(10);
     }
 
-    // Per-query timeout in milliseconds.  cvc5 accepts this as a regular
-    // option name and applies it to subsequent checkSat() calls.
+    // Per-query timeout in milliseconds.  Applied to cvc5 (tlimit-per) and, when
+    // routing, passed to the external solver via its own -t flag.
+    uint64_t query_timeout_ms_ = 0;
     void set_query_timeout_ms(uint64_t ms) {
+        query_timeout_ms_ = ms;
         solver->setOption("tlimit-per", std::to_string(ms));
     }
 };
@@ -251,7 +437,7 @@ struct VerificationContext {
 // ---------------------------------------------------------------------------
 inline thread_local VerificationContext* g_ctx = nullptr;
 
-// Scalar-term side channel for _Float16's copy-ctor (see symbolic_buffer.hpp).
+// Scalar-term side channel for salt_float16's copy-ctor (see symbolic_buffer.hpp).
 inline thread_local std::unordered_map<const void*, Term> g_scalar_terms;
 
 inline void VerificationContext::clear_scalar_terms() { g_scalar_terms.clear(); }
@@ -266,9 +452,9 @@ inline Term mk_bv_val(TermManager& tm, size_t bits, int64_t val) {
 }
 
 // ---------------------------------------------------------------------------
-// FP16 from concrete _Float16, possibly redirected through scalar side channel
+// FP16 from concrete salt_float16, possibly redirected through scalar side channel
 // ---------------------------------------------------------------------------
-inline Term mk_fp16_from_f16(TermManager& tm, const _Float16& value) {
+inline Term mk_fp16_from_f16(TermManager& tm, const salt_float16& value) {
     auto it = g_scalar_terms.find(&value);
     if (it != g_scalar_terms.end()) return it->second;
     Term bv = tm.mkBitVector(16, value.value);

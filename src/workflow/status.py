@@ -2,6 +2,7 @@
 
 import json
 import logging
+import threading
 from pathlib import Path
 
 log = logging.getLogger("pipeline")
@@ -28,6 +29,7 @@ class StatusTracker:
     def __init__(self, status_file: Path):
         self._path = status_file
         self._data: dict[str, dict] = {}
+        self._lock = threading.RLock()   # serialize read-modify-write of status.json under --jobs
         self._load()
 
     _VALID_FIELDS = {
@@ -75,10 +77,11 @@ class StatusTracker:
         bad = fields.keys() - self._VALID_FIELDS
         if bad:
             raise ValueError(f"Unknown status fields: {bad}. Valid: {self._VALID_FIELDS}")
-        entry = self.get(kernel)
-        entry.update(fields)
-        self._data[kernel] = entry
-        self._save()
+        with self._lock:
+            entry = self.get(kernel)
+            entry.update(fields)
+            self._data[kernel] = entry
+            self._save()
 
     def is_generated(self, kernel: str) -> bool:
         return self.get(kernel).get("generated", False)

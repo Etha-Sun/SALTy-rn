@@ -33,6 +33,6 @@
 
 // SymbolicScalar<xnn_float16> assumes xnn_float16 is a struct (XNN_HAVE_FLOAT16=0).
 // If this fires, the SymTraits<xnn_float16> specialization and the forward declaration
-// in symbolic_scalar.hpp need to be reworked for the _Float16 typedef path.
+// in symbolic_scalar.hpp need to be reworked for the salt_float16 typedef path.
 static_assert(sizeof(xnn_float16) == sizeof(uint16_t) && !std::is_scalar_v<xnn_float16>,
               "xnn_float16 must be a struct (XNN_HAVE_FLOAT16=0) for SymbolicScalar support");

@@ -1632,38 +1632,38 @@ inline float16x8_t vsubq_f16(const float16x8_t& a, const float16x8_t& b) { retur
 inline float16x8_t vmulq_f16(const float16x8_t& a, const float16x8_t& b) { return fp16_binop(a, b, Kind::FLOATINGPOINT_MULT); }
 inline float16x8_t vdupq_n_f16(float v) {
     auto& tm = g_ctx->tm;
-    _Float16 fp(v);
+    salt_float16 fp(v);
     Term bv = mk_bv_val(tm, 16, fp.value);
     std::array<Term, 8> lanes; lanes.fill(bv);
     return float16x8_t(tm, lanes);
 }
 inline float16x4_t vdup_n_f16(float v) {
     auto& tm = g_ctx->tm;
-    _Float16 fp(v);
+    salt_float16 fp(v);
     Term bv = mk_bv_val(tm, 16, fp.value);
     std::array<Term, 4> lanes; lanes.fill(bv);
     return float16x4_t(tm, lanes);
 }
-inline float16x8_t vld1q_f16(const _Float16* p) {
+inline float16x8_t vld1q_f16(const salt_float16* p) {
     auto& b = g_ctx->findBuffer(p);
     return b.loadNeon<16, 8>(b.ptrToByteOffset(p));
 }
-inline void vst1q_f16(_Float16* p, const float16x8_t& v) {
+inline void vst1q_f16(salt_float16* p, const float16x8_t& v) {
     auto& b = g_ctx->findBuffer(p);
     b.storeNeon<16, 8>(b.ptrToByteOffset(p), v);
 }
-inline float16x4_t vld1_dup_f16(const _Float16* p) {
+inline float16x4_t vld1_dup_f16(const salt_float16* p) {
     auto& tm = g_ctx->tm;
     auto& b = g_ctx->findBuffer(p);
     Term v = b.loadScalar(b.ptrToByteOffset(p), 16);
     std::array<Term, 4> lanes; lanes.fill(v);
     return float16x4_t(tm, lanes);
 }
-inline void vst1_lane_f16(_Float16* p, const float16x4_t& val, int lane) {
+inline void vst1_lane_f16(salt_float16* p, const float16x4_t& val, int lane) {
     auto& b = g_ctx->findBuffer(p);
     b.storeScalar(b.ptrToByteOffset(p), val.getLane(lane), 16);
 }
-inline float16x8_t vld1q_dup_f16(const _Float16* p) {
+inline float16x8_t vld1q_dup_f16(const salt_float16* p) {
     auto& tm = g_ctx->tm;
     auto& b = g_ctx->findBuffer(p);
     Term v = b.loadScalar(b.ptrToByteOffset(p), 16);
