@@ -7,6 +7,7 @@
 #include <bitwuzla/cpp/bitwuzla.h>
 
 #include <array>
+#include <type_traits>
 #include <cstddef>
 #include <cstdint>
 #include <string>

@@ -7,6 +7,7 @@
 #include <cvc5/cvc5.h>
 
 #include <array>
+#include <type_traits>
 #include <cstddef>
 #include <cstdint>
 #include <string>
