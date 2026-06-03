@@ -1,7 +1,3 @@
-#include <riscv_vector.h>
-#include <assert.h>
-#include <stddef.h>
-
 void test_rvv(
     size_t batch,
     const int8_t* input_a,
@@ -19,7 +15,7 @@ void test_rvv(
   const int8_t b_zero_point = params->scalar.b_zero_point;
   const int32_t a_multiplier = params->scalar.a_multiplier;
   const int32_t b_multiplier = params->scalar.b_multiplier;
-  const int32_t shift = params->scalar.shift;
+  const size_t shift = (size_t)params->scalar.shift;
   const int16_t output_zero_point = params->scalar.output_zero_point;
   const int8_t output_min = params->scalar.output_min;
   const int8_t output_max = params->scalar.output_max;
@@ -39,11 +35,7 @@ void test_rvv(
     vint32m8_t vacc = __riscv_vmul_vx_i32m8(vxa32, a_multiplier, vl);
     vacc = __riscv_vmacc_vx_i32m8(vacc, b_multiplier, vxb32, vl);
 
-    if (shift < 0) {
-      vacc = __riscv_vsll_vx_i32m8(vacc, (size_t)(-shift), vl);
-    } else {
-      vacc = __riscv_vssra_vx_i32m8(vacc, (size_t)shift, __RISCV_VXRM_RNU, vl);
-    }
+    vacc = __riscv_vssra_vx_i32m8(vacc, shift, __RISCV_VXRM_RNU, vl);
 
     vint16m4_t vacc16 = __riscv_vnclip_wx_i16m4(vacc, 0, __RISCV_VXRM_RDN, vl);
     vacc16 = __riscv_vsadd_vx_i16m4(vacc16, output_zero_point, vl);

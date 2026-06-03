@@ -225,11 +225,10 @@ inline SymbolicBuffer* VerificationContext::findBufferSafe(const void* ptr) noex
 } // namespace salt
 
 // ---------------------------------------------------------------------------
-// _Float16 copy-ctor / copy-assign / dtor — out-of-line so they can use the
+// salt_float16 copy-ctor / copy-assign / dtor — out-of-line so they can use the
 // full SymbolicBuffer definition.  See context.hpp for the declaration.
 // ---------------------------------------------------------------------------
-#ifndef __FLT16_MAX__
-inline _Float16::_Float16(const _Float16& other) : value(other.value) {
+inline salt_float16::salt_float16(const salt_float16& other) : value(other.value) {
     if (!salt::g_ctx) return;
     // Propagate Term if source already carries one (temporary, param, etc.).
     auto it = salt::g_scalar_terms.find(&other);
@@ -246,7 +245,7 @@ inline _Float16::_Float16(const _Float16& other) : value(other.value) {
     }
 }
 
-inline _Float16& _Float16::operator=(const _Float16& other) {
+inline salt_float16& salt_float16::operator=(const salt_float16& other) {
     if (this == &other) return *this;
     value = other.value;
     if (!salt::g_ctx) return *this;
@@ -267,10 +266,9 @@ inline _Float16& _Float16::operator=(const _Float16& other) {
     return *this;
 }
 
-inline _Float16::~_Float16() {
+inline salt_float16::~salt_float16() {
     // Unconditional erase — g_ctx may have been cleared while objects of
     // static/thread-local lifetime are still alive; leaking map entries
     // would cause cross-run contamination.
     if (!salt::g_scalar_terms.empty()) salt::g_scalar_terms.erase(this);
 }
-#endif

@@ -11,8 +11,8 @@
 #define __ARM_NEON_H
 
 // xnn_minimal.h FIRST so xnn_float16 is fully visible to context.hpp's
-// _Float16 struct (which now has an implicit `_Float16(xnn_float16)` ctor).
-#include "../verification/xnn_minimal.h"
+// salt_float16 struct (which now has an implicit `salt_float16(xnn_float16)` ctor).
+#include "../verification_bw/xnn_minimal.h"
 
 #include "core/context.hpp"
 #include "core/symbolic_vector.hpp"

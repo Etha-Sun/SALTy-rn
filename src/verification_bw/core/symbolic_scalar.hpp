@@ -17,7 +17,7 @@
 
 // Forward-declare xnn_float16 (defined in xnn_minimal.h, included later by salt.hpp).
 // This assumes XNN_HAVE_FLOAT16=0, where xnn_float16 is a struct wrapping uint16_t.
-// If XNN_HAVE_FLOAT16=1, xnn_float16 is a typedef for _Float16 and this breaks.
+// If XNN_HAVE_FLOAT16=1, xnn_float16 is a typedef for salt_float16 and this breaks.
 struct xnn_float16;
 
 namespace salt {

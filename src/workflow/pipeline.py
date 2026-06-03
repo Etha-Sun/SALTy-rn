@@ -29,9 +29,11 @@ Environment Variables:
 import argparse
 import json
 import logging
+import queue
 import re
 import sys
 import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
 
@@ -205,7 +207,8 @@ def _resolve_prob_id(kernel_name: str, cfg: Config) -> int | None:
 
 
 def _optimize_and_reverify(kernel_path: Path, kernel_name: str,
-                            cfg: Config, tracker: StatusTracker) -> None:
+                            cfg: Config, tracker: StatusTracker,
+                            build_dir: Path = None) -> None:
     """Run autocomp on the verified RVV, then re-verify the optimized output."""
     if not tracker.is_verified(kernel_name):
         log.info("Skipping --optimize for %s (not verified)", kernel_name)
@@ -228,7 +231,7 @@ def _optimize_and_reverify(kernel_path: Path, kernel_name: str,
     # Re-verify the optimized RVV against the original NEON
     log.info("Re-verifying optimized kernel against NEON baseline...")
     verify_result = _run_formal_verification(
-        kernel_path, opt.optimized_path, kernel_name, cfg)
+        kernel_path, opt.optimized_path, kernel_name, cfg, build_dir)
     if verify_result is None:
         log.warning("Re-verification unavailable for optimized %s", kernel_name)
         return
@@ -245,7 +248,7 @@ def _optimize_and_reverify(kernel_path: Path, kernel_name: str,
                   kernel_name, verdict)
 
 
-def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict | None:
+def _run_formal_verification(kernel_path, output_path, kernel_name, cfg, build_dir=None) -> dict | None:
     """Run formal verification (v2 engine, cvc5) on the kernel pair.
 
     Returns the verification result dict, or None only if the module is missing.
@@ -261,30 +264,28 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg) -> dict
 
     log.info("Starting formal verification for %s", kernel_name)
 
-    # 2D kernels (stride-based) cap at smaller max_batch since each batch is heavier.
-    source_text = kernel_path.read_text()
-    is_2d = "stride" in source_text and "channels" in source_text
-    per_batch_timeout = cfg.verification_timeout
+    # Total wall-clock budget for the whole sweep. Default is UNBOUNDED batch: keep
+    # increasing the batch until the budget is spent (no per-batch cap — heavier 2D
+    # batches just consume more of the same budget).
+    time_budget = cfg.verification_timeout
     if cfg.verification_batch > 0:
-        # Single-batch mode — pin both ends.
-        min_batch = max_batch = cfg.verification_batch
+        min_batch = max_batch = cfg.verification_batch   # single batch — pin both ends
         log.info("  Single-batch mode: batch=%d", cfg.verification_batch)
     else:
-        min_batch = 1
-        max_batch = 64 if is_2d else 256
-        if is_2d:
-            log.info("  2D kernel detected — max_batch=%d", max_batch)
+        min_batch, max_batch = 1, 0                      # 0 = unbounded; bounded only by time_budget
 
     result = verify_kernel(
         neon_path=str(kernel_path),
         rvv_path=str(output_path),
         kernel_name=kernel_name,
         vlen=256,
-        per_batch_timeout=per_batch_timeout,
+        time_budget=time_budget,
         max_batch=max_batch,
         min_batch=min_batch,
         backend=cfg.verification_backend,
         input_range=cfg.verification_input_range,
+        symbolic_params=cfg.verification_symbolic_params,
+        build_dir=build_dir,
     )
     import json
     result_dict = json.loads(result.to_json())
@@ -311,28 +312,48 @@ def _call_llm(client, prompt: str, system: str, tools: dict, cfg: Config,
         )
 
 
+# Zephyr build slots: each kernel installs its harness into slot_<id>/app/src/main.c,
+# builds into slot_<id>/build, and Spike reads slot_<id>/build/zephyr/zephyr.elf — all
+# slot-private.  Under --jobs, concurrent kernels MUST use distinct slots or they clobber
+# each other's main.c / build / ELF.  _SLOT_POOL hands out distinct slots (a free-list);
+# acquiring a slot isolates the whole build+Spike stage, so they run in PARALLEL (no lock).
+_SLOT_POOL = None  # queue.Queue of slot ids; initialized in main() when --jobs > 1
+
+
 def _compile_and_run(kernel_name: str, cfg: Config):
-    """Compile the kernel and optionally run on Spike. Returns (build_result, run_result)."""
+    """Compile the kernel and optionally run on Spike. Returns (build_result, run_result).
+
+    Runs on an isolated build slot so parallel kernels don't clobber each other's
+    harness / build tree / ELF.
+    """
     from .build import build_kernel, run_spike
+    from .build.compiler import _get_build_slot
 
     if not cfg.zephyr_base or not Path(cfg.zephyr_base).exists():
         log.info("Skipping compilation (zephyr not found at %s)", cfg.zephyr_base)
         return None, None
 
-    log.info("Compiling %s...", kernel_name)
-    build_result = build_kernel(kernel_name, zephyr_base=cfg.zephyr_base)
+    slot = _SLOT_POOL.get() if _SLOT_POOL is not None else 0
+    try:
+        log.info("Compiling %s (slot %d)...", kernel_name, slot)
+        build_result = build_kernel(kernel_name, zephyr_base=cfg.zephyr_base, slot_id=slot)
 
-    if not build_result.success:
-        return build_result, None
+        if not build_result.success:
+            return build_result, None
 
-    log.info("Compilation passed (%.1fs)", build_result.elapsed)
+        log.info("Compilation passed (%.1fs)", build_result.elapsed)
 
-    if not cfg.chipyard_path:
-        log.info("Skipping Spike (CHIPYARD_PATH not set)")
-        return build_result, None
+        if not cfg.chipyard_path:
+            log.info("Skipping Spike (CHIPYARD_PATH not set)")
+            return build_result, None
 
-    run_result = run_spike(kernel_name=kernel_name, chipyard_path=cfg.chipyard_path)
-    return build_result, run_result
+        _, slot_build_dir = _get_build_slot(slot)   # the ELF for THIS slot
+        run_result = run_spike(kernel_name=kernel_name, build_dir=slot_build_dir,
+                               chipyard_path=cfg.chipyard_path)
+        return build_result, run_result
+    finally:
+        if _SLOT_POOL is not None:
+            _SLOT_POOL.put(slot)
 
 
 def translate_kernel(
@@ -341,6 +362,7 @@ def translate_kernel(
     client,
     tools: dict[str, callable],
     tracker: StatusTracker,
+    build_dir: Path = None,
 ) -> TranslationResult:
     """Translate a single kernel with compile/run repair loop.
 
@@ -427,7 +449,7 @@ def translate_kernel(
     if cfg.skip_spike and tracker.get(kernel_name).get("compiled", False):
         log.info("Skipping compile+Spike for %s (already passed), jumping to verification", kernel_name)
 
-        verify_result = _run_formal_verification(kernel_path, output_path, kernel_name, cfg)
+        verify_result = _run_formal_verification(kernel_path, output_path, kernel_name, cfg, build_dir)
 
         if verify_result is None:
             log.warning("Formal verification unavailable — skipping")
@@ -517,7 +539,7 @@ def translate_kernel(
 
             # --- Formal verification (v2 engine, cvc5) ---
             verify_result = _run_formal_verification(
-                kernel_path, output_path, kernel_name, cfg)
+                kernel_path, output_path, kernel_name, cfg, build_dir)
 
             if verify_result is None:
                 # Verification not available (bitwuzla not installed, etc.)
@@ -650,6 +672,9 @@ def build_parser() -> argparse.ArgumentParser:
     g.add_argument("-k", "--kernel", type=str, help="Kernel name to translate (e.g. f32-vmulc)")
     g.add_argument("-f", "--file", type=Path, help="Path to a specific source kernel file")
     g.add_argument("-b", "--batch", action="store_true", help="Translate all kernels in source dir")
+    p.add_argument("-j", "--jobs", type=int, default=1,
+                   help="--batch: translate+verify this many kernels concurrently "
+                        "(default 1; bound by your LLM provider's rate limits)")
 
     # Translation config
     p.add_argument("--source", default="Neon", help="Source ISA (default: Neon)")
@@ -665,7 +690,9 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--max-verification-retries", type=int, default=5,
                     help="Max repair attempts for formal verification failures")
     p.add_argument("--verification-timeout", type=int, default=600,
-                    help="Per-batch verification timeout in seconds (also enforced inside the solver via tlimit-per). Default: 600 (10 min).  0 = no timeout (run until cvc5 returns).")
+                    help="TOTAL wall-clock time budget (s) for the whole batch sweep. The verifier keeps "
+                         "increasing the batch (unbounded) until this is spent; each solver query gets "
+                         "whatever time is left. Default: 600 (10 min). 0 = no budget.")
     p.add_argument("--verify-batch", type=int, default=0,
                     help="Run ONLY this batch size in verification (skip the 1..max sweep). 0 = sweep (default).")
     p.add_argument("--input-range", default="",
@@ -673,6 +700,10 @@ def build_parser() -> argparse.ArgumentParser:
                          "Needed for FP-multiply families (gemm/igemm/dwconv/vmulcaddc/ibilinear), which "
                          "otherwise counterexample on the inherent NaN-in-min/max ISA difference. "
                          "Tags the verdict config:finite. Use '=' to pass a leading '-': --input-range=-1,1")
+    p.add_argument("--symbolic-params", action="store_true",
+                    help="Verify with SYMBOLIC params — prove equivalence for ALL valid param values "
+                         "(within their constraints/ranges) instead of the concrete edge configs. "
+                         "Strongest for integer-param families (qs8/qu8); FP params can be solver-hard.")
 
     # Build / simulation
     p.add_argument("--zephyr-base", default="", help="Path to Zephyr SDK")
@@ -753,17 +784,51 @@ def main():
             sys.exit(1)
         log.info("Batch mode: found %d kernels", len(kernel_files))
 
+    def _process_kernel(kernel_path, build_dir, with_kernel_log):
+        # Per-kernel log files add a handler to the ROOT logger, which doesn't
+        # work under concurrency — only used in sequential mode.
+        kh = _setup_kernel_logging(run_dir, kernel_path.stem) if with_kernel_log else None
+        try:
+            result = translate_kernel(kernel_path, cfg, client, tools, tracker, build_dir=build_dir)
+            if cfg.optimize and result.success:
+                try:
+                    _optimize_and_reverify(kernel_path, kernel_path.stem, cfg, tracker,
+                                           build_dir=build_dir)
+                except Exception:
+                    log.exception("Optimization stage crashed for %s", kernel_path.stem)
+            return result
+        finally:
+            if kh is not None:
+                _teardown_kernel_logging(kh)
+
     results = []
-    for kernel_path in kernel_files:
-        kh = _setup_kernel_logging(run_dir, kernel_path.stem)
-        result = translate_kernel(kernel_path, cfg, client, tools, tracker)
-        if cfg.optimize and result.success:
-            try:
-                _optimize_and_reverify(kernel_path, kernel_path.stem, cfg, tracker)
-            except Exception:
-                log.exception("Optimization stage crashed for %s", kernel_path.stem)
-        _teardown_kernel_logging(kh)
-        results.append(result)
+    if cfg.jobs > 1 and len(kernel_files) > 1:
+        # Parallel batch (§9c.F): dispatch many kernels through translate→compile→
+        # Spike→verify at once. Bounded by --jobs (mind LLM rate limits). Each kernel
+        # verifies in its own cmake build dir and builds/Spikes on its own Zephyr slot;
+        # status writes + libclang generation are the only locked sections.
+        log.info("Parallel batch: %d kernels across %d workers (per-kernel log files off)",
+                 len(kernel_files), cfg.jobs)
+        slots = PROJECT_ROOT / "build" / "slots"
+        global _SLOT_POOL                       # distinct Zephyr build slot per concurrent kernel
+        _SLOT_POOL = queue.Queue()
+        for i in range(cfg.jobs):
+            _SLOT_POOL.put(i)
+        with ThreadPoolExecutor(max_workers=cfg.jobs) as ex:
+            futs = {ex.submit(_process_kernel, kp, slots / kp.stem, False): kp
+                    for kp in kernel_files}
+            for fut in as_completed(futs):
+                kp = futs[fut]
+                try:
+                    res = fut.result()
+                except Exception as e:
+                    log.exception("Kernel %s crashed", kp.stem)
+                    res = TranslationResult(kernel_name=kp.stem, success=False, error=str(e))
+                results.append(res)
+                log.info("[done] %-18s success=%s", kp.stem, getattr(res, "success", False))
+    else:
+        for kernel_path in kernel_files:
+            results.append(_process_kernel(kernel_path, None, True))
 
     total = len(results)
     success = sum(1 for r in results if r.success)

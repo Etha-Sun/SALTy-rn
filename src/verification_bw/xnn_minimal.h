@@ -89,7 +89,7 @@ static inline uint16_t fp16_ieee_from_fp32_value(float f) {
 #endif
 
 #if XNN_HAVE_FLOAT16
-typedef _Float16 xnn_float16;
+typedef salt_float16 xnn_float16;
 #else
 struct xnn_float16 {
   uint16_t value;

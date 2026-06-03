@@ -19,19 +19,28 @@ log = logging.getLogger("pipeline")
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent.parent  # src/workflow/verification/ -> SALT/
 
-DEFAULT_MAX_BATCH = 256
-
 # Backend → (cmake source dir, build subdir under build/) mapping.  The
 # generated harness is identical between backends; only the include path /
 # library link differs.
 VERIFICATION_DIRS = {
-    "bitwuzla": PROJECT_ROOT / "src" / "verification",
+    "bitwuzla": PROJECT_ROOT / "src" / "verification_bw",
     "cvc5":     PROJECT_ROOT / "src" / "verification_cvc5",
 }
 VERIFICATION_BUILD_SUBDIRS = {
-    "bitwuzla": "verification",
+    "bitwuzla": "verification_bw",
     "cvc5":     "verification_cvc5",
 }
+
+# Auto-routing portfolio: the v2 (cvc5) harness routes each query at runtime —
+# pure-BV → bitwuzla (it wins the hard symbolic-int BV cases), FP → cvc5 — via
+# the SALT_BACKEND=auto / SALT_BITWUZLA env hooks in core/context.hpp.
+BITWUZLA_BIN = PROJECT_ROOT / "third_party" / "bitwuzla" / "install" / "bin" / "bitwuzla"
+BITWUZLA_LIB = PROJECT_ROOT / "third_party" / "bitwuzla" / "install" / "lib64"
+
+# Serializes libclang harness generation when many kernels verify in one process
+# (the --jobs ThreadPool). Process-local, so the ProcessPool sweep is unaffected.
+import threading as _threading
+_GEN_LOCK = _threading.Lock()
 
 # Legacy alias kept for any downstream import.
 VERIFICATION_DIR = VERIFICATION_DIRS["bitwuzla"]
@@ -169,27 +178,39 @@ def extract_missing_intrinsics(compile_error: str) -> list[str]:
 
 
 def run_verification(bin_path: Path, kernel_name: str,
-                      per_batch_timeout: int = 600,
-                      max_batch: int = DEFAULT_MAX_BATCH,
+                      time_budget: int = 600,
+                      max_batch: int = 0,
                       vlen: int = 256,
-                      min_batch: int = 1) -> VerificationResult:
-    """Run the harness on batch=min_batch..max_batch in a single process.
+                      min_batch: int = 1,
+                      route: bool = False) -> VerificationResult:
+    """Run the harness in a single process under ONE total wall-clock budget.
 
-    The harness handles the loop internally and checks per-batch time.
-    Stops when any single batch exceeds per_batch_timeout seconds.
-    per_batch_timeout=0 disables both the per-query and the outer wall-clock cap.
+    The harness sweeps increasing batch sizes (min_batch, min_batch+1, …) and each
+    solver query gets whatever is left of `time_budget` seconds; it stops when the
+    budget is spent (→ TIMEOUT/PARTIAL), on a counterexample, or at max_batch.
+
+    max_batch == 0 means UNBOUNDED — keep increasing the batch until the budget runs
+    out (the batch is not capped, only the total time is). max_batch > 0 caps it.
+    time_budget == 0 disables the budget (then max_batch must be > 0, else the harness
+    defaults to a 600 s budget so it can't run forever).
     """
     result = VerificationResult(kernel_name=kernel_name, verdict="ALL_PASSED")
     env = os.environ.copy()
     env["DYLD_LIBRARY_PATH"] = "/usr/local/lib"
     env["LD_LIBRARY_PATH"] = "/usr/local/lib"
+    if route:
+        bwz = os.environ.get("SALT_BITWUZLA", str(BITWUZLA_BIN))
+        env["SALT_BACKEND"] = "auto"
+        env["SALT_BITWUZLA"] = bwz
+        env["LD_LIBRARY_PATH"] = f"{BITWUZLA_LIB}:{env['LD_LIBRARY_PATH']}"
+        log.info("  Routing: auto (pure-BV→bitwuzla, FP→cvc5); bitwuzla=%s", bwz)
 
-    # Overall wall-clock kill — None means no outer kill (per_batch_timeout=0).
-    n_batches = max_batch - min_batch + 1
-    overall_timeout = None if per_batch_timeout == 0 else \
-        max(n_batches * 20, per_batch_timeout * n_batches, 600)
+    # The harness self-limits to `time_budget` wall-clock. Kill the process only as a
+    # backstop a bit past that (last-query overshoot + final summary print).
+    overall_timeout = None if time_budget <= 0 else (time_budget + 60)
 
-    log.info("  Running: %s %d %d %d %d", bin_path.name, min_batch, max_batch, vlen, per_batch_timeout)
+    log.info("  Running: %s start=%d end=%s vlen=%d budget=%ds", bin_path.name,
+             min_batch, max_batch or "unbounded", vlen, time_budget)
 
     t0 = time.perf_counter()
     last_logged_batch = 0
@@ -199,7 +220,7 @@ def run_verification(bin_path: Path, kernel_name: str,
     # Stream stdout line-by-line for real-time progress
     try:
         proc = subprocess.Popen(
-            [str(bin_path), str(min_batch), str(max_batch), str(vlen), str(per_batch_timeout)],
+            [str(bin_path), str(min_batch), str(max_batch), str(vlen), str(time_budget)],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE,
             text=True, env=env,
             bufsize=1,  # line-buffered on the Python side of the pipe
@@ -276,8 +297,8 @@ def run_verification(bin_path: Path, kernel_name: str,
 
             elif status == "TIMEOUT":
                 result.verdict = "PARTIAL"
-                log.info("  config=%s batch=%d exceeded %ds — verified up to batch=%d",
-                         config, batch, per_batch_timeout,
+                log.info("  config=%s — %ds budget spent at batch=%d; verified up to batch=%d",
+                         config, time_budget, batch,
                          result.config_results.get(config, 0))
 
             elif status == "ALL_VERIFIED" and result.verdict == "ALL_PASSED":
@@ -350,11 +371,12 @@ def verify_kernel(neon_path: str, rvv_path: str,
                    param_configs: list[tuple[str, str]] = None,
                    symbolic_params: bool = False,
                    vlen: int = 256,
-                   per_batch_timeout: int = 600,
-                   max_batch: int = DEFAULT_MAX_BATCH,
+                   time_budget: int = 600,
+                   max_batch: int = 0,
                    min_batch: int = 1,
-                   backend: str = "cvc5",
+                   backend: str = "auto",
                    input_range: tuple = None,
+                   build_dir: Path = None,
                    llm_client=None) -> VerificationResult:
     """Full pipeline: generate (v2 engine) → compile → run.
 
@@ -373,13 +395,24 @@ def verify_kernel(neon_path: str, rvv_path: str,
     if not kernel_name:
         kernel_name = Path(neon_path).stem
 
+    # backend="auto" (default) → build the cvc5 harness, but route per-query at
+    # runtime (pure-BV→bitwuzla, FP→cvc5) via the SALT_BACKEND env hook.  If the
+    # bitwuzla binary isn't present, degrade gracefully to cvc5-only.
+    route = backend == "auto"
+    compile_backend = "cvc5" if route else backend
+    if route:
+        bwz = os.environ.get("SALT_BITWUZLA", str(BITWUZLA_BIN))
+        if not Path(bwz).exists():
+            log.warning("  backend=auto but bitwuzla not found at %s — using cvc5-only", bwz)
+            route = False
+
     log.info("═══════════════════════════════════════════════════════════")
     log.info("Verification: %s", kernel_name)
     log.info("  NEON source: %s", neon_path)
     log.info("  RVV source:  %s", rvv_path)
     log.info("  Backend: %s", backend)
-    log.info("  VLEN=%d  max_batch=%d  per_batch_timeout=%ds",
-             vlen, max_batch, per_batch_timeout)
+    log.info("  VLEN=%d  max_batch=%s  time_budget=%ds",
+             vlen, max_batch or "unbounded", time_budget)
 
     params_mode = "symbolic" if symbolic_params else "concrete"
     log.info("  Mode: params=%s%s", params_mode,
@@ -389,11 +422,12 @@ def verify_kernel(neon_path: str, rvv_path: str,
     log.info("Step 1/3: Generating verification harness (v2)...")
     try:
         from .engine.emit import generate_harness
-        harness = generate_harness(
-            neon_path, rvv_path, kernel_name,
-            params_mode=params_mode,
-            input_range=input_range,
-        )
+        with _GEN_LOCK:   # libclang cindex isn't reliably thread-safe across concurrent parses
+            harness = generate_harness(
+                neon_path, rvv_path, kernel_name,
+                params_mode=params_mode,
+                input_range=input_range,
+            )
     except NotImplementedError as e:
         log.warning("Kernel not yet supported by v2 engine: %s", e)
         return VerificationResult(
@@ -406,7 +440,8 @@ def verify_kernel(neon_path: str, rvv_path: str,
 
     # 2. Compile
     log.info("Step 2/3: Compiling verification harness...")
-    bin_path, compile_error = compile_harness(harness, kernel_name, backend=backend)
+    bin_path, compile_error = compile_harness(harness, kernel_name, backend=compile_backend,
+                                              output_dir=build_dir)
     if bin_path is None:
         missing = extract_missing_intrinsics(compile_error)
         if missing:
@@ -420,12 +455,52 @@ def verify_kernel(neon_path: str, rvv_path: str,
     log.info("  Compilation successful")
 
     # 3. Run
-    log.info("Step 3/3: Starting bounded verification (batch=%d..%d)...", min_batch, max_batch)
+    log.info("Step 3/3: Bounded verification (batch from %d, %s, %ds budget)...",
+             min_batch, f"to {max_batch}" if max_batch else "unbounded", time_budget)
     return run_verification(bin_path, kernel_name,
-                             per_batch_timeout=per_batch_timeout,
+                             time_budget=time_budget,
                              max_batch=max_batch,
                              min_batch=min_batch,
-                             vlen=vlen)
+                             vlen=vlen,
+                             route=route)
+
+
+# ---------------------------------------------------------------------------
+# Parallel sweep — embarrassingly parallel across kernels (§9c.F)
+# ---------------------------------------------------------------------------
+def _verify_one_spec(spec: dict):
+    """Pool worker: verify one kernel in its OWN build dir so concurrent compiles
+    don't clobber a shared CMake cache.  `spec` is verify_kernel kwargs."""
+    name = spec["kernel_name"]
+    bd = PROJECT_ROOT / "build" / "slots" / name
+    return name, verify_kernel(build_dir=bd, **spec)
+
+
+def verify_kernels_parallel(specs: list, max_workers: int = None) -> dict:
+    """Verify many kernels concurrently (one process each, isolated build dirs).
+
+    `specs`: list of verify_kernel kwargs dicts (each must include kernel_name,
+    neon_path, rvv_path).  Returns {kernel_name: VerificationResult}.  Each kernel's
+    solver query uses ~1 core, so the natural cap is the core count.
+    """
+    from concurrent.futures import ProcessPoolExecutor, as_completed
+    if max_workers is None:
+        max_workers = max(1, min(8, (os.cpu_count() or 4) - 1))
+    log.info("Parallel verification: %d kernels across %d workers", len(specs), max_workers)
+    results = {}
+    with ProcessPoolExecutor(max_workers=max_workers) as ex:
+        futs = {ex.submit(_verify_one_spec, s): s.get("kernel_name", "?") for s in specs}
+        for fut in as_completed(futs):
+            name = futs[fut]
+            try:
+                n, res = fut.result()
+                results[n] = res
+                nver = len([b for b in res.verified_batches if b.status == "VERIFIED"])
+                log.info("  [done] %-18s %-14s verified=%d", n, res.verdict, nver)
+            except Exception as e:
+                log.error("  [fail] %s: %s", name, e)
+                results[name] = VerificationResult(kernel_name=name, verdict=f"EXC:{type(e).__name__}")
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -444,15 +519,23 @@ def main():
     p.add_argument("--params-init", default="", help="C++ params initialization code")
     p.add_argument("--params-file", default="", help="File containing params init code")
     p.add_argument("--vlen", type=int, default=256, help="Target VLEN in bits")
-    p.add_argument("--timeout", type=int, default=600, help="Per-batch timeout in seconds (default: 600 = 10 min)")
-    p.add_argument("--max-batch", type=int, default=DEFAULT_MAX_BATCH, help="Max batch size")
+    p.add_argument("--timeout", type=int, default=600,
+                   help="TOTAL wall-clock time budget in seconds for the whole batch sweep "
+                        "(default: 600 = 10 min). The sweep keeps increasing the batch until this "
+                        "is spent; each query gets whatever time is left. 0 = no budget (then set --max-batch).")
+    p.add_argument("--max-batch", type=int, default=0,
+                   help="Cap the batch sweep at this size. 0 (default) = UNBOUNDED — keep increasing "
+                        "the batch until the --timeout budget runs out.")
     p.add_argument("--batch", type=int, default=0,
                    help="Run ONLY this batch size (shortcut for --min-batch=N --max-batch=N). 0 = sweep.")
     p.add_argument("--symbolic-params", action="store_true",
                    help="Use symbolic params (proves for ALL valid params)")
-    p.add_argument("--backend", choices=sorted(VERIFICATION_DIRS.keys()),
-                   default="cvc5",
-                   help="SMT backend (default: cvc5; the v2 engine is cvc5-only)")
+    p.add_argument("--backend", choices=sorted(VERIFICATION_DIRS.keys()) + ["auto"],
+                   default="auto",
+                   help="SMT backend. auto (default) = portfolio: build cvc5 harness, "
+                        "route each query pure-BV→bitwuzla / FP→cvc5 with on-timeout "
+                        "fallback (degrades to cvc5 if bitwuzla absent). "
+                        "cvc5 = cvc5-only | bitwuzla = legacy tree.")
     p.add_argument("--input-range", default="",
                    help="Constrain F32 inputs to a finite band 'LO,HI' (e.g. -1,1) — "
                         "needed for FP-multiply families; tags the verdict config:finite. "
@@ -475,7 +558,7 @@ def main():
         params_init=params_init,
         symbolic_params=args.symbolic_params,
         vlen=args.vlen,
-        per_batch_timeout=args.timeout,
+        time_budget=args.timeout,
         max_batch=max_batch,
         min_batch=min_batch,
         backend=args.backend,
