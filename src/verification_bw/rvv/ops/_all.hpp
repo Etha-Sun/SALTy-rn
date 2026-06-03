@@ -1,0 +1,23 @@
+#pragma once
+// Aggregator for generated complete-coverage RVV intrinsic families (bitwuzla).
+// Each family file is self-contained (#include "../intrinsics.hpp", own helpers).
+#include "core.hpp"
+#include "vsetvl.hpp"
+#include "int_arith.hpp"
+#include "int_macc.hpp"
+#include "int_compare.hpp"
+#include "widening.hpp"
+#include "narrowing.hpp"
+#include "int_red.hpp"
+#include "carry.hpp"
+#include "fixedpoint.hpp"
+#include "init.hpp"
+#include "typemanip.hpp"
+#include "crypto.hpp"
+#include "permutation.hpp"
+#include "mask.hpp"
+#include "mem_unit.hpp"
+#include "mem_strided.hpp"
+#include "mem_seg.hpp"
+#include "mem_segstr.hpp"
+#include "mem_indexed.hpp"

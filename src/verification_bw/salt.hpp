@@ -22,7 +22,9 @@
 
 // Symbolic intrinsic implementations
 #include "neon/intrinsics.hpp"
+#include "neon/ops/_all.hpp"
 #include "rvv/intrinsics.hpp"
+#include "rvv/ops/_all.hpp"
 
 // XNN param structs, macros, and type definitions
 // (guards the real arm_neon.h / riscv_vector.h from being included)
