@@ -20,6 +20,7 @@ import logging
 import os
 import random
 import re
+import threading
 
 log = logging.getLogger("pipeline")
 
@@ -136,6 +137,13 @@ class LLMClient:
         self._client = None
         self._async_client = None
         self._loop = asyncio.new_event_loop()
+        # Drive the loop in its own daemon thread so one shared client is safe to
+        # call from multiple worker threads (batch --jobs). Callers submit via
+        # run_coroutine_threadsafe; using run_until_complete from two threads on
+        # the same loop raises "This event loop is already running".
+        self._loop_thread = threading.Thread(
+            target=self._loop.run_forever, name="llm-eventloop", daemon=True)
+        self._loop_thread.start()
 
         self._init_client()
 
@@ -301,7 +309,9 @@ class LLMClient:
     # ---- async internals ----------------------------------------------------
 
     def _run_async(self, coro):
-        return self._loop.run_until_complete(coro)
+        # Submit to the loop running in its own thread and block for the result;
+        # safe to call concurrently from many threads (batch --jobs).
+        return asyncio.run_coroutine_threadsafe(coro, self._loop).result()
 
     async def _achat(self, prompt: str, system: str | None, temperature: float,
                      max_tokens: int, thinking: str | None) -> str:

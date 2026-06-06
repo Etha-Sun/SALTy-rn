@@ -1649,12 +1649,12 @@ inline int8_t vaddv_s8(const int8x8_t& a) { return {}; }
 inline int8_t vaddvq_s8(const int8x16_t& a) { return {}; }
 inline int16_t vaddv_s16(const int16x4_t& a) { return {}; }
 inline int16_t vaddvq_s16(const int16x8_t& a) { return {}; }
-inline int32_t vaddvq_s32(const int32x4_t& a) { return {}; }
+inline int32_t vaddvq_s32(const int32x4_t& a) { auto& tm = g_ctx->tm; Term s = a.getLane(0); for (size_t i = 1; i < 4; i++) s = tm.mkTerm(Kind::BITVECTOR_ADD, {s, a.getLane(i)}); g_ctx->set_scalar_result(s); return {}; }  // rsum: capture reduction sum
 inline uint8_t vaddv_u8(const uint8x8_t& a) { return {}; }
 inline uint8_t vaddvq_u8(const uint8x16_t& a) { return {}; }
 inline uint16_t vaddv_u16(const uint16x4_t& a) { return {}; }
 inline uint16_t vaddvq_u16(const uint16x8_t& a) { return {}; }
-inline uint32_t vaddvq_u32(const uint32x4_t& a) { return {}; }
+inline uint32_t vaddvq_u32(const uint32x4_t& a) { auto& tm = g_ctx->tm; Term s = a.getLane(0); for (size_t i = 1; i < 4; i++) s = tm.mkTerm(Kind::BITVECTOR_ADD, {s, a.getLane(i)}); g_ctx->set_scalar_result(s); return {}; }  // rsum: capture reduction sum
 inline int16_t vaddlv_s8(const int8x8_t& a) { return {}; }
 inline int16_t vaddlvq_s8(const int8x16_t& a) { return {}; }
 inline int32_t vaddlv_s16(const int16x4_t& a) { return {}; }

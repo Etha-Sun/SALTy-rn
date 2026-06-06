@@ -165,7 +165,7 @@ inline int16_t __riscv_vmv_x_s_i16m4_i16(const RVVVector& src){ (void)src; retur
 inline int16_t __riscv_vmv_x_s_i16m8_i16(const RVVVector& src){ (void)src; return 0; }
 inline int16_t __riscv_vmv_x_s_i16mf2_i16(const RVVVector& src){ (void)src; return 0; }
 inline int16_t __riscv_vmv_x_s_i16mf4_i16(const RVVVector& src){ (void)src; return 0; }
-inline int32_t __riscv_vmv_x_s_i32m1_i32(const RVVVector& src){ (void)src; return 0; }
+inline int32_t __riscv_vmv_x_s_i32m1_i32(const RVVVector& src){ g_ctx->set_scalar_result(src.getElement(0)); return 0; }  // rsum: capture reduction sum
 inline int32_t __riscv_vmv_x_s_i32m2_i32(const RVVVector& src){ (void)src; return 0; }
 inline int32_t __riscv_vmv_x_s_i32m4_i32(const RVVVector& src){ (void)src; return 0; }
 inline int32_t __riscv_vmv_x_s_i32m8_i32(const RVVVector& src){ (void)src; return 0; }
@@ -187,7 +187,7 @@ inline uint16_t __riscv_vmv_x_s_u16m4_u16(const RVVVector& src){ (void)src; retu
 inline uint16_t __riscv_vmv_x_s_u16m8_u16(const RVVVector& src){ (void)src; return 0; }
 inline uint16_t __riscv_vmv_x_s_u16mf2_u16(const RVVVector& src){ (void)src; return 0; }
 inline uint16_t __riscv_vmv_x_s_u16mf4_u16(const RVVVector& src){ (void)src; return 0; }
-inline uint32_t __riscv_vmv_x_s_u32m1_u32(const RVVVector& src){ (void)src; return 0; }
+inline uint32_t __riscv_vmv_x_s_u32m1_u32(const RVVVector& src){ g_ctx->set_scalar_result(src.getElement(0)); return 0; }  // rsum: capture reduction sum
 inline uint32_t __riscv_vmv_x_s_u32m2_u32(const RVVVector& src){ (void)src; return 0; }
 inline uint32_t __riscv_vmv_x_s_u32m4_u32(const RVVVector& src){ (void)src; return 0; }
 inline uint32_t __riscv_vmv_x_s_u32m8_u32(const RVVVector& src){ (void)src; return 0; }

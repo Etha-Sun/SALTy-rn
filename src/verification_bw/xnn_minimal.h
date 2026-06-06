@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <string.h>
+#include <math.h>     // floor (rdsum num_batches)
 #define XNN_ARCH_ARM64 1
 
 // Minimal definitions needed for XNN symbolic execution
@@ -26,6 +27,14 @@ static inline uint32_t fp32_to_bits(float f) {
 
 static inline size_t doz(size_t a, size_t b) {
   return a > b ? a - b : 0;
+}
+
+static inline size_t min(size_t a, size_t b) {
+  return a < b ? a : b;
+}
+
+static inline size_t max(size_t a, size_t b) {
+  return a > b ? a : b;
 }
 
 // Check if n is a power of 2
@@ -294,6 +303,13 @@ struct xnn_qs8_f16_cvt_params {
 };
 
 struct xnn_qs8_f32_cvt_params {
+  struct {
+    int32_t zero_point;
+    float scale;
+  } scalar;
+};
+
+struct xnn_qu8_f32_cvt_params {
   struct {
     int32_t zero_point;
     float scale;

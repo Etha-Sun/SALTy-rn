@@ -188,6 +188,18 @@ def _rewrite_symbolic_params(src: str, st: str, pname: str, leaves) -> str:
         esc = re.escape(f"{pname}->{path}")
         body = re.sub(rf'\(\s*(\w+)\s*\)\s*{esc}\b', rf'{acc}.cast<\1>()', body)
         body = re.sub(rf'{esc}\b', acc, body)
+    # XNNPACK idiom `(T)(-(U)params->f)`: the inner `(U)params->f` became a
+    # `.cast<U>()` accessor above, but the outer C-style `(T)(...)` cast can't
+    # apply to a SymbolicScalar. Rewrite `(T) <sym>` → symbolic `<sym>.cast<T>()`.
+    _ACC = r"salt_param<\w+>\(\w+,\s*offsetof\([^)]+\)\)(?:\.cast<\w+>\(\))?"
+    _CT = r"u?int(?:8|16|32|64)_t|size_t"
+    _prev = None
+    while _prev != body:
+        _prev = body
+        body = re.sub(rf'\(\s*({_CT})\s*\)\s*\(\s*-\s*({_ACC})\s*\)', r'(-\2).cast<\1>()', body)
+        body = re.sub(rf'\(\s*({_CT})\s*\)\s*-\s*({_ACC})',           r'(-\2).cast<\1>()', body)
+        body = re.sub(rf'\(\s*({_CT})\s*\)\s*\(\s*({_ACC})\s*\)',     r'\2.cast<\1>()', body)
+        body = re.sub(rf'\(\s*({_CT})\s*\)\s*({_ACC})',               r'\2.cast<\1>()', body)
     body = _rebind_tainted_locals(body)
     if f"{pname}->" in body:  # residual param read the rewrite missed → fail loudly
         raise NotImplementedError(f"unrewritten param read of {pname} remains "
@@ -271,7 +283,7 @@ def _output_is_read(src: str, name: str) -> bool:
 class FixtureSpec:
     def __init__(self, dims, strides, extents, out_buffers, out_extent, elem, kind,
                  out_region=None, weights=None, params=None, indirect=None,
-                 out_extents=None, dual_weights=None):
+                 out_extents=None, dual_weights=None, out_elem=None, out_kind=None):
         self.dims = dims              # dim_name -> [values]
         self.strides = strides        # stride_name -> C++ expr (over dims)
         self.extents = extents        # buffer_name -> byte-count expr
@@ -279,6 +291,8 @@ class FixtureSpec:
         self.out_extent = out_extent  # contiguous output element count (if no out_region)
         self.elem = elem
         self.kind = kind
+        self.out_elem = out_elem or elem   # output element type (rdsum: int8 in, int32 out)
+        self.out_kind = out_kind or kind   # output ElementKind (matches out_elem)
         self.out_region = out_region  # {rows,cols,row_stride,col_stride} → strided compare
         self.weights = weights or {}  # name -> (byte-extent expr, uniform fill literal) — concrete
         self.params = params          # (struct_name, {field: value}) — concrete struct, or None
@@ -398,6 +412,40 @@ def _dwconv_fixture(ksize: int = 3) -> "FixtureSpec":
         elem="float", kind="F32")
 
 
+def _rdsum_fixture(elem: str, out_elem: str) -> "FixtureSpec":
+    # Column reduction over a rows×channels matrix: output[c] += Σ_r input[r*input_stride+c].
+    # int8/uint8 input, int32/uint32 INOUT output (loads prior contents, adds the sum).
+    # The NEON ref is the 7p7x variant — it reads 7 row pointers and substitutes the
+    # `zero` row for the partial tail of each 7-row group. `zero` MUST be a CONCRETE
+    # all-zeros buffer: that is the kernel's actual caller contract, and it is load-
+    # bearing for equivalence. NEON reads `zero` BLOCK-RELATIVE (each channel block and
+    # tail chunk resets i1..i6=zero and reads from zero[0]; logical channel c → zero[c
+    # mod blockwidth], blockwidth=16 for qs8 / 32 for qu8), whereas RVV reads zero[0..vl)
+    # spanning the full vector block (c → zero[c] within the block). These agree only
+    # when `zero` is uniform — a SYMBOLIC zero produces real counterexamples once
+    # channels exceed one NEON block (e.g. qs8 ch=18: NEON uses zero[0..2) for ch16-17,
+    # RVV uses zero[16..18)). With all-zeros padding it is a no-op and matches the RVV
+    # exact-row sum. (The symbolic INPUT matrix and INOUT OUTPUT init are full-domain.)
+    # Tight rows (≤8, single 252-block) exercise every zero-substitution threshold
+    # (cb<2,≤2,<4,≤4,<6,≤6); channels span the 16-wide main loop and the ≥8 / &4 / &2
+    # tails. rows≤8 ⇒ |Σ|≤8·128 ⟹ no int16 overflow ⟹ both sides compute the exact
+    # integer column sum (full domain, pure BV).
+    # channels are EVEN only: the NEON `channels&1` tail writes its last lane via a
+    # scalar store (`*output += vgetq_lane_s32(...)`), which the multi-dim symbolic
+    # engine (vector stores only) can't capture. Every even path IS a vector store —
+    # vst1q_s32 (16-wide main loop: 16,18,20; ≥8 tail: 8), the &4 tail (4,20), and the
+    # 2-lane vst1_s32 &2 tail (2,6,18) — so even channels verify; odd ones are excluded.
+    return FixtureSpec(
+        dims={"rows": [1, 2, 3, 7, 8], "channels": [2, 4, 6, 8, 16, 18, 20]},
+        strides={"input_stride": "channels"},        # tight row pitch (bytes; int8 ⇒ =channels)
+        extents={"input": "rows * input_stride + 64",                 # symbolic matrix + OOB pad
+                 "output": f"channels * sizeof({out_elem}) + 64"},
+        out_buffers=["output"], out_extent="channels", out_region=None,
+        weights={"zero": ("channels + 64", "0")},     # concrete all-zeros padding row (contract)
+        params=("xnn_qs8_rsum_params", {}),           # dummy struct (unused; &params must be valid)
+        elem=elem, kind=_kind(elem), out_elem=out_elem, out_kind=_kind(out_elem))
+
+
 def _strided_slice_fixture() -> "FixtureSpec":
     # y[i] = x[i*stride] — pure strided gather, no arithmetic → full-domain (the
     # FP-aware compare is bit-exact for a copy). Two bounds (n_out, stride); x is
@@ -485,6 +533,16 @@ def _match_fixture(sig, src=""):
         return _transpose_fixture(elem)   # element width from the buffer type
     if {"rows", "channels", "input_stride", "output_stride", "weights"} <= names:
         return _vmulcaddc_fixture()       # 2-row scale+bias+clamp (dual-packed weights)
+    if ({"rows", "channels", "input_stride", "zero"} <= names
+            and "output_stride" not in names and "weights" not in names):
+        # rdsum: int8/uint8 input → int32/uint32 INOUT column-sum, concrete-zero padding.
+        inp = next(p for p in sig.params
+                   if p.is_pointer and p.points_to_const and p.name == "input")
+        outp = next(p for p in sig.params
+                    if p.is_pointer and not p.points_to_const and p.name == "output")
+        ie = {"signed char": "int8_t", "unsigned char": "uint8_t"}.get(inp.pointee, inp.pointee)
+        oe = {"int": "int32_t", "unsigned int": "uint32_t"}.get(outp.pointee, outp.pointee)
+        return _rdsum_fixture(ie, oe)
     if ({"mr", "nc", "kc", "ks"} <= names
             and any(p.is_ptr_to_ptr for p in sig.params)):
         m = re.search(r'\bks\s*==\s*(\d+)', src)          # assert(ks == N)
@@ -530,6 +588,8 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
                if p.is_pointer and not p.points_to_const and not p.is_ptr_to_ptr
                and p.name not in spec.dims]
     elem = spec.elem
+    oelem, okind = spec.out_elem, spec.out_kind   # output type (rdsum: int8 in, int32 out)
+    neon_src, rvv_src = open(neon_path).read(), open(rvv_path).read()
     decls = [f"    const size_t {s} = {e};" for s, e in spec.strides.items()]
     # Indirect inputs: `const T** name` is a table of `count` row pointers into one
     # shared symbolic buffer. Both kernels read the same table → same symbols, so
@@ -553,11 +613,20 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
         ext = spec.extents[b]
         decls += [f"    std::vector<{elem}> {b}_arr({nelem(ext)}, 0);",
                   f'    auto& _b_{b} = ctx.registerBuffer("{b}", ({ext})); _b_{b}.{bindm}({b}_arr.data());']
+    onelem = lambda ext: f"({ext}) / sizeof({oelem}) + 1"   # output backing count (own type)
     for b in outputs:
         ext = spec.extents[b]
-        decls += [f"    std::vector<{elem}> {b}_neon_arr({nelem(ext)}, 0), {b}_rvv_arr({nelem(ext)}, 0);",
+        # In-out / accumulator outputs (rdsum: `output += Σ`) load prior contents, so
+        # both sides must start from ONE shared symbolic image; pure-write outputs keep
+        # independent poison so a missing write is caught.
+        inout = _output_is_read(neon_src, b) or _output_is_read(rvv_src, b)
+        decls += [f"    std::vector<{oelem}> {b}_neon_arr({onelem(ext)}, 0), {b}_rvv_arr({onelem(ext)}, 0);",
                   f'    auto& _b_{b}_neon = ctx.registerBuffer("{b}_neon", ({ext})); _b_{b}_neon.bind({b}_neon_arr.data());',
                   f'    auto& _b_{b}_rvv  = ctx.registerBuffer("{b}_rvv",  ({ext})); _b_{b}_rvv.bind({b}_rvv_arr.data());']
+        if inout:
+            decls.append(
+                f'    for (size_t _i = 0; _i < ({ext}); _i++) '
+                f'_b_{b}_rvv.setByte(_i, _b_{b}_neon.getByte(_i));  // shared init (in-out)')
     for b, (ext, fill) in spec.weights.items():   # concrete uniform weights (layout-invariant)
         decls += [f"    std::vector<{elem}> {b}_arr({nelem(ext)}, {fill});",
                   f'    ctx.registerConcreteBuffer("{b}", {b}_arr.data(), ({ext}));']
@@ -645,7 +714,7 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
 
     if spec.out_extents:                # multi-output: AND a contiguous compare per output
         terms = [f"buffers_equal(ctx.tm, _b_{ob}_neon, _b_{ob}_rvv, {ext}, "
-                 f"sizeof({elem}), ElementKind::{spec.kind})"
+                 f"sizeof({oelem}), ElementKind::{okind})"
                  for ob, ext in spec.out_extents.items()]
         cmp_expr = terms[0]
         for t in terms[1:]:
@@ -656,10 +725,36 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
             r = spec.out_region
             cmp_expr = (f"buffers_equal_strided(ctx.tm, _b_{ob}_neon, _b_{ob}_rvv, "
                         f"{r['rows']}, {r['cols']}, {r['row_stride']}, {r['col_stride']}, "
-                        f"sizeof({elem}), ElementKind::{spec.kind})")
+                        f"sizeof({oelem}), ElementKind::{okind})")
         else:
             cmp_expr = (f"buffers_equal(ctx.tm, _b_{ob}_neon, _b_{ob}_rvv, "
-                        f"{spec.out_extent}, sizeof({elem}), ElementKind::{spec.kind})")
+                        f"{spec.out_extent}, sizeof({oelem}), ElementKind::{okind})")
+    # Counterexample witness: on SAT, scan the (first) output buffer for the first
+    # differing element and extract both models, so the repair LLM gets an actionable
+    # "channel C: NEON=x RVV=y" instead of an empty shape. Strided/multi-output regions
+    # report the first diff in the leading region; contiguous outputs scan [0,count).
+    obits = _BYTES[oelem] * 8
+    if spec.out_extents:
+        _wob, _wcount = next(iter(spec.out_extents.items()))[0], next(iter(spec.out_extents.values()))
+        _woff = f"e * sizeof({oelem})"
+    elif spec.out_region:
+        r = spec.out_region
+        _wob, _wcount = spec.out_buffers[0], f"({r['rows']}) * ({r['cols']})"
+        _woff = f"(e / ({r['cols']})) * ({r['row_stride']}) + (e % ({r['cols']})) * ({r['col_stride']})"
+    else:
+        _wob, _wcount = spec.out_buffers[0], spec.out_extent
+        _woff = f"e * sizeof({oelem})"
+    cex_witness = (
+        f"    size_t fi = 0; long long _nv = 0, _vv = 0;\n"
+        f"    for (size_t e = 0; e < ({_wcount}); e++) {{\n"
+        f"        size_t _off = {_woff};\n"
+        f"        Term _n = ctx.solver->getValue(_b_{_wob}_neon.loadScalar(_off, {obits}));\n"
+        f"        Term _v = ctx.solver->getValue(_b_{_wob}_rvv.loadScalar(_off, {obits}));\n"
+        f"        unsigned long long _nu = strtoull(_n.getBitVectorValue(10).c_str(), nullptr, 10);\n"
+        f"        unsigned long long _vu = strtoull(_v.getBitVectorValue(10).c_str(), nullptr, 10);\n"
+        f"        if (_nu != _vu) {{ fi = e; _nv = (long long)({oelem})_nu; _vv = (long long)({oelem})_vu; break; }}\n"
+        f"    }}"
+    )
     dims = list(spec.dims)
     dim_sig = ", ".join(f"size_t {d}" for d in dims)
     dim_call = ", ".join(dims)
@@ -681,8 +776,8 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
         return (f"      for (size_t {d} : {{{vals}}}) {{\n{nest(i + 1)}\n      }}")
 
     decls_str = "\n".join(decls)
-    neon_body = _strip_simd_includes(open(neon_path).read())
-    rvv_body = _strip_simd_includes(open(rvv_path).read())
+    neon_body = _strip_simd_includes(neon_src)
+    rvv_body = _strip_simd_includes(rvv_src)
     main_loop = nest(0)
     return f"""// AUTO-GENERATED by emit.py — multi-dim harness ({name}).
 #include "salt.hpp"
@@ -714,6 +809,7 @@ int verify({dim_sig}, size_t vlen, double timeout_s) {{
     Term eq = {cmp_expr};
     ctx.assert_(ctx.lnot_(eq));
     if (timeout_s > 0) ctx.set_query_timeout_ms((uint64_t)(timeout_s * 1000.0));
+    printf("{{\\"status\\":\\"SOLVING\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});
     CheckResult _c = ctx.check();
     if (_c == CheckResult::Unsat) {{
         printf("{{\\"status\\":\\"VERIFIED\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});
@@ -723,11 +819,13 @@ int verify({dim_sig}, size_t vlen, double timeout_s) {{
         printf("{{\\"status\\":\\"TIMEOUT\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});
         return 2;
     }}
-    printf("{{\\"status\\":\\"COUNTEREXAMPLE\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});
+{cex_witness}
+    printf("{{\\"status\\":\\"COUNTEREXAMPLE\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\",\\"fail_index\\":%zu,\\"neon_out\\":%lld,\\"rvv_out\\":%lld}}\\n", {dim_call}, fi, _nv, _vv);
     return 1;
 }}
 
 int main(int argc, char** argv) {{
+    setvbuf(stdout, NULL, _IOLBF, 0);   // line-buffer so per-batch status streams over a pipe
     size_t vlen   = (argc > 3) ? (size_t)atoi(argv[3]) : 256;
     double budget = (argc > 4) ? atof(argv[4]) : 0.0;     // TOTAL wall-clock budget (s); 0 = none
     auto _t0 = std::chrono::steady_clock::now();
@@ -753,6 +851,12 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
     if _fx is not None:
         return generate_multidim(neon_path, rvv_path, name, neon, rvv, _fx, input_range)
     roles = resolve_roles(neon)
+
+    # `const void* params` (e.g. f32-f16-vcvt) is parsed as a const pointer and
+    # lands in roles.inputs with pointee "void" — but it's an opaque, unused
+    # param, not data. Strip it; the kernel call passes nullptr for it.
+    void_param_names = {p.name for p in roles.inputs if p.pointee == "void"}
+    roles.inputs = [p for p in roles.inputs if p.pointee != "void"]
 
     if roles.indirect:
         raise NotImplementedError("indirect (T**) inputs not yet supported")
@@ -793,10 +897,11 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
             params_setup += [f"    {st} params{{}};",
                              f'    auto& _b_params = ctx.registerBuffer("params", sizeof({st}));',
                              "    _b_params.bindScalarRef(&params);"]
-        else:                              # symbolic int (cls == 'int')
-            if [p for p, t, _ in leaves if t in _FP_CTYPES and p != "_"]:
-                raise NotImplementedError(f"mixed int+float symbolic params ({st}); "
-                                          "re-run with --params concrete")
+        else:                              # symbolic int — or mixed int+float
+            # Int leaves rewrite to salt_param<int>() (symbolic BV); float leaves
+            # to salt_param<float>() → SymbolicScalar<float>, which the FP _vf_
+            # overloads (core.hpp) consume. Both load from the same symbolic
+            # params buffer at disjoint offsets.
             pname = roles.params[0].name
             params_setup += [f"    {st} params{{}};",
                              f'    auto& _b_params = ctx.registerBuffer("params", sizeof({st}));',
@@ -806,6 +911,8 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
             if _ranges:
                 params_setup += _emit_param_ranges(st, leaves, _ranges)
             sym_param_rewrite = (st, pname, leaves)               # rewrite params->field in bodies
+    if void_param_names and not roles.params:    # only param was the opaque const void*
+        config_str = '"no-params"'
     if len(roles.bounds) != 1:
         raise NotImplementedError(f"elementwise slice needs exactly one bound; got "
                                   f"{[p.name for p in roles.bounds]}")
@@ -821,14 +928,28 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
         if unit_type not in _BYTES:
             raise NotImplementedError(f"byte-unit element type {unit_type!r} unknown")
         unit_bytes = _BYTES[unit_type]
-        # Slice limitation: every buffer's element is the byte-unit size, so the
-        # element count maps cleanly. Mixed widths (e.g. vcvt) come later.
-        for p in roles.inputs + roles.outputs:
-            if _BYTES.get(p.pointee) != unit_bytes:
-                raise NotImplementedError("mixed element sizes with byte-unit batch not yet supported")
+        # `batch` is the byte-extent of the INPUT domain (measured in unit_type),
+        # so every input must be unit_bytes wide for "batch / sizeof(unit)" to be
+        # the element count N. OUTPUTS may be a different width — a convert kernel
+        # narrows/widens (e.g. f32-f16-vcvt: float in, uint16 out; qu8-f32-vcvt:
+        # uint8 in, float out) but still writes N elements; each output is sized
+        # by its own pointee and compared with its own kind.
+        if unit_bytes > 1:
+            for p in roles.inputs:
+                if _BYTES.get(p.pointee) != unit_bytes:
+                    raise NotImplementedError("mixed input element sizes with byte-unit batch not yet supported")
 
     input_names = {p.name for p in roles.inputs}
     output_names = {p.name for p in roles.outputs}
+
+    # Split-complex kernels (f32-vcmul) carve each buffer into [real | imag] via
+    # `(uintptr_t) ptr + batch`, so every buffer spans split_mult*bound elements
+    # and the output compare must cover both halves (not just [0, bound)).
+    split_mult = 2 if re.search(
+        r'\(\s*uintptr_t\s*\)\s*\w+\s*\+\s*' + re.escape(bound) + r'\b',
+        neon_src + rvv_src) else 1
+    cap_expr = f"{bound} + 16" if split_mult == 1 else f"{bound} * {split_mult} + 16"
+    cmp_count = bound if split_mult == 1 else f"{bound} * {split_mult}"
 
     # buffer setup
     decls = []
@@ -876,6 +997,8 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
                 out.append(f"{p.name}_{side}_arr.data()")
             elif p.name in params_names:
                 out.append("&params")
+            elif p.name in void_param_names:
+                out.append("nullptr")
             elif p.name == bound:
                 out.append(bound_call)
             else:
@@ -886,13 +1009,54 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
     cmps = []
     for p in roles.outputs:
         cmps.append(f'        buffers_equal(ctx.tm, _b_{p.name}_neon, _b_{p.name}_rvv, '
-                    f'{bound}, sizeof({p.pointee}), ElementKind::{_kind(p.pointee)})')
+                    f'{cmp_count}, sizeof({p.pointee}), ElementKind::{_kind(p.pointee)})')
     cmp_expr = "\n      , ".join(cmps)
 
     # counterexample scan: first differing element of the first output
     first_out = roles.outputs[0]
     fo_ct = first_out.pointee
     fo_bits = _BYTES[first_out.pointee] * 8
+
+    # Scalar-reduction output (rsum): the kernel writes its result via a scalar
+    # accumulate `*output += vmv_x_s/vget_lane(...)`, NOT a vector store — so it
+    # never reaches the symbolic output buffer.  Detect the `*output <op>=` store
+    # (not the `T* output` param decl) and compare the captured reduction sum
+    # (stashed in ctx by the scalar-extract shims) instead of the (unwritten,
+    # unconstrained) output buffer.
+    out0 = first_out.name
+    is_scalar_reduction = bool(
+        re.search(r'\*\s*' + re.escape(out0) + r'\s*[-+*/|&^]?=', neon_src + rvv_src))
+    if is_scalar_reduction:
+        kernel_calls = (
+            f'    ctx.clear_scalar_result();\n'
+            f'    neon_kernel::{neon.func_name}({call_args("neon")});\n'
+            f'    Term _neon_red = ctx.scalar_result();\n'
+            f'    ctx.clear_scalar_result();\n'
+            f'    rvv_kernel ::{rvv.func_name}({call_args("rvv")});\n'
+            f'    Term _rvv_red = ctx.scalar_result();'
+        )
+        cmp_expr = "ctx.equal(_neon_red, _rvv_red)"
+        cex_block = (
+            '    printf("{\\"status\\":\\"COUNTEREXAMPLE\\",\\"batch\\":%zu,\\"vlen\\":%zu,'
+            '\\"config\\":\\"%s\\",\\"fail_index\\":0}\\n", ' + bound + ', vlen, ' + config_str + ');\n'
+            '    return 1;'
+        )
+    else:
+        kernel_calls = (
+            f'    neon_kernel::{neon.func_name}({call_args("neon")});\n'
+            f'    rvv_kernel ::{rvv.func_name}({call_args("rvv")});'
+        )
+        cex_block = (
+            f'    size_t fi = 0;\n'
+            f'    for (size_t e = 0; e < {cmp_count}; e++) {{\n'
+            f'        Term n = ctx.solver->getValue(_b_{first_out.name}_neon.loadScalar(e * sizeof({fo_ct}), {fo_bits}));\n'
+            f'        Term v = ctx.solver->getValue(_b_{first_out.name}_rvv.loadScalar(e * sizeof({fo_ct}), {fo_bits}));\n'
+            f'        if (n.getBitVectorValue(10) != v.getBitVectorValue(10)) {{ fi = e; break; }}\n'
+            f'    }}\n'
+            '    printf("{\\"status\\":\\"COUNTEREXAMPLE\\",\\"batch\\":%zu,\\"vlen\\":%zu,'
+            '\\"config\\":\\"%s\\",\\"fail_index\\":%zu}\\n", ' + bound + ', vlen, ' + config_str + ', fi);\n'
+            '    return 1;'
+        )
 
     decls_str = "\n".join(decls)
     neon_body = _strip_simd_includes(neon_src)
@@ -970,15 +1134,15 @@ namespace rvv_kernel {{
 int verify(size_t {bound}, size_t vlen{cfg_param}, double timeout_s) {{
     VerificationContext ctx(vlen);
     g_ctx = &ctx;
-    const size_t cap = {bound} + 16;   // over-allocate; exact size not needed
+    const size_t cap = {cap_expr};   // over-allocate; exact size not needed
 {decls_str}
 
-    neon_kernel::{neon.func_name}({call_args("neon")});
-    rvv_kernel ::{rvv.func_name}({call_args("rvv")});
+{kernel_calls}
 
     Term eq = {cmp_expr};
     ctx.assert_(ctx.lnot_(eq));
     if (timeout_s > 0) ctx.set_query_timeout_ms((uint64_t)(timeout_s * 1000.0));
+    printf("{{\\"status\\":\\"SOLVING\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {bound}, vlen, {config_str});
     CheckResult _r = ctx.check();
     if (_r == CheckResult::Unsat) {{
         printf("{{\\"status\\":\\"VERIFIED\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {bound}, vlen, {config_str});
@@ -988,17 +1152,11 @@ int verify(size_t {bound}, size_t vlen{cfg_param}, double timeout_s) {{
         printf("{{\\"status\\":\\"TIMEOUT\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\"}}\\n", {bound}, vlen, {config_str});
         return 2;
     }}
-    size_t fi = 0;
-    for (size_t e = 0; e < {bound}; e++) {{
-        Term n = ctx.solver->getValue(_b_{first_out.name}_neon.loadScalar(e * sizeof({fo_ct}), {fo_bits}));
-        Term v = ctx.solver->getValue(_b_{first_out.name}_rvv.loadScalar(e * sizeof({fo_ct}), {fo_bits}));
-        if (n.getBitVectorValue(10) != v.getBitVectorValue(10)) {{ fi = e; break; }}
-    }}
-    printf("{{\\"status\\":\\"COUNTEREXAMPLE\\",\\"batch\\":%zu,\\"vlen\\":%zu,\\"config\\":\\"%s\\",\\"fail_index\\":%zu}}\\n", {bound}, vlen, {config_str}, fi);
-    return 1;
+{cex_block}
 }}
 
 int main(int argc, char** argv) {{
+    setvbuf(stdout, NULL, _IOLBF, 0);   // line-buffer so per-batch status streams over a pipe
     if (argc < 3) {{ fprintf(stderr, "Usage: %s <start> <end(0=unbounded)> [vlen] [time_budget_s]\\n", argv[0]); return 2; }}
     size_t start = (size_t)atoi(argv[1]);
     size_t end   = (size_t)atoi(argv[2]);                 // 0 = unbounded: sweep until the time budget

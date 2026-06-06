@@ -164,9 +164,11 @@ def find_kernel_by_name(source_dir: Path, name: str) -> Path | None:
 def _format_counterexample(ce: dict) -> str:
     """Format a solver counterexample as human-readable text for LLM repair."""
     lines = []
-    batch = ce.get("batch", "?")
     fi = ce.get("fail_index", "?")
-    lines.append(f"At batch={batch}, element index {fi} produces different outputs:")
+    # Multi-dim (shape) harnesses report the failing shape as "dims" (e.g. "1,2" =
+    # rows,channels); elementwise harnesses report a scalar "batch". Show whichever.
+    where = f"dims=[{ce['dims']}]" if "dims" in ce else f"batch={ce.get('batch', '?')}"
+    lines.append(f"At {where}, output index {fi} produces different outputs:")
     lines.append("")
 
     # Print inputs

@@ -115,6 +115,17 @@ struct VerificationContext {
     std::map<std::string, std::unique_ptr<SymbolicBuffer>> buffers;
     std::vector<SymbolicBuffer*> registered_buffers;
 
+    // Scalar reduction result (rsum-style `*output += vmv_x_s/vget_lane(...)`):
+    // the scalar-extract shims stash the symbolic sum here so the harness can
+    // compare it directly — the scalar `*output +=` store bypasses the symbolic
+    // output buffer.  The harness clears this around each kernel call.
+    Term scalar_result_;
+    bool has_scalar_result_ = false;
+    void set_scalar_result(const Term& t) { scalar_result_ = t; has_scalar_result_ = true; }
+    void clear_scalar_result() { has_scalar_result_ = false; }
+    bool has_scalar_result() const { return has_scalar_result_; }
+    Term scalar_result() const { return scalar_result_; }
+
     // UF-abstraction (§9c.E): SALT_UF_ABSTRACT=mul,fma,... replaces those FP ops
     // with a shared uninterpreted function on BOTH kernels (the rewrite is applied
     // to the asserted formula, so it's symmetric by construction).  Sound but

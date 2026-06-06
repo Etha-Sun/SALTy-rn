@@ -2031,7 +2031,7 @@ inline mfloat8x16_t vsetq_lane_mf8(mfloat8_t a, const mfloat8x16_t& v, const int
 }
 inline uint8_t vget_lane_u8(const uint8x8_t& v, const int lane) { return {}; }
 inline uint16_t vget_lane_u16(const uint16x4_t& v, const int lane) { return {}; }
-inline uint32_t vget_lane_u32(const uint32x2_t& v, const int lane) { return {}; }
+inline uint32_t vget_lane_u32(const uint32x2_t& v, const int lane) { g_ctx->set_scalar_result(v.getLane((size_t)lane)); return {}; }  // rsum: capture reduction sum
 inline uint64_t vget_lane_u64(const uint64x1_t& v, const int lane) { return {}; }
 inline poly64_t vget_lane_p64(const poly64x1_t& v, const int lane) { return {}; }
 inline int64_t vget_lane_s64(const int64x1_t& v, const int lane) { return {}; }
@@ -2046,7 +2046,7 @@ inline poly8_t vgetq_lane_p8(const poly8x16_t& v, const int lane) { return {}; }
 inline poly16_t vgetq_lane_p16(const poly16x8_t& v, const int lane) { return {}; }
 inline int8_t vget_lane_s8(const int8x8_t& v, const int lane) { return {}; }
 inline int16_t vget_lane_s16(const int16x4_t& v, const int lane) { return {}; }
-inline int32_t vget_lane_s32(const int32x2_t& v, const int lane) { return {}; }
+inline int32_t vget_lane_s32(const int32x2_t& v, const int lane) { g_ctx->set_scalar_result(v.getLane((size_t)lane)); return {}; }  // rsum: capture reduction sum
 inline int8_t vgetq_lane_s8(const int8x16_t& v, const int lane) { return {}; }
 inline int16_t vgetq_lane_s16(const int16x8_t& v, const int lane) { return {}; }
 inline int32_t vgetq_lane_s32(const int32x4_t& v, const int lane) { return {}; }

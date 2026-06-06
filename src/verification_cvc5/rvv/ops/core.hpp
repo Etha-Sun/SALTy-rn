@@ -1101,6 +1101,7 @@ inline vint32m8_t __riscv_vadd_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int3
 inline vint32m8_t __riscv_vsub_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BITVECTOR_SUB, vl, 32); }
 inline vint32m8_t __riscv_vmul_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BITVECTOR_MULT, vl, 32); }
 inline vint32m8_t __riscv_vand_vx_i32m8(const vint32m8_t& a, SymbolicScalar<int32_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BITVECTOR_AND, vl, 32); }
+inline vuint16m4_t __riscv_vadd_vx_u16m4(const vuint16m4_t& a, SymbolicScalar<uint16_t> b, size_t vl) { return rvv_sym_bv_binop_vx(a, b.term(), Kind::BITVECTOR_ADD, vl, 16); }
 
 // --- vrsub_vx (symbolic) ---
 inline vint16m4_t __riscv_vrsub_vx_i16m4(const vint16m4_t& a, SymbolicScalar<int16_t> b, size_t vl) { return rvv_sym_bv_rsub_vx(a, b.term(), vl, 16); }
@@ -3458,6 +3459,34 @@ inline vfloat32m8_t __riscv_vfadd_vv_f32m8_tu(const vfloat32m8_t& dst,
         } else {
             r.push_back(dst.getElement(i));
         }
+    }
+    return RVVVector(tm, 32, r);
+}
+
+// vadd_vv_{i32,u32}m8_tu: tail-undisturbed integer add — lanes [0, vl) get
+// a[i]+b[i], lanes [vl, dst.getVL()) keep dst's value.  The int twin of
+// vfadd_vv_f32m8_tu above; used by qs8/qu8-rsum's accumulator loop.
+inline vint32m8_t __riscv_vadd_vv_i32m8_tu(const vint32m8_t& dst,
+                                           const vint32m8_t& a,
+                                           const vint32m8_t& b,
+                                           size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> r; r.reserve(dst.getVL());
+    for (size_t i = 0; i < dst.getVL(); i++) {
+        if (i < vl) r.push_back(tm.mkTerm(Kind::BITVECTOR_ADD, {a.getElement(i), b.getElement(i)}));
+        else        r.push_back(dst.getElement(i));
+    }
+    return RVVVector(tm, 32, r);
+}
+inline vuint32m8_t __riscv_vadd_vv_u32m8_tu(const vuint32m8_t& dst,
+                                            const vuint32m8_t& a,
+                                            const vuint32m8_t& b,
+                                            size_t vl) {
+    auto& tm = g_ctx->tm;
+    std::vector<Term> r; r.reserve(dst.getVL());
+    for (size_t i = 0; i < dst.getVL(); i++) {
+        if (i < vl) r.push_back(tm.mkTerm(Kind::BITVECTOR_ADD, {a.getElement(i), b.getElement(i)}));
+        else        r.push_back(dst.getElement(i));
     }
     return RVVVector(tm, 32, r);
 }

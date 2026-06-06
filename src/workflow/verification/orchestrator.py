@@ -256,6 +256,10 @@ def run_verification(bin_path: Path, kernel_name: str,
             status = data.get("status", "")
             batch = data.get("batch", 0)
             config = data.get("config", "default")
+            # Progress label: elementwise harnesses report "batch"; multi-dim
+            # ("shape") harnesses report "dims" (e.g. "10,16"). Show whichever is
+            # present so progress prints for every shape, not just "batch=0".
+            label = f"dims=[{data['dims']}]" if "dims" in data else f"batch={batch}"
 
             # Log config transitions
             if config != current_config:
@@ -270,7 +274,7 @@ def run_verification(bin_path: Path, kernel_name: str,
                 # Visibility ping from verify() before check_sat() runs.
                 # Prevents silence when a single batch takes a long time.
                 elapsed_so_far = time.perf_counter() - t0
-                log.info("  batch=%-4d solving... (%.1fs)", batch, elapsed_so_far)
+                log.info("  %-16s solving... (%.1fs)", label, elapsed_so_far)
 
             elif status == "VERIFIED":
                 result.max_verified_batch = max(result.max_verified_batch, batch)
@@ -279,7 +283,7 @@ def run_verification(bin_path: Path, kernel_name: str,
                     result.config_results.get(config, 0), batch)
                 # Log every batch
                 elapsed_so_far = time.perf_counter() - t0
-                log.info("  batch=%-4d VERIFIED  (%.1fs)", batch, elapsed_so_far)
+                log.info("  %-16s VERIFIED  (%.1fs)", label, elapsed_so_far)
                 last_logged_batch = batch
 
             elif status == "COUNTEREXAMPLE":
@@ -288,7 +292,7 @@ def run_verification(bin_path: Path, kernel_name: str,
                 result.failed_config = config
                 result.verified_batches.append(
                     BatchResult(batch=batch, status="COUNTEREXAMPLE", details=json.dumps(data)))
-                log.error("  batch=%-4d COUNTEREXAMPLE config=%s", batch, config)
+                log.error("  %-16s COUNTEREXAMPLE config=%s", label, config)
                 log.error("    input[%s]=%s  neon_out=%s  rvv_out=%s",
                            data.get("fail_index", "?"),
                            data.get("input_at_fail", "?"),
@@ -297,8 +301,8 @@ def run_verification(bin_path: Path, kernel_name: str,
 
             elif status == "TIMEOUT":
                 result.verdict = "PARTIAL"
-                log.info("  config=%s — %ds budget spent at batch=%d; verified up to batch=%d",
-                         config, time_budget, batch,
+                log.info("  config=%s — %ds budget spent at %s; verified up to batch=%d",
+                         config, time_budget, label,
                          result.config_results.get(config, 0))
 
             elif status == "ALL_VERIFIED" and result.verdict == "ALL_PASSED":

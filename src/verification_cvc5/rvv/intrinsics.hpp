@@ -32,6 +32,7 @@ namespace salt_cvc5 {
 using vint8m1_t    = RVVVector;
 using vint8m2_t    = RVVVector;
 using vint8m4_t    = RVVVector;
+using vint8m8_t    = RVVVector;
 using vint16m1_t   = RVVVector;
 using vint16m2_t   = RVVVector;
 using vint16m4_t   = RVVVector;
@@ -43,6 +44,7 @@ using vint32m8_t   = RVVVector;
 using vuint8m1_t   = RVVVector;
 using vuint8m2_t   = RVVVector;
 using vuint8m4_t   = RVVVector;
+using vuint8m8_t   = RVVVector;
 using vuint8mf2_t  = RVVVector;
 using vuint16m2_t  = RVVVector;
 using vuint16m4_t  = RVVVector;
