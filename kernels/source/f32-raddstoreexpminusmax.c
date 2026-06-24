@@ -1,8 +1,7 @@
 /*
 no params struct: const void* params (unused)
+neonfma-rr1-p5-u4: table-free exp (degree-5 polynomial + bit-trick 2^n), no LUT.
 */
-
-extern XNN_INTERNAL const float xnn_table_exp2_k_over_64[64];
 
 void test_neon(
     size_t batch,
@@ -20,19 +19,14 @@ void test_neon(
   assert(sum != NULL);
 
   const float32x4_t vlog2e = vmovq_n_f32(0x1.715476p+0f);
-  const float32x4_t vmagic_bias = vmovq_n_f32(0x1.800000p17f);
-  const int32x4_t vindex_mask = vmovq_n_s32(INT32_C(0x3F));
-  const float32x4_t vc2 = vmovq_n_f32(0x1.FFFF0Ap-2f);
+  const float32x4_t vmagic_bias = vmovq_n_f32(0x1.8000FEp23f);
+  const float32x4_t vc5 = vmovq_n_f32(0x1.0F9F9Cp-7f);
+  const float32x4_t vc4 = vmovq_n_f32(0x1.573A1Ap-5f);
+  const float32x4_t vc3 = vmovq_n_f32(0x1.555A80p-3f);
+  const float32x4_t vc2 = vmovq_n_f32(0x1.FFFDC6p-2f);
+  const float32x4_t vc1 = vmovq_n_f32(0x1.FFFFF6p-1f);
   const float32x4_t vdenorm_cutoff = vmovq_n_f32(-0x1.5D589Ep6f);
-
-  XNN_FORCE_REALIZATION(vlog2e);
-  XNN_FORCE_REALIZATION(vmagic_bias);
-  XNN_FORCE_REALIZATION(vindex_mask);
-  XNN_FORCE_REALIZATION(vc2);
-  XNN_FORCE_REALIZATION(vdenorm_cutoff);
-
   const float32x4_t vminus_ln2 = vmovq_n_f32(-0x1.62E430p-1f);
-  XNN_FORCE_REALIZATION(vminus_ln2);
 
   const float32x4_t vi_max = vld1q_dup_f32(max);
 
@@ -44,26 +38,19 @@ void test_neon(
 
     float32x4_t vn = vfmaq_f32(vmagic_bias, vx, vlog2e);
 
-    const int32x4_t ve = vshlq_n_s32(vbicq_s32(vreinterpretq_s32_f32(vn), vmovq_n_s32(INT32_C(0x3F))), 17);
-
-    const uint64x2_t vidx = vreinterpretq_u64_s32(vandq_s32(vreinterpretq_s32_f32(vn), vindex_mask));
-    const uint64_t vidx_lo = vgetq_lane_u64(vidx, 0);
-    const uint64_t vidx_hi = vgetq_lane_u64(vidx, 1);
-    float32x2_t vl_lo = vld1_dup_f32(&xnn_table_exp2_k_over_64[(uint32_t) vidx_lo]);
-    float32x2_t vl_hi = vld1_dup_f32(&xnn_table_exp2_k_over_64[(uint32_t) vidx_hi]);
-    vl_lo = vld1_lane_f32(&xnn_table_exp2_k_over_64[(uint32_t) (vidx_lo >> 32)], vl_lo, 1);
-    vl_hi = vld1_lane_f32(&xnn_table_exp2_k_over_64[(uint32_t) (vidx_hi >> 32)], vl_hi, 1);
-    const float32x4_t vl = vcombine_f32(vl_lo, vl_hi);
-    const float32x4_t vs = vreinterpretq_f32_s32(vaddq_s32(vreinterpretq_s32_f32(vl), ve));
+    const float32x4_t vs = vreinterpretq_f32_s32(vshlq_n_s32(vreinterpretq_s32_f32(vn), 23));
 
     vn = vsubq_f32(vn, vmagic_bias);
 
     float32x4_t vt = vfmaq_f32(vx, vn, vminus_ln2);
 
-    float32x4_t vp = vmulq_f32(vt, vc2);
-    vp = vfmaq_f32(vt, vt, vp);
+    float32x4_t vp = vfmaq_f32(vc4, vc5, vt);
+    vp = vfmaq_f32(vc3, vp, vt);
+    vp = vfmaq_f32(vc2, vp, vt);
+    vp = vfmaq_f32(vc1, vp, vt);
 
-    float32x4_t vf = vfmaq_f32(vs, vs, vp);
+    vt = vmulq_f32(vt, vs);
+    float32x4_t vf = vfmaq_f32(vs, vp, vt);
 
     vf = vreinterpretq_f32_u32(vbicq_u32(vreinterpretq_u32_f32(vf), vcltq_f32(vx, vdenorm_cutoff)));
 
@@ -85,26 +72,19 @@ void test_neon(
 
     float32x4_t vn = vfmaq_f32(vmagic_bias, vx, vlog2e);
 
-    const int32x4_t ve = vshlq_n_s32(vbicq_s32(vreinterpretq_s32_f32(vn), vmovq_n_s32(INT32_C(0x3F))), 17);
-
-    const uint64x2_t vidx = vreinterpretq_u64_s32(vandq_s32(vreinterpretq_s32_f32(vn), vindex_mask));
-    const uint64_t vidx_lo = vgetq_lane_u64(vidx, 0);
-    const uint64_t vidx_hi = vgetq_lane_u64(vidx, 1);
-    float32x2_t vl_lo = vld1_dup_f32(&xnn_table_exp2_k_over_64[(uint32_t) vidx_lo]);
-    float32x2_t vl_hi = vld1_dup_f32(&xnn_table_exp2_k_over_64[(uint32_t) vidx_hi]);
-    vl_lo = vld1_lane_f32(&xnn_table_exp2_k_over_64[(uint32_t) (vidx_lo >> 32)], vl_lo, 1);
-    vl_hi = vld1_lane_f32(&xnn_table_exp2_k_over_64[(uint32_t) (vidx_hi >> 32)], vl_hi, 1);
-    const float32x4_t vl = vcombine_f32(vl_lo, vl_hi);
-    const float32x4_t vs = vreinterpretq_f32_s32(vaddq_s32(vreinterpretq_s32_f32(vl), ve));
+    const float32x4_t vs = vreinterpretq_f32_s32(vshlq_n_s32(vreinterpretq_s32_f32(vn), 23));
 
     vn = vsubq_f32(vn, vmagic_bias);
 
     float32x4_t vt = vfmaq_f32(vx, vn, vminus_ln2);
 
-    float32x4_t vp = vmulq_f32(vt, vc2);
-    vp = vfmaq_f32(vt, vt, vp);
+    float32x4_t vp = vfmaq_f32(vc4, vc5, vt);
+    vp = vfmaq_f32(vc3, vp, vt);
+    vp = vfmaq_f32(vc2, vp, vt);
+    vp = vfmaq_f32(vc1, vp, vt);
 
-    float32x4_t vf = vfmaq_f32(vs, vs, vp);
+    vt = vmulq_f32(vt, vs);
+    float32x4_t vf = vfmaq_f32(vs, vp, vt);
 
     vf = vreinterpretq_f32_u32(vbicq_u32(vreinterpretq_u32_f32(vf), vcltq_f32(vx, vdenorm_cutoff)));
 

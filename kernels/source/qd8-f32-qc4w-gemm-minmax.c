@@ -213,10 +213,16 @@ void test_neon(
       }
     }
 
-    float32x4_t vout0x0123 = vcvtq_n_f32_s32(vacc0x0123, 4);
-    float32x4_t vout0x4567 = vcvtq_n_f32_s32(vacc0x4567, 4);
-    float32x4_t vout0x89AB = vcvtq_n_f32_s32(vacc0x89AB, 4);
-    float32x4_t vout0xCDEF = vcvtq_n_f32_s32(vacc0xCDEF, 4);
+    // Shift-then-convert, recipe-aligned with the RVV target (vsra+vfcvt); bit-equal
+    // to vcvtq_n_f32_s32(.,4) under the packer invariant acc ≡ 0 (mod 16).
+    // float32x4_t vout0x0123 = vcvtq_n_f32_s32(vacc0x0123, 4);
+    // float32x4_t vout0x4567 = vcvtq_n_f32_s32(vacc0x4567, 4);
+    // float32x4_t vout0x89AB = vcvtq_n_f32_s32(vacc0x89AB, 4);
+    // float32x4_t vout0xCDEF = vcvtq_n_f32_s32(vacc0xCDEF, 4);
+    float32x4_t vout0x0123 = vcvtq_f32_s32(vshrq_n_s32(vacc0x0123, 4));
+    float32x4_t vout0x4567 = vcvtq_f32_s32(vshrq_n_s32(vacc0x4567, 4));
+    float32x4_t vout0x89AB = vcvtq_f32_s32(vshrq_n_s32(vacc0x89AB, 4));
+    float32x4_t vout0xCDEF = vcvtq_f32_s32(vshrq_n_s32(vacc0xCDEF, 4));
 
     const float32x4_t vinput_scale0 = vld1q_dup_f32(&quantization_params[0].inv_scale);
     vout0x0123 = vmulq_f32(vout0x0123, vinput_scale0);

@@ -46,6 +46,7 @@ target_compile_options(salt_cvc5_headers INTERFACE
     -Wno-format
     -Wno-sign-compare
     -fno-operator-names
+    -fpermissive   # XNNPACK kernels are C: allow implicit void*->T* (e.g. qd8 `const void* w` + vld1q_s32(w))
 )
 
 add_executable(verify_f16_conv_hwc2chw_cvc5

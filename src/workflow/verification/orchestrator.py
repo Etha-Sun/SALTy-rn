@@ -9,6 +9,7 @@ import json
 import logging
 import os
 import re
+import shutil
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -145,6 +146,20 @@ def compile_harness(harness_source: str, kernel_name: str,
     t0 = time.perf_counter()
     result = subprocess.run(build_cmd, capture_output=True, text=True,
                             cwd=str(cmake_build_dir), timeout=120)
+                            
+    if result.returncode != 0 and "No rule to make target" in (result.stdout + result.stderr):
+        log.info("Stale CMake target; reconfiguring from a clean cache...")
+        (cmake_build_dir / "CMakeCache.txt").unlink(missing_ok=True)
+        shutil.rmtree(cmake_build_dir / "CMakeFiles", ignore_errors=True)
+        rc = subprocess.run(configure_cmd, capture_output=True, text=True,
+                            cwd=str(cmake_build_dir), timeout=60)
+        if rc.returncode != 0:
+            error = rc.stderr + "\n" + rc.stdout
+            log.error("CMake reconfigure failed:\n%s", error[:2000])
+            return None, error
+        result = subprocess.run(build_cmd, capture_output=True, text=True,
+                                cwd=str(cmake_build_dir), timeout=120)
+
     compile_time = time.perf_counter() - t0
 
     if result.returncode != 0:

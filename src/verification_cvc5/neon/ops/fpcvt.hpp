@@ -523,16 +523,17 @@ inline float64x2_t vcvtq_f64_s64(const int64x2_t& a) {
     return float64x2_t(tm, _nres);
 }
 inline float64_t vcvtd_f64_s64(int64_t a) { return {}; }
+// /2^n emitted as ×2^-n (exact reciprocal, bit-identical) — FP div bit-blasts far worse than mul.
 inline float32x2_t vcvt_n_f32_s32(const int32x2_t& a, const int n) {
     auto& tm = g_ctx->tm;
     std::array<Term, 2> _nres;
-    for (size_t i = 0; i < 2; i++) _nres[i] = fp_to_lane(tm, nfp_div(tm, sint_to_fp(tm,a.getLane(i),rm_of(tm,0),32), mk_fpc(tm, std::ldexp(1.0,n), 32)), 32);
+    for (size_t i = 0; i < 2; i++) _nres[i] = fp_to_lane(tm, nfp_mul(tm, sint_to_fp(tm,a.getLane(i),rm_of(tm,0),32), mk_fpc(tm, std::ldexp(1.0,-n), 32)), 32);
     return float32x2_t(tm, _nres);
 }
 inline float32x4_t vcvtq_n_f32_s32(const int32x4_t& a, const int n) {
     auto& tm = g_ctx->tm;
     std::array<Term, 4> _nres;
-    for (size_t i = 0; i < 4; i++) _nres[i] = fp_to_lane(tm, nfp_div(tm, sint_to_fp(tm,a.getLane(i),rm_of(tm,0),32), mk_fpc(tm, std::ldexp(1.0,n), 32)), 32);
+    for (size_t i = 0; i < 4; i++) _nres[i] = fp_to_lane(tm, nfp_mul(tm, sint_to_fp(tm,a.getLane(i),rm_of(tm,0),32), mk_fpc(tm, std::ldexp(1.0,-n), 32)), 32);
     return float32x4_t(tm, _nres);
 }
 inline float32_t vcvts_n_f32_s32(int32_t a, const int n) { return {}; }

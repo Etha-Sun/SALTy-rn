@@ -185,6 +185,11 @@ struct VerificationContext {
         clear_scalar_terms();
     }
 
+    // Clear the Term side-channels (g_scalar_terms, g_fp_bv_cache) BEFORE the TermManager
+    // member is torn down — otherwise the thread_local maps outlive `tm` and their cached
+    // Terms' destructors run against a freed TermManager (use-after-free / SIGSEGV at exit).
+    ~VerificationContext();
+
     // Forward-declared helper; definition follows g_scalar_terms below.
     static void clear_scalar_terms();
 
@@ -229,6 +234,7 @@ struct VerificationContext {
 
     // Logical / equality
     Term equal(Term a, Term b) { return tm.mkTerm(Kind::EQUAL, {a, b}); }
+    Term add(Term a, Term b)   { return tm.mkTerm(Kind::BITVECTOR_ADD, {a, b}); }
     Term land_(Term a, Term b) { return tm.mkTerm(Kind::AND,   {a, b}); }
     Term lor_ (Term a, Term b) { return tm.mkTerm(Kind::OR,    {a, b}); }
     Term lnot_(Term t)         { return tm.mkTerm(Kind::NOT,   {t});    }
@@ -399,6 +405,7 @@ struct VerificationContext {
     // getValue require it).  The auto-router only ever returns Sat via this path.
     CheckResult check_cvc5() {
         Result r = solver->checkSat();
+        print_stats();   // SALT_STATS=1: dump in-process counters (gated inside; survives timeout)
         if (r.isUnsat()) return CheckResult::Unsat;
         if (r.isSat())   return CheckResult::Sat;
         return CheckResult::Unknown;
@@ -451,7 +458,17 @@ inline thread_local VerificationContext* g_ctx = nullptr;
 // Scalar-term side channel for salt_float16's copy-ctor (see symbolic_buffer.hpp).
 inline thread_local std::unordered_map<const void*, Term> g_scalar_terms;
 
-inline void VerificationContext::clear_scalar_terms() { g_scalar_terms.clear(); }
+// FP<->BV memoization: store_fp{16,32,64}_as_bv mints a fresh BV `bv` with a global
+// `TO_FP_FROM_IEEE_BV(bv) == fp` constraint; we map bv.getId() -> fp so load_as_fp*(bv)
+// returns the FP term DIRECTLY instead of re-introducing TO_FP_FROM_IEEE_BV(bv). For pure
+// FP-op chains the fresh bv is then read only by its own constraint (dead, pruned by cvc5);
+// it stays live only where the bits are genuinely manipulated (vreinterpret bitcasts) or
+// stored to a buffer. Collapses the per-op fresh-var blowup that made exp/conv chains
+// intractable. Keyed by Term id (matching the uf_rewrite memo convention).
+inline thread_local std::unordered_map<uint64_t, Term> g_fp_bv_cache;
+
+inline void VerificationContext::clear_scalar_terms() { g_scalar_terms.clear(); g_fp_bv_cache.clear(); }
+inline VerificationContext::~VerificationContext() { g_scalar_terms.clear(); g_fp_bv_cache.clear(); }
 
 // ---------------------------------------------------------------------------
 // Helper: BV value from signed int64, masked to width

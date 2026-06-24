@@ -81,6 +81,7 @@ def load_translation_prompt(
     source: str,
     source_code: str,
     params_section: str,
+    vlen: int = 256,
 ) -> str:
     """Load and fill the translation prompt template.
 
@@ -88,6 +89,8 @@ def load_translation_prompt(
         source: Source language directory name (e.g. "Neon")
         source_code: The source code to translate
         params_section: Parameter struct description
+        vlen: Target VLEN in bits — fills {target_vlen} so the model picks LMUL
+            for the intended hardware (correctness is VLEN-agnostic; LMUL is perf).
     """
     src_dir = _source_dir(source)
     template = _load_file(src_dir / "prompt.md")
@@ -95,6 +98,7 @@ def load_translation_prompt(
         template
         .replace("{source_code}", source_code)
         .replace("{parameter}", params_section)
+        .replace("{target_vlen}", str(vlen))
     )
 
 

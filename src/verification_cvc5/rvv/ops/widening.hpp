@@ -324,6 +324,25 @@ inline RVVVector __riscv_vwmul_vv_i64m4(const RVVVector& a, const RVVVector& b, 
 inline RVVVector __riscv_vwmul_vv_i64m8(const RVVVector& a, const RVVVector& b, size_t vl){ return _gw_mul_vv(a,b,64,true,true,vl); }
 inline RVVVector __riscv_vwmul_vx_i16m1(const RVVVector& a, int8_t b, size_t vl){ return _gw_mul_vx(a,(int64_t)b,16,true,vl); }
 inline RVVVector __riscv_vwmul_vx_i16m2(const RVVVector& a, int8_t b, size_t vl){ return _gw_mul_vx(a,(int64_t)b,16,true,vl); }
+// symbolic-scalar overload: qd8 reads `a0[i]` via salt_scalar (int8 has no NaN sentinel).
+// Product built at 32 bits with vmlal-matching structure (sext-merge makes the MULT node
+// hash-cons with NEON's), truncated to the true 16-bit result; the sext(extract)==M32
+// equality is a tautology here (8-bit-sext operands → |prod| < 2^15) asserted as a bridge
+// so SAT never has to reason about the multiplier's output range.
+inline RVVVector __riscv_vwmul_vx_i16m2(const RVVVector& a, SymbolicScalar<int8_t> b, size_t vl){
+  auto&tm=g_ctx->tm;
+  Op sx24=tm.mkOp(Kind::BITVECTOR_SIGN_EXTEND,{24}), sx16=tm.mkOp(Kind::BITVECTOR_SIGN_EXTEND,{16});
+  Op lo16=tm.mkOp(Kind::BITVECTOR_EXTRACT,{15,0});
+  Term sb=tm.mkTerm(sx24,{b.term()});
+  std::vector<Term> r; r.reserve(vl);
+  for(size_t i=0;i<vl;i++){
+    Term sa=tm.mkTerm(sx24,{a.getElement(i)});
+    Term m32=tm.mkTerm(Kind::BITVECTOR_MULT,{sa,sb});
+    Term p16=tm.mkTerm(lo16,{m32});
+    g_ctx->solver->assertFormula(tm.mkTerm(Kind::EQUAL,{m32,tm.mkTerm(sx16,{p16})}));
+    r.push_back(p16);}
+  return RVVVector(tm,16,r);
+}
 inline RVVVector __riscv_vwmul_vx_i16m4(const RVVVector& a, int8_t b, size_t vl){ return _gw_mul_vx(a,(int64_t)b,16,true,vl); }
 inline RVVVector __riscv_vwmul_vx_i16m8(const RVVVector& a, int8_t b, size_t vl){ return _gw_mul_vx(a,(int64_t)b,16,true,vl); }
 inline RVVVector __riscv_vwmul_vx_i16mf2(const RVVVector& a, int8_t b, size_t vl){ return _gw_mul_vx(a,(int64_t)b,16,true,vl); }

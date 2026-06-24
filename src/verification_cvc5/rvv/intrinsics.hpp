@@ -58,6 +58,10 @@ using vfloat32m1_t = RVVVector;
 using vfloat32m2_t = RVVVector;
 using vfloat32m4_t = RVVVector;
 using vfloat32m8_t = RVVVector;
+using vuint32m1x2_t = VectorTuple<RVVVector, 2>;
+using vuint32mf2x2_t = VectorTuple<RVVVector, 2>;
+using vuint32m2x2_t = VectorTuple<RVVVector, 2>;
+using vuint32m4x2_t = VectorTuple<RVVVector, 2>;
 
 using vbool4_t  = MaskVector;
 using vbool8_t  = MaskVector;

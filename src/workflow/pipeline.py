@@ -280,7 +280,7 @@ def _run_formal_verification(kernel_path, output_path, kernel_name, cfg, build_d
         neon_path=str(kernel_path),
         rvv_path=str(output_path),
         kernel_name=kernel_name,
-        vlen=256,
+        vlen=cfg.vlen,
         time_budget=time_budget,
         max_batch=max_batch,
         min_batch=min_batch,
@@ -377,12 +377,18 @@ def translate_kernel(
     kernel_name = kernel_path.stem
     log.info("Translating: %s", kernel_name)
 
+    # Target hardware VLEN: 256 keeps the legacy bare name; any other value gives
+    # a coexisting variant kernels/target/<name>-<vlen>.c (translated for that
+    # VLEN's LMUL and verified at that VLEN).
+    vlen_suffix = "" if cfg.vlen == 256 else f"-{cfg.vlen}"
+    output_path = cfg.target_dir / f"{kernel_path.stem}{vlen_suffix}.c"
+
     # Skip if already verified and skip_existing is set
     if cfg.skip_existing and tracker.is_verified(kernel_name):
         log.info("Skipping %s (already verified)", kernel_name)
         return TranslationResult(
             kernel_name=kernel_name, success=True,
-            output_file=str(cfg.target_dir / kernel_path.name),
+            output_file=str(output_path),
         )
 
     # 1. Read source
@@ -390,7 +396,6 @@ def translate_kernel(
     log.info("Read source: %s (%d chars)", kernel_path.name, len(source_code))
 
     cfg.target_dir.mkdir(parents=True, exist_ok=True)
-    output_path = cfg.target_dir / kernel_path.name
 
     if cfg.skip_translation:
         # Skip LLM, use existing target kernel
@@ -409,7 +414,7 @@ def translate_kernel(
         if params_section:
             log.info("Extracted params struct (%d chars)", len(params_section))
         system_prompt = load_reference_docs(cfg.source, rules_only=cfg.rules_only)
-        user_prompt = load_translation_prompt(cfg.source, source_code, params_section)
+        user_prompt = load_translation_prompt(cfg.source, source_code, params_section, vlen=cfg.vlen)
 
         # 3. Dry run check
         if cfg.dry_run:
@@ -447,9 +452,11 @@ def translate_kernel(
     verification_attempts = 0
     last_error = ""
 
-    # Skip straight to verification if already compiled+passed and --skip-spike is set
-    if cfg.skip_spike and tracker.get(kernel_name).get("compiled", False):
-        log.info("Skipping compile+Spike for %s (already passed), jumping to verification", kernel_name)
+    # Skip straight to verification if already compiled+passed and --skip-spike is set,
+    # or for a non-default VLEN (the Spike harness/build assume the bare-name 256 target,
+    # so the -<vlen> variant is a translate→formal-verify flow).
+    if (cfg.vlen != 256) or (cfg.skip_spike and tracker.get(kernel_name).get("compiled", False)):
+        log.info("Skipping compile+Spike for %s, jumping to verification (vlen=%d)", kernel_name, cfg.vlen)
 
         verify_result = _run_formal_verification(kernel_path, output_path, kernel_name, cfg, build_dir)
 
@@ -697,6 +704,11 @@ def build_parser() -> argparse.ArgumentParser:
                          "whatever time is left. Default: 600 (10 min). 0 = no budget.")
     p.add_argument("--verify-batch", type=int, default=0,
                     help="Run ONLY this batch size in verification (skip the 1..max sweep). 0 = sweep (default).")
+    p.add_argument("--vlen", type=int, default=256,
+                    help="Target VLEN in bits. Drives the translator's LMUL choice (prompt) AND the "
+                         "verifier's vsetvl semantics. 256 (default) = legacy bare target name; any other "
+                         "value writes/verifies kernels/target/<name>-<vlen>.c (e.g. --vlen 128 -> <name>-128.c). "
+                         "Non-256 skips Spike (the Spike build assumes the bare-name target).")
     p.add_argument("--input-range", default="",
                     help="Constrain F32 verification inputs to a finite band 'LO,HI' (e.g. -1,1). "
                          "Needed for FP-multiply families (gemm/igemm/dwconv/vmulcaddc/ibilinear), which "

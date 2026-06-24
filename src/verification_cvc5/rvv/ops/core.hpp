@@ -406,6 +406,8 @@ inline vfloat16m1_t __riscv_vmerge_vvm_f16m1(const vfloat16m1_t& a,
 // FP32 helpers (BV32 ↔ FP32) — analogous to the FP16 helpers above
 // ---------------------------------------------------------------------------
 inline Term rvv_load_as_fp32(TermManager& tm, Term bv) {
+    auto it = g_fp_bv_cache.find(bv.getId());   // memoized store→load: skip the FP↔BV round-trip
+    if (it != g_fp_bv_cache.end()) return it->second;
     Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
     return tm.mkTerm(op, {bv});
 }
@@ -421,6 +423,7 @@ inline Term rvv_store_fp32_as_bv(TermManager& tm, Term fp_val) {
     Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
     Term fp_from_bv = tm.mkTerm(op, {bv});
     g_ctx->solver->assertFormula(fold_eq(tm, fp_from_bv, fp_val));
+    g_fp_bv_cache[bv.getId()] = fp_val;   // so rvv_load_as_fp32(bv) returns fp_val directly
     return bv;
 }
 
@@ -852,6 +855,24 @@ inline vint32m8_t __riscv_vluxei32_v_i32m8(const int32_t* base,
     return rvv_vluxei32_impl(base, off, vl, 32);
 }
 
+// Masked indexed (gather) load, f32m1.  Masked-off lanes take the maskedoff
+// (merge) operand.  Reuses the scalar gather; for vid-derived (concrete)
+// byte offsets the per-lane ITE chain collapses to a direct load.
+inline vfloat32m1_t __riscv_vluxei32_v_f32m1_m(const vbool32_t& mask,
+                                                const vfloat32m1_t& maskedoff,
+                                                const float* base,
+                                                const vuint32m1_t& off, size_t vl) {
+    auto& tm = g_ctx->tm;
+    RVVVector gathered = rvv_vluxei32_impl(base, off, vl, 32);
+    Term one = mk_bv_val(tm, 1, 1);
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term cond = fold_eq(tm, mask.getBit(i), one);
+        r.push_back(fold_ite(tm, cond, gathered.getElement(i), maskedoff.getElement(i)));
+    }
+    return RVVVector(tm, 32, r);
+}
+
 // ---------------------------------------------------------------------------
 // FP32 vector arithmetic (vv, vf)
 // ---------------------------------------------------------------------------
@@ -1277,6 +1298,8 @@ inline RVVVector rvv_sym_fp32_binop_vf(const RVVVector& a, Term b_fp, Kind op, s
 
 inline vfloat32m8_t __riscv_vfadd_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FLOATINGPOINT_ADD, vl); }
 inline vfloat32m8_t __riscv_vfsub_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FLOATINGPOINT_SUB, vl); }
+inline vfloat32m4_t __riscv_vfsub_vf_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FLOATINGPOINT_SUB, vl); }  // raddstoreexpminusmax (u4v): vx = vi - *max (symbolic broadcast)
+inline vfloat32m2_t __riscv_vfsub_vf_f32m2(const vfloat32m2_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FLOATINGPOINT_SUB, vl); }  // u2v variant
 inline vfloat32m8_t __riscv_vfmul_vf_f32m8(const vfloat32m8_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FLOATINGPOINT_MULT, vl); }
 
 inline vfloat32m4_t __riscv_vfmin_vf_f32m4(const vfloat32m4_t& a, SymbolicScalar<float> b, size_t vl) { return rvv_sym_fp32_binop_vf(a, b.term(), Kind::FLOATINGPOINT_MIN, vl); }
@@ -1980,6 +2003,19 @@ inline vint32m8_t __riscv_vwmacc_vv_i32m8(const vint32m8_t& acc, const vint16m4_
 inline vint32m1_t __riscv_vwmacc_vx_i32m1(const vint32m1_t& acc, int16_t rs1, const vint16mf2_t& b, size_t vl) { return rvv_vwmacc_vx_impl(acc,rs1,b,vl,16); }
 inline vint32m4_t __riscv_vwmacc_vx_i32m4(const vint32m4_t& acc, int16_t rs1, const vint16m2_t& b, size_t vl) { return rvv_vwmacc_vx_impl(acc,rs1,b,vl,16); }
 inline vint32m8_t __riscv_vwmacc_vx_i32m8(const vint32m8_t& acc, int16_t rs1, const vint16m4_t& b, size_t vl) { return rvv_vwmacc_vx_impl(acc,rs1,b,vl,16); }
+// symbolic-scalar overload (qd8: a0[i] via salt_scalar.cast<int16_t>()) — sext16→32 both
+// operands, mult32, add: matches the NEON vmlal term structure so the nodes hash-cons.
+inline vint32m8_t __riscv_vwmacc_vx_i32m8(const vint32m8_t& acc, SymbolicScalar<int16_t> rs1, const vint16m4_t& b, size_t vl) {
+    auto& tm = g_ctx->tm; Op sx16 = tm.mkOp(Kind::BITVECTOR_SIGN_EXTEND, {16});
+    Term sb = tm.mkTerm(sx16, {rs1.term()});
+    std::vector<Term> r; r.reserve(vl);
+    for (size_t i = 0; i < vl; i++) {
+        Term ey = tm.mkTerm(sx16, {b.getElement(i)});
+        Term p = tm.mkTerm(Kind::BITVECTOR_MULT, {sb, ey});
+        r.push_back(tm.mkTerm(Kind::BITVECTOR_ADD, {acc.getElement(i), p}));
+    }
+    return RVVVector(tm, 32, r);
+}
 
 // ---------------------------------------------------------------------------
 // vwcvt / vwcvtu: widening identity (sign/zero extend, no op).
@@ -2946,18 +2982,24 @@ inline vfloat32m1_t __riscv_vfadd_vv_f32m1(const vfloat32m1_t& a, const vfloat32
 inline vfloat32m1_t __riscv_vfsub_vv_f32m1(const vfloat32m1_t& a, const vfloat32m1_t& b, size_t vl) {
     return rvv_fp32_binop(a, b, Kind::FLOATINGPOINT_SUB, vl);
 }
-// vlse32 stride=0 broadcast load — preserves symbolic Term across vl lanes.
+// vlse32 strided load (stride in bytes); stride=0 broadcasts lane 0.
+// Resolves findBuffer PER LANE: with a shifted-back base pointer (de-gather
+// left-pad trick) lane 0 can land before its buffer while higher lanes are
+// in-bounds — a single base-pointer findBuffer would read every lane from the
+// wrong buffer and corrupt the valid lanes (only bites at vl>=2).
 inline vfloat32m1_t __riscv_vlse32_v_f32m1(const float* p, ptrdiff_t stride, size_t vl) {
     auto& tm = g_ctx->tm;
-    auto& b = g_ctx->findBuffer(p);
-    size_t base = b.ptrToByteOffset(p);
     std::vector<Term> lanes; lanes.reserve(vl);
     if (stride == 0) {
-        Term v0 = b.loadScalar(base, 32);
+        auto& b = g_ctx->findBuffer(p);
+        Term v0 = b.loadScalar(b.ptrToByteOffset(p), 32);
         for (size_t i = 0; i < vl; i++) lanes.push_back(v0);
     } else {
-        for (size_t i = 0; i < vl; i++)
-            lanes.push_back(b.loadScalar(base + i * (size_t)stride, 32));
+        for (size_t i = 0; i < vl; i++) {
+            const float* lp = (const float*)((uintptr_t)p + i * (size_t)stride);
+            auto& b = g_ctx->findBuffer(lp);
+            lanes.push_back(b.loadScalar(b.ptrToByteOffset(lp), 32));
+        }
     }
     return RVVVector(tm, 32, lanes);
 }
@@ -3463,6 +3505,48 @@ inline vfloat32m8_t __riscv_vfadd_vv_f32m8_tu(const vfloat32m8_t& dst,
     return RVVVector(tm, 32, r);
 }
 
+// vfadd_vv_f32m4_tu / m2_tu: same shape as m1/m8 above, m4/m2 LMUL.  Used by
+// raddstoreexpminusmax's `vsum` accumulate (rvv-rr2-p6, u4v=m4 / u2v=m2).
+inline vfloat32m4_t __riscv_vfadd_vv_f32m4_tu(const vfloat32m4_t& dst,
+                                                const vfloat32m4_t& a,
+                                                const vfloat32m4_t& b,
+                                                size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(dst.getVL());
+    for (size_t i = 0; i < dst.getVL(); i++) {
+        if (i < vl) {
+            Term af = rvv_load_as_fp32(tm, a.getElement(i));
+            Term bf = rvv_load_as_fp32(tm, b.getElement(i));
+            Term sf = tm.mkTerm(Kind::FLOATINGPOINT_ADD, {rm, af, bf});
+            r.push_back(rvv_store_fp32_as_bv(tm, sf));
+        } else {
+            r.push_back(dst.getElement(i));
+        }
+    }
+    return RVVVector(tm, 32, r);
+}
+
+inline vfloat32m2_t __riscv_vfadd_vv_f32m2_tu(const vfloat32m2_t& dst,
+                                                const vfloat32m2_t& a,
+                                                const vfloat32m2_t& b,
+                                                size_t vl) {
+    auto& tm = g_ctx->tm;
+    Term rm = g_ctx->fp.rounding_mode;
+    std::vector<Term> r; r.reserve(dst.getVL());
+    for (size_t i = 0; i < dst.getVL(); i++) {
+        if (i < vl) {
+            Term af = rvv_load_as_fp32(tm, a.getElement(i));
+            Term bf = rvv_load_as_fp32(tm, b.getElement(i));
+            Term sf = tm.mkTerm(Kind::FLOATINGPOINT_ADD, {rm, af, bf});
+            r.push_back(rvv_store_fp32_as_bv(tm, sf));
+        } else {
+            r.push_back(dst.getElement(i));
+        }
+    }
+    return RVVVector(tm, 32, r);
+}
+
 // vadd_vv_{i32,u32}m8_tu: tail-undisturbed integer add — lanes [0, vl) get
 // a[i]+b[i], lanes [vl, dst.getVL()) keep dst's value.  The int twin of
 // vfadd_vv_f32m8_tu above; used by qs8/qu8-rsum's accumulator loop.
@@ -3684,14 +3768,14 @@ inline void __riscv_vse32_v_f32m2(float* p, const vfloat32m2_t& v, size_t vl) {
     size_t off = b.ptrToByteOffset(p);
     for (size_t i = 0; i < vl; i++) b.storeScalar(off + i * 4, v.getElement(i), 32);
 }
-// vlse32 strided load (stride in bytes).
+// vlse32 strided load (stride in bytes); per-lane findBuffer (see f32m1 above).
 inline vfloat32m2_t __riscv_vlse32_v_f32m2(const float* p, ptrdiff_t stride, size_t vl) {
     auto& tm = g_ctx->tm;
-    auto& b = g_ctx->findBuffer(p);
     std::vector<Term> r; r.reserve(vl);
     for (size_t i = 0; i < vl; i++) {
-        size_t off = b.ptrToByteOffset(p) + i * (size_t)stride;
-        r.push_back(b.loadScalar(off, 32));
+        const float* lp = (const float*)((uintptr_t)p + i * (size_t)stride);
+        auto& b = g_ctx->findBuffer(lp);
+        r.push_back(b.loadScalar(b.ptrToByteOffset(lp), 32));
     }
     return RVVVector(tm, 32, r);
 }

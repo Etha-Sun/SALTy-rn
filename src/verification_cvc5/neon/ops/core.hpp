@@ -350,6 +350,8 @@ inline float16x4x2_t vzip_f16(const float16x4_t& a, const float16x4_t& b) {
 // equality, since cvc5 has no fp.to_ieee_bv).
 // ---------------------------------------------------------------------------
 inline Term load_as_fp32(TermManager& tm, Term bv32) {
+    auto it = g_fp_bv_cache.find(bv32.getId());   // memoized store→load: skip the FP↔BV round-trip
+    if (it != g_fp_bv_cache.end()) return it->second;
     Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
     return tm.mkTerm(op, {bv32});
 }
@@ -363,6 +365,7 @@ inline Term store_fp32_as_bv(TermManager& tm, Term fp_val) {
     Op op = tm.mkOp(Kind::FLOATINGPOINT_TO_FP_FROM_IEEE_BV, {8, 24});
     Term fp_from_bv = tm.mkTerm(op, {bv});
     g_ctx->solver->assertFormula(tm.mkTerm(Kind::EQUAL, {fp_from_bv, fp_val}));
+    g_fp_bv_cache[bv.getId()] = fp_val;   // so load_as_fp32(bv) returns fp_val directly
     return bv;
 }
 inline Term mk_fp32_from_float(TermManager& tm, float v) {

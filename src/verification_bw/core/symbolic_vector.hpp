@@ -223,4 +223,7 @@ using int32x2x2_t  = VectorTuple<int32x2_t, 2>;
 using int32x4x2_t  = VectorTuple<int32x4_t, 2>;
 using uint8x16x4_t = VectorTuple<uint8x16_t, 4>;
 
+// RVV tuple aliases (vlseg/vlsseg returns)
+using vuint32m1x2_t = VectorTuple<RVVVector, 2>;
+
 } // namespace salt

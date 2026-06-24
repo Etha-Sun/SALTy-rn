@@ -45,6 +45,23 @@ def _kind(pointee: str) -> str:
     return _KIND[pointee]
 
 
+# Per-kernel output ULP tolerance: 0 (default) = bit-exact; >0 relaxes FP outputs
+# to "agree within N ULP". Keys are name substrings; SALT_ULP_TOL=<n> overrides all.
+_ULP_TOL = {
+    "raddstoreexpminusmax": 4,
+}
+
+
+def _ulp_tol_for(name: str) -> int:
+    env = os.environ.get("SALT_ULP_TOL")
+    if env not in (None, ""):
+        return int(env)
+    for key, tol in _ULP_TOL.items():
+        if key in name:
+            return tol
+    return 0
+
+
 def _detect_byte_unit(src: str, bound: str):
     """Detect the XNNPACK `batch % sizeof(T)` byte-count idiom. Returns
     (is_byte_unit, element_type). `batch` is then a byte count whose unit is
@@ -175,6 +192,33 @@ def _rewrite_scalar_broadcast(src: str, names) -> str:
     return head + body
 
 
+def _rewrite_index_reads(src: str, names) -> str:
+    """Rewrite scalar element reads `p[i]` of symbolic-buffer pointers to
+    salt_scalar accessors (int element types have no NaN-payload sentinel)."""
+    if not names:
+        return src
+    head, body = _split_body(src)
+    if not body:
+        return src
+    for n in names:
+        body = re.sub(rf'\(\s*(\w+)\s*\)\s*{re.escape(n)}\s*\[\s*([^\]]+?)\s*\]',
+                      rf'salt_scalar({n} + (\2)).cast<\1>()', body)   # (T) p[i] → .cast<T>()
+        body = re.sub(rf'\b{re.escape(n)}\s*\[\s*([^\]]+?)\s*\]',
+                      rf'salt_scalar({n} + (\1))', body)
+    body = _rebind_tainted_locals(body)
+    return head + body
+
+
+def _rewrite_scalar_movs(src: str) -> str:
+    """Rewrite scalar buffer-to-buffer moves `*dst = *src++;` (packw remainder
+    paths) to symbolic accessors: `salt_deref(dst) = salt_scalar(src); src += 1;`."""
+    head, body = _split_body(src)
+    if not body:
+        return src
+    return head + re.sub(r'\*\s*(\w+)\s*=\s*\*\s*(\w+)\s*\+\+\s*;',
+                         r'salt_deref(\1) = salt_scalar(\2); \2 += 1;', body)
+
+
 def _rewrite_symbolic_params(src: str, st: str, pname: str, leaves) -> str:
     """Rewrite `params->field` reads to a symbolic accessor so the solver proves
     over ALL valid param values. `(T) params->f` -> `salt_param<ft>(...).cast<T>()`."""
@@ -278,12 +322,14 @@ def _output_is_read(src: str, name: str) -> bool:
         rf"(vld\w*|__riscv_vle\w+|vget\w*q?_\w+)\s*\(\s*&?\s*{re.escape(name)}\b", src))
 
 
-# Multi-dim fixture: swept dims + chosen strides. Tight-stride/contiguous output
-# for now; strided regions land with GEMM.
+# Multi-dim fixture: swept dims + chosen strides.
 class FixtureSpec:
     def __init__(self, dims, strides, extents, out_buffers, out_extent, elem, kind,
                  out_region=None, weights=None, params=None, indirect=None,
-                 out_extents=None, dual_weights=None, out_elem=None, out_kind=None):
+                 out_extents=None, dual_weights=None, out_elem=None, out_kind=None,
+                 probes=None, odd_tail_dim=None, grow_dim=None, grow_cross=None,
+                 out_elems=None, shared_out=None, scalar_movs=False,
+                 extra_params=None, raw_decls=None, index_reads=None, pre_defines=None):
         self.dims = dims              # dim_name -> [values]
         self.strides = strides        # stride_name -> C++ expr (over dims)
         self.extents = extents        # buffer_name -> byte-count expr
@@ -298,14 +344,27 @@ class FixtureSpec:
         self.params = params          # (struct_name, {field: value}) — concrete struct, or None
         self.indirect = indirect or {}  # name -> {count, row} — T** pointer table over a symbolic buffer
         self.out_extents = out_extents   # {name: elem-count expr} — multi-output contiguous compare (each output ANDed)
+        self.out_elems = out_elems or {}  # {output_name: C type} — per-output element type for MIXED-type multi-output (argmaxpool: output=float, index=uint32_t); defaults to out_elem
         self.dual_weights = dual_weights or {}  # name -> {count, neon_tile, rvv_tile} — per-dialect weight packing
+        self.probes = probes or []    # extra explicit shapes [{dim: value, ...}] appended after the dims cross product
+        self.odd_tail_dim = odd_tail_dim  # dim whose odd value routes the last output lane through a scalar `*out += vgetq_lane` store (rsum/rdsum tail) — captured via scalar side-channel
+        self.grow_dim = grow_dim          # dim to grow continuously (unbounded sweep over argv[1..2]/budget) instead of cross-product; the rest of `dims` is the per-row representative inner set
+        self.grow_cross = grow_cross      # (d0, d1): grow BOTH dims cross-product-wise as an expanding N×N square frontier until budget (dims must be empty)
+        self.shared_out = shared_out or []  # outputs with unwritten holes (packw extra_bytes gaps) → force shared init even if never read
+        self.scalar_movs = scalar_movs    # rewrite `*dst = *src++;` to salt_deref/salt_scalar accessors (packw remainder)
+        self.extra_params = extra_params or {}  # name -> (struct, {field: value}) — 2nd+ concrete param structs (qd8 quantization_params)
+        self.raw_decls = raw_decls or []  # raw C++ lines appended after buffer decls (extra constraints; cvc5 API)
+        self.index_reads = index_reads or []  # local ptr names whose `p[i]` reads become salt_scalar (int scalars, no sentinel)
+        self.pre_defines = pre_defines or []  # #define lines before kernel bodies (e.g. force XNN_ARCH_ARM64=0)
 
 
 def _transpose_fixture(elem: str) -> "FixtureSpec":
     # block_height×block_width → block_width×block_height, any element width.
-    # Padded strides (+8B/row) make the output strided, exercising Strided2D.
+    # Padded strides (+8B/row) make the output strided. grow_cross expands an N×N
+    # square frontier until the budget.
     return FixtureSpec(
-        dims={"block_width": [1, 2, 3, 4, 5], "block_height": [1, 2, 3, 4, 5]},
+        dims={},
+        grow_cross=("block_width", "block_height"),
         strides={"input_stride": f"block_width * sizeof({elem}) + 8",
                  "output_stride": f"block_height * sizeof({elem}) + 8"},
         extents={"input": "block_height * input_stride + 64",     # bytes
@@ -316,15 +375,76 @@ def _transpose_fixture(elem: str) -> "FixtureSpec":
         elem=elem, kind=_kind(elem))
 
 
-def _gemm_fixture() -> "FixtureSpec":
-    # Full f32-gemm (mr≤6, nr=8): c[m][n] = clamp(bias[n] + Σ_k a[m][k]·w[k][n]).
-    # kc in BYTES → real reduction (kc>1). nc ≤ 8 = single NEON tile (cn_stride unused).
-    # Weights DUAL-PACKED: planes = 1+kc_floats (bias + weight rows), NEON tile=8,
-    # RVV tile=VLMAX(e32m4), padded (`w += nr`). Both reduce sequentially over k with
-    # FMA in identical order → kc>1 is FP-safe. `a` symbolic (sentinel bridges RVV's
-    # scalar `*a0++`; NEON's vld1q reads the same bytes). Output region strided.
+def _qd8_qc4w_gemm_fixture() -> "FixtureSpec":
+    # qd8-f32-qc4w 1-row GEMM: int8 activations × packed 4-bit weights → f32 out.
+    # ONE shared symbolic `w`; RUN --vlen 128 (NEON NR=16 == RVV vlmax(e32m4)).
+    # Tile layout: ksum 16×i32 | (kc/2) nibble planes 16×u8 | scale 16×f32 | bias 16×f32.
+    # raw_decls assert ksum ≡ 0 (mod 16) — the packer invariant. cvc5-only.
+    tile = "(16 * 4 + ((kc + 1) / 2) * 16 + 16 * 4 + 16 * 4)"
     return FixtureSpec(
-        dims={"mr": [1, 2, 6], "nc": [1, 4, 8], "kc": [4, 8]},   # kc BYTES: 4=1float, 8=2floats
+        dims={"mr": [1], "nc": [1, 2, 4, 5, 8, 15, 16], "kc": [2, 4, 6, 8, 10]},
+        strides={"a_stride": "kc", "cm_stride": "nc * sizeof(float)",
+                 "cn_stride": "16 * sizeof(float)"},
+        extents={"a": "kc + 72",                       # +8 OOB pad (NEON vld1_s8 tail) +64
+                 "w": f"((nc + 15) / 16) * {tile} + 64",
+                 "c": "nc * sizeof(float) + 64"},
+        out_buffers=["c"], out_extent=None,
+        out_region={"rows": "mr", "cols": "nc",
+                    "row_stride": "cm_stride", "col_stride": "sizeof(float)"},
+        params=("xnn_f32_qc4w_minmax_params",
+                {"scalar.min": "-1e30f", "scalar.max": "1e30f", "scalar.kernel_zero_point": "8"}),
+        extra_params={"quantization_params": ("xnn_qd8_quantization_params",
+                                              {"zero_point": "5", "inv_scale": "0.5f"})},
+        index_reads=["a0"],
+        raw_decls=[
+            "    { auto& _tm = ctx.tm; Op _lo4 = _tm.mkOp(Kind::BITVECTOR_EXTRACT, {3, 0});",
+            f"      size_t _tilesz = {tile};",
+            "      size_t _fpoff = 16 * 4 + ((kc + 1) / 2) * 16;   // scale plane offset in tile",
+            "      Term _flo = mk_fp32_from_float(ctx.tm, -1.0f), _fhi = mk_fp32_from_float(ctx.tm, 1.0f);",
+            "      for (size_t _t = 0; _t < (nc + 15) / 16; _t++)",
+            "        for (size_t _i = 0; _i < 16; _i++) {",
+            "          Term _ks = _b_w.loadScalar(_t * _tilesz + _i * 4, 32);",
+            "          ctx.solver->assertFormula(_tm.mkTerm(Kind::EQUAL, "
+            "{_tm.mkTerm(_lo4, {_ks}), _tm.mkBitVector(4, 0)}));",
+            "          // |ksum| <= 2048 (packer: ksum = 16*Σnibbles) — narrows the int→fp converters",
+            "          Term _ks12 = _tm.mkTerm(_tm.mkOp(Kind::BITVECTOR_EXTRACT, {11, 0}), {_ks});",
+            "          ctx.solver->assertFormula(_tm.mkTerm(Kind::EQUAL, "
+            "{_ks, _tm.mkTerm(_tm.mkOp(Kind::BITVECTOR_SIGN_EXTEND, {20}), {_ks12})}));",
+            "          // scale + bias planes finite [-1,1] — full-domain f32 bits are FP-blast-intractable",
+            "          for (size_t _p = 0; _p < 2; _p++) {",
+            "            Term _fp = load_as_fp32(ctx.tm, _b_w.loadScalar(_t * _tilesz + _fpoff + _p * 64 + _i * 4, 32));",
+            "            ctx.assert_(ctx.land_(ctx.fp32_geq(_fp, _flo), ctx.fp32_leq(_fp, _fhi)));",
+            "          }",
+            "        } }",
+        ],
+        elem="int8_t", kind="SINT", out_elem="float", out_kind="F32")
+
+
+def _packw_fixture() -> "FixtureSpec":
+    # x32-packw-x2-gemm-goi (NR=2, KR=1, SR=1): packs g groups of GOI weights+bias
+    # into [bias×2][k-major 2-wide]… blocks + an extra_bytes gap. Pure BV → full domain.
+    # Unwritten bytes (gaps + odd-nc bias slot) → shared_out; odd-nc remainder → scalar movs.
+    # bias always non-NULL.
+    blk_u32 = "(2 + 2 * kc + extra_bytes / sizeof(uint32_t))"   # block elems incl. gap
+    return FixtureSpec(
+        dims={"g": [1, 2], "nc": [1, 2, 3, 4, 5], "kc": [1, 2, 3, 4], "extra_bytes": [0, 8]},
+        strides={"nr": "2", "kr": "1", "sr": "1"},
+        extents={"weights": "g * nc * kc * sizeof(uint32_t) + 64",
+                 "bias": "g * nc * sizeof(uint32_t) + 64",
+                 "scale": "16", "params": "16",                   # unused void* args
+                 "packed_weights": f"g * ((nc + 1) / 2) * {blk_u32} * sizeof(uint32_t) + 64"},
+        out_buffers=["packed_weights"],
+        out_extent=f"g * ((nc + 1) / 2) * {blk_u32}",
+        shared_out=["packed_weights"], scalar_movs=True,
+        elem="uint32_t", kind="UINT")
+
+
+def _gemm_fixture() -> "FixtureSpec":
+    # Full f32-gemm (mr≤4, nr=8): c[m][n] = clamp(bias[n] + Σ_k a[m][k]·w[k][n]).
+    # kc in BYTES. Weights DUAL-PACKED (planes = 1+kc_floats: bias + weight rows,
+    # NEON/RVV tile=8). Both reduce over k with FMA in identical order → kc>1 FP-safe.
+    return FixtureSpec(
+        dims={"mr": [1, 2, 3, 4], "nc": [1, 4, 8, 12], "kc": [4, 8]},   # mr 1-4 (both kernels 4-row); nc=12 → 2nd tile (cn_stride + a-rewind); kc BYTES
         strides={"a_stride": "kc",                       # a row pitch (bytes), tight
                  "cm_stride": "nc * sizeof(float)",      # c row pitch, tight
                  "cn_stride": "8 * sizeof(float)"},      # next nr-tile (unused at nc≤8)
@@ -334,7 +454,7 @@ def _gemm_fixture() -> "FixtureSpec":
                     "row_stride": "cm_stride", "col_stride": "sizeof(float)"},
         dual_weights={"w": {"planes": "1 + kc / sizeof(float)",   # bias + kc_floats weight rows
                             "ncols": "nc", "neon_tile": "8",
-                            "rvv_tile": "(vlen / 32) * 4", "rvv_packed": False}},
+                            "rvv_tile": "8", "rvv_packed": False}},   # target does fixed `w += 8` (NR=8), NOT vlmax
         params=("xnn_f32_minmax_params",
                 {"scalar.min": "-1e30f", "scalar.max": "1e30f"}),   # wide → no clamp
         elem="float", kind="F32")
@@ -351,15 +471,14 @@ _MINMAX_PARAMS = {
 
 
 def _maxpool_fixture(elem: str) -> "FixtureSpec":
-    # Indirect-input family: `const T** input` is a table of kernel_elements row
-    # pointers, each into a shared symbolic buffer; per-channel max-reduction with
-    # a [min,max] clamp. Max order is identical on both sides (sequential over k),
-    # so it verifies on the FULL domain — no input-range needed. f32 uses FP max;
-    # s8/u8 use signed/unsigned integer max (kind SINT/UINT) — same recipe.
+    # Indirect-input: `const T** input` table of kernel_elements rows into a shared
+    # symbolic buffer; per-channel max-reduction + [min,max] clamp. Max order matches
+    # both sides → FULL domain (no input-range). f32 uses FP max, s8/u8 integer max.
+    # GROW kernel_elements past the 9p pass boundary; inner set = channels×output_pixels.
     return FixtureSpec(
         dims={"channels": [1, 2, 3, 4, 5, 7, 8],
-              "kernel_elements": [1, 2, 3],
               "output_pixels": [1, 2]},
+        grow_dim="kernel_elements",
         # Unused scalar args declared (and pinned) as zero-valued locals.
         strides={"input_offset": "0", "input_pixel_stride": "0",
                  "input_increment": "0", "output_increment": "0"},
@@ -371,36 +490,59 @@ def _maxpool_fixture(elem: str) -> "FixtureSpec":
         elem=elem, kind=_kind(elem))
 
 
-def _igemm_fixture(ks: int = 1) -> "FixtureSpec":
-    # Minimal igemm (a_offset=0; zero/params/strides voided). `a` is a T** table
-    # of ks*mr row pointers (reuses the indirect handler), indexed a[p*mr + m].
-    # Output c[m*nc+n] is contiguous mr×nc. Both sides index `w` IDENTICALLY
-    # (bias[nc] then ks·kc rows of nc) — no dual-packing — so weights are symbolic.
-    # Reduction order is identical (sequential over p,k), so equivalence holds;
-    # symbolic FP-mul needs input-range. ks=1 is the base igemm; ks=3 is igemm-ks3.
-    kc_vals = [1, 2, 3] if ks == 1 else [1, 2]   # ks*kc products — cap work for ks>1
+def _argmaxpool_fixture() -> "FixtureSpec":
+    # Argmax pooling: per-channel max over a pooling_elements window, writing BOTH max
+    # VALUES (float* output) and argmax POSITIONS (uint32_t* index) → dual MIXED-type
+    # output (out_extents + out_elems). The two compares pin tie-breaking (strict `>`,
+    # first-wins). GROW pooling_elements past the 9p8x boundary; inner = channels×output_pixels.
     return FixtureSpec(
-        dims={"mr": [1, 2], "nc": [1, 4, 5, 8], "kc": kc_vals},
-        strides={"ks": str(ks), "a_offset": "0", "cm_stride": "0", "cn_stride": "0"},
-        extents={"w": f"nc * (1 + {ks}*kc) * sizeof(float) + 64",   # bias[nc] + ks·kc rows of nc
+        dims={"channels": [1, 2, 3, 4, 5, 7, 8], "output_pixels": [1, 2]},
+        grow_dim="pooling_elements",
+        # Unused scalar args declared (and pinned) as zero-valued locals.
+        strides={"input_offset": "0", "input_pixel_stride": "0", "input_increment": "0",
+                 "output_increment": "0", "index_increment": "0"},
+        extents={"output": "channels * sizeof(float) + 64",
+                 "index":  "channels * sizeof(uint32_t) + 64"},
+        out_buffers=["output", "index"], out_extent=None, out_region=None,
+        out_extents={"output": "channels", "index": "channels"},   # dual contiguous compare, ANDed
+        out_elems={"output": "float", "index": "uint32_t"},        # mixed-type: values F32, indices UINT
+        indirect={"input": {"count": "pooling_elements", "row": "input_offset + channels"}},
+        params=None,                          # argmaxpool has no params struct
+        elem="float", kind="F32")
+
+
+def _igemm_fixture(ks: int = 1) -> "FixtureSpec":
+    # Minimal igemm (a_offset=0; zero/params/strides voided). `a` is a T** table of
+    # ks*mr row pointers, indexed a[p*mr + m]. `w` indexed identically both sides →
+    # symbolic. FP-mul needs input-range. ks=1 base; ks=3 is igemm-ks3.
+    kc_vals = [4, 8] if ks == 1 else [4]   # kc in BYTES (kc % sizeof(float)==0); ks*kc caps FP work
+    return FixtureSpec(
+        # mr=[1] only: kernel asserts mr<=1 (asserts off in Release → mr>1 is UB/crash).
+        # nc 1/4/5/8 hits the NR=8 tail-store paths (nc&4, nc&2, nc&1) + the full tile.
+        dims={"mr": [1], "nc": [1, 4, 5, 8], "kc": [4, 8]},  # kc BYTES (=1,2 floats)
+        # ks in BYTES (count*sizeof(void*)); kernel does `p -= sizeof(void*)`, so the raw
+        # count underflows the p-loop → SIGSEGV.
+        strides={"ks": f"{ks} * sizeof(void*)", "a_offset": "0", "cm_stride": "0", "cn_stride": "0"},
+        # NR=8: kernel reads a full 8-channel tile even for the nc<8 tail, so round nc up to
+        # 8 — else partial tiles read OOB weights → crash/spurious CEX.
+        extents={"w": f"((nc + 7) / 8) * 8 * (1 + {ks}*kc) * sizeof(float) + 64",
                  "c": "mr * nc * sizeof(float) + 64"},
         out_buffers=["c"], out_extent="mr * nc", out_region=None,
         indirect={"a": {"count": f"{ks} * mr", "row": "a_offset + kc"}},
         weights={"zero": ("16", "0.0f")},        # voided; concrete dummy → valid ptr
-        params=("xnn_f32_minmax_params", {}),    # voided; declared so &params is valid
+        params=("xnn_f32_minmax_params",         # WIDE bounds → no clamp (else min=max=0 → vacuous)
+                {"scalar.min": "-1e30f", "scalar.max": "1e30f"}),
         elem="float", kind="F32")
 
 
 def _dwconv_fixture(ksize: int = 3) -> "FixtureSpec":
-    # Minimal depthwise conv, kernel_size=ksize (input/output_increment/strides/
-    # zero/params voided). `input` is a T** table of output_width*ksize row pointers
-    # (ksize taps per output pixel). Weights share the SAME layout on both sides
-    # (bias[C] + ksize taps, each C-wide) → symbolic. Output output[ow*channels+c]
-    # is contiguous; ksize-tap reduction in matched order; FP-mul needs input-range.
-    # ksize=3 is the base dwconv; ksize=9 is dwconv-9p.
+    # Minimal depthwise conv, kernel_size=ksize (increments/strides/zero/params voided).
+    # `input` is a T** table of output_width*ksize rows. Weights same layout both sides
+    # → symbolic. FP-mul needs input-range. ksize=3 base; ksize=9 is dwconv-9p.
     ow_vals = [1, 2] if ksize <= 3 else [1]      # ksize products/output — cap work
     return FixtureSpec(
-        dims={"channels": [1, 2, 4, 5, 8], "output_width": ow_vals},
+        dims={"output_width": ow_vals},          # inner representative set; channels is grow_dim
+        grow_dim="channels",                     # grow channels 1,2,3,… until budget (soak: saturates ~8)
         strides={"input_stride": "0", "output_increment": "0",
                  "input_offset": "0", "input_pixel_stride": "0"},
         extents={"weights": f"channels * {ksize + 1} * sizeof(float) + 64",   # bias + ksize taps
@@ -414,35 +556,21 @@ def _dwconv_fixture(ksize: int = 3) -> "FixtureSpec":
 
 def _rdsum_fixture(elem: str, out_elem: str) -> "FixtureSpec":
     # Column reduction over a rows×channels matrix: output[c] += Σ_r input[r*input_stride+c].
-    # int8/uint8 input, int32/uint32 INOUT output (loads prior contents, adds the sum).
-    # The NEON ref is the 7p7x variant — it reads 7 row pointers and substitutes the
-    # `zero` row for the partial tail of each 7-row group. `zero` MUST be a CONCRETE
-    # all-zeros buffer: that is the kernel's actual caller contract, and it is load-
-    # bearing for equivalence. NEON reads `zero` BLOCK-RELATIVE (each channel block and
-    # tail chunk resets i1..i6=zero and reads from zero[0]; logical channel c → zero[c
-    # mod blockwidth], blockwidth=16 for qs8 / 32 for qu8), whereas RVV reads zero[0..vl)
-    # spanning the full vector block (c → zero[c] within the block). These agree only
-    # when `zero` is uniform — a SYMBOLIC zero produces real counterexamples once
-    # channels exceed one NEON block (e.g. qs8 ch=18: NEON uses zero[0..2) for ch16-17,
-    # RVV uses zero[16..18)). With all-zeros padding it is a no-op and matches the RVV
-    # exact-row sum. (The symbolic INPUT matrix and INOUT OUTPUT init are full-domain.)
-    # Tight rows (≤8, single 252-block) exercise every zero-substitution threshold
-    # (cb<2,≤2,<4,≤4,<6,≤6); channels span the 16-wide main loop and the ≥8 / &4 / &2
-    # tails. rows≤8 ⇒ |Σ|≤8·128 ⟹ no int16 overflow ⟹ both sides compute the exact
-    # integer column sum (full domain, pure BV).
-    # channels are EVEN only: the NEON `channels&1` tail writes its last lane via a
-    # scalar store (`*output += vgetq_lane_s32(...)`), which the multi-dim symbolic
-    # engine (vector stores only) can't capture. Every even path IS a vector store —
-    # vst1q_s32 (16-wide main loop: 16,18,20; ≥8 tail: 8), the &4 tail (4,20), and the
-    # 2-lane vst1_s32 &2 tail (2,6,18) — so even channels verify; odd ones are excluded.
+    # int8/uint8 input, int32/uint32 INOUT output. NEON ref is the 7p7x variant. `zero` MUST
+    # be a CONCRETE all-zeros buffer — the kernel's caller contract, load-bearing for
+    # equivalence (a symbolic zero yields real CEX once channels exceed one NEON block).
+    # ROWS GROW unbounded; channels = fixed representative set hitting every tail path.
+    # Odd channels route the last lane through a scalar `*out += vgetq_lane` store → odd_tail_dim.
     return FixtureSpec(
-        dims={"rows": [1, 2, 3, 7, 8], "channels": [2, 4, 6, 8, 16, 18, 20]},
+        dims={"channels": [1, 2, 4, 7, 8, 15, 16, 17, 32, 33]},   # representative configs; rows is grow_dim
+        grow_dim="rows",                              # rows grow 1,2,3,… until budget — unbounded verification
         strides={"input_stride": "channels"},        # tight row pitch (bytes; int8 ⇒ =channels)
         extents={"input": "rows * input_stride + 64",                 # symbolic matrix + OOB pad
                  "output": f"channels * sizeof({out_elem}) + 64"},
         out_buffers=["output"], out_extent="channels", out_region=None,
         weights={"zero": ("channels + 64", "0")},     # concrete all-zeros padding row (contract)
         params=("xnn_qs8_rsum_params", {}),           # dummy struct (unused; &params must be valid)
+        odd_tail_dim="channels",   # odd channel → scalar `*out += vgetq_lane` tail (captured via side-channel)
         elem=elem, kind=_kind(elem), out_elem=out_elem, out_kind=_kind(out_elem))
 
 
@@ -456,6 +584,56 @@ def _strided_slice_fixture() -> "FixtureSpec":
         extents={"x": "n_out * stride * sizeof(float) + 64",
                  "y": "n_out * sizeof(float) + 64"},
         out_buffers=["y"], out_extent="n_out", out_region=None,
+        elem="float", kind="F32")
+
+
+def _dwconv2d_chw_fixture() -> "FixtureSpec":
+    # 3x3 s1 p1 depthwise conv on ONE channel plane (CHW), direct 2D. input/output are
+    # flat H×cols planes (input_width is a BYTE pitch). Output contiguous → flat compare.
+    # `weights` = bias + 9 taps (symbolic). `zero` = CONCRETE all-zeros halo. padding_top==1.
+    # Small fixed grid (not production sizes — intractable for cvc5 FP); conv is local +
+    # size-invariant so it covers all behaviors. FP-mul ⇒ needs --input-range.
+    return FixtureSpec(
+        dims={"input_height": [1, 2, 3, 4, 5, 6], "input_width": [16, 20, 32]},  # input_width in BYTES
+        strides={"padding_top": "1"},                 # asserted == 1
+        extents={"input": "input_height * input_width + 256",   # flat H×cols plane + OOB pad
+                 "weights": "10 * sizeof(float) + 64",          # bias + 3x3 taps
+                 "output": "input_height * input_width + 256"},
+        out_buffers=["output"],
+        out_extent="input_height * input_width / sizeof(float)",  # H*cols contiguous elements
+        out_region=None,
+        weights={"zero": ("input_width + 64", "0.0f")},          # concrete all-zeros halo row
+        params=_MINMAX_PARAMS["float"],
+        elem="float", kind="F32")
+
+
+def _conv_hwc2chw_fixture() -> "FixtureSpec":
+    # 3x3 s2 p1 FULL conv, 3 input channels (RGB), HWC in → CHW out (MobileNet first layer).
+    # `input` HWC interleaved; `weights` = bias + 3 ic × 3x3 per oc (28 floats/oc); `zero` =
+    # CONCRETE all-zeros HWC halo. CHW output with contiguous strides → flat compare.
+    # Derived: output_width=(input_width+1)/2, H_out=(input_height+1)/2 (stride 2). Small grid
+    # (not the 224x224x3 production size — ~150k symbolic floats, hopeless for cvc5 FP); conv
+    # is local + size-invariant so it covers production behavior. FP-mul ⇒ needs --input-range.
+    # Budget-gated (cheapest-first until --timeout); symbolic weights are ~88s/shape and grow.
+    return FixtureSpec(
+        dims={"input_height": [1, 2, 3, 4, 5],
+              "input_width": [2, 3, 4, 5, 7, 8],
+              "output_channels": [1, 2, 3, 4, 5, 8]},
+        strides={"output_y_start": "0",
+                 "output_y_end": "(input_height + 1) / 2",          # H_out (stride 2)
+                 "input_padding_top": "1",
+                 "output_height_stride": "((input_width + 1) / 2) * sizeof(float)",                       # contiguous rows
+                 "output_channel_stride": "((input_height + 1) / 2) * ((input_width + 1) / 2) * sizeof(float)"},  # contiguous planes
+        extents={"input": "input_height * input_width * 3 * sizeof(float) + 256",   # HWC + OOB pad
+                 # round output_channels up to a multiple of 4 — the kernel reads a FULL
+                 # 4-channel block per group, else partial tiles read OOB weights → spurious CEX.
+                 "weights": "((output_channels + 3) / 4) * 4 * 28 * sizeof(float) + 64",
+                 "output": "output_channels * ((input_height + 1) / 2) * ((input_width + 1) / 2) * sizeof(float) + 64"},
+        out_buffers=["output"],
+        out_extent="output_channels * ((input_height + 1) / 2) * ((input_width + 1) / 2)",  # CHW contiguous
+        out_region=None,
+        weights={"zero": ("input_width * 3 * sizeof(float) + 64", "0.0f")},   # concrete all-zeros HWC halo row
+        params=_MINMAX_PARAMS["float"],
         elem="float", kind="F32")
 
 
@@ -488,11 +666,9 @@ def _split2_fixture() -> "FixtureSpec":
 
 def _vmulcaddc_fixture() -> "FixtureSpec":
     # 2-row per-channel: output = clamp(input*scale + bias). `channels` in BYTES.
-    # Weights are DUAL-PACKED: NEON packs scale[4]+bias[4] per fixed 4-float tile;
-    # RVV packs scale[vl]+bias[vl] per vl-float tile (vl = VLMAX(e32m4) = (vlen/32)*4).
-    # The harness builds two physical buffers (w_neon, w_rvv) from ONE shared symbolic
-    # logical weight set placed at each dialect's offsets — so both kernels recover the
-    # same per-channel scale/bias at ANY vlen and with tails. Symbolic FP-mul → input-range.
+    # Weights DUAL-PACKED (NEON scale[4]+bias[4] per 4-float tile; RVV per VLMAX(e32m4)
+    # tile) from ONE shared symbolic logical set → both recover the same scale/bias at any
+    # vlen. FP-mul → input-range.
     return FixtureSpec(
         dims={"rows": [1, 2, 3], "channels": [4, 16, 20, 32, 48]},   # BYTES; 20=5 floats (tail)
         strides={"input_stride": "channels", "output_stride": "channels"},   # tight (contiguous rows)
@@ -509,11 +685,9 @@ def _vmulcaddc_fixture() -> "FixtureSpec":
 
 
 def _ibilinear_fixture() -> "FixtureSpec":
-    # Bilinear interp (decomposed, no FMA → matched FP order). `input` is a T** table
-    # of output_pixels*4 corner pointers (itl,itr,ibl,ibr). `weights[op*2+{0,1}]` =
-    # alphah,alphav per pixel, broadcast identically on both sides (NEON vld1_dup /
-    # RVV vlse32 stride-0) → SYMBOLIC shared. Output output[op*channels+c] contiguous.
-    # FP sub/mul/add → input-range. No params struct.
+    # Bilinear interp (decomposed, no FMA → matched FP order). `input` is a T** table of
+    # output_pixels*4 corner pointers. `weights` = alphah,alphav per pixel, broadcast both
+    # sides → symbolic shared. FP sub/mul/add → input-range. No params struct.
     return FixtureSpec(
         dims={"channels": [1, 2, 4, 5, 8], "output_pixels": [1, 2]},
         strides={"input_offset": "0", "output_increment": "0"},
@@ -528,6 +702,10 @@ def _match_fixture(sig, src=""):
     # `src` lets us read a size constant the signature can't reveal (igemm/igemm-ks3
     # and dwconv/dwconv-9p share identical signatures — only `ks`/tap-count differ).
     names = {p.name for p in sig.params}
+    if {"input_height", "input_width", "padding_top"} <= names:
+        return _dwconv2d_chw_fixture()    # 3x3 s1 p1 depthwise on a CHW plane (direct 2D)
+    if {"input_height", "input_width", "output_y_start", "output_channels"} <= names:
+        return _conv_hwc2chw_fixture()    # 3x3 s2 p1 c3 full conv, HWC in -> CHW out
     if {"input_stride", "output_stride", "block_width", "block_height"} <= names:
         elem = next((p.pointee for p in sig.params if p.is_pointer), "uint32_t")
         return _transpose_fixture(elem)   # element width from the buffer type
@@ -561,8 +739,15 @@ def _match_fixture(sig, src=""):
         return _concat2_fixture()         # pure concatenation (2 in → 1 out)
     if {"na", "nb", "x", "a", "b"} <= names and len(sig.params) == 5:
         return _split2_fixture()          # pure split (1 in → 2 out, multi-output compare)
+    if "quantization_params" in names and {"mr", "nc", "kc"} <= names:
+        return _qd8_qc4w_gemm_fixture()   # before f32-gemm: qd8 names are a superset
     if {"mr", "nc", "kc", "a_stride", "cm_stride", "cn_stride"} <= names:
         return _gemm_fixture()
+    if {"g", "nc", "kc", "nr", "kr", "sr", "extra_bytes"} <= names:
+        return _packw_fixture()           # x32-packw NR=2 GOI weight packing (pure BV)
+    if ({"output_pixels", "pooling_elements", "channels", "index"} <= names
+            and any(p.is_ptr_to_ptr for p in sig.params)):
+        return _argmaxpool_fixture()      # f32 dual-output: max values + argmax indices
     if ({"output_pixels", "kernel_elements", "channels", "input_offset"} <= names
             and any(p.is_ptr_to_ptr for p in sig.params)):
         # `const float**` pointee normalizes to "float *" — strip the inner `*`.
@@ -570,7 +755,7 @@ def _match_fixture(sig, src=""):
         ind = next(p.pointee for p in sig.params if p.is_ptr_to_ptr)
         elem = ind.replace("*", "").strip()
         elem = {"signed char": "int8_t", "unsigned char": "uint8_t"}.get(elem, elem)
-        if elem in _MINMAX_PARAMS:        # f32/s8/u8 maxpool; f16 (Phase 3) defers.
+        if elem in _MINMAX_PARAMS:        # f32/s8/u8 maxpool; f16 defers.
             return _maxpool_fixture(elem)
     return None
 
@@ -589,17 +774,20 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
                and p.name not in spec.dims]
     elem = spec.elem
     oelem, okind = spec.out_elem, spec.out_kind   # output type (rdsum: int8 in, int32 out)
+    ulp_tol = _ulp_tol_for(name)                  # 0 = bit-exact; >0 relaxes FP outputs to a ULP bound
     neon_src, rvv_src = open(neon_path).read(), open(rvv_path).read()
     decls = [f"    const size_t {s} = {e};" for s, e in spec.strides.items()]
     # Indirect inputs: `const T** name` is a table of `count` row pointers into one
     # shared symbolic buffer. Both kernels read the same table → same symbols, so
     # an intrinsic load resolves to identical bytes on each side.
+    _ibind = "bindScalarRef" if elem in _FP_CTYPES else "bind"  # FP indirect rows read scalar-wise (RVV vfmacc_vf)
     for nm, spc in spec.indirect.items():
         cnt, row = spc["count"], spc["row"]
         decls += [
             f"    const size_t _{nm}_rows = ({cnt}), _{nm}_row = ({row});  // ptr count, elems/row",
             f"    std::vector<{elem}> {nm}_data(_{nm}_rows * _{nm}_row + 16, 0);",
-            f'    auto& _b_{nm} = ctx.registerBuffer("{nm}", _{nm}_rows * _{nm}_row * sizeof({elem})); _b_{nm}.bind({nm}_data.data());',
+            # +16 elem slack matches the backing pad so XNN_OOB_READS tail over-reads stay in-bounds
+            f'    auto& _b_{nm} = ctx.registerBuffer("{nm}", (_{nm}_rows * _{nm}_row + 16) * sizeof({elem})); _b_{nm}.{_ibind}({nm}_data.data());',
             f"    std::vector<const {elem}*> {nm}_tbl(_{nm}_rows);",
             f"    for (size_t _k = 0; _k < _{nm}_rows; _k++) {nm}_tbl[_k] = {nm}_data.data() + _k * _{nm}_row;",
         ]
@@ -613,14 +801,16 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
         ext = spec.extents[b]
         decls += [f"    std::vector<{elem}> {b}_arr({nelem(ext)}, 0);",
                   f'    auto& _b_{b} = ctx.registerBuffer("{b}", ({ext})); _b_{b}.{bindm}({b}_arr.data());']
-    onelem = lambda ext: f"({ext}) / sizeof({oelem}) + 1"   # output backing count (own type)
     for b in outputs:
         ext = spec.extents[b]
+        _oeb = spec.out_elems.get(b, oelem)         # per-output C type (argmaxpool: output=float, index=uint32_t)
+        _onb = f"({ext}) / sizeof({_oeb}) + 1"      # backing count in that type
         # In-out / accumulator outputs (rdsum: `output += Σ`) load prior contents, so
         # both sides must start from ONE shared symbolic image; pure-write outputs keep
         # independent poison so a missing write is caught.
-        inout = _output_is_read(neon_src, b) or _output_is_read(rvv_src, b)
-        decls += [f"    std::vector<{oelem}> {b}_neon_arr({onelem(ext)}, 0), {b}_rvv_arr({onelem(ext)}, 0);",
+        inout = (_output_is_read(neon_src, b) or _output_is_read(rvv_src, b)
+                 or b in spec.shared_out)   # unwritten holes (packw gaps) need one shared image too
+        decls += [f"    std::vector<{_oeb}> {b}_neon_arr({_onb}, 0), {b}_rvv_arr({_onb}, 0);",
                   f'    auto& _b_{b}_neon = ctx.registerBuffer("{b}_neon", ({ext})); _b_{b}_neon.bind({b}_neon_arr.data());',
                   f'    auto& _b_{b}_rvv  = ctx.registerBuffer("{b}_rvv",  ({ext})); _b_{b}_rvv.bind({b}_rvv_arr.data());']
         if inout:
@@ -684,6 +874,9 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
         st, fields = spec.params
         decls.append(f"    {st} params{{}};")
         decls += [f"    params.{f} = {v};" for f, v in fields.items()]
+    for pname, (st, fields) in spec.extra_params.items():  # extra concrete param structs (qd8)
+        decls.append(f"    {st} {pname}_v{{}};")
+        decls += [f"    {pname}_v.{f} = {v};" for f, v in fields.items()]
     if input_range and elem == "float":  # optional: restrict F32 inputs to finite [lo,hi]
         lo, hi = input_range
         for b in inputs:                  # element count within capacity (floor, no +1)
@@ -692,6 +885,7 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
             decls += _emit_input_range(f"_b_{nm}", f"_{nm}_rows * _{nm}_row", lo, hi)
         for nm in spec.dual_weights:       # logical weights (shared by both packings)
             decls += _emit_input_range(f"_wlog_{nm}", f"_{nm}_P * _{nm}_N", lo, hi)
+    decls += spec.raw_decls             # raw constraint lines (e.g. qd8 ksum ≡ 0 mod 16)
     cfg_tag = "finite" if input_range else "symbolic"
 
     def call_args(side):
@@ -706,6 +900,8 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
                 out.append(f"{p.name}_tbl.data()")
             elif p.name in outputs:
                 out.append(f"{p.name}_{side}_arr.data()")
+            elif p.name in spec.extra_params:   # before param_names: both are struct ptrs
+                out.append(f"&{p.name}_v")
             elif p.name in param_names:
                 out.append("&params")
             else:                       # dim or stride → pass by name (local/arg)
@@ -714,7 +910,7 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
 
     if spec.out_extents:                # multi-output: AND a contiguous compare per output
         terms = [f"buffers_equal(ctx.tm, _b_{ob}_neon, _b_{ob}_rvv, {ext}, "
-                 f"sizeof({oelem}), ElementKind::{okind})"
+                 f"sizeof({spec.out_elems.get(ob, oelem)}), ElementKind::{_kind(spec.out_elems.get(ob, oelem))}, {ulp_tol})"
                  for ob, ext in spec.out_extents.items()]
         cmp_expr = terms[0]
         for t in terms[1:]:
@@ -725,10 +921,10 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
             r = spec.out_region
             cmp_expr = (f"buffers_equal_strided(ctx.tm, _b_{ob}_neon, _b_{ob}_rvv, "
                         f"{r['rows']}, {r['cols']}, {r['row_stride']}, {r['col_stride']}, "
-                        f"sizeof({oelem}), ElementKind::{okind})")
+                        f"sizeof({oelem}), ElementKind::{okind}, {ulp_tol})")
         else:
             cmp_expr = (f"buffers_equal(ctx.tm, _b_{ob}_neon, _b_{ob}_rvv, "
-                        f"{spec.out_extent}, sizeof({oelem}), ElementKind::{okind})")
+                        f"{spec.out_extent}, sizeof({oelem}), ElementKind::{okind}, {ulp_tol})")
     # Counterexample witness: on SAT, scan the (first) output buffer for the first
     # differing element and extract both models, so the repair LLM gets an actionable
     # "channel C: NEON=x RVV=y" instead of an empty shape. Strided/multi-output regions
@@ -744,6 +940,24 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
     else:
         _wob, _wcount = spec.out_buffers[0], spec.out_extent
         _woff = f"e * sizeof({oelem})"
+    _din = inputs[0] if (inputs and inputs[0] in spec.extents) else None
+    _cexin = ((f"      fprintf(stderr, \"CEX_IN:\");\n"
+               f"      for (size_t _e = 0; _e < ({spec.extents[_din]})/sizeof({elem}); _e++) "
+               f"fprintf(stderr, \" %lu\", strtoul(ctx.solver->getValue(_b_{_din}.loadScalar(_e*sizeof({elem}), {ebits})).getBitVectorValue(10).c_str(), nullptr, 10));\n"
+               f"      fprintf(stderr, \"\\n\");\n") if _din else "")
+    # Under a ULP tolerance the first BIT-differing element may still be within
+    # tol; flag the first element whose ULP distance actually EXCEEDS tol, so the
+    # repair hint names a genuine violator. Exact (tol=0) keeps raw bit inequality.
+    _store = f"fi = e; _nv = (long long)({oelem})_nu; _vv = (long long)({oelem})_vu; break;"
+    if ulp_tol and oelem in _FP_CTYPES:
+        _wb = obits - 1
+        _wit_cmp = (
+            f"        long long _ka = ((_nu >> {_wb}) & 1ULL) ? ((long long)(1ULL << {_wb}) - (long long)_nu) : (long long)_nu;\n"
+            f"        long long _kb = ((_vu >> {_wb}) & 1ULL) ? ((long long)(1ULL << {_wb}) - (long long)_vu) : (long long)_vu;\n"
+            f"        long long _ud = (_ka > _kb) ? (_ka - _kb) : (_kb - _ka);\n"
+            f"        if (_ud > {ulp_tol}LL) {{ {_store} }}\n")
+    else:
+        _wit_cmp = f"        if (_nu != _vu) {{ {_store} }}\n"
     cex_witness = (
         f"    size_t fi = 0; long long _nv = 0, _vv = 0;\n"
         f"    for (size_t e = 0; e < ({_wcount}); e++) {{\n"
@@ -752,15 +966,49 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
         f"        Term _v = ctx.solver->getValue(_b_{_wob}_rvv.loadScalar(_off, {obits}));\n"
         f"        unsigned long long _nu = strtoull(_n.getBitVectorValue(10).c_str(), nullptr, 10);\n"
         f"        unsigned long long _vu = strtoull(_v.getBitVectorValue(10).c_str(), nullptr, 10);\n"
-        f"        if (_nu != _vu) {{ fi = e; _nv = (long long)({oelem})_nu; _vv = (long long)({oelem})_vu; break; }}\n"
+        + _wit_cmp +
+        f"    }}\n"
+        f"    if (std::getenv(\"SALT_CEX_DUMP\")) {{\n"
+        + _cexin +
+        f"      fprintf(stderr, \"CEX_NEON:\");\n"
+        f"      for (size_t _e = 0; _e < ({_wcount}); _e++) "
+        f"fprintf(stderr, \" %lu\", strtoul(ctx.solver->getValue(_b_{_wob}_neon.loadScalar(_e*sizeof({oelem}), {obits})).getBitVectorValue(10).c_str(), nullptr, 10));\n"
+        f"      fprintf(stderr, \"\\nCEX_RVV:\");\n"
+        f"      for (size_t _e = 0; _e < ({_wcount}); _e++) "
+        f"fprintf(stderr, \" %lu\", strtoul(ctx.solver->getValue(_b_{_wob}_rvv.loadScalar(_e*sizeof({oelem}), {obits})).getBitVectorValue(10).c_str(), nullptr, 10));\n"
+        f"      fprintf(stderr, \"\\n\"); fflush(stderr);\n"
         f"    }}"
     )
-    dims = list(spec.dims)
+    # Odd-tail scalar store: rsum/rdsum write the final output lane via a native
+    # `*out += vgetq_lane(...)` with no vector-store shim. vgetq_lane stashes the lane
+    # in the scalar side-channel; reconstruct `prior + lane` into the NEON buffer's last
+    # lane so the existing buffer compare covers the odd channel.
+    if spec.odd_tail_dim:
+        _otb, _od = spec.out_buffers[0], spec.odd_tail_dim
+        scalar_tail_clear = "    ctx.clear_scalar_result();\n"
+        scalar_tail_inject = (
+            f"\n    if ((({_od}) & 1) && ctx.has_scalar_result()) {{\n"
+            f"        size_t _olo = (({_od}) - 1) * sizeof({oelem});\n"
+            f"        Term _oprior = _b_{_otb}_neon.loadScalar(_olo, {obits});\n"
+            f"        _b_{_otb}_neon.storeScalar(_olo, ctx.add(_oprior, ctx.scalar_result()), {obits});\n"
+            f"    }}"
+        )
+    else:
+        scalar_tail_clear = scalar_tail_inject = ""
+    grow = spec.grow_dim                       # dim to grow continuously (unbounded sweep), else None
+    gcross = spec.grow_cross                    # (d0, d1) grown cross-product-wise (expanding square), else None
+    inner_dims = [] if gcross else list(spec.dims)   # cross-product dims (the representative configs)
+    if gcross:
+        dims = list(gcross)                    # verify() takes both grown dims
+    elif grow:
+        dims = [grow] + inner_dims             # verify() still takes ALL dims
+    else:
+        dims = inner_dims
     dim_sig = ", ".join(f"size_t {d}" for d in dims)
     dim_call = ", ".join(dims)
     dimfmt = ",".join("%zu" for _ in dims)
 
-    def nest(i):
+    def nest(i):   # fixed cross-product grid (non-grow mode)
         if i == len(dims):
             # Each combo's query gets the remaining total budget; once it's spent,
             # the rest of the grid reports TIMEOUT without running.
@@ -775,10 +1023,115 @@ def generate_multidim(neon_path, rvv_path, name, neon, rvv, spec, input_range=No
         vals = ", ".join(str(v) for v in spec.dims[d])
         return (f"      for (size_t {d} : {{{vals}}}) {{\n{nest(i + 1)}\n      }}")
 
+    def grow_inner(i):   # inner cross-product over the representative configs, with per-batch gate
+        if i == len(inner_dims):
+            return (
+                "          if (budget > 0.0 && _rem() <= 0.0) {\n"
+                f'              printf("{{\\"status\\":\\"TIMEOUT\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});\n'
+                "              _batch_ok = false; break;\n"
+                "          }\n"
+                f"          int _r = verify({dim_call}, vlen, _rem());\n"
+                "          if (_r == 1) return 1;\n"
+                "          if (_r == 2) { _batch_ok = false; break; }"
+            )
+        d = inner_dims[i]
+        vals = ", ".join(str(v) for v in spec.dims[d])
+        return (f"        for (size_t {d} : {{{vals}}}) {{\n"
+                "          if (!_batch_ok) break;\n"
+                f"{grow_inner(i + 1)}\n"
+                "        }")
+
     decls_str = "\n".join(decls)
     neon_body = _strip_simd_includes(neon_src)
     rvv_body = _strip_simd_includes(rvv_src)
-    main_loop = nest(0)
+    if spec.scalar_movs:
+        neon_body = _rewrite_scalar_movs(neon_body)
+        rvv_body = _rewrite_scalar_movs(rvv_body)
+    if spec.index_reads:
+        neon_body = _rewrite_index_reads(neon_body, spec.index_reads)
+        rvv_body = _rewrite_index_reads(rvv_body, spec.index_reads)
+    pre_defines_str = ("\n".join(spec.pre_defines) + "\n") if spec.pre_defines else ""
+    if gcross:
+        d0, d1 = gcross
+        # Cross-product growth: expand a square frontier. At level _n verify every shape with
+        # max(d0,d1)=_n — the new `d0=_n` column (d1=1.._n) and `d1=_n` row (d0=1.._n-1) — so
+        # after level N the full N×N grid is verified. Advance only if the whole frontier
+        # passes; stop on counterexample (halt) or budget (TIMEOUT → PARTIAL "up to N×N").
+        main_loop = (
+            "    size_t _grow_last = 0;\n"
+            f"    for (size_t _n = _gstart; (_gmax == 0 || _n <= _gmax); _n++) {{\n"
+            "      bool _batch_ok = true;\n"
+            f"      {{ size_t {d0} = _n;\n"
+            f"        for (size_t {d1} = 1; {d1} <= _n && _batch_ok; {d1}++) {{\n"
+            "          if (budget > 0.0 && _rem() <= 0.0) {\n"
+            f'            printf("{{\\"status\\":\\"TIMEOUT\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});\n'
+            "            _batch_ok = false; break;\n"
+            "          }\n"
+            f"          int _r = verify({dim_call}, vlen, _rem());\n"
+            "          if (_r == 1) return 1;\n"
+            "          if (_r == 2) { _batch_ok = false; break; }\n"
+            "        }\n"
+            "      }\n"
+            f"      {{ size_t {d1} = _n;\n"
+            f"        for (size_t {d0} = 1; {d0} < _n && _batch_ok; {d0}++) {{\n"
+            "          if (budget > 0.0 && _rem() <= 0.0) {\n"
+            f'            printf("{{\\"status\\":\\"TIMEOUT\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {dim_call});\n'
+            "            _batch_ok = false; break;\n"
+            "          }\n"
+            f"          int _r = verify({dim_call}, vlen, _rem());\n"
+            "          if (_r == 1) return 1;\n"
+            "          if (_r == 2) { _batch_ok = false; break; }\n"
+            "        }\n"
+            "      }\n"
+            "      if (!_batch_ok) break;\n"
+            "      _grow_last = _n;\n"
+            "    }"
+        )
+        probes_block = ""
+    elif grow:
+        # Continuous-growth sweep: grow `grow` from _gstart, unbounded (or to _gmax),
+        # verifying ALL representative inner configs per value; advance only if the whole
+        # batch passes. Stop on counterexample (halt) or budget (a config prints TIMEOUT →
+        # PARTIAL = "verified up to here"). Unbounded ⇒ only TIMEOUT/COUNTEREXAMPLE exit.
+        main_loop = (
+            "    size_t _grow_last = 0;\n"
+            f"    for (size_t {grow} = _gstart; (_gmax == 0 || {grow} <= _gmax); {grow}++) {{\n"
+            "      bool _batch_ok = true;\n"
+            f"{grow_inner(0)}\n"
+            "      if (!_batch_ok) break;\n"
+            f"      _grow_last = {grow};\n"
+            "    }"
+        )
+        probes_block = ""
+    else:
+        main_loop = nest(0)
+        # Sparse probe shapes appended after the cross-product grid (e.g. deep-row
+        # flush-boundary checks pinned to one channel width — see _rdsum_fixture).
+        probe_lines = []
+        for _pr in spec.probes:
+            _pv = ", ".join(f"(size_t){_pr[d]}" for d in dims)   # size_t for %zu / verify() args
+            probe_lines.append(
+                f'      if (budget > 0.0 && _rem() <= 0.0) {{\n'
+                f'          printf("{{\\"status\\":\\"TIMEOUT\\",\\"dims\\":\\"{dimfmt}\\",\\"config\\":\\"{cfg_tag}\\"}}\\n", {_pv});\n'
+                f'      }} else {{\n'
+                f'          int _r = verify({_pv}, vlen, _rem());\n'
+                f'          if (_r == 1) return 1;\n'
+                f'      }}')
+        probes_block = ("\n" + "\n".join(probe_lines)) if probe_lines else ""
+    # Growth mode reads start/max-grow from argv[1]/argv[2] (orchestrator min/max_batch),
+    # defaults to a finite budget so an unbounded sweep can't spin forever.
+    if gcross or grow:
+        budget_default = "600.0"
+        grow_argv = ("    size_t _gstart = (argc > 1) ? (size_t)atoi(argv[1]) : 1;\n"
+                     "    size_t _gmax   = (argc > 2) ? (size_t)atoi(argv[2]) : 0;   // 0 = unbounded\n")
+        if gcross:
+            final_status = (f'    printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"grow_cross\\":\\"{gcross[0]}x{gcross[1]}\\",\\"reached\\":%zu}}\\n", _grow_last);')
+        else:
+            final_status = (f'    printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"grow_dim\\":\\"{grow}\\",\\"reached\\":%zu}}\\n", _grow_last);')
+    else:
+        budget_default = "0.0"
+        grow_argv = ""
+        final_status = '    printf("{\\"status\\":\\"ALL_VERIFIED\\",\\"start\\":0,\\"end\\":0,\\"configs\\":1}\\n");'
     return f"""// AUTO-GENERATED by emit.py — multi-dim harness ({name}).
 #include "salt.hpp"
 #include <cassert>
@@ -790,7 +1143,26 @@ using namespace salt;
 
 #define restrict
 
-namespace neon_kernel {{
+// Symbolic accessors for rewritten scalar derefs: reads (`*p`) and stores (`*p = v`).
+template <typename T>
+static inline SymbolicScalar<T> salt_scalar(const T* p) {{
+    auto& _sb = g_ctx->findBuffer((const void*)p);
+    return SymbolicScalar<T>(_sb, _sb.ptrToByteOffset((const void*)p));
+}}
+template <typename T>
+struct SaltDeref {{
+    SymbolicBuffer& b; size_t off;
+    SaltDeref& operator=(const SymbolicScalar<T>& v) {{
+        b.storeScalar(off, v.term(), SymTraits<T>::bits); return *this;
+    }}
+}};
+template <typename T>
+static inline SaltDeref<T> salt_deref(T* p) {{
+    auto& _sb = g_ctx->findBuffer((const void*)p);
+    return SaltDeref<T>{{_sb, _sb.ptrToByteOffset((const void*)p)}};
+}}
+
+{pre_defines_str}namespace neon_kernel {{
 {neon_body}
 }} // namespace neon_kernel
 
@@ -803,7 +1175,7 @@ int verify({dim_sig}, size_t vlen, double timeout_s) {{
     g_ctx = &ctx;
 {decls_str}
 
-    neon_kernel::{neon.func_name}({call_args("neon")});
+{scalar_tail_clear}    neon_kernel::{neon.func_name}({call_args("neon")});{scalar_tail_inject}
     rvv_kernel ::{rvv.func_name}({call_args("rvv")});
 
     Term eq = {cmp_expr};
@@ -827,15 +1199,15 @@ int verify({dim_sig}, size_t vlen, double timeout_s) {{
 int main(int argc, char** argv) {{
     setvbuf(stdout, NULL, _IOLBF, 0);   // line-buffer so per-batch status streams over a pipe
     size_t vlen   = (argc > 3) ? (size_t)atoi(argv[3]) : 256;
-    double budget = (argc > 4) ? atof(argv[4]) : 0.0;     // TOTAL wall-clock budget (s); 0 = none
+    double budget = (argc > 4) ? atof(argv[4]) : {budget_default};     // TOTAL wall-clock budget (s); 0 = none
     auto _t0 = std::chrono::steady_clock::now();
     auto _rem = [&]() -> double {{                         // seconds left in the total budget (0 = no limit)
         if (budget <= 0.0) return 0.0;
         double e = std::chrono::duration<double>(std::chrono::steady_clock::now() - _t0).count();
         return budget - e;
     }};
-{main_loop}
-    printf("{{\\"status\\":\\"ALL_VERIFIED\\",\\"start\\":0,\\"end\\":0,\\"configs\\":1}}\\n");
+{grow_argv}{main_loop}{probes_block}
+{final_status}
     return 0;
 }}
 """
@@ -847,10 +1219,11 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
     rvv = parse_signature(rvv_path, "test_rvv")
     if len(neon.params) != len(rvv.params):
         raise ValueError(f"signature arity mismatch: {len(neon.params)} vs {len(rvv.params)}")
-    _fx = _match_fixture(neon, open(neon_path).read())   # multi-dim fixture family (Phase 2)?
+    _fx = _match_fixture(neon, open(neon_path).read())   # multi-dim fixture family?
     if _fx is not None:
         return generate_multidim(neon_path, rvv_path, name, neon, rvv, _fx, input_range)
     roles = resolve_roles(neon)
+    ulp_tol = _ulp_tol_for(name)   # 0 = bit-exact; >0 relaxes FP outputs to a ULP bound
 
     # `const void* params` (e.g. f32-f16-vcvt) is parsed as a const pointer and
     # lands in roles.inputs with pointee "void" — but it's an opaque, unused
@@ -922,6 +1295,15 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
 
     neon_src = open(neon_path).read()
     rvv_src = open(rvv_path).read()
+    # Partition outputs: a native `*name <op>=` store is a scalar reduction (rsum/raddstore).
+    # Array (vector-store) outputs are buffer-compared. A PURE reduction (no array output)
+    # uses the scalar-result side-channel. A HYBRID (array + reduction — raddstoreexpminusmax:
+    # output[] exp values + the `sum` horizontal reduce) compares the array(s) and DEFERS the
+    # reduction: it's a horizontal reduce accumulated in a native float, not capturable as one
+    # Term — and order-sensitive — so verify the exp output[] now, leave the sum for later.
+    _red_outs = {p.name for p in roles.outputs
+                 if re.search(r'\*\s*' + re.escape(p.name) + r'\s*[-+*/|&^]?=', neon_src + rvv_src)}
+    arr_outs = [p for p in roles.outputs if p.name not in _red_outs]
     byte_unit, unit_type = _detect_byte_unit(neon_src, bound)
     unit_bytes = 1
     if byte_unit:
@@ -1005,17 +1387,31 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
                 out.append(p.name)
         return ", ".join(out)
 
-    # output comparison over the logical region [0, bound) per output
+    # output comparison over the logical region [0, bound) per ARRAY output
     cmps = []
-    for p in roles.outputs:
+    for p in arr_outs:
         cmps.append(f'        buffers_equal(ctx.tm, _b_{p.name}_neon, _b_{p.name}_rvv, '
-                    f'{cmp_count}, sizeof({p.pointee}), ElementKind::{_kind(p.pointee)})')
+                    f'{cmp_count}, sizeof({p.pointee}), ElementKind::{_kind(p.pointee)}, {ulp_tol})')
     cmp_expr = "\n      , ".join(cmps)
 
-    # counterexample scan: first differing element of the first output
-    first_out = roles.outputs[0]
+    # counterexample scan: first differing element of the first array output
+    first_out = arr_outs[0] if arr_outs else roles.outputs[0]
     fo_ct = first_out.pointee
     fo_bits = _BYTES[first_out.pointee] * 8
+    # Witness predicate: under a ULP tolerance, flag the first element whose ULP
+    # distance EXCEEDS tol (not the first bit-differing one). Exact (tol=0) keeps
+    # raw decimal-string inequality.
+    if ulp_tol and fo_ct in _FP_CTYPES:
+        _wb = fo_bits - 1
+        _lwit = (
+            f'        unsigned long long _nu = strtoull(n.getBitVectorValue(10).c_str(), nullptr, 10);\n'
+            f'        unsigned long long _vu = strtoull(v.getBitVectorValue(10).c_str(), nullptr, 10);\n'
+            f'        long long _ka = ((_nu >> {_wb}) & 1ULL) ? ((long long)(1ULL << {_wb}) - (long long)_nu) : (long long)_nu;\n'
+            f'        long long _kb = ((_vu >> {_wb}) & 1ULL) ? ((long long)(1ULL << {_wb}) - (long long)_vu) : (long long)_vu;\n'
+            f'        long long _ud = (_ka > _kb) ? (_ka - _kb) : (_kb - _ka);\n'
+            f'        if (_ud > {ulp_tol}LL) {{ fi = e; break; }}\n')
+    else:
+        _lwit = f'        if (n.getBitVectorValue(10) != v.getBitVectorValue(10)) {{ fi = e; break; }}\n'
 
     # Scalar-reduction output (rsum): the kernel writes its result via a scalar
     # accumulate `*output += vmv_x_s/vget_lane(...)`, NOT a vector store — so it
@@ -1023,9 +1419,11 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
     # (not the `T* output` param decl) and compare the captured reduction sum
     # (stashed in ctx by the scalar-extract shims) instead of the (unwritten,
     # unconstrained) output buffer.
-    out0 = first_out.name
-    is_scalar_reduction = bool(
-        re.search(r'\*\s*' + re.escape(out0) + r'\s*[-+*/|&^]?=', neon_src + rvv_src))
+    out0 = roles.outputs[0].name
+    # Pure reduction (rsum: the only output is a `*out +=`) → scalar side-channel compare.
+    # Hybrid (array output(s) + a separate reduction) → arr_outs buffer-compare above, with
+    # the reduction deferred (not in arr_outs, so not compared).
+    is_scalar_reduction = bool(_red_outs) and not arr_outs
     if is_scalar_reduction:
         kernel_calls = (
             f'    ctx.clear_scalar_result();\n'
@@ -1051,7 +1449,7 @@ def generate_harness(neon_path: str, rvv_path: str, name: str,
             f'    for (size_t e = 0; e < {cmp_count}; e++) {{\n'
             f'        Term n = ctx.solver->getValue(_b_{first_out.name}_neon.loadScalar(e * sizeof({fo_ct}), {fo_bits}));\n'
             f'        Term v = ctx.solver->getValue(_b_{first_out.name}_rvv.loadScalar(e * sizeof({fo_ct}), {fo_bits}));\n'
-            f'        if (n.getBitVectorValue(10) != v.getBitVectorValue(10)) {{ fi = e; break; }}\n'
+            + _lwit +
             f'    }}\n'
             '    printf("{\\"status\\":\\"COUNTEREXAMPLE\\",\\"batch\\":%zu,\\"vlen\\":%zu,'
             '\\"config\\":\\"%s\\",\\"fail_index\\":%zu}\\n", ' + bound + ', vlen, ' + config_str + ', fi);\n'

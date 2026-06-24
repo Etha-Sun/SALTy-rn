@@ -24,6 +24,11 @@ class Config:
     # Verification
     verification_model: str = "gemini-3.1-pro-preview"   # LLM for harness inference (buffer sizes, params). Empty = use 'model'
 
+    # Target hardware: VLEN drives BOTH the translator's LMUL choice (prompt) and
+    # the verifier's vsetvl semantics. 256 = legacy default (bare target name);
+    # any other value suffixes the target as kernels/target/<name>-<vlen>.c.
+    vlen: int = 256
+
     # Zephyr / Spike
     # zephyr_base: str = field(default_factory=lambda: str(PROJECT_ROOT / "third_party" / "zephyr"))
     # chipyard_path: str = ""
@@ -93,6 +98,7 @@ class Config:
         cfg.max_verification_retries = args.max_verification_retries
         cfg.verification_backend = getattr(args, "backend", "auto")  # portfolio by default
         cfg.verification_timeout = args.verification_timeout
+        cfg.vlen = getattr(args, "vlen", 256)
         cfg.verification_batch = getattr(args, "verify_batch", 0)
         _ir = getattr(args, "input_range", "")
         if _ir:
