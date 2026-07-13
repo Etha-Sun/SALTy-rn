@@ -36,4 +36,3 @@ void vst1_u8(uint8_t* p, uint8x8_t x);
 void vst1_lane_u32(void* p, uint32x2_t x, int lane);
 void vst1_lane_u16(void* p, uint16x4_t x, int lane);
 void vst1_lane_u8(uint8_t* p, uint8x8_t x, int lane);
-
