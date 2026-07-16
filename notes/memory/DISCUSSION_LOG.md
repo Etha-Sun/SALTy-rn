@@ -223,3 +223,176 @@ forbidden-token scan, and an exported-axiom whitelist of only `propext`/`Quot.so
 
 **Unresolved:** the branch is local and has not been pushed. The next semantic step is
 still generalizing normalized lowering and structured control to real `s8-vclamp`.
+
+## 2026-07-16: Teaching Audit of Existing Lean Examples
+
+**Question:** What do the already verified `QS8ClampEmit`, `QS8VAddC`, and `F32VELU`
+examples actually prove, and how should their files be read?
+
+**Conclusion:** all three use the same proof architecture: reduce each ISA-specific
+list loop to a `map`/`zipWith` normal form, prove pointwise equality, then apply a
+generic kernel-class theorem. `QS8ClampEmit` is the clearest warm-up because both
+element functions are identical. `QS8VAddC` adds one genuine cross-model lemma for
+Neon versus RVV-RNU rounding shifts under `shift <= 31`. `F32VELU` is the key warning:
+both sides reduce by `rfl` to one shared opaque `Float32` computation, so its clean
+Lean theorem is not independent IEEE/C/ISA validation.
+
+**Evidence:** audit pinned to `lean-verification@dd1c0ab`. Concrete Lean runs
+gave clamp outputs `[-10,-10,-4,0,20,20,20]` for both an 8-lane Neon schedule and
+RVV `vlmax=3`, and VAddC outputs `[-1,2,7]` for both sides. `#print axioms` reports
+only `propext`/`Quot.sound` for clamp, while VAddC transitively carries 31 native
+`bv_decide` axioms from the rounding lemma. The executable walkthrough is saved as
+`notes/demos/existing-lean-examples.lean`.
+
+**Boundary:** the runtime harness, bounded SMT harness, and unbounded Lean list theorem
+are distinct artifacts. None of the existing final Lean theorems binds a C AST, source
+hash, pointer/memory semantics, or an official intrinsic/ISA model. `Emit`/`Parsed`
+names alone are not provenance certificates.
+
+## 2026-07-16: Historical Lean-to-C/ISA Alignment Audit
+
+**Question:** Is the existing pattern merely `Neon = map f`, `RVV = map f`, followed
+by a template proof; which translations are inaccurate; which inaccuracies are
+acceptable; and do any accepted Lean theorems remain misaligned with real C/ISA
+implementations?
+
+**Conclusion:** the structural summary is correct, but the two loop-refinement lemmas
+and pointwise element equality carry the semantic burden. All 11 final theorems are
+valid relative to their Lean definitions, with a native-`bv_decide` trust qualification
+for the eight QS8 add/addc variants. They cover only four semantic families and do not
+establish C or ISA correspondence. List/chunk abstractions and omitted inactive state
+can be acceptable under explicit output-only contracts; copied FMA semantics, signed-C
+overflow modeled as wrapping, and clamp equality without ordered bounds cannot.
+
+**Evidence:** all 52 Lean source units compiled explicitly; no `sorry`, `admit`,
+explicit `axiom`, or `unsafe` was found. A full finite-normal F32 VELU input
+`0xBB44B983` produces Neon/non-fused `0xBB446E00` and RVV/fused `0xBB446DFF`.
+UBSan reports signed overflow for the allowed VAddC bias case
+`255 * INT32_MAX`. For `x=0, min=100, max=-100`, the current Neon clamp tail returns
+`100`, while RVV and the Lean model return `-100`. Reproducers and the complete
+module/provenance/TCB matrix are in `notes/lean-model-alignment-audit.md`.
+
+**Current IR comparison:** synthetic `s8-clamp16@0eb0f75` is a defensible restricted
+generated semantic-IR E2E, but it uses external strip-mine control and transactional
+memory. Real `s8-vclamp` remains 399/399 plus 121/121 `AST_AUDIT_ONLY`; its handwritten
+value theorem and synthetic generated-IR theorem are not connected. Lean checks
+recorded digest consistency, not file hashes; Python regeneration supplies freshness.
+
+**Unresolved:** the required publication claim, authoritative C/flags/contracts, and
+whether all legal RVV `vsetvl` traces are required remain project-owner decisions.
+The next implementation target remains full semantic lowering of real `s8-vclamp`,
+with ordered/representable bounds, physical tail memory, partial stores, bundled
+artifact binding, and real-artifact freshness CI.
+
+## 2026-07-16: Translation Validation, Verified Lifting, and IR Taxonomy
+
+**Question:** Are there only two directions: verify an LM rewrite, as in verified
+lifting/LLMLift, or use PL techniques to translate `Neon -> IR -> Lean`?
+
+**Confirmed (literature):** classical verified lifting is not merely post-hoc
+checking of an LM-produced source-to-target rewrite. It uses synthesis, such as
+CEGIS, to find a high-level program or summary and verifies functional equivalence
+to the low-level source. LLMLift changes the proposal mechanism: an LLM receives
+target-language semantics expressed through Python context, proposes a target
+program and equivalence proof, and an external formal verifier remains the checker.
+Tenspiler shows the related compiler architecture `source -> synthesized TensIR ->
+multiple target backends`, with the IR supporting lifting, verification, and code
+generation.
+
+**Confirmed (taxonomy):** two useful axes were being conflated. Candidate generation
+can be (1) an untrusted LM/tool followed by per-instance translation validation or
+(2) a certifying synthesis/compiler. Proof organization can independently be direct
+source/target equivalence or two refinements through a shared IR/spec. Therefore
+`Neon/RVV C -> IR -> Lean` is semantic extraction shared by several strategies; it
+does not itself generate an RVV rewrite and is not the alternative to LLMLift.
+
+**Proposal:** for the current SaltyRN objective, use a hybrid. Preserve the existing
+LM as the untrusted RVV candidate generator; deterministically and fail-closed lower
+both Neon and RVV C bodies to a typed semantic IR; make Lean prove the fixed
+observational-equivalence theorem. Let an LLM/CEGIS system optionally propose a
+shared normal form, invariant, or proof script, but treat all of those as untrusted
+witnesses. A genuinely different long-term project would lower Neon to a shared IR
+and then generate RVV through a semantics-preserving verified backend.
+
+**Evidence:**
+
+- Verified Lifting of Stencil Computations (PLDI 2016):
+  <https://people.eecs.berkeley.edu/~akcheung/papers/pldi16.html>
+- LLMLift technical report (2024):
+  <https://www2.eecs.berkeley.edu/Pubs/TechRpts/2024/EECS-2024-11.html>
+- Tenspiler (ECOOP 2024):
+  <https://doi.org/10.4230/LIPIcs.ECOOP.2024.32>
+
+**Unresolved:** the paper framing still needs an explicit choice between a
+translation-validator contribution, a verified-lifting contribution centered on a
+SIMD normal form, and the much larger verified-compiler contribution. The first is
+the closest match to the stated project objective and current SaltyRN artifact.
+
+## 2026-07-16: How LLMLift Establishes Equivalence
+
+**Question:** What does LLMLift's generated equivalence proof actually contain, and
+how is it checked?
+
+**Confirmed:** for the side-effect-free source/target functions in the paper, the
+correctness condition is `forall state sigma, S(sigma) = T(sigma)`. The LLM first
+proposes a program summary (`PS`) composed only from the supplied target-DSL
+operators. If the source has loops, it then proposes loop invariants (`Inv`) that
+relate the partially computed source state to a prefix application of `PS`. These
+are Python-shaped IR expressions, not Lean/Coq proof terms or unstructured natural
+language arguments.
+
+**Confirmed:** a rule-based parser rejects unsupported constructs and rewrites `PS`
+and `Inv` into the verification oracle's language. Floyd-Hoare verification-condition
+generation reduces the loop proof to initialization, preservation, and termination
+obligations. cvc5 or Z3 checks those obligations for validity; a failed Boolean result
+causes LLMLift to request another candidate. Thus the LLM supplies the candidate and
+inductive certificate, while deterministic VC generation plus SMT performs the
+actual universal check.
+
+**Confirmed boundary:** the paper's claim is limited to side-effect-free code and its
+framework does not support pointers or objects. The proved equality is between the
+source semantics accepted by its frontend and the verified IR program summary under
+the encoded DSL operator semantics. A syntax-directed rule system subsequently emits
+concrete DSL code, so fidelity of the source frontend, DSL axioms/semantics, VC
+generator, SMT solver, and IR-to-concrete code generator all remain relevant to the
+end-to-end claim. The current Metalift tutorial separately offers Rosette as a bounded
+testing mode and SMT plus user-supplied DSL axioms as its full-verification mode.
+
+**Inference for SaltyRN:** LLMLift's useful transferable idea is to let an LLM propose
+the shared SIMD summary and loop invariants. It is not a drop-in Neon/RVV verifier:
+pointer memory, aliasing, undefined behavior, intrinsic effects, and dynamic RVV `vl`
+first need explicit semantics. Lean can replace the SMT oracle while keeping the same
+division of labor: the agent proposes summaries/invariants/proof scripts, and the
+fixed theorem plus Lean kernel checks them.
+
+**Evidence:**
+
+- LLMLift paper, Sections 3 and Appendix E:
+  <https://people.eecs.berkeley.edu/~sseshia/pubdir/llmlift-neurips24.pdf>
+- Metalift LLMLift tutorial:
+  <https://metalift.pages.dev/docs/tutorial/llmlift-tutorial/>
+
+## 2026-07-16: Publishable Audit Artifact Organization
+
+**Question:** Which accumulated files are still outside Git, and how should the F32
+counterexample and remaining audit material be committed?
+
+**Confirmed:** the actual repository is the `upstream-main/` worktree on
+`research/lean-ir-e2e`; the surrounding research directory is intentionally not a
+Git repository for this project. Before this organization pass, the fork remote had
+only `main@6acdf7a`, so the five existing IR commits were local-only. The root-level
+prototype is a stale working duplicate and is not a source for new commits.
+
+**Conclusion:** committed the standalone finite-normal F32 VELU fused-versus-
+non-fused reproducer as `505b7f3`, then committed the complete historical Lean
+alignment audit, QS8VAddC UBSan reproducer, and executable historical Lean walkthrough
+as `83cb0cc`. Public artifacts use repository-relative paths and pinned revisions.
+Early meeting notes, private correspondence, local absolute paths, `.DS_Store`, and
+the stale root prototype remain excluded.
+
+**Evidence:** the F32 demo reproduces outputs `0xBB446E00` and `0xBB446DFF`; the QS8
+demo triggers UBSan on `255 * INT32_MAX`; the Lean walkthrough compiles against
+`lean-verification@dd1c0ab` and prints the expected outputs and transitive axioms.
+
+**Unresolved:** remote publication is a separate final step after the memory update
+and full branch verification.

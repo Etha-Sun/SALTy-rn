@@ -1,6 +1,6 @@
 # SaltyRN Project State
 
-Last updated: 2026-07-14 (Asia/Seoul)
+Last updated: 2026-07-16 (Asia/Seoul)
 
 ## Objective
 
@@ -24,9 +24,10 @@ subset. It has not established levels 3-5 end to end.
 
 ## Repository Snapshot
 
-Remote audit date: 2026-07-11. The claims below are pinned to upstream
+Remote/code audit date: 2026-07-16. The claims below are pinned to upstream
 `main@6acdf7a522e2b97b96831f8e95b578e6edf42a83` and
 `lean-verification@dd1c0ab12dedccc8d1e0296c82cbc3b72c32249f`.
+The local generated-IR prototype is pinned at `research/lean-ir-e2e@0eb0f75`.
 
 - `main` is the integration baseline for LLM translation, Spike testing, bounded
   CVC5/Bitwuzla verification, and the current kernel corpus.
@@ -69,9 +70,12 @@ intrinsic models. Examples include arbitrary-length Lists in place of fixed Neon
 register widths, vector operands specialized to broadcast scalars, a uniform
 right-shift-only model for `vrshlq_s32`, and simplified RVV `vnclip`/`vsetvl`.
 
-**Current defensible claim:** the active-lane integer value semantics used by the
-existing QS8 examples are broadly plausible under their restricted parameter domain
-and output-only observation. Full C/ISA correspondence has not been established.
+**Current defensible claim:** the active-lane `QS8VAdd` formula is plausible under
+its restricted shift domain and output-only observation. Full C/ISA correspondence
+has not been established. Two other integer families have missing contracts:
+`QS8VAddC` models wrapping bias multiplication although signed C overflow is UB, and
+`QS8ClampEmit` omits the ordered/representable bounds needed to reconcile the real
+Neon 64-byte and 8/tail clamp orders. See `notes/lean-model-alignment-audit.md`.
 
 ## Float32 Status
 
@@ -93,21 +97,21 @@ equality inside that shared opaque model, not independent C/ISA faithfulness.
 `kernels/source/f32-velu.c` and target are also absent from the current kernel
 directory.
 
-**Confirmed concrete mismatch:** the historical Neon F32 VELU code uses
-`vmlaq_f32`, whose ACLE semantics are a non-fused multiply followed by add. Its
-RVV counterpart uses fused `vfmacc`. The current Lean Neon and RVV models both use
-separate `Float32.mul` and `Float32.add`, so the RVV model is not faithful to that
-C implementation. Fused and non-fused results can differ even for ordinary finite
-inputs. The historical Neon loop processes 16 elements per main iteration, while
-the Lean loop uses 12/4 chunks, providing a second direct C/model provenance gap.
-One deterministic host check with contraction disabled found all-normal finite
-operands `a=0x3620B2AC`, `b=0x2ED17056`, `c=0x1BADB75B`: fused FMA returns
-`0x2583786D`, while rounded multiply followed by add returns `0x2583786E`.
+**Confirmed concrete mismatch:** the historical Neon F32 VELU uses non-fused
+`vmlaq_f32`, while its RVV counterpart uses fused `vfmacc`. Lean gives both sides
+the Neon expression. A full scalar-pipeline counterexample with finite normal input
+`x=0xBB44B983` gives Neon `0xBB446E00` and RVV `0xBB446DFF`, a 1-ULP final-output
+difference. The reproducible demo is `notes/demos/f32-velu-fma-counterexample.c`.
+The historical symbolic Neon pair is 16-wide, while Lean is 12/4 and likely resembles
+a different external XNNPACK x12 kernel; because the cited C files are absent, this
+is an unresolved provenance split rather than a second proven correspondence error.
 
 **Confirmed concrete mismatch:** the current helper
 `fmax a b := if b <= a then a else b` is not a complete model of either Arm `FMAX`
 or RISC-V `vfmax`: NaN selection, signed-zero ordering, payload/canonicalization,
-and architectural FP state require explicit policies.
+and architectural FP state require explicit policies. The SMT Neon shim explicitly
+changes ordinary Arm FMAX to a maxNum helper to match RVV; this is an engineering
+oracle, not faithful unrestricted Arm semantics.
 
 **Open design choice:** for bit-exact floating-point claims, use an explicit
 binary32 model (likely `BitVec 32` plus classification, exact arithmetic, rounding,
@@ -150,9 +154,10 @@ Official/reuse references:
 
 ## Proof Audit
 
-**Confirmed:** all 50 Lean modules compile when checked individually; the source
-contains no `sorry`, `admit`, explicit `axiom`, or `unsafe`. Eleven final
-equivalence theorems compile, and none has contradictory premises.
+**Confirmed:** all 52 Lean source units (50 below `SALT/` plus two roots) compile
+when checked explicitly; the source contains no `sorry`, `admit`, explicit `axiom`,
+or `unsafe`. Eleven final theorems represent only four semantic families. Default
+`lake build` omits the eight Emit/Parsed/Clamp families, adequacy, and tests.
 
 **Important trust qualification:** the eight QS8 add/addc final theorems transitively
 depend on 31 generated `..._native.bv_decide.ax_*` axioms originating at
@@ -193,12 +198,13 @@ Even after intrinsic coverage exists, the pipeline still needs:
 - artifact binding, coverage manifests, mutation tests, and CI checks;
 - a separate compiler-correctness bridge if the claim extends to machine code.
 
-Generating an implementation and an asserted API specification from the same
-unchecked IR has common-mode-error risk. Automation may safely generate a fixed
-equivalence theorem and an optional normal-form witness, because Lean must still
-prove both refinements. It must not infer/weaken contracts, observations, or intrinsic
-semantics to make the proof pass. Direct source-IR/target-IR equivalence is primary;
-an independently reviewed functional spec is additional assurance.
+There are two ways to obtain an RVV candidate: an untrusted translator whose output
+is validated per pair, or a certifying synthesis/compiler. This axis is orthogonal
+to proof organization. `Neon/RVV -> IR -> Lean` is a common semantic frontend; a
+true compiler route is `Neon -> shared IR -> RVV` plus backend preservation. Verified
+lifting proposes a summary; LLMLift also proposes invariants, then cvc5/Z3 discharge Floyd-Hoare conditions rather than checking a Lean proof term.
+**Default:** retain SaltyRN's LM-generated RVV, fail-closed lower both C bodies, and
+prove direct observational equivalence in Lean; generated witnesses remain untrusted.
 
 ### IR Scope Correction
 
@@ -259,42 +265,36 @@ observational equivalence.
 
 ## Current Prototype Status
 
-**Confirmed (2026-07-14):** synthetic `s8-clamp16` is the first generated semantic-IR
+**Confirmed (2026-07-16):** synthetic `s8-clamp16` is the first generated semantic-IR
 E2E. A fail-closed Clang frontend translates all 47 Neon and 71 RVV body nodes to typed
 parameters, operations, or structured control with zero `AST_AUDIT_ONLY` entries. Lean
-rechecks provenance, descriptors, registry, coverage, and local SSA use order, then
-directly interprets the generated `KernelIR` operations.
+rechecks recorded digest consistency, descriptors, registry, coverage references,
+and local SSA use order, then interprets the generated `KernelIR` operations. Lean
+does not recompute file hashes or prove AST-to-IR semantic preservation; regeneration
+CI recomputes hashes. Binding facts remain separate from the final execution theorem.
 
 **Confirmed theorem:** under a fixed 16-byte readable/writable, disjoint-or-in-place
-contract, both programs succeed for every positive RVV progress partition; final
-memories and outputs agree, exactly 16 output addresses are reported written, and the
-outside frame is unchanged. Exported theorems use only `propext` and `Quot.sound`. A
-supported `vmin -> vmax` mutation lowers and passes structural checks, but executes
-differently in Lean.
+contract, both programs succeed for every positive RVV partition; final memory/output,
+frame, and 16-address write summary agree. Exported theorems use only `propext` and
+`Quot.sound`. A `vmin -> vmax` mutation stays structurally valid but executes differently.
 
 **Confirmed boundary:** this uses synthetic C, a parse facade, restricted Python,
-single-block operations plus structured loop control, and transactional final memory.
-Positive partitions overapproximate progress, not all ISA-realizable `vsetvl` traces.
-Clang/C and intrinsic/ISA adequacy remain external; general CFG is not implemented.
+single-block operations, external structured control, and transactional final memory.
+Positive partitions overapproximate `vsetvl`; write effects derive from output length.
+Clang/C and intrinsic/ISA adequacy remain external.
 
 **Confirmed real-kernel status:** current-main `s8-vclamp` still has 399/399 Neon and
 121/121 RVV nodes only under strict `AST_AUDIT_ONLY` shape auditing. Its handwritten
 value theorems do not execute emitted IR and do not yet prove real memory/frame or C
-correspondence. The next task is to generalize the microcase frontend/interpreter to
-that real arbitrary-batch kernel without reinstating answer-shaped extraction.
+correspondence. Its checked artifacts were fresh during the audit, but the current
+gate does not byte-compare real-kernel regeneration to them. The synthetic IR proof
+and real-kernel value theorem remain two unconnected lines of work.
 
-**Confirmed reproducibility:** `prototype/neon2lean/tools/check_e2e.py` regenerates
-artifacts, tests failure gates, builds Lean, scans proof tokens, and audits axioms.
-
+**Confirmed reproducibility:** `prototype/neon2lean/tools/check_e2e.py`
+passes both frontend suites, 25-job Lean build, proof-token scan, and exported-axiom
+audit. Synthetic checked artifacts are regenerated and byte-compared.
 ## Open Questions
-
-- What exact claim does the intended paper require: C-source equivalence, intrinsic
-  program equivalence, or compiled machine-code equivalence?
-- Which compiler, flags, FP control state, XNNPACK parameter contracts, and OOB-read
-  assumptions are authoritative?
-- Is the intended RVV theorem per fixed implementation/VLEN or portable across all
-  legal `vsetvl` choices?
-- Which official or third-party IEEE-754 formal model can be reused in Lean without
-  making an SMT solver or native runtime part of the trusted proof kernel?
-- Which current-main kernel pairs are considered canonical acceptance tests by the
-  project authors?
+- Which claim is required: C-source, intrinsic-program, or machine-code equivalence?
+- Which compiler/flags, XNN contracts, FP state, and OOB assumptions are authoritative?
+- Must RVV portability cover every legal `vsetvl` choice?
+- Which current-main pairs are canonical acceptance tests?
