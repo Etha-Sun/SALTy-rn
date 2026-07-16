@@ -396,3 +396,21 @@ demo triggers UBSan on `255 * INT32_MAX`; the Lean walkthrough compiles against
 
 **Unresolved:** remote publication is a separate final step after the memory update
 and full branch verification.
+
+
+## 2026-07-16: Publish Research Batch to Fork Main
+
+**Question:** Should the organized research history be published on a separate branch
+or directly on the fork's `main`?
+
+**Conclusion:** the project owner selected `main`. The fork's `main` was
+fast-forwarded without force from `6acdf7a` through the eight-commit research batch
+ending at `bf89dde`. The upstream `keaganchern/SALTy-rn` remote was not modified.
+
+**Evidence:** the push reported `6acdf7a..bf89dde research/lean-ir-e2e -> main`.
+The local worktree remained clean and the pre-push E2E gate passed frontend tests,
+deterministic regeneration, the 25-job Lean build, proof-token policy, and exported-
+axiom audit.
+
+**Boundary:** local `main` continues to track upstream `origin/main`; development
+remains on `research/lean-ir-e2e` so upstream comparison stays explicit.

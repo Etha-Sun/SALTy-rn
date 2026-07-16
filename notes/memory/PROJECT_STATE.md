@@ -27,7 +27,8 @@ subset. It has not established levels 3-5 end to end.
 Remote/code audit date: 2026-07-16. The claims below are pinned to upstream
 `main@6acdf7a522e2b97b96831f8e95b578e6edf42a83` and
 `lean-verification@dd1c0ab12dedccc8d1e0296c82cbc3b72c32249f`.
-The local generated-IR prototype is pinned at `research/lean-ir-e2e@0eb0f75`.
+The generated-IR prototype is pinned at `research/lean-ir-e2e@0eb0f75`. The public
+fork `main` contains the eight-commit research batch through `bf89dde`.
 
 - `main` is the integration baseline for LLM translation, Spike testing, bounded
   CVC5/Bitwuzla verification, and the current kernel corpus.
@@ -35,10 +36,8 @@ The local generated-IR prototype is pinned at `research/lean-ir-e2e@0eb0f75`.
 - `bitwuzla` is an early, superseded proof of concept.
 - `lean-verification` is an isolated prototype: relative to `main`, it is missing
   16 main commits and has one branch-only aggregate commit.
-- `vlen128` is the newest unmerged work and adds 35 `*-128.c` RVV target files; it
-  does not add Lean or verifier changes.
-- No public roadmap, open issue, or open PR described a Lean integration plan at
-  the time of the audit.
+- `vlen128` adds 35 unmerged `*-128.c` RVV targets but no verifier changes.
+- No public roadmap, issue, or PR described a Lean integration plan at audit time.
 
 ## Existing Lean Architecture
 
