@@ -370,6 +370,18 @@ and 444 complete repository tests pass. The independent program convergence repo
 binds the final 19-review publication. See
 `notes/reviews/elementwise-m8-final-audit-2026-08-30.md`.
 
+### Dashboard Presentation Follow-up
+
+**Status:** Implemented on `feat/dashboard` for owner review, 2026-08-30.
+
+The English UI now separates “Current compiler” from “Full corpus · 40.” The full
+corpus is grouped into five collapsible planning families; only the elementwise
+family inherits outcomes from `/api/elementwise`, while `/api/state` supplies
+source/target inventory for planning-only TODO and unavailable labels. Presentation
+code remains outside the generator/checker identity, so this review draft does not
+invalidate published program-review parents. Acceptance remains the owner's visual
+and taxonomy review; no merge is part of this follow-up.
+
 ## Commit Policy
 
 Do not treat memory/documentation updates as standalone delivery commits. During

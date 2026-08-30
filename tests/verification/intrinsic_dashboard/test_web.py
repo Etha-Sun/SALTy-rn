@@ -239,12 +239,12 @@ def test_elementwise_frontend_uses_exact_schema_v3_artifact_graph_fields() -> No
         "result",
     ):
         assert f'"{artifact}"' in script
-    assert "input condition blocked" in script
+    assert "external condition missing" in script
     assert "checked counterexample" in script
     assert "program.input_condition" in script
     assert "program.cross_phase" in script
-    assert "condition.scope" in script
-    assert "phase.trial_count" in script
+    assert "program.input_condition?.scope" in script
+    assert "program.cross_phase?.trial_count" in script
     assert "program.counterexample" in script
     assert "program.independently_reviewed" in script
     assert "program.reviewed_outcome" in script
@@ -264,7 +264,25 @@ def test_elementwise_frontend_uses_exact_schema_v3_artifact_graph_fields() -> No
     assert "conditioned_intrinsic_variants" in script
     assert "reviewed_registry_intrinsic_variants" in script
     assert "reviewed_used_intrinsic_variants" in script
-    assert "Reusable intrinsic pieces" in html
+    for view in ("Overview", "Programs", "Intrinsic Library", "Audit"):
+        assert f">{view}<" in html
+    assert "From a C pair to a reviewed result" in html
+    assert "Five layers that must not be conflated" in html
+    assert "Full corpus · 40" in html
+    assert "One compiler family today, four reusable families next" in html
+    assert 'fetchJson("/api/state")' in script
+    assert "buildCorpusRoadmap" in script
+    assert "family-not-implemented" in script
+    assert "target-unavailable" in script
+    assert "elementwise-artifact-graph" in script
+    for family in (
+        "Elementwise and conversion",
+        "Reductions and pooling",
+        "Convolution and channel transforms",
+        "Matrix kernels",
+        "Packing and permutation",
+    ):
+        assert family in script
     for witness_field in (
         "counterexample.claim",
         "counterexample.parameters",
@@ -274,7 +292,7 @@ def test_elementwise_frontend_uses_exact_schema_v3_artifact_graph_fields() -> No
     ):
         assert witness_field in script
     assert "Legacy proof prototypes" in html
-    assert "not the authority for element-wise compiler status" in html
+    assert "not the authority for elementwise compiler status" in html
 
 
 def test_group_approval_requires_exact_aggregate_status_and_variant_counts() -> None:
@@ -481,7 +499,7 @@ def test_kernel_table_names_and_displays_explicit_claim_scopes() -> None:
     script = (WEB / "app.js").read_text(encoding="utf-8")
 
     assert "Legacy proof prototypes" in page
-    assert "not the authority for element-wise compiler status" in page
+    assert "not the authority for elementwise compiler status" in page
     assert "Scope review" in page
     assert "File unlocks" not in page
     assert "claim_scope" in script

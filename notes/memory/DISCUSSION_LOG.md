@@ -771,3 +771,28 @@ RISC-V F/V NaN and minimumNumber/maximumNumber specifications.
 the five assert-only producer domains should become explicit API preconditions or
 upstream runtime checks; implement and review the generic producer bridge; and
 re-run all FP outcomes after architecture-specific arithmetic NaN semantics land.
+
+## 2026-08-30 — First full-corpus dashboard review draft
+
+**Question:** How should the dashboard show all 40 programs when current work is
+still elementwise, the boundary to other families is not necessarily sharp, and
+future programs should remain visible as TODOs rather than disappear?
+
+**Confirmed:** the review draft is English-only and lives on `feat/dashboard`; it
+must not be merged during this review. The current compiler view retains the 20
+content-addressed elementwise outcomes. A second “Full corpus · 40” view presents
+40 source programs, 36 nonempty pairs, and five collapsible planning families.
+Non-elementwise pairs are labeled `Family TODO`, not failed; missing/empty targets
+are labeled `Target unavailable`. Selecting a current program drills back into its
+artifact-backed result and exact dependencies.
+
+**Evidence:** the counts are derived at runtime from `/api/state` inventory and
+the authoritative `/api/elementwise` graph; the latter remains the sole source of
+current outcomes. Browser checks covered the family disclosures, result drill-down,
+intrinsic filtering, audit view, 390-pixel responsive layout, and an empty
+warning/error console. The focused dashboard suite passed 29 tests with 23 skipped.
+
+**Unresolved:** the owner must review the visual hierarchy and decide whether the
+five planning buckets are the right long-term navigation. Their boundaries are a
+roadmap convenience, not a semantic claim or a commitment to five separate
+compiler implementations.

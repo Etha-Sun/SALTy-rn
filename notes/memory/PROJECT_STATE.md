@@ -4,8 +4,9 @@ Last updated: 2026-08-30 (Asia/Seoul)
 
 ## Snapshot
 
-- Branch: `feat/elementwise-compiler`
-- Audited implementation head before the final memory update: `4ae0cd5`
+- Active presentation branch: `feat/dashboard`
+- Compiler baseline and published fork head: `cc53aa5` on
+  `feat/elementwise-compiler`
 - Base: `1707e5e1b847fe0c4a0a17ff058928485db82cee`
 - First branch commit: `986acd4` (`s8-vmax` target-architecture prototype)
 - Upstream corpus baseline: `origin/main@6acdf7a522e2b97b96831f8e95b578e6edf42a83`
@@ -53,6 +54,18 @@ layout/view capability. Schedule says when coordinates are processed; layout say
 how physical scalar streams form one logical element and observation. Scalar-lane
 layouts cover phase one. Planar complex `f32-vcmul` is not covered until a reusable
 grouped layout exists.
+
+**Confirmed presentation boundary, 2026-08-30:** the English dashboard on
+`feat/dashboard` exposes all 40 source programs as a planning inventory while
+keeping the content-addressed elementwise graph as the only authority for current
+outcomes. The 20 current pairs remain inspectable under “Current compiler”; the
+full-corpus view groups 40 sources into five collapsible planning families and
+labels non-elementwise pairs only as `Family TODO` or `Target unavailable`.
+
+**Proposal pending owner review:** the five-family navigation taxonomy is
+elementwise/conversion, reductions/pooling, convolution/channel transforms,
+matrix kernels, and packing/permutation. These are roadmap buckets, not a claim
+that the semantic boundaries are sharp or that five separate compilers are needed.
 
 ## Supported Claim Layers
 

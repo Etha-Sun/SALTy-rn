@@ -540,3 +540,16 @@ checks before accepting records. A self-consistent but stale stored Plan/Checks
 pair is insufficient. The dashboard verifies IntrinsicAudit and
 IntrinsicReviewPlan before loading program approvals, so a missing external review
 policy in a copied corpus cannot hide a corrupted reusable intrinsic parent.
+
+## EC-044: Full-Corpus Planning Must Not Become Outcome Authority
+
+**Status:** Accepted and implemented for the dashboard review branch, 2026-08-30.
+
+The dashboard may expose all 40 source programs and organize future work into
+collapsible planning families. Current elementwise outcomes must still come only
+from the content-addressed `/api/elementwise` artifact graph. The legacy
+`/api/state` source/target inventory may supply corpus membership and path presence,
+but it cannot assign proof, counterexample, or failure status. A non-elementwise
+pair is shown only as `Family TODO`; a missing or empty target is shown as
+`Target unavailable`. The particular five-family taxonomy remains a presentation
+proposal until owner review.

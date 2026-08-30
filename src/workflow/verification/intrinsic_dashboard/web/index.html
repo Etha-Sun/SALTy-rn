@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light">
-    <title>SALTy-rn intrinsic verification</title>
+    <title>SALTy-rn verification dashboard</title>
     <link rel="stylesheet" href="styles.css">
     <script src="app.js" defer></script>
     <script src="elementwise.js" defer></script>
@@ -15,7 +15,8 @@
     <header class="app-header">
       <div>
         <p class="product-label">SALTy-rn</p>
-        <h1>Intrinsic verification</h1>
+        <h1>Verification dashboard</h1>
+        <p class="header-description">Neon-to-RVV corpus coverage, generated proofs, and review boundaries</p>
       </div>
       <div class="sync-panel" aria-live="polite" aria-atomic="true">
         <span id="connection-dot" class="connection-dot" aria-hidden="true"></span>
@@ -29,182 +30,184 @@
 
     <div id="connection-banner" class="connection-banner" role="status" hidden></div>
 
+    <nav class="workspace-tabs" aria-label="Dashboard views" role="tablist">
+      <button id="tab-overview" class="workspace-tab" type="button" role="tab" aria-selected="true" aria-controls="view-overview" data-view="overview">Overview</button>
+      <button id="tab-programs" class="workspace-tab" type="button" role="tab" aria-selected="false" aria-controls="view-programs" data-view="programs" tabindex="-1">Programs</button>
+      <button id="tab-intrinsics" class="workspace-tab" type="button" role="tab" aria-selected="false" aria-controls="view-intrinsics" data-view="intrinsics" tabindex="-1">Intrinsic Library</button>
+      <button id="tab-audit" class="workspace-tab" type="button" role="tab" aria-selected="false" aria-controls="view-audit" data-view="audit" tabindex="-1">Audit</button>
+    </nav>
+
     <main id="main-content">
-      <section class="data-section elementwise-section" aria-labelledby="elementwise-title">
-        <div class="section-heading table-section-heading">
+      <section id="view-overview" class="view-panel overview-panel" role="tabpanel" aria-labelledby="tab-overview" data-view-panel="overview">
+        <div class="overview-hero">
           <div>
             <p class="section-kicker">Generated artifact graph</p>
-            <h2 id="elementwise-title">Element-wise compiler puzzle</h2>
+            <h2 id="elementwise-title">Current compiler outcomes</h2>
+            <p id="elementwise-message" class="lead-copy">Reading CorpusReport and its content-addressed children.</p>
           </div>
-          <div id="elementwise-counts" class="section-counts" aria-live="polite">Loading</div>
+          <div id="elementwise-counts" class="authority-stamp" aria-live="polite">Loading</div>
         </div>
-        <p id="elementwise-message" class="elementwise-message">Reading CorpusReport and its content-addressed children.</p>
-        <div id="elementwise-summary" class="elementwise-summary" aria-live="polite"></div>
-        <div class="table-shell" tabindex="0" role="region" aria-labelledby="elementwise-title">
-          <table class="elementwise-table">
-            <caption class="sr-only">Element-wise program generation and proof progress</caption>
-            <thead>
-              <tr>
-                <th scope="col">Program</th>
-                <th scope="col">Current state</th>
-                <th scope="col">Layout</th>
-                <th scope="col">Schedule</th>
-                <th scope="col">Generated chain</th>
-                <th scope="col">Missing intrinsic pieces</th>
-                <th scope="col">Claim boundary</th>
-              </tr>
-            </thead>
-            <tbody id="elementwise-body"></tbody>
-          </table>
+
+        <div id="elementwise-summary" class="outcome-grid" aria-live="polite"></div>
+
+        <aside class="scope-notice" aria-label="Verification scope">
+          <strong>Current boundary</strong>
+          <span>A verified value result means Lean accepted the frozen logical-value theorem. It is not a complete C-function, ISA, or binary-correctness result.</span>
+        </aside>
+
+        <section class="overview-section corpus-section" aria-labelledby="corpus-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="section-kicker">Full source corpus</p>
+              <h2 id="corpus-title">One compiler family today, four reusable families next</h2>
+            </div>
+            <button id="open-corpus-button" class="secondary-button" type="button">Explore all 40 programs</button>
+          </div>
+          <p class="section-intro">Elementwise is the first implemented model-generation family, not a permanent product boundary. The remaining programs stay visible as capability work without being mislabeled as proof failures.</p>
+          <div id="corpus-overview" class="corpus-overview" aria-live="polite"></div>
+        </section>
+
+        <section class="overview-section" aria-labelledby="pipeline-title">
+          <div class="section-heading compact-heading">
+            <div>
+              <p class="section-kicker">Automatic path</p>
+              <h2 id="pipeline-title">From a C pair to a reviewed result</h2>
+            </div>
+            <span class="section-counts">No per-program status catalog</span>
+          </div>
+          <ol class="pipeline" aria-label="Elementwise translation and verification pipeline">
+            <li><span class="pipeline-index">01</span><strong>C pair + discovery</strong><small>Fail-closed typed extraction</small></li>
+            <li><span class="pipeline-index">02</span><strong>ProgramManifest</strong><small>Exact intrinsics, layout, schedule, contract</small></li>
+            <li><span class="pipeline-index">03</span><strong>Models</strong><small>Independent Neon and RVV value models</small></li>
+            <li><span class="pipeline-index">04</span><strong>Spec</strong><small>Generated, proof-free proposition</small></li>
+            <li><span class="pipeline-index">05</span><strong>ProofTask</strong><small>Frozen claim and protected parents</small></li>
+            <li><span class="pipeline-index">06</span><strong>Agent-owned Proof</strong><small>The agent may edit only Proof.lean</small></li>
+            <li><span class="pipeline-index">07</span><strong>Lean Result + review</strong><small>Checked outcome and independent review</small></li>
+          </ol>
+          <p class="pipeline-note"><strong>Mandatory side gates:</strong> ExternalCondition and CrossPhaseAudit are bound before proof delegation. A checked counterexample takes a separate terminal branch instead of creating a ProofTask.</p>
+        </section>
+
+        <section class="overview-section" aria-labelledby="claim-ladder-title">
+          <div class="section-heading compact-heading">
+            <div><p class="section-kicker">Claim boundary</p><h2 id="claim-ladder-title">Five layers that must not be conflated</h2></div>
+          </div>
+          <ol class="claim-ladder">
+            <li class="claim-layer current"><span>1</span><div><strong>Logical value equality</strong><small id="value-claim-summary">Loading current outcomes</small></div></li>
+            <li class="claim-layer reviewed"><span>2</span><div><strong>Intrinsic semantic correspondence</strong><small id="intrinsic-claim-summary">Loading exact intrinsic reviews</small></div></li>
+            <li class="claim-layer future"><span>3</span><div><strong>Complete C refinement</strong><small>Not established: memory, aliasing, overread, frame, and caller conditions remain separate.</small></div></li>
+            <li class="claim-layer future"><span>4</span><div><strong>ISA correspondence</strong><small>Not established: legal machine state, vsetvl, masks, tails, and FP state are outside current results.</small></div></li>
+            <li class="claim-layer future"><span>5</span><div><strong>Compiled binary correctness</strong><small>Not established.</small></div></li>
+          </ol>
+        </section>
+
+        <section class="overview-section deferred-section" aria-labelledby="deferred-title">
+          <div class="section-heading compact-heading"><div><p class="section-kicker">Visible next capability</p><h2 id="deferred-title">Deferred grouped layout</h2></div></div>
+          <div id="deferred-summary" class="deferred-card" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section id="view-programs" class="view-panel" role="tabpanel" aria-labelledby="tab-programs" data-view-panel="programs" hidden>
+        <div class="page-heading">
+          <div><p class="section-kicker">Current results and future families</p><h2 id="programs-title">Programs</h2><p class="lead-copy">Inspect the current elementwise artifact graph, then move to the full source corpus to see which reusable family capability comes next.</p></div>
+          <div id="programs-counts" class="section-counts" aria-live="polite">Loading</div>
         </div>
-        <h3 id="elementwise-intrinsics-title" class="elementwise-subtitle">Reusable intrinsic pieces</h3>
-        <div class="table-shell" tabindex="0" role="region" aria-labelledby="elementwise-intrinsics-title">
-          <table class="elementwise-capability-table">
-            <caption class="sr-only">Exact intrinsic definition, Lean check, and independent review status</caption>
-            <thead>
-              <tr>
-                <th scope="col">Exact intrinsic</th>
-                <th scope="col">Defined</th>
-                <th scope="col">Lean checked</th>
-                <th scope="col">Independent review</th>
-                <th scope="col">Used by current 19</th>
-                <th scope="col">Dependent programs</th>
-              </tr>
-            </thead>
+        <div class="program-view-switch" role="tablist" aria-label="Program scopes">
+          <button id="program-tab-current" type="button" role="tab" aria-selected="true" aria-controls="program-view-current" data-program-view="current">Current compiler</button>
+          <button id="program-tab-corpus" type="button" role="tab" aria-selected="false" aria-controls="program-view-corpus" data-program-view="corpus" tabindex="-1">Full corpus · 40</button>
+        </div>
+
+        <section id="program-view-current" class="program-scope-panel" role="tabpanel" aria-labelledby="program-tab-current" data-program-view-panel="current">
+          <div class="view-controls" aria-label="Program filters">
+            <label class="search-field"><span>Search programs</span><input id="program-search" type="search" autocomplete="off" placeholder="Program, status, intrinsic"></label>
+            <label><span>Outcome</span><select id="program-status-filter"><option value="all">All outcomes</option></select></label>
+            <label><span>Rows</span><select id="program-page-size"><option value="10">10</option><option value="20" selected>20</option><option value="50">50</option></select></label>
+          </div>
+          <div class="table-shell program-table-shell" tabindex="0" role="region" aria-labelledby="programs-title">
+            <table class="program-table">
+              <caption class="sr-only">Elementwise programs and their current content-addressed outcomes</caption>
+              <thead><tr><th scope="col">Program</th><th scope="col">Result</th><th scope="col">Blocker / explanation</th><th scope="col">Generated progress</th><th scope="col">Claim scope</th></tr></thead>
+              <tbody id="elementwise-body"></tbody>
+            </table>
+          </div>
+          <nav id="program-pagination" class="pagination" aria-label="Program table pages"></nav>
+        </section>
+
+        <section id="program-view-corpus" class="program-scope-panel corpus-program-panel" role="tabpanel" aria-labelledby="program-tab-corpus" data-program-view-panel="corpus" hidden>
+          <div class="corpus-program-heading">
+            <div><p class="section-kicker">Capability roadmap</p><h3>All source programs by reusable model family</h3></div>
+            <div id="corpus-program-counts" class="section-counts" aria-live="polite">Loading</div>
+          </div>
+          <p class="section-intro">Open a family to inspect its programs. “Family TODO” means the pair exists but the reusable model generator is not implemented; it is not a failed equivalence result.</p>
+          <div id="corpus-family-list" class="corpus-family-list" aria-live="polite"></div>
+        </section>
+      </section>
+
+      <section id="view-intrinsics" class="view-panel" role="tabpanel" aria-labelledby="tab-intrinsics" data-view-panel="intrinsics" hidden>
+        <div class="page-heading">
+          <div><p class="section-kicker">Reusable exact pieces</p><h2 id="intrinsics-title">Intrinsic Library</h2><p class="lead-copy">Exact typed variants are reviewed once and reused by every dependent program. Spelling counts and exact review identities remain separate.</p></div>
+          <div id="intrinsic-counts" class="section-counts" aria-live="polite">Loading</div>
+        </div>
+        <div id="intrinsic-summary" class="library-summary" aria-live="polite"></div>
+        <div class="view-controls intrinsic-controls" aria-label="Intrinsic library filters">
+          <label class="search-field"><span>Search exact intrinsics</span><input id="intrinsic-search" type="search" autocomplete="off" placeholder="Spelling, signature, family, program"></label>
+          <label><span>Architecture</span><select id="intrinsic-architecture-filter"><option value="all">Neon + RVV</option><option value="neon">Neon</option><option value="rvv">RVV</option></select></label>
+          <label><span>Status</span><select id="intrinsic-status-filter"><option value="all">All exact variants</option><option value="used">Used by current 19</option><option value="reviewed">Reviewed</option><option value="pending-review">Pending review</option><option value="conditioned">Architecture-conditioned</option></select></label>
+          <label><span>Rows</span><select id="intrinsic-page-size"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></label>
+        </div>
+        <div class="table-shell" tabindex="0" role="region" aria-labelledby="intrinsics-title">
+          <table class="exact-intrinsic-table">
+            <caption class="sr-only">Exact intrinsic definition, Lean check, independent review, and dependent programs</caption>
+            <thead><tr><th scope="col">Exact intrinsic</th><th scope="col">Definition</th><th scope="col">Lean + review</th><th scope="col">Scope / conditions</th><th scope="col">Dependent programs</th></tr></thead>
             <tbody id="elementwise-capability-body"></tbody>
           </table>
         </div>
+        <nav id="intrinsic-pagination" class="pagination" aria-label="Intrinsic library pages"></nav>
       </section>
 
-      <section class="activity-section" aria-labelledby="activity-title">
-        <div class="section-heading">
-          <div>
-            <p class="section-kicker">Live queue</p>
-            <h2 id="activity-title">Agent activity</h2>
-          </div>
+      <section id="view-audit" class="view-panel audit-panel" role="tabpanel" aria-labelledby="tab-audit" data-view-panel="audit" hidden>
+        <div class="page-heading">
+          <div><p class="section-kicker">History and diagnostics</p><h2 id="audit-title">Audit</h2><p class="lead-copy">Runtime activity and the earlier case-scoped registry remain available for investigation. They do not determine elementwise program status.</p></div>
           <span id="revision-label" class="revision-label">Revision unavailable</span>
         </div>
-        <div id="agent-list" class="agent-list" aria-live="polite"></div>
-      </section>
 
-      <section class="table-controls" aria-labelledby="controls-title">
-        <h2 id="controls-title" class="sr-only">Table controls</h2>
-        <label class="search-field">
-          <span>Search</span>
-          <input id="search-input" type="search" autocomplete="off" placeholder="Intrinsic, local kernel, path">
-        </label>
-        <label>
-          <span>Status</span>
-          <select id="status-filter">
-            <option value="all">All statuses</option>
-            <option value="missing">Missing</option>
-            <option value="generated">Generated</option>
-            <option value="pending">Pending review</option>
-            <option value="approved">Approved</option>
-            <option value="rejected">Rejected</option>
-            <option value="stale">Stale</option>
-          </select>
-        </label>
-        <label>
-          <span>Rows</span>
-          <select id="page-size">
-            <option value="10">10</option>
-            <option value="25" selected>25</option>
-            <option value="50">50</option>
-            <option value="100">100</option>
-          </select>
-        </label>
-      </section>
+        <section class="activity-section" aria-labelledby="activity-title">
+          <div class="section-heading"><div><p class="section-kicker">Live queue</p><h2 id="activity-title">Agent activity</h2></div></div>
+          <div id="agent-list" class="agent-list" aria-live="polite"></div>
+        </section>
 
-      <aside class="claim-boundary" aria-label="Review claim boundary">
-        <strong>Review boundary</strong>
-        <span>Proof scope progresses cumulatively from a selected local block to an arbitrary-length value model and then a complete C function. Counts advance only after the exact policy-bound Lean check passes. Approval covers only the recorded scope; it does not automatically establish Arm ACLE, RISC-V ISA, C-memory, or compiled-binary adequacy.</span>
-      </aside>
+        <div class="table-controls" aria-labelledby="controls-title">
+          <h2 id="controls-title" class="sr-only">Historical table controls</h2>
+          <label class="search-field"><span>Search historical records</span><input id="search-input" type="search" autocomplete="off" placeholder="Intrinsic, local kernel, path"></label>
+          <label><span>Status</span><select id="status-filter"><option value="all">All statuses</option><option value="missing">Missing</option><option value="generated">Generated</option><option value="pending">Pending review</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="stale">Stale</option></select></label>
+          <label><span>Rows</span><select id="page-size"><option value="10">10</option><option value="25" selected>25</option><option value="50">50</option><option value="100">100</option></select></label>
+        </div>
 
-      <section class="data-section" aria-labelledby="neon-title">
-        <div class="section-heading table-section-heading">
-          <div>
-            <p class="section-kicker">Arm</p>
-            <h2 id="neon-title">Neon intrinsics</h2>
+        <aside class="claim-boundary" aria-label="Historical review claim boundary"><strong>Historical boundary</strong><span>These tables expose older spelling-grouped and case-scoped records. They are useful audit evidence, not the production authority for the elementwise compiler.</span></aside>
+
+        <section class="data-section" aria-labelledby="neon-title">
+          <div class="section-heading table-section-heading"><div><p class="section-kicker">Historical Arm registry</p><h2 id="neon-title">Neon intrinsic groups</h2></div><div id="neon-counts" class="section-counts" aria-live="polite"></div></div>
+          <div class="table-shell" tabindex="0" role="region" aria-labelledby="neon-title">
+            <table class="legacy-intrinsic-table"><caption class="sr-only">Historical Neon intrinsic translation and review status</caption><thead><tr><th scope="col">Intrinsic</th><th scope="col">Kernel group</th><th scope="col">Translation</th><th scope="col">Automation</th><th scope="col">Lean implementation</th><th scope="col">Review</th><th scope="col">Local SALTyRN programs</th></tr></thead><tbody id="neon-body"></tbody></table>
           </div>
-          <div id="neon-counts" class="section-counts" aria-live="polite"></div>
-        </div>
-        <div class="table-shell" tabindex="0" role="region" aria-labelledby="neon-title">
-          <table>
-            <caption class="sr-only">Neon intrinsic translation and review status</caption>
-            <thead>
-              <tr>
-                <th scope="col">Intrinsic</th>
-                <th scope="col">Kernel group</th>
-                <th scope="col">Translation</th>
-                <th scope="col">Automation</th>
-                <th scope="col">Lean implementation</th>
-                <th scope="col">Review</th>
-                <th scope="col">Local SALTyRN programs</th>
-              </tr>
-            </thead>
-            <tbody id="neon-body"></tbody>
-          </table>
-        </div>
-        <nav id="neon-pagination" class="pagination" aria-label="Neon table pages"></nav>
-      </section>
+          <nav id="neon-pagination" class="pagination" aria-label="Neon table pages"></nav>
+        </section>
 
-      <section class="data-section" aria-labelledby="rvv-title">
-        <div class="section-heading table-section-heading">
-          <div>
-            <p class="section-kicker">RISC-V</p>
-            <h2 id="rvv-title">RVV intrinsics</h2>
+        <section class="data-section" aria-labelledby="rvv-title">
+          <div class="section-heading table-section-heading"><div><p class="section-kicker">Historical RISC-V registry</p><h2 id="rvv-title">RVV intrinsic groups</h2></div><div id="rvv-counts" class="section-counts" aria-live="polite"></div></div>
+          <div class="table-shell" tabindex="0" role="region" aria-labelledby="rvv-title">
+            <table class="legacy-intrinsic-table"><caption class="sr-only">Historical RVV intrinsic translation and review status</caption><thead><tr><th scope="col">Intrinsic</th><th scope="col">Kernel group</th><th scope="col">Translation</th><th scope="col">Automation</th><th scope="col">Lean implementation</th><th scope="col">Review</th><th scope="col">Local SALTyRN programs</th></tr></thead><tbody id="rvv-body"></tbody></table>
           </div>
-          <div id="rvv-counts" class="section-counts" aria-live="polite"></div>
-        </div>
-        <div class="table-shell" tabindex="0" role="region" aria-labelledby="rvv-title">
-          <table>
-            <caption class="sr-only">RVV intrinsic translation and review status</caption>
-            <thead>
-              <tr>
-                <th scope="col">Intrinsic</th>
-                <th scope="col">Kernel group</th>
-                <th scope="col">Translation</th>
-                <th scope="col">Automation</th>
-                <th scope="col">Lean implementation</th>
-                <th scope="col">Review</th>
-                <th scope="col">Local SALTyRN programs</th>
-              </tr>
-            </thead>
-            <tbody id="rvv-body"></tbody>
-          </table>
-        </div>
-        <nav id="rvv-pagination" class="pagination" aria-label="RVV table pages"></nav>
-      </section>
+          <nav id="rvv-pagination" class="pagination" aria-label="RVV table pages"></nav>
+        </section>
 
-      <section class="data-section" aria-labelledby="files-title">
-        <div class="section-heading table-section-heading">
-          <div>
-            <p class="section-kicker">Historical backend inventory</p>
-            <h2 id="files-title">Legacy proof prototypes</h2>
+        <section class="data-section" aria-labelledby="files-title">
+          <div class="section-heading table-section-heading"><div><p class="section-kicker">Historical backend inventory</p><h2 id="files-title">Legacy proof prototypes</h2></div><div id="file-counts" class="section-counts" aria-live="polite"></div></div>
+          <p class="elementwise-message">These rows preserve earlier case-scoped review records and non-elementwise kernels. They are not the authority for elementwise compiler status.</p>
+          <div class="table-shell" tabindex="0" role="region" aria-labelledby="files-title">
+            <table class="files-table"><caption class="sr-only">Historical kernel proof progress under each recorded claim scope</caption><thead><tr><th scope="col">Local kernel / file</th><th scope="col">Neon mapping / review</th><th scope="col">RVV mapping / review</th><th scope="col">Contract / spec</th><th scope="col">Lean proof file</th><th scope="col">Lean theorem check</th><th scope="col">Scope review</th><th scope="col">Missing</th></tr></thead><tbody id="files-body"></tbody></table>
           </div>
-          <div id="file-counts" class="section-counts" aria-live="polite"></div>
-        </div>
-        <p class="elementwise-message">These rows preserve earlier case-scoped review records for reference and for non-element-wise kernels. They are not the authority for element-wise compiler status; use the generated artifact graph above.</p>
-        <div class="table-shell" tabindex="0" role="region" aria-labelledby="files-title">
-          <table class="files-table">
-            <caption class="sr-only">Kernel proof progress under each recorded claim scope</caption>
-            <thead>
-              <tr>
-                <th scope="col">Local kernel / file</th>
-                <th scope="col">Neon mapping / review</th>
-                <th scope="col">RVV mapping / review</th>
-                <th scope="col">Contract / spec</th>
-                <th scope="col">Lean proof file</th>
-                <th scope="col">Lean theorem check</th>
-                <th scope="col">Scope review</th>
-                <th scope="col">Missing</th>
-              </tr>
-            </thead>
-            <tbody id="files-body"></tbody>
-          </table>
-        </div>
-        <nav id="files-pagination" class="pagination" aria-label="Kernel proof claim table pages"></nav>
+          <nav id="files-pagination" class="pagination" aria-label="Kernel proof claim table pages"></nav>
+        </section>
       </section>
     </main>
   </body>
