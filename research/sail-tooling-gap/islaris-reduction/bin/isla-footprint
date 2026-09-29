@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+study=$(cd "$(dirname "$0")/../.." && pwd)
+snapshot=$1
+shift
+test "$snapshot" = riscv64.ir
+exec "$study/vendor/isla-master/target/release/isla-footprint" \
+  -A "$study/vendor/riscv64.ir" --no-model-reg-init --executable "$@"

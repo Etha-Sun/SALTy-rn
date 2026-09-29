@@ -1,0 +1,38 @@
+{
+  "kind": "manual-source-map-not-compiler-manifest",
+  "repository_commit": "7ea7bf35317eb5434341c2f4f3b72776a1a5deae",
+  "kernel": "qu8-rsum",
+  "source_to_model": [
+    {"source": "../../kernels/source/qu8-rsum.c", "lines": [23, 35], "definitions": ["NeonState", "neonRun", "neonOuter", "neonFullBlock", "neonInner", "neonLoad16"]},
+    {"source": "../../kernels/source/qu8-rsum.c", "lines": [37, 51], "definitions": ["neonRemainder", "neonRemainderLoop", "neonTail", "maskedTail"]},
+    {"source": "../../kernels/source/qu8-rsum.c", "lines": [52, 60], "definitions": ["vaddvq_u32", "neonRun"]},
+    {"source": "../../kernels/target/qu8-rsum.c", "lines": [12, 30], "definitions": ["RvvState", "rvvRun", "rvvLoop", "rvvStep", "vzext_vf4", "vadd_tu"]},
+    {"source": "../../kernels/target/qu8-rsum.c", "lines": [32, 36], "definitions": ["vredsum", "rvvRun"]}
+  ],
+  "manual_lowering_choices": [
+    "Arm64 path is selected; no claim about automatic preprocessing validation.",
+    "Loop counters and input byte offset use Nat at the logical value layer.",
+    "NEON fixed decreasing loops become primitive recursion on input.length/2048, 128, and remaining batch/16; no arbitrary bounded-fuel cutoff.",
+    "Constant 32-byte mask table and tail pointer expression are normalized to batch ones plus 16-batch zeros; multiplication stays BV8.",
+    "Source block-local vacc16_0 and vacc16 share one explicit typed vacc16 state field, reset at exactly the corresponding block entry.",
+    "BV16 and BV32 registers remain distinct; only proof-side ghost observations can identify their sums.",
+    "Old output is carried unchanged through the loop; params is unused, and null pointers are represented only by valid logical streams/scalar output.",
+    "RVV machine vsetvl policy is replaced by a supplied complete positive bounded schedule; proving over this larger value domain does not establish a CSR implementation bridge.",
+    "Final reduction seed/lane-0 extraction is normalized to a scalar fold over exactly vlmax accumulator lanes.",
+    "All needed arithmetic wrappers are local manual semantics, not canonical registry approvals."
+  ],
+  "proof_domain": {
+    "input": "arbitrary nonempty List (BitVec 8)",
+    "overread": "arbitrary List (BitVec 8) with at least 15 readable logical bytes",
+    "old_output": "arbitrary BitVec 32",
+    "schedule": "any positive width and complete list of positive chunks, each no greater than width",
+    "observation": "final uint32 output bits only"
+  },
+  "not_established": [
+    "Certified C-to-Lean frontend translation",
+    "Complete C allocation/provenance/alias/assert/undefined-behavior semantics",
+    "ISA intrinsic refinement or compiler/binary correctness",
+    "Production elementwise registry, artifact gate, or publisher integration",
+    "Generality to floating-point reductions or all 40 kernels"
+  ]
+}

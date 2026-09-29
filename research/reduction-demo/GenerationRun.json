@@ -1,0 +1,51 @@
+{
+  "kind": "single-guided-LLM-proof-pilot",
+  "status": "complete-frozen-value-claim-proved",
+  "agent_task": "/root/reduction_proof",
+  "model_configuration": "inherited session configuration; no separate model override",
+  "writable_artifact": "Proof.lean",
+  "proof_sha256": "83a58da7a17292f665051b666bbd47bfdffbfa4886b8c2680969539b5ac7ca40",
+  "prompt_sha256": "894a8ae74ffd919c87f84d2e5616e66984d3f9e49ea5cdf69c48698444de2b16",
+  "task_sha256": "ce1b605af8c6a7a45cf1e7e841bf4e9929b70a90cf775db3923a5e7fa797c94c",
+  "assistance": "Main modeling assistant supplied frozen manual models, single spec, and prose invariant hints; proof agent generated all proof terms and helper lemmas. No frozen-model/spec repair during proof search.",
+  "agent_reported_stats": {
+    "direct_lean_compile_attempts": 14,
+    "failed_intermediate_compile_batches": 12,
+    "successful_checkpoints": 2,
+    "successful_checkpoint_descriptions": ["RVV subset", "full NEON/RVV proof"],
+    "approximate_total_minutes": 15,
+    "proof_source_creation_utc": "2026-09-06 08:41:21",
+    "proof_source_final_edit_utc": "2026-09-06 08:54:39",
+    "writing_repair_interval_seconds": 798,
+    "caveat": "Compile counts and generation times are agent-reported development observations, not a centrally captured benchmark trace."
+  },
+  "independently_measured": {
+    "models_lines": 159,
+    "spec_lines": 15,
+    "public_spec_definitions": 1,
+    "proof_lines": 615,
+    "helper_theorems": 45,
+    "target_theorems": 1,
+    "checked_theorem_declarations": 46,
+    "fresh_stage_check_seconds": 4.904,
+    "cross_language_cases_passed": 1242,
+    "protected_hashes_unchanged": true
+  },
+  "major_invariants_proved": [
+    "RVV complete bounded partitions preserve full-width accumulator modular sum plus unread suffix sum",
+    "RVV accumulator shape, input suffix, offset, batch and old-output field summaries",
+    "NEON BV16 lane bound 510*t for t+n<=128, with no lost carries on widening",
+    "NEON exact 2048-byte block and arbitrary outer-loop prefix sum",
+    "NEON remainder-loop/inner-loop lane equivalence despite distinct counter updates",
+    "Arbitrary overread bytes vanish under the actual tail mask",
+    "Both complete implementations refine the same proof-only byteSum, including oldOutput"
+  ],
+  "repair_topics": [
+    "Std-only tactic availability versus mathlib idioms",
+    "BitVec typed literal and simp normalization",
+    "Avoiding definitional expansion of 128 inner iterations by proved field summaries",
+    "Local masked-tail rewriting rather than global batch substitution"
+  ],
+  "independent_evidence": ["ProofResult.json", "ProofResult.log", "TestResult.json"],
+  "boundary": "One guided pilot, not an automatic-compiler result, a proof-generation success-rate estimate, or certified C/memory/ISA equivalence."
+}

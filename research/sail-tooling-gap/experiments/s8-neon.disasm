@@ -1,0 +1,16 @@
+
+research/sail-tooling-gap/experiments/s8-neon.o:	file format elf64-littleaarch64
+
+Disassembly of section .text:
+
+0000000000000000 <test_neon>:
+       0: 1f 40 00 f1  	cmp	x0, #16
+       4: 03 01 00 54  	b.lo	0x24 <test_neon+0x24>
+       8: 60 c0 40 4d  	ld1r	{ v0.16b }, [x3]
+       c: 21 04 c1 3c  	ldr	q1, [x1], #16
+      10: 00 40 00 d1  	sub	x0, x0, #16
+      14: 1f 3c 00 f1  	cmp	x0, #15
+      18: 21 64 20 4e  	smax	v1.16b, v1.16b, v0.16b
+      1c: 41 04 81 3c  	str	q1, [x2], #16
+      20: 68 ff ff 54  	b.hi	0xc <test_neon+0xc>
+      24: c0 03 5f d6  	ret

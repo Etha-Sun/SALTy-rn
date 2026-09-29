@@ -1,0 +1,36 @@
+--- original/Defs.lean
++++ diagnostic/Defs.lean
+@@ -1163,17 +1163,17 @@
+ 
+ 
+ 
+-abbrev root_level : Int :=
++abbrev root_level (k_v : Nat) : Int :=
+   (if ( k_v = 32 ∨ k_v = 34  : Bool) then 1 else (if ( k_v = 39 ∨ k_v = 41  : Bool) then 2 else (if ( k_v
+   = 48 ∨ k_v = 50  : Bool) then 3 else 4)))
+ 
+ abbrev level_range (k_v : Nat) := Nat
+ 
+-abbrev vpn_level_size : Int := (12 - if ( is_sv32_mode(k_v)  : Bool) then 2 else 3)
+-
+-abbrev pte_bits k_v := (BitVec (if ( is_sv32_mode(k_v)  : Bool) then 32 else 64))
+-
+-abbrev ppn_bits k_v := (BitVec (if ( is_sv32_mode(k_v)  : Bool) then 22 else 44))
++abbrev vpn_level_size (k_v : Nat) : Int := (12 - if ( k_v = 32 ∨ k_v = 34  : Bool) then 2 else 3)
++
++abbrev pte_bits (k_v : Nat) := (BitVec (if ( k_v = 32 ∨ k_v = 34  : Bool) then 32 else 64))
++
++abbrev ppn_bits (k_v : Nat) := (BitVec (if ( k_v = 32 ∨ k_v = 34  : Bool) then 22 else 44))
+ 
+ abbrev vpn_bits k_v := (BitVec (k_v - 12))
+ 
+--- original/RiscvExtrasExecutable.lean
++++ diagnostic/RiscvExtrasExecutable.lean
+@@ -11,7 +11,6 @@
+ 
+ open Sail
+ open ConcurrencyInterfaceV1
+-open Rv64Kernel
+ 
+ def print_bits (_ : String) (_ : BitVec n) : Unit := ()
+ def print_string (_ : String) (_ : String) : Unit := ()

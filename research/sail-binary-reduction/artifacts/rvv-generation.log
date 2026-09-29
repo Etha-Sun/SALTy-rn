@@ -1,0 +1,693 @@
+[Summary: 0 unused-variable warnings omitted; full log is under out/]
+Profiled parsing project: 0.002518s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled type checking: 20.599077s
+  SMT calls: 31314, SMT time: 7.704535s
+Warning: Incomplete pattern match statement at extensions/Zicsr/zicsr_insts.sail:12.0-8:
+12 |function clause currentlyEnabled(Ext_Zicsr) = hartSupports(Ext_Zicsr)
+   |^------^
+   | 
+The following expression is unmatched: Ext_A
+
+Warning: Incomplete pattern match statement at postlude/insts_end.sail:23.0-8:
+23 |function clause execute C_ILLEGAL(_s) = Illegal_Instruction()
+   |^------^
+   | 
+The following expression is unmatched: AES32DSI(undefined)
+
+Profiled rewrite initial: 0.012869s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite move_termination_measures: 0.005874s
+  SMT calls: 3, SMT time: 0.000017s
+Profiled rewrite instantiate_outcomes: 0.002627s
+  SMT calls: 2, SMT time: 0.000015s
+Profiled rewrite realize_mappings: 1.289082s
+  SMT calls: 5564, SMT time: 0.241649s
+Profiled rewrite remove_vector_subrange_pats: 0.049794s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_duplicate_valspecs: 0.008335s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite toplevel_string_append: 0.000002s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite pat_string_append: 0.018972s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite mapping_patterns: 0.257520s
+  SMT calls: 3070, SMT time: 0.059129s
+Profiled rewrite add_unspecified_rec: 0.030396s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite undefined: 0.020953s
+  SMT calls: 8, SMT time: 0.004044s
+Profiled rewrite remove_not_pats: 0.015365s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_impossible_int_cases: 0.188060s
+  SMT calls: 488, SMT time: 0.147871s
+Profiled rewrite tuple_assignments: 0.030803s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite vector_concat_assignments: 0.027385s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite simple_assignments: 0.086188s
+  SMT calls: 68, SMT time: 0.008774s
+Profiled rewrite remove_vector_concat: 0.249381s
+  SMT calls: 159, SMT time: 0.021523s
+Profiled rewrite remove_bitvector_pats: 0.692883s
+  SMT calls: 159, SMT time: 0.023087s
+Profiled rewrite recheck_defs: 3.138616s
+  SMT calls: 17572, SMT time: 0.405810s
+Profiled rewrite fun_guarded_pats: 0.000002s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite guarded_pats: 0.402004s
+  SMT calls: 578, SMT time: 0.022643s
+Profiled rewrite nexp_ids: 0.100928s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite split: 0.024674s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite minimise_recursive_functions: 0.027707s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_bitfield_records: 0.031198s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite recheck_defs: 3.542903s
+  SMT calls: 19875, SMT time: 0.588605s
+Profiled rewrite top_sort_defs: 0.307183s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite add_register_init_function: 0.005075s
+  SMT calls: 17, SMT time: 0.000399s
+Profiled rewrite const_prop_mutrec: 0.296709s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite exp_lift_assign: 0.027577s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite early_return: 0.019867s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite recheck_defs: 3.447295s
+  SMT calls: 19841, SMT time: 0.587828s
+Match checking:
+Redundant wildcard clause
+Match checking:
+extensions/I/base_insts.sail:42.6-81:
+42 |  <-> utype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_20(imm)
+   |      ^-------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:86.6-68:
+86 |  <-> "jal" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_21(imm)
+   |      ^------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:96.6-97:
+96 |  <-> "jalr" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_12(imm) ^ "(" ^ reg_name(rs1) ^ ")"
+   |      ^-----------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:140.6-106:
+140 |  <-> btype_mnemonic(op) ^ spc() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2) ^ sep() ^ hex_bits_signed_13(imm)
+    |      ^--------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:181.6-105:
+181 |  <-> itype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_signed_12(imm)
+    |      ^-------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:220.6-102:
+220 |  <-> shiftiop_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_6(shamt)
+    |      ^----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:267.6-95:
+267 |  <-> rtype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+    |      ^---------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:306.6-141:
+306 |  <-> "l" ^ width_mnemonic(width) ^ maybe_u(is_unsigned) ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_12(imm) ^ "(" ^ reg_name(rs1) ^ ")"
+    |      ^-------------------------------------------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:334.6-155:
+334 |  <-> "s" ^ width_mnemonic(width) ^ spc() ^ reg_name(rs2) ^ sep() ^ hex_bits_signed_12(imm) ^ opt_spc() ^ "(" ^ opt_spc() ^ reg_name(rs1) ^ opt_spc() ^ ")"
+    |      ^---------------------------------------------------------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:351.6-94:
+351 |  <-> "addiw" ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_signed_12(imm)
+    |      ^--------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:397.6-96:
+397 |  <-> rtypew_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+    |      ^----------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:432.6-103:
+432 |  <-> shiftiwop_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_5(shamt)
+    |      ^-----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:447.6-17:
+447 |  <-> "fence.tso"
+    |      ^---------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:560.38-45:
+560 |mapping clause assembly = ECALL() <-> "ecall"
+    |                                      ^-----^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:601.37-43:
+601 |mapping clause assembly = MRET() <-> "mret"
+    |                                     ^----^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:672.37-43:
+672 |mapping clause assembly = SRET() <-> "sret"
+    |                                     ^----^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:683.39-47:
+683 |mapping clause assembly = EBREAK() <-> "ebreak"
+    |                                       ^------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:709.36-41:
+709 |mapping clause assembly = WFI() <-> "wfi"
+    |                                    ^---^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:741.6-66:
+741 |  <-> "sfence.vma" ^ spc() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+    |      ^----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/B/zba_insts.sail:21.6-90:
+21 |  <-> "slli.uw" ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_6(shamt)
+   |      ^----------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/B/zba_insts.sail:51.6-104:
+51 |  <-> zba_rtypeuw_mnemonic(shamt) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+   |      ^------------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/B/zba_insts.sail:72.6-102:
+72 |  <-> zba_rtype_mnemonic(shamt) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+   |      ^----------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:26.6-13:
+26 |  <-> "c.nop"
+   |      ^-----^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:29.6-46:
+29 |  <-> "c.nop" ^ spc() ^ hex_bits_signed_6(imm)
+   |      ^--------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:47.6-103:
+47 |  <-> "c.addi4spn" ^ spc() ^ creg_name(rdc) ^ sep() ^ sp_reg_name() ^ sep() ^ hex_bits_10(nzimm @ 0b00)
+   |      ^-----------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:65.6-100:
+65 |  <-> "c.lw" ^ spc() ^ creg_name(rdc) ^ sep() ^ hex_bits_7(uimm @ 0b00) ^ "(" ^ creg_name(rsc) ^ ")"
+   |      ^--------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:82.6-101:
+82 |  <-> "c.ld" ^ spc() ^ creg_name(rdc) ^ sep() ^ hex_bits_8(uimm @ 0b000) ^ "(" ^ creg_name(rsc) ^ ")"
+   |      ^---------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:100.6-102:
+100 |  <-> "c.sw" ^ spc() ^ creg_name(rsc2) ^ sep() ^ hex_bits_7(uimm @ 0b00) ^ "(" ^ creg_name(rsc1) ^ ")"
+    |      ^----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:117.6-103:
+117 |  <-> "c.sd" ^ spc() ^ creg_name(rsc2) ^ sep() ^ hex_bits_8(uimm @ 0b000) ^ "(" ^ creg_name(rsc1) ^ ")"
+    |      ^-----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:135.6-71:
+135 |  <-> "c.addi" ^ spc() ^ reg_name(rsd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^---------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:149.6-53:
+149 |  <-> "c.jal" ^ spc() ^ hex_bits_signed_12(imm @ 0b0)
+    |      ^---------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:163.6-72:
+163 |  <-> "c.addiw" ^ spc() ^ reg_name(rsd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^----------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:180.6-68:
+180 |  <-> "c.li" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:195.6-82:
+195 |  <-> "c.addi16sp" ^ spc() ^ sp_reg_name() ^ sep() ^ hex_bits_signed_10(imm @ 0x0)
+    |      ^--------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:214.6-69:
+214 |  <-> "c.lui" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^-------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:231.6-67:
+231 |  <-> "c.srli" ^ spc() ^ creg_name(rsd) ^ sep() ^ hex_bits_6(shamt)
+    |      ^-----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:247.6-67:
+247 |  <-> "c.srai" ^ spc() ^ creg_name(rsd) ^ sep() ^ hex_bits_6(shamt)
+    |      ^-----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:263.6-72:
+263 |  <-> "c.andi" ^ spc() ^ creg_name(rsd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^----------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:279.6-63:
+279 |  <-> "c.sub" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^-------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:295.6-63:
+295 |  <-> "c.xor" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^-------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:311.6-62:
+311 |  <-> "c.or" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:327.6-63:
+327 |  <-> "c.and" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^-------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:343.6-64:
+343 |  <-> "c.subw" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^--------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:360.6-64:
+360 |  <-> "c.addw" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^--------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:374.6-51:
+374 |  <-> "c.j" ^ spc() ^ hex_bits_signed_12(imm @ 0b0)
+    |      ^-------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:387.6-77:
+387 |  <-> "c.beqz" ^ spc() ^ creg_name(rs) ^ sep() ^ hex_bits_signed_9(imm @ 0b0)
+    |      ^---------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:400.6-77:
+400 |  <-> "c.bnez" ^ spc() ^ creg_name(rs) ^ sep() ^ hex_bits_signed_9(imm @ 0b0)
+    |      ^---------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:415.6-66:
+415 |  <-> "c.slli" ^ spc() ^ reg_name(rsd) ^ sep() ^ hex_bits_6(shamt)
+    |      ^----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:430.6-99:
+430 |  <-> "c.lwsp" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_8(uimm @ 0b00) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^-------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:446.6-100:
+446 |  <-> "c.ldsp" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_9(uimm @ 0b000) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^--------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:462.6-100:
+462 |  <-> "c.swsp" ^ spc() ^ reg_name(rs2) ^ sep() ^ hex_bits_8(uimm @ 0b00) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^--------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:477.6-101:
+477 |  <-> "c.sdsp" ^ spc() ^ reg_name(rs2) ^ sep() ^ hex_bits_9(uimm @ 0b000) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^---------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:491.6-36:
+491 |  <-> "c.jr" ^ spc() ^ reg_name(rs1)
+    |      ^----------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:505.6-38:
+505 |  <-> "c.jalr" ^ spc() ^ reg_name(rs1)
+    |      ^------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:521.6-59:
+521 |  <-> "c.mv" ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs2)
+    |      ^---------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:535.41-51:
+535 |mapping clause assembly = C_EBREAK() <-> "c.ebreak"
+    |                                         ^--------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:550.6-61:
+550 |  <-> "c.add" ^ spc() ^ reg_name(rsd) ^ sep() ^ reg_name(rs2)
+    |      ^-----------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/Zicsr/zicsr_insts.sail:116.6-106:
+116 |  <-> csr_mnemonic(op) ^ "i" ^ spc() ^ reg_name(rd)  ^ sep() ^ csr_name_map(csr) ^ sep() ^ hex_bits_5(imm)
+    |      ^--------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/Zicsr/zicsr_insts.sail:118.6-97:
+118 |  <-> csr_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ csr_name_map(csr) ^ sep() ^ reg_name(rs1)
+    |      ^-----------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+postlude/insts_end.sail:17.41-75:
+17 |mapping clause assembly = ILLEGAL(s) <-> "illegal" ^ spc() ^ hex_bits_32(s)
+   |                                         ^--------------------------------^
+   | Redundant clause
+Match checking:
+postlude/insts_end.sail:25.43-79:
+25 |mapping clause assembly = C_ILLEGAL(s) <-> "c.illegal" ^ spc() ^ hex_bits_16(s)
+   |                                           ^----------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:42.6-81:
+42 |  <-> utype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_20(imm)
+   |      ^-------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:86.6-68:
+86 |  <-> "jal" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_21(imm)
+   |      ^------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:96.6-97:
+96 |  <-> "jalr" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_12(imm) ^ "(" ^ reg_name(rs1) ^ ")"
+   |      ^-----------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:140.6-106:
+140 |  <-> btype_mnemonic(op) ^ spc() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2) ^ sep() ^ hex_bits_signed_13(imm)
+    |      ^--------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:181.6-105:
+181 |  <-> itype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_signed_12(imm)
+    |      ^-------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:220.6-102:
+220 |  <-> shiftiop_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_6(shamt)
+    |      ^----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:267.6-95:
+267 |  <-> rtype_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+    |      ^---------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:306.6-141:
+306 |  <-> "l" ^ width_mnemonic(width) ^ maybe_u(is_unsigned) ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_12(imm) ^ "(" ^ reg_name(rs1) ^ ")"
+    |      ^-------------------------------------------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:334.6-155:
+334 |  <-> "s" ^ width_mnemonic(width) ^ spc() ^ reg_name(rs2) ^ sep() ^ hex_bits_signed_12(imm) ^ opt_spc() ^ "(" ^ opt_spc() ^ reg_name(rs1) ^ opt_spc() ^ ")"
+    |      ^---------------------------------------------------------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:351.6-94:
+351 |  <-> "addiw" ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_signed_12(imm)
+    |      ^--------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:397.6-96:
+397 |  <-> rtypew_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+    |      ^----------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:432.6-103:
+432 |  <-> shiftiwop_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_5(shamt)
+    |      ^-----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:447.6-17:
+447 |  <-> "fence.tso"
+    |      ^---------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:560.38-45:
+560 |mapping clause assembly = ECALL() <-> "ecall"
+    |                                      ^-----^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:601.37-43:
+601 |mapping clause assembly = MRET() <-> "mret"
+    |                                     ^----^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:672.37-43:
+672 |mapping clause assembly = SRET() <-> "sret"
+    |                                     ^----^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:683.39-47:
+683 |mapping clause assembly = EBREAK() <-> "ebreak"
+    |                                       ^------^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:709.36-41:
+709 |mapping clause assembly = WFI() <-> "wfi"
+    |                                    ^---^
+    | Redundant clause
+Match checking:
+extensions/I/base_insts.sail:741.6-66:
+741 |  <-> "sfence.vma" ^ spc() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+    |      ^----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/B/zba_insts.sail:21.6-90:
+21 |  <-> "slli.uw" ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ hex_bits_6(shamt)
+   |      ^----------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/B/zba_insts.sail:51.6-104:
+51 |  <-> zba_rtypeuw_mnemonic(shamt) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+   |      ^------------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/B/zba_insts.sail:72.6-102:
+72 |  <-> zba_rtype_mnemonic(shamt) ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs1) ^ sep() ^ reg_name(rs2)
+   |      ^----------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:26.6-13:
+26 |  <-> "c.nop"
+   |      ^-----^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:29.6-46:
+29 |  <-> "c.nop" ^ spc() ^ hex_bits_signed_6(imm)
+   |      ^--------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:47.6-103:
+47 |  <-> "c.addi4spn" ^ spc() ^ creg_name(rdc) ^ sep() ^ sp_reg_name() ^ sep() ^ hex_bits_10(nzimm @ 0b00)
+   |      ^-----------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:65.6-100:
+65 |  <-> "c.lw" ^ spc() ^ creg_name(rdc) ^ sep() ^ hex_bits_7(uimm @ 0b00) ^ "(" ^ creg_name(rsc) ^ ")"
+   |      ^--------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:82.6-101:
+82 |  <-> "c.ld" ^ spc() ^ creg_name(rdc) ^ sep() ^ hex_bits_8(uimm @ 0b000) ^ "(" ^ creg_name(rsc) ^ ")"
+   |      ^---------------------------------------------------------------------------------------------^
+   | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:100.6-102:
+100 |  <-> "c.sw" ^ spc() ^ creg_name(rsc2) ^ sep() ^ hex_bits_7(uimm @ 0b00) ^ "(" ^ creg_name(rsc1) ^ ")"
+    |      ^----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:117.6-103:
+117 |  <-> "c.sd" ^ spc() ^ creg_name(rsc2) ^ sep() ^ hex_bits_8(uimm @ 0b000) ^ "(" ^ creg_name(rsc1) ^ ")"
+    |      ^-----------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:135.6-71:
+135 |  <-> "c.addi" ^ spc() ^ reg_name(rsd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^---------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:149.6-53:
+149 |  <-> "c.jal" ^ spc() ^ hex_bits_signed_12(imm @ 0b0)
+    |      ^---------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:163.6-72:
+163 |  <-> "c.addiw" ^ spc() ^ reg_name(rsd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^----------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:180.6-68:
+180 |  <-> "c.li" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:195.6-82:
+195 |  <-> "c.addi16sp" ^ spc() ^ sp_reg_name() ^ sep() ^ hex_bits_signed_10(imm @ 0x0)
+    |      ^--------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:214.6-69:
+214 |  <-> "c.lui" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^-------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:231.6-67:
+231 |  <-> "c.srli" ^ spc() ^ creg_name(rsd) ^ sep() ^ hex_bits_6(shamt)
+    |      ^-----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:247.6-67:
+247 |  <-> "c.srai" ^ spc() ^ creg_name(rsd) ^ sep() ^ hex_bits_6(shamt)
+    |      ^-----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:263.6-72:
+263 |  <-> "c.andi" ^ spc() ^ creg_name(rsd) ^ sep() ^ hex_bits_signed_6(imm)
+    |      ^----------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:279.6-63:
+279 |  <-> "c.sub" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^-------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:295.6-63:
+295 |  <-> "c.xor" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^-------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:311.6-62:
+311 |  <-> "c.or" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:327.6-63:
+327 |  <-> "c.and" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^-------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:343.6-64:
+343 |  <-> "c.subw" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^--------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:360.6-64:
+360 |  <-> "c.addw" ^ spc() ^ creg_name(rsd) ^ sep() ^ creg_name(rs2)
+    |      ^--------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:374.6-51:
+374 |  <-> "c.j" ^ spc() ^ hex_bits_signed_12(imm @ 0b0)
+    |      ^-------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:387.6-77:
+387 |  <-> "c.beqz" ^ spc() ^ creg_name(rs) ^ sep() ^ hex_bits_signed_9(imm @ 0b0)
+    |      ^---------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:400.6-77:
+400 |  <-> "c.bnez" ^ spc() ^ creg_name(rs) ^ sep() ^ hex_bits_signed_9(imm @ 0b0)
+    |      ^---------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:415.6-66:
+415 |  <-> "c.slli" ^ spc() ^ reg_name(rsd) ^ sep() ^ hex_bits_6(shamt)
+    |      ^----------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:430.6-99:
+430 |  <-> "c.lwsp" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_8(uimm @ 0b00) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^-------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:446.6-100:
+446 |  <-> "c.ldsp" ^ spc() ^ reg_name(rd) ^ sep() ^ hex_bits_9(uimm @ 0b000) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^--------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:462.6-100:
+462 |  <-> "c.swsp" ^ spc() ^ reg_name(rs2) ^ sep() ^ hex_bits_8(uimm @ 0b00) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^--------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:477.6-101:
+477 |  <-> "c.sdsp" ^ spc() ^ reg_name(rs2) ^ sep() ^ hex_bits_9(uimm @ 0b000) ^ "(" ^ sp_reg_name() ^ ")"
+    |      ^---------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:491.6-36:
+491 |  <-> "c.jr" ^ spc() ^ reg_name(rs1)
+    |      ^----------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:505.6-38:
+505 |  <-> "c.jalr" ^ spc() ^ reg_name(rs1)
+    |      ^------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:521.6-59:
+521 |  <-> "c.mv" ^ spc() ^ reg_name(rd) ^ sep() ^ reg_name(rs2)
+    |      ^---------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:535.41-51:
+535 |mapping clause assembly = C_EBREAK() <-> "c.ebreak"
+    |                                         ^--------^
+    | Redundant clause
+Match checking:
+extensions/C/zca_insts.sail:550.6-61:
+550 |  <-> "c.add" ^ spc() ^ reg_name(rsd) ^ sep() ^ reg_name(rs2)
+    |      ^-----------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/Zicsr/zicsr_insts.sail:116.6-106:
+116 |  <-> csr_mnemonic(op) ^ "i" ^ spc() ^ reg_name(rd)  ^ sep() ^ csr_name_map(csr) ^ sep() ^ hex_bits_5(imm)
+    |      ^--------------------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+extensions/Zicsr/zicsr_insts.sail:118.6-97:
+118 |  <-> csr_mnemonic(op) ^ spc() ^ reg_name(rd) ^ sep() ^ csr_name_map(csr) ^ sep() ^ reg_name(rs1)
+    |      ^-----------------------------------------------------------------------------------------^
+    | Redundant clause
+Match checking:
+postlude/insts_end.sail:17.41-75:
+17 |mapping clause assembly = ILLEGAL(s) <-> "illegal" ^ spc() ^ hex_bits_32(s)
+   |                                         ^--------------------------------^
+   | Redundant clause
+Match checking:
+postlude/insts_end.sail:25.43-79:
+25 |mapping clause assembly = C_ILLEGAL(s) <-> "c.illegal" ^ spc() ^ hex_bits_16(s)
+   |                                           ^----------------------------------^
+   | Redundant wildcard clause

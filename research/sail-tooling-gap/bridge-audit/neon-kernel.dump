@@ -1,0 +1,42 @@
+210598: 6f00e400  movi v0.2d, #0000000000000000
+21059c: f120001f  cmp x0, #2048
+2105a0: 540001c3  b.lo 0x2105d8 <test_neon+0x40>
+2105a4: 6f00e400  movi v0.2d, #0000000000000000
+2105a8: 6f00e401  movi v1.2d, #0000000000000000
+2105ac: aa1f03e8  mov x8, xzr
+2105b0: 3ce86822  ldr q2, [x1, x8]
+2105b4: 91004108  add x8, x8, #16
+2105b8: f120011f  cmp x8, #2048
+2105bc: 6e206841  uadalp v1.8h, v2.16b
+2105c0: 54ffff81  b.ne 0x2105b0 <test_neon+0x18>
+2105c4: 6e606820  uadalp v0.4s, v1.8h
+2105c8: 91200021  add x1, x1, #2048
+2105cc: d1200000  sub x0, x0, #2048
+2105d0: f11ffc1f  cmp x0, #2047
+2105d4: 54fffea8  b.hi 0x2105a8 <test_neon+0x10>
+2105d8: b50000e0  cbnz x0, 0x2105f4 <test_neon+0x5c>
+2105dc: 4eb1b800  addv s0, v0.4s
+2105e0: b9400048  ldr w8, [x2]
+2105e4: 1e260009  fmov w9, s0
+2105e8: 0b090108  add w8, w8, w9
+2105ec: b9000048  str w8, [x2]
+2105f0: d65f03c0  ret
+2105f4: 6f00e401  movi v1.2d, #0000000000000000
+2105f8: f100401f  cmp x0, #16
+2105fc: 54000103  b.lo 0x21061c <test_neon+0x84>
+210600: 6f00e401  movi v1.2d, #0000000000000000
+210604: 3cc10422  ldr q2, [x1], #16
+210608: d1004000  sub x0, x0, #16
+21060c: f1003c1f  cmp x0, #15
+210610: 6e206841  uadalp v1.8h, v2.16b
+210614: 54ffff88  b.hi 0x210604 <test_neon+0x6c>
+210618: b4000100  cbz x0, 0x210638 <test_neon+0xa0>
+21061c: 90ffff88  adrp x8, 0x200000 <test_neon+0x44>
+210620: 3dc00022  ldr q2, [x1]
+210624: 9108c108  add x8, x8, #560
+210628: cb000108  sub x8, x8, x0
+21062c: 3dc00503  ldr q3, [x8, #16]
+210630: 4e229c62  mul v2.16b, v3.16b, v2.16b
+210634: 6e206841  uadalp v1.8h, v2.16b
+210638: 6e606820  uadalp v0.4s, v1.8h
+21063c: 17ffffe8  b 0x2105dc <test_neon+0x44>

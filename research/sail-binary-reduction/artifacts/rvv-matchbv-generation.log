@@ -1,0 +1,87 @@
+[Summary: 0 unused-variable warnings omitted; full log is under out/]
+Profiled parsing project: 0.002526s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled type checking: 21.145037s
+  SMT calls: 31314, SMT time: 7.949109s
+Warning: Incomplete pattern match statement at extensions/Zicsr/zicsr_insts.sail:12.0-8:
+12 |function clause currentlyEnabled(Ext_Zicsr) = hartSupports(Ext_Zicsr)
+   |^------^
+   | 
+The following expression is unmatched: Ext_A
+
+Warning: Incomplete pattern match statement at postlude/insts_end.sail:23.0-8:
+23 |function clause execute C_ILLEGAL(_s) = Illegal_Instruction()
+   |^------^
+   | 
+The following expression is unmatched: AES32DSI(undefined)
+
+Profiled rewrite initial: 0.026531s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite move_termination_measures: 0.004829s
+  SMT calls: 3, SMT time: 0.000019s
+Profiled rewrite instantiate_outcomes: 0.002341s
+  SMT calls: 2, SMT time: 0.000020s
+Profiled rewrite realize_mappings: 1.274174s
+  SMT calls: 5564, SMT time: 0.260419s
+Profiled rewrite remove_vector_subrange_pats: 0.059547s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_duplicate_valspecs: 0.008562s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite toplevel_string_append: 0.000001s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite pat_string_append: 0.019098s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite mapping_patterns: 0.260279s
+  SMT calls: 3070, SMT time: 0.059252s
+Profiled rewrite add_unspecified_rec: 0.033584s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite undefined: 0.021615s
+  SMT calls: 8, SMT time: 0.003716s
+Profiled rewrite remove_not_pats: 0.015606s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_impossible_int_cases: 0.181532s
+  SMT calls: 488, SMT time: 0.151576s
+Profiled rewrite tuple_assignments: 0.024123s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite vector_concat_assignments: 0.021177s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite simple_assignments: 0.078942s
+  SMT calls: 68, SMT time: 0.008614s
+Profiled rewrite remove_vector_concat: 0.000003s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_bitvector_pats: 0.000002s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite recheck_defs: 2.885996s
+  SMT calls: 17572, SMT time: 0.416943s
+Profiled rewrite fun_guarded_pats: 0.422268s
+  SMT calls: 558, SMT time: 0.032476s
+Profiled rewrite guarded_pats: 0.000001s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite nexp_ids: 0.091371s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite split: 0.020173s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite minimise_recursive_functions: 0.021521s
+  SMT calls: 0, SMT time: 0.000000s
+Profiled rewrite remove_bitfield_records: 0.017521s
+  SMT calls: 0, SMT time: 0.000000s
+Internal error: Unreachable code (at "src/lib/type_error.ml" line 582):
+pmp/pmp_regs.sail:78.40-62:
+78 |      let mask : xlenbits = zero_extend(ones(min(G - 1, xlen)));
+   |                                        ^--------------------^
+   | During rewriting: Could not resolve quantifiers for ones
+   | * 'ex294665# >= 0
+   | 
+   | 
+   | Raised by primitive operation at Libsail__Reporting.err_unreachable in file "src/lib/reporting.ml", line 221, characters 18-62
+   | Called from Libsail__Type_error.check in file "src/lib/type_error.ml", line 589, characters 66-100
+   | Called from Libsail__Rewrites.checking_rewriter.(fun) in file "src/lib/rewrites.ml", line 4832, characters 21-30
+   | Called from Libsail__Rewrites.rewrite_step in file "src/lib/rewrites.ml", line 5000, characters 35-67
+   | Called from Libsail__Rewrites.rewrite.(fun) in file "src/lib/rewrites.ml", line 5022, characters 40-70
+   | Called from Stdlib__List.fold_left in file "list.ml", line 123, characters 24-34
+   | Called from Libsail__Rewrites.rewrite in file "src/lib/rewrites.ml", lines 5021-5025, characters 6-7
+   | Called from Sail.run_sail in file "src/bin/sail.ml", line 584, characters 35-97
+   | Called from Sail.main in file "src/bin/sail.ml", line 766, characters 46-68
+   | Called from Sail in file "src/bin/sail.ml", line 803, characters 8-15
+   | 
+   | Please report this as an issue on GitHub at https://github.com/rems-project/sail/issues

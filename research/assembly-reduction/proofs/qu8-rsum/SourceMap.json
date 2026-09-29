@@ -1,0 +1,242 @@
+{
+  "schema": 1,
+  "function": "test_rvv",
+  "assembly_sha256": "f43285cc98e81b74d2f2d651a7545d29e94026fa2201944d0aafc00ee2262141",
+  "pc_unit": "decoded instruction index, not byte address",
+  "labels": {
+    "test_rvv": 0,
+    ".L3": 3,
+    ".L2": 10
+  },
+  "instructions": [
+    {
+      "pc": 0,
+      "line": 11,
+      "assembly": "vsetvli\ta4,zero,e32,m8,ta,ma",
+      "opcode": "vsetvli",
+      "operands": [
+        "a4",
+        "zero",
+        "e32",
+        "m8",
+        "ta",
+        "ma"
+      ],
+      "lean": ".vsetvli 14 0 32 8 .agnostic"
+    },
+    {
+      "pc": 1,
+      "line": 12,
+      "assembly": "vmv.v.i\tv8,0",
+      "opcode": "vmv.v.i",
+      "operands": [
+        "v8",
+        "0"
+      ],
+      "lean": ".vmvVI 8 0"
+    },
+    {
+      "pc": 2,
+      "line": 13,
+      "assembly": "beq\ta0,zero,.L2",
+      "opcode": "beq",
+      "operands": [
+        "a0",
+        "zero",
+        ".L2"
+      ],
+      "lean": ".branch .eq 10 0 10"
+    },
+    {
+      "pc": 3,
+      "line": 15,
+      "assembly": "vsetvli\ta5,a0,e32,m8,tu,ma",
+      "opcode": "vsetvli",
+      "operands": [
+        "a5",
+        "a0",
+        "e32",
+        "m8",
+        "tu",
+        "ma"
+      ],
+      "lean": ".vsetvli 15 10 32 8 .undisturbed"
+    },
+    {
+      "pc": 4,
+      "line": 16,
+      "assembly": "vle8.v\tv2,0(a1)",
+      "opcode": "vle8.v",
+      "operands": [
+        "v2",
+        "0(a1)"
+      ],
+      "lean": ".vle8 2 11"
+    },
+    {
+      "pc": 5,
+      "line": 17,
+      "assembly": "sub\ta0,a0,a5",
+      "opcode": "sub",
+      "operands": [
+        "a0",
+        "a0",
+        "a5"
+      ],
+      "lean": ".alu .sub 10 10 15"
+    },
+    {
+      "pc": 6,
+      "line": 18,
+      "assembly": "add\ta1,a1,a5",
+      "opcode": "add",
+      "operands": [
+        "a1",
+        "a1",
+        "a5"
+      ],
+      "lean": ".alu .add 11 11 15"
+    },
+    {
+      "pc": 7,
+      "line": 19,
+      "assembly": "vzext.vf4\tv16,v2",
+      "opcode": "vzext.vf4",
+      "operands": [
+        "v16",
+        "v2"
+      ],
+      "lean": ".vzextVF4 16 2"
+    },
+    {
+      "pc": 8,
+      "line": 20,
+      "assembly": "vadd.vv\tv8,v8,v16",
+      "opcode": "vadd.vv",
+      "operands": [
+        "v8",
+        "v8",
+        "v16"
+      ],
+      "lean": ".vaddVV 8 8 16"
+    },
+    {
+      "pc": 9,
+      "line": 21,
+      "assembly": "bne\ta0,zero,.L3",
+      "opcode": "bne",
+      "operands": [
+        "a0",
+        "zero",
+        ".L3"
+      ],
+      "lean": ".branch .ne 10 0 3"
+    },
+    {
+      "pc": 10,
+      "line": 23,
+      "assembly": "vsetvli\ta5,zero,e32,m1,ta,ma",
+      "opcode": "vsetvli",
+      "operands": [
+        "a5",
+        "zero",
+        "e32",
+        "m1",
+        "ta",
+        "ma"
+      ],
+      "lean": ".vsetvli 15 0 32 1 .agnostic"
+    },
+    {
+      "pc": 11,
+      "line": 24,
+      "assembly": "vmv.v.i\tv1,0",
+      "opcode": "vmv.v.i",
+      "operands": [
+        "v1",
+        "0"
+      ],
+      "lean": ".vmvVI 1 0"
+    },
+    {
+      "pc": 12,
+      "line": 25,
+      "assembly": "vsetvli\ta4,zero,e32,m8,ta,ma",
+      "opcode": "vsetvli",
+      "operands": [
+        "a4",
+        "zero",
+        "e32",
+        "m8",
+        "ta",
+        "ma"
+      ],
+      "lean": ".vsetvli 14 0 32 8 .agnostic"
+    },
+    {
+      "pc": 13,
+      "line": 26,
+      "assembly": "lw\ta3,0(a2)",
+      "opcode": "lw",
+      "operands": [
+        "a3",
+        "0(a2)"
+      ],
+      "lean": ".loadWord 13 12 0"
+    },
+    {
+      "pc": 14,
+      "line": 27,
+      "assembly": "vredsum.vs\tv8,v8,v1",
+      "opcode": "vredsum.vs",
+      "operands": [
+        "v8",
+        "v8",
+        "v1"
+      ],
+      "lean": ".vredsumVS 8 8 1"
+    },
+    {
+      "pc": 15,
+      "line": 28,
+      "assembly": "vmv.x.s\ta5,v8",
+      "opcode": "vmv.x.s",
+      "operands": [
+        "a5",
+        "v8"
+      ],
+      "lean": ".vmvXS 15 8"
+    },
+    {
+      "pc": 16,
+      "line": 29,
+      "assembly": "addw\ta5,a5,a3",
+      "opcode": "addw",
+      "operands": [
+        "a5",
+        "a5",
+        "a3"
+      ],
+      "lean": ".alu .addw 15 15 13"
+    },
+    {
+      "pc": 17,
+      "line": 30,
+      "assembly": "sw\ta5,0(a2)",
+      "opcode": "sw",
+      "operands": [
+        "a5",
+        "0(a2)"
+      ],
+      "lean": ".storeWord 15 12 0"
+    },
+    {
+      "pc": 18,
+      "line": 31,
+      "assembly": "ret",
+      "opcode": "ret",
+      "operands": [],
+      "lean": ".ret"
+    }
+  ]
+}

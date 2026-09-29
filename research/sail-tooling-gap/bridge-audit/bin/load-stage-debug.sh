@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+exec /srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/bridge-audit/bin/isla-footprint riscv64.ir -f isla_footprint_no_init -C /srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/bridge-audit/configs/rvv16-load-fixed.toml --simplify-registers --tree -s -x -i 07810502 --verbose --probe process_vlseg --probe init_masked_result --probe read_vmask --probe read_vreg_seg --probe write_single_element --probe read_ram --probe pmpCheck > /srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/bridge-audit/attempts/load-stage-debug.isla

@@ -1,0 +1,8 @@
+(* Common observable-output specification; not a kernel correctness theorem.
+   input contains unsigned bytes, and old is the initial uint32 output.
+   Memory validity, frame, ABI, termination and exceptional outcomes belong
+   in the still-to-be-proved connection to kernel_step. *)
+open import Pervasives_extra
+
+val reduction_spec : list integer -> integer -> integer
+let reduction_spec input old = integerMod (List.foldl integerAdd old input) 4294967296

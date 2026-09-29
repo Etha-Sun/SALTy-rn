@@ -1,0 +1,179 @@
+(* Exact excerpt, NOT a standalone module. See rv64_kernel.lem.gz. *)
+val kernel_instruction : list bitU -> M (maybe ((instruction * integer)))
+
+let kernel_instruction address =
+   let p0_ = address in
+   if ((eq_vec p0_
+          [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+           B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;B1;B0;B1;B1;
+           B1;B1;B0;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B1;B1;B0;B1;B0;B0;B1;B1;B0;B0;B0;B0;B0;B1;B1;B1;B0;B1;B1;B1;B0;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__0 : instruction) ->
+     return (Just (w__0, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B0;B0;B0;B0;B0])) then
+     (encdec_backwards
+        [B0;B1;B0;B1;B1;B1;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;B1;B0;B1;B0;B0;B0;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__1 : instruction) ->
+     return (Just (w__1, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B0;B0;B1;B0;B0])) then
+     (encdec_compressed_backwards [B1;B1;B0;B0;B1;B1;B0;B1;B0;B0;B0;B0;B0;B0;B0;B1]) >>= fun (w__2 :
+       instruction) ->
+     return (Just (w__2, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B0;B0;B1;B1;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B1;B0;B0;B1;B0;B0;B1;B1;B0;B1;B0;B1;B0;B1;B1;B1;B0;B1;B1;B1;B1;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__3 : instruction) ->
+     return (Just (w__3, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B0;B1;B0;B1;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B1;B0;B1;B1;B0;B0;B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B1;
+         B1;B1]) >>= fun (w__4 : instruction) ->
+     return (Just (w__4, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B0;B1;B1;B1;B0])) then
+     (encdec_compressed_backwards [B1;B0;B0;B0;B1;B1;B0;B1;B0;B0;B0;B1;B1;B1;B0;B1]) >>= fun (w__5 :
+       instruction) ->
+     return (Just (w__5, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B1;B0;B0;B0;B0])) then
+     (encdec_compressed_backwards [B1;B0;B0;B1;B0;B1;B0;B1;B1;B0;B1;B1;B1;B1;B1;B0]) >>= fun (w__6 :
+       instruction) ->
+     return (Just (w__6, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B1;B0;B0;B1;B0])) then
+     (encdec_backwards
+        [B0;B1;B0;B0;B1;B0;B1;B0;B0;B0;B1;B0;B0;B0;B1;B0;B0;B0;B1;B0;B1;B0;B0;B0;B0;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__7 : instruction) ->
+     return (Just (w__7, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B1;B0;B1;B1;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B0;B0;B1;B0;B1;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B1;B0;B0;B0;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__8 : instruction) ->
+     return (Just (w__8, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B1;B1;B0;B1;B0])) then
+     (encdec_compressed_backwards [B1;B1;B1;B1;B0;B1;B0;B1;B0;B1;B1;B1;B0;B1;B0;B1]) >>= fun (w__9 :
+       instruction) ->
+     return (Just (w__9, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B0;B1;B1;B1;B0;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B1;B1;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;B1;B1;B0;B1;B1;B1;B1;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__10 : instruction) ->
+     return (Just (w__10, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B0;B0;B0;B0;B0])) then
+     (encdec_backwards
+        [B0;B1;B0;B1;B1;B1;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;B1;B0;B0;B0;B0;B1;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__11 : instruction) ->
+     return (Just (w__11, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B0;B0;B1;B0;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B1;B1;B0;B1;B0;B0;B1;B1;B0;B0;B0;B0;B0;B1;B1;B1;B0;B1;B1;B1;B0;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__12 : instruction) ->
+     return (Just (w__12, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B0;B1;B0;B0;B0])) then
+     (encdec_compressed_backwards [B0;B1;B0;B0;B0;B0;B1;B0;B0;B0;B0;B1;B0;B1;B0;B0]) >>= fun (w__13 :
+       instruction) ->
+     return (Just (w__13, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B0;B1;B0;B1;B0])) then
+     (encdec_backwards
+        [B0;B0;B0;B0;B0;B0;B1;B0;B1;B0;B0;B0;B0;B0;B0;B0;B1;B0;B1;B0;B0;B1;B0;B0;B0;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__14 : instruction) ->
+     return (Just (w__14, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B0;B1;B1;B1;B0])) then
+     (encdec_backwards
+        [B0;B1;B0;B0;B0;B0;B1;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;B0;B0;B1;B1;B1;B1;B1;B0;B1;B0;B1;
+         B1;B1]) >>= fun (w__15 : instruction) ->
+     return (Just (w__15, (4:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B1;B0;B0;B1;B0])) then
+     (encdec_compressed_backwards [B1;B0;B0;B1;B1;B1;B1;B1;B1;B0;B1;B1;B0;B1;B0;B1]) >>= fun (w__16 :
+       instruction) ->
+     return (Just (w__16, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B1;B0;B1;B0;B0])) then
+     (encdec_compressed_backwards [B1;B1;B0;B0;B0;B0;B1;B0;B0;B0;B0;B1;B1;B1;B0;B0]) >>= fun (w__17 :
+       instruction) ->
+     return (Just (w__17, (2:ii)))
+   else if ((eq_vec p0_
+               [B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;
+                B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B0;B1;
+                B1;B1;B1;B1;B0;B1;B1;B0])) then
+     (encdec_compressed_backwards [B1;B0;B0;B0;B0;B0;B0;B0;B1;B0;B0;B0;B0;B0;B1;B0]) >>= fun (w__18 :
+       instruction) ->
+     return (Just (w__18, (2:ii)))
+   else return Nothing
+
+val kernel_step : unit -> M (maybe ExecutionResult)
+
+let kernel_step () =
+   (read_reg PC_ref  : M (list bitU)) >>= fun (w__0 : list bitU) ->
+   (kernel_instruction ((zero_extend' (64:ii) w__0))  : M (maybe ((instruction * integer)))) >>= fun (w__1 :
+     maybe ((instruction * integer))) ->
+   match w__1 with
+   | Nothing -> return Nothing
+   | Just ((ins, width)) ->
+      (read_reg PC_ref  : M (list bitU)) >>= fun (w__2 : list bitU) ->
+      write_reg nextPC_ref ((add_vec w__2 ((to_bits (64:ii) width)))) >>
+      and_boolM (return ((eq width (2:ii))))
+        ((currentlyEnabled Ext_Zca) >>= fun (w__3 : bool) -> return ((not' w__3))) >>= fun w__4 ->
+      (if w__4 then return (Illegal_Instruction ())
+       else
+         (execute ins) >>= fun (w__5 : ExecutionResult) ->
+         match w__5 with
+         | ExecuteAs (expanded) -> (execute expanded)
+         | other_result -> return other_result
+         end) >>= fun result ->
+      match result with
+      | Retire_Success (()) ->
+         (read_reg nextPC_ref  : M (list bitU)) >>= fun (w__8 : list bitU) -> write_reg PC_ref w__8
+      | _ -> return ()
+      end >>
+      return (Just result)
+   end
+

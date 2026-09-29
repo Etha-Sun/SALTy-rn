@@ -1,0 +1,81 @@
+Require Import isla.riscv64.riscv64 RvvLoadSharedDefs RvvUpdateExpressions RvvUpdateMath.
+Definition load_all_updates (vl : bv 64) (old : bv 65536) (f : N -> bv 8) : bv 65536 :=
+  (load_update_value_31 (load_update_value_30 (load_update_value_29 (load_update_value_28 (load_update_value_27 (load_update_value_26 (load_update_value_25 (load_update_value_24 (load_update_value_23 (load_update_value_22 (load_update_value_21 (load_update_value_20 (load_update_value_19 (load_update_value_18 (load_update_value_17 (load_update_value_16 (load_update_value_15 (load_update_value_14 (load_update_value_13 (load_update_value_12 (load_update_value_11 (load_update_value_10 (load_update_value_9 (load_update_value_8 (load_update_value_7 (load_update_value_6 (load_update_value_5 (load_update_value_4 (load_update_value_3 (load_update_value_2 (load_update_value_1 (load_update_value_0 old (if decide (0%Z < bv_unsigned vl)%Z then f 0%N else bv_extract 0%N 8 old)) (if decide (1%Z < bv_unsigned vl)%Z then f 1%N else bv_extract 8%N 8 old)) (if decide (2%Z < bv_unsigned vl)%Z then f 2%N else bv_extract 16%N 8 old)) (if decide (3%Z < bv_unsigned vl)%Z then f 3%N else bv_extract 24%N 8 old)) (if decide (4%Z < bv_unsigned vl)%Z then f 4%N else bv_extract 32%N 8 old)) (if decide (5%Z < bv_unsigned vl)%Z then f 5%N else bv_extract 40%N 8 old)) (if decide (6%Z < bv_unsigned vl)%Z then f 6%N else bv_extract 48%N 8 old)) (if decide (7%Z < bv_unsigned vl)%Z then f 7%N else bv_extract 56%N 8 old)) (if decide (8%Z < bv_unsigned vl)%Z then f 8%N else bv_extract 64%N 8 old)) (if decide (9%Z < bv_unsigned vl)%Z then f 9%N else bv_extract 72%N 8 old)) (if decide (10%Z < bv_unsigned vl)%Z then f 10%N else bv_extract 80%N 8 old)) (if decide (11%Z < bv_unsigned vl)%Z then f 11%N else bv_extract 88%N 8 old)) (if decide (12%Z < bv_unsigned vl)%Z then f 12%N else bv_extract 96%N 8 old)) (if decide (13%Z < bv_unsigned vl)%Z then f 13%N else bv_extract 104%N 8 old)) (if decide (14%Z < bv_unsigned vl)%Z then f 14%N else bv_extract 112%N 8 old)) (if decide (15%Z < bv_unsigned vl)%Z then f 15%N else bv_extract 120%N 8 old)) (if decide (16%Z < bv_unsigned vl)%Z then f 16%N else bv_extract 128%N 8 old)) (if decide (17%Z < bv_unsigned vl)%Z then f 17%N else bv_extract 136%N 8 old)) (if decide (18%Z < bv_unsigned vl)%Z then f 18%N else bv_extract 144%N 8 old)) (if decide (19%Z < bv_unsigned vl)%Z then f 19%N else bv_extract 152%N 8 old)) (if decide (20%Z < bv_unsigned vl)%Z then f 20%N else bv_extract 160%N 8 old)) (if decide (21%Z < bv_unsigned vl)%Z then f 21%N else bv_extract 168%N 8 old)) (if decide (22%Z < bv_unsigned vl)%Z then f 22%N else bv_extract 176%N 8 old)) (if decide (23%Z < bv_unsigned vl)%Z then f 23%N else bv_extract 184%N 8 old)) (if decide (24%Z < bv_unsigned vl)%Z then f 24%N else bv_extract 192%N 8 old)) (if decide (25%Z < bv_unsigned vl)%Z then f 25%N else bv_extract 200%N 8 old)) (if decide (26%Z < bv_unsigned vl)%Z then f 26%N else bv_extract 208%N 8 old)) (if decide (27%Z < bv_unsigned vl)%Z then f 27%N else bv_extract 216%N 8 old)) (if decide (28%Z < bv_unsigned vl)%Z then f 28%N else bv_extract 224%N 8 old)) (if decide (29%Z < bv_unsigned vl)%Z then f 29%N else bv_extract 232%N 8 old)) (if decide (30%Z < bv_unsigned vl)%Z then f 30%N else bv_extract 240%N 8 old)) (if decide (31%Z < bv_unsigned vl)%Z then f 31%N else bv_extract 248%N 8 old)).
+Local Opaque load_update_value_0 load_update_value_1 load_update_value_2 load_update_value_3 load_update_value_4 load_update_value_5 load_update_value_6 load_update_value_7 load_update_value_8 load_update_value_9 load_update_value_10 load_update_value_11 load_update_value_12 load_update_value_13 load_update_value_14 load_update_value_15 load_update_value_16 load_update_value_17 load_update_value_18 load_update_value_19 load_update_value_20 load_update_value_21 load_update_value_22 load_update_value_23 load_update_value_24 load_update_value_25 load_update_value_26 load_update_value_27 load_update_value_28 load_update_value_29 load_update_value_30.
+Ltac normalize_loaded_lane j := repeat first [
+  rewrite (load_update_lane_30 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_29 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_28 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_27 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_26 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_25 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_24 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_23 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_22 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_21 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_20 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_19 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_18 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_17 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_16 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_15 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_14 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_13 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_12 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_11 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_10 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_9 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_8 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_7 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_6 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_5 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_4 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_3 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_2 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_1 j _ _ ltac:(lia)) |
+  rewrite (load_update_lane_0 j _ _ ltac:(lia)) |
+  match goal with |- context [decide (?a = ?b)] =>
+    destruct (decide (a = b)); [try discriminate|try contradiction]
+  end].
+Lemma load_all_updates_correct vl old f :
+  load_all_updates vl old f = loaded8 vl old f.
+Proof.
+  unfold load_all_updates, load_update_value_31, loaded8.
+  apply pack32bytes_ext. intros i Hi.
+  assert (i=0 \/ i=1 \/ i=2 \/ i=3 \/ i=4 \/ i=5 \/ i=6 \/ i=7 \/ i=8 \/ i=9 \/ i=10 \/ i=11 \/ i=12 \/ i=13 \/ i=14 \/ i=15 \/ i=16 \/ i=17 \/ i=18 \/ i=19 \/ i=20 \/ i=21 \/ i=22 \/ i=23 \/ i=24 \/ i=25 \/ i=26 \/ i=27 \/ i=28 \/ i=29 \/ i=30 \/ i=31)%N as Hcases by lia.
+  destruct Hcases as [Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|[Hcase|Hcase]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]; subst i.
+  - normalize_loaded_lane 0%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 1%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 2%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 3%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 4%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 5%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 6%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 7%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 8%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 9%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 10%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 11%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 12%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 13%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 14%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 15%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 16%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 17%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 18%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 19%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 20%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 21%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 22%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 23%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 24%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 25%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 26%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 27%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 28%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 29%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 30%N. cbn [N.mul Z.of_N]. reflexivity.
+  - normalize_loaded_lane 31%N. cbn [N.mul Z.of_N]. reflexivity.
+
+Qed.
+Print Assumptions load_all_updates_correct.

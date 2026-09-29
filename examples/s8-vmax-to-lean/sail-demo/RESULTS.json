@@ -1,0 +1,80 @@
+{
+  "sail_compiler": {
+    "version": "0.20.2",
+    "commit": "3b7af38d66466ecadad563158b07ce2f82fe05da",
+    "archive_sha256": "26b59bcab2d66e9f220d317dfe45f8b09170ed70e59a824553d6f525134d1ff6"
+  },
+  "sail_riscv_model_commit": "29e6158f0a88bdb26b9fbcd0718ab919449b5179",
+  "sail_riscv_simulator_version": "0.14",
+  "lean_used": "4.29.1",
+  "lean_sail_commit": "79b4d08505af29d88b3918f32d29840fae1fa191",
+  "source_assembly_sha256": "bdd69ded94afbb196a69e7996d0d60b09efd9ac645ba237d339ac82c4e0d60a8",
+  "elf_sha256": "1d44ffd924b333e59c150cfe8870d0ddeea8a1aeaea1829f306c5429dad867cc",
+  "target_address": "0x800000e2",
+  "target_size_bytes": 32,
+  "lane_example": {
+    "sail_generation": "passed",
+    "lean_build": "passed",
+    "lean_build_jobs": 13,
+    "evaluation": -5,
+    "concrete_kernel_checked_example": "passed"
+  },
+  "assembly_direct_input": {
+    "status": "unsupported_extension",
+    "message": "No handler for file with extension '.s'"
+  },
+  "elf_import": {
+    "status": "passed",
+    "lean_typecheck": "passed",
+    "semantics": "data only; no instruction semantics supplied by importer"
+  },
+  "sail_execution": {
+    "status": "passed",
+    "batch": 272,
+    "threshold": -5,
+    "input": "signed byte sequence -128..127 then -128..-113",
+    "memory": "disjoint input/output",
+    "vlen_bits": [
+      128,
+      256,
+      512
+    ],
+    "elen_bits": 64,
+    "exit_codes": [
+      0,
+      0,
+      0
+    ]
+  },
+  "negative_control": {
+    "change": "vmax.vx 0x1e874457 -> vmin.vx 0x16874457 in a separate ELF",
+    "exit_code": 1,
+    "result": "FAILURE: 1"
+  },
+  "full_lean_model_generation": {
+    "status": "generation_stopped_after_time_limit",
+    "pid": 533382,
+    "elapsed_seconds": 2903.2299999999814,
+    "memory": "VmRSS:\t16299828 kB",
+    "signal": "SIGTERM",
+    "requested_time_limit_seconds": 1800,
+    "note": "First attempt used a manual stop, not shell timeout; actual termination was later than the requested limit. Replay script enforces a shell timeout.",
+    "modules": [
+      "V",
+      "Zca",
+      "Zba",
+      "Zicsr_insts",
+      "postlude"
+    ],
+    "vlen_bits": 256,
+    "elen_bits": 64,
+    "lean_files_produced": 0,
+    "last_diagnostic": "redundant assembly mapping clauses; no fatal semantic error reported before termination"
+  },
+  "not_completed": [
+    "Full RISC-V model Lean build",
+    "Execution of test_rvv in Lean",
+    "Machine-code-to-array refinement proof",
+    "All-input correctness or equivalence proof"
+  ]
+}

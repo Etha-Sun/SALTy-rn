@@ -1,0 +1,383 @@
+{
+  "status": "binaries-built-data-imported-finite-tests-passed",
+  "kernel": "qu8-rsum",
+  "commands": [
+    {
+      "name": "compile-rvv",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-gcc",
+        "-march=rv64gcv",
+        "-mabi=lp64d",
+        "-O2",
+        "-DNDEBUG",
+        "-S",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/kernel-rvv.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.s"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.264
+    },
+    {
+      "name": "compile-neon",
+      "argv": [
+        "clang",
+        "--target=aarch64-none-elf",
+        "-march=armv8-a+simd",
+        "-ffreestanding",
+        "-O2",
+        "-S",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/kernel-neon.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.s"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.115
+    },
+    {
+      "name": "assemble-rvv",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-gcc",
+        "-march=rv64gcv",
+        "-mabi=lp64d",
+        "-c",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.s",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.008
+    },
+    {
+      "name": "assemble-neon",
+      "argv": [
+        "clang",
+        "--target=aarch64-none-elf",
+        "-march=armv8-a+simd",
+        "-ffreestanding",
+        "-O2",
+        "-c",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.s",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.033
+    },
+    {
+      "name": "link-rvv",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-gcc",
+        "-march=rv64gcv",
+        "-mabi=lp64d",
+        "-O1",
+        "-mcmodel=medany",
+        "-msmall-data-limit=0",
+        "-fno-tree-vectorize",
+        "-fno-tree-loop-distribute-patterns",
+        "-fno-builtin",
+        "-fno-stack-protector",
+        "-nostdlib",
+        "-static",
+        "-Wl,--no-relax",
+        "-Wl,-T,/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/rvv.ld",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/start-rvv.S",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/check.c",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.064
+    },
+    {
+      "name": "harness-neon",
+      "argv": [
+        "clang",
+        "--target=aarch64-none-elf",
+        "-march=armv8-a+simd",
+        "-ffreestanding",
+        "-O2",
+        "-fno-builtin",
+        "-fno-stack-protector",
+        "-fno-vectorize",
+        "-fno-slp-vectorize",
+        "-DNEON",
+        "-c",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/check.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/check-neon.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.064
+    },
+    {
+      "name": "entry-neon",
+      "argv": [
+        "clang",
+        "--target=aarch64-none-elf",
+        "-march=armv8-a+simd",
+        "-ffreestanding",
+        "-O2",
+        "-c",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/start-neon.S",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/start-neon.o"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.115
+    },
+    {
+      "name": "link-neon",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/llvm/usr/bin/ld.lld-14",
+        "-m",
+        "aarch64elf",
+        "-static",
+        "-e",
+        "_start",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/start-neon.o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/check-neon.o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.032
+    },
+    {
+      "name": "rvv-disasm",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/xpack-riscv-none-elf-gcc-15.2.0-1/bin/riscv-none-elf-objdump",
+        "-d",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.004
+    },
+    {
+      "name": "neon-disasm",
+      "argv": [
+        "/usr/bin/llvm-objdump-14",
+        "-d",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.032
+    },
+    {
+      "name": "lean-BinaryImage",
+      "argv": [
+        "lean",
+        "-j",
+        "2",
+        "-o",
+        "BinaryImage.olean",
+        "BinaryImage.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.415
+    },
+    {
+      "name": "lean-BinarySpec",
+      "argv": [
+        "lean",
+        "-j",
+        "2",
+        "-o",
+        "BinarySpec.olean",
+        "BinarySpec.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.416
+    },
+    {
+      "name": "lean-RvvBinary",
+      "argv": [
+        "lean",
+        "-j",
+        "2",
+        "-o",
+        "RvvBinary.olean",
+        "RvvBinary.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.817
+    },
+    {
+      "name": "lean-NeonBinary",
+      "argv": [
+        "lean",
+        "-j",
+        "2",
+        "-o",
+        "NeonBinary.olean",
+        "NeonBinary.lean"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 1.318
+    },
+    {
+      "name": "qemu-neon",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/qemu/usr/bin/qemu-aarch64-static",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/neon.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.016
+    },
+    {
+      "name": "sail-rvv-128",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/bin/sail_riscv_sim",
+        "--inst-limit",
+        "100000000",
+        "--config",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/share/sail-riscv/config/rv64d_v128_e64.json",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 155.653
+    },
+    {
+      "name": "sail-rvv-256",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/bin/sail_riscv_sim",
+        "--inst-limit",
+        "100000000",
+        "--config",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/share/sail-riscv/config/rv64d_v256_e64.json",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 154.604
+    },
+    {
+      "name": "sail-rvv-512",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/bin/sail_riscv_sim",
+        "--inst-limit",
+        "100000000",
+        "--config",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/share/sail-riscv/config/rv64d_v512_e64.json",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv.elf"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 155.158
+    },
+    {
+      "name": "sail-rvv-negative",
+      "argv": [
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/bin/sail_riscv_sim",
+        "--inst-limit",
+        "1000000",
+        "--config",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail-riscv-Linux-x86_64/share/sail-riscv/config/rv64d_v256_e64.json",
+        "/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/out/binaries/rvv-negative.elf"
+      ],
+      "exit_code": 1,
+      "elapsed_seconds": 0.516
+    }
+  ],
+  "binary_equivalence_proved": false,
+  "elf_execution_in_lean": false,
+  "source_sha256": {
+    "source": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+    "target": "f44a9addcab95a4f9c57e3c65818c05b332d3a6aa9a3fc59ce1fc4cc3943e494"
+  },
+  "images": {
+    "rvv": {
+      "elf_sha256": "34af16d56742985cb0c8ce864523395d5e5582d80048e81cbce4e637a77a0de9",
+      "machine": 243,
+      "entry": 2147483648,
+      "symbol": "test_rvv",
+      "kernel_address": 2147484092,
+      "kernel_size": 60,
+      "kernel_bytes": "5777300d5734005e01cdd7773509078105021d8dbe955728224a5704880275f5d777000dd730005e5777300d144257a48002d7278042b59f1cc28280",
+      "segments": [
+        {
+          "address": 2147483648,
+          "memory_size": 504,
+          "file_size": 504,
+          "flags": 5
+        },
+        {
+          "address": 2147487744,
+          "memory_size": 25776,
+          "file_size": 232,
+          "flags": 6
+        }
+      ],
+      "semantics": "data-only",
+      "loader_formally_verified": false
+    },
+    "neon": {
+      "elf_sha256": "a308f2d14429e0354cc7419769224a657c07d54ddd72e896deaf82bf7c8d899c",
+      "machine": 183,
+      "entry": 2163280,
+      "symbol": "test_neon",
+      "kernel_address": 2164120,
+      "kernel_size": 168,
+      "kernel_bytes": "00e4006f1f0020f1c301005400e4006f01e4006fe8031faa2268e83c084100911f0120f14168206e81ffff542068606e21002091000020d11ffc1ff1a8feff54e00000b500b8b14e480040b90900261e0801090b480000b9c0035fd601e4006f1f4000f10301005401e4006f2204c13c004000d11f3c00f14168206e88ffff54000100b488ffff902200c03d08c10891080100cb0305c03d629c224e4168206e2068606ee8ffff17",
+      "segments": [
+        {
+          "address": 2097152,
+          "memory_size": 592,
+          "file_size": 592,
+          "flags": 4
+        },
+        {
+          "address": 2163280,
+          "memory_size": 1008,
+          "file_size": 1008,
+          "flags": 5
+        },
+        {
+          "address": 2229824,
+          "memory_size": 9136,
+          "file_size": 0,
+          "flags": 6
+        }
+      ],
+      "semantics": "data-only",
+      "loader_formally_verified": false
+    }
+  },
+  "lean_data_import": "typechecked; no ISA execution",
+  "neon_tests": {
+    "backend": "QEMU (not Sail)",
+    "cases": 225,
+    "status": "passed"
+  },
+  "rvv_tests": [
+    {
+      "backend": "Sail C++ emulator",
+      "vlen": 128,
+      "cases": 225,
+      "status": "passed"
+    },
+    {
+      "backend": "Sail C++ emulator",
+      "vlen": 256,
+      "cases": 225,
+      "status": "passed"
+    },
+    {
+      "backend": "Sail C++ emulator",
+      "vlen": 512,
+      "cases": 225,
+      "status": "passed"
+    }
+  ],
+  "negative_control": {
+    "status": "caught",
+    "pc": 2147484118,
+    "change": "vadd.vv -> nop"
+  },
+  "limitations": [
+    "NEON Sail execution not implemented",
+    "Neither ELF executed in Lean",
+    "No unconditional binary equivalence theorem",
+    "No compiler correctness theorem"
+  ]
+}

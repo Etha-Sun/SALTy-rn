@@ -1,0 +1,78 @@
+Require Import isla.riscv64.riscv64.
+Require Import StructAssume RvvArithmetic RvvSharedDefs RvvLiterals RvvCompactLoad.
+Require Import Simple.rvv.a800001ca.
+Definition rvv_memory_env `{!islaG Σ} `{!threadG} : iProp Σ :=
+  rvv_loop_env ∗
+    "cur_privilege" ↦ᵣ (RegVal_Base (Val_Enum "Machine")) ∗
+    "rv_pmp_count" ↦ᵣ (RegVal_I 0%Z 64%Z) ∗
+    "rv_enable_misaligned_access" ↦ᵣ (RegVal_Base (Val_Bool false)) ∗
+    "rv_ram_base" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0x80000000%Z))) ∗
+    "rv_ram_size" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0x4000000%Z))) ∗
+    "rv_rom_base" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0x1000%Z))) ∗
+    "rv_rom_size" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0x100%Z))) ∗
+    "rv_clint_base" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0x2000000%Z))) ∗
+    "rv_clint_size" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0xc0000%Z))) ∗
+    "rv_htif_tohost" ↦ᵣ (RegVal_Base (Val_Bits (BV 64%N 0x40001000%Z))).
+Arguments rvv_memory_env /.
+Definition pack32bytes (f : N -> bv 8) : bv 65536 := bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_or (bv_shiftl (bv_zero_extend 65536 (f 31%N)) wide8) (bv_zero_extend 65536 (f 30%N))) wide8) (bv_zero_extend 65536 (f 29%N))) wide8) (bv_zero_extend 65536 (f 28%N))) wide8) (bv_zero_extend 65536 (f 27%N))) wide8) (bv_zero_extend 65536 (f 26%N))) wide8) (bv_zero_extend 65536 (f 25%N))) wide8) (bv_zero_extend 65536 (f 24%N))) wide8) (bv_zero_extend 65536 (f 23%N))) wide8) (bv_zero_extend 65536 (f 22%N))) wide8) (bv_zero_extend 65536 (f 21%N))) wide8) (bv_zero_extend 65536 (f 20%N))) wide8) (bv_zero_extend 65536 (f 19%N))) wide8) (bv_zero_extend 65536 (f 18%N))) wide8) (bv_zero_extend 65536 (f 17%N))) wide8) (bv_zero_extend 65536 (f 16%N))) wide8) (bv_zero_extend 65536 (f 15%N))) wide8) (bv_zero_extend 65536 (f 14%N))) wide8) (bv_zero_extend 65536 (f 13%N))) wide8) (bv_zero_extend 65536 (f 12%N))) wide8) (bv_zero_extend 65536 (f 11%N))) wide8) (bv_zero_extend 65536 (f 10%N))) wide8) (bv_zero_extend 65536 (f 9%N))) wide8) (bv_zero_extend 65536 (f 8%N))) wide8) (bv_zero_extend 65536 (f 7%N))) wide8) (bv_zero_extend 65536 (f 6%N))) wide8) (bv_zero_extend 65536 (f 5%N))) wide8) (bv_zero_extend 65536 (f 4%N))) wide8) (bv_zero_extend 65536 (f 3%N))) wide8) (bv_zero_extend 65536 (f 2%N))) wide8) (bv_zero_extend 65536 (f 1%N))) wide8) (bv_zero_extend 65536 (f 0%N)).
+
+Definition loaded8 (vl : bv 64) (old : bv 65536) (f : N -> bv 8) : bv 65536 :=
+  pack32bytes (fun i => if decide (Z.of_N i < bv_unsigned vl)%Z
+    then f i else bv_extract (8*i) 8 old).
+Definition input8 (f : N -> bv 8) := [f 0%N;f 1%N;f 2%N;f 3%N;f 4%N;f 5%N;f 6%N;f 7%N].
+Lemma rvv_load_active_bytes_shared `{!islaG Σ} `{!threadG} pc
+    (vl p : bv 64) (mask old : bv 65536) (f : N -> bv 8) :
+  (bv_unsigned vl <= 8)%Z ->
+  (0x80000000 <= bv_unsigned p <= 0x83fffff8)%Z ->
+  instr pc (Some a800001ca) ⊢ instr_body pc (
+    rvv_memory_env ∗ "vl" ↦ᵣ RVal_Bits vl ∗ "x11" ↦ᵣ RVal_Bits p ∗
+    "vr0" ↦ᵣ RVal_Bits mask ∗ "vr2" ↦ᵣ RVal_Bits old ∗
+    bv_unsigned p ↦ₘ∗ input8 f ∗
+    instr_pre (pc+4) (
+      rvv_memory_env ∗ "vl" ↦ᵣ RVal_Bits vl ∗ "x11" ↦ᵣ RVal_Bits p ∗
+      "vr0" ↦ᵣ RVal_Bits mask ∗ "vr2" ↦ᵣ RVal_Bits (loaded8 vl old f) ∗
+      bv_unsigned p ↦ₘ∗ input8 f)).
+Proof.
+  intros Hvl Hrange. rewrite <- a800001ca_shared_exact. iStartProof.
+  Time do 10 kernelAStep. idtac "step_10".
+  Time do 10 kernelAStep. idtac "step_20".
+  Time do 10 kernelAStep. idtac "step_30".
+  Time do 10 kernelAStep. idtac "step_40".
+  Time do 10 kernelAStep. idtac "step_50".
+  Time do 10 kernelAStep. idtac "step_60".
+  Time do 10 kernelAStep. idtac "step_70".
+  Time do 10 kernelAStep. idtac "step_80".
+  Time do 10 kernelAStep. idtac "step_90".
+  Time do 10 kernelAStep. idtac "step_100".
+  Time do 10 kernelAStep. idtac "step_110".
+  Time do 10 kernelAStep. idtac "step_120".
+  Time do 10 kernelAStep. idtac "step_130".
+  Time do 10 kernelAStep. idtac "step_140".
+  Time do 10 kernelAStep. idtac "step_150".
+  Time do 10 kernelAStep. idtac "step_160".
+  Time do 10 kernelAStep. idtac "step_170".
+  Time do 10 kernelAStep. idtac "step_180".
+  Time do 10 kernelAStep. idtac "step_190".
+  Time do 10 kernelAStep. idtac "step_200".
+  Time do 10 kernelAStep. idtac "step_210".
+  Time do 10 kernelAStep. idtac "step_220".
+  Time do 10 kernelAStep. idtac "step_230".
+  Time do 10 kernelAStep. idtac "step_240".
+  Time do 10 kernelAStep. idtac "step_250".
+  Time do 10 kernelAStep. idtac "step_260".
+  Time do 10 kernelAStep. idtac "step_270".
+  Time do 10 kernelAStep. idtac "step_280".
+  Time do 10 kernelAStep. idtac "step_290".
+  Time do 10 kernelAStep. idtac "step_300".
+  Time do 10 kernelAStep. idtac "step_310".
+  Time do 10 kernelAStep. idtac "step_320".
+  Time do 10 kernelAStep. idtac "step_330".
+  Time do 10 kernelAStep. idtac "step_340".
+  Time do 10 kernelAStep. idtac "step_350".
+  Time do 10 kernelAStep. idtac "step_360".
+  Time do 10 kernelAStep. idtac "step_370".
+  Time do 10 kernelAStep. idtac "step_380".
+  Time do 10 kernelAStep. idtac "step_390".
+  Time do 10 kernelAStep. idtac "step_400".
+  Show.
+Abort.

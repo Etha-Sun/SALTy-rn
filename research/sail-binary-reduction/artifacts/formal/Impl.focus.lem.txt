@@ -1,0 +1,102 @@
+(* Exact excerpts from rv64_kernel.lem; NOT a standalone module.
+   No instruction body has been simplified or rewritten. *)
+
+(* Source: rv64_kernel.lem:119231 *)
+val kernel_step : unit -> M (maybe ExecutionResult)
+
+let kernel_step () =
+   (read_reg PC_ref  : M (list bitU)) >>= fun (w__0 : list bitU) ->
+   (kernel_instruction ((zero_extend' (64:ii) w__0))  : M (maybe ((instruction * integer)))) >>= fun (w__1 :
+     maybe ((instruction * integer))) ->
+   match w__1 with
+   | Nothing -> return Nothing
+   | Just ((ins, width)) ->
+      (read_reg PC_ref  : M (list bitU)) >>= fun (w__2 : list bitU) ->
+      write_reg nextPC_ref ((add_vec w__2 ((to_bits (64:ii) width)))) >>
+      and_boolM (return ((eq width (2:ii))))
+        ((currentlyEnabled Ext_Zca) >>= fun (w__3 : bool) -> return ((not' w__3))) >>= fun w__4 ->
+      (if w__4 then return (Illegal_Instruction ())
+       else
+         (execute ins) >>= fun (w__5 : ExecutionResult) ->
+         match w__5 with
+         | ExecuteAs (expanded) -> (execute expanded)
+         | other_result -> return other_result
+         end) >>= fun result ->
+      match result with
+      | Retire_Success (()) ->
+         (read_reg nextPC_ref  : M (list bitU)) >>= fun (w__8 : list bitU) -> write_reg PC_ref w__8
+      | _ -> return ()
+      end >>
+      return (Just result)
+   end
+
+
+(* Source: rv64_kernel.lem:110446 *)
+val execute_VSETVLI : list bitU -> list bitU -> list bitU -> list bitU -> list bitU -> regidx -> regidx -> M ExecutionResult
+
+let execute_VSETVLI vtr ma ta sew lmul rs1 rd =
+   if ((neq_vec vtr ((zeros' (3:ii))))) then (handle_illegal_vtype rd)
+   else
+     (if ((neq rs1 zreg)) then (rX_bits rs1)
+      else if ((neq rd zreg)) then return ((ones (64:ii)))
+      else (read_reg vl_ref  : M (list bitU))) >>= fun avl ->
+     let requires_fixed_vlmax = (and_bool ((eq rd zreg)) ((eq rs1 zreg))) in
+     (execute_vsetvl_type ma ta sew lmul avl requires_fixed_vlmax rd)
+
+
+(* Source: rv64_kernel.lem:112343 *)
+val execute_RMVVTYPE : rmvvfunct6 -> list bitU -> vregidx -> vregidx -> vregidx -> M ExecutionResult
+
+let execute_RMVVTYPE funct6 vm vs2 vs1 vd =
+   (get_sew ()) >>= fun SEW ->
+   (get_lmul_pow ()) >>= fun LMUL_pow ->
+   (get_num_elem LMUL_pow SEW) >>= fun num_elem_vs ->
+   (get_num_elem (0:ii) SEW) >>= fun num_elem_vd ->
+   or_boolM ((illegal_vstart VSTART_MANDATORY num_elem_vs LMUL_pow))
+     (or_boolM ((illegal_reduction ()))
+        (or_boolM (return ((not' ((valid_reg_group vs2 LMUL_pow)))))
+           (or_boolM
+              ((valid_vm_src_overlap vm vs2 SEW) >>= fun (w__2 : bool) -> return ((not' w__2)))
+              ((valid_vm_src_overlap vm vs1 SEW) >>= fun (w__3 : bool) -> return ((not' w__3)))))) >>= fun (w__7 :
+     bool) ->
+   if w__7 then return (Illegal_Instruction ())
+   else
+     (read_reg vl_ref  : M (list bitU)) >>= fun (w__8 : list bitU) ->
+     if ((eq ((uint w__8)) (0:ii))) then return RETIRE_SUCCESS
+     else
+       let n = num_elem_vs in
+       let d = num_elem_vd in
+       let m = SEW in
+       (read_vmask num_elem_vs vm zvreg) >>= fun (vm_val : list bitU) ->
+       (read_vreg num_elem_vd SEW (0:ii) vd) >>= fun (vd_val : list (list bitU)) ->
+       (read_vreg num_elem_vs SEW LMUL_pow vs2) >>= fun (vs2_val : list (list bitU)) ->
+       (init_masked_source num_elem_vs LMUL_pow vm_val) >>= fun (mask : list bitU) ->
+       (read_single_element SEW (0:ii) vs1) >>= fun (sum : list bitU) ->
+       let (sum : list bitU) =
+         let loop_i_lower = (0:ii) in
+         let loop_i_upper = (integerMinus num_elem_vs (1:ii)) in
+         (foreach (index_list loop_i_lower loop_i_upper (1:ii)) sum
+           (fun i sum ->
+             if ((eq_vec ((access_vec_dec mask i)) [B1])) then
+               match funct6 with
+               | MVV_VREDSUM -> (add_vec sum ((access_list_dec vs2_val i)))
+               | MVV_VREDAND -> (and_vec sum ((access_list_dec vs2_val i)))
+               | MVV_VREDOR -> (or_vec sum ((access_list_dec vs2_val i)))
+               | MVV_VREDXOR -> (xor_vec sum ((access_list_dec vs2_val i)))
+               | MVV_VREDMIN ->
+                  (to_bits_unsafe SEW
+                     ((integerMin ((sint ((access_list_dec vs2_val i)))) ((sint sum)))))
+               | MVV_VREDMINU ->
+                  (to_bits_unsafe SEW
+                     ((integerMin ((uint ((access_list_dec vs2_val i)))) ((uint sum)))))
+               | MVV_VREDMAX ->
+                  (to_bits_unsafe SEW
+                     ((integerMax ((sint ((access_list_dec vs2_val i)))) ((sint sum)))))
+               | MVV_VREDMAXU ->
+                  (to_bits_unsafe SEW
+                     ((integerMax ((uint ((access_list_dec vs2_val i)))) ((uint sum)))))
+               end
+             else sum)) in
+       (write_single_element SEW (0:ii) vd sum) >>
+       (set_vstart ((zeros' (16:ii)))) >> return RETIRE_SUCCESS
+

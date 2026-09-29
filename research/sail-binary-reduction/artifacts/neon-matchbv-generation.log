@@ -1,0 +1,2366 @@
+[Summary: 0 unused-variable warnings omitted; full log is under out/]
+/srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail/bin/sail -dprofile -verbose 1 -memo_z3 \
+        -lean --lean-force-output \
+        -lean_output_dir lean -o armv9 \
+        -undefined_gen \
+        -memo-z3 \
+        -lean-noncomputable \
+        -lean-line-width 100000 \
+        -lean-force-output \
+        -lean-import-file lean/ArmExtras.lean \
+        src/prelude.sail src/decode_start.sail src/builtins.sail src/v8_base.sail src/stubs.sail src/interrupts.sail src/interface.sail src/devices.sail src/impdefs.sail src/mem.sail src/sysregs_autogen.sail src/sysregs.sail src/reset.sail src/instrs32.sail src/instrs64.sail src/instrs64_sve.sail src/instrs64_sme.sail src/decode_end.sail src/fetch.sail src/map_clauses.sail src/event_clauses.sail --lean-matchbv \
+        src/termination_measures.sail
+Warning: Deprecated src/v8_base.sail:2141.61-74:
+2141 |val read_gpr : forall 'n, 0 <= 'n <= 30. int('n) -> bits(64) effect {rreg}
+     |                                                             ^-----------^
+     | 
+Explicit effect annotations are deprecated. They are no longer used and can be removed.
+
+Warning: Deprecated src/mem.sail:45.4-73:
+45 |  = { ocaml: "Platform.read_mem", c: "platform_read_mem", _: "read_mem" }
+   |    ^-------------------------------------------------------------------^
+   | 
+All external bindings should be marked as either pure or impure
+
+
+
+
+
+
+
+
+Warning: Duplicate function type definition for max_int
+src/prelude.sail:86.4-11:
+86 |val max_int : forall 'n 'm. (int('n), int('m)) -> {'o, ('n <= 'm & 'o == 'm) | ('n > 'm & 'o == 'n). int('o)}
+   |    ^-----^
+   | This duplicate definition is being ignored!
+   | /srv/home/yuechunsun/tools/lean/research/sail-binary-reduction/vendor/sail/share/sail/lib/arith.sail:226.4-11:
+   | 226 |val max_int = pure {
+   |     |    ^-----^ previous definition here
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:3563.4-19:
+3563 |    tmp : FPCR_Type = Mk_FPCR_Type(tmp.bits & not_vec(0xfffffffff80040f8));
+     |    ^-------------^
+     | 
+Type is already known
+
+
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:3629.4-20:
+3629 |    tmp : FPSCR_Type = Mk_FPSCR_Type(tmp.bits & not_vec(ZeroExtend(0x6060, 32)));
+     |    ^--------------^
+     | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to tc src/v8_base.sail:5459.8-20:
+5459 |        tc : bits(2) = PMEVTYPER_EL0[n][TC][1 .. 0];
+     |        ^----------^
+     | 
+Type is already known
+
+
+
+
+
+Warning: Redundant type annotation on assignment to TS_el2 src/v8_base.sail:5528.8-24:
+5528 |        TS_el2 : bits(2) = BRBCR_EL2[TS];
+     |        ^--------------^
+     | 
+Type is already known
+
+
+
+
+
+
+
+Warning: Redundant case src/v8_base.sail:5704.6-7:
+5704 |      _ => {
+     |      ^
+     | 
+This match case is never used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Incomplete pattern match statement at src/v8_base.sail:6328.4-9:
+6328 |    match mode {
+     |    ^---^
+     | 
+No expression of type bitvector(5) can be matched by unguarded patterns.
+This is the type of the expression being matched on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to vl src/v8_base.sail:6918.4-12:
+6918 |    vl : int = (vl + 1) * 128;
+     |    ^------^
+     | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to nbits src/v8_base.sail:6943.4-15:
+6943 |    nbits : int = 128;
+     |    ^---------^
+     | 
+Type is already known
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to vl src/v8_base.sail:6984.4-12:
+6984 |    vl : int = (vl + 1) * 128;
+     |    ^------^
+     | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant case src/v8_base.sail:7982.6-7:
+7982 |      _ => {
+     |      ^
+     | 
+This match case is never used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to trap src/v8_base.sail:10783.8-19:
+10783 |        trap : bool = false;
+      |        ^---------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant case src/v8_base.sail:11360.6-7:
+11360 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+
+
+Warning: Redundant case src/v8_base.sail:11420.6-7:
+11420 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant case src/v8_base.sail:12388.6-7:
+12388 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:12432.6-7:
+12432 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:12454.6-7:
+12454 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to a src/v8_base.sail:13126.12-19:
+13126 |            a : int = (((a >> 1)) << 1);
+      |            ^-----^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to real_val src/v8_base.sail:13130.8-23:
+13130 |        real_val : real = sqrt(real_val);
+      |        ^-------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to real_val src/v8_base.sail:13131.8-23:
+13131 |        real_val : real = real_val * Real(2 ^ 47);
+      |        ^-------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to round_up src/v8_base.sail:13134.8-23:
+13134 |        round_up : bool = error > 0.5;
+      |        ^-------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to int_val src/v8_base.sail:13139.8-21:
+13139 |        int_val : int = RoundDown(real_val);
+      |        ^-----------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to int_result src/v8_base.sail:17483.8-24:
+17483 |        int_result : int = RoundDown(value_name);
+      |        ^--------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to int_result src/v8_base.sail:17556.8-24:
+17556 |        int_result : int = RoundDown(value_name);
+      |        ^--------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to error src/v8_base.sail:17557.8-20:
+17557 |        error : real = value_name - Real(int_result);
+      |        ^----------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to imask src/v8_base.sail:18301.8-23:
+18301 |        imask : bits(1) = CNTV_CTL_EL0[IMASK];
+      |        ^-------------^
+      | 
+Type is already known
+
+
+
+
+
+Warning: Redundant type annotation on assignment to n src/v8_base.sail:18350.8-15:
+18350 |        n : int = UInt(CNTHCTL_EL2[EVNTI]);
+      |        ^-----^
+      | 
+Type is already known
+
+
+
+Warning: Redundant type annotation on assignment to n src/v8_base.sail:18401.8-15:
+18401 |        n : int = UInt(CNTKCTL_EL1[EVNTI]);
+      |        ^-----^
+      | 
+Type is already known
+
+Warning: Redundant case src/v8_base.sail:18903.6-7:
+18903 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:18936.10-11:
+18936 |          _ => {
+      |          ^
+      | 
+This match case is never used
+
+
+
+
+
+Warning: Redundant case src/v8_base.sail:19579.6-7:
+19579 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19609.6-7:
+19609 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19653.6-7:
+19653 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19682.6-7:
+19682 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19700.6-7:
+19700 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19743.6-7:
+19743 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19779.6-7:
+19779 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:19985.10-11:
+19985 |          _ => {
+      |          ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:20003.10-11:
+20003 |          _ => {
+      |          ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:20023.6-7:
+20023 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:20077.6-7:
+20077 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:20102.6-7:
+20102 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:20281.6-7:
+20281 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to roundkey src/v8_base.sail:21476.4-23:
+21476 |    roundkey : bits(64) = EOR(modk0, runningmod);
+      |    ^-----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21477.4-25:
+21477 |    workingval : bits(64) = EOR(workingval, roundkey);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21478.4-25:
+21478 |    workingval : bits(64) = PACCellShuffle(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21479.4-25:
+21479 |    workingval : bits(64) = PACMult(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21485.4-25:
+21485 |    workingval : bits(64) = PACCellShuffle(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21486.4-25:
+21486 |    workingval : bits(64) = PACMult(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21487.4-25:
+21487 |    workingval : bits(64) = EOR(key1, workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21488.4-25:
+21488 |    workingval : bits(64) = PACCellInvShuffle(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21494.4-25:
+21494 |    workingval : bits(64) = PACMult(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21495.4-25:
+21495 |    workingval : bits(64) = PACCellInvShuffle(workingval);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21496.4-25:
+21496 |    workingval : bits(64) = EOR(workingval, key0);
+      |    ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to workingval src/v8_base.sail:21497.4-25:
+21497 |    workingval : bits(64) = EOR(workingval, runningmod);
+      |    ^-------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to ipa src/v8_base.sail:24742.8-31:
+24742 |        ipa : AddressDescriptor = CreateAddressDescriptor(va_in, oa, memattrs);
+      |        ^---------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+Warning: Redundant case src/v8_base.sail:25715.10-11:
+25715 |          _ => {
+      |          ^
+      | 
+This match case is never used
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to s2startlevel src/v8_base.sail:26410.8-26:
+26410 |        s2startlevel : int = FINAL_LEVEL - DIV(iasize - 1 - granulebits, stride);
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant case src/v8_base.sail:26472.6-7:
+26472 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:26541.6-7:
+26541 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+
+
+Warning: Redundant case src/v8_base.sail:27140.14-15:
+27140 |              _ => {
+      |              ^
+      | 
+This match case is never used
+
+Warning: Redundant case src/v8_base.sail:27487.14-15:
+27487 |              _ => {
+      |              ^
+      | 
+This match case is never used
+
+Warning: Redundant type annotation on assignment to memstatus src/v8_base.sail:28133.8-36:
+28133 |        memstatus : PhysMemRetStatus = PhysMemWrite(memaddrdesc, halfsize, accdesc, None(), lowhalf);
+      |        ^--------------------------^
+      | 
+Type is already known
+
+Warning: Redundant case src/v8_base.sail:28409.6-7:
+28409 |      _ => ()
+      |      ^
+      | 
+This match case is never used
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:29225.8-32:
+29225 |        except : ExceptionRecord = ExceptionSyndrome(Exception_AdvSIMDFPAccessTrap);
+      |        ^----------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to value_name src/v8_base.sail:31101.8-25:
+31101 |        value_name : real = Abs(value_name);
+      |        ^---------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to route_to_el2 src/v8_base.sail:33793.8-27:
+33793 |        route_to_el2 : bool = false;
+      |        ^-----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:33800.12-36:
+33800 |            except : ExceptionRecord = ExceptionSyndrome(Exception_SupervisorCall);
+      |            ^----------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:33841.8-32:
+33841 |        except : ExceptionRecord = ExceptionSyndrome(Exception_MonitorCall);
+      |        ^----------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to new_byte src/v8_base.sail:34693.8-26:
+34693 |        new_byte : bits(8) = EOR(EOR(__SPE_LFSR[16 .. 9], __SPE_LFSR[21 .. 14]), __SPE_LFSR[22 .. 15]);
+      |        ^----------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to sync_errors src/v8_base.sail:35696.8-26:
+35696 |        sync_errors : bool = SCTLR_read__1()[IESB] == 0b1;
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to end_address_name src/v8_base.sail:36245.4-31:
+36245 |    end_address_name : bits(64) = start_address + range[63 .. 0];
+      |    ^-------------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to end_address_name src/v8_base.sail:36287.4-31:
+36287 |    end_address_name : bits(64) = start_address + range[63 .. 0];
+      |    ^-------------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to ipa src/v8_base.sail:39001.8-31:
+39001 |        ipa : AddressDescriptor = undefined;
+      |        ^---------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to match_word src/v8_base.sail:40577.8-29:
+40577 |        match_word : bits(32) = Zeros(32);
+      |        ^-------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to hcptr_tase src/v8_base.sail:41606.12-32:
+41606 |            hcptr_tase : bits(1) = HCPTR_read()[TASE];
+      |            ^------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to hcptr_cp10 src/v8_base.sail:41607.12-32:
+41607 |            hcptr_cp10 : bits(1) = HCPTR_read()[TCP10];
+      |            ^------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:41618.16-40:
+41618 |                except : ExceptionRecord = ExceptionSyndrome(Exception_AdvSIMDFPAccessTrap);
+      |                ^----------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to cpacr_asedis src/v8_base.sail:41668.8-30:
+41668 |        cpacr_asedis : bits(1) = CPACR_read__1()[ASEDIS];
+      |        ^--------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to cpacr_cp10 src/v8_base.sail:41669.8-28:
+41669 |        cpacr_cp10 : bits(2) = CPACR_read__1()[cp10];
+      |        ^------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:42948.8-32:
+42948 |        except : ExceptionRecord = ExceptionSyndrome(Exception_SupervisorCall);
+      |        ^----------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to route_to_el2 src/v8_base.sail:43025.8-27:
+43025 |        route_to_el2 : bool = false;
+      |        ^-----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:43030.12-36:
+43030 |            except : ExceptionRecord = ExceptionSyndrome(Exception_SupervisorCall);
+      |            ^----------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to except src/v8_base.sail:43094.12-36:
+43094 |            except : ExceptionRecord = ExceptionSyndrome(Exception_WFxTrap);
+      |            ^----------------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:53775.4-24:
+53775 |    tmp : SCTLR_EL1_Type = Mk_SCTLR_EL1_Type(tmp.bits & not_vec(ZeroExtend(0x400020000, 64)));
+      |    ^------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:53925.4-31:
+53925 |    tmp : ID_AA64ISAR0_EL1_Type = Mk_ID_AA64ISAR0_EL1_Type(tmp.bits & not_vec(ZeroExtend(0xf, 64)));
+      |    ^-------------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:54471.4-26:
+54471 |    tmp : FPEXC32_EL2_Type = Mk_FPEXC32_EL2_Type(tmp.bits & not_vec(0xffffffff9bfff860) | ZeroExtend(0x700, 64));
+      |    ^--------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:54917.4-23:
+54917 |    tmp : PMCR_EL0_Type = Mk_PMCR_EL0_Type(tmp.bits & not_vec(0xfffffffe00000506));
+      |    ^-----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:55155.4-22:
+55155 |    tmp : SCR_EL3_Type = Mk_SCR_EL3_Type(tmp.bits & not_vec(0xb744000001c00040) | ZeroExtend(0x30, 64));
+      |    ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:55366.4-26:
+55366 |    tmp : MPAMIDR_EL1_Type = Mk_MPAMIDR_EL1_Type(tmp.bits & not_vec(0xc1ffff00ffe10000));
+      |    ^--------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:55603.4-26:
+55603 |    tmp : PMSEVFR_EL1_Type = Mk_PMSEVFR_EL1_Type(tmp.bits & not_vec(ZeroExtend(0xffff00000001, 64)));
+      |    ^--------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:55693.4-27:
+55693 |    tmp : PMSNEVFR_EL1_Type = Mk_PMSNEVFR_EL1_Type(tmp.bits & not_vec(ZeroExtend(0xffff00000001, 64)));
+      |    ^---------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56030.4-20:
+56030 |    tmp : HCPTR_Type = Mk_HCPTR_Type(tmp.bits & not_vec(ZeroExtend(0xccc4000, 32)));
+      |    ^--------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56177.4-19:
+56177 |    tmp : PMCR_Type = Mk_PMCR_Type(tmp.bits & not_vec(ZeroExtend(0x506, 32)));
+      |    ^-------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56631.4-21:
+56631 |    tmp : HSCTLR_Type = Mk_HSCTLR_Type(tmp.bits & not_vec(ZeroExtend(0x20200, 32)));
+      |    ^---------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56677.4-20:
+56677 |    tmp : CPACR_Type = Mk_CPACR_Type(tmp.bits & not_vec(0x4c0cffff));
+      |    ^--------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56704.4-20:
+56704 |    tmp : SCTLR_Type = Mk_SCTLR_Type(tmp.bits & not_vec(ZeroExtend(0x20000, 32)));
+      |    ^--------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56718.4-20:
+56718 |    tmp : SCTLR_Type = Mk_SCTLR_Type(tmp.bits & not_vec(ZeroExtend(0x20000, 32)));
+      |    ^--------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to tmp src/v8_base.sail:56732.4-20:
+56732 |    tmp : SCTLR_Type = Mk_SCTLR_Type(tmp.bits & not_vec(ZeroExtend(0x20000, 32)));
+      |    ^--------------^
+      | 
+Type is already known
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Warning: Redundant type annotation on assignment to address src/instrs32.sail:40966.8-26:
+40966 |        address : bits(32) = if increment_name then R_read(n) else
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs32.sail:41036.8-26:
+41036 |        address : bits(32) = if increment_name then R_read(n) else
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to psr_val src/instrs32.sail:41095.8-26:
+41095 |        psr_val : bits(32) = GetPSRFromPSTATE(AArch32_NonDebugState, 32) & mask;
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs32.sail:41579.8-26:
+41579 |        address : bits(32) = if increment_name then R_read(n) else R_read(n) - 8;
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs32.sail:41905.8-26:
+41905 |        address : bits(32) = if increment_name then R_read(n) else
+      |        ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to sync_errors src/instrs32.sail:42716.8-26:
+42716 |        sync_errors : bool = HaveIESB() & SCTLR_EL3[IESB] == 0b1;
+      |        ^----------------^
+      | 
+Type is already known
+
+
+Warning: Redundant case src/instrs64.sail:10363.6-7:
+10363 |      _ => {
+      |      ^
+      | 
+This match case is never used
+
+Warning: Redundant type annotation on assignment to fltval src/instrs64.sail:14276.10-31:
+14276 |          fltval : bits('fsize) = if merge then V_read(d, fsize) else
+      |          ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to fltval src/instrs64.sail:16863.10-31:
+16863 |          fltval : bits('fsize) = if merge then V_read(d, fsize) else
+      |          ^-------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs64.sail:30562.4-22:
+30562 |    address : bits(64) = address + offset;
+      |    ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs64.sail:30606.4-22:
+30606 |    address : bits(64) = Align(address, size);
+      |    ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to data1 src/instrs64.sail:31028.10-33:
+31028 |          data1 : bits('datasize) = Mem_read(address + 0, dbytes, accdesc);
+      |          ^---------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to data2 src/instrs64.sail:31029.10-33:
+31029 |          data2 : bits('datasize) = Mem_read(address + dbytes, dbytes, accdesc);
+      |          ^---------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to data1 src/instrs64.sail:31183.10-33:
+31183 |          data1 : bits('datasize) = Mem_read(address + 0, dbytes, accdesc);
+      |          ^---------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to data2 src/instrs64.sail:31184.10-33:
+31184 |          data2 : bits('datasize) = Mem_read(address + dbytes, dbytes, accdesc);
+      |          ^---------------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs64.sail:36419.4-22:
+36419 |    address : bits(64) = address + offset;
+      |    ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs64.sail:50819.4-22:
+50819 |    address : bits(64) = Align(address, size);
+      |    ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to address src/instrs64.sail:51381.4-22:
+51381 |    address : bits(64) = Align(address, size);
+      |    ^----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to operand2 src/instrs64.sail:51475.4-23:
+51475 |    operand2 : bits(64) = SignExtend(operand2[55 .. 0], 64);
+      |    ^-----------------^
+      | 
+Type is already known
+
+Warning: Redundant type annotation on assignment to operand2 src/instrs64.sail:51515.4-23:
+51515 |    operand2 : bits(64) = SignExtend(operand2[55 .. 0], 64);
+      |    ^-----------------^
+      | 
+Type is already known
+
+
+make: *** [Makefile:86: gen_lean] Terminated

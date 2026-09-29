@@ -1,0 +1,80 @@
+(trace
+  (assume-reg |__highest_el_aarch32| nil false)
+  (assume-reg |__currentInstrLength| nil (_ bv4 128))
+  (assume-reg |__v85_implemented| nil false)
+  (assume-reg |__v84_implemented| nil false)
+  (assume-reg |__v81_implemented| nil true)
+  (assume-reg |HCR_EL2| nil #x0000000080000000)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL3| nil #x1)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL2| nil #x1)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL1| nil #x1)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL0| nil #x1)
+  (assume-reg |CPTR_EL3| nil #x00000000)
+  (assume-reg |CPTR_EL2| nil #x00000000)
+  (define-enum |signal| 2 (|LOW| |HIGH|)) ; 0:0 - 0:0
+  (assume-reg |PSTATE| ((_ field |EL|)) #b10)
+  (assume-reg |PSTATE| ((_ field |nRW|)) #b0)
+  (assume-reg |SCR_EL3| nil #x00000501)
+  (cycle)
+  (read-reg |SEE| nil (_ bv-1 128))
+  (write-reg |SEE| nil (_ bv1430 128))
+  (write-reg |__unconditional| nil true)
+  (define-enum |ArchVersion| 6 (|ARMv8p0| |ARMv8p1| |ARMv8p2| |ARMv8p3| |ARMv8p4| |ARMv8p5|)) ; 0:0 - 0:0
+  (read-reg |__v85_implemented| nil false)
+  (read-reg |PSTATE| ((_ field |EL|)) (_ struct (|EL| #b10)))
+  (read-reg |__v84_implemented| nil false)
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL2| nil #x1)
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL3| nil #x1)
+  (read-reg |PSTATE| ((_ field |nRW|)) (_ struct (|nRW| #b0)))
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL0| nil #x1)
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL1| nil #x1)
+  (read-reg |__highest_el_aarch32| nil false)
+  (read-reg |SCR_EL3| nil #x00000501)
+  (read-reg |__v81_implemented| nil true)
+  (read-reg |HCR_EL2| nil #x0000000080000000)
+  (read-reg |CPTR_EL2| nil #x00000000)
+  (read-reg |CPTR_EL3| nil #x00000000)
+  (declare-const v29 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v30 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v31 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v32 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v33 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v34 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v35 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v36 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v37 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v38 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v39 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v40 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v41 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v42 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v43 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v44 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v45 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v46 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v47 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v48 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v49 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v50 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v51 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v52 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v53 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v54 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v55 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v56 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v57 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v58 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v59 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (declare-const v60 (_ BitVec 128)) ; model/aarch64.sail 3285:10 - 3285:15
+  (read-reg |_V| nil (_ vec v29 v30 v31 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49 v50 v51 v52 v53 v54 v55 v56 v57 v58 v59 v60))
+  (define-const v61 v32) ; 0:0 - 0:0
+  (define-const v62 v31) ; 0:0 - 0:0
+  (declare-const v63 (_ BitVec 128)) ; model/aarch64_vector.sail 6199:31 - 6199:40
+  (define-const v179 (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand (bvor (bvand v63 #xffffffffffffffffffffffffffffff00) ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 7 0) v61)) ((_ zero_extend 120) ((_ extract 7 0) v62)))))) #xffffffffffffffffffffffffffff00ff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 15 8) v61)) ((_ zero_extend 120) ((_ extract 15 8) v62))))) #x00000000000000000000000000000008)) #xffffffffffffffffffffffffff00ffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 23 16) v61)) ((_ zero_extend 120) ((_ extract 23 16) v62))))) #x00000000000000000000000000000010)) #xffffffffffffffffffffffff00ffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 31 24) v61)) ((_ zero_extend 120) ((_ extract 31 24) v62))))) #x00000000000000000000000000000018)) #xffffffffffffffffffffff00ffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 39 32) v61)) ((_ zero_extend 120) ((_ extract 39 32) v62))))) #x00000000000000000000000000000020)) #xffffffffffffffffffff00ffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 47 40) v61)) ((_ zero_extend 120) ((_ extract 47 40) v62))))) #x00000000000000000000000000000028)) #xffffffffffffffffff00ffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 55 48) v61)) ((_ zero_extend 120) ((_ extract 55 48) v62))))) #x00000000000000000000000000000030)) #xffffffffffffffff00ffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 63 56) v61)) ((_ zero_extend 120) ((_ extract 63 56) v62))))) #x00000000000000000000000000000038)) #xffffffffffffff00ffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 71 64) v61)) ((_ zero_extend 120) ((_ extract 71 64) v62))))) #x00000000000000000000000000000040)) #xffffffffffff00ffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 79 72) v61)) ((_ zero_extend 120) ((_ extract 79 72) v62))))) #x00000000000000000000000000000048)) #xffffffffff00ffffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 87 80) v61)) ((_ zero_extend 120) ((_ extract 87 80) v62))))) #x00000000000000000000000000000050)) #xffffffff00ffffffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 95 88) v61)) ((_ zero_extend 120) ((_ extract 95 88) v62))))) #x00000000000000000000000000000058)) #xffffff00ffffffffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 103 96) v61)) ((_ zero_extend 120) ((_ extract 103 96) v62))))) #x00000000000000000000000000000060)) #xffff00ffffffffffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 111 104) v61)) ((_ zero_extend 120) ((_ extract 111 104) v62))))) #x00000000000000000000000000000068)) #xff00ffffffffffffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 119 112) v61)) ((_ zero_extend 120) ((_ extract 119 112) v62))))) #x00000000000000000000000000000070)) #x00ffffffffffffffffffffffffffffff) (bvshl ((_ zero_extend 120) ((_ extract 7 0) (bvmul ((_ zero_extend 120) ((_ extract 127 120) v61)) ((_ zero_extend 120) ((_ extract 127 120) v62))))) #x00000000000000000000000000000078))) ; model/aarch_mem.sail 3140:4 - 3140:21
+  (write-reg |_V| nil (_ vec v29 v30 v179 v32 v33 v34 v35 v36 v37 v38 v39 v40 v41 v42 v43 v44 v45 v46 v47 v48 v49 v50 v51 v52 v53 v54 v55 v56 v57 v58 v59 v60))
+  (read-reg |__PC_changed| nil false)
+  (declare-const v180 (_ BitVec 64)) ; model/elfmain.sail 424:34 - 424:60
+  (read-reg |_PC| nil v180)
+  (read-reg |__currentInstrLength| nil (_ bv4 128))
+  (define-const v181 (bvadd v180 #x0000000000000004)) ; 0:0 - 0:0
+  (write-reg |_PC| nil v181))

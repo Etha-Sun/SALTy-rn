@@ -1,0 +1,190 @@
+{
+  "passed": true,
+  "scope": "abstract block-memory and loop equivalence; extracted pure VL helper",
+  "arbitrary_input_length_abstract": true,
+  "variable_non_aligned_chunks_abstract": true,
+  "disjoint_and_in_place_memory_abstract": true,
+  "abstract_termination_checked": true,
+  "llm_not_in_abstract_proof_tcb": true,
+  "axiom_audit_passed": true,
+  "isa_to_block_refinement_proved": false,
+  "cross_isa_machine_code_equivalence_proved": false,
+  "arm_full_isa_imported": false,
+  "rvv_full_isa_imported": false,
+  "known_limitation": "No whole-ISA-to-block bridge; natural-number addresses; no decoder, exceptions or register state.",
+  "checks": {
+    "extract": {
+      "command": [
+        "python3",
+        "extract_vl.py"
+      ],
+      "exit_code": 0,
+      "seconds": 0.038
+    },
+    "update": {
+      "command": [
+        "lake",
+        "update"
+      ],
+      "exit_code": 0,
+      "seconds": 0.062
+    },
+    "build": {
+      "command": [
+        "lake",
+        "build"
+      ],
+      "exit_code": 0,
+      "seconds": 0.162
+    },
+    "Chunked.lean": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Chunked.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 1.445
+    },
+    "Memory.lean": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "Memory.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 1.277
+    },
+    "SailVLProof.lean": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "SailVLProof.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 1.513
+    },
+    "NegativeControls.lean": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "NegativeControls.lean"
+      ],
+      "exit_code": 0,
+      "seconds": 0.675
+    },
+    "negative_claim_rejection": {
+      "command": [
+        "lake",
+        "env",
+        "lean",
+        "/srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/unbounded-vla/results/RejectedClaims.lean"
+      ],
+      "exit_code": 1,
+      "seconds": 0.604,
+      "false_claims_reported": 4,
+      "passed": true
+    }
+  },
+  "axioms": {
+    "UnboundedVLA.chunkLoop_exact": [
+      "propext",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.neonLoop_exact": [
+      "propext",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.fixed_to_vla": [
+      "propext",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.s8max_fixed_to_vla": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.lane_equal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.execution_exact": [
+      "propext"
+    ],
+    "UnboundedVLA.execution_progress": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.no_infinite_progress": [
+      "propext",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.balanced_legal": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.write_prefix": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.execute_exact": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.schedule_sum": [
+      "propext",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.memory_fixed_to_vla": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "UnboundedVLA.s8max_memory_fixed_to_vla": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "emitted_vl_is_min": [
+      "propext"
+    ],
+    "emitted_vl_progress": [
+      "propext",
+      "Classical.choice",
+      "Quot.sound"
+    ],
+    "emitted_vl_for_representable_length": [
+      "propext"
+    ],
+    "UnboundedVLA.wrong_opcode_witness": [
+      "propext"
+    ],
+    "UnboundedVLA.missing_last_byte_witness": [
+      "propext"
+    ],
+    "UnboundedVLA.overlap_witness": [
+      "propext"
+    ],
+    "UnboundedVLA.wrong_signedness_witness": []
+  },
+  "sha256": {
+    "Chunked.lean": "06af11ab744e48eb0933e71c151c86deabae56b2e994fc2615faa78e33085fe2",
+    "Memory.lean": "749605efa57c8f83302db3a753db91318eb7653930dfc0669839852e1f1378a9",
+    "SailVLProof.lean": "89b81d8fd59edc2df2874fbc2d19ed97f143aff2b93043f446c52de0838cbe0e",
+    "NegativeControls.lean": "d380bd6926a24040436b6cc8ba3e53ae3f07c26ddfce35201042f94645cd78bd",
+    "SailVLExtract.lean": "baf5b532441716898bef45f6279369762c2f8142522dd948151b1c41dac47f93",
+    "lakefile.toml": "c713ec34fbd936c20766783041ae74b61b29719fb44eda4df79e28a68c7bd5f7",
+    "lean-toolchain": "651c8accb402b0c071cd336e9d3dc0a55516b1bfb434ddc4801f14936785b1d2",
+    "extract_vl.py": "dcd3e9b09fc71150c969d2e451db4f93b6b6bb7ffb56b5129fd231080c997d92",
+    "replay.py": "8231a41c367a4bcda652acc9642edff854f381115834088561022ac30ca94703"
+  }
+}

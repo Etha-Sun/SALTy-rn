@@ -1,0 +1,67 @@
+(trace
+  (assume-reg |elen| nil #b1)
+  (assume-reg |vlen| nil #x3)
+  (assume-reg |misa| nil (_ struct (|bits| #x8000000000200100)))
+  (assume-reg |rv_enable_zfinx| nil false)
+  (assume-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (assume-reg |vtype| nil (_ struct (|bits| #x00000000000000d3)))
+  (cycle)
+  (declare-const v0 (_ BitVec 64)) ; model/main.sail 47:15 - 47:21
+  (read-reg |PC| nil v0)
+  (define-const v1 (bvadd v0 #x0000000000000004)) ; 0:0 - 0:0
+  (write-reg |nextPC| nil v1)
+  (read-reg |misa| nil (_ struct (|bits| #x8000000000200100)))
+  (read-reg |rv_enable_zfinx| nil false)
+  (define-enum |vsetop| 2 (|VSETVLI| |VSETVL|)) ; 0:0 - 0:0
+  (read-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (read-reg |vlen| nil #x3)
+  (read-reg |elen| nil #b1)
+  (read-reg |vtype| nil (_ struct (|bits| #x00000000000000d3)))
+  (write-reg |vtype| ((_ field |bits|)) (_ struct (|bits| #x0000000000000093)))
+  (read-reg |vtype| nil (_ struct (|bits| #x0000000000000093)))
+  (declare-const v2 (_ BitVec 64)) ; model/riscv_regs.sail 65:12 - 65:15
+  (read-reg |x10| nil v2)
+  (define-const v3 ((_ zero_extend 64) v2)) ; model/riscv_insts_vext_vset.sail 91:14 - 91:31
+  (define-const v4 (bvsle v3 #x00000000000000000000000000000040)) ; model/riscv_insts_vext_vset.sail 92:12 - 92:24
+
+  (cases "model/riscv_insts_vext_vset.sail 92:9 - 94:42"
+    (trace
+      (assert v4) ; 0:0 - 0:0
+      (define-const v5 ((_ extract 63 0) v3)) ; 0:0 - 0:0
+      (write-reg |vl| nil v5)
+      (read-reg |vl| nil v5)
+      (write-reg |x15| nil v5)
+      (read-reg |vtype| ((_ field |bits|)) (_ struct (|bits| #x0000000000000093)))
+      (write-reg |vstart| nil #x0000)
+      (read-reg |vstart| nil #x0000)
+      (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+      (read-reg |nextPC| nil v1)
+      (write-reg |PC| nil v1))
+    (trace
+      (assert (not v4)) ; 0:0 - 0:0
+      (define-const v6 (bvslt v3 #x00000000000000000000000000000080)) ; model/riscv_insts_vext_vset.sail 93:17 - 93:32
+    
+      (cases "model/riscv_insts_vext_vset.sail 93:14 - 94:42"
+        (trace
+          (assert v6) ; 0:0 - 0:0
+          (define-const v9 ((_ extract 63 0) (bvsdiv (bvadd v3 #x00000000000000000000000000000001) #x00000000000000000000000000000002))) ; 0:0 - 0:0
+          (write-reg |vl| nil v9)
+          (read-reg |vl| nil v9)
+          (write-reg |x15| nil v9)
+          (read-reg |vtype| ((_ field |bits|)) (_ struct (|bits| #x0000000000000093)))
+          (write-reg |vstart| nil #x0000)
+          (read-reg |vstart| nil #x0000)
+          (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+          (read-reg |nextPC| nil v1)
+          (write-reg |PC| nil v1))
+        (trace
+          (assert (not v6)) ; 0:0 - 0:0
+          (write-reg |vl| nil #x0000000000000040)
+          (read-reg |vl| nil #x0000000000000040)
+          (write-reg |x15| nil #x0000000000000040)
+          (read-reg |vtype| ((_ field |bits|)) (_ struct (|bits| #x0000000000000093)))
+          (write-reg |vstart| nil #x0000)
+          (read-reg |vstart| nil #x0000)
+          (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+          (read-reg |nextPC| nil v1)
+          (write-reg |PC| nil v1))))))

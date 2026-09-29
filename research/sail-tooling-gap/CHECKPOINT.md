@@ -4,6 +4,8 @@ Start with [the presentation directory](presentation/README.md), [the short Engl
 
 This checkpoint preserves the accepted Coq proof sources and their local source dependencies, the generated Coq semantics for the simplified kernels, extraction/checking scripts, configuration and historical checker records, and the presentation materials. External toolchains, compiled Coq objects, large execution logs, and unsuccessful diagnostic variants are not part of this checkpoint.
 
+The subsequent archive commit also preserves the remaining source experiments and diagnostics in their original locations. Their inclusion does not change the proof status above or turn failed/unfinished variants into verified results. See [the archive note](../WORKTREE_ARCHIVE.md); `presentation/` remains the curated reading entry point.
+
 ## What is established
 
 - The simplified 20-instruction NEON kernel satisfies the exact modular byte-sum specification and preserves its input memory, for arbitrary legal input lengths.
