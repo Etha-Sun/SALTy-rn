@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+here=$(cd "$(dirname "$0")/.." && pwd)
+case "$1" in
+ aarch64.ir) snapshot="/srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/vendor/islaris-pinned-aarch64.ir" ;;
+ riscv64.ir) snapshot="/srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/vendor/riscv64.ir" ;;
+ *) exit 2 ;;
+esac
+shift
+exec "/srv/home/yuechunsun/tools/lean/research/sail-tooling-gap/vendor/isla-master/target/release/isla-footprint" -A "$snapshot" --no-model-reg-init --executable "$@"

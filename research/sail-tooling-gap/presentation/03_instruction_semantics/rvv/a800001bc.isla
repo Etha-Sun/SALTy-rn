@@ -1,0 +1,41 @@
+(trace
+  (assume-reg |elen| nil #b1)
+  (assume-reg |vlen| nil #x3)
+  (assume-reg |misa| nil (_ struct (|bits| #x8000000000200104)))
+  (assume-reg |rv_enable_zfinx| nil false)
+  (assume-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (declare-const v0 (_ BitVec 64)) ; model/main.sail 40:4 - 40:26
+  (assume (= (|vtype| ((_ field |bits|) )) #x00000000000000d0))
+  (assert (= v0 #x00000000000000d0)) ; 0:0 - 0:0
+  (cycle)
+  (declare-const v1 (_ BitVec 64)) ; model/main.sail 47:15 - 47:21
+  (read-reg |PC| nil v1)
+  (define-const v2 (bvadd v1 #x0000000000000004)) ; 0:0 - 0:0
+  (write-reg |nextPC| nil v2)
+  (read-reg |misa| nil (_ struct (|bits| #x8000000000200104)))
+  (read-reg |rv_enable_zfinx| nil false)
+  (define-enum |vsetop| 2 (|VSETVLI| |VSETVL|)) ; 0:0 - 0:0
+  (read-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (read-reg |vlen| nil #x3)
+  (read-reg |elen| nil #b1)
+  (read-reg |vtype| nil (_ struct (|bits| v0)))
+  (define-const v3 ((_ extract 2 0) v0)) ; 2748:0 - 0:0
+  (assert (not (= v3 #b101))) ; 0:0 - 0:0
+  (assert (not (= v3 #b110))) ; 0:0 - 0:0
+  (assert (not (= v3 #b111))) ; 0:0 - 0:0
+  (assert (not (not (= v3 #b000)))) ; 0:0 - 0:0
+  (define-const v12 ((_ extract 5 3) v0)) ; 2770:0 - 0:0
+  (assert (not (= v12 #b000))) ; 0:0 - 0:0
+  (assert (not (= v12 #b001))) ; 0:0 - 0:0
+  (assert (not (not (= v12 #b010)))) ; 0:0 - 0:0
+  (write-reg |vtype| ((_ field |bits|)) (_ struct (|bits| #x00000000000000d0)))
+  (read-reg |vtype| nil (_ struct (|bits| #x00000000000000d0)))
+  (write-reg |vl| nil #x0000000000000008)
+  (read-reg |vl| nil #x0000000000000008)
+  (write-reg |x14| nil #x0000000000000008)
+  (read-reg |vtype| ((_ field |bits|)) (_ struct (|bits| #x00000000000000d0)))
+  (write-reg |vstart| nil #x0000)
+  (read-reg |vstart| nil #x0000)
+  (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+  (read-reg |nextPC| nil v2)
+  (write-reg |PC| nil v2))

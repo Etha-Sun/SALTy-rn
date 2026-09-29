@@ -1,0 +1,24 @@
+(trace
+  (assume-reg |misa| nil (_ struct (|bits| #x8000000000200104)))
+  (assume-reg |rv_enable_zfinx| nil false)
+  (assume-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (assume-reg |vlenb| nil #x0000000000000020)
+  (assume-reg |vtype| nil (_ struct (|bits| #x00000000000000d0)))
+  (cycle)
+  (declare-const v0 (_ BitVec 64)) ; model/main.sail 47:15 - 47:21
+  (read-reg |PC| nil v0)
+  (define-const v1 (bvadd v0 #x0000000000000004)) ; 0:0 - 0:0
+  (write-reg |nextPC| nil v1)
+  (read-reg |misa| nil (_ struct (|bits| #x8000000000200104)))
+  (read-reg |rv_enable_zfinx| nil false)
+  (read-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (read-reg |vtype| nil (_ struct (|bits| #x00000000000000d0)))
+  (read-reg |vlenb| nil #x0000000000000020)
+  (declare-const v4 (_ BitVec 65536)) ; model/riscv_vext_regs.sail 102:11 - 102:14
+  (read-reg |vr8| nil v4)
+  (define-const v14 ((_ sign_extend 32) ((_ extract 31 0) v4))) ; model/prelude.sail 112:29 - 112:51
+  (write-reg |x15| nil v14)
+  (write-reg |vstart| nil #x0000)
+  (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+  (read-reg |nextPC| nil v1)
+  (write-reg |PC| nil v1))

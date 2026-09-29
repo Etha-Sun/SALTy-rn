@@ -1,0 +1,58 @@
+(trace
+  (assume-reg |cur_privilege| nil |Machine|)
+  (assume-reg |rv_pmp_count| nil (_ bv0 64))
+  (assume-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (assume-reg |rv_enable_misaligned_access| nil false)
+  (assume-reg |rv_ram_base| nil #x0000000080000000)
+  (assume-reg |rv_ram_size| nil #x0000000004000000)
+  (assume-reg |rv_rom_base| nil #x0000000000001000)
+  (assume-reg |rv_rom_size| nil #x0000000000000100)
+  (assume-reg |rv_clint_base| nil #x0000000002000000)
+  (assume-reg |rv_clint_size| nil #x00000000000c0000)
+  (assume-reg |rv_htif_tohost| nil #x0000000040001000)
+  (declare-const v0 (_ BitVec 64)) ; model/main.sail 40:4 - 40:26
+  (assume (bvuge (|x12| nil) #x0000000080000000))
+  (assert (bvuge v0 #x0000000080000000)) ; 0:0 - 0:0
+  (assume (bvule (|x12| nil) #x0000000083fffffc))
+  (assert (bvule v0 #x0000000083fffffc)) ; 0:0 - 0:0
+  (assume (= (bvand (|x12| nil) #x0000000000000003) #x0000000000000000))
+  (assert (= (bvand v0 #x0000000000000003) #x0000000000000000)) ; 0:0 - 0:0
+  (cycle)
+  (declare-const v1 (_ BitVec 64)) ; model/main.sail 44:15 - 44:21
+  (read-reg |PC| nil v1)
+  (define-const v2 (bvadd v1 #x0000000000000002)) ; 0:0 - 0:0
+  (write-reg |nextPC| nil v2)
+  (define-enum |word_width| 4 (|BYTE| |HALF| |WORD| |DOUBLE|)) ; 0:0 - 0:0
+  (read-reg |x12| nil v0)
+  (define-const v3 (bvadd v0 #x0000000000000000)) ; model/riscv_addr_checks.sail 59:13 - 59:29
+  (read-reg |rv_enable_misaligned_access| nil false)
+  (assert (not (= ((_ extract 0 0) (bvlshr v3 #x0000000000000000)) #b1))) ; 0:0 - 0:0
+  (assert (not (= ((_ extract 0 0) (bvlshr v3 #x0000000000000001)) #b1))) ; 0:0 - 0:0
+  (read-reg |mstatus| nil (_ struct (|bits| #x8000000000000600)))
+  (read-reg |cur_privilege| nil |Machine|)
+  (define-enum |Privilege| 3 (|User| |Supervisor| |Machine|)) ; 0:0 - 0:0
+  (define-enum |SATPMode| 4 (|Sbare| |Sv32| |Sv39| |Sv48|)) ; 0:0 - 0:0
+  (read-reg |rv_pmp_count| nil (_ bv0 64))
+  (define-const v9 ((_ zero_extend 64) v3)) ; model/riscv_platform.sail 137:23 - 137:37
+  (read-reg |rv_clint_base| nil #x0000000002000000)
+  (read-reg |rv_clint_size| nil #x00000000000c0000)
+  (assert (bvsle #x00000000000000000000000002000000 v9)) ; 0:0 - 0:0
+  (assert (not (bvsle (bvadd v9 #x00000000000000000000000000000004) #x000000000000000000000000020c0000))) ; 0:0 - 0:0
+  (read-reg |rv_htif_tohost| nil #x0000000040001000)
+  (assert (not (= #x0000000040001000 v3))) ; 0:0 - 0:0
+  (assert (not (= #x0000000040001004 v3))) ; 0:0 - 0:0
+  (define-const v15 ((_ zero_extend 64) v3)) ; model/riscv_platform.sail 109:21 - 109:35
+  (read-reg |rv_ram_base| nil #x0000000080000000)
+  (read-reg |rv_rom_base| nil #x0000000000001000)
+  (read-reg |rv_ram_size| nil #x0000000004000000)
+  (read-reg |rv_rom_size| nil #x0000000000000100)
+  (assert (bvsle #x00000000000000000000000080000000 v15)) ; 0:0 - 0:0
+  (assert (bvsle (bvadd v15 #x00000000000000000000000000000004) #x00000000000000000000000084000000)) ; 0:0 - 0:0
+  (define-enum |read_kind| 7 (|Read_plain| |Read_ifetch| |Read_RISCV_acquire| |Read_RISCV_strong_acquire| |Read_RISCV_reserved| |Read_RISCV_reserved_acquire| |Read_RISCV_reserved_strong_acquire|)) ; 0:0 - 0:0
+  (declare-const v19 (_ BitVec 32)) ; 0:0 - 0:0
+  (read-mem v19 |Read_plain| v3 4)
+  (define-const v20 ((_ sign_extend 32) v19)) ; model/prelude.sail 112:29 - 112:51
+  (write-reg |x13| nil v20)
+  (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+  (read-reg |nextPC| nil v2)
+  (write-reg |PC| nil v2))

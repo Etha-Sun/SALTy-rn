@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+here=$(cd "$(dirname "$0")/.." && pwd)
+case "$1" in
+ aarch64.ir) snapshot="$here/../vendor/islaris-pinned-aarch64.ir" ;;
+ riscv64.ir) snapshot="$here/../vendor/riscv64.ir" ;;
+ *) exit 2 ;;
+esac
+shift
+exec "$here/../vendor/isla-master/target/release/isla-footprint" -A "$snapshot" --no-model-reg-init --executable "$@"

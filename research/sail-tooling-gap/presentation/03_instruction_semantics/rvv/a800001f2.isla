@@ -1,0 +1,16 @@
+(trace
+  (cycle)
+  (declare-const v0 (_ BitVec 64)) ; model/main.sail 44:15 - 44:21
+  (read-reg |PC| nil v0)
+  (define-const v1 (bvadd v0 #x0000000000000002)) ; 0:0 - 0:0
+  (write-reg |nextPC| nil v1)
+  (define-enum |ropw| 5 (|RISCV_ADDW| |RISCV_SUBW| |RISCV_SLLW| |RISCV_SRLW| |RISCV_SRAW|)) ; 0:0 - 0:0
+  (declare-const v2 (_ BitVec 64)) ; model/riscv_regs.sail 70:12 - 70:15
+  (read-reg |x15| nil v2)
+  (declare-const v4 (_ BitVec 64)) ; model/riscv_regs.sail 68:12 - 68:15
+  (read-reg |x13| nil v4)
+  (define-const v7 ((_ sign_extend 32) (bvadd ((_ extract 31 0) v2) ((_ extract 31 0) v4)))) ; model/prelude.sail 112:29 - 112:51
+  (write-reg |x15| nil v7)
+  (define-enum |Retired| 2 (|RETIRE_SUCCESS| |RETIRE_FAIL|)) ; 0:0 - 0:0
+  (read-reg |nextPC| nil v1)
+  (write-reg |PC| nil v1))

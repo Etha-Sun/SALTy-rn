@@ -1,0 +1,81 @@
+(trace
+  (assume-reg |__highest_el_aarch32| nil false)
+  (assume-reg |__currentInstrLength| nil (_ bv4 128))
+  (assume-reg |__isla_vector_gpr| nil false)
+  (assume-reg |__v85_implemented| nil false)
+  (assume-reg |__v84_implemented| nil false)
+  (assume-reg |__v81_implemented| nil true)
+  (assume-reg |HCR_EL2| nil #x0000000080000000)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL3| nil #x1)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL2| nil #x1)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL1| nil #x1)
+  (assume-reg |CFG_ID_AA64PFR0_EL1_EL0| nil #x1)
+  (assume-reg |CPTR_EL3| nil #x00000000)
+  (assume-reg |CPTR_EL2| nil #x00000000)
+  (define-enum |signal| 2 (|LOW| |HIGH|)) ; 0:0 - 0:0
+  (assume-reg |PSTATE| ((_ field |EL|)) #b10)
+  (assume-reg |PSTATE| ((_ field |nRW|)) #b0)
+  (assume-reg |SCR_EL3| nil #x00000501)
+  (cycle)
+  (read-reg |SEE| nil (_ bv-1 128))
+  (write-reg |SEE| nil (_ bv1529 128))
+  (write-reg |__unconditional| nil true)
+  (define-enum |FPConvOp| 5 (|FPConvOp_CVT_FtoI| |FPConvOp_CVT_ItoF| |FPConvOp_MOV_FtoI| |FPConvOp_MOV_ItoF| |FPConvOp_CVT_FtoI_JS|)) ; 0:0 - 0:0
+  (define-enum |FPRounding| 6 (|FPRounding_TIEEVEN| |FPRounding_POSINF| |FPRounding_NEGINF| |FPRounding_ZERO| |FPRounding_TIEAWAY| |FPRounding_ODD|)) ; 0:0 - 0:0
+  (define-enum |ArchVersion| 6 (|ARMv8p0| |ARMv8p1| |ARMv8p2| |ARMv8p3| |ARMv8p4| |ARMv8p5|)) ; 0:0 - 0:0
+  (read-reg |__v85_implemented| nil false)
+  (read-reg |PSTATE| ((_ field |EL|)) (_ struct (|EL| #b10)))
+  (read-reg |__v84_implemented| nil false)
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL2| nil #x1)
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL3| nil #x1)
+  (read-reg |PSTATE| ((_ field |nRW|)) (_ struct (|nRW| #b0)))
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL0| nil #x1)
+  (read-reg |CFG_ID_AA64PFR0_EL1_EL1| nil #x1)
+  (read-reg |__highest_el_aarch32| nil false)
+  (read-reg |SCR_EL3| nil #x00000501)
+  (read-reg |__v81_implemented| nil true)
+  (read-reg |HCR_EL2| nil #x0000000080000000)
+  (read-reg |CPTR_EL2| nil #x00000000)
+  (read-reg |CPTR_EL3| nil #x00000000)
+  (declare-const v52 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v53 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v54 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v55 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v56 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v57 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v58 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v59 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v60 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v61 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v62 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v63 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v64 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v65 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v66 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v67 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v68 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v69 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v70 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v71 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v72 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v73 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v74 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v75 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v76 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v77 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v78 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v79 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v80 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v81 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v82 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (declare-const v83 (_ BitVec 128)) ; model/aarch64_float.sail 134:21 - 134:26
+  (read-reg |_V| nil (_ vec v52 v53 v54 v55 v56 v57 v58 v59 v60 v61 v62 v63 v64 v65 v66 v67 v68 v69 v70 v71 v72 v73 v74 v75 v76 v77 v78 v79 v80 v81 v82 v83))
+  (define-const v86 (concat #x00000000 ((_ extract 31 0) v52))) ; model/aarch_mem.sail 3140:4 - 3140:21
+  (read-reg |__isla_vector_gpr| nil false)
+  (write-reg |R9| nil v86)
+  (read-reg |__PC_changed| nil false)
+  (declare-const v87 (_ BitVec 64)) ; model/elfmain.sail 424:34 - 424:60
+  (read-reg |_PC| nil v87)
+  (read-reg |__currentInstrLength| nil (_ bv4 128))
+  (define-const v88 (bvadd v87 #x0000000000000004)) ; 0:0 - 0:0
+  (write-reg |_PC| nil v88))
