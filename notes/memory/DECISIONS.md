@@ -114,3 +114,21 @@ Call the current RVV quantification a `PositivePartition` or positive progress m
 Do not call every such partition an ISA-legal `vsetvl` trace. A later bridge must fix
 VLEN/VLMAX/SEW/LMUL and prove that concrete `vsetvl` execution yields a member of the
 verified progress set.
+
+## D-011: Publish the Coq Reduction Slice on `proof/sum`
+
+**Status:** Accepted, 2026-10-02.
+
+Use an isolated `proof/sum` branch from fork main and a normal Coq project at
+`coq/neon-rvv-reduction`. Include the complete NEON partial-correctness route,
+RVV loads VL=0/1 and the other completed RVV instruction proofs selected by the
+owner. Keep every generated program instruction definition and its original
+trace, with lossless compression permitted, plus required semantic bridges.
+Include the entire proof dependency closure; Coq proof helpers named `Cache` are
+sources, not disposable build artifacts. Ignore compiled Coq outputs.
+
+Keep unfinished experiments and the conditional whole-RVV route in the original
+research branch. Explicitly state the missing VL=2..8 load contracts and the
+external extraction/adequacy boundary. Compile project sources afresh, check
+objects recursively and inspect exported assumptions before claiming validation.
+Publish the branch and prepare a local PR draft; opening a PR remains a later step.

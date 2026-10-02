@@ -414,3 +414,35 @@ axiom audit.
 
 **Boundary:** local `main` continues to track upstream `origin/main`; development
 remains on `research/lean-ir-e2e` so upstream comparison stays explicit.
+
+## 2026-10-02: Package NEON and Completed RVV Coq Proofs
+
+**Question:** How should the reduction proofs become a small conventional Coq
+project, and which existing RVV instruction proofs should accompany load VL=1?
+
+**Confirmed conclusion:** the owner selected branch `proof/sum` and requested the
+other completed RVV instruction proofs. An isolated worktree from `94e88f4`
+contains `coq/neon-rvv-reduction`: 131 sources, 20 NEON + 19 RVV generated program
+instructions, four bridges and all corresponding compressed original traces.
+The original `feat/assembly-reduction-lean@bc8b3b8` research checkout is preserved.
+
+**Evidence:** an independent migration audit confirmed identical proof sources
+after reversing namespace changes, except for the exact split of the two program
+instruction tables. Both assemblies reproduce all instruction bytes in their
+inventories and executable ELF segments. Selected NEON/RVV/bridge extractions
+reproduce both trace and generated-Coq hashes. Absolute historical tool paths
+are replaced only in recorded runtime configuration copies.
+
+**Confirmed:** all 131 project sources compiled afresh in the existing pinned
+Coq/Islaris environment, including both RVV load contracts.
+
+**Confirmed:** recursive `coqchk` passed all 131 modules and dependencies with
+`-bytecode-compiler yes`; all 35 exported theorem assumption reports were closed
+under the global context. An earlier VM-disabled check was interrupted because
+large bitvector conversion was expensive. `verification.json` records the
+successful checker environment and the tested manifest hash.
+
+**Unresolved:** a clean external dependency
+installation has not been performed. RVV loads VL=2..8 remain unfinished;
+conditional whole-program proofs are intentionally outside this slice. The
+local PR draft will state those limits and the external extraction trust boundary.

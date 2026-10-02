@@ -1,6 +1,6 @@
 # SaltyRN Project State
 
-Last updated: 2026-07-16 (Asia/Seoul)
+Last updated: 2026-10-02 (Asia/Seoul)
 
 ## Objective
 
@@ -8,6 +8,35 @@ The project objective is to replace or complement SaltyRN's bounded SMT
 translation validation with an automated Lean (or comparable prover) harness that
 can establish unbounded Neon/RVV kernel equivalence. The intended claim is stronger
 than testing a finite set of batch sizes and one VLEN.
+
+## Coq Reduction Proof Package: `proof/sum`
+
+**Confirmed:** the owner selected `proof/sum` for a small reproducible Coq project
+at `coq/neon-rvv-reduction`, based on fork `origin/main@94e88f4`. Sources were
+migrated from research `feat/assembly-reduction-lean@bc8b3b8`; the original research
+checkout remains intact. The project retains 131 Coq sources and all generated
+instruction definitions and raw compressed traces: 20 NEON, 19 RVV, four bridges.
+
+**Confirmed:** scope includes NEON entry-through-return partial correctness,
+NEON memory/register bridges, RVV load VL=0/1, vector configuration, widening/add
+for VL=0..8, eight-lane reduction, initialization, entry/loop control, writeback,
+and arithmetic helpers. RVV loads VL=2..8, a complete RVV program theorem,
+cross-ISA equivalence, termination and hardware/ELF adequacy remain open.
+
+**Confirmed:** the migration audit found no theorem weakening; 129 sources match
+the original after reversing module-path changes, and two instruction tables are
+the exact NEON/RVV split. Both programs reassemble with all 39 instruction bytes
+matching their inventories and executable ELF segments. Selected NEON, RVV and
+bridge traces regenerate with identical trace/source hashes.
+
+**Confirmed:** all 131 project sources compiled afresh in the pinned existing
+Coq/Islaris environment. Recursive `coqchk` passed for all 131 project modules
+and dependencies with Coq's VM conversion enabled. All 35 exported theorem
+assumption reports were `Closed under the global context`.
+Dependency installation from an empty opam root is not yet validated. The project
+README and manifest describe fixed external versions and extraction trust limits.
+
+The following Lean snapshot records the earlier, separate modeling work.
 
 ## Claim Ladder
 

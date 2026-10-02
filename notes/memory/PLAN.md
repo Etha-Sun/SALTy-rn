@@ -1,8 +1,28 @@
 # SaltyRN Active Plan
 
-Last updated: 2026-07-14 (Asia/Seoul)
+Last updated: 2026-10-02 (Asia/Seoul)
 
 ## Active Milestone
+
+Prepare the `proof/sum` Coq reduction PR locally, including all selected completed
+RVV instruction proofs alongside the complete NEON partial-correctness route.
+
+- [x] Create an isolated branch/worktree from fork `origin/main@94e88f4`.
+- [x] Include the selected roots' complete dependency closure, all 39 program
+  instruction definitions/traces, and four NEON bridge traces.
+- [x] Audit source migration for omitted dependencies or weakened statements.
+- [x] Add `_CoqProject`, make/opam build inputs, portable extraction entry points,
+  provenance checks and an explicit recursive object/assumption gate.
+- [x] Reassemble both programs and compare every instruction with executable ELF
+  bytes; regenerate selected traces from each group with identical hashes.
+- [x] Complete a fresh compilation of all project sources.
+- [x] Run recursive `coqchk` and the 35 exported theorem assumption reports.
+- [ ] Commit and publish `proof/sum`; keep the PR description local for review.
+
+Dependency setup from an empty opam root remains a separate reproduction check.
+Complete RVV program verification still requires load VL=2..8.
+
+## Prior Lean Milestone
 
 Build the first reproducible integer-only paired verification slice for current-main
 `s8-vclamp`, without claiming that the C-to-IR bridge is already formally verified.
