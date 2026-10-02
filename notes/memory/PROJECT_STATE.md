@@ -36,6 +36,9 @@ assumption reports were `Closed under the global context`.
 Dependency installation from an empty opam root is not yet validated. The project
 README and manifest describe fixed external versions and extraction trust limits.
 
+**Confirmed publication:** project commit `2bbe27e` was pushed to
+`origin/proof/sum`. The PR description remains a local draft; no PR was opened.
+
 The following Lean snapshot records the earlier, separate modeling work.
 
 ## Claim Ladder

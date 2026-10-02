@@ -446,3 +446,8 @@ successful checker environment and the tested manifest hash.
 installation has not been performed. RVV loads VL=2..8 remain unfinished;
 conditional whole-program proofs are intentionally outside this slice. The
 local PR draft will state those limits and the external extraction trust boundary.
+
+**Confirmed publication:** Git reported `94e88f4..2bbe27e proof/sum -> proof/sum`
+on the fork's origin. The project and verification summary are committed; the
+PR description remains local at `coq/neon-rvv-reduction/_build/PR_DRAFT.md`.
+No GitHub PR was opened.

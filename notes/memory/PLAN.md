@@ -17,7 +17,7 @@ RVV instruction proofs alongside the complete NEON partial-correctness route.
   bytes; regenerate selected traces from each group with identical hashes.
 - [x] Complete a fresh compilation of all project sources.
 - [x] Run recursive `coqchk` and the 35 exported theorem assumption reports.
-- [ ] Commit and publish `proof/sum`; keep the PR description local for review.
+- [x] Commit and publish `proof/sum`; keep the PR description local for review.
 
 Dependency setup from an empty opam root remains a separate reproduction check.
 Complete RVV program verification still requires load VL=2..8.

@@ -132,3 +132,6 @@ research branch. Explicitly state the missing VL=2..8 load contracts and the
 external extraction/adequacy boundary. Compile project sources afresh, check
 objects recursively and inspect exported assumptions before claiming validation.
 Publish the branch and prepare a local PR draft; opening a PR remains a later step.
+
+**Confirmed implementation:** the checked project was published as
+`origin/proof/sum@2bbe27e` on 2026-10-02; the PR draft remains local.
