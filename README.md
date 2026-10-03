@@ -1,5 +1,10 @@
 # SALTy-RN
 
+For the current cross-ISA proof research and server migration, start with
+[the Chinese project handoff](SERVER_HANDOFF.zh-CN.md) and
+[the Sail proof checkpoint](research/sail-tooling-gap/CHECKPOINT.md).
+The active research branch is `feat/assembly-reduction-lean` in `Etha-Sun/SALTy-rn`.
+
 LLM-powered SIMD kernel translation pipeline (Neon → RVV), with **bounded formal
 verification** of every translation.
 
