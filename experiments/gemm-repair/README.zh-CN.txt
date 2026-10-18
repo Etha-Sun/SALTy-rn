@@ -27,7 +27,7 @@ repaired_rvv.c 只修改 min/max clamp 阶段，原 vfmin/vfmax 指令仍保留�
 新增三个真实 RVV intrinsic：vmfne_vv_f32m4_b8、vfmerge_vfm_f32m4、
 vfmv_v_f_f32m4。shim.h 逐条给出普通 C lane 实现；没有改写 vfmin/vfmax
 本身语义。coupling agent 已只读审查 mask 的生成时机、b8 类型和活跃 lane。
-新分支 codex/verified-output-equivalence 的实际
+新分支 feat/shim-c 的实际
 kernels/target/f32-gemm-minmax.c 已由主 agent 更新，与本目录测试的
 repaired_rvv.c 逐字一致，SHA256 为
 b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162。

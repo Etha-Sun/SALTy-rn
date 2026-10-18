@@ -14,7 +14,7 @@ start=shim.index('static inline vbool8_t __riscv_vmfne')
 shim=shim[:start]+shim[shim.rfind('#endif'):]
 baseline_sha='75c958c1c04bbd92d28f2405c81a9c49ad558d5ac6359fba08bfd01622a261ff'
 result={
- 'branch':'codex/verified-output-equivalence',
+ 'branch':'feat/shim-c',
  'actual_target_matches_tested_repair':target.read_bytes()==(b/'repaired_rvv.c').read_bytes(),
  'actual_target_sha256':sha(target),
  'arcadia_reference_preserved':sha(b/'reference_neon.c')=='b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61',

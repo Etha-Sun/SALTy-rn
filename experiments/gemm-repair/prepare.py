@@ -55,7 +55,7 @@ target=b.parents[1]/'kernels/target/f32-gemm-minmax.c'
  'arcadia_commit':'4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca',
  'proof_is_concatenated_full_sources':True,'proof_model_is_original_kernel_not_schedule_shadow':True,
  'reference_source_unchanged':True,'intrinsic_minmax_semantics_unchanged':True,
- 'branch':'codex/verified-output-equivalence',
+ 'branch':'feat/shim-c',
  'actual_target':'kernels/target/f32-gemm-minmax.c',
  'actual_target_matches_tested_repair':target.read_bytes()==(b/'repaired_rvv.c').read_bytes(),
  'actual_target_sha256':hashlib.sha256(target.read_bytes()).hexdigest(),
