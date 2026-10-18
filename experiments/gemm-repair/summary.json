@@ -1,0 +1,58 @@
+{
+  "branch": "codex/verified-output-equivalence",
+  "actual_target_matches_tested_repair": true,
+  "actual_target_sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+  "arcadia_reference_preserved": true,
+  "arcadia_original_target_preserved": true,
+  "old_intrinsic_shim_bodies_unchanged": true,
+  "new_rvv_intrinsics": [
+    "vmfne_vv_f32m4_b8",
+    "vfmerge_vfm_f32m4",
+    "vfmv_v_f_f32m4"
+  ],
+  "native_cases_passed": 2400,
+  "old_counterexample_preserved_and_repair_passed": true,
+  "native_observation": "bitwise output in canonical quiet-NaN C shim; no all-ISA-bit equality claim",
+  "native_sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "real_rvv_syntax_check_exit": 0,
+  "whole_c_frontend_exit": 0,
+  "whole_c_verification_attempt": {
+    "model": "gcc_x86_64 / Typed+float",
+    "direct_full_kernel_sources": true,
+    "schedule_shadow_program": false,
+    "wall_timeout": true,
+    "seconds": 180.19331088400213,
+    "failure_stage": "whole-AST VC generation/scheduling did not finish before wall budget; no SMT inequivalence judgment",
+    "raw_goal_report_available": false,
+    "raw_proved": null,
+    "raw_total": null,
+    "source_hashes_match_current": true,
+    "observation": "forall active outputs: numerical == or both NaN",
+    "memory_domain": "contiguous rows and NR8 packing; 4 full allocated rows even when mr<4; arbitrary legal positive dimensions, arbitrary strides not covered"
+  },
+  "proof_bridge_gaps": [
+    "fmaf common_fma external contract has no checked libc/ISA body bridge",
+    "same_value FMA congruence or stronger word relation remains unproved",
+    "__builtin_nanf recognized as GCC builtin but no verified NaN postcondition",
+    "canonical_nan float/uint32 memcpy byte-memory representation bridge",
+    "whole-kernel loop invariants, assigns and pointer/stride memory relations",
+    "ISA-to-shim, NaN payload/FPCR/sNaN/FP flags/rounding/FTZ boundaries"
+  ],
+  "complete_original_c_equivalence_proved": false,
+  "admitted_to_verified": false,
+  "source_sha256": {
+    "shim.h": "7a3c6ba6177fd68208c3a47451af27c9dbfb2fa96b9dfc11a100adc88ea641a0",
+    "original_rvv.c": "9ae2f510ae8991e8dc80606edd0fb4595e02d11dcba6ae57974e7b5ef0b2b4b7",
+    "run.py": "7468a5371c2ebc4fa5c3cef70bd9548139310f7b00c12ac2b64601108e16b1bf",
+    "repaired_rvv.c": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+    "inspect_results.py": "d3c9e0325045fdb52b53690cbadd7f760418b08632cb0b5943f16b763265463e",
+    "reference_neon.c": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61",
+    "native_test.c": "77f35562d3e78399edeb928b7a9758b8bcefefb33b602ecb5d0915af0a15ff87",
+    "proof.c": "c1924975d4204b2f0b17d9fbb19658daba9c06215cf5e1ba0fd584daf81c45e0",
+    "prepare.py": "35c73ac6346f4040e7fbda5b1c4c869d7a0b9a113d294550d1b75645dc1f3b4e",
+    "run_gcc_wp.py": "3c534d95d24b607c0fe43c255cd46c5c3cec234c48f04fb16d9e9fc0e0503ab0"
+  }
+}

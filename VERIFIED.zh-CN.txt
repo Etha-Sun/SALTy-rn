@@ -1,0 +1,41 @@
+输出等价性验证分支
+
+分支：codex/verified-output-equivalence
+原工作分支和旧v1/v2实验保留，本分支使用独立worktree。
+
+已完成
+verified/qs8-rsum/proof.c 是唯一证明源文件：全部普通C shim、原kernel体、
+ACSL规格、loop invariant、ghost辅助引理和输出比较wrapper都在里面。
+不需要单独的proof helper header。新鲜检查579/579，262.409秒；
+33个函数完整覆盖，内联后目标集合与先前多文件版逐项一致。
+证明的输入是任意合法长度，硬件模型固定VLEN128、VL=min(remaining,32)。
+它是普通C模型的输出等价性，不是原ISA/机器码端到端定理。
+
+修复与未完成项
+kernels/target/f32-gemm-minmax.c 已加入NaN检测与mask merge/broadcast，
+保留vfmin/vfmax原有numeric语义，修复相对固定NEON reference的NaN分类差异。
+旧target保存在 experiments/gemm-repair/original_rvv.c。
+修复target与 experiments/gemm-repair/repaired_rvv.c 逐字相同。
+原NaN反例重放和2400个native case在canonical-qNaN普通C模型中逐位一致。
+完整GEMM WP等价性仍未闭合，材料保存在experiments，不进入verified目录。
+真实NaN payload/sNaN/FP flags对应也没有证明。
+
+旧symbolic系统曾把NEON vmin/vmax路由成minNum/maxNum以匹配RVV。
+本分支修复 src/verification_bw/neon/ops/core.hpp 和
+src/verification_cvc5/neon/ops/core.hpp 所审f32 NEON入口，另显式处理相反符号零。
+tests/verification/neon_nan/ 编译实际CVC5 header：旧版负对照SAT，新版UNSAT。
+Bitwuzla侧尚未编译，其他FP入口的完整语义审计未在本轮完成。
+这些旧后端不参与verified/qs8-rsum的WP检查。
+
+阅读入口
+verified/README.zh-CN.txt：准入规则、已证程序和复现命令。
+verified/manifest.json：当前已证程序与证明输入/记录哈希。
+docs/TCB.zh-CN.txt：除SMT solver外10类工具/证据可信组件，另6类语义环境前提。
+docs/GENERALITY.zh-CN.txt：目前泛化边界，新增kernel仍需哪些证明工作。
+docs/REVIEW.zh-CN.txt：另一agent独立审计，不只看汇总布尔值。
+tools/README.zh-CN.txt：版本、固定Frama发行包安装脚本与工具依赖。
+experiments/gemm-repair/README.zh-CN.txt：反例归因、真实target修复、测试与完整证明尝试。
+
+公共功能后置条件可以统一为“相同输入、两个输出相等”。
+每个kernel仍需要合法域、内存/布局条件、intrinsic语义和循环对应证明。
+新增intrinsic支持是扩展工作的一部分，尚不能只靠它自动验证任意kernel。

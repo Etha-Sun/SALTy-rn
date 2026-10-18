@@ -1,0 +1,79 @@
+能否只补intrinsic就验证所有新kernel？
+
+结论：目前不能。通用的是C分析/VC生成和部分已有shim/代数库；
+完整kernel的输入域、内存布局、循环不变量与对应关系仍需补充。
+agent可以生成这些材料并迭代验证，不能把“语法支持齐全”变成“所有等价证明自动成功”。
+
+已有证据
+qs8-rsum普通C路线已有任意合法符号输入长度的证明，但固定VLEN128和一种VL策略。
+GEMM即使原C已成功解析、FMA和min/max都有C shim，也仍遇到：
+真实NaN语义差异、fmaf数值桥接缺口、float↔bits桥接、原源码→调度模型缺失。
+这已经是“只加intrinsic不够”的直接例子，不是仅凭经验预测。
+
+新kernel通常还要做什么
+
+1. 固定目标程序与公共规格。
+选定原C版本/宏、允许的mr/nc/kc或batch、观察数值还是bits、padding/alias/对齐、
+初值与参数合法域。只要求两边输出相等可以减少公共数学规格，但不能省略合法内存域。
+如果两程序本来不等价，正确结果应是反例；修复target或明确域需要独立记录。
+
+2. C类型和ABI落地。
+Frama-C能复用普通C前端，不必为每个普通for/if重写parser；
+vector intrinsic类型仍要降低为struct/array或提供合适模型。
+_Float16/bfloat16、饱和/舍入、指针整数往返、unaligned/alias、inline asm、
+特殊寄存器/FP环境可能需要前端/内存模型支持，不只是加一个算术函数。
+
+3. intrinsic C模型及ISA对应。
+已有函数和证明可复用；新增函数要证明C体满足契约，并审查其ISA参数/lane/tail/mask语义。
+若只写外部函数契约，不写且验证实现体，那是新增假设，不能当作已支持已证明。
+给FMA补数学ensures之前，要解释这层C/ISA→IEEE模型桥接为何可信。
+
+4. 依赖kernel组织的内存和循环证明。
+GEMM有packed NR8权重、mr行复用、nc分块、byte stride、奇偶K、尾部存储；
+reduction有跨块mod累加、padding mask与尾部inactive lanes。
+需要loop invariant、frame/assigns、寻址范围、termination以及两个调度对应关系。
+这些与intrinsic semantics相关但不是它的自动推论。
+
+5. 代数和关系引理。
+已有sum/mod32引理可以复用到类似reduction；transposition/packing需要index/permutation引理；
+GEMM调度关系可以复用共享step的归纳定理，但还须证明原C遵守这个调度和共享操作。
+浮点不可随意重排或把fused FMA改成独立乘加。正确归纳通常比实数矩阵公式更贴近实现。
+
+6. 全依赖验收。
+不能只验wrapper后置而信任未验证的kernel契约；要覆盖每个shim/helper函数体、assert、
+loop invariant建立/保持、RTE与终止，并确认非空输入域、源码哈希和目标集合。
+证明器超时/模型缺口不是kernel反例；有实际不同输出才是既定关系下的反例。
+
+与Arcadia旧Lean extraction的区别
+Arcadia verification commit 4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca 的
+verification/extraction/profiles.json 是按family列参数/类型/调用映射/指针步进/支持AST节点，
+不是从任意新程序自动推导的完整配置；rsum_context.h固定ARM64、dummy params和LP64上下文。
+扩展那条路线还要更新profile/context、必要时frontend和CByte语义/typing、证明原C→模型对应。
+新WP路线复用Frama的普通C前端，避免自己实现每种常见C语句；
+但它并没有因此自动获得ISA shim正确性或原kernel循环等价性。
+
+可实现的渐进式共享
+先按kernel family共享：ABI/参数声明、typed vector表示、load/store与饱和/舍入原语、
+通用VL参数接口、range/alias frame模板、分块/尾部/packed索引引理。
+每个新kernel主要补“公共域+布局/循环关系”，agent生成并由同一checker验收。
+这个方向可减少增量effort，但本轮只验证了具体qs8-rsum，尚无跨全部family自动泛化证据。
+
+系统bug与kernel bug必须分开
+旧BW symbolic shim曾为匹配RVV而把NEON vmin/vmax改成minNum/maxNum，隐藏真实差异。
+这属于模型/translation soundness错误，应修系统使其报告反例，不应改reference语义求通过。
+真实target的vfmin/vfmax本来是minimumNumber/maximumNumber；在约定包含NaN的输出关系下，
+它没有保持source FMIN/FMAX传播NaN，因此是跨ISA kernel翻译/等价性问题。
+若产品域明确排除NaN，则这个反例不落在该域，不能不加域说明地称普通有限输入也错误。
+
+当前target修复实验保持vfmin/vfmax原语语义，加入NaN检测与merge/broadcast。
+这是真实修改target C，必须与旧target分开保留；canonical-qNaN普通C模型的回归通过
+不代表真实ARM/RVV所有payload、sNaN、FP flags、所有VL策略已等价。
+同样，此次系统补丁仅覆盖所审f32 NEON入口（含NaN和signed-zero规则），
+不应宣传全部FP16/FP64、minnm与RVV路径已统一审计。SMT原生fp.min/max对
+opposite signed-zero的结果可欠约束，其他入口仍需独立审查ISA符号零规则。
+
+一级资料
+ARM ACLE将vminq_f32/vmaxq_f32映射到FMIN/FMAX：
+https://arm-software.github.io/acle/neon_intrinsics/advsimd.html
+RVV规范说明vfmin/vfmax采用minimumNumber/maximumNumber：
+https://docs.riscv.org/reference/isa/unpriv/v-st-ext

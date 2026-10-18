@@ -1,0 +1,116 @@
+{
+  "repository": "https://github.com/Arcadia-Y/SALTy-rn",
+  "branch": "verification",
+  "commit": "4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca",
+  "experiment_baseline": "research/output-equivalence-v2/rsum",
+  "packing": "Concatenate components in the recorded order, remove local quoted includes and outer header guards only. No C or ACSL expression is rewritten. Section markers delimit the exact packed text.",
+  "sections": [
+    {
+      "name": "shim.h",
+      "source_sha256": "c29460caf31889c74dddc9afa102ab4fdf261c6bf1deb969fe9217df89e50cf6",
+      "packed_sha256": "fd803b37e541d2de81bf8533cade3545a824447fe50c6978ccbae0dd55f52e82"
+    },
+    {
+      "name": "shim.c",
+      "source_sha256": "4989fd0d9bb4df3a6912667931ab648af058fb01ab013ae8e52a420ccc8b80ea",
+      "packed_sha256": "410a15eb324a810d763b2e8f0e238ce315bcf7db88d23c528175684d95225142"
+    },
+    {
+      "name": "proof_s16.h",
+      "source_sha256": "aaf318ebdcdf1911042b0767730343797698d1f112b69a7dc36dea0f24772724",
+      "packed_sha256": "307e52aa835871b5c332ab523036553a6a407366962fad8199e8e8dba342a2a5"
+    },
+    {
+      "name": "proof_math.h",
+      "source_sha256": "eabdf87fc13b3267b5d733a86444f50f32b0c3018960d83134bcb49c946a0b34",
+      "packed_sha256": "4fbbf60b0d9eabb5edc2917d297195e755d13982382d106af4b87cd6699b9e4d"
+    },
+    {
+      "name": "proof_helpers.h",
+      "source_sha256": "255ba858ebe1008a5a617a346bf348bf1c56a7ccd50f80dce9421fedbdcfa537",
+      "packed_sha256": "476f51822bf04deafc5fc34756ceb1646c3061a656ed7fa06d5a86705cad859a"
+    },
+    {
+      "name": "kernel_neon.c",
+      "source_sha256": "ec03d981e8f6da91d223f9de382893049c3390bf1e9365d5f3cf0a32e45bfe5d",
+      "packed_sha256": "e91df1d781daad501bc3fcd7f110a84f55037318c0c46f60844f760000d921db"
+    },
+    {
+      "name": "kernel_rvv.c",
+      "source_sha256": "d377ac3e691d60a4ff41f7d8cfc78c0f28df87d745c99f5433505b943d1a0796",
+      "packed_sha256": "ff9f1b192a760c139a43cb028211333a46e600addd4ec9a60c4ed8323a2143ac"
+    },
+    {
+      "name": "equivalence.c",
+      "source_sha256": "d8c3b4e301589a06a5ac6896a4bfbd8b036cbf86f0481ac368f7c3be420442e3",
+      "packed_sha256": "0a635c64ee31eeb473985308693db9d12972cc399a4b83290dab381b84c03298"
+    }
+  ],
+  "original": {
+    "neon.c": {
+      "repository_path": "kernels/source/qs8-rsum.c",
+      "sha256": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5"
+    },
+    "rvv.c": {
+      "repository_path": "kernels/target/qs8-rsum.c",
+      "sha256": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b"
+    }
+  },
+  "scope": {
+    "machdep": "x86_64 LP64 little endian",
+    "VLEN_bits": 128,
+    "vlmax_e8m2_e32m8": 32,
+    "vlmax_e32m1": 4,
+    "schedule": "min(remaining,32)",
+    "domain": "0<n<=SIZE_MAX-15; n+15 readable input bytes; input/output disjoint; final signed int32 addition defined",
+    "observation": "two int32 output values equal; no machine flags, traces or binary equivalence",
+    "math_in_public_requires": true,
+    "math_in_public_functional_postcondition": false,
+    "math_in_internal_proof": true
+  },
+  "proof_sha256": "4293713fbeb8d65fad068013ef62dd625dac321269ae2d612828481bc5a4bcc7",
+  "expected_goal_count": 579,
+  "expected_goal_names_sha256": "0814123a3a9d5b1f8646195411445de6063cc578f030ea4911d2e306207a625b",
+  "expected_body_ensures": [
+    "__riscv_vadd_vv_i32m8_tu",
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vmv_v_x_i32m1",
+    "__riscv_vmv_v_x_i32m8",
+    "__riscv_vmv_x_s_i32m1_i32",
+    "__riscv_vredsum_vs_i32m8_i32m1",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsetvlmax_e32m1",
+    "__riscv_vsetvlmax_e32m8",
+    "__riscv_vsext_vf4_i32m8",
+    "equivalent",
+    "lemma_rvv_active",
+    "lemma_rvv_cancel",
+    "lemma_rvv_tail",
+    "lemma_sum8_split",
+    "proof_load_sum",
+    "proof_prefix_widen",
+    "proof_s16_add",
+    "proof_u32_congruence",
+    "proof_widen",
+    "rvv_proof_s32_u32",
+    "rvv_proof_u32_congruence",
+    "rvv_proof_u32_cross_cancel",
+    "rvv_proof_u32_normalize",
+    "signed16",
+    "signed32",
+    "vaddvq_s32",
+    "vld1q_s8",
+    "vmovq_n_s16",
+    "vmovq_n_s32",
+    "vmulq_s8",
+    "vpadalq_s16",
+    "vpadalq_s8"
+  ],
+  "previous_joint_result": {
+    "raw": {
+      "passed": 579,
+      "total": 579
+    },
+    "sha256": "dc10b37b7957974ff0346eb97b26dff09122c074e0e590e39841b638b2a1751b"
+  }
+}

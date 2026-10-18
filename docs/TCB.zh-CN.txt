@@ -1,0 +1,139 @@
+WP 输出等价性路线的 TCB 与证明边界
+
+结论：即使不计算外部 SMT solver，TCB 也不只是 intrinsic shim。
+这里明确拆成10类工具链/证据可信组件，另列6类语义和环境前提。
+这是审计分类，不是10个软件文件或完整依赖包数量；没有把所有动态库逐个算一类。
+本页针对 verified/qs8-rsum 的普通 C + ACSL + Frama-C WP 实验，
+不是旧 C++ symbolic backend、Lean CByte 或 VST 的统一 TCB 清单。
+
+10类工具链/证据可信组件（不含外部 SMT solver）
+
+T1. C预处理器与宏/机器描述加载。
+Frama-C kernel-help 的 -cpp-command 默认是 gcc -C -E -I.（或CPP环境覆盖）。
+它决定 #if XNN_ARCH_ARM64、typedef、assert 宏和标准头实际内容。
+本次 -machdep x86_64 使用 machdeps/machdep_x86_64.yaml：
+第14行char signed，第47行little-endian宏，第516行little_endian=true，
+531-535行int4/long8/pointer8。选错这些数据即验证了另一种C程序。
+宿主GCC11.4的预处理行为在此链中；native测试的GCC代码生成另属测试/二进制边界。
+
+T2. Frama-C kernel 的 C/ACSL 前端、类型检查和规范化。
+包括识别C类型/表达式/整数提升、结构体、pointer arithmetic、ACSL逻辑与标签。
+本次Frama-C33.0(Arsenic)；实际 kernel 位于 bundle/lib/frama-c/kernel/frama_c_kernel.cmxs。
+当前WP路线没有经过Clang AST→自定义Lean AST，不应把那条路线的前端混进本清单。
+
+T3. 源到待证明AST的转换。
+本次使用 -inline-calls test_neon,test_rvv、-inline-stmt-contracts、
+-remove-inlined；内联需要保持变量重命名、ghost/Pre/LoopEntry标签、控制流与断言。
+删除standalone定义只是避免重复，必须确认wrapper中的实际函数体仍存在。
+proof.c打包也属于源对应证据链：本次仅拼接、移除本地include和外层header guards，
+不是已形式验证的源转换；审计通过各component哈希和原kernel可执行文本比较降低风险。
+
+T4. C/ACSL语义模型及支持理论。
+整数有限宽运算、逻辑integer、Typed内存、pointer provenance/别名、函数契约、
+浮点模型及内置谓词的具体实现均需可信。本次没有把这些模型整体重新证明一遍。
+关键文件：share/frama-c/share/wp/why3/frama_c_wp/{cint,memory,memaddr,cfloat}.mlw。
+浮点proof必须显式+float；+real是不同抽象，不能拿实数等式代替IEEE位行为。
+例如cfloat.mlw:17导入Why3 Float32，54起有库级axiom，不能因用户源码无axiom说没有模型假设。
+
+T5. WP验证条件生成器和RTE生成器。
+弱前置条件计算、循环不变量、frame/assigns、termination和RTE guards的生成必须正确。
+-wp-rte并不等于已覆盖所有C UB；日志明确跳过不支持的alignment和valid_function guards。
+Typed额外内存假设在日志输出，不能从“所有生成目标通过”推成这些假设也已证明。
+本次没有向Coq导出一个可独立重放的完整C语义推导证明。
+
+T6. Qed简化器。
+Qed可直接把目标判为Valid，也会在送SMT前重写算术、逻辑、数组/记录表达式。
+因此即使外部SMT完全可信，错误的Qed简化仍可能导致错误结论。
+WP的META实际依赖qed、why3、zarith；公开WP说明也明确Qed是内部prover和预处理simplifier。
+
+T7. Why3翻译、driver和结果接口。
+本地bundle/lib/why3/META标明Why3 1.8.2。
+ACSL/WP逻辑到Why3、Why3变换、SMT语法和结果回传都在本次可信链中。
+share/frama-c/share/wp/wp.driver:9-12导入Qed，35-40导入C整数/bit理论，
+42-66连接浮点class/sign/rounding符号，75-79连接memory。
+Why3标准库的IEEE理论已经有FMA不等于C fmaf已自动连上：后者目前没有这层数值桥接。
+
+T8. 内置和外部库契约、默认外部调用条款。
+C库实现没有逐一在本实验验证。采用Frama标准头契约时，它们属于环境假设：
+- libc/assert.h:16-20，__FC_assert要求c!=0且assigns nothing。
+  这要求调用点证明assert条件，不是任意删去assert的许可。
+- libc/math.h:198-203，__fc_signbitf有sign与非零结果对应的ensures。
+- libc/math.h:2136-2139，fmaf只有assigns/from，缺少数值或NaN后置条件。
+- libc/string.h:128-138，memcpy有valid/readable/separated、复制内容和返回指针契约。
+- GCC __builtin_nanf在gcc_x86_64机型可识别类型，但当前完整GEMM日志仍没有NaN数值契约；
+  builtin识别和数值/位语义验证不是同一件事。
+- 无函数体且未写exits/terminates时，Frama可能生成默认条款，日志必须保留。
+这些契约不是本项目的kernel/helper证明；特别是给fmaf新写一个ensures不能算已经验证fmaf。
+qs8-rsum不调用fmaf/memcpy/signbit；它们是GEMM相关片段的额外环境边界，不能全部堆入rsum依赖。
+
+T9. 检查器可执行运行基础。
+编译后的Frama/Why3/Qed二进制、OCaml运行时、Zarith/GMP整数实现、加载器、系统和硬件
+需要正常执行。ldd显示本地Frama依赖libgmp/libz和宿主libc/libm等。
+本地历史environment.json记录Frama二进制sha256：
+03f393e273b6e6cd7fb1648b6c464bdc05068ec30d6ed3791279deeb1321a4d5。
+安装包sha256为c754c31bb32d151acf7db3bcfdc5181b076bdbff813b19049e984f639eba3735。
+这是特定环境取证，不是已冻结整个宿主依赖或证明工具自身正确。
+
+T10. 结果验收和证明覆盖的证据链。
+check.py、audit.py、manifest、哈希/目标计数的解释，决定汇报的是不是刚检查的输入及完整依赖。
+这不是数学演算规则TCB，但在“这个源程序已证明”的交付主张中必须可信或独立复核。
+新runner删除本轮旧JSON，检查源码前后哈希、33个body ensures、579个目标及名称集合，
+拒绝只凭exit0、日志一句passed或旧结果作结论。独立审计仍须确认spec/impl没有一起改弱。
+工具版本会记录；不是所有标准头、driver和运行时依赖都由proof.c本身哈希覆盖。
+
+6类语义/环境前提（与工具实现错误分开）
+
+S1. 原ISA intrinsic/assembly 与普通C shim之间的对应。
+当前证明检查C shim内部实现满足其契约；没有证明其定义就是ARM/RVV规范的全部行为。
+真实FMA的单舍入、NaN/zero/tail/mask语义不能靠函数同名或输出测试自动确认。
+源→shim替换、参数顺序、lane映射、scalar/vector布局的正确性仍需要单独桥接。
+
+S2. ABI、布局和编译分支。
+LP64、little endian、int32/float32、结构体布局、固定ARM64分支、dummy未使用params。
+这些可以作为清楚的适用前提；不能称任意ABI/真实参数结构体都覆盖。
+
+S3. RVV配置与VL策略。
+rsum固定VLEN128、e8m2/e32m8容量32、e32m1容量4，VL=min(remaining,32)。
+没有量化所有合法setvl选择、所有VLEN或所有tail/mask agnostic状态。
+符号总输入长度不代表硬件VLEN和VL调度也已泛化。
+
+S4. 合法输入、内存与源程序溢出。
+rsum要求n>0、n+15可读padding、不重叠和最终int32 signed addition有定义。
+非空域的简单见证：n=1、16个可读零字节、initial=0，独立分配对象；sum=0，输出0。
+这份见证说明前提并非明显矛盾；完整非空域/每个辅助契约的可满足性不是579个VC自动保证的。
+当前runner未启用-wp-smoke-tests，测试和人工见证不能冒充全自动非空性证明。
+原kernel末端 *output += vacc 本来就是signed C加法；去掉无溢出前提后存在UB，
+不能靠添加intrinsic支持消除。若产品希望mod32输出，须明确改源程序/规格再证明。
+
+S5. 浮点环境和观察。
+GEMM测试约定FE_TONEAREST和canonical quiet NaN C模型；尚不覆盖真实ARM NaN payload、
+FPCR.DN/FZ、sNaN、RVV/ARM异常标志、动态舍入环境/errno、编译器fast-math行为。
+C ==、NaN-aware相等、raw-word相等各不相同。全域C ==在NaN处不自反。
+将两个FMA建模成同一个word函数是额外假设，不能从同为IEEE FMA推导所有NaN bits一致。
+
+S6. 规格充分性与程序边界。
+相同输入上的两个输出相等不说明输出实现了正确GEMM，也不保证原始kernel无越界。
+必须同时检查内存安全、termination、frame和合法域，且spec与产品要求一致。
+“模型的输出等价”与“原C的等价”与“真实ISA/机器码等价”是三个不同主张。
+
+哪些不应再列为未经证明的TCB
+- 已在同次完整运行中检查函数体的19个rsum shim契约、13个ghosthelper和中间assert：
+  它们是证明内容，错误通常表现为VC失败，不是未检查的自由假设。
+  但这些C定义是否忠实于ISA仍是S1，不能混淆两个层次。
+- sum8/u32/s32等ACSL定义本身是固定模型/规格内容，不是新增的用户axiom；
+  其语义解释属于T4。中间使用求和模型不意味着公共后置仍要求实现求和公式。
+- agent、生成proof的LLM、启发式求解搜索不是逻辑TCB，前提是固定spec/impl并完整检查结果。
+  agent若能同时改弱spec/manifest而无人复核，T10证据链仍会失守。
+- native ASan/UBSan/差分测试是辅助证据，不是无界等价证明，也不替代ISA桥接。
+- src/verification_bw 和 src/verification_cvc5旧symbolic backend不被新WP runner调用，
+  它们的修复应独立记录，不应当作这次WP正确性的额外前提或证明成果。
+
+取证定位
+单文件输入：verified/qs8-rsum/proof.c；真实命令与目标：verified/qs8-rsum/logs/。
+本地工具取证目录（工具未vendor进新分支）：
+/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/。
+本地环境记录：原workspace research/frama-c-qs8-rsum/environment.json。
+工具层面的公开依据：
+https://www.frama-c.com/fc-plugins/wp.html
+https://www.frama-c.com/download/frama-c-wp-manual.pdf
+这些是工具说明，不是本项目工具链自身的形式验证证书。

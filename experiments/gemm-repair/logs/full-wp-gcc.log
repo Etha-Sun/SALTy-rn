@@ -1,0 +1,43 @@
+COMMAND ['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-wp', '-wp-rte', '-wp-model', 'Typed+float', '-inline-calls', 'fp_nan,canonical_nan,min_number,max_number,neon_min,neon_max,vld1q_f32,vld1_f32,vdupq_n_f32,vld1q_dup_f32,vdupq_lane_f32,vfmaq_f32,vminq_f32,vmaxq_f32,vst1q_f32,vst1_f32,vst1_lane_f32,vget_low_f32,vget_high_f32,__riscv_vsetvl_e32m4,__riscv_vle32_v_f32m4,__riscv_vfmacc_vf_f32m4,__riscv_vfmin_vf_f32m4,__riscv_vfmax_vf_f32m4,__riscv_vse32_v_f32m4,__riscv_vmfne_vv_f32m4_b8,__riscv_vfmerge_vfm_f32m4,__riscv_vfmv_v_f_f32m4,test_neon,test_rvv', '-wp-fct', 'equivalent', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '5', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/gemm-repair/logs/full-wp-gcc.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/gemm-repair/proof.c']
+[kernel] Parsing proof.c (with preprocessing)
+[kernel] proof.c:24: Warning: 
+  found two contracts (old location: FRAMAC_SHARE/libc/math.h:2136-2137). Merging them
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] <unknown location>: Warning: 
+  Neither code nor specification for function __builtin_nanf, generating
+  default exits, assigns and terminates.
+  See -generated-spec-* options for more info.
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/math.h:203: Warning: 
+  Neither code nor explicit exits and terminates for function __fc_signbitf,
+  generating default clauses. See -generated-spec-* options for more info.
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/math.h:2139: Warning: 
+  Neither code nor explicit exits and terminates for function fmaf, generating
+  default clauses. See -generated-spec-* options for more info.
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] proof.c:71: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:66: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:60: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:63: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:31: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] proof.c:31: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] proof.c:92: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:89: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:104: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:113: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:110: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:100: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:107: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:96: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:364: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:355: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] proof.c:82: Warning: Missing assigns clause (assigns 'everything' instead)

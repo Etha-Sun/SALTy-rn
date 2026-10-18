@@ -1015,7 +1015,13 @@ inline NeonVector<32, NumLanes> neon_vmin_f32_nan_propagating(
         Term a_nan = tm.mk_term(Kind::FP_IS_NAN, {a_fp});
         Term b_nan = tm.mk_term(Kind::FP_IS_NAN, {b_fp});
         Term either_nan = tm.mk_term(Kind::OR, {a_nan, b_nan});
-        Term min_result = tm.mk_term(Kind::FP_MIN, {a_fp, b_fp});
+        Term both_zero = tm.mk_term(Kind::AND, {
+            tm.mk_term(Kind::FP_IS_ZERO, {a_fp}),
+            tm.mk_term(Kind::FP_IS_ZERO, {b_fp})});
+        Term zero_result = tm.mk_term(Kind::ITE, {
+            tm.mk_term(Kind::FP_IS_NEG, {a_fp}), a_fp, b_fp});
+        Term min_result = tm.mk_term(Kind::ITE, {
+            both_zero, zero_result, tm.mk_term(Kind::FP_MIN, {a_fp, b_fp})});
         Term min_bv = store_fp32_as_bv(tm, min_result);
         lanes[i] = tm.mk_term(Kind::ITE, {either_nan, nan_bv, min_bv});
     }
@@ -1035,7 +1041,13 @@ inline NeonVector<32, NumLanes> neon_vmax_f32_nan_propagating(
         Term a_nan = tm.mk_term(Kind::FP_IS_NAN, {a_fp});
         Term b_nan = tm.mk_term(Kind::FP_IS_NAN, {b_fp});
         Term either_nan = tm.mk_term(Kind::OR, {a_nan, b_nan});
-        Term max_result = tm.mk_term(Kind::FP_MAX, {a_fp, b_fp});
+        Term both_zero = tm.mk_term(Kind::AND, {
+            tm.mk_term(Kind::FP_IS_ZERO, {a_fp}),
+            tm.mk_term(Kind::FP_IS_ZERO, {b_fp})});
+        Term zero_result = tm.mk_term(Kind::ITE, {
+            tm.mk_term(Kind::FP_IS_NEG, {a_fp}), b_fp, a_fp});
+        Term max_result = tm.mk_term(Kind::ITE, {
+            both_zero, zero_result, tm.mk_term(Kind::FP_MAX, {a_fp, b_fp})});
         Term max_bv = store_fp32_as_bv(tm, max_result);
         lanes[i] = tm.mk_term(Kind::ITE, {either_nan, nan_bv, max_bv});
     }
@@ -1071,16 +1083,12 @@ inline NeonVector<32, NumLanes> neon_vmax_f32_maxnum(
 }
 
 // vmin/vmax → FMIN/FMAX (NaN-propagating)
-// NEON vmin/vmax now dispatch to the direct FP_MIN/FP_MAX helpers to match
-// the RVV side (__riscv_vfmin/__riscv_vfmax), which also use FP_MIN/FP_MAX.
-// In XNNPACK verification context both sides must share the same NaN
-// semantics; using the _nan_propagating helpers here produced a real
-// divergence vs RVV and added unreachable ITE chains that bloated every
-// clamp point in the solver query.
-inline float32x4_t vminq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmin_f32_maxnum(a, b); }
-inline float32x4_t vmaxq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmax_f32_maxnum(a, b); }
-inline float32x2_t vmin_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmin_f32_maxnum(a, b); }
-inline float32x2_t vmax_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmax_f32_maxnum(a, b); }
+// Preserve the reference ISA behavior even when RVV vfmin/vfmax differs.
+// This FP abstraction tracks NaN classification, not architectural payloads/flags.
+inline float32x4_t vminq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmin_f32_nan_propagating(a, b); }
+inline float32x4_t vmaxq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmax_f32_nan_propagating(a, b); }
+inline float32x2_t vmin_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmin_f32_nan_propagating(a, b); }
+inline float32x2_t vmax_f32(const float32x2_t& a, const float32x2_t& b)  { return neon_vmax_f32_nan_propagating(a, b); }
 // vminnm/vmaxnm → FMINNM/FMAXNM (NaN-quiet, IEEE 754-2008 maxNum/minNum)
 inline float32x4_t vminnmq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmin_f32_maxnum(a, b); }
 inline float32x4_t vmaxnmq_f32(const float32x4_t& a, const float32x4_t& b) { return neon_vmax_f32_maxnum(a, b); }

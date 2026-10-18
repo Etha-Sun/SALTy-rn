@@ -1223,8 +1223,35 @@ inline float32x4_t vaddq_f32(const float32x4_t& a, const float32x4_t& b) { retur
 inline float32x4_t vsubq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_binop(a, b, Kind::FLOATINGPOINT_SUB); }
 inline float32x4_t vmulq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_binop(a, b, Kind::FLOATINGPOINT_MULT); }
 inline float32x4_t vdivq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_binop(a, b, Kind::FLOATINGPOINT_DIV); }
-inline float32x4_t vminq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_binop(a, b, Kind::FLOATINGPOINT_MIN); }
-inline float32x4_t vmaxq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_binop(a, b, Kind::FLOATINGPOINT_MAX); }
+// FMIN/FMAX propagate NaNs; SMT fp.min/fp.max implement numeric selection.
+// NaN payloads and floating-point exception flags remain outside this model.
+inline float32x4_t fp32_minmax_propagating(
+    const float32x4_t& a, const float32x4_t& b, Kind op) {
+    auto& tm = g_ctx->tm;
+    std::array<Term, 4> lanes;
+    for (size_t i = 0; i < 4; i++) {
+        Term af = load_as_fp32(tm, a.getLane(i));
+        Term bf = load_as_fp32(tm, b.getLane(i));
+        Term nan = tm.mkTerm(Kind::OR, {
+            tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {af}),
+            tm.mkTerm(Kind::FLOATINGPOINT_IS_NAN, {bf})});
+        Term both_zero = tm.mkTerm(Kind::AND, {
+            tm.mkTerm(Kind::FLOATINGPOINT_IS_ZERO, {af}),
+            tm.mkTerm(Kind::FLOATINGPOINT_IS_ZERO, {bf})});
+        Term zero_result = tm.mkTerm(Kind::ITE, {
+            tm.mkTerm(Kind::FLOATINGPOINT_IS_NEG, {af}),
+            op == Kind::FLOATINGPOINT_MIN ? af : bf,
+            op == Kind::FLOATINGPOINT_MIN ? bf : af});
+        Term numeric = tm.mkTerm(Kind::ITE, {
+            both_zero, zero_result, tm.mkTerm(op, {af, bf})});
+        Term result = tm.mkTerm(Kind::ITE, {
+            nan, tm.mkFloatingPointNaN(8, 24), numeric});
+        lanes[i] = store_fp32_as_bv(tm, result);
+    }
+    return float32x4_t(tm, lanes);
+}
+inline float32x4_t vminq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_minmax_propagating(a, b, Kind::FLOATINGPOINT_MIN); }
+inline float32x4_t vmaxq_f32(const float32x4_t& a, const float32x4_t& b) { return fp32_minmax_propagating(a, b, Kind::FLOATINGPOINT_MAX); }
 inline float32x2_t vsub_f32 (const float32x2_t& a, const float32x2_t& b) { return fp32_binop(a, b, Kind::FLOATINGPOINT_SUB); }
 
 inline float32x4_t vfmaq_f32(const float32x4_t& a, const float32x4_t& b, const float32x4_t& c) {
