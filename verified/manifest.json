@@ -513,6 +513,85 @@
       },
       "supersedes_quarantined_version": "f32-vmax",
       "source_to_ISA_correspondence_proved": false
+    },
+    {
+      "name": "f32-vsub",
+      "version": 2,
+      "status": "proved_under_declared_c_model",
+      "directory": "f32-vsub-v2",
+      "proof_file": "f32-vsub-v2/proof.patch",
+      "proof_helper_files": [],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 556,
+        "total": 556
+      },
+      "seconds": 257.502,
+      "isa_to_c_shim_proved": false,
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ],
+        "floating_model": "Recompiled patched WP frontend; native IEEE binary32 operations; model-front pinned overlay"
+      },
+      "spec_file": "f32-vsub-v2/spec.h",
+      "source_freeze": "f32-vsub-v2/frozen.json",
+      "proof_evidence": "f32-vsub-v2/logs/canonical01-summary.json",
+      "llvm_identity_evidence": "f32-vsub-v2/llvm/byte-identity-audit.json",
+      "llvm_diff_raw_evidence": "f32-vsub-v2/llvm/result.json",
+      "body_functions": 28,
+      "global_lemmas": [],
+      "implementation_unchanged_checks": {
+        "original_kernel_bytes": true,
+        "public_spec_bytes": true,
+        "preprocessed_C_tokens": 4249,
+        "LLVM_IR_byte_identical": true,
+        "model_inputs_unchanged": true
+      },
+      "source_and_evidence_sha256": {
+        "f32-vsub-v2/README.zh-CN.txt": "e0d374c2ada1fdd3af7b012ea0bce1630fc5139d2f09015a24e15f93dec1768d",
+        "f32-vsub-v2/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "f32-vsub-v2/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "f32-vsub-v2/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "f32-vsub-v2/extensions.driver": "d1591895fa331eaaf173857e8d9caa8b9d204c2367f6144f8631c90eb1e21cfa",
+        "f32-vsub-v2/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "f32-vsub-v2/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vsub-v2/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "f32-vsub-v2/frozen.json": "b3f005b1ae73839a6e33f030621a29a9d8a22399d73f66fcc59964f860ab61c1",
+        "f32-vsub-v2/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "f32-vsub-v2/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "f32-vsub-v2/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "f32-vsub-v2/llvm/annotated.ll": "35f7c8fac62c80f7f9b96d821149a49403ed0bc6a2bf287d06b8e42ca495be47",
+        "f32-vsub-v2/llvm/byte-identity-audit.json": "1ddf74e1ba6b63313325e2525594dac50f4661618ced56a802b21a3e02a304e7",
+        "f32-vsub-v2/llvm/plain.ll": "35f7c8fac62c80f7f9b96d821149a49403ed0bc6a2bf287d06b8e42ca495be47",
+        "f32-vsub-v2/llvm/result.json": "6f19be579340d9435b5ca47c25a023e3adab87cd5f4196d5f96c3db9ea64d92a",
+        "f32-vsub-v2/logs/canonical01-model-control.c": "1bbb454c34fd3eb2cac38f4dbb7350cc9882c14d1c2f18a9053ceedd8c290bf3",
+        "f32-vsub-v2/logs/canonical01-model-control.json": "05a8eb66b328cbbf690e13f1d3ba0a7337521a8dd1771e0bd99d9b6b951e6d2c",
+        "f32-vsub-v2/logs/canonical01-model-control.log": "bce19743198cc1295eaa4728c84a798f972a39ee17d67e1f6fa19da0bd0f862d",
+        "f32-vsub-v2/logs/canonical01-summary.json": "2728dae03713cd29dc8bd925af471e30524db1a1765a181097c57b60264cedac",
+        "f32-vsub-v2/logs/canonical01.json": "28365cb38ff166fb5780b3a686c3223af5e82652d6d340c1bf244681a7d8b94a",
+        "f32-vsub-v2/logs/canonical01.log": "3631d628198579fa0fa5501ba96d7e0c77a3d1fdbdb799ae86fcaad6928aae05",
+        "f32-vsub-v2/modules.json": "d59e9070591a1d92cbda721059c61c49f9c50e8079c79232d148df1a19ad12ff",
+        "f32-vsub-v2/neon.c": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+        "f32-vsub-v2/proof.patch": "fca3fb102c4f02c6efb84daba39fccff70c093f055a28f850851d19a0c41d656",
+        "f32-vsub-v2/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "f32-vsub-v2/rvv.c": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c",
+        "f32-vsub-v2/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "f32-vsub-v2/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "f32-vsub-v2/sub.c": "d5faae2660abad1f38d21805b22f41124cfe81721c80465e587a6543c791cc5c",
+        "f32-vsub-v2/unit.c": "8f1085aa7d60b2ff54cbf1e372eb34ee08655ae65d1baa0f47a14db99d7d3138"
+      },
+      "supersedes_quarantined_version": "f32-vsub",
+      "source_to_ISA_correspondence_proved": false,
+      "proof_method": "Modular WP, extra checked kernel ensures only; frozen public spec and C unchanged"
     }
   ],
   "gemm_repair_admitted": false,
@@ -808,7 +887,9 @@
       "historical_status": "proved_under_declared_c_model",
       "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
       "quarantine_evidence": "f32-vsub/logs/model-control01/summary.json",
-      "quarantine_evidence_sha256": "78f6cf289a77cd0ea779a766d000afb3a782ce3d492e282ff09b5fa46ef4e581"
+      "quarantine_evidence_sha256": "78f6cf289a77cd0ea779a766d000afb3a782ce3d492e282ff09b5fa46ef4e581",
+      "superseded_by": "f32-vsub-v2",
+      "historical_evidence_preserved": true
     },
     {
       "name": "f32-vdiv",
