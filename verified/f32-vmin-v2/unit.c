@@ -1,0 +1,8 @@
+#include "spec.h"
+#include "base.c"
+#include "float_ops.c"
+#include "min.c"
+#include "mask.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"
