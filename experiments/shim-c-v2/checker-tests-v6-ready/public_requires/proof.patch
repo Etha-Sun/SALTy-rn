@@ -1,0 +1,9 @@
+--- a/unit.c
++++ b/unit.c
+@@ -1,4 +1,6 @@
+ #include "spec.h"
++/*@ requires x==0; ensures *o==x+1; */
+ void test_neon(int x,int *o){*o=x+1;}
++/*@ ensures *o==x+1; */
+ void test_rvv(int x,int *o){*o=x+1;}
+ int equivalent(int x){int a,b;test_neon(x,&a);test_rvv(x,&b);return a==b;}

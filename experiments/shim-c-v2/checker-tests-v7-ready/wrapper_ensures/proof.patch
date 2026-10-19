@@ -1,0 +1,11 @@
+--- a/unit.c
++++ b/unit.c
+@@ -1,5 +1,8 @@
+ #define XNN_OOB_READS
+ #include "spec.h"
++/*@ ensures *o==x+1; */
+ void test_neon(int x,int *o) XNN_OOB_READS {*o=x+1;}
++/*@ ensures *o==x+1; */
+ void test_rvv(int x,int *o) XNN_OOB_READS {*o=x+1;}
++/*@ ensures \true; */
+ int equivalent(int x){int a,b;test_neon(x,&a);test_rvv(x,&b);return a==b;}

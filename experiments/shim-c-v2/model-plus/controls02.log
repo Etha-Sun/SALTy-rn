@@ -1,0 +1,19 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Typed+float", "-warn-special-float", "none", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-par", "2", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/controls02.json", "experiments/shim-c-v2/model-plus/controls.c", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/shim-c-v2/model-plus/controls.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function correct_mod
+[rte:annot] annotating function correct_nan
+[rte:annot] annotating function wrong_false
+[rte:annot] annotating function wrong_nan
+[wp] 18 goals scheduled
+[wp] [Timeout] typed_fma_wrong_nan_ensures (Qed 3ms) (CVC5)
+[wp] [Timeout] typed_fma_wrong_false_ensures (Z3)
+[wp] Proved goals:   20 / 22
+  Terminating:     2
+  Unreachable:     2
+  Qed:            13 (2ms-0.40ms-3ms)
+  CVC5 1.2.1:      3 (24ms-42ms-55ms)
+  Timeout:         2
