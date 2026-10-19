@@ -1,0 +1,34 @@
+[kernel] Parsing experiments/shim-c-v2/model-fma/controls.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function false_control
+[rte:annot] annotating function finite_exact
+[kernel:annot:missing-spec] experiments/shim-c-v2/model-fma/libc/math.h:2142: Warning: 
+  Neither code nor explicit exits and terminates for function fmaf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function finite_fused
+[rte:annot] annotating function infinite_fma
+[rte:annot] annotating function infinite_zero
+[rte:annot] annotating function nan_fma
+[rte:annot] annotating function negative_zero
+[rte:annot] annotating function positive_zero
+[rte:annot] annotating function true_control
+[rte:annot] annotating function wrong_fused
+[rte:annot] annotating function wrong_nan
+[rte:annot] annotating function wrong_zero
+[wp] experiments/shim-c-v2/model-fma/controls.c:6: Warning: 
+  Unexpected constant literal "0x1p-46"
+[wp] 68 goals scheduled
+[wp] [Timeout] typed_fma_false_control_ensures (Z3)
+[wp] [Timeout] typed_fma_finite_fused_ensures (Qed 1ms) (Z3) (Stronger)
+[wp] [Timeout] typed_fma_wrong_fused_ensures (Qed 1ms) (Z3)
+[wp] [Timeout] typed_fma_wrong_nan_ensures (Qed 2ms) (Z3)
+[wp] [Timeout] typed_fma_wrong_zero_ensures (Qed 2ms) (Z3)
+[wp] Proved goals:   67 / 72
+  Terminating:     2
+  Unreachable:     2
+  Qed:            53 (0.64ms-0.30ms-2ms)
+  CVC5 1.2.1:      8 (4ms-44ms-76ms)
+  Z3 4.12.5:       2 (23ms-27ms)
+  Timeout:         5

@@ -1,0 +1,112 @@
+--- a/src/plugins/wp/Cfloat.ml
++++ b/src/plugins/wp/Cfloat.ml
+@@ -126,12 +126,6 @@
+ (* -------------------------------------------------------------------------- *)
+ 
+ let rfloat = Floating_point.round_to_single_precision
+-
+-let fmake ulp value = match ulp with
+-  | Float32 -> F.e_fun ~result:t32 fq32 [F.e_float (rfloat value)]
+-  | Float64 -> F.e_fun ~result:t64 fq64 [F.e_float value]
+-
+-let qmake ulp q = fmake ulp (Q.to_float q)
+ 
+ let re_float = Str.regexp ".*[fldFLD]$"
+ let re_mantissa = Str.regexp "[-+]?[0-9]*"
+@@ -183,8 +177,14 @@
+ 
+ let code_lit ulp value original =
+   match Context.get model , ulp , original with
+-  | Float , Float32 , _ -> F.e_fun ~result:t32 fq32 [F.e_float value]
+-  | Float , Float64 , _ -> F.e_fun ~result:t64 fq64 [F.e_float value]
++  | Float , ft , _ ->
++    let t = ftau ft in
++    let q = match ft with Float32 -> fq32 | Float64 -> fq64 in
++    let v = F.e_fun ~result:t q [F.e_float value] in
++    if value = 0.0 && Int64.bits_of_float value = Int64.min_int then
++      let neg = extern_f ~library ~result:t "neg_%a" pp_suffix ft in
++      F.e_fun ~result:t neg [v]
++    else v
+   | Real , _ , None -> F.e_float value
+   | Real , _ , Some r -> F.e_real (parse_literal ~model:Real value r)
+ 
+@@ -264,28 +264,9 @@
+   | Qed.Logic.Fun( f , [ q ] ) when f == fq32 || f == fq64 -> exact q
+   | _ -> raise Not_found
+ 
+-let round ulp e =
+-  match F.repr e with
+-  | Qed.Logic.Fun( f , [ b ] ) ->
+-    begin
+-      match find f with
+-      | REAL , ulp2 when ulp2 = ulp -> b
+-      | _ -> qmake ulp (exact e )
+-    end
+-  | _ -> qmake ulp (exact e)
+-
+-let compute_float op ulp xs =
++let compute_float op _ulp xs =
++  (* Preserve native IEEE arithmetic, including zero signs and non-finite values. *)
+   match op , xs with
+-  | NEG , [ x ] -> qmake ulp (Q.neg (exact x))
+-  | ADD , [ x ; y ] -> qmake ulp (Q.add (exact x) (exact y))
+-  | SUB , [ x ; y ] -> qmake ulp (Q.sub (exact x) (exact y))
+-  | MUL , [ x ; y ] -> qmake ulp (Q.mul (exact x) (exact y))
+-  | DIV , [ x ; y ] ->
+-    let res = match Q.div (exact x) (exact y) with
+-      | x when Q.classify x = Q.NZERO -> x
+-      | _ -> raise Not_found (* let Why3 take care of the division*)
+-    in qmake ulp res
+-  | ROUND , [ x ] -> round ulp x
+   | REAL , [ x ] -> F.e_real (exact x)
+   | LE , [ x ; y ] -> F.e_bool (Q.leq (exact x) (exact y))
+   | LT , [ x ; y ] -> F.e_bool (Q.lt (exact x) (exact y))
+@@ -445,6 +426,15 @@
+ 
+ let float_of_int f a = float_of_real f (Cmath.real_of_int a)
+ 
++let float_of_float dst src a =
++  if Ctypes.equal_float src dst then a else
++    match Context.get model with
++    | Real -> a
++    | Float ->
++      let phi = extern_f ~library ~result:(ftau dst)
++          "cast_%a_%a" pp_suffix src pp_suffix dst in
++      F.e_fun ~result:(ftau dst) phi [a]
++
+ (* -------------------------------------------------------------------------- *)
+ (* --- Float Arithmetics                                                  --- *)
+ (* -------------------------------------------------------------------------- *)
+--- a/src/plugins/wp/Cfloat.mli
++++ b/src/plugins/wp/Cfloat.mli
+@@ -57,6 +57,7 @@
+ val float_of_int : c_float -> unop
+ val float_of_real : c_float -> unop
+ val real_of_float : c_float -> unop
++val float_of_float : c_float -> c_float -> unop
+ 
+ val fopp : c_float -> unop
+ val fadd : c_float -> binop
+--- a/src/plugins/wp/CodeSemantics.ml
++++ b/src/plugins/wp/CodeSemantics.ml
+@@ -241,8 +241,7 @@
+ 
+     | C_float fr , C_float fe ->
+       let v = cval ve in
+-      Val( if Ctypes.equal_float fe fr then v else
+-             Cfloat.float_of_real fr (Cfloat.real_of_float fe v) )
++      Val(Cfloat.float_of_float fr fe v)
+ 
+     | C_int ir , C_float fr ->
+       Val(Cint.of_real ir (Cfloat.real_of_float fr (cval ve)))
+--- a/src/plugins/wp/LogicSemantics.ml
++++ b/src/plugins/wp/LogicSemantics.ml
+@@ -502,7 +502,7 @@
+     | C_float f , L_real ->
+       L.map (Cfloat.float_of_real f) (C.logic env t)
+     | C_float ft,  L_cfloat ff ->
+-      let map v = if Ctypes.equal_float ff ft then v else Cfloat.float_of_real ft (Cfloat.real_of_float ff v) in
++      let map v = Cfloat.float_of_float ft ff v in
+       L.map map (C.logic env t)
+     | C_float f , (L_cint _ | L_integer) ->
+       L.map (Cfloat.float_of_int f) (C.logic env t)

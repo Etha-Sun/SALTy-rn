@@ -1,0 +1,9 @@
+--- a/unit.c
++++ b/unit.c
+@@ -1,5 +1,6 @@
+ #include "spec.h"
+ static int helper(int x) { return x+1; }
++/*@ requires -100<x<100; assigns \nothing; ensures \result==x+1; */
+ void test_neon(int x,int *o){*o=helper(x);}
+ void test_rvv(int x,int *o){*o=helper(x);}
+ int equivalent(int x){int a,b;test_neon(x,&a);test_rvv(x,&b);return a==b;}

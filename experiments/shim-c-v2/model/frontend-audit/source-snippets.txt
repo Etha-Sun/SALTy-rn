@@ -1,0 +1,146 @@
+
+Cfloat.ml
+145:       begin
+146:         if not @@ Str.string_match re_mantissa r 0 then
+147:           raise Not_found ;
+148:         let mantissa = Str.matched_string r in
+149:         let p = Str.match_end () in (* length mantissa = p *)
+150:         let q, decimal =
+151:           if Str.string_match re_decimal r p then
+152:             let q = Str.match_end () in
+153:             q, String.sub r (p + 1) (q - p - 1)
+154:           else
+155:             p, "" in
+156:         let n, exponent =
+157:           if Str.string_match re_exponent r q then
+158:             let n = Str.match_end () in
+159:             n, String.sub r (q + 1) (n - q - 1)
+160:           else
+161:             q, "0" in
+162:         if n <> String.length r && not @@ Str.string_match re_float r n then
+163:           raise Not_found ;
+164:         let digits = Z.of_string @@ mantissa ^ decimal in
+165:         let decades = int_of_string exponent - String.length decimal in
+166:         let power n =
+167:           let s = Bytes.make (n+1) '0' in Bytes.set s 0 '1' ;
+168:           Z.of_string (String.of_bytes s) in
+169:         if decades < 0 then
+170:           Q.make digits @@ power (-decades)
+171:         else
+172:         if decades > 0 then
+173:           Q.of_bigint (Z.mul digits @@ power decades)
+174:         else
+175:           Q.of_bigint digits
+176:       end
+177:   with Failure _ | Not_found | Invalid_argument _ ->
+178:     Warning.error "Unexpected constant literal %S" r
+179: 
+180: let acsl_lit l =
+181:   let open Cil_types in
+182:   F.e_real (parse_literal ~model:(Context.get model) l.r_nearest l.r_literal)
+183: 
+184: let code_lit ulp value original =
+185:   match Context.get model , ulp , original with
+186:   | Float , Float32 , _ -> F.e_fun ~result:t32 fq32 [F.e_float value]
+187:   | Float , Float64 , _ -> F.e_fun ~result:t64 fq64 [F.e_float value]
+188:   | Real , _ , None -> F.e_float value
+189:   | Real , _ , Some r -> F.e_real (parse_literal ~model:Real value r)
+190: 
+191: (* -------------------------------------------------------------------------- *)
+192: (* --- Literal Output                                                     --- *)
+193: (* -------------------------------------------------------------------------- *)
+194: 
+195: let printers = [
+
+Cfloat.ml
+260: let rec exact e =
+261:   match F.repr e with
+262:   | Qed.Logic.Kreal r -> r
+263:   | Qed.Logic.Kint z -> Q.of_bigint z
+264:   | Qed.Logic.Fun( f , [ q ] ) when f == fq32 || f == fq64 -> exact q
+265:   | _ -> raise Not_found
+266: 
+267: let round ulp e =
+268:   match F.repr e with
+269:   | Qed.Logic.Fun( f , [ b ] ) ->
+270:     begin
+271:       match find f with
+272:       | REAL , ulp2 when ulp2 = ulp -> b
+273:       | _ -> qmake ulp (exact e )
+274:     end
+275:   | _ -> qmake ulp (exact e)
+276: 
+277: let compute_float op ulp xs =
+278:   match op , xs with
+279:   | NEG , [ x ] -> qmake ulp (Q.neg (exact x))
+280:   | ADD , [ x ; y ] -> qmake ulp (Q.add (exact x) (exact y))
+281:   | SUB , [ x ; y ] -> qmake ulp (Q.sub (exact x) (exact y))
+282:   | MUL , [ x ; y ] -> qmake ulp (Q.mul (exact x) (exact y))
+283:   | DIV , [ x ; y ] ->
+284:     let res = match Q.div (exact x) (exact y) with
+285:       | x when Q.classify x = Q.NZERO -> x
+286:       | _ -> raise Not_found (* let Why3 take care of the division*)
+287:     in qmake ulp res
+288:   | ROUND , [ x ] -> round ulp x
+289:   | REAL , [ x ] -> F.e_real (exact x)
+290:   | LE , [ x ; y ] -> F.e_bool (Q.leq (exact x) (exact y))
+291:   | LT , [ x ; y ] -> F.e_bool (Q.lt (exact x) (exact y))
+292:   | EQ , [ x ; y ] -> F.e_bool (Q.equal (exact x) (exact y))
+293:   | NE , [ x ; y ] -> F.e_bool (not (Q.equal (exact x) (exact y)))
+294:   | _ -> raise Not_found
+295: 
+296: let compute_real op xs =
+297:   match op , xs with
+298:   | NEG , [ x ] -> F.e_opp x
+299:   | ADD , [ x ; y ] -> F.e_add x y
+300:   | SUB , [ x ; y ] -> F.e_sub x y
+301:   | MUL , [ x ; y ] -> F.e_mul x y
+302:   | DIV , [ x ; y ] -> F.e_div x y
+303:   | (ROUND|REAL) , [ x ] -> x
+304:   | LE , [ x ; y ] -> F.e_leq x y
+305:   | LT , [ x ; y ] -> F.e_lt x y
+
+CodeSemantics.ml
+235:   let cast tr te ve =
+236:     match Ctypes.object_of tr , Ctypes.object_of te with
+237: 
+238:     | C_int ir , C_int ie ->
+239:       let v = cval ve in
+240:       Val( if Ctypes.sub_c_int ie ir then v else Cint.downcast ir v )
+241: 
+242:     | C_float fr , C_float fe ->
+243:       let v = cval ve in
+244:       Val( if Ctypes.equal_float fe fr then v else
+245:              Cfloat.float_of_real fr (Cfloat.real_of_float fe v) )
+246: 
+247:     | C_int ir , C_float fr ->
+248:       Val(Cint.of_real ir (Cfloat.real_of_float fr (cval ve)))
+249: 
+250:     | C_float fr , C_int _ ->
+251:       Val(Cfloat.float_of_real fr (Cmath.real_of_int (cval ve)))
+252: 
+
+LogicSemantics.ml
+490:     | C_int i , L_integer ->
+491:       L.map (Cint.convert i) (C.logic env t)
+492:     | C_int i , L_pointer _ ->
+493:       L.map_l2t (M.int_of_loc i) (C.logic env t)
+494:     | C_int i , L_real ->
+495:       L.map (Cint.of_real i) (C.logic env t)
+496:     | C_int i , L_cfloat f ->
+497:       L.map (fun v -> Cint.of_real i (Cfloat.real_of_float f v)) (C.logic env t)
+498:     | C_int _, L_array _ ->
+499:       Warning.error "@[Logic cast to sized integer (%a) from (%a) not implemented yet@]"
+500:         Printer.pp_typ dst_ctype Printer.pp_logic_type t.term_type
+501:     (* Cast to C float from ... *)
+502:     | C_float f , L_real ->
+503:       L.map (Cfloat.float_of_real f) (C.logic env t)
+504:     | C_float ft,  L_cfloat ff ->
+505:       let map v = if Ctypes.equal_float ff ft then v else Cfloat.float_of_real ft (Cfloat.real_of_float ff v) in
+506:       L.map map (C.logic env t)
+507:     | C_float f , (L_cint _ | L_integer) ->
+508:       L.map (Cfloat.float_of_int f) (C.logic env t)
+509:     | C_float _, (L_bool|L_pointer _|L_array _) ->
+510:       Warning.error "@[Logic cast to float (%a) from (%a) not implemented yet@]"
+511:         Printer.pp_typ dst_ctype Printer.pp_logic_type t.term_type
+512:     (* Cast to C pointer from ...  *)

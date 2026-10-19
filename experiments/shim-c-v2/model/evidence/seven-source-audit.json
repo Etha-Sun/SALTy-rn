@@ -1,0 +1,267 @@
+{
+  "scope": "Clang AST checks mixed FP casts/negative-zero literal syntax and Clang O0/O1 IR checks negative-zero constants. This is evidence for these frozen inputs, not a formal source-to-WP correctness theorem or complete analysis of all future constant folding.",
+  "clang": "/usr/bin/clang-14",
+  "clang_sha256": "31925065812631303cf9af9a30b2f56427d2102667a87a9fb4ba03a306104589",
+  "cases": [
+    {
+      "case": "f32-vadd",
+      "manifest_sha256": "6301b971c0e7a42293f419fccf50a906782b844930c6203d18077861c282d275",
+      "frozen_source_hashes": {
+        "verified/shared/float.driver": "95a638d50dfac1d444e9996ce9e2de27898b3579728963be375503da1c68f355",
+        "verified/shared/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared/shim.h": "d3fd51718f5e1d4c29ab067ba62a1a78cdaefaf276f7e9ef2feb569eb7d1f19f",
+        "verified/shared/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared/rsum.c": "42b79d1a9e23af25577088f55873bf0ca712097e94c22599c9c25fa2c4b3b38b",
+        "verified/shared/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared/clamp.c": "bfde19aceaa7b4724fa59e95770154c69fa4e2ef9b252f96c52401a9730a84f2",
+        "verified/f32-vadd/neon.c": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+        "verified/f32-vadd/rvv.c": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593",
+        "verified/f32-vadd/spec.h": "998b84b82ca57bb6f8352d1ac4af5798b96387811f533085049e2088276c510f",
+        "verified/f32-vadd/harness.c": "5a346e97cf20f2640917dc37cf3cc25e165b9356203f2501ddca20913b6591e4",
+        "verified/f32-vadd/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "experiments/shim-c-v2/float/f32-vadd/unit.c": "ac8080cde96dabeb13e2195df742b60cf118e03eb5e70401047b1d94a9600113",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "f32-vmul",
+      "manifest_sha256": "49035116bc8becf5e8ef3236e773caf8cf48ce2e44bcc65e962ed25795fd8207",
+      "frozen_source_hashes": {
+        "verified/shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "verified/shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "verified/shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "verified/shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared-extension/float/mul.c": "c63398341dbcb8191ad0537971f48f51c6c541fbfad383f7efe7e625a2cc43c1",
+        "verified/f32-vmul/neon.c": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c",
+        "verified/f32-vmul/rvv.c": "6f2acd553de265d3b8304d47009bb725dde8118539acf948cbdf0f7de79f235c",
+        "verified/f32-vmul/spec.h": "3c7f0c587ad5414af9933ba3ddb96fe2d1c69d34d64d7d22892b3a57caae962b",
+        "verified/f32-vmul/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "verified/f32-vmul/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "verified/f32-vmul/unit.c": "50f8ce85025581d0f99a643cd783feec6197641bc4479bb4b7acc9c67ea495ac",
+        "verified/shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "verified/f32-vmul/modules.json": "31367658d5e4ea8238a32ca1980eb843795c6a05b8dc00f2b67f35f17a7dcbf0",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "f32-vsub",
+      "manifest_sha256": "37fe0c1dadc71a450397956567e222bd72e18751a4489acaa0d0f16af464d249",
+      "frozen_source_hashes": {
+        "verified/shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "verified/shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "verified/shared-extension/float/sub.driver": "d1591895fa331eaaf173857e8d9caa8b9d204c2367f6144f8631c90eb1e21cfa",
+        "verified/shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared-extension/float/sub.c": "d5faae2660abad1f38d21805b22f41124cfe81721c80465e587a6543c791cc5c",
+        "verified/f32-vsub/neon.c": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+        "verified/f32-vsub/rvv.c": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c",
+        "verified/f32-vsub/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "verified/f32-vsub/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "verified/f32-vsub/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "verified/f32-vsub/unit.c": "8f1085aa7d60b2ff54cbf1e372eb34ee08655ae65d1baa0f47a14db99d7d3138",
+        "verified/shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "verified/f32-vsub/modules.json": "d59e9070591a1d92cbda721059c61c49f9c50e8079c79232d148df1a19ad12ff",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "f32-vdiv",
+      "manifest_sha256": "ac64506447928d40b2766417fff3a0c7595cde1963dd3b29fdf6d93c7fd386f9",
+      "frozen_source_hashes": {
+        "verified/shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "verified/shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "verified/shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "verified/shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared-extension/float/div.c": "242cf5697b67ddaae5af716876c3032dafe734ac33e7d4e6adb360c896d3c012",
+        "verified/f32-vdiv/neon.c": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0",
+        "verified/f32-vdiv/rvv.c": "5637c46cc781ada609567f65a010b3d698a010e090834e36c587873ede1e1f3d",
+        "verified/f32-vdiv/spec.h": "3c7f0c587ad5414af9933ba3ddb96fe2d1c69d34d64d7d22892b3a57caae962b",
+        "verified/f32-vdiv/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "verified/f32-vdiv/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "verified/f32-vdiv/unit.c": "108bac801f6a47fb37bed46da1c8e403e5ffd74247f4fa25cd3c3f4b16fd27b4",
+        "verified/shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "verified/f32-vdiv/modules.json": "e709c0b5abd16b65a2b086ae1e828b55dc00047e7750c2e3dc368046361a0e38",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "f32-vmulc",
+      "manifest_sha256": "9b7ec858b3ac77715b5bc7eb9210de78bc5dd7d6d905f2a4e595175e1c08985c",
+      "frozen_source_hashes": {
+        "verified/shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "verified/shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "verified/shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "verified/shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared-extension/float/mul.c": "c63398341dbcb8191ad0537971f48f51c6c541fbfad383f7efe7e625a2cc43c1",
+        "verified/shared-extension/float/mulc.c": "ac96a49082c87d42bd4f286f040dd6f245bd7be0b4d3dbbd0c73cdcca83dfec5",
+        "verified/f32-vmulc/neon.c": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+        "verified/f32-vmulc/rvv.c": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a",
+        "verified/f32-vmulc/spec.h": "28f7773cd42823f479a316362f6377f534ca3ef89499d9ca620e32c03034c532",
+        "verified/f32-vmulc/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "verified/f32-vmulc/interface.json": "656c30f7b44df505a32deb9a7c9599035edc3e23b2d3bfe72ebbd88186831528",
+        "verified/f32-vmulc/unit.c": "7b6ecc9c632bc2918c7eeb81d9e694799fdd964b31ec850df6a36ca041268c6f",
+        "verified/shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "verified/f32-vmulc/modules.json": "59da7ce76fc3a3a19bc3ff8c3541dbc2a2470dd714acbfba63311977242d92c5",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "f32-vmin",
+      "manifest_sha256": "e716c440b525b9c4a8bd503d9baa03dd1ec5214c585116f16fe4526cd49db897",
+      "frozen_source_hashes": {
+        "verified/shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "verified/shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "verified/shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "verified/shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared-extension/float/min.c": "26677268e6e203c9d470b2846ea7e0f2ed7d290fd73ead993c4d7d3b5cdb0e9e",
+        "verified/shared-extension/float/mask.c": "78846cf89ec7fbbe5fea754f50c8aa422df0efaca9a97d57cc7d50eccfd74a84",
+        "verified/f32-vmin/neon.c": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+        "verified/f32-vmin/rvv.c": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+        "verified/f32-vmin/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "verified/f32-vmin/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "verified/f32-vmin/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "verified/f32-vmin/unit.c": "cfe68085a1e1436c6afc2d0a6a8ecd55dd59ee38300d47d9d7f264ea6b44fd68",
+        "verified/shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "verified/f32-vmin/modules.json": "3ac379b8ad0f3bace52bf13f857a025e196967b15518424ee532d3253507b559",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    },
+    {
+      "case": "f32-vmax",
+      "manifest_sha256": "822df0f1015f5c3521093cb84e58e57516b82d0df4d921825a11749a755411c4",
+      "frozen_source_hashes": {
+        "verified/shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "verified/shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "verified/shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "verified/shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "verified/shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "verified/shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "verified/shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "verified/shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "verified/shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "verified/shared-extension/float/max.c": "ffb8d0f1d89c54213aacd43e6472967df94b225be84dc9711c893ea996c1cb4a",
+        "verified/shared-extension/float/mask.c": "78846cf89ec7fbbe5fea754f50c8aa422df0efaca9a97d57cc7d50eccfd74a84",
+        "verified/f32-vmax/neon.c": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+        "verified/f32-vmax/rvv.c": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+        "verified/f32-vmax/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "verified/f32-vmax/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "verified/f32-vmax/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "verified/f32-vmax/unit.c": "1a0992b66d5dd1bfeefc269653f88803bd93ae979dc7f014afd0dbcd5ce1cc08",
+        "verified/shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "verified/f32-vmax/modules.json": "d21c700351d8ddc0d68f26fd68f01a88b1654fc2a6a87de80f0f57753017192b",
+        "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+        "experiments/shim-c-v2/model/float_model_lock.json": "fce3f471c158523871625c5a72d96853da606e96f3a32307e84df290e3584a61"
+      },
+      "mixed_fp_casts": [],
+      "negative_zero_literal_syntax": [],
+      "clang_llvm": {
+        "0": {
+          "negative_zero_constant_lines": []
+        },
+        "1": {
+          "negative_zero_constant_lines": []
+        }
+      },
+      "audit_passed": true
+    }
+  ]
+}
