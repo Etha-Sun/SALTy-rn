@@ -1,0 +1,6 @@
+#include "spec.h"
+#include "base.c"
+#include "clamp.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"
