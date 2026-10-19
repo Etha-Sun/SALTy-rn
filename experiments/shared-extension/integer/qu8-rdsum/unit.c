@@ -1,0 +1,5 @@
+#include "spec.h"
+#include "integer-qu8-rdsum.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"

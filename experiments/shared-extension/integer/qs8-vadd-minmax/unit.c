@@ -1,0 +1,5 @@
+#include "spec.h"
+#include "integer-qs8-vadd-minmax.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"

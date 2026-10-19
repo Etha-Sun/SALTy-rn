@@ -1,0 +1,5 @@
+#include "spec.h"
+#include "integer-f32-f16-vcvt.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"
