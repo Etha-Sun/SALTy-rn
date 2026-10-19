@@ -1,0 +1,56 @@
+{
+  "baseline_head": "3b96d1a",
+  "new_complete_kernels": 0,
+  "kernel_count": 9,
+  "kernels": [
+    "f32-argmaxpool",
+    "f32-conv-hwc2chw",
+    "f32-dwconv-minmax",
+    "f32-dwconv2d-chw",
+    "f32-gemm-minmax",
+    "f32-igemm-minmax",
+    "f32-maxpool",
+    "f32-spmm-minmax",
+    "qd8-f32-qc4w-gemm-minmax"
+  ],
+  "strictly_accepted_stage3_kernels": [],
+  "inventory": {
+    "admitted": 11,
+    "unproved": 26,
+    "missing_target": 3
+  },
+  "original_target_modified": false,
+  "new_target_counterexample_found": false,
+  "candidate_versions_audited": 34,
+  "audit_sha256": "7ece38f8d92ba4fe79e09c0cdf542cc5e0d69016bf0e56bebc871c845352ae51",
+  "group_evidence": {
+    "experiments/shim-c-v2/stage3-gemm/STATUS.json": "f0c3326b6a7995906c71c54298c42af1b37e0c5fc7842795b6786ed1ea0ea349",
+    "experiments/shim-c-v2/stage3-gemm/RESULTS.json": "20eb49583400bd53f04daf40c9c8294087f38ef92174435604838d651fc392d2",
+    "experiments/shim-c-v2/stage3-conv/STATUS.json": "a861d62f337a0358c6489598f3b00227791cba508c6626c09e26fd3b957c2a9b",
+    "experiments/shim-c-v2/stage3-pool-spmm/STATUS.json": "5a7401937c99f1ade6c405d9e10d95b2bde26668463d59a0cae86e444f82a0dd",
+    "experiments/shim-c-v2/stage3-unary-front/ACCEPTANCE.json": "6239ce952c57299bd9616eed03fc58cdf568c37705bf64c673da7891e4f281b1",
+    "experiments/shim-c-v2/stage3-conv/unary-front-review.json": "7b94163ed121b2b8bc03da097a323b0ab418fcaedb6448c610f24bf549a2b036",
+    "experiments/shim-c-v2/stage3-conv/cross-review.json": "21ebff350af066667fbdceba418240d4f0cfee426b60df9a7fddef5547526e73",
+    "experiments/shim-c-v2/stage3-audit/address-diagnostic/raw01/result.json": "f17ebd41036340e05c0ba38e5a2c67bb82dad20fbd9a5d46e16938da65d297ea",
+    "experiments/shim-c-v2/stage3-audit/address-diagnostic/typed01/result.json": "077da17f3c3ab6491330d634932917fe5382025336857de4d85304a7e0d60e0c",
+    "experiments/shim-c-v2/stage3-conv/address-review.json": "fc90e4af1a05cbf8db97dfcc949d379253889db007a133f1dabe34502a9d538c",
+    "experiments/shim-c-v2/stage3-audit/old-source-preservation.json": "3c87d3abe921478481915dbffed2379b9fac527af30da6af1748234910d81e74"
+  },
+  "native_searches": [
+    {
+      "path": "experiments/shim-c-v2/stage3-audit/native-results.json",
+      "sha256": "5d82ed143cf9b0a655b834ddad08b7769e0be240a85812825a4ff6e589bdfce4",
+      "kernels_executed": 9,
+      "finite_search_only": true
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-audit/stress01/native-results.json",
+      "sha256": "19980dd65db7bc828658e086962800d1a83df114d442aac23840a6841fa6b194",
+      "kernels_executed": 9,
+      "finite_search_only": true
+    }
+  ],
+  "tool_fix": "Independent value-context logical-negation frontend; controls and old f32-vadd full 571/571 replay accepted. Not a new kernel proof.",
+  "scope": "All nine received proof changes and full attempts. Selected diagnostics and global-only reports are not complete proofs; missing body raw remains unknown. See group reports for exact versions, pending VCs and run history.",
+  "push_authorized": false
+}

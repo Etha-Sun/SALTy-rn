@@ -1,0 +1,165 @@
+{
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/frama-c.py",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-model",
+    "Typed+raw+float",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "tip,z3,cvc5",
+    "-wp-par",
+    "1",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-fct",
+    "bits_i8,__riscv_vle8_v_i8m2,__riscv_vsll_vx_i8m2,__riscv_vand_vx_i8m2,__riscv_vsext_vf2_i16m4",
+    "-wp-driver",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/complex_fp.driver",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/components01-session",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/logs/components01.json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/unit.c"
+  ],
+  "scope": "Complete selected helper bodies and RTE only; not full kernel. No implementations skipped within these selected bodies.",
+  "proof_sha256": "bec55a1cb749f01972aa5814a89e23e5dfd8181ab65511de876ac9e44fd3f3ef",
+  "budget_seconds": 180,
+  "exit": 0,
+  "seconds": 114.06216286600102,
+  "complete": false,
+  "raw_total": 71,
+  "raw_passed": 66,
+  "pending": [
+    {
+      "goal": "typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved",
+      "property": "riscv_vand_vx_i8m2_loop_invariant_2",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/quantized.c",
+      "line": 45,
+      "function": "__riscv_vand_vx_i8m2",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0862,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.111,
+          "success": 1
+        }
+      ],
+      "subgoals": 2,
+      "tactics": 1,
+      "proved": 1,
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow",
+      "property": "riscv_vsll_vx_i8m2_assert_rte_signed_overflow",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/quantized.c",
+      "line": 42,
+      "function": "__riscv_vsll_vx_i8m2",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0519,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_complex_fp_bits_i8_ensures",
+      "property": "bits_i8_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/quantized.c",
+      "line": 13,
+      "function": "bits_i8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0331,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_complex_fp_bits_i8_call_memcpy_requires_valid_src",
+      "property": "memcpy_requires_valid_src",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/quantized.c",
+      "line": 14,
+      "function": "bits_i8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0281,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_complex_fp_bits_i8_call_memcpy_requires_separation",
+      "property": "memcpy_requires_separation",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r2/.build/diagnostic01/annotated/quantized.c",
+      "line": 14,
+      "function": "bits_i8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0536,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "3", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-conv/revision2/f32-dwconv2d-chw/logs/selected02.json", "-wp-fct", "equivalent", "-wp-prop", "stage3_height,stage3_rows,stage3_vl", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-conv/revision2/f32-dwconv2d-chw/.build/guard02/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-conv/revision2/f32-dwconv2d-chw/.build/guard02/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] neon.c:29: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: uint32*)
+[wp] 9 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_height_preserved (Qed 8.8s) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_rows_preserved (Qed 9s) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_rows_2_preserved (Qed 15s) (CVC5) (Stronger)
+[wp] Proved goals:    6 / 9
+  Qed:             1 (57ms-7.5s-16.2s)
+  CVC5 1.2.1:      5 (235ms-837ms-1.7s)
+  Timeout:         3
+[wp:pedantic-assigns] utils.c:7: Warning: 
+  No 'assigns' specification for function 'round_up_po2'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] utils.c:9: Warning: 
+  No 'assigns' specification for function 'doz'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:3: Warning: 
+  No 'assigns' specification for function 'vld1q_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_repr.c:3: Warning: 
+  No 'assigns' specification for function 'vandq_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_repr.c:9: Warning: 
+  No 'assigns' specification for function 'vreinterpretq_u32_f32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_repr.c:13: Warning: 
+  No 'assigns' specification for function 'vreinterpretq_f32_u32'.
+  Callers assumptions might be imprecise.

@@ -1,0 +1,25 @@
+--- a/src/plugins/wp/CodeSemantics.ml
++++ b/src/plugins/wp/CodeSemantics.ml
+@@ -149,13 +149,20 @@
+   (* -------------------------------------------------------------------------- *)
+ 
+   let exp_unop env typ unop e =
++    (* Logical negation has an integer result even for pointer/float operands.
++       Select its semantics from the operand type; arithmetic unary operators
++       retain the C expression result type (including integer promotions). *)
++    let operation_typ = if unop = LNot then Cil.typeOf e else typ in
+     let v =
+-      match Ctypes.object_of typ , unop with
++      match Ctypes.object_of operation_typ , unop with
+       | C_int i , Neg -> Cint.iopp i (val_of_exp env e)
+       | C_int i , BNot -> Cint.bnot i (val_of_exp env e)
+       | C_float f , Neg -> Cfloat.fopp f (val_of_exp env e)
+       | C_int _ , LNot -> Cvalues.bool_eq (val_of_exp env e) F.e_zero
+-      | C_float _ , LNot -> Cvalues.bool_eq (val_of_exp env e) F.e_zero_real
++      | C_float f , LNot ->
++        Cvalues.is_true
++          (Cfloat.feq f (val_of_exp env e)
++             (Cfloat.float_of_real f F.e_zero_real))
+       | C_pointer _ , LNot -> Cvalues.is_true (M.is_null (loc_of_exp env e))
+       | _ ->
+         Warning.error "Undefined unary operator (%a)" Printer.pp_typ typ

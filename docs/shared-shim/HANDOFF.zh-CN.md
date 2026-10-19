@@ -1,5 +1,7 @@
 # feat/shim-c 接手说明
 
+第三阶段9个复杂kernel的实际proof续作、独立工具修复与逐项未证状态见 [STAGE3.zh-CN.md](STAGE3.zh-CN.md)。本阶段新增整核通过0；原target未改，未经用户允许不push。
+
 当前机器从 `f2f8d2c` 接手后的独立环境恢复与571/571小复验，见 [LOCAL-RECOVERY.zh-CN.md](LOCAL-RECOVERY.zh-CN.md)。下文原服务器路径与历史锁保留，不代表已在当前机器原路径恢复。
 
 接手后的26项分工和最新独立尝试见 [PROOF-WORK-PLAN.zh-CN.md](PROOF-WORK-PLAN.zh-CN.md)：qu8-f32-vcvt新完整报告剩7项；qs8新候选预算耗尽无完整body报告。新增整核通过0，暂不push。

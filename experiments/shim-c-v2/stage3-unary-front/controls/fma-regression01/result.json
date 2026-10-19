@@ -1,0 +1,87 @@
+{
+  "name": "fma-regression01",
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/frama-c.py",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "z3,cvc5",
+    "-wp-par",
+    "1",
+    "-wp-timeout",
+    "10",
+    "-wp-cache",
+    "none",
+    "-wp-model",
+    "Typed+raw+float",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls/fma-regression01/raw.json",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls/fma-regression01/.build/session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/controls.c"
+  ],
+  "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c",
+  "model_lock_sha256": "18fae880dd3039ce8d2a5dbc5840052444be0dd0cd11916c2cb64e0fbe000973",
+  "source_sha256": "7c2f6cfd0fcad00d903d1aa9023b84a40081c1354d9581b249e31e11ce91d335",
+  "exit": 0,
+  "seconds": 35.36630535603035,
+  "raw_total": 18,
+  "raw_passed": 16,
+  "pending": [
+    {
+      "goal": "typed_raw_fma_wrong_false_ensures",
+      "property": "wrong_false_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/controls.c",
+      "line": 6,
+      "function": "wrong_false",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_wrong_nan_ensures",
+      "property": "wrong_nan_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/controls.c",
+      "line": 4,
+      "function": "wrong_nan",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00623,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ]
+}

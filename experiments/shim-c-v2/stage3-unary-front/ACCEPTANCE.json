@@ -1,0 +1,104 @@
+{
+  "status": "isolated_frontend_controls_and_known_full_replay_accepted",
+  "scope": "Value-context logical negation repair, native IEEE; compiler/ISA correspondence remain TCB. No complex kernel accepted.",
+  "model_checks": {
+    "handoff-model-front": {
+      "lock_sha256": "a04db83a4cb7bf0b5832a119c558e101dd433dfcd80309bc64920ce6c01baf8b",
+      "files_checked": 9975,
+      "unchanged": true
+    },
+    "handoff-model-plus": {
+      "lock_sha256": "f6756e5cf0665df060894ccf02993483bd8306f52795a3dd5f739296e110fc67",
+      "files_checked": 10053,
+      "unchanged": true
+    },
+    "stage3-unary-front": {
+      "lock_sha256": "18fae880dd3039ce8d2a5dbc5840052444be0dd0cd11916c2cb64e0fbe000973",
+      "files_checked": 10056,
+      "unchanged": true
+    }
+  },
+  "controls": {
+    "controls_accepted": true,
+    "model_lock_sha256": "18fae880dd3039ce8d2a5dbc5840052444be0dd0cd11916c2cb64e0fbe000973",
+    "checks": [
+      {
+        "name": "unary-raw03",
+        "raw_sha256": "abff6da674ce38c90d91729d38ad33bca40c29f0144040bed7b98142f1559fa6",
+        "positive_passed": 17,
+        "raw_total": 19,
+        "intended_negative_unproved": [
+          "wrong_negative_zero_not_ensures",
+          "wrong_pointer_not_ensures"
+        ],
+        "accepted": true
+      },
+      {
+        "name": "unary-typed03",
+        "raw_sha256": "cf0f50f497b0eddeae19a14a4b38c2e14f4d41b7b224f821c46f8d7f8b9001e4",
+        "positive_passed": 17,
+        "raw_total": 19,
+        "intended_negative_unproved": [
+          "wrong_negative_zero_not_ensures",
+          "wrong_pointer_not_ensures"
+        ],
+        "accepted": true
+      },
+      {
+        "name": "ieee-regression01",
+        "raw_sha256": "6334b23d3aaaa0aeae23fbf34f233a6022967755d05601547528c655dc743936",
+        "positive_passed": 23,
+        "raw_total": 26,
+        "intended_negative_unproved": [
+          "impossible_ensures",
+          "wrong_literal_sign_ensures",
+          "wrong_nan_cast_ensures"
+        ],
+        "accepted": true
+      },
+      {
+        "name": "fma-regression01",
+        "raw_sha256": "8fcc85ba2692c0c191db5a0d3911a70a1f596175557b62aacdb157208242e517",
+        "positive_passed": 16,
+        "raw_total": 18,
+        "intended_negative_unproved": [
+          "wrong_false_ensures",
+          "wrong_nan_ensures"
+        ],
+        "accepted": true
+      }
+    ],
+    "whole_kernel_replay": "pending"
+  },
+  "known_full_replay": {
+    "kernel": "f32-vadd",
+    "complete": true,
+    "raw_passed": 571,
+    "raw_total": 571,
+    "pending": [],
+    "summary_sha256": "32ae08a19c8d692be82f3121f5a3b67c5cbca1d389ab5d628c556c5a743eed42",
+    "raw_sha256": "d442210d6bedd45f1d411491e8ab56010a2aec7f700cef396a1f0fc89188edf1",
+    "frozen_sha256": "9ef3d65551992e65ee191384caa8a8b133b2371b5b39887b39509415fdb19f2f",
+    "seconds": 250.437
+  },
+  "argmax_original_raw_configuration_diagnostic": {
+    "raw_passed": 1,
+    "raw_total": 6,
+    "type_error_reproduced_after_fix": false,
+    "raw_sha256": "d8504646e5dc4825f36c47603de4322b85908d326e0dc5b50400e0fe5840f205",
+    "whole_kernel_accepted": false
+  },
+  "argmax_full_attempt": {
+    "complete": false,
+    "exit": 124,
+    "seconds": 311.38,
+    "body_raw_present": false,
+    "global_only_raw": {
+      "passed": 5,
+      "total": 5
+    },
+    "summary_sha256": "2e09238b81611eb7fd63c16728cbdde828a2100b35718a53d6e72fbf961155a7",
+    "actual_wp_model": "Typed+raw+float",
+    "note": "command is the base command; actual_command is the pinned execution. Global-only merged raw is not a body report."
+  }
+}

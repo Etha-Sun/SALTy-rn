@@ -1,0 +1,33 @@
+阶段结束，新增整核通过0/3，没有新kernel反例或target修改；未commit/push。
+模型固定handoff-model-plus，旧模型/锁/实现/spec/wrapper均不改。
+
+f32-conv-hwc2chw
+  最新实质候选 revision3/f32-conv-hwc2chw。
+  新helper完整所选body：6函数91/91，含inactive-lane新结论，非整kernel。
+  新主cursor/VL/ky定点4/5，剩stage3_cursor preserved。
+  首版300秒full01与revision3 1200秒full03均exit124，无最终body raw，计数未知。
+  global6/6单独保存，不能充当完整body；full03实际进入主程序，Qed某义务耗时约80秒。
+
+f32-dwconv-minmax
+  最新实质候选 revision5/f32-dwconv-minmax，selected05 5/5，pending为空仅指该定点。
+  前置同一块对齐cut使revision4定点4/5变为5/5；没有删除/假设该义务。
+  最新完整尝试是revision4 full04 300秒exit124，无最终body raw。
+  revision5未做完整验收，不把revision4结果移植给revision5。
+  输入row/packed weight有效性与uintptr+0/+stride、canonical_nan、最终输出仍需全量证明。
+  初版多assert一注释块是候选语法错误，失败保留，revision4拆分后实际解析/控制通过。
+
+f32-dwconv2d-chw
+  最新实质候选 revision2/f32-dwconv2d-chw，frame补充后selected02 6/9。
+  剩NEON height preserved、NEON rows preserved、RVV rows preserved。
+  最新完整尝试是首版full01 300秒exit124，无最终body raw。
+  revision2只做定点，不声称全量；位重解释/memcpy/地址有效性及最终输出关系未证。
+
+所有实际进入后续定点/全量WP步骤的候选都先通过同上下文正反控制，false未证；解析/环境失败版单独记录，不能说控制通过。最终源/模型SHA审计见STATUS.json。
+未执行静态中间版：revision2/conv、revision2/minmax（其工作分别并入revision3/conv、revision4/minmax）。
+原始Unknown prover、注释解析失败、run03重复控制及独占日志拒绝完整保留，并在README说明。
+新完整尝试以单worker执行；短时重复控制已如实披露，后续队列严格串行。
+没有因超时缩小输入域、使用Bytes+float/Real、改FMA或修改实现。
+
+独立只读review：unary-front-review.json核对新unary补丁与四组原始语义控制；
+cross-review.json抽查GEMM/IGEMM r3/r4、SPMM frame-v3注释、raw tokens与合同边界。
+两个review都不是对别的kernel整链证明的验收。

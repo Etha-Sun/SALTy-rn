@@ -1,0 +1,31 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-prover", "z3,cvc5", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r1/logs/full01-model-control.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r1/logs/full01-model-control.c", "-wp-skip-fct", "__riscv_vfadd_vv_f32m8,__riscv_vfmacc_vf_f32m8,__riscv_vfmax_vv_f32m8,__riscv_vfmin_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_u32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,doz,round_down_po2,vaddq_f32,vaddq_u32,vaddv_f32,vaddvq_f32,vcombine_f32,vdupq_lane_f32,vdupq_n_u32,vextq_f32,vfma_f32,vfmaq_lane_f32,vfmaq_laneq_f32,vget_high_u32,vget_lane_f32,vget_low_u32,vld1_dup_f32,vld1_f32,vld1q_lane_f32,vld1q_u32,vld2_dup_f32,vld2q_dup_f32,vmax_f32,vmin_f32,vmlaq_f32,vmovq_n_f32,vst1_lane_u32,vst1_u32,vst1q_lane_f32,vst1q_u32,vsubq_f32,vzip1q_f32,vzip2q_f32,xnn_prefetch_to_l1", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "shim_control_false,shim_control_true", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r1/.build/full01/annotated/complex_fp.driver"]
+[kernel] Parsing /srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/qd8-f32-qc4w-gemm-minmax-r1/logs/full01-model-control.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:246: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:251: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:257: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:263: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:269: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function shim_control_false
+[rte:annot] annotating function shim_control_true
+[wp] 4 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_shim_control_false_ensures (Z3)
+[wp] Proved goals:    7 / 8
+  Terminating:     2
+  Unreachable:     2
+  Qed:             3
+  Timeout:         1

@@ -1,0 +1,29 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-par", "1", "-wp-timeout", "10", "-wp-cache", "none", "-wp-model", "Typed+float", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls/ieee-regression01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls/ieee-regression01/.build/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-front/semantic.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/shim-c-v2/model-front/semantic.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function impossible
+[rte:annot] annotating function literal_negative_zero
+[rte:annot] annotating function logic_cast_nan
+[rte:annot] annotating function multiply_zero
+[rte:annot] annotating function narrow_infinity
+[rte:annot] annotating function narrow_minuszero
+[rte:annot] annotating function narrow_nan
+[rte:annot] annotating function negate_zero
+[rte:annot] annotating function widen_infinity
+[rte:annot] annotating function widen_minuszero
+[rte:annot] annotating function widen_nan
+[rte:annot] annotating function wrong_literal_sign
+[rte:annot] annotating function wrong_nan_cast
+[wp] 26 goals scheduled
+[wp] [Timeout] typed_fma_wrong_literal_sign_ensures (Qed 0.81ms) (Z3)
+[wp] [Timeout] typed_fma_wrong_nan_cast_ensures (Qed 2ms) (Z3)
+[wp] [Timeout] typed_fma_impossible_ensures (Z3)
+[wp] Proved goals:   49 / 52
+  Terminating:    13
+  Unreachable:    13
+  Qed:            13 (0.50ms-0.51ms-2ms)
+  CVC5 1.2.1:     10 (11ms-23ms-48ms)
+  Timeout:         3

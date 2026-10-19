@@ -1,0 +1,32 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-par", "1", "-wp-timeout", "5", "-wp-cache", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-audit/address-diagnostic/raw01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-audit/address-diagnostic/raw01/.build/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-audit/address-diagnostic/control.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/shim-c-v2/stage3-audit/address-diagnostic/control.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function byte_step
+[rte:annot] annotating function roundtrip
+[rte:annot] annotating function typed_step
+[rte:annot] annotating function wrong_roundtrip
+[wp] 8 goals scheduled
+[wp] [Timeout] typed_raw_fma_byte_step_ensures (Qed 2ms) (Z3)
+[wp] [Unknown] typed_raw_fma_wrong_roundtrip_ensures (Qed 1ms) (CVC5)
+[wp] Proved goals:   14 / 16
+  Terminating:     4
+  Unreachable:     4
+  Qed:             4 (1ms-0.94ms-2ms)
+  CVC5 1.2.1:      2 (51ms-56ms)
+  Timeout:         1
+  Unknown:         1
+[wp:pedantic-assigns] experiments/shim-c-v2/stage3-audit/address-diagnostic/control.c:4: Warning: 
+  No 'assigns \result \from ...' specification for function 'roundtrip'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] experiments/shim-c-v2/stage3-audit/address-diagnostic/control.c:7: Warning: 
+  No 'assigns \result \from ...' specification for function 'byte_step'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] experiments/shim-c-v2/stage3-audit/address-diagnostic/control.c:10: Warning: 
+  No 'assigns \result \from ...' specification for function 'typed_step'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] experiments/shim-c-v2/stage3-audit/address-diagnostic/control.c:12: Warning: 
+  No 'assigns \result \from ...' specification for function 'wrong_roundtrip'returning pointer type.
+  Callers assumptions might be imprecise.

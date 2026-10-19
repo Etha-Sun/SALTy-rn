@@ -1,0 +1,83 @@
+{
+  "review_utc": "2026-10-19T07:57:20.721095+00:00",
+  "reviewer": "environment_rebuild subagent",
+  "accepted_for_declared_scope": true,
+  "read_only": true,
+  "source_sha_match": true,
+  "patch_sha_match": true,
+  "actual_source_diff_exactly_matches_patch": true,
+  "old_code_semantics_sha256": "ab931b98fd91afdc018026c3997c56437d7c94ddaf58dcf11ce914c74be28df4",
+  "new_code_semantics_sha256": "39794cff44ff419bf1fc5d17670ac6903495d76cd963865a61c639c052d6acbf",
+  "patch_sha256": "d13ce8db189e4e7bd3300447f0374e2429f0e4cee926377f4a5030697a2ff8aa",
+  "controls": [
+    {
+      "name": "unary-raw03",
+      "raw_sha256": "abff6da674ce38c90d91729d38ad33bca40c29f0144040bed7b98142f1559fa6",
+      "sha_matches_record": true,
+      "raw_total": 19,
+      "passed": 17,
+      "unproved": [
+        "wrong_negative_zero_not_ensures",
+        "wrong_pointer_not_ensures"
+      ],
+      "negative_set_matches": true
+    },
+    {
+      "name": "unary-typed03",
+      "raw_sha256": "cf0f50f497b0eddeae19a14a4b38c2e14f4d41b7b224f821c46f8d7f8b9001e4",
+      "sha_matches_record": true,
+      "raw_total": 19,
+      "passed": 17,
+      "unproved": [
+        "wrong_negative_zero_not_ensures",
+        "wrong_pointer_not_ensures"
+      ],
+      "negative_set_matches": true
+    },
+    {
+      "name": "ieee-regression01",
+      "raw_sha256": "6334b23d3aaaa0aeae23fbf34f233a6022967755d05601547528c655dc743936",
+      "sha_matches_record": true,
+      "raw_total": 26,
+      "passed": 23,
+      "unproved": [
+        "impossible_ensures",
+        "wrong_literal_sign_ensures",
+        "wrong_nan_cast_ensures"
+      ],
+      "negative_set_matches": true
+    },
+    {
+      "name": "fma-regression01",
+      "raw_sha256": "8fcc85ba2692c0c191db5a0d3911a70a1f596175557b62aacdb157208242e517",
+      "sha_matches_record": true,
+      "raw_total": 18,
+      "passed": 16,
+      "unproved": [
+        "wrong_false_ensures",
+        "wrong_nan_ensures"
+      ],
+      "negative_set_matches": true
+    }
+  ],
+  "reasoning": [
+    "LNot result type is int even for pointer/float operands; selecting its operation by operand type is correct.",
+    "Pointer branch uses M.is_null and Cvalues.is_true; result is int 0 or 1.",
+    "Float branch uses native Cfloat.feq with a same-precision positive-zero value; both signed zeros produce true, NaN/infinities/nonzero values produce false.",
+    "Neg/BNot continue using expression result type, retaining integer promotions; no change to these branches.",
+    "No added axiom, input restriction, forced Real model, memory-model change, or kernel source change is present in this patch."
+  ],
+  "limits": [
+    "Source review plus finite positive/negative controls, not formal correctness of the whole frontend.",
+    "Covers currently supported scalar types and the declared numerical observation; no claim about additional scalar categories or floating flags/payloads.",
+    "10894-file one-change inventory is recorded in build-result.json; reviewer independently compared the changed source pair and exact patch, not all 10894 files.",
+    "The root agent reported strict f32-vadd571/571 replay; this review independently checks the four listed raw control files, not that separate complete replay.",
+    "Conv proof runs remain on unchanged handoff-model-plus and do not use this new unary frontend."
+  ],
+  "records_sha256": {
+    "experiments/shim-c-v2/stage3-unary-front/source-provenance.json": "45f6d80620b9293ba7eef8f00500fd851a3f685192e974f5431dc0e55191c5f9",
+    "experiments/shim-c-v2/stage3-unary-front/build-result.json": "cacc336d807c00da06b04ef7549c599ba421866772268c6e5165043bcade4240",
+    "experiments/shim-c-v2/stage3-unary-front/control-acceptance.json": "01a6eb39ac1b4201b8040ab1c27e46789e839c09d6acc4ead4e3a0e8227998b2",
+    "experiments/shim-c-v2/stage3-unary-front/controls-v3.c": "a94f6662a5a0f245c1ad67da32091f7730d23c4c86f6e14fd425ff27ea7574f2"
+  }
+}

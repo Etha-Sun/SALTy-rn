@@ -1,0 +1,87 @@
+{
+  "name": "unary-raw03",
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/frama-c.py",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "z3,cvc5",
+    "-wp-par",
+    "1",
+    "-wp-timeout",
+    "10",
+    "-wp-cache",
+    "none",
+    "-wp-model",
+    "Typed+raw+float",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls/unary-raw03/raw.json",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls/unary-raw03/.build/session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls-v3.c"
+  ],
+  "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c",
+  "model_lock_sha256": "18fae880dd3039ce8d2a5dbc5840052444be0dd0cd11916c2cb64e0fbe000973",
+  "source_sha256": "a94f6662a5a0f245c1ad67da32091f7730d23c4c86f6e14fd425ff27ea7574f2",
+  "exit": 0,
+  "seconds": 26.305555144092068,
+  "raw_total": 19,
+  "raw_passed": 17,
+  "pending": [
+    {
+      "goal": "typed_raw_fma_wrong_negative_zero_not_ensures",
+      "property": "wrong_negative_zero_not_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls-v3.c",
+      "line": 8,
+      "function": "wrong_negative_zero_not",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00143,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_wrong_pointer_not_ensures",
+      "property": "wrong_pointer_not_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/controls-v3.c",
+      "line": 10,
+      "function": "wrong_pointer_not",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00144,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ]
+}

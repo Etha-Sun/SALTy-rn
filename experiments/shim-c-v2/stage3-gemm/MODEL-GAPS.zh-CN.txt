@@ -1,0 +1,9 @@
+实际VC与只读模型检查（不改变当前模型）
+
+1. GEMM seed的printseed01显示两次向量局部load/赋值产生Mf32上的memcpy。load合同关联第一份memory，而递归参考原先读后续memory；这要求局部对象与原weight区域分离及frame。memory.mlw的memcpy是具体map定义，separated时保留旧memory；eqmem_memcpy给出相应frame定理。r3将参考锚定bias-load前label并增加输入/weight读frame，仍须实际证明。
+
+2. 当前handoff-model-plus/wp-share/why3/frama_c_wp/memaddr.mlw:137起只声明int_of_addr/addr_of_int，并给出null转换和statically_allocated时的直接roundtrip；没有一般的指针位移/整数地址加法交换定理。不能从这种抽象接口凭空推出uintptr+offset再转指针的真实ABI线性关系。GEMM/IGEMM的相应未证不自动意味着kernel错误；本任务没有增加新地址axiom，也没有修改模型。
+
+3. canonical_nan的uint32→float memcpy是另一项实际body缺口。当前完整日志记录ensures、assigns与memcpy前置条件超时，未得到反例。Typed整数/浮点地址与字节表示桥需要独立具体模型审计，不能偷换Bytes+float或Real，也不能用外部ghost合同假设通过。
+
+4. qd8旧quantized.c多个关键callee没有合同；这会让caller缺少lane内容信息。r2只对真实bits_i8/load/shift/and/signextend补合同/循环并安排完整选定body+RTE诊断。bits_i8内部memcpy证明是否闭合必须看原始VC，不能把callee的已写合同当成已证。

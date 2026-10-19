@@ -1,0 +1,29 @@
+当前整核新增通过：0 / 3。三项均有实际proof增补、独立冻结和完整尝试；没有target反例或target修复。
+
+f32-gemm-minmax
+  原冻结：v4-campaign/f32-gemm-minmax/frozen.json，原SHA及proof SHA见各新版manifest stage3字段。
+  最新已执行完整候选：f32-gemm-minmax-r3，full01（1200秒主体预算），1218.995秒结束，exit124；无完整body raw。
+  已完成定点：r3 diagnostic01，3/6。seed/step及NEON累加器建立通过；NEON保持、RVV建立/保持timeout。
+  后继：r4 diagnostic01完整raw 4/7；全参数FMA同余lemma实际证明通过，原3项累计/RVV目标仍timeout。
+  关键缺口：uintptr游标、局部struct memcpy/frame、累加保持、输出wrapper关系、canonical_nan真实位桥。
+
+f32-igemm-minmax
+  最新完整尝试候选：f32-igemm-minmax-r1，full01，300秒主体耗尽，无完整body raw。
+  已验证的快照/frame改进：r3 diagnostic01，3/6。seed/step及NEON累加器建立通过；NEON保持、RVV建立/保持timeout。
+  后继：r4 diagnostic01完整raw 4/7，新增FMA同余lemma已证明；NEON保持、RVV建立/保持仍timeout。
+  关键缺口：indirection表与两层累计的frame、uintptr游标、真实FMA累计及wrapper关系。
+
+qd8-f32-qc4w-gemm-minmax
+  最新完整尝试候选：qd8-f32-qc4w-gemm-minmax-r1，full01，300秒主体耗尽，无完整body raw。
+  最新改进：r2 components01，选定5个真实helper body及RTE，66/71。
+  剩余5项：bits_i8 ensures、memcpy valid_src与separation；vsll signed overflow；vand prefix invariant preserved。
+  下游通过VC可能依赖bits_i8未证合同，不能记整条callee链已证。
+  其他关键缺口：NEON量化helper和整数模运算累计、struct/地址/浮点位桥、完整kernel及wrapper输出关系。
+
+r1三项完整运行的source_guard、unchanged、model_inputs_unchanged、model_control.accepted都true；仍complete=false。
+RESULTS.json严格区分完整body raw、仅global的合并raw、选定属性raw。主体超时而body raw缺失时计数为null，不报告0/0或pending为空为完成。
+所有历史失败、原版和原锁保留。未切新工具模型；未commit/push，主agent负责独立审计。
+
+所有队列已结束。最终最佳proof候选：GEMM r4、IGEMM r4、qd8 r2；其最新完整尝试分别来自GEMM r3、IGEMM r1、qd8 r1。不同版本不混算完整验收。
+
+追加算术尝试已结束：qd8 r3 globals9/16（7项raw verdict=timeout），components02=67/71；r4 globals10/16（6项常数shift raw verdict=unknown），components03=67/71。r4合并范围lemma通过，但其全局lemma集合未闭合。两个components的shift overflow通过均不能被记为独立有效改善，继续保留最佳可用r2 66/71；bits_i8真实body仍未证。原始raw及pending verdict完整保留。17版源与proof SHA核对无变化，无后续运行。

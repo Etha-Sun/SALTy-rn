@@ -1,0 +1,167 @@
+{
+  "reviewer": "environment_rebuild",
+  "utc": "2026-10-19T08:13:27.179777+00:00",
+  "scope": "Read-only inspection of saved evidence/source; no solver, model, target or diagnostic modification. Source hashes below independently recomputed; not a full environment rehash or semantic proof.",
+  "decision": "evidence_consistent_with_nonblocking_wording_clarification",
+  "source_checks": [
+    {
+      "path": "experiments/shim-c-v2/stage3-unary-front/.build/source/src/plugins/wp/MemAddr.ml",
+      "sha256": "49ea01babc875c9a35f6c42506551bde0e8094f3e40e21325813986da81975e3",
+      "source_audit_matches": true,
+      "lock_entry_matches": false,
+      "lock_contains": false
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-unary-front/.build/source/src/plugins/wp/MemTyped.ml",
+      "sha256": "ad0d3c4e8e568a09d47bb658767e5ba476cc9e957f16b14981370642c5e235b5",
+      "source_audit_matches": true,
+      "lock_entry_matches": false,
+      "lock_contains": false
+    },
+    {
+      "path": "experiments/shim-c-v2/handoff-model-plus/wp-share/why3/frama_c_wp/memaddr.mlw",
+      "sha256": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f",
+      "source_audit_matches": true,
+      "lock_entry_matches": true,
+      "lock_contains": true
+    }
+  ],
+  "model_lock_sha256": "18fae880dd3039ce8d2a5dbc5840052444be0dd0cd11916c2cb64e0fbe000973",
+  "cil_sha256": "2b09f3dd4ac67c90815bac1b7c8df160b88a636b9e44ed76fc5a8e21288750da",
+  "runs": [
+    {
+      "run": "raw01",
+      "passed": 6,
+      "total": 8,
+      "exit": 0,
+      "source_sha_matches": true,
+      "model_lock_sha_matches": true,
+      "all_properties": [
+        {
+          "goal": "typed_raw_fma_byte_step_ensures",
+          "property": "byte_step_ensures",
+          "passed": false,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_raw_fma_byte_step_assigns",
+          "property": "byte_step_assigns",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_raw_fma_roundtrip_ensures",
+          "property": "roundtrip_ensures",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_raw_fma_roundtrip_assigns",
+          "property": "roundtrip_assigns",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_raw_fma_typed_step_ensures",
+          "property": "typed_step_ensures",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_raw_fma_typed_step_assigns",
+          "property": "typed_step_assigns",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_raw_fma_wrong_roundtrip_ensures",
+          "property": "wrong_roundtrip_ensures",
+          "passed": false,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_raw_fma_wrong_roundtrip_assigns",
+          "property": "wrong_roundtrip_assigns",
+          "passed": true,
+          "verdict": "valid"
+        }
+      ],
+      "raw_sha256": "57c5d469273bc931b03c614be79eee00115abb9fc2290088926f5568f06ffedc",
+      "result_sha256": "f17ebd41036340e05c0ba38e5a2c67bb82dad20fbd9a5d46e16938da65d297ea",
+      "log_sha256": "8de75eae113e8f9974cc48c67cabcac10d26308048ac224c519606beb3d9473a",
+      "command_sha256": "e3dd9584d6e9ac42a2e4d6e7d3a57c84ff1264448978c32d9b1d12a7209e1853"
+    },
+    {
+      "run": "typed01",
+      "passed": 6,
+      "total": 8,
+      "exit": 0,
+      "source_sha_matches": true,
+      "model_lock_sha_matches": true,
+      "all_properties": [
+        {
+          "goal": "typed_fma_byte_step_ensures",
+          "property": "byte_step_ensures",
+          "passed": false,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_byte_step_assigns",
+          "property": "byte_step_assigns",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_fma_roundtrip_ensures",
+          "property": "roundtrip_ensures",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_fma_roundtrip_assigns",
+          "property": "roundtrip_assigns",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_fma_typed_step_ensures",
+          "property": "typed_step_ensures",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_fma_typed_step_assigns",
+          "property": "typed_step_assigns",
+          "passed": true,
+          "verdict": "valid"
+        },
+        {
+          "goal": "typed_fma_wrong_roundtrip_ensures",
+          "property": "wrong_roundtrip_ensures",
+          "passed": false,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_wrong_roundtrip_assigns",
+          "property": "wrong_roundtrip_assigns",
+          "passed": true,
+          "verdict": "valid"
+        }
+      ],
+      "raw_sha256": "3387e864763a5233cb330b44b972856e186c2370719a9fe94313bc13645ec030",
+      "result_sha256": "077da17f3c3ab6491330d634932917fe5382025336857de4d85304a7e0d60e0c",
+      "log_sha256": "4349367a07bdfd5d3bc36ee0bb99ff93e5b847b6bd37e68b80071d55d907f4f6",
+      "command_sha256": "8b02f303e22b21628b27cb07dd8adcca8358138925da177238d666e7481d9295"
+    }
+  ],
+  "readme_sha256": "565aee8bbcbf2062feea1ca79620d4b9796134bb114e3c853c7e8f5d95e423be",
+  "findings": [
+    "Both raw reports have exactly 8 goals, 6 passed. Both byte_step ensures time out; wrong_roundtrip ensures is unknown in raw01 and timeout in typed01. All four assigns pass; direct roundtrip and typed_step ensures pass. Exit 0 is not all-goals acceptance.",
+    "MemTyped.ml:927-928 uses addr_of_int(v) and Cint.of_integer(iota,int_of_addr(l)); integer conversion can truncate. MemAddr.ml:300-307 simplifies int_of_addr(addr_of_int(a)) to a and zero conversions. The simplifier direction is integer-to-address-to-integer, not the direct pointer-to-integer-to-pointer control.",
+    "cil.ml:5744-5753 removes direct nested pointer-to-integer-to-pointer casts when can_hold_ptr; this explains the direct-control success without demonstrating a general WP address bridge. README wording one kind of roundtrip is technically compatible but should specify this direction and distinguish CIL elimination.",
+    "memaddr.mlw:137-145 declares abstract conversions, null conversion, and a statically_allocated pointer inverse; there is no direct linear int_of_addr/shift equation in the inspected physical-address section. These are pre-existing model axioms, not new additions.",
+    "README explicitly avoids concluding impossibility, a real counterexample, or a repaired general bridge from timeout/unknown. That limitation is correct.",
+    "The byte_step requires prevent multiplication overflow and demand a readable typed range, but do not establish a universal ISO C integer-address arithmetic law or explicitly bound uintptr base-plus-offset. This is an implementation/model-specific diagnostic obligation; no recommendation to add kernel preconditions or an unproved bridge axiom."
+  ],
+  "suggested_readme_clarification": "Specify MemAddr integer→address→integer simplification versus CIL direct pointer→integer→pointer elimination, and say the offset equality needs an explicit implementation/model contract rather than being an unconditional ISO C guarantee."
+}

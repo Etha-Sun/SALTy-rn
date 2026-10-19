@@ -1,0 +1,112 @@
+{
+  "name": "f32-igemm-minmax",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-igemm-minmax/neon.c",
+      "sha256": "e7a1cb0fa88abfc4588d289781c03daf29832466fbdcc88861fc3f6cf2683b6a"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-igemm-minmax/rvv.c",
+      "sha256": "551fb621ce3354fc61c0e3229325d654cf1ffe96c8fa7f17a40394bc29398d3a"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/f32-igemm-minmax/spec.h",
+      "sha256": "fc0152c1a336da574e1e745515764dc10abdf91c775a0db90c964089ed283b99"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-igemm-minmax/harness.c",
+      "sha256": "1b467238f46365337c97d9e788bdb601ba7e5dc3e7d1ed5cf68563ab5d334eaf"
+    },
+    "native_types.h": {
+      "path": "experiments/shared-extension/complex/shared/native_types.h",
+      "sha256": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1"
+    },
+    "fp_primitives.h": {
+      "path": "experiments/shared-extension/complex/shared/fp_primitives.h",
+      "sha256": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "fp_minmax.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax.c",
+      "sha256": "92ea301e85f8ce7cf917bf21104087d7619cb8c5c674f4e7c32b879565a05381"
+    },
+    "fp_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory.c",
+      "sha256": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b"
+    },
+    "fp_arithmetic.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic.c",
+      "sha256": "ce46742c5a7717cc8e4ecdaf2820e03b0139f220dd034aaac8633307aad3c9a3"
+    },
+    "fp_memory_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory_m4.c",
+      "sha256": "70a9fb8d6ef08a7dc600c0759e6f06450ecf605ff855d0c22beb97e80b7cb2dd"
+    },
+    "fp_arithmetic_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic_m4.c",
+      "sha256": "ee1555baaa35553f9faa0c78faeed7fe9d33fe2bd6e0422f6dfb60640bf1cd7a"
+    },
+    "fp_minmax_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax_m4.c",
+      "sha256": "8e499e6bf5216a9910cebda40218e06f2594e60e036c9e4c36d75007945217d2"
+    },
+    "fp_masks_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks_m4.c",
+      "sha256": "e07e40fd80d9b5fa7caa44aa57c0d88f7e1ec3e5e716f1f210db500387395d83"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-igemm-minmax/unit.c",
+      "sha256": "2c582a2459bd31dd5fc4f52b7744f475f02994810f669ff0411e155a2f18c1ce"
+    },
+    "model_runner.py": {
+      "path": "experiments/shim-c-v2/stage3-gemm/serial-v4.py",
+      "sha256": "acb9a35d1cdecd09b10730037fd929694852ad5f33df0011e8a80569d5fa7e25"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/handoff-model-plus/float_model_lock.json",
+      "sha256": "f6756e5cf0665df060894ccf02993483bd8306f52795a3dd5f739296e110fc67"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/stage3-gemm/f32-igemm-minmax-r4/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "VLEN_bits": 128,
+  "scope": "Actual NEON and preserved/repaired RVV, all output memory under declared wrapper; FMA/libc and representation bridges not assumed proved",
+  "previous_version": "experiments/shim-c-v2/stage3-gemm/f32-igemm-minmax-r3",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "wp_share": "experiments/shim-c-v2/handoff-model-plus/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/handoff-model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 10,
+  "wp_budget": 1200,
+  "wp_model_variant": "Typed+raw+float",
+  "model_variant_reason": "Safe Raw model retains aggregate initializer relationships; ordinary C and public spec unchanged.",
+  "proof_stage": "Independent proof copy allows private static-helper proof while preceding frozen replay runs unchanged.",
+  "stage3": {
+    "previous_frozen_sha256": "0b91fcb0465c881ef14612acc8081123efff4525425ea33cf868bbac8bd69121",
+    "previous_proof_sha256": "cbc955183a43cfac418cefdbb697126f70025d91f7369a46720e5a57842e6877",
+    "proof_sha256": "c3a18d321038373ec55e66797a7afa18e2f44f5633b820363125b50b3b5387b7",
+    "environment_evidence": "experiments/shim-c-v2/handoff-plus-evidence/summary.json",
+    "implementation_and_public_spec_changes": false,
+    "checker_change": "Independent serial copy: wp-par=1 only.",
+    "previous_candidate_frozen_sha256": "082102b4e9bbb5a47877d2ea5e4eba1bc2456717ada8c1710edf622f21feda9f",
+    "fix": "Add actual proof obligation for all-argument ext_same FMA congruence, no model change or axiom."
+  }
+}

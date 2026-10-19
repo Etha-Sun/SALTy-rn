@@ -1,0 +1,312 @@
+['/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/logs/full-01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/.build/full-01/annotated/complex_fp.driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/.build/full-01/annotated/unit.c', '-wp-skip-fct', '__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32']
+# Actual pinned execution: ['/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '5', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/logs/full-01.json', '-wp-model', 'Typed+raw+float', '-warn-special-float', 'none', '-wp-driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/.build/full-01/annotated/complex_fp.driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/.build/full-01/annotated/unit.c', '-wp-skip-fct', '__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32', '-wp-share', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share', '-wp-why3-config', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-prover", "z3,cvc5", "-wp-timeout", "5", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/logs/full-01.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/.build/full-01/annotated/unit.c", "-wp-skip-fct", "__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-argmaxpool/.build/full-01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmerge_vxm_u32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmv_v_x_u32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_u32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vbslq_f32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vbslq_u32
+[rte:annot] annotating function vcgtq_f32
+[rte:annot] annotating function vdupq_n_u32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_u32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_u32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_u32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_u32
+[wp] integer_memory.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] quantized.c:3: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [100 goals...]
+[wp] fp_masks.c:11: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] integer_memory.c:7: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:7: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [200 goals...]
+[wp] quantized.c:5: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:7: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] fp_masks.c:15: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:9: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:57: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:31: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:18: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:34: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:20: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] 673 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_dest (Qed 22ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_src (Qed 22ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_separation (Qed 20ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vaddq_u32_terminates (Qed 3ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound (Qed 5ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_u32_terminates (Qed 5ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound (Qed 9ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_dest (Qed 20ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_src (Qed 24ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_separation (Qed 23ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_dest (Qed 34ms) (Z3) (Stronger, 4 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_src (Qed 34ms) (Z3) (Stronger, 4 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_separation (Qed 19ms) (Z3) (Stronger, 4 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_dest (Qed 19ms) (CVC5) (Stronger, 6 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_src (Qed 39ms) (CVC5) (Stronger, 6 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_separation (Qed 34ms) (CVC5) (Stronger, 6 warnings)
+[wp] [Unknown] typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_dest (Qed 23ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_src (Qed 8ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_separation (Qed 8ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_dest (Qed 12ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_src (Qed 21ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_separation (Qed 15ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound (Qed 4ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound_2 (Qed 4ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_mem_access (Qed 10ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_terminates (Qed 4ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_index_bound (Qed 10ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_mem_access (Qed 9ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_terminates (Qed 7ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_assert_rte_index_bound (Qed 7ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_terminates (Qed 6ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_assert_rte_index_bound (Qed 8ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_terminates (Qed 4ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_index_bound (Qed 5ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_mem_access (Qed 5ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part2 (Qed 51ms) (CVC5)
+[wp] Warning: Goal Terminates (3/5):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Terminates (3/5):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_terminates_part3 (Qed 57ms) (CVC5)
+[wp] Warning: Goal Terminates (4/5):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Terminates (4/5):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_terminates_part4 (Qed 1.2s) (CVC5)
+[wp] Warning: Goal Terminates (5/5):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Terminates (5/5):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_terminates_part5 (Qed 76ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_ensures_equal (Qed 683ms) (CVC5)
+[wp] Warning: Goal Establishment:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Establishment:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_established (Qed 119ms) (CVC5)
+[wp] Warning: Goal Preservation:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Preservation:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_preserved (Qed 274ms) (CVC5)
+[wp] Warning: Goal Preservation:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Preservation:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_2_preserved (Qed 276ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access (Qed 142ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2 (Qed 136ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_7 (Qed 261ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_8 (Qed 276ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_9 (Qed 34ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_10 (Qed 74ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_11 (Qed 144ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_12 (Qed 216ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_13 (Qed 343ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_14 (Qed 467ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_15 (Qed 605ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_16 (Qed 793ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_17 (Qed 945ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow (Qed 5.2s) (CVC5)
+[wp] Warning: Goal Establishment:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Establishment:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_count_established (Qed 79ms) (CVC5)
+[wp] Warning: Goal Preservation:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Preservation:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_count_preserved (Qed 2.5s) (CVC5)
+[wp] Warning: Goal Establishment:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Establishment:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_index_established (Qed 80ms) (CVC5)
+[wp] Warning: Goal Preservation:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Preservation:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_index_preserved (Qed 2.6s) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_18 (Qed 91ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_19 (Qed 119ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_20 (Qed 259ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_21 (Qed 436ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_22 (Qed 622ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_23 (Qed 868ms) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_24 (Qed 1.2s) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_25 (Qed 1.4s) (CVC5)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_26 (Qed 1.5s) (CVC5)
+[wp] Warning: Goal Establishment:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Establishment:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_channel_bounds_established (Qed 1.9s) (CVC5)
+[wp] Warning: Goal Preservation:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Preservation:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_channel_bounds_preserved (Qed 4.8s) (CVC5)
