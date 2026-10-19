@@ -1,0 +1,11 @@
+--- run30-unary.py
++++ run30-unary-inline-u32.py
+@@ -11,7 +11,7 @@
+ assert data['files']['float_model_lock.json']['sha256']==sha(lockpath)
+ watch={case/'proof.patch':sha(case/'proof.patch'),case/'frozen.json':sha(case/'frozen.json'),Path(__file__).resolve():sha(Path(__file__).resolve()),lockpath:sha(lockpath)}
+ watch.update({ann/n:d for n,d in guard['generated'].items()});watch.update({Path(n) if Path(n).is_absolute() else ROOT/n:d for n,d in lock['files'].items()});assert all(sha(p)==d for p,d in watch.items())
+-cmd=[str(model/'frama-c.py'),'-load-module',str(ROOT/'experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs'),'-machdep','gcc_x86_64','-inline-calls','test_neon,test_rvv','-inline-stmt-contracts','-remove-inlined','test_neon,test_rvv','-wp','-wp-rte','-wp-par','1','-wp-timeout','30','-wp-memlimit','2048','-wp-cache','none','-wp-model',data['wp_model_variant'],'-warn-special-float','none','-wp-share',str(ROOT/data['wp_share']),'-wp-why3-config',str(ROOT/data['wp_why3_config']),'-wp-no-why3-detect','-wp-prover','z3,cvc5','-wp-driver',str(ann/data['driver']),'-wp-report-json',str(logs/(a.name+'.json'))]
++cmd=[str(model/'frama-c.py'),'-load-module',str(ROOT/'experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs'),'-machdep','gcc_x86_64','-inline-calls','test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8','-inline-stmt-contracts','-remove-inlined','test_neon,test_rvv','-wp','-wp-rte','-wp-par','1','-wp-timeout','30','-wp-memlimit','2048','-wp-cache','none','-wp-model',data['wp_model_variant'],'-warn-special-float','none','-wp-share',str(ROOT/data['wp_share']),'-wp-why3-config',str(ROOT/data['wp_why3_config']),'-wp-no-why3-detect','-wp-prover','z3,cvc5','-wp-driver',str(ann/data['driver']),'-wp-report-json',str(logs/(a.name+'.json'))]
+ source=ann/'unit.c'
+ if a.mode=='control':
+  source=logs/(a.name+'.c');source.write_text('#include '+json.dumps(str(ann/'unit.c'))+'\n/*@ assigns \\nothing; ensures \\false; */\nvoid stage3_false(void) {}\n/*@ assigns \\nothing; ensures \\true; */\nvoid stage3_true(void) {}\n');cmd+=['-wp-fct','stage3_false,stage3_true']

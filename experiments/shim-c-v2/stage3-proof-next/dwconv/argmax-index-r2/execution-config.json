@@ -1,0 +1,19 @@
+{
+  "purpose": "Independent real-callee-inline diagnosis; not old checker acceptance",
+  "base_runner": "run30-unary.py",
+  "runner": "run30-unary-inline-u32.py",
+  "runner_sha256": "56b810e7deb21f14d3db61172b2ea26c196c4420035bc5ca188b9264b81444e7",
+  "model": "stage3-unary-front",
+  "inline_callees_added": [
+    "__riscv_vle32_v_u32m8",
+    "__riscv_vmv_v_x_u32m8",
+    "__riscv_vse32_v_u32m8",
+    "__riscv_vmerge_vxm_u32m8"
+  ],
+  "remove_inlined": "test_neon,test_rvv",
+  "actual_u32_definitions_retained": true,
+  "new_function_requires": 0,
+  "new_function_assigns": 0,
+  "proof_change": "Loop annotations only on four real u32 helpers; prior r1 cuts retained",
+  "acceptance_boundary": "All inlined loop invariants, frame, variant and RTE obligations remain debt. Standalone helpers lack valid-pointer/vl function contracts: do not claim their arbitrary-input bodies verified from selected caller proofs."
+}

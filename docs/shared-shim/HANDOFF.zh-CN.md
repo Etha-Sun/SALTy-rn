@@ -1,3 +1,8 @@
+【2026-10-19 当前任务优先级更新】
+当前只处理第三阶段原九项及其真实依赖；用户要求继续直至解决优先三项并尽量完成九项。不得扩展 qs8/qu8 等九项之外任务。允许本地 commit，未经用户重新许可禁止 push。
+最新阶段报告：experiments/shim-c-v2/stage3-proof-next/REPORT.zh-CN.md；检查点 bdf42bf 之后还有工作，先核对 branch/status 保留所有候选与日志。新增整核通过仍 0/9，局部组通过不能称整核通过。
+当前 qualified 模型为 handoff-model-plus；argmax 使用独立 stage3-unary-front。stage3-byte-fp-front-v1 仅未资格认证的独立实验：控制尚未全过，CVC5 原型编码不兼容，严禁用于 kernel 或声称恢复成功。完整失败与未证依赖见新报告及逐项 STATUS。以下历史交接保留，其旧下一步优先级已由本段覆盖。
+
 # feat/shim-c 接手说明
 
 第三阶段9个复杂kernel的实际proof续作、独立工具修复与逐项未证状态见 [STAGE3.zh-CN.md](STAGE3.zh-CN.md)。本阶段新增整核通过0；原target未改，未经用户允许不push。

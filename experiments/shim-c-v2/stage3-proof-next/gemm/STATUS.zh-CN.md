@@ -19,3 +19,17 @@ candidate07 从05派生：增加标量 t 范围及固定4lane具体索引/读取
 08 helper01完整2/2；selected01完整35/38，剩bound_0_0与两步acc。print-bound01准确显示helper forall缺少算术实例化触发，输入未变。09将helper的lane改为显式参数0，无requires、真实空body；helper01完整2/2，selected01完整36/38，仅剩acc_first/second。此时两组packed界和load链已在所选组全部闭合，仍非整核证明。见CHAIN-PROGRESS.json。
 
 10从09派生，未新增helper或lemma，仅在真实FMA前增加8个精确FMA表达式切分和4个广播/旧累加器切分；静态guard已通过，实际50项selected由root启动，当前尚不报告通过。
+
+10 selected01在600.712秒后exit124，无normal_exit/raw，输入不变；因此不能把50 scheduled当完整50项结果，也不替代09。print-eval01（none）完整导出真实eval0_0/dup0公式：当前acc在目标中为局部struct-copy展开后的Mf32_undef读取，而已有归纳关系经memcpy内存映射表达；需区分实例化和frame。11从09派生，仅加入首lane的ground dup/acc/recursive-step/eval四个切分，全部自身VC纳入42项selected，静态guard已通过，待root实际运行。
+
+11 selected01完整37/42，输入SHA不变；ground_step已证明，ground_dup/ground_acc/ground_eval及原两步acc仍未证。print-ground01完整none打印表明递归展开可证；浮点congruence实例化和struct-copy/frame关系分别仍是proof债务，未证不等于target错误。当前最佳局部候选维持09（36/38+helper2/2）；正在补09独立完整inventory，不能沿用05分母。
+
+09完整inventory已完成：body 1206逻辑+32 CFG，globals12，逻辑总分母1218；两部分exit0、normal_exit与final数一致、输入SHA不变。candidate09/INVENTORY.json保留事件SHA；该分母不与05 full成绩混合。
+
+12新增纯float空body/no-requires ghost helper next_fma_actual，以实际三个操作数为参数、conditional post只实例化FMA congruence及ext_same对称/传递；frame与acc未证cuts保留。静态guard通过，等待root实跑helpers完整body与43项selected，尚无新通过结论。
+
+12 helper01完整raw4/4（另4 CFG-only），selected01完整38/43；新增helper自身通过，但与11同样5项pending，尚未减少调用点债务。最佳仍09。focus12.py另备3个ground目标的120秒direct solver诊断，RTE/模型保持，尚未执行；不同策略诊断不能当完整43项验收。
+
+12 focus01已结束：exit0，0/3，3个ground在direct z3/cvc5各120秒仍未证，输入不变；这是独立诊断配置，不替代原组结果。13将完整congruence条件封装为有body predicate并增加ground predicate实例化；helper01已4/4，selected由root运行中。13完整inventory为1213 body+12 globals=1225逻辑，另34 CFG，均exit0/normal/final一致/SHA不变。
+
+14从09独立派生，仅增加真实ghost structcopy诊断：by-value struct输入、真实局部copy与return、4个ground lane断言和4个return ensures、无requires；未在kernel调用。静态guard通过，等待root完整helper body检查，不声称循环frame已修复。

@@ -1,0 +1,133 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "none", "-wp-fct", "round_up_po2", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r2/parse01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r2/parse01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r2/.build/guard01/annotated/unit.c", "-wp-print", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r2/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function round_up_po2
+
+Goal Post-condition 'qd8_round_range' in 'round_up_po2':
+Let x = Mint_0[global(P_n_6792)].
+Let x_1 = 1 + x.
+Let x_2 = land(18446744073709551614, x_1).
+Assume {
+  Type: is_uint64_chunk(Mint_0) /\ is_uint64(x) /\ is_uint64(x_2) /\
+      is_uint64_chunk(Mint_0[global(L___retres_9169) <- x_2]).
+  (* Goal *)
+  When: (Mint_0[global(P_q_6793)] = 2) /\ (x <= 18446744073709551613).
+  (* Assertion 'qd8_round_sum_exact' *)
+  Have: x_1 = to_uint64(to_uint64(2 + x) - 1).
+  (* Assertion 'qd8_round_mask_half' *)
+  Have: (2 * (x_1 / 2)) = land(18446744073709551614, to_uint64(x_1)).
+}
+Prove: (x <= x_2) /\ (x_2 <= x_1).
+
+------------------------------------------------------------
+
+Goal Post-condition 'qd8_round_even' in 'round_up_po2':
+Let x = Mint_0[global(P_n_6792)].
+Let x_1 = 1 + x.
+Let x_2 = land(18446744073709551614, x_1).
+Assume {
+  Type: is_uint64_chunk(Mint_0) /\ is_uint64(x) /\ is_uint64(x_2) /\
+      is_uint64_chunk(Mint_0[global(L___retres_9169) <- x_2]).
+  (* Goal *)
+  When: (Mint_0[global(P_q_6793)] = 2) /\ (x <= 18446744073709551613).
+  (* Assertion 'qd8_round_sum_exact' *)
+  Have: x_1 = to_uint64(to_uint64(2 + x) - 1).
+  (* Assertion 'qd8_round_mask_half' *)
+  Have: (2 * (x_1 / 2)) = land(18446744073709551614, to_uint64(x_1)).
+}
+Prove: (x_2 % 2) = 0.
+
+------------------------------------------------------------
+
+Goal Post-condition 'qd8_round_count' in 'round_up_po2':
+Let x = Mint_0[global(P_n_6792)].
+Let x_1 = 1 + x.
+Let x_2 = 2 * (x_1 / 2).
+Let x_3 = land(18446744073709551614, x_1).
+Assume {
+  Type: is_uint64_chunk(Mint_0) /\ is_uint64(x) /\ is_uint64(x_3) /\
+      is_uint64_chunk(Mint_0[global(L___retres_9169) <- x_3]).
+  (* Goal *)
+  When: (Mint_0[global(P_q_6793)] = 2) /\ (x <= 18446744073709551613).
+  (* Assertion 'qd8_round_sum_exact' *)
+  Have: x_1 = to_uint64(to_uint64(2 + x) - 1).
+  (* Assertion 'qd8_round_mask_half' *)
+  Have: x_2 = land(18446744073709551614, to_uint64(x_1)).
+}
+Prove: x_2 = x_3.
+
+------------------------------------------------------------
+
+Goal Post-condition 'qd8_round_positive' in 'round_up_po2':
+Let x = Mint_0[global(P_n_6792)].
+Let x_1 = 1 + x.
+Let x_2 = land(18446744073709551614, x_1).
+Assume {
+  Type: is_uint64_chunk(Mint_0) /\ is_uint64(x) /\ is_uint64(x_2) /\
+      is_uint64_chunk(Mint_0[global(L___retres_9169) <- x_2]).
+  (* Goal *)
+  When: (Mint_0[global(P_q_6793)] = 2) /\ (0 < x) /\
+      (x <= 18446744073709551613).
+  (* Assertion 'qd8_round_sum_exact' *)
+  Have: x_1 = to_uint64(to_uint64(2 + x) - 1).
+  (* Assertion 'qd8_round_mask_half' *)
+  Have: (2 * (x_1 / 2)) = land(18446744073709551614, to_uint64(x_1)).
+}
+Prove: 0 < x_2.
+
+------------------------------------------------------------
+
+Goal Assertion 'qd8_round_sum_exact' ("utils.c", line 13):
+Let x = Mint_0[global(P_n_6792)].
+Assume {
+  Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+  (* Goal *)
+  When: (Mint_0[global(P_q_6793)] = 2) /\ (x <= 18446744073709551613).
+}
+Prove: (1 + x) = to_uint64(to_uint64(2 + x) - 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'qd8_round_mask_value' ("utils.c", line 14):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'qd8_round_mask_half' ("utils.c", line 15):
+Let x = Mint_0[global(P_q_6793)].
+Let x_1 = Mint_0[global(P_n_6792)].
+Let x_2 = 1 + x_1.
+Assume {
+  Type: is_uint64_chunk(Mint_0) /\ is_uint64(x_1) /\ is_uint64(x).
+  (* Goal *)
+  When: x_1 <= 18446744073709551613.
+  (* Assertion 'qd8_round_sum_exact' *)
+  Have: ((x = 2) -> (x_2 = to_uint64(to_uint64(x_1 + x) - 1))).
+  (* Assertion 'qd8_round_mask_value' *)
+  Have: ((x = 2) -> (to_uint64(lnot(x - 1)) = 18446744073709551614)).
+}
+Prove: (2 * (x_2 / 2)) = land(18446744073709551614, to_uint64(x_2)).
+
+------------------------------------------------------------
+[wp:pedantic-assigns] utils.c:12: Warning: 
+  No 'assigns' specification for function 'round_up_po2'.
+  Callers assumptions might be imprecise.

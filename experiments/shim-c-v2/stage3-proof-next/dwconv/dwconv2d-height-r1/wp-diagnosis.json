@@ -1,0 +1,28 @@
+{
+  "status": "Read-only generated WP diagnosis; no counterexample search or model alteration",
+  "print_sha256": "151a59874f71f2e94690fd7586c10149ad7208ac35b1069f77667ad010a4aff6",
+  "selected_raw": "logs/selected-root01.json",
+  "selected": {
+    "passed": 11,
+    "total": 14,
+    "pending": [
+      "NEON next_height_before",
+      "NEON next_height_bound",
+      "NEON next_height_rows"
+    ]
+  },
+  "rvv_height_group": {
+    "passed": 7,
+    "total": 7,
+    "scope": "height/rows invariant establishment+preservation and three new checked cuts; ghost helper postcondition/assigns separately passed"
+  },
+  "neon_warning": "Old invariant greens depend on three unproved cuts; not an established chain",
+  "bound_goal_Mint0_lines": [
+    "Let x = Mint_0[a].",
+    "Let x_27 = Mint_0[a_1].",
+    "      is_uint64_chunk(Mint_0) /\\ is_uint64_chunk(Mint_157) /\\",
+    "      is_uint64_chunk(Mint_0)."
+  ],
+  "diagnosis": "Post-doz input_height is read from unconstrained final Mint_0, while prior height helper uses Mint_157. The function has exact-result ensures only; absence of frame is visible in exported goal. Arithmetic helper alone cannot supply a memory frame. This is modular proof abstraction, not a real kernel defect.",
+  "possible_followup": "Independently configured inline of actual doz body may recover frame without adding requires/assigns; requires root decision and new execution provenance. Before-cut still has separate long-body frame burden."
+}

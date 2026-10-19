@@ -1,0 +1,96 @@
+--- v3/neon.c
++++ v5/neon.c
+@@ -32,16 +32,39 @@
+     const float32x4_t vmax = vcombine_f32(vminmax.val[1], vminmax.val[1]);
+   #endif
+ 
++  //@ ghost size_t spn_MC=mc;
++  //@ ghost float *spn_output=output;
+   size_t output_decrement = output_stride * nc - 4 * sizeof(float);
++  /*@ loop invariant spn_mc_range: 0<=mc<=spn_MC && mc%4==0;
++      loop invariant spn_output_row: output==spn_output+(spn_MC-mc)/4;
++      loop assigns mc,input,output,errno,spn_output[0..nc*(spn_MC/4+4)-1];
++      loop variant mc;
++  */
+   while XNN_LIKELY(mc >= 4 * sizeof(float)) {
+     const float* w = weights;
+     const int32_t* dmap = widx_dmap;
+     const uint32_t* nnzmap = nidx_nnzmap;
+     size_t n = nc;
++    //@ ghost float *spn_column_4=output;
++    /*@ loop invariant spn_n_4: 0<n<=nc;
++        loop invariant spn_map_4: nnzmap==nidx_nnzmap+(nc-n);
++        loop invariant spn_out_4: output==spn_column_4+(nc-n)*(spn_MC/4+4);
++        loop assigns n,w,dmap,nnzmap,input,output,errno,spn_output[0..nc*(spn_MC/4+4)-1];
++        loop variant n;
++    */
+     do {
+       uint32_t nnz = *nnzmap++;
+       float32x4_t vacc0123 = vld1q_dup_f32(w); w += 1;
++      //@ ghost uint32_t spn_nnz0_4=nnz;
++      //@ ghost const float *spn_w_4=w;
++      //@ ghost const int32_t *spn_d_4=dmap;
+       if XNN_LIKELY(nnz != 0) {
++        /*@ loop invariant spn_nnz_4: 0<nnz<=spn_nnz0_4;
++            loop invariant spn_wstep_4: w==spn_w_4+(spn_nnz0_4-nnz);
++            loop invariant spn_dstep_4: dmap==spn_d_4+(spn_nnz0_4-nnz);
++            loop assigns nnz,dmap,input,w,vacc0123,errno;
++            loop variant nnz;
++        */
+         do {
+           const intptr_t diff = *dmap++;
+           const float32x4_t vi0123 = vld1q_f32(input);
+@@ -68,10 +91,26 @@
+       const int32_t* dmap = widx_dmap;
+       const uint32_t* nnzmap = nidx_nnzmap;
+       size_t n = nc;
++      //@ ghost float *spn_column_2=output;
++      /*@ loop invariant spn_n_2: 0<n<=nc;
++          loop invariant spn_map_2: nnzmap==nidx_nnzmap+(nc-n);
++          loop invariant spn_out_2: output==spn_column_2+(nc-n)*(spn_MC/4+4);
++          loop assigns n,w,dmap,nnzmap,input,output,errno,spn_output[0..nc*(spn_MC/4+4)-1];
++          loop variant n;
++      */
+       do {
+         uint32_t nnz = *nnzmap++;
+         float32x2_t vacc01 = vld1_dup_f32(w); w += 1;
++        //@ ghost uint32_t spn_nnz0_2=nnz;
++        //@ ghost const float *spn_w_2=w;
++        //@ ghost const int32_t *spn_d_2=dmap;
+         if XNN_LIKELY(nnz != 0) {
++          /*@ loop invariant spn_nnz_2: 0<nnz<=spn_nnz0_2;
++              loop invariant spn_wstep_2: w==spn_w_2+(spn_nnz0_2-nnz);
++              loop invariant spn_dstep_2: dmap==spn_d_2+(spn_nnz0_2-nnz);
++              loop assigns nnz,dmap,input,w,vacc01,errno;
++              loop variant nnz;
++          */
+           do {
+             const intptr_t diff = *dmap++;
+             const float32x2_t vi01 = vld1_f32(input);
+@@ -94,10 +133,26 @@
+       const int32_t* dmap = widx_dmap;
+       const uint32_t* nnzmap = nidx_nnzmap;
+       size_t n = nc;
++      //@ ghost float *spn_column_1=output;
++      /*@ loop invariant spn_n_1: 0<n<=nc;
++          loop invariant spn_map_1: nnzmap==nidx_nnzmap+(nc-n);
++          loop invariant spn_out_1: output==spn_column_1+(nc-n)*(spn_MC/4+4);
++          loop assigns n,w,dmap,nnzmap,input,output,errno,spn_output[0..nc*(spn_MC/4+4)-1];
++          loop variant n;
++      */
+       do {
+         uint32_t nnz = *nnzmap++;
+         float32x2_t vacc0 = vld1_dup_f32(w); w += 1;
++        //@ ghost uint32_t spn_nnz0_1=nnz;
++        //@ ghost const float *spn_w_1=w;
++        //@ ghost const int32_t *spn_d_1=dmap;
+         if XNN_LIKELY(nnz != 0) {
++          /*@ loop invariant spn_nnz_1: 0<nnz<=spn_nnz0_1;
++              loop invariant spn_wstep_1: w==spn_w_1+(spn_nnz0_1-nnz);
++              loop invariant spn_dstep_1: dmap==spn_d_1+(spn_nnz0_1-nnz);
++              loop assigns nnz,dmap,input,w,vacc0,errno;
++              loop variant nnz;
++          */
+           do {
+             const intptr_t diff = *dmap++;
+             const float32x2_t vi0 = vld1_dup_f32(input);

@@ -1,0 +1,6 @@
+import json,hashlib,collections,sys
+from pathlib import Path
+p=Path(__file__).resolve().parent/sys.argv[1];parts={};allrows=[]
+for n in ['inventory-body01','inventory-globals01']:
+ d=p/'logs'/n;r=json.loads((d/'result.json').read_text());f=[json.loads(l) for l in (d/'events.jsonl').read_text().splitlines() if json.loads(l)['event']=='final'];cfg=[x for x in f if x['results'] and all(v['prover']=='cfg' for v in x['results'])];logical=[x for x in f if x not in cfg];parts[n]={'exit':r['exit'],'normal_exit_marker':r['normal_exit_marker'],'final':len(f),'cfg_only':len(cfg),'logical':len(logical),'inputs_unchanged':r['inputs_unchanged'],'inventory_complete':r['inventory_complete'],'events_sha256':hashlib.sha256((d/'events.jsonl').read_bytes()).hexdigest()};allrows+=logical
+s={'candidate':p.name,'proof_sha256':hashlib.sha256((p/'proof.patch').read_bytes()).hexdigest(),'inventory_complete':all(v['inventory_complete'] and v['inputs_unchanged'] for v in parts.values()),'parts':parts,'logical_total':len(allrows),'by_function':dict(collections.Counter(x.get('function','<global>') for x in allrows)),'complete':False,'note':'Complete generation only, not proof acceptance; CFG-only separate; no cross-candidate result transfer.'};(p/'INVENTORY.json').write_text(json.dumps(s,indent=2)+'\n');print(s['logical_total'],parts)

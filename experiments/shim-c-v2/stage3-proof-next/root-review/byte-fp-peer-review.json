@@ -1,0 +1,57 @@
+{
+  "reviewer": "environment_rebuild",
+  "method": "Read-only source/diff and existing Why3 export review; no solver or model mutation",
+  "verdict": "Source design and native driver interpretation accepted for isolated qualification; NOT qualified model or kernel acceptance",
+  "input_sha256": {
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/MemBytes-native-codec.patch": "754fc451c5d3f6308e1688493de7301758cd520de093b5bd4f648ef3bcd5fad8",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/source-audit.json": "0b383b2d94b6675b050235d0973915c1017d5d42fde47cbc74796216d70b4243",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/build-result.json": "279e02bf24ebd0da352695a2ebf506debd1bfc23df49af50a6b5072f3621b1df",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/bytefloat.driver": "4ce3fde26fa0d03b45344e7acd4ba1c1dc2aab562c0b4629aca3b3dbbe6f8035",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/z3-codec.drv": "83e4dc70786e9d7074bfede0e096d68a8174bf24e68a13c1a1805d48fff058c1",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/cvc5-codec.drv": "00fb3fe20d7bbbafd985ed7ce14c270078528b9b4c5e5588f0faa3f561d4099c",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/controls.c": "5bb33934172261a08596b4f12201c36d1365e4ca7fb85ec2af6f275092eec36c",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/wp-share/why3/frama_c_wp/bytefloat.mlw": "b43062cec60df70470960a8ff054ee43f18aa918d51fe41e8e7800e82d955a62",
+    "experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/README.zh-CN.md": "cf396783287f9a5f9abcb74b14605b733c40714bd6ab1c2300ace29e28123ead",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/.build/source/src/plugins/wp/MemBytes.ml": "fac0db714e92cd55a70e3c6215e9e482eb1a6357695dac50cb97b8709eea9693",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/.build/source/src/plugins/wp/MemLoader.ml": "b59407d1220f7c0871bc556aaebf4748e9229053463881467ca6a3da851c9fe8",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/.build/source/src/plugins/wp/Cvalues.ml": "c04b39f6a15932715d694b9679a4fcae88c4b8ae45979ee60977efebf9fb6b80",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/.build/source/src/plugins/wp/wpo.ml": "37f3cdbe80caeca6de7dae787e4eb06e3b548a8c6191d81ceda5420c923869d3",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v1/.build/source/src/plugins/wp/Lang.ml": "7d02ed449dd7d52bec4a3782b74e939c84952e643903d3101e2f436775e9b308",
+    "experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/driver-export01/z3/probe-Probe-roundtrip64.smt2": "0ce9eae57a5e23872f62a07bff74012e57d0e6fb1ed92e9d3da5493196955bec",
+    "experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/driver-export01/z3/probe-Probe-roundtrip32.smt2": "646f8df9ed46bb5c962c6293077e6b6c366f5e6aa855a79ecfdee912185d7db5",
+    "experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/driver-export01/cvc5/probe-Probe-roundtrip64.smt2": "36e38502607f25798519502e7849dbfe2e4dfc1a2fafa425b60a45ededba0245",
+    "experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/driver-export01/cvc5/probe-Probe-roundtrip32.smt2": "b95d56abfa335485c7b32f8ae2dffda5f44ed6b616db84b17b9c8be0ee06c1c8"
+  },
+  "scope_audit": {
+    "manifest_entries_before": 10894,
+    "manifest_entries_after": 10894,
+    "manifest_changed_files": [
+      "src/plugins/wp/MemBytes.ml"
+    ],
+    "actual_MemBytes_sha_matches_audit": true,
+    "freshly_rehashed_all_10894_sources": false,
+    "removed_codec_admits": 3,
+    "new_codec_axioms": 0
+  },
+  "accepted_design": [
+    "Fresh unrestricted int nan_seed allocated in each store_float invocation, passed explicitly to encode. No allocation at load or inside a cached codec definition.",
+    "MemLoader.stored routes C_float to store_float; stored_chunk forms Set(post_memory,write(pre_memory,encode(value,seed))). Existing final WPO closure uses F.p_close; Lang.p_close=e_close_forall. Source path supports universal rather than existential nondeterminism. Actual two-store C export remains required.",
+    "load_float deterministically reads UInt32/UInt64 bytes then decode; same unchanged memory is not reseeded. Source memcpy still invokes WBytes.f_memcpy on source/destination bytes without float decode/encode.",
+    "NaN encoding fraction is 1+(masked_seed mod (2^fraction_bits-1)); range is all nonzero fractions and no exponent carry. For desired sign s and payload p choose seed=(s<<(width-1))|(p-1). This gives every positive/negative quiet/signaling NaN representation for binary32 and binary64. This is a mathematical source argument, not a fresh solver claim.",
+    "Non-NaN encoding fp.to_ieee_bv preserves signed zero, infinities and subnormals; decoder uses SMT reinterpretation to_fp of int2bv, not numerical conversion. Native type check rejects Real.",
+    "Existing four Why3 exports (32/64, Z3/CVC5) contain native operators; roundtrip has universally quantified x and seed. They contain no codec inverse/range axioms or uninterpreted codec functions. These are synthetic explicit-seed probes, NOT end-to-end fresh-variable evidence."
+  ],
+  "required_before_qualification": [
+    "Actual patched-WP SMT for two NaN stores must show distinct independent seed symbols, correct universal closure, no extra seed assumptions; include branches, loop obligations, function calls and aggregate copies to detect caching/scope effects.",
+    "Actual C controls: stable repeated observation of one store; NaN byte memcpy preserves all bits; two float stores must not force equal payload or a fixed payload/sign.",
+    "Actual canonical_nan body and memcpy validity/assigns obligations; finite/zero/infinity/subnormal decode and store/load at binary32/64; partial byte write and disjoint frame; separate endian-qualified configuration.",
+    "True/false and abstraction-negative controls including wrong bitcast, negative-zero bit equality, NaN self equality, bounds/alias/invalid memcpy. Timeout alone is not a semantic counterexample or proof of impossibility.",
+    "Final emitted SMT must contain native codec interpretation, no old CODEC_FLOAT axioms, no untranslated codec symbols. Restrict accepted provers to reviewed drivers.",
+    "Check inherited integer-byte memcpy changes separately and rerun all needed controls; unchanged function source does not establish whole-model correctness.",
+    "Run IEEE/FMA positive/negative regression and strict known-kernel smoke, then freeze independent source/install/share/drivers/solvers lock and replay. Old model and acceptance records remain unchanged.",
+    "NaN payload/sign are absent in decoded SMT FP values: audit consumers of signbit/classification on NaN. Output numerical equality-or-both-NaN does not qualify arbitrary C representation/flags observations."
+  ],
+  "build_status_observed": "compiled-unqualified",
+  "end_to_end_acceptance_claimed": false,
+  "kernel_acceptance_claimed": false
+}

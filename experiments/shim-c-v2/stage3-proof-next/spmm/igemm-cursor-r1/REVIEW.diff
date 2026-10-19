@@ -1,0 +1,43 @@
+--- r4/rvv.c
++++ igemm-cursor-r1/rvv.c
+@@ -1,3 +1,11 @@
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures igemm_step4_math: 4<=k<=K && k%4==0 ==>
++      (size_t)(k-4)==k-4 &&
++      (K-(size_t)(k-4))/4==(K-k)/4+1 &&
++      0<=(size_t)(k-4)<=K && ((size_t)(k-4))%4==0; @/
++static void igemm_step4(size_t K,size_t k) {}
++*/
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
+ /*@ requires vl<=16; assigns \nothing;
+  ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+@@ -81,9 +89,9 @@
+       size_t k = kc;
+       //@ ghost const float *stage3_row=a0;
+       //@ ghost const float *stage3_weights=w;
+-      /*@ loop invariant stage3_k: 0<=k<=KC && k%4==0;
+-          loop invariant a0==stage3_row+(KC-k)/4;
+-          loop invariant w==stage3_weights+8*((KC-k)/4);
++      /*@ loop invariant igemm_rvv_k: 0<=k<=KC && k%4==0;
++          loop invariant igemm_rvv_row_cursor: a0==stage3_row+(KC-k)/4;
++          loop invariant igemm_rvv_weight_cursor: w==stage3_weights+8*((KC-k)/4);
+           loop invariant stage3_inner_acc_rvv_0: \forall integer j;0<=j<vl ==> ext_same(vacc.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,j,((KS-p)/sizeof(void*))*(KC/4)+(KC-k)/4,KC/4,KS/sizeof(void*)));
+         loop invariant stage3_read_table: \forall integer q;0<=q<KS/sizeof(void*) ==> A[q]==\at(A[q],Stage3Block);
+         loop invariant stage3_read_rows: \forall integer q,t;0<=q<KS/sizeof(void*) && 0<=t<KC/4 ==> ext_same(A[q][t],\at(A[q][t],Stage3Block));
+@@ -94,6 +102,15 @@
+         vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl);
+         w += 8;
+         vacc = __riscv_vfmacc_vf_f32m4(vacc, va, vb, vl);
++        /*@ assert igemm_before_sub: 4<=k<=KC && k%4==0; */
++        //@ ghost igemm_step4(KC,k);
++        /*@ assert igemm_k_exact: (size_t)(k-4)==k-4; */
++        /*@ assert igemm_step_index: (KC-(size_t)(k-4))/4==(KC-k)/4+1; */
++        /*@ assert igemm_row_advanced: a0==stage3_row+(KC-k)/4+1; */
++        /*@ assert igemm_weight_advanced: w==stage3_weights+8*((KC-k)/4+1); */
++        /*@ assert igemm_row_rebased: a0==stage3_row+(KC-(size_t)(k-4))/4; */
++        /*@ assert igemm_weight_rebased: w==stage3_weights+8*((KC-(size_t)(k-4))/4); */
++        /*@ assert igemm_next_range: 0<=(size_t)(k-4)<=KC && ((size_t)(k-4))%4==0; */
+         k -= sizeof(float);
+       }
+       p -= 1 * sizeof(void*);

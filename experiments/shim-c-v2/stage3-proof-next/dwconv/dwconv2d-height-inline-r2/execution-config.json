@@ -1,0 +1,18 @@
+{
+  "purpose": "Independent execution diagnosis, not strict old-checker acceptance",
+  "base_runner": "experiments/shim-c-v2/stage3-proof-next/dwconv/run30-single.py",
+  "base_runner_sha256": "6fe4b4b669cb392e2fc4ef4143a80b3e2b28f69b242cf205a94b9a4b78625ec0",
+  "runner": "experiments/shim-c-v2/stage3-proof-next/dwconv/run30-inline-doz.py",
+  "runner_sha256": "02a9e2268ac29d0b1d0ae795b8ddee063345805831342caa8f271bcbba09102a",
+  "only_command_change": {
+    "inline_calls_before": "test_neon,test_rvv",
+    "inline_calls_after": "test_neon,test_rvv,doz"
+  },
+  "remove_inlined": "test_neon,test_rvv",
+  "doz_definition_retained": true,
+  "required_separate_body_check": [
+    "doz",
+    "next_height_step"
+  ],
+  "implementation_spec_shim_model_unchanged": true
+}

@@ -1,0 +1,597 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,xnn_prefetch_to_l1,vld2q_dup_f32", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "none", "-wp-prop", "spn_mc_range", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v6/range-print01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v6/range-print01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v6/.build/guard01/annotated/unit.c", "-wp-print", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v6/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m8
+[rte:annot] annotating function __riscv_vfmacc_vv_f32m8
+[rte:annot] annotating function __riscv_vfmax_vf_f32m8
+[rte:annot] annotating function __riscv_vfmax_vv_f32m8
+[rte:annot] annotating function __riscv_vfmerge_vfm_f32m8
+[rte:annot] annotating function __riscv_vfmin_vf_f32m8
+[rte:annot] annotating function __riscv_vfmin_vv_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vfmul_vv_f32m8
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m8
+[rte:annot] annotating function __riscv_vfslide1down_vf_f32m8
+[rte:annot] annotating function __riscv_vfslide1up_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmfne_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m2
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m2
+[rte:annot] annotating function __riscv_vsetvlmax_e32m4
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function canonical_nan
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function fp_nan
+[rte:annot] annotating function max_number
+[rte:annot] annotating function min_number
+[rte:annot] annotating function neon_max
+[rte:annot] annotating function neon_min
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function round_up_po2
+[rte:annot] annotating function salty_max_vf_m8
+[rte:annot] annotating function salty_min_vf_m8
+[rte:annot] annotating function spmm_prefix_zero
+[rte:annot] annotating function spmm_size_decrement
+[rte:annot] annotating function spmm_u32_decrement
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vaddv_f32
+[rte:annot] annotating function vaddvq_f32
+[rte:annot] annotating function vcombine_f32
+[rte:annot] annotating function vdupq_lane_f32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vextq_f32
+[rte:annot] annotating function vfma_f32
+[rte:annot] annotating function vfmaq_f32
+[rte:annot] annotating function vfmaq_lane_f32
+[rte:annot] annotating function vfmaq_laneq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_lane_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vld1_dup_f32
+[rte:annot] annotating function vld1_f32
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_lane_f32
+[rte:annot] annotating function vld2_dup_f32
+[rte:annot] annotating function vld2q_dup_f32
+[rte:annot] annotating function vmax_f32
+[rte:annot] annotating function vmaxq_f32
+[rte:annot] annotating function vmin_f32
+[rte:annot] annotating function vminq_f32
+[rte:annot] annotating function vmlaq_f32
+[rte:annot] annotating function vmovq_n_f32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_lane_f32
+[rte:annot] annotating function vsubq_f32
+[rte:annot] annotating function vzip1q_f32
+[rte:annot] annotating function vzip2q_f32
+[rte:annot] annotating function xnn_prefetch_to_l1
+[wp] neon.c:74: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:72: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+------------------------------------------------------------
+  Function equivalent
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'spn_mc_range' ("neon.c", line 38):
+Let x = Mint_0[global(L_nc_9197)].
+Let x_1 = Mint_0[global(L_output_stride_9203)].
+Let x_2 = Mint_0[global(L_spn_MC_9209)].
+Let x_3 = Mint_0[global(L_mc_9196)].
+Let a = global(L_tmp_9274).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let a_2 = global(L_tmp_0_9275).
+Let a_3 = Mptr_0[global(L_p_9272)].
+Let a_4 = shift_float32(a_3, 1).
+Let m = Malloc_0[P_m_7310 <- 1][P_nc_7311 <- 1][P_input_7312 <- 1]
+          [P_weights_7313 <- 1][P_dmap_7314 <- 1][P_nnz_7315 <- 1]
+          [P_left_7316 <- 1][P_right_7317 <- 1][P_lower_7318 <- 1]
+          [P_upper_7319 <- 1][L___retres_8705 <- 1][L_params_7320 <- 2]
+          [L_mc_9196 <- 1][L_nc_9197 <- 1][L_input_9198 <- 1][L_weights_9199
+          <- 1][L_widx_dmap_9200 <- 1][L_nidx_nnzmap_9201 <- 1][L_output_9202
+          <- 1][L_output_stride_9203 <- 1][L_params_9204 <- 1][L_vminmax_9205
+          <- 8][L_tmp_9206 <- 8][L_vmin_9207 <- 4][L_vmax_9208 <- 4]
+          [L_spn_MC_9209 <- 1][L_spn_output_9210 <- 1]
+          [L_output_decrement_9211 <- 1][L_p_9272 <- 1][L_r_9273 <- 8]
+          [L_tmp_9274 <- 4][L_tmp_0_9275 <- 4].
+Let a_5 = shift_float32(a_3, 0).
+Let a_6 = global(L_params_7320).
+Let a_7 = shiftfield_F2_xnn_f32_minmax_params_scalar(a_6).
+Let x_4 = x_3 % 4.
+Let x_5 = Mint_0[global(P_m_7310)].
+Let x_6 = 4 + x_5.
+Let a_8 = Mptr_0[global(P_left_7316)].
+Let a_9 = Mptr_0[global(P_nnz_7315)].
+Let a_10 = Mptr_0[global(P_dmap_7314)].
+Let a_11 = Mptr_0[global(P_weights_7313)].
+Let a_12 = Mptr_0[global(P_input_7312)].
+Let x_7 = Mint_0[global(P_nc_7311)].
+Let x_8 = L_prefix_nnz(Mint_2, a_9, x_7).
+Let x_9 = L_prefix_diff(Mint_1, a_10, x_8).
+Let x_10 = 17 + x_5.
+Let a_13 = shift_float32(a_8, 0).
+Let x_11 = x_6 * x_7.
+Let a_14 = shift_float32(Mptr_0[global(P_right_7317)], 0).
+Let a_15 = shift_uint32(a_9, 0).
+Let a_16 = shift_sint32(a_10, 0).
+Let a_17 = shift_float32(a_11, 0).
+Let x_12 = 32 + x_7 + x_8.
+Assume {
+  Type: is_sint32_chunk(Mint_1) /\ is_uint32_chunk(Mint_2) /\
+      is_uint64_chunk(Mint_0) /\ is_uint64(x_3) /\ is_uint64(x) /\
+      is_uint64(x_1) /\ is_uint64(x_2) /\ is_uint64(x_5) /\ is_uint64(x_7).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition 'm' *)
+  Have: (0 < x_5) /\ (x_5 <= 288230376151711743).
+  (* Pre-condition 'nc' *)
+  Have: (0 < x_7) /\ (x_7 <= 288230376151711743).
+  (* Pre-condition 'maps' *)
+  Have: valid_rd(Malloc_0, a_15, x_7).
+  (* Pre-condition 'map_extent' *)
+  Have: x_8 <= 288230376151711743.
+  (* Pre-condition 'delta_map' *)
+  Have: valid_rd(Malloc_0, a_16, x_8).
+  (* Pre-condition 'aligned_deltas' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < x_8) ->
+      ((Mint_1[shift_sint32(a_10, i)] % 4) = 0))).
+  (* Pre-condition 'weights' *)
+  Have: valid_rd(Malloc_0, a_17, x_12).
+  (* Pre-condition 'output_extent' *)
+  Have: x_11 <= 2305843009213693951.
+  (* Pre-condition 'left' *)
+  Have: valid_rw(Malloc_0, a_13, x_11).
+  (* Pre-condition 'right' *)
+  Have: valid_rw(Malloc_0, a_14, x_11).
+  (* Pre-condition 'metadata_outputs' *)
+  Have: separated(a_15, x_7, a_16, x_8) /\
+      separated(a_13, x_11, a_14, x_11) /\
+      separated(a_16, x_8, a_13, x_11) /\ separated(a_16, x_8, a_14, x_11) /\
+      separated(a_15, x_7, a_13, x_11) /\ separated(a_15, x_7, a_14, x_11) /\
+      separated(a_17, x_12, a_13, x_11) /\
+      separated(a_17, x_12, a_14, x_11) /\
+      separated(a_16, x_8, a_17, x_12) /\ separated(a_15, x_7, a_17, x_12).
+  (* Pre-condition *)
+  Have: (forall i_1,i : Z. ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= x_5) ->
+         ((i <= x_8) ->
+         valid_rd(Malloc_0,
+           shift_float32(a_12, (L_prefix_diff(Mint_1, a_10, i) + (i_1 * x_9))
+             / 4), x_10)))))) /\
+      (forall i_1,i : Z.
+       let a_18 = shift_float32(a_12,
+                    (L_prefix_diff(Mint_1, a_10, i) + (i_1 * x_9)) / 4) in
+       ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= x_5) -> ((i <= x_8) ->
+       (separated(a_18, x_10, a_13, x_11) /\
+        separated(a_18, x_10, a_14, x_11))))))).
+  (* Initializer *)
+  Init: Mf32_0[a_3] = Mf32_0[global(P_lower_7318)].
+  (* Initializer *)
+  Init: Mf32_0[shiftfield_F3_max(a_7)] = Mf32_0[global(P_upper_7319)].
+  (* Initializer *)
+  Init: x_3 = to_uint64(4 * x_5).
+  (* Initializer *)
+  Init: x_7 = x.
+  (* Initializer *)
+  Init: a_12 = Mptr_0[global(L_input_9198)].
+  (* Initializer *)
+  Init: a_11 = Mptr_0[global(L_weights_9199)].
+  (* Initializer *)
+  Init: a_10 = Mptr_0[global(L_widx_dmap_9200)].
+  (* Initializer *)
+  Init: a_9 = Mptr_0[global(L_nidx_nnzmap_9201)].
+  (* Initializer *)
+  Init: a_8 = Mptr_0[global(L_output_9202)].
+  (* Initializer *)
+  Init: x_1 = to_uint64(4 * to_uint64(x_6)).
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_9204)] = a_6.
+  (* Call '__FC_assert' *)
+  Have: x_3 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_4) = 0.
+  (* Call '__FC_assert' *)
+  Have: x != 0.
+  (* Initializer *)
+  Init: a_3 = shiftfield_F3_min(a_7).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_5, 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_ext_same(a_1[shift_float32(shiftfield_F5_lane(a), i)], Mf32_0[a_5]))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_4, 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_ext_same(memcpy(a_1, a_2, Mf32_undef_1, a_2, 4)
+                   [shift_float32(shiftfield_F5_lane(a_2), i)], Mf32_0[a_4]))).
+  (* Initializer *)
+  Init: x_2 = x_3.
+  (* Initializer *)
+  Init: Mint_0[global(L_output_decrement_9211)]
+          = to_uint64(to_uint64(x * x_1) - 16).
+}
+Prove: (x_4 = 0) /\ (0 <= x_3) /\ (x_3 <= x_2).
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'spn_mc_range' ("neon.c", line 38):
+neon.c:72: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: float32*) (target: sint8*)
+neon.c:74: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: float32*) (target: sint8*)
+Let a = global(L_output_9202).
+Let a_1 = Mptr_1[a].
+Let a_2 = shift_float32(a_1, 0).
+Let a_3 = global(L_vout0123_9229).
+Let a_4 = memcpy(Mf32_2, a_3, Mf32_undef_9, a_3, 4).
+Let a_5 = memcpy(a_4, a_3, Mf32_undef_10, a_3, 4).
+Let a_6 = shiftfield_F5_lane(a_3).
+Let a_7 = global(L_vmin_9207).
+Let a_8 = global(L_vacc0123_9219).
+Let a_9 = shiftfield_F5_lane(a_8).
+Let a_10 = global(L_vmax_9208).
+Let x = Mint_5[global(L_nnz_9217)].
+Let x_1 = Mint_5[global(L_spn_nnz0_4_9220)].
+Let m = Malloc_0[P_m_7310 <- 1][P_nc_7311 <- 1][P_input_7312 <- 1]
+          [P_weights_7313 <- 1][P_dmap_7314 <- 1][P_nnz_7315 <- 1]
+          [P_left_7316 <- 1][P_right_7317 <- 1][P_lower_7318 <- 1]
+          [P_upper_7319 <- 1][L___retres_8705 <- 1][L_params_7320 <- 2]
+          [L_mc_9196 <- 1][L_nc_9197 <- 1][L_input_9198 <- 1][L_weights_9199
+          <- 1][L_widx_dmap_9200 <- 1][L_nidx_nnzmap_9201 <- 1][L_output_9202
+          <- 1][L_output_stride_9203 <- 1][L_params_9204 <- 1][L_vminmax_9205
+          <- 8][L_tmp_9206 <- 8][L_vmin_9207 <- 4][L_vmax_9208 <- 4]
+          [L_spn_MC_9209 <- 1][L_spn_output_9210 <- 1]
+          [L_output_decrement_9211 <- 1][L_p_9272 <- 1][L_r_9273 <- 8]
+          [L_tmp_9274 <- 4][L_tmp_0_9275 <- 4].
+Let m_1 = m[L_p_9272 <- 0][L_r_9273 <- 0][L_tmp_9274 <- 0][L_tmp_0_9275 <- 0]
+            [L_w_9212 <- 1][L_dmap_9213 <- 1][L_nnzmap_9214 <- 1][L_n_9215
+            <- 1][L_spn_column_4_9216 <- 1][L_nnz_9217 <- 1][L_tmp_0_9218
+            <- 1][L_vacc0123_9219 <- 4][L_spn_nnz0_4_9220 <- 1]
+            [L_spn_w_4_9221 <- 1][L_spn_d_4_9222 <- 1][L_vout0123_9229 <- 4].
+Let a_11 = global(L_tmp_9274).
+Let a_12 = memcpy(Mf32_0, a_11, Mf32_undef_0, a_11, 4).
+Let a_13 = global(L_tmp_0_9275).
+Let a_14 = memcpy(a_12, a_13, Mf32_undef_1, a_13, 4).
+Let a_15 = global(L_tmp_9206).
+Let a_16 = global(L_r_9273).
+Let a_17 = memcpy(a_14, a_15, a_14, a_16, 8).
+Let a_18 = Mptr_0[global(L_spn_output_9210)].
+Let a_19 = shift_float32(a_18, 0).
+Let x_2 = Mint_0[global(L_spn_MC_9209)].
+Let x_3 = 4 + (x_2 / 4).
+Let x_4 = Mint_0[global(L_nc_9197)].
+Let x_5 = x_3 * x_4.
+Let a_20 = memcpy(memcpy(a_17, a_19, Mf32_undef_2, a_19, x_5), a_19,
+             Mf32_undef_3, a_19, x_5).
+Let a_21 = Mptr_0[global(L_nidx_nnzmap_9201)].
+Let a_22 = shift_uint32(a_21, x_4 - v_1).
+Let x_6 = Mint_5[a_22].
+Let a_23 = Mptr_0[global(L_nnzmap_9214)].
+Let a_24 = global(L_n_9215).
+Let x_7 = Mint_0[a_24].
+Let x_8 = x_4 - x_7.
+Let a_25 = Mptr_0[global(L_widx_dmap_9200)].
+Let a_26 = Mptr_0[global(L_weights_9199)].
+Let a_27 = Mptr_0[a].
+Let a_28 = global(L_mc_9196).
+Let x_9 = Mint_0[a_28].
+Let x_10 = Mint_0[global(L_output_decrement_9211)].
+Let x_11 = Mint_0[global(L_output_stride_9203)].
+Let a_29 = global(L_vminmax_9205).
+Let a_30 = shiftfield_F7_val(a_29).
+Let a_31 = Load_S7(a_15, a_17).
+Let a_32 = shiftfield_F7_val(a_16).
+Let a_33 = shift_S5(a_32, 1).
+Let a_34 = Mptr_0[global(L_p_9272)].
+Let a_35 = shift_float32(a_34, 1).
+Let a_36 = shift_float32(a_34, 0).
+Let a_37 = global(L_params_7320).
+Let a_38 = shiftfield_F2_xnn_f32_minmax_params_scalar(a_37).
+Let x_12 = Mint_0[global(P_m_7310)].
+Let x_13 = 4 + x_12.
+Let a_39 = Mptr_0[global(P_left_7316)].
+Let a_40 = Mptr_0[global(P_nnz_7315)].
+Let a_41 = Mptr_0[global(P_dmap_7314)].
+Let a_42 = Mptr_0[global(P_weights_7313)].
+Let a_43 = Mptr_0[global(P_input_7312)].
+Let x_14 = Mint_0[global(P_nc_7311)].
+Let x_15 = L_prefix_nnz(Mint_5, a_40, x_14).
+Let x_16 = L_prefix_diff(Mint_3, a_41, x_15).
+Let x_17 = 17 + x_12.
+Let a_44 = shift_float32(a_39, 0).
+Let x_18 = x_13 * x_14.
+Let a_45 = shift_float32(Mptr_0[global(P_right_7317)], 0).
+Let a_46 = shift_uint32(a_40, 0).
+Let a_47 = shift_sint32(a_41, 0).
+Let a_48 = shift_float32(a_42, 0).
+Let x_19 = 32 + x_14 + x_15.
+Let m_2 = Mint_0[a_28 <- v].
+Let x_20 = to_uint64(v - 16).
+Assume {
+  Type: is_sint32_chunk(Mint_1) /\ is_sint32_chunk(Mint_2) /\
+      is_sint32_chunk(Mint_3) /\ is_sint64_chunk(Mint_4) /\
+      is_uint32_chunk(Mint_5) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v_1) /\
+      is_uint64(v) /\ is_uint64_chunk(m_2) /\ is_uint32(x) /\
+      is_uint32(x_1) /\ is_uint64(x_9) /\ is_uint64(x_7) /\ is_uint64(x_4) /\
+      is_uint64(x_10) /\ is_uint64(x_11) /\ is_uint64(x_2) /\
+      is_uint64(x_12) /\ is_uint64(x_14) /\
+      is_sint64(Mint_4[global(L_diff_9223)]) /\
+      is_uint64_chunk(m_2[a_24 <- 0]) /\ is_uint64_chunk(m_2[a_24 <- v_1]) /\
+      is_uint32(x_6).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition 'm' *)
+  Have: (0 < x_12) /\ (x_12 <= 288230376151711743).
+  (* Pre-condition 'nc' *)
+  Have: (0 < x_14) /\ (x_14 <= 288230376151711743).
+  (* Pre-condition 'maps' *)
+  Have: valid_rd(Malloc_0, a_46, x_14).
+  (* Pre-condition 'map_extent' *)
+  Have: x_15 <= 288230376151711743.
+  (* Pre-condition 'delta_map' *)
+  Have: valid_rd(Malloc_0, a_47, x_15).
+  (* Pre-condition 'aligned_deltas' *)
+  Have: forall i : Z. ((0 <= i) -> ((i < x_15) ->
+      ((Mint_3[shift_sint32(a_41, i)] % 4) = 0))).
+  (* Pre-condition 'weights' *)
+  Have: valid_rd(Malloc_0, a_48, x_19).
+  (* Pre-condition 'output_extent' *)
+  Have: x_18 <= 2305843009213693951.
+  (* Pre-condition 'left' *)
+  Have: valid_rw(Malloc_0, a_44, x_18).
+  (* Pre-condition 'right' *)
+  Have: valid_rw(Malloc_0, a_45, x_18).
+  (* Pre-condition 'metadata_outputs' *)
+  Have: separated(a_46, x_14, a_47, x_15) /\
+      separated(a_44, x_18, a_45, x_18) /\
+      separated(a_47, x_15, a_44, x_18) /\
+      separated(a_47, x_15, a_45, x_18) /\
+      separated(a_46, x_14, a_44, x_18) /\
+      separated(a_46, x_14, a_45, x_18) /\
+      separated(a_48, x_19, a_44, x_18) /\
+      separated(a_48, x_19, a_45, x_18) /\
+      separated(a_47, x_15, a_48, x_19) /\ separated(a_46, x_14, a_48, x_19).
+  (* Pre-condition *)
+  Have: (forall i_1,i : Z. ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= x_12) ->
+         ((i <= x_15) ->
+         valid_rd(Malloc_0,
+           shift_float32(a_43,
+             (L_prefix_diff(Mint_3, a_41, i) + (i_1 * x_16)) / 4), x_17)))))) /\
+      (forall i_1,i : Z.
+       let a_49 = shift_float32(a_43,
+                    (L_prefix_diff(Mint_3, a_41, i) + (i_1 * x_16)) / 4) in
+       ((0 <= i_1) -> ((0 <= i) -> ((i_1 <= x_12) -> ((i <= x_15) ->
+       (separated(a_49, x_17, a_44, x_18) /\
+        separated(a_49, x_17, a_45, x_18))))))).
+  (* Initializer *)
+  Init: Mf32_0[a_34] = Mf32_0[global(P_lower_7318)].
+  (* Initializer *)
+  Init: Mf32_0[shiftfield_F3_max(a_38)] = Mf32_0[global(P_upper_7319)].
+  (* Initializer *)
+  Init: x_9 = to_uint64(4 * x_12).
+  (* Initializer *)
+  Init: x_14 = x_4.
+  (* Initializer *)
+  Init: a_43 = Mptr_0[global(L_input_9198)].
+  (* Initializer *)
+  Init: a_42 = a_26.
+  (* Initializer *)
+  Init: a_41 = a_25.
+  (* Initializer *)
+  Init: a_40 = a_21.
+  (* Initializer *)
+  Init: a_39 = a_27.
+  (* Initializer *)
+  Init: x_11 = to_uint64(4 * to_uint64(x_13)).
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_9204)] = a_37.
+  (* Call '__FC_assert' *)
+  Have: x_9 != 0.
+  (* Call '__FC_assert' *)
+  Have: x_4 != 0.
+  (* Initializer *)
+  Init: a_34 = shiftfield_F3_min(a_38).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_36, 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_ext_same(a_12[shift_float32(shiftfield_F5_lane(a_11), i)],
+        Mf32_0[a_36]))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_35, 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: (Load_S5(a_33, a_14) = Load_S5(a_13, a_14)) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(Mf32_0[shift_float32(shiftfield_F5_lane(a_33), i)],
+         Mf32_0[a_35])))).
+  (* Initializer *)
+  Init: Load_S5(shift_S5(a_32, 0), a_14) = Load_S5(a_11, a_14).
+  Have: a_31 = Load_S7(a_16, a_14).
+  (* Initializer *)
+  Init: Load_S7(a_29, a_17) = a_31.
+  (* Initializer *)
+  Init: Load_S5(shift_S5(a_30, 0), a_17) = Load_S5(a_7, a_17).
+  (* Initializer *)
+  Init: Load_S5(shift_S5(a_30, 1), a_17) = Load_S5(a_10, a_17).
+  (* Initializer *)
+  Init: x_2 = x_9.
+  (* Initializer *)
+  Init: a_18 = a_27.
+  (* Initializer *)
+  Init: x_10 = to_uint64(to_uint64(x_4 * x_11) - 16).
+  (* Invariant 'spn_mc_range' *)
+  Have: ((x_9 % 4) = 0) /\ (0 <= x_9) /\ (x_9 <= x_2).
+  (* Invariant 'spn_output_row' *)
+  Have: a_27 = shift_float32(a_18, (x_2 - x_9) / 4).
+  (* Invariant 'spn_mc_range' *)
+  Have: ((v % 4) = 0) /\ (0 <= v) /\ (v <= x_2).
+  (* Invariant 'spn_output_row' *)
+  Have: (shift_float32(a_18, (x_2 - v) / 4) =
+         shift_float32(Mptr_0[global(L_spn_column_4_9216)], 0)) /\
+      ((x_8 * x_3) = 0).
+  (* Then *)
+  Have: 16 <= v.
+  (* Initializer *)
+  Init: a_26 = Mptr_0[global(L_w_9212)].
+  (* Initializer *)
+  Init: a_25 = Mptr_0[global(L_dmap_9213)].
+  (* Initializer *)
+  Init: a_23 = a_21.
+  (* Initializer *)
+  Init: x_4 = x_7.
+  (* Invariant 'spn_n_4' *)
+  Have: (0 < x_7) /\ (x_7 <= x_4).
+  (* Invariant 'spn_map_4' *)
+  Have: a_23 = shift_uint32(a_21, x_8).
+  (* Invariant 'spn_n_4' *)
+  Have: (0 < v_1) /\ (v_1 <= x_4).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m_1, a_22, 1).
+  (* Initializer *)
+  Init: x_6 = x.
+  (* Call 'vld1q_dup_f32' *)
+  Have: valid_rd(m_1, v_2, 1) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(memcpy(a_20, a_8, Mf32_undef_4, a_8, 4)
+                    [shift_float32(a_9, i)], a_20[v_2])))).
+  (* Initializer *)
+  Init: x_1 = x.
+  (* Initializer *)
+  Init: Mptr_0[global(L_spn_w_4_9221)] = shift_float32(v_2, 1).
+  If x != 0
+  Then {
+    Let m_3 = m_1[L_diff_9223 <- 1][L_tmp_2_9224 <- 1][L_vi0123_9225 <- 4]
+                [L_tmp_3_9226 <- 4][L_vw_9227 <- 4][L_tmp_4_9228 <- 4].
+    Let m_4 = m_3[L_p_9276 <- 0].
+    Let a_49 = memcpy(Mf32_1, a_8, Mf32_undef_5, a_8, 4).
+    Let a_50 = global(L_tmp_3_9226).
+    Let a_51 = memcpy(a_49, a_50, Mf32_undef_6, a_50, 4).
+    Let a_52 = global(L_tmp_4_9228).
+    Let a_53 = memcpy(a_51, a_52, Mf32_undef_7, a_52, 4).
+    Let a_54 = global(L_vi0123_9225).
+    Let a_55 = shiftfield_F5_lane(a_54).
+    Let a_56 = global(L_vw_9227).
+    Let a_57 = shiftfield_F5_lane(a_56).
+    Let a_58 = Mptr_0[global(L_spn_column_4_9216)].
+    Let a_59 = global(L_input_9198).
+    Let x_21 = -v_1.
+    Let a_60 = global(L_nnzmap_9214).
+    Let a_61 = global(L_dmap_9213).
+    Let a_62 = Mptr_0[global(L_spn_d_4_9222)].
+    Let a_63 = global(L_w_9212).
+    Let x_22 = -v_4.
+    Let x_23 = Mint_6[global(L_spn_nnz0_4_9220)].
+    Let x_24 = 1 + x_23 - v_4.
+    Let x_25 = Mint_4[global(L_diff_9223)].
+    Let a_64 = Mptr_0[global(L_spn_w_4_9221)].
+    Let m_5 = Mint_3[global(G___fc_errno_2465) <- v_3].
+    Let x_26 = x_23 - v_4.
+    Let x_27 = Mint_6[global(L_nnz_9217)].
+    Have: memcpy(a_20, a_8, Mf32_undef_4, a_8, 4) = Mf32_1.
+    (* Invariant 'spn_nnz_4' *)
+    Have: (0 < x_27) /\ (x_27 <= x_23).
+    (* Invariant 'spn_wstep_4' *)
+    Have: x_23 = x_27.
+    (* Loop assigns ... *)
+    Have: (Mint_6 = Mint_5) /\ (m_5 = Mint_7).
+    (* Invariant 'spn_nnz_4' *)
+    Have: (0 < v_4) /\ (v_4 <= x_23).
+    (* Invariant 'spn_wstep_4' *)
+    Have: shift_float32(a_64, x_26) = v_5.
+    (* Invariant 'spn_dstep_4' *)
+    Have: shift_sint32(a_62, x_26) = v_6.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(m_3, v_6, 1).
+    (* Initializer *)
+    Init: m_5[v_6] = x_25.
+    Have: (Mint_2 = Mint_7) /\ (m_5 = Mint_2).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S5(a_54, a_51) = Load_S5(a_50, a_51)) /\
+        valid_rd(m_3, shift_float32(v_7, 0), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_ext_same(a_20[shift_float32(a_55, i)],
+           a_49[shift_float32(v_7, i)])))).
+    Have: (Mint_1 = Mint_7) /\ (m_5 = Mint_1).
+    (* Call 'vld1q_dup_f32' *)
+    Have: (Load_S5(a_56, a_53) = Load_S5(a_52, a_53)) /\
+        valid_rd(m_4, v_5, 1) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_ext_same(a_20[shift_float32(a_57, i)], a_51[v_5])))).
+    Have: Mptr_0[a <- shift_float32(a_58, 0)][a_59 <- v_8][a
+            <- shift_float32(a_58, (x_4 - v_1) * x_3)][a_59 <- v_9][a_60
+            <- a_22][a_61 <- a_62][a_63 <- v_2][global(L_tmp_0_9218) <- a_22]
+            [a_60 <- shift_uint32(a_21, 1 + x_4 - v_1)][a_63 <- v_5][a_59
+            <- v_7][a_61 <- v_6][global(L_tmp_2_9224) <- v_6][a_61
+            <- shift_sint32(a_62, x_24)][a_59
+            <- addr_of_int(to_uint64(to_uint64(int_of_addr(v_7))
+                             + to_uint64(x_25)))][a_63
+            <- shift_float32(a_64, x_24)] = Mptr_1.
+    (* Call 'vfmaq_f32' *)
+    Have: forall i : Z. let a_65 = shift_float32(a_9, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_ext_same(Mf32_2[a_65],
+          fma_f32(a_20[shift_float32(a_55, i)], a_20[shift_float32(a_57, i)],
+            a_49[a_65])))).
+    (* Return Effects *)
+    Have: memcpy(a_53, a_8, Mf32_undef_8, a_8, 4) = Mf32_2.
+    (* Block Out *)
+    Have: m_4[L_p_9277 <- 0][L_diff_9223 <- 0][L_tmp_2_9224 <- 0]
+            [L_vi0123_9225 <- 0][L_tmp_3_9226 <- 0][L_vw_9227 <- 0]
+            [L_tmp_4_9228 <- 0] = Malloc_1.
+    (* Else *)
+    Have: to_uint32(v_4 - 1) = 0.
+  }
+  Else {
+    Have: (Mptr_0[a <- shift_float32(a_58, 0)][a_59 <- v_8][a
+             <- shift_float32(a_58, (x_4 - v_1) * x_3)][a_59 <- v_9][a_60
+             <- a_22][a_61 <- a_62][a_63 <- v_2][global(L_tmp_0_9218)
+             <- a_22][a_60 <- shift_uint32(a_21, 1 + x_4 - v_1)][a_63
+             <- a_64] = Mptr_1) /\
+        (memcpy(a_20, a_8, Mf32_undef_4, a_8, 4) = Mf32_2) /\
+        (m_1 = Malloc_1).
+  }
+  (* Call 'vminq_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_ext_same(a_4[shift_float32(a_6, i)],
+        L_ext_neon_min32(Mf32_2[shift_float32(a_9, i)],
+          Mf32_2[shift_float32(shiftfield_F5_lane(a_10), i)])))).
+  (* Call 'vmaxq_f32' *)
+  Have: forall i : Z. let a_65 = shift_float32(a_6, i) in ((0 <= i) ->
+      ((i <= 3) ->
+      P_ext_same(a_5[a_65],
+        L_ext_neon_max32(a_4[a_65],
+          Mf32_2[shift_float32(shiftfield_F5_lane(a_7), i)])))).
+  (* Call 'vst1q_f32' *)
+  Have: valid_rw(Malloc_1, a_2, 4) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(memcpy(a_5, a_2, Mf32_undef_11, a_2, 4)
+                    [shift_float32(a_1, i)], a_5[shift_float32(a_6, i)])))).
+  (* Else *)
+  Have: to_uint64(v_1 - 1) = 0.
+}
+Prove: ((x_20 % 4) = 0) /\ (x_20 <= x_2).
+
+------------------------------------------------------------

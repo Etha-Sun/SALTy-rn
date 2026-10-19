@@ -1,0 +1,56 @@
+--- r2/neon.c
++++ qd8-round-r1/neon.c
+@@ -39,7 +39,7 @@
+   //@ ghost const int8_t *A=a;
+   //@ ghost float *C=c;
+   /*@ loop invariant stage3_nc: 0<nc<=NC && (NC-nc)%16==0;
+-      loop invariant stage3_even_kc: 0<KC && KC%2==0 && kc==KC;
++      loop invariant qd8_neon_even_kc: 0<KC && KC%2==0 && kc==KC;
+       loop invariant a0==A;
+       loop invariant c0==C+(NC-nc);
+       loop assigns nc,a0,c0,w,C[0..NC-1],errno; loop variant nc; */
+@@ -56,7 +56,8 @@
+ 
+     size_t k = kc;
+     //@ ghost const unsigned char *stage3_weights=(const unsigned char*)w;
+-    /*@ loop invariant stage3_k: 0<=k<=KC && k%2==0;
++    /*@ loop invariant qd8_neon_k: 0<=k<=KC && k%2==0;
++        loop invariant qd8_neon_count: k/2+(KC-k)/2==KC/2;
+         loop invariant stage3_input_cursor: a0==A+(KC-k);
+         loop invariant stage3_weight_cursor: (const unsigned char*)w==stage3_weights+8*(KC-k);
+         loop assigns k,a0,w,vacc0x0123,vacc0x4567,vacc0x89AB,vacc0xCDEF; loop variant k; */
+--- r2/rvv.c
++++ qd8-round-r1/rvv.c
+@@ -46,7 +46,7 @@
+   //@ ghost float *C=c;
+ 
+   /*@ loop invariant stage3_nc: 0<nc<=NC && (NC-nc)%16==0;
+-      loop invariant stage3_even_kc: 0<KC && KC%2==0 && kc==KC;
++      loop invariant qd8_rvv_even_kc: 0<KC && KC%2==0 && kc==KC;
+       loop invariant a0==A;
+       loop invariant c0==C+(NC-nc);
+       loop assigns nc,a0,c0,w,C[0..NC-1],errno; loop variant nc; */
+@@ -65,7 +65,8 @@
+ 
+     size_t k = kc;
+     //@ ghost const unsigned char *stage3_weights=(const unsigned char*)w;
+-    /*@ loop invariant stage3_k: 0<=k<=KC && k%2==0;
++    /*@ loop invariant qd8_rvv_k: 0<=k<=KC && k%2==0;
++        loop invariant qd8_rvv_count: k/2+(KC-k)/2==KC/2;
+         loop invariant stage3_input_cursor: a0==A+(KC-k);
+         loop invariant stage3_weight_cursor: (const unsigned char*)w==stage3_weights+8*(KC-k);
+         loop assigns k,a0,w,vacc; loop variant k; */
+--- r2/utils.c
++++ qd8-round-r1/utils.c
+@@ -4,6 +4,11 @@
+ 
+ size_t round_down_po2(size_t n,size_t q) { return n & ~(q-1); }
+ 
++/*@ ensures qd8_round_range: q==2 && n<=SIZE_MAX-2 ==> n<=\result<=n+1;
++    ensures qd8_round_even: q==2 && n<=SIZE_MAX-2 ==> \result%2==0;
++    ensures qd8_round_count: q==2 && n<=SIZE_MAX-2 ==> \result==2*((n+1)/2);
++    ensures qd8_round_positive: q==2 && 0<n<=SIZE_MAX-2 ==> 0<\result;
++*/
+ size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }
+ 
+ size_t doz(size_t n,size_t d) { return n>d?n-d:0; }

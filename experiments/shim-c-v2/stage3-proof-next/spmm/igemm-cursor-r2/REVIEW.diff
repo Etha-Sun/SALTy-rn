@@ -1,0 +1,19 @@
+--- r4/rvv.c
++++ igemm-cursor-r1/rvv.c
+@@ -1,5 +1,6 @@
+ /*@ ghost
+ /@ terminates \true; assigns \nothing;
++    ensures igemm_nonzero_multiple: k>0 && k%4==0 ==> k>=4;
+     ensures igemm_step4_math: 4<=k<=K && k%4==0 ==>
+       (size_t)(k-4)==k-4 &&
+       (K-(size_t)(k-4))/4==(K-k)/4+1 &&
+@@ -102,8 +103,8 @@
+         vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl);
+         w += 8;
+         vacc = __riscv_vfmacc_vf_f32m4(vacc, va, vb, vl);
++        //@ ghost igemm_step4(KC,k);
+         /*@ assert igemm_before_sub: 4<=k<=KC && k%4==0; */
+-        //@ ghost igemm_step4(KC,k);
+         /*@ assert igemm_k_exact: (size_t)(k-4)==k-4; */
+         /*@ assert igemm_step_index: (KC-(size_t)(k-4))/4==(KC-k)/4+1; */
+         /*@ assert igemm_row_advanced: a0==stage3_row+(KC-k)/4+1; */

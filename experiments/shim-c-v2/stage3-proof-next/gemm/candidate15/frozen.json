@@ -1,0 +1,119 @@
+{
+  "name": "f32-gemm-minmax",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-gemm-minmax/neon.c",
+      "sha256": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-gemm-minmax/rvv.c",
+      "sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/f32-gemm-minmax/spec.h",
+      "sha256": "f36c72565bcbf3a70c6576fccc1c2b27295ee596a305fd2b799f600559ebda34"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-gemm-minmax/harness.c",
+      "sha256": "e2b1e4b7b4136454f068c612487baa695108cef2197a4241809357fb530341bc"
+    },
+    "native_types.h": {
+      "path": "experiments/shared-extension/complex/shared/native_types.h",
+      "sha256": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1"
+    },
+    "fp_primitives.h": {
+      "path": "experiments/shared-extension/complex/shared/fp_primitives.h",
+      "sha256": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "fp_minmax.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax.c",
+      "sha256": "92ea301e85f8ce7cf917bf21104087d7619cb8c5c674f4e7c32b879565a05381"
+    },
+    "fp_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory.c",
+      "sha256": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b"
+    },
+    "fp_arithmetic.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic.c",
+      "sha256": "ce46742c5a7717cc8e4ecdaf2820e03b0139f220dd034aaac8633307aad3c9a3"
+    },
+    "fp_memory_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory_m4.c",
+      "sha256": "70a9fb8d6ef08a7dc600c0759e6f06450ecf605ff855d0c22beb97e80b7cb2dd"
+    },
+    "fp_arithmetic_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic_m4.c",
+      "sha256": "ee1555baaa35553f9faa0c78faeed7fe9d33fe2bd6e0422f6dfb60640bf1cd7a"
+    },
+    "fp_minmax_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax_m4.c",
+      "sha256": "8e499e6bf5216a9910cebda40218e06f2594e60e036c9e4c36d75007945217d2"
+    },
+    "fp_masks_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks_m4.c",
+      "sha256": "e07e40fd80d9b5fa7caa44aa57c0d88f7e1ec3e5e716f1f210db500387395d83"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-gemm-minmax/unit.c",
+      "sha256": "2c582a2459bd31dd5fc4f52b7744f475f02994810f669ff0411e155a2f18c1ce"
+    },
+    "model_runner.py": {
+      "path": "experiments/shim-c-v2/stage3-gemm/serial-v4.py",
+      "sha256": "acb9a35d1cdecd09b10730037fd929694852ad5f33df0011e8a80569d5fa7e25"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/handoff-model-plus/float_model_lock.json",
+      "sha256": "f6756e5cf0665df060894ccf02993483bd8306f52795a3dd5f739296e110fc67"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/stage3-proof-next/gemm/candidate15/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "VLEN_bits": 128,
+  "scope": "Actual NEON and preserved/repaired RVV, all output memory under declared wrapper; FMA/libc and representation bridges not assumed proved",
+  "previous_version": "experiments/shim-c-v2/stage3-gemm/f32-gemm-minmax-r3",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "wp_share": "experiments/shim-c-v2/handoff-model-plus/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/handoff-model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 10,
+  "wp_budget": 1200,
+  "wp_model_variant": "Typed+raw+float",
+  "model_variant_reason": "Safe Raw model retains aggregate initializer relationships; ordinary C and public spec unchanged.",
+  "proof_stage": "Independent proof copy allows private static-helper proof while preceding frozen replay runs unchanged.",
+  "stage3": {
+    "previous_frozen_sha256": "738468708e7f2bf298bc42058b3f77ae8a8ceb50dcf53ecf0c6e1d4f21bbcfa6",
+    "previous_proof_sha256": "e593526f15f30219d45751d8c400764db3c2fb38b4d851928bda61b6e46495c0",
+    "proof_sha256": "4df66d8e86bbb70101190ca2da05b5c19ee5325fe53d1608c68dd86da380371d",
+    "environment_evidence": "experiments/shim-c-v2/handoff-plus-evidence/summary.json",
+    "implementation_and_public_spec_changes": false,
+    "checker_change": "Independent serial copy: wp-par=1 only.",
+    "previous_candidate_frozen_sha256": "c14f81e5ccdfd33d36bcf7095ea124be32057f5864b6caefa86fe5a6d3ab0599",
+    "fix": "Add actual proof obligation for all-argument ext_same FMA congruence, no model change or axiom."
+  },
+  "proof_next": {
+    "base": "experiments/shim-c-v2/stage3-gemm/f32-gemm-minmax-r4",
+    "base_frozen_sha256": "c14f81e5ccdfd33d36bcf7095ea124be32057f5864b6caefa86fe5a6d3ab0599",
+    "base_proof_sha256": "5041514dbf61c31012b5954853ecfe4c65d6bfe9c0f7cffbf952da3216ff5104",
+    "revision": "Preserve original quantified accumulator invariant and add four ground fixed-lane equivalents. Every established and preserved obligation is selected; no domain/premise changes and no extra body cuts.",
+    "previous_candidate_sha256": "a618e7cc6a2e902eac5eb86edb2b81cbda4f3b2e03bdb79a385a620aed1f6e1f"
+  }
+}

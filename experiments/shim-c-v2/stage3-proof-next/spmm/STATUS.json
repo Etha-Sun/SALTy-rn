@@ -3,7 +3,7 @@
   "candidate": "cuts-v4",
   "complete": false,
   "strict_kernel_accepted": false,
-  "phase": "column_v2_prepared_waiting_root_solver",
+  "phase": "column_v3_selected_complete_metadata_separation_open",
   "frozen_sha256": "155116f55785ae4932d7223d19918f7c6f8cbc48bf12d7454e934b92deaf2a46",
   "proof_sha256": "4df39f26b1731c0d235d4e6713b27b3ea556dfc3733dd782182983ea6cbfe41c",
   "source_guard": true,
@@ -49,7 +49,7 @@
     ]
   },
   "column_v2": {
-    "status": "prepared-not-run",
+    "status": "selected-complete-not-kernel",
     "new_assertions": [
       "spmm_origin_count",
       "spmm_origin_nnz",
@@ -57,6 +57,26 @@
       "spmm_origin_weight"
     ],
     "new_body_helper": "spmm_prefix_zero",
-    "added_requires": 0
+    "added_requires": 0,
+    "selected": "30/36",
+    "helpers_full_raw": "6/6",
+    "whole_kernel_accepted": false,
+    "remaining": [
+      "spmm_origin_nnz",
+      "spmm_origin_delta",
+      "spmm_origin_weight",
+      "stage3_delta_cursor_preserved",
+      "stage3_weight_cursor_preserved",
+      "spmm_column_map_value"
+    ],
+    "interpretation": "Three old cursor establishment goals pass only after three unproved origin assertions: debt migration, not closure. Six pending remain; no full-kernel acceptance."
+  },
+  "column_v3": {
+    "selected": "4/5",
+    "remaining": [
+      "spmm_map_local_disjoint"
+    ],
+    "whole_kernel_accepted": false,
+    "interpretation": "Inner map invariant and final map-value assertion pass conditional on newly unproved local/map separation. Debt remains; no group closure."
   }
 }
