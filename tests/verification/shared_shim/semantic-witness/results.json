@@ -1,0 +1,43 @@
+{
+  "scope": "Actual C kernel bodies, explicit nan-propagating NEON and numeric RVV min/max C shims; one quiet-NaN witness, not real ISA execution or all-input proof.",
+  "records": [
+    {
+      "kernel": "f32-vmin",
+      "compile_command": [
+        "gcc",
+        "-std=c11",
+        "-O0",
+        "-fno-builtin",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/tests/verification/shared_shim/semantic-witness/f32-vmin.c",
+        "-lm",
+        "-o",
+        "/tmp/shared-shim-f32-vmin"
+      ],
+      "compile_exit": 0,
+      "exit": 0,
+      "stdout": "source_is_nan=1 target_is_nan=0 target_value=1\n",
+      "source_sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+      "target_sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e",
+      "witness_source_sha256": "9bd7cdc2ead21b4c9c7b377495fbf699c1fe7ae24891ba747cd283ea340d1a9d"
+    },
+    {
+      "kernel": "f32-vmax",
+      "compile_command": [
+        "gcc",
+        "-std=c11",
+        "-O0",
+        "-fno-builtin",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/tests/verification/shared_shim/semantic-witness/f32-vmax.c",
+        "-lm",
+        "-o",
+        "/tmp/shared-shim-f32-vmax"
+      ],
+      "compile_exit": 0,
+      "exit": 0,
+      "stdout": "source_is_nan=1 target_is_nan=0 target_value=1\n",
+      "source_sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+      "target_sha256": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6",
+      "witness_source_sha256": "1ad73e05431a2d21bcc04cd71e52ae54b9cb947d60fb2c1e96c877a764c183a6"
+    }
+  ]
+}

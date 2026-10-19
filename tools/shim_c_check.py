@@ -27,6 +27,16 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def ghost_has_prototype(annotation):
+    body = re.sub(r"/@.*?@/", "", annotation, flags=re.S)
+    body = re.sub(r"^(?:/\*@|//@)\s*ghost\b", "", body)
+    body = guard.without_comments(body)
+    # Declarations have a type before the function name; ordinary calls do not.
+    declarations = re.finditer(r"(?:^|[;{}])\s*(?P<type>(?:[A-Za-z_]\w*(?:\s+|(?=\*))|\*\s*)+)[A-Za-z_]\w*\s*\([^;{}]*\)\s*;", body)
+    return (any(m.group("type").strip() not in {"return", "else", "goto"} for m in declarations)
+            or bool(re.search(r"\(\s*\*\s*\w+\s*\)\s*\(", body)))
+
+
 def inputs():
     frozen = SHARED / "frozen.json"
     if sha(frozen) != FROZEN_SHA256:
@@ -105,6 +115,10 @@ def prepare(case, name, clang="clang-14"):
                 raise RuntimeError("Unchecked assumption in " + p.name)
             clauses = re.sub(r"\bloop\s+(assigns|invariant|variant)\b", "loop_clause", annotation)
             ghost = re.match(r"(?:/\*@|//@)\s*ghost\b", annotation)
+            if ghost and re.search(r"\b(extern|typedef|typeof|__typeof__|__attribute__|__asm__)\b", annotation):
+                raise RuntimeError("Unsupported ghost declaration syntax in " + p.name)
+            if ghost and ghost_has_prototype(annotation):
+                raise RuntimeError("Ghost function declaration without body in " + p.name)
             if p.name in {"neon.c", "rvv.c", "harness.c", "unit.c"} and not ghost and re.search(r"\b(requires|ensures|assigns|terminates|behavior|assumes)\b", clauses):
                 raise RuntimeError("Public contract injection in " + p.name)
     a, _ = guard.clang_tokens(plain, clang)
@@ -121,13 +135,13 @@ def prepare(case, name, clang="clang-14"):
 
 
 def run(case, name, framac, prover_bin, clang):
-    source = prepare(case, name, clang)
     directory = ROOT / "verified" / case
     logs = directory / "logs"
     logs.mkdir(exist_ok=True)
     raw = logs / f"{name}.json"
     if raw.exists() or (logs / f"{name}-summary.json").exists():
         raise RuntimeError("Use a fresh run name to preserve evidence")
+    source = prepare(case, name, clang)
     annotated = Path(source["annotated"])
     files = [p for p in annotated.glob("*.c") if p.name in {"base.c", MODULES[case]+".c", "harness.c"}]
     declarations = "\n".join(p.read_text() for p in files)
@@ -156,19 +170,23 @@ def run(case, name, framac, prover_bin, clang):
             exitcode = 124
     rows = json.loads(raw.read_text()) if raw.exists() else []
     # Ghost definitions can live in module headers too; recover their body names.
+    lemmas = set()
     for p in [*annotated.glob("*.h"),*files,annotated/"neon.c",annotated/"rvv.c",annotated/"unit.c"]:
         for m in guard.LEX.finditer(p.read_text()):
+            lemmas.update(re.findall(r"\blemma\s+(\w+)\s*(?:\{[^}]*\})?\s*:", m.group()))
             if re.match(r"/\*@\s*ghost\b", m.group()):
                 expected.update(re.findall(r"\b(?:void|int|float|\w+_t)\s+(\w+)\s*\([^;{}]*\)\s*\{", m.group()))
     seen = {r["function"] for r in rows if "ensures" in r["goal"]}
     missing = sorted(expected-seen)
+    missing_lemmas = sorted(n for n in lemmas if not any(r.get("property")=="lemma_"+n for r in rows))
     unchanged = all(sha(ROOT/p)==v for p,v in before.items()) and inputs()==source["frozen"] and all(sha(annotated/p)==v for p,v in source["generated"].items())
     report = dict(case=case, command=command, tool_versions=versions, exit=exitcode, seconds=round(time.monotonic()-started,3), source_guard=source,
                   checker_inputs=before, unchanged=unchanged, missing_body_ensures=missing,
+                  expected_global_lemmas=sorted(lemmas), missing_global_lemmas=missing_lemmas,
                   raw_obligations=dict(passed=sum(bool(r["passed"]) for r in rows),total=len(rows)),
                   pending=[r for r in rows if not r["passed"]], functions=sorted(seen), expected_functions=sorted(expected),
                   goal_names_sha256=hashlib.sha256("\n".join(sorted(r["goal"] for r in rows)).encode()).hexdigest(),
-                  complete=exitcode==0 and bool(rows) and all(r["passed"] for r in rows) and unchanged and not missing,
+                  complete=exitcode==0 and bool(rows) and all(r["passed"] for r in rows) and unchanged and not missing and not missing_lemmas,
                   isa_to_c_shim_proved=False)
     (logs/f"{name}-summary.json").write_text(json.dumps(report,indent=2)+"\n")
     return report
