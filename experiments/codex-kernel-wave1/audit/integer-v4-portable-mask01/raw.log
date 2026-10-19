@@ -1,0 +1,132 @@
+# Pure-integer Bytes invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v4-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "3", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Bytes", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v4-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/raw.json", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/session", "-wp-fct", "mask16_normalize,mask16_false", "-wp-print", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v4-no-pointer-range/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function mask16_normalize
+[rte:annot] annotating function mask16_false
+[wp] 10 goals scheduled
+[wp] [Timeout] bytes_mask16_false_ensures (Z3)
+[wp] Proved goals:   13 / 14
+  Terminating:     2
+  Unreachable:     2
+  Qed:             4 (1ms-2ms-6ms)
+  CVC5 1.2.1:      2 (25ms-35ms)
+  Script:          3 (Tactics 3) (Qed 3/7 13ms) (CVC5 3/7 80ms) (Z3)
+  Timeout:         1
+[wp] Updated session
+   - 1 new valid script
+   - 3 new scripts to complete
+
+Goal Post-condition 'low_a' in 'mask16_normalize':
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Post-condition 'low_b' in 'mask16_normalize':
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Post-condition 'merge' in 'mask16_normalize':
+Let x = lnot(m).
+Let x_1 = land(65535, land(b, x)).
+Let x_2 = land(b, x).
+Let x_3 = land(65535, land(a, m)).
+Let x_4 = land(a, m).
+Assume {
+  Type: is_uint16(a) /\ is_uint16(b) /\ is_uint16(m).
+  (* Assertion 'range_a' *)
+  Have: (0 <= x_4) /\ (x_4 <= 65535).
+  (* Assertion 'range_b' *)
+  Have: (0 <= x_2) /\ (x_2 <= 65535).
+  (* Assertion 'masked_a_exact' *)
+  Have: x_3 = x_4.
+  (* Assertion 'masked_b_exact' *)
+  Have: x_1 = x_2.
+}
+Prove: L_L_wrap16(lor(x_3, x_1)) = L_L_wrap16(lor(x_4, x_2)).
+Prover CVC5 1.2.1 returns Valid (Qed:2ms) (25ms)
+
+------------------------------------------------------------
+
+Goal Assertion 'range_a' ("experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c", line 9):
+Let x = land(a, m). Assume { Type: is_uint16(a) /\ is_uint16(m). }
+Prove: (0 <= x) /\ (x <= 65535).
+Prover CVC5 1.2.1 returns Valid (Qed:1ms) (35ms)
+
+------------------------------------------------------------
+
+Goal Assertion 'range_b' ("experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c", line 10):
+Let x = land(a, m).
+Let x_1 = land(b, lnot(m)).
+Assume {
+  Type: is_uint16(a) /\ is_uint16(b) /\ is_uint16(m).
+  (* Assertion 'range_a' *)
+  Have: (0 <= x) /\ (x <= 65535).
+}
+Prove: (0 <= x_1) /\ (x_1 <= 65535).
+Prover CVC5 1.2.1 returns Unknown (Qed:1ms)
+Prover Z3 4.12.5 returns Timeout (Qed:1ms) (3s)
+Prover Script returns Valid (Qed:3ms) (22ms)
+
+------------------------------------------------------------
+
+Goal Assertion 'masked_a_exact' ("experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c", line 11):
+Let x = land(b, lnot(m)).
+Let x_1 = land(a, m).
+Assume {
+  Type: is_uint16(a) /\ is_uint16(b) /\ is_uint16(m).
+  (* Assertion 'range_a' *)
+  Have: (0 <= x_1) /\ (x_1 <= 65535).
+  (* Assertion 'range_b' *)
+  Have: (0 <= x) /\ (x <= 65535).
+}
+Prove: land(65535, land(a, m)) = x_1.
+Prover CVC5 1.2.1 returns Unknown (Qed:2ms)
+Prover Z3 4.12.5 returns Timeout (Qed:2ms) (3s)
+Prover Script returns Valid (Qed:4ms) (28ms)
+
+------------------------------------------------------------
+
+Goal Assertion 'masked_b_exact' ("experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c", line 12):
+Let x = land(a, m).
+Let x_1 = lnot(m).
+Let x_2 = land(b, x_1).
+Assume {
+  Type: is_uint16(a) /\ is_uint16(b) /\ is_uint16(m).
+  (* Assertion 'range_a' *)
+  Have: (0 <= x) /\ (x <= 65535).
+  (* Assertion 'range_b' *)
+  Have: (0 <= x_2) /\ (x_2 <= 65535).
+  (* Assertion 'masked_a_exact' *)
+  Have: land(65535, land(a, m)) = x.
+}
+Prove: land(65535, land(b, x_1)) = x_2.
+Prover CVC5 1.2.1 returns Unknown (Qed:3ms)
+Prover Z3 4.12.5 returns Timeout (Qed:3ms) (3s)
+Prover Script returns Valid (Qed:6ms) (31ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'mask16_normalize':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/codex-kernel-wave1/audit/integer-v4-portable-mask01/mask16.c", line 15) in 'mask16_false':
+Prove: false.
+Prover CVC5 1.2.1 returns Unknown
+Prover Z3 4.12.5 returns Timeout (3s)
+Prover Script returns Timeout
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'mask16_false':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

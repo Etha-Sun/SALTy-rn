@@ -1,0 +1,20 @@
+--- a/src/plugins/wp/ProofEngine.ml
++++ b/src/plugins/wp/ProofEngine.ml
+@@ -263,9 +263,14 @@
+ let is_prover (p,_) = not @@ Prover.is_tactical p
+ 
+ let prover_stats ~smoke goal =
+-  Stats.results ~smoke @@
+-  List.filter is_prover @@
+-  Wpo.get_results goal
++  (* Trivial tactic children may have no stored prover result. *)
++  if Wpo.is_trivial goal then
++    Stats.results ~smoke
++      [Prover.Qed, VCS.result ~solver:(Wpo.qed_time goal) VCS.Valid]
++  else
++    Stats.results ~smoke @@
++    List.filter is_prover @@
++    Wpo.get_results goal
+ 
+ let rec consolidate ~smoke n =
+   match n.stats with

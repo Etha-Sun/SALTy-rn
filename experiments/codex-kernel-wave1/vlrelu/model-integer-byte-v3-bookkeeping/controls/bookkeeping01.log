@@ -1,0 +1,84 @@
+# Pure-integer Bytes invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "3", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Bytes", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/controls/bookkeeping01.json", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/.build/bookkeeping01", "-wp-fct", "mask_good,mask_bad,bookkeeping_true,bookkeeping_false", "-wp-print", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/controls/bookkeeping-controls.c", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/controls/bookkeeping-controls.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function mask_good
+[rte:annot] annotating function mask_bad
+[rte:annot] annotating function bookkeeping_true
+[rte:annot] annotating function bookkeeping_false
+[wp] 8 goals scheduled
+[wp] [Timeout] bytes_bookkeeping_false_ensures (Qed 0.55ms) (Z3)
+[wp] [Timeout] bytes_mask_bad_ensures_mask_bad (Tactic) (Qed 3ms) (CVC5 1/2 25ms) (Z3)
+[wp] Proved goals:   14 / 16
+  Terminating:     4
+  Unreachable:     4
+  Qed:             5 (0.55ms-0.70ms-3ms)
+  Script:          1 (Tactics 2) (Qed 1/5 6ms) (CVC5 2/5 60ms) (Z3)
+  Timeout:         2
+[wp] Updated session
+   - 3 new scripts to complete
+
+Goal Post-condition 'mask_ok' in 'mask_good':
+Assume {
+  Type: is_uint32(u).
+  (* Pre-condition *)
+  Have: (0 <= u) /\ (u <= 4294967295).
+}
+Prove: lsr(to_uint32(lsl(u, 1)), 1) = land(2147483647, u).
+Prover CVC5 1.2.1 returns Unknown (Qed:1ms)
+Prover Z3 4.12.5 returns Timeout (Qed:1ms) (3s)
+Prover Script returns Valid (Qed:2ms) (34ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'mask_good':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition 'mask_bad' in 'mask_bad':
+Assume {
+  Type: is_uint32(u).
+  (* Pre-condition *)
+  Have: (0 <= u) /\ (u <= 4294967295).
+}
+Prove: lsr(to_uint32(lsl(u, 1)), 2) = land(2147483647, u).
+Prover CVC5 1.2.1 returns Unknown (Qed:0.85ms)
+Prover Z3 4.12.5 returns Timeout (Qed:0.85ms) (3s)
+Prover Script returns Timeout (Qed:3ms) (25ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'mask_bad':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/controls/bookkeeping-controls.c", line 13) in 'bookkeeping_true':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'bookkeeping_true':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/controls/bookkeeping-controls.c", line 15) in 'bookkeeping_false':
+Prove: false.
+Prover CVC5 1.2.1 returns Unknown (Qed:0.55ms)
+Prover Z3 4.12.5 returns Timeout (Qed:0.55ms) (3s)
+Prover Script returns Timeout (Qed:0.55ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'bookkeeping_false':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

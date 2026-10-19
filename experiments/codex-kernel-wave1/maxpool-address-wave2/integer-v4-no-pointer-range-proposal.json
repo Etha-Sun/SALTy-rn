@@ -1,0 +1,22 @@
+{
+  "status": "Proposal only; original source untouched; construction requires root approval",
+  "base_source": "experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/.build/source/src/plugins/wp/MemBytes.ml",
+  "base_sha256": "357e5daf0a41637f5fdfdfdfec935bda4918cab9a6b1c4ead3753fe864187000",
+  "proposed_source_sha256": "9e309b4179f45606239feae47985588bcb931c9ca6ffca91ccf9481ad450032b",
+  "patch_sha256": "73dbd9ef5ef9754b19d61545c7f13831b1c23594c68ca5a01c6ea3d30e93973e",
+  "changed_files": [
+    "src/plugins/wp/MemBytes.ml"
+  ],
+  "change": "Remove unused PointersProperties.ranges definition and its compile-time invocation; no replacement rule",
+  "unchanged": [
+    "ProofEngine accounting fix",
+    "MemAddr/Cint",
+    "integer/byte codecs and load/store implementation",
+    "framed predicate",
+    "per-concrete-global pointer range facts",
+    "CODEC_FLOAT fatal guard",
+    "all kernel C, specs, proof files and checker semantics"
+  ],
+  "expected_effect": "Q_pointers_int_range absent from future SMT; pointer/int roundtrips and goals relying on it may become unproved. No stronger assumptions added. Must re-run complete proof campaigns in independent model namespace.",
+  "pointer_codec_audit": "No named CODEC_ADDR generator found in inspected MemBytes/MemLoader/MemAddr or shared Why3. Pointers use addr_of_int(load_int_raw/uint64) and store_int(int_of_addr(p)); no additional universal finite-address inverse generator found. Existing MemAddr inverse maps into unbounded mathematical int. Removing the all-address bounded range avoids the identified infinite-to-finite injection combination; not a complete consistency proof of the remaining model."
+}

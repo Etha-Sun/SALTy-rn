@@ -1,0 +1,44 @@
+experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/PointerRange.lean:46:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  c ≤ 0
+  a ≥ 0
+  a - b ≤ -1
+where
+ a := encode (0, Int.ofNat n)
+ b := Int.ofNat m
+ c := encode (0, ↑n)
+experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/PointerRange.lean:52:6: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≤ 0
+  g ≤ 0
+  e ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+  c - d ≤ -1
+  c - e ≤ -1
+where
+ c := encode (0, Int.ofNat a)
+ d := Int.ofNat m
+ e := encode (0, Int.ofNat b)
+ g := encode (0, ↑b)
+ h := encode (0, ↑a)
+experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/PointerRange.lean:54:6: error: 'calc' expression has type
+  ((0 : Int), Int.ofNat a) = (0, Int.ofNat b)
+but is expected to have type
+  ((0 : Nat), Int.ofNat a) = (0, Int.ofNat b)
+experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/PointerRange.lean:60:4: error: omega could not prove the goal:
+a possible counterexample may satisfy the constraints
+  h ≥ 0
+  g ≥ 0
+  g - h ≥ 1
+  e ≥ 0
+  d - e ≥ 1
+  c ≥ 0
+where
+ c := ↑(f b)
+ d := Int.ofNat m
+ e := encode (0, Int.ofNat b)
+ g := ↑b
+ h := ↑a
+'no_bounded_injection' depends on axioms: [propext, Quot.sound]
+'range_inverse_conflict' depends on axioms: [propext, sorryAx, Quot.sound]

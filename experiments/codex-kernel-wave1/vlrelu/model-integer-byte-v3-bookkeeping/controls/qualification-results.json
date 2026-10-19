@@ -1,0 +1,58 @@
+{
+  "model_lock_sha256": "5750dcd3a4450cc84edf5166f9a195379f00f42c4fdf0b411fe593e9ce1f6f61",
+  "qualification": "Controls only; root independent source/semantic audit required before candidate use.",
+  "results": [
+    {
+      "name": "bookkeeping01",
+      "source_sha256": "9744fd5a0ff12af6ad9a1d6dd358b2e5b61eca1f4da9fa6cd41a2187bae1a7ca",
+      "exit": 0,
+      "raw": {
+        "passed": 6,
+        "total": 8
+      },
+      "not_proved": [
+        "bookkeeping_false_ensures",
+        "mask_bad_ensures_mask_bad"
+      ],
+      "expected_negative_properties": [
+        "bookkeeping_false_ensures",
+        "mask_bad_ensures_mask_bad"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "mask16-01",
+      "source_sha256": "e1f99c2f01e294c4a9c57b08df690044f017135ab4d97b2b6b23564c04932916",
+      "exit": 0,
+      "raw": {
+        "passed": 9,
+        "total": 10
+      },
+      "not_proved": [
+        "mask16_false_ensures"
+      ],
+      "expected_negative_properties": [
+        "mask16_false_ensures"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "wrapper-float-option",
+      "exit": 1,
+      "accepted_rejection": true,
+      "message_tail": "Only pure-integer Bytes is qualified; floating codecs are forbidden\n"
+    },
+    {
+      "name": "wrapper-driver",
+      "exit": 1,
+      "accepted_rejection": true,
+      "message_tail": "Additional semantic drivers and libraries are not qualified\n"
+    },
+    {
+      "name": "direct-float-codec",
+      "exit": 1,
+      "accepted_rejection": true,
+      "message_tail": "[kernel] Parsing experiments/shim-c-v2/model-integer-byte-v2/blocked-codec.c (with preprocessing)\n[wp] Running WP plugin...\n[wp] Warning: Skipped RTE guards: unaligned pointers (\\aligned not supported)\n[wp] Warning: Skipped RTE guards: invalid function pointer calls (\\valid_function not supported)\n[rte:annot] annotating function float_codec_must_be_rejected\n[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: \n  Neither code nor explicit exits and terminates for function memcpy,\n  generating default clauses. See -generated-spec-* options for more info.\n[wp] experiments/shim-c-v2/model-integer-byte-v2/blocked-codec.c:7: User Error: \n  Pure-integer Bytes profile forbids CODEC_FLOAT generation\n[kernel] Plug-in wp aborted: invalid user input.\n"
+    }
+  ]
+}

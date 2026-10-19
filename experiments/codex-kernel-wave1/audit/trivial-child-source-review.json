@@ -1,0 +1,42 @@
+{
+  "patch_sha256": "6bbc20d9b0b384a22691ddf241ae9f407c25ddf43a3051c977d2e4bf55e195a3",
+  "review": "Root inspected original ProofEngine.prover_stats/compute, Wpo.is_locally_valid, Conditions.is_trivial and Stats.tactical. Change only derives Qed statistics when existing Wpo.is_trivial says true. Nontrivial proof path unchanged; no JSON preset or condition/hypothesis/model change. Independent regressions pending.",
+  "independent_regressions": [
+    {
+      "name": "trivial-child-inline01",
+      "passed": 6,
+      "total": 8,
+      "expected_negative_properties": [
+        "bookkeeping_false_ensures",
+        "mask_bad_ensures_mask_bad"
+      ],
+      "raw_sha256": "cceb1f456738bd047e74c9d9de1a18f3bd03905d68675c911dcdb182b08f2e23"
+    },
+    {
+      "name": "trivial-child-mask1601",
+      "passed": 9,
+      "total": 10,
+      "expected_negative_properties": [
+        "mask16_false_ensures"
+      ],
+      "raw_sha256": "35dddec08cee1052ec0d22ae186b1a7a7b9b0a5b1497d8057a1ef20faf155e26"
+    },
+    {
+      "name": "trivial-child-nan-loop01",
+      "passed": 51,
+      "total": 52,
+      "expected_negative_properties": [
+        "one_site_nan_bits_equal_control_ensures"
+      ],
+      "raw_sha256": "accadb78be93551c2c47c0f31ddad07ed5ee845b81c3b3bc8f6e5f69769ef62c"
+    }
+  ],
+  "unchanged_helpers": {
+    "passed": 9,
+    "total": 9,
+    "log_sha256": "d14b83c4c48c7083fe775778d5db6b819bc8db186f9cd66fa347ffb09ad2774e"
+  },
+  "model_lock_sha256": "d8a6269f196209069a675c04846b7f5510eec231f653a9d78dfbb542baa226fd",
+  "all_locked_files_unchanged": true,
+  "qualification": "Approved for new independently frozen experimental candidates under the declared bytes32 model, after source review and independent positive/negative controls. Not a consistency theorem; model and frontend remain TCB. Float64 byte codec and NaN sign/payload correlation limitations remain."
+}

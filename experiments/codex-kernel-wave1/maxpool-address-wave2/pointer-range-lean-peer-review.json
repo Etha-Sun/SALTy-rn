@@ -1,0 +1,39 @@
+{
+  "reviewer": "conversion_proofs; independent source/math/Lean replay audit requested by root",
+  "lean_source_sha256": "f6ae36fefdc79696498c50f051b29bff898cca85d16e54b35e4eb4711b9d78e1",
+  "actual_smt_sha256": "978d4d26c8db5068dc1e93cb6fde71ed45b5e231e376b9c4c6f69bcc4c56f090",
+  "independent_command": [
+    "/home/ycsun/.elan/bin/elan",
+    "run",
+    "leanprover/lean4:v4.29.1",
+    "lean",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/PointerRange.lean"
+  ],
+  "independent_lean_exit": 0,
+  "lean_log": "pointer-range-lean-peer11.log",
+  "lean_axioms": [
+    "propext",
+    "Quot.sound"
+  ],
+  "math_review": "Induction removes one image from finite range; valid for arbitrary Nat m, with no size bound or unproved injectivity premise. Int.toNat conversion uses explicit nonnegative bound. Injection recovered by applying decode and projecting pair second field.",
+  "source_to_premises": [
+    {
+      "source": "SMT42 datatype addr = constructor(base:Int,offset:Int)",
+      "mapping": "Lean Int x Int via constructor/selector bijection; arbitrary Nat offsets included"
+    },
+    {
+      "source": "SMT441 is_uint64 iff 0<=x<18446744073709551616",
+      "mapping": "bounded with m=2^64 exactly"
+    },
+    {
+      "source": "SMT2206 statically_allocated(base) iff base=0 or static_malloc(base)>0",
+      "mapping": "base0 instance true for every offset; no validity premise needed"
+    },
+    {
+      "source": "SMT2227 inverse and SMT11686 Q_pointers_int_range are unconditional forall-address assertions with only static-base antecedent",
+      "mapping": "For every z:Int obtain bounded encode(0,z) and decode(encode(0,z))=(0,z). No extra memory/offset assumptions added"
+    }
+  ],
+  "verdict": "Confirmed: displayed actual old model formulas imply False by the independently kernel-checked theorem. No source-to-premise strengthening found. This diagnoses the model combination, not a C program inequivalence. Old complete replay results remain conditional model records and do not establish kernel equivalence under an acceptable theory.",
+  "limitation": "This verifies the identified conflict, not consistency of the proposed weakened model. v4 requires independent qualification and complete fresh program replays."
+}
