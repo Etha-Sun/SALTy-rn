@@ -1,0 +1,86 @@
+{
+  "group": "native",
+  "model_lock_sha256": "9d6e312082637fa2bd7e8c55b02e7384084b3a7b0614dec92e0bbd07e08d14ce",
+  "scope": "Controls only, not consistency or full kernel equivalence; root independent audit required.",
+  "results": [
+    {
+      "name": "bookkeeping01",
+      "source_sha256": "9744fd5a0ff12af6ad9a1d6dd358b2e5b61eca1f4da9fa6cd41a2187bae1a7ca",
+      "expected_negative_properties": [
+        "bookkeeping_false_ensures",
+        "mask_bad_ensures_mask_bad"
+      ],
+      "exit": 0,
+      "seconds": 18.34383532498032,
+      "passed": 6,
+      "total": 8,
+      "not_proved": [
+        "bookkeeping_false_ensures",
+        "mask_bad_ensures_mask_bad"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "representation01",
+      "source_sha256": "fdb93ef3c561ec69de55a8fe3015eaff3c8d1c169a6d2818513c0ba5c6cb1828",
+      "expected_negative_properties": [
+        "nan_inverse_control_ensures",
+        "representation_false_control_ensures",
+        "unbounded_inverse_control_ensures"
+      ],
+      "exit": 0,
+      "seconds": 18.994889373949263,
+      "passed": 11,
+      "total": 14,
+      "not_proved": [
+        "nan_inverse_control_ensures",
+        "representation_false_control_ensures",
+        "unbounded_inverse_control_ensures"
+      ],
+      "accepted": true
+    },
+    {
+      "name": "word-store01",
+      "source_sha256": "5c554d5eb6c322578ab3fb6d019a2a1b56f8ada5527d6dee0dbbd63e0d734ffe",
+      "expected_negative_properties": [
+        "arbitrary_value_roundtrip_ensures",
+        "codec_false_ensures",
+        "independent_nan_stores_equal_ensures"
+      ],
+      "exit": 0,
+      "seconds": 48.391562014992815,
+      "passed": 53,
+      "total": 57,
+      "not_proved": [
+        "arbitrary_value_roundtrip_ensures",
+        "codec_false_ensures",
+        "independent_nan_stores_equal_ensures",
+        "non_nan_value_roundtrip_ensures"
+      ],
+      "accepted": false
+    },
+    {
+      "name": "nan-loop01",
+      "source_sha256": "0769bbf3ebdd1274c51790edba7d08b7b839454bf770e6c37e50b4e884035c16",
+      "expected_negative_properties": [
+        "one_site_nan_bits_equal_control_ensures"
+      ],
+      "exit": 0,
+      "seconds": 33.46879696199903,
+      "passed": 49,
+      "total": 52,
+      "not_proved": [
+        "one_site_nan_bits_equal_control_ensures",
+        "one_site_nan_bits_equal_control_assert_rte_mem_access_3",
+        "one_site_two_nan_stores_assert_rte_mem_access_3"
+      ],
+      "accepted": false
+    },
+    {
+      "name": "float64-rejection",
+      "source_sha256": "7a01047657058f253a1e7a14c2976e2fb10570564d96f90b8bf349f91150bc95",
+      "exit": 4,
+      "accepted_rejection": true
+    }
+  ]
+}

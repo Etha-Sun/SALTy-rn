@@ -1,0 +1,78 @@
+{
+  "approved_for_fresh_frozen_experimental_candidates": true,
+  "full_model_consistency_proved": false,
+  "source_review": "../native-v6-root-source01/review.json",
+  "native_lock_sha256": "9d6e312082637fa2bd7e8c55b02e7384084b3a7b0614dec92e0bbd07e08d14ce",
+  "fma_lock_sha256": "719fc553cd7c9839b8cd767c1ecf8de67f423f75b91e462943232740909cf97c",
+  "combined_full_positive_negative_control": {
+    "exit": 0,
+    "seconds": 109.59897037001792,
+    "total": 184,
+    "passed": 179,
+    "pending": [
+      "arbitrary_value_roundtrip_ensures",
+      "byte32_false_control_ensures",
+      "codec_false_ensures",
+      "independent_nan_stores_equal_ensures",
+      "nan_stores_equal_control_ensures"
+    ],
+    "accepted": true,
+    "source_sha256": "e64f75c2d081524b29953752a47d50864eb84a3b620b3d8fa0ec80f9c140e82b",
+    "all_helper_body_cuts_pre_RTE_included": true
+  },
+  "FMA": {
+    "exit": 0,
+    "seconds": 19.398253945983015,
+    "total": 20,
+    "passed": 18,
+    "pending": [
+      "impossible_fma_control_ensures",
+      "wrong_unfused_control_ensures"
+    ]
+  },
+  "additional_controls": {
+    "bookkeeping": {
+      "name": "bookkeeping",
+      "exit": 0,
+      "seconds": 18.595185883983504,
+      "total": 8,
+      "passed": 6,
+      "pending": [
+        "bookkeeping_false_ensures",
+        "mask_bad_ensures_mask_bad"
+      ],
+      "accepted": true
+    },
+    "representation": {
+      "name": "representation",
+      "exit": 0,
+      "seconds": 18.89620316500077,
+      "total": 14,
+      "passed": 11,
+      "pending": [
+        "nan_inverse_control_ensures",
+        "representation_false_control_ensures",
+        "unbounded_inverse_control_ensures"
+      ],
+      "accepted": true
+    },
+    "nan-loop": {
+      "name": "nan-loop",
+      "exit": 0,
+      "seconds": 39.32987155899173,
+      "total": 52,
+      "passed": 51,
+      "pending": [
+        "one_site_nan_bits_equal_control_ensures"
+      ],
+      "accepted": true
+    }
+  },
+  "qualification_source_sha256": "e64f75c2d081524b29953752a47d50864eb84a3b620b3d8fa0ec80f9c140e82b",
+  "old_models_preserved": true,
+  "only_semantic_model_delta": "Delete inconsistent universal pointer finite-range law; no new axiom",
+  "scope": "Permits new independent candidate proofs only. All body/global/call/RTE/termination/frame gates and full independent/canonical replay remain mandatory. No old v5/local green inherited. Remaining memory/ABI/codec/nativeFP/FMA/libc/toolchain/solver premises remain TCB. Float64 codec unsupported. NaN stores deliberately overapproximate payload/sign and do not permit typed NaN bit roundtrip equality.",
+  "combined_original_C_LLVM_IR_byte_identical": true,
+  "LLVM_evidence": "combined-llvm/result.json",
+  "public_contract_review": "Root manually checked original 16 function contracts retain the same attached pre/postconditions; added requires only on three body-checked ghost helpers."
+}

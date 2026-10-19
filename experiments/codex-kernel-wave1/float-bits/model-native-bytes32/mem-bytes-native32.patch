@@ -1,0 +1,138 @@
+--- a/src/plugins/wp/MemBytes.ml
++++ b/src/plugins/wp/MemBytes.ml
+@@ -410,108 +410,38 @@
+ 
+ (* Prepare loader *)
+ 
+-let float_cluster () =
+-  Definitions.cluster ~id:"MemBytes.Float" ~title:"MemBytes definitions" ()
+-
++(* Experimental relational binary32 representation. No codec axioms.
++   Native FP collapses NaN payloads. Each FLOAT STORE therefore gets a fresh
++   universally quantified choice of any uint32 NaN encoding. This is an
++   over-approximation; memcpy itself still copies concrete byte memory. *)
+ module Float = struct
+-  type t = Ctypes.c_float
+-  let pretty = Ctypes.pp_float
+-  let compare = Ctypes.compare_c_float
+-  let ikind = function
+-    | Float32 -> UInt32
+-    | Float64 -> UInt64
++  let ikind = function Float32 -> UInt32 | Float64 -> UInt64
+ end
+ 
+-module CODEC_FLOAT = WpContext.Generator(Float)
+-    (struct
+-      let name = "MemBytes.LOAD_FLOAT"
+-      type key = Float.t
+-      type data = Lang.lfun * Lang.lfun
+-
+-      let decode ft =
+-        let result = Cfloat.tau_of_float ft in
+-        let f = Lang.freshvar ~basename:"f" Lang.t_int in
+-        let decode =
+-          Lang.generated_f ~result "int_to_%a" Float.pretty ft in
+-        Definitions.define_symbol {
+-          d_lfun = decode ;
+-          d_cluster = float_cluster () ; d_types = 0 ;
+-          d_params = [ f ] ;
+-          d_definition = Logic result ;
+-        } ;
+-        decode
+-
+-      let encode ft =
+-        let result = Lang.t_int in
+-        let f = Lang.freshvar ~basename:"f" @@ Cfloat.tau_of_float ft in
+-        let encode =
+-          Lang.generated_f ~result "%a_to_int" Float.pretty ft in
+-        Definitions.define_symbol {
+-          d_lfun = encode ;
+-          d_cluster = float_cluster () ; d_types = 0 ;
+-          d_params = [ f ] ;
+-          d_definition = Logic result ;
+-        } ;
+-        encode
+-
+-      let add_decode_encode ft encode decode =
+-        let f = Lang.freshvar ~basename:"f" @@ Cfloat.tau_of_float ft in
+-        let tf = e_var f in
+-        let name = Format.asprintf "decode_encode_%a" Float.pretty ft in
+-        let lemma =
+-          p_equal tf (e_fun decode [e_fun encode [tf]]) in
+-        Definitions.define_lemma {
+-          l_kind = Admit ;
+-          l_name = name ;
+-          l_triggers = [] ;
+-          l_forall = [f] ;
+-          l_cluster = float_cluster () ;
+-          l_lemma = lemma
+-        }
+-
+-      let add_encode_decode ft encode decode =
+-        let i = Lang.freshvar ~basename:"i" Lang.t_int in
+-        let ti = e_var i in
+-        let name = Format.asprintf "encode_decode_%a" Float.pretty ft in
+-        let lemma =
+-          p_equal ti (e_fun encode [e_fun decode [ti]]) in
+-        Definitions.define_lemma {
+-          l_kind = Admit ;
+-          l_name = name ;
+-          l_triggers = [] ;
+-          l_forall = [i] ;
+-          l_cluster = float_cluster () ;
+-          l_lemma = lemma
+-        }
+-
+-      let add_encode_bounds ft encode =
+-        let f = Lang.freshvar ~basename:"f" @@ Cfloat.tau_of_float ft in
+-        let tf = e_var f in
+-        let name = Format.asprintf "encode_bounds_%a" Float.pretty ft in
+-        let lemma = Cint.range (Float.ikind ft) @@ e_fun encode [ tf ] in
+-        Definitions.define_lemma {
+-          l_kind = Admit ;
+-          l_name = name ;
+-          l_triggers = [] ;
+-          l_forall = [f] ;
+-          l_cluster = float_cluster () ;
+-          l_lemma = lemma
+-        }
+-
+-      let compile ft =
+-        let encode = encode ft in
+-        let decode = decode ft in
+-        add_encode_decode ft encode decode ;
+-        add_decode_encode ft encode decode ;
+-        add_encode_bounds ft encode ;
+-        encode, decode
+-    end)
++let codec32_encode =
++  Lang.extern_f ~library:"cfloat" ~result:Lang.t_int "repr_encode32"
++let codec32_decode =
++  Lang.extern_f ~library:"cfloat"
++    ~result:(Cfloat.tau_of_float Float32) "repr_decode32"
++let codec32_is_nan = Lang.extern_fp ~library:"cfloat" "is_NaN_f32"
+ 
+ let float_to_int fkind f =
+-  e_fun (fst @@ CODEC_FLOAT.get fkind) [ f ]
+-
+-let int_to_float fkind f =
+-  e_fun (snd @@ CODEC_FLOAT.get fkind) [ f ]
++  match fkind with
++  | Float64 -> Wp_parameters.fatal "Experimental byte codec supports binary32 only"
++  | Float32 ->
++    let choice = Lang.freshvar ~basename:"nan_store_bits" Lang.t_int in
++    let bits = Cint.convert UInt32 (e_var choice) in
++    let exp = e_fun Cint.f_land [bits;e_int 0x7f800000] in
++    let frac = e_fun Cint.f_land [bits;e_int 0x007fffff] in
++    let is_nan_bits = e_and [e_eq exp (e_int 0x7f800000); e_neq frac e_zero] in
++    let nan_bits = e_if is_nan_bits bits (e_int 0x7fc00000) in
++    e_if (e_prop (p_call codec32_is_nan [f])) nan_bits
++      (e_fun codec32_encode [f])
++
++let int_to_float fkind bits =
++  match fkind with
++  | Float64 -> Wp_parameters.fatal "Experimental byte codec supports binary32 only"
++  | Float32 -> e_fun codec32_decode [bits]
+ 
+ let load_int_raw memory kind addr =
+   let read = match kind with

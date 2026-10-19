@@ -1,0 +1,37 @@
+{
+  "stage": "Proposal only; no build started",
+  "base_frontend": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping",
+  "base_MemBytes_sha256": "e1c9d9ab625f6d3bccab6e9a340ab6eb5bccc34758da82d7c1b0299918019044",
+  "proposed_MemBytes_sha256": "3de8c76038b4a959dc62197d43e928d99bc2ea2823b605cbf8de9ebd018de57f",
+  "patch_sha256": "03badd89444ab455ebd8c11f09b1ae9abccac48d648864d370dc8430036aaf1b",
+  "native_namespace": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range",
+  "fma_namespace": "experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma",
+  "source_change": "Delete only 10-line PointersProperties.ranges definition plus its one-line invocation; no replacement law",
+  "fma_composition_change": "Delegate new independent FMA wrapper to v6 base, append exact existing model-fma/fma.driver; keep fmaf libc contract as TCB",
+  "plan": [
+    "Copy v5 source into fresh v6 source/build namespace without editing v5",
+    "Apply pinned deletion patch; source-audit every non_build file, only MemBytes may differ",
+    "Copy wp-share, acsl-bits.driver, z3.drv, cvc5.drv, wrapper and libc references unchanged; why3.conf only relocate driver paths into v6 namespace",
+    "Rebuild standalone backend, install only to new prefix; keep ProofEngine trivial-child fix byte-identical",
+    "Replay nine unchanged float_bits32 helper checks; qualify native word/NaN, true/false/wrong bit arithmetic, float64 rejection, native FMA composition controls",
+    "Export identical actual numeric/memory VC SMT to verify only universal Q range removal; construct fresh complete model locks including all source/install inputs",
+    "Root independent source/lock review before any worker candidate config changes"
+  ],
+  "frozen_semantic_and_driver_files": {
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/.build/source/src/plugins/wp/ProofEngine.ml": "0987eaa5cdb7afa2fa4b5cc6291c40e03b6cb9b156931cf73dfd8adeca9505e6",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/.build/source/src/plugins/wp/MemAddr.ml": "49ea01babc875c9a35f6c42506551bde0e8094f3e40e21325813986da81975e3",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/.build/source/src/plugins/wp/MemLoader.ml": "b59407d1220f7c0871bc556aaebf4748e9229053463881467ca6a3da851c9fe8",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/wp-share/why3/frama_c_wp/cint.mlw": "04eb21eee70595bd097ee0693e4bd47e903b10aa5dc12f8f9284b912c504847c",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/wp-share/why3/frama_c_wp/memaddr.mlw": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/wp-share/why3/frama_c_wp/cfloat.mlw": "1a9096b35b7f76a9b1511da38078b91861721deba4cd01e7a5b7e54a7b74b3ff",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/wp-share/why3/frama_c_wp/float_bits32.mlw": "23bbacdcfa39ccad81fbde1455411e1a89ad5aefa63691870716b4249db58246",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/wp-share/why3/frama_c_wp/float_bits32_primitive.mlw": "ab3051fd78a2ade3ba336b5049697fa5e349a0fc35e8fa594619afffde60c679",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/acsl-bits.driver": "31e145c1d733553701c824fda6033d4a978cde43d7667468827694213d9006d8",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/z3.drv": "2f29cd31cf1e044685f85546ae889d4473fbe193152eb7143027d4a121da9363",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/cvc5.drv": "122b30a65f6fc44fee9709bc8d1239613d64e6bd99716d2066546fc43e7dc961",
+    "experiments/shim-c-v2/model-fma/fma.driver": "af656e56ef57b50ce19fce9e76d525ef09ae5ffdf5a10a79229c770cad48eb3b",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/frama-c.py": "5bab8e723ba33e054538cd8a1b4f2332daa3dce5bf405d5f635b4380075372c1",
+    "experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v5-fma/frama-c.py": "eed8f771b17d731f6ee94e53921125fbc80277c26ebba38742a64f84b86bdbf1"
+  },
+  "codec_preservation": "Native MemBytes.float_to_int/int_to_float at lines418-442 copied byte-identically, including repr_encode32/repr_decode32 and binary32-only fatal branch for Float64; all Cfloat/float_bits32/native driver laws unchanged. No new finite address encoding inverse."
+}

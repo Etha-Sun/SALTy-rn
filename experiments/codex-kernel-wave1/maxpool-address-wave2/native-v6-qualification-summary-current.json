@@ -1,0 +1,334 @@
+{
+  "status": "candidate: qualification incomplete pending pure integer mask/interval proof; no worker profile switched",
+  "scope": "Conservative theory weakening only; control qualification is not theory consistency or a full kernel proof.",
+  "models": [
+    {
+      "path": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range",
+      "lock": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/float_model_lock.json",
+      "sha256": "9d6e312082637fa2bd7e8c55b02e7384084b3a7b0614dec92e0bbd07e08d14ce"
+    },
+    {
+      "path": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma",
+      "lock": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/float_model_lock.json",
+      "sha256": "719fc553cd7c9839b8cd767c1ecf8de67f423f75b91e462943232740909cf97c"
+    }
+  ],
+  "source_audit": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/source-audit.json",
+  "patch": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/no-pointer-range.patch",
+  "actual_smt_delta_audit": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-actual-smt-removal-audit.json",
+  "helper_result": {
+    "exit": 0,
+    "passed": 9,
+    "total": 9,
+    "scope": "Unchanged native32 helper module, exact original checks under relocated driver paths."
+  },
+  "original_controls": [
+    {
+      "group": "native",
+      "model_lock_sha256": "9d6e312082637fa2bd7e8c55b02e7384084b3a7b0614dec92e0bbd07e08d14ce",
+      "scope": "Controls only, not consistency or full kernel equivalence; root independent audit required.",
+      "results": [
+        {
+          "name": "bookkeeping01",
+          "source_sha256": "9744fd5a0ff12af6ad9a1d6dd358b2e5b61eca1f4da9fa6cd41a2187bae1a7ca",
+          "expected_negative_properties": [
+            "bookkeeping_false_ensures",
+            "mask_bad_ensures_mask_bad"
+          ],
+          "exit": 0,
+          "seconds": 18.34383532498032,
+          "passed": 6,
+          "total": 8,
+          "not_proved": [
+            "bookkeeping_false_ensures",
+            "mask_bad_ensures_mask_bad"
+          ],
+          "accepted": true
+        },
+        {
+          "name": "representation01",
+          "source_sha256": "fdb93ef3c561ec69de55a8fe3015eaff3c8d1c169a6d2818513c0ba5c6cb1828",
+          "expected_negative_properties": [
+            "nan_inverse_control_ensures",
+            "representation_false_control_ensures",
+            "unbounded_inverse_control_ensures"
+          ],
+          "exit": 0,
+          "seconds": 18.994889373949263,
+          "passed": 11,
+          "total": 14,
+          "not_proved": [
+            "nan_inverse_control_ensures",
+            "representation_false_control_ensures",
+            "unbounded_inverse_control_ensures"
+          ],
+          "accepted": true
+        },
+        {
+          "name": "word-store01",
+          "source_sha256": "5c554d5eb6c322578ab3fb6d019a2a1b56f8ada5527d6dee0dbbd63e0d734ffe",
+          "expected_negative_properties": [
+            "arbitrary_value_roundtrip_ensures",
+            "codec_false_ensures",
+            "independent_nan_stores_equal_ensures"
+          ],
+          "exit": 0,
+          "seconds": 48.391562014992815,
+          "passed": 53,
+          "total": 57,
+          "not_proved": [
+            "arbitrary_value_roundtrip_ensures",
+            "codec_false_ensures",
+            "independent_nan_stores_equal_ensures",
+            "non_nan_value_roundtrip_ensures"
+          ],
+          "accepted": false
+        },
+        {
+          "name": "nan-loop01",
+          "source_sha256": "0769bbf3ebdd1274c51790edba7d08b7b839454bf770e6c37e50b4e884035c16",
+          "expected_negative_properties": [
+            "one_site_nan_bits_equal_control_ensures"
+          ],
+          "exit": 0,
+          "seconds": 33.46879696199903,
+          "passed": 49,
+          "total": 52,
+          "not_proved": [
+            "one_site_nan_bits_equal_control_ensures",
+            "one_site_nan_bits_equal_control_assert_rte_mem_access_3",
+            "one_site_two_nan_stores_assert_rte_mem_access_3"
+          ],
+          "accepted": false
+        },
+        {
+          "name": "float64-rejection",
+          "source_sha256": "7a01047657058f253a1e7a14c2976e2fb10570564d96f90b8bf349f91150bc95",
+          "exit": 4,
+          "accepted_rejection": true
+        }
+      ]
+    },
+    {
+      "group": "fma",
+      "model_lock_sha256": "719fc553cd7c9839b8cd767c1ecf8de67f423f75b91e462943232740909cf97c",
+      "scope": "Controls only, not consistency or full kernel equivalence; root independent audit required.",
+      "results": [
+        {
+          "name": "fma01",
+          "source_sha256": "c7243d0b60e9c5e31c9181ddf7069279aefcdc266e6856828ec4628f5a75b4fd",
+          "expected_negative_properties": [
+            "impossible_fma_control_ensures",
+            "wrong_unfused_control_ensures"
+          ],
+          "exit": 0,
+          "seconds": 19.349520275951363,
+          "passed": 18,
+          "total": 20,
+          "not_proved": [
+            "impossible_fma_control_ensures",
+            "wrong_unfused_control_ensures"
+          ],
+          "accepted": true
+        },
+        {
+          "name": "float64-rejection",
+          "source_sha256": "7a01047657058f253a1e7a14c2976e2fb10570564d96f90b8bf349f91150bc95",
+          "exit": 4,
+          "accepted_rejection": true
+        }
+      ]
+    }
+  ],
+  "followups": {
+    "native-v6-word-store16": {
+      "exit": 0,
+      "seconds": 100.82249507599045,
+      "total": 57,
+      "passed": 53,
+      "pending": [
+        "bytes_acsl-bits_arbitrary_value_roundtrip_ensures",
+        "bytes_acsl-bits_codec_false_ensures",
+        "bytes_acsl-bits_independent_nan_stores_equal_ensures",
+        "bytes_acsl-bits_non_nan_value_roundtrip_ensures"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-word-store16-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-word-store16.json",
+      "raw_sha256": "c2af083854e0cd0fe11cf08e11c5d2034b5e8d6514d3821d22083c20ad21af77"
+    },
+    "native-v6-nan-loop17": {
+      "exit": 0,
+      "seconds": 38.73597921198234,
+      "total": 52,
+      "passed": 51,
+      "pending": [
+        "bytes_acsl-bits_one_site_nan_bits_equal_control_ensures"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-nan-loop17-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-nan-loop17.json",
+      "raw_sha256": "74bc4fba925fabb0857d66e2192066a21cbf7b7f608735a6a2a7caacbd9d1acf"
+    },
+    "native-v6-special-cut18": {
+      "exit": 0,
+      "seconds": 74.98143228900153,
+      "total": 93,
+      "passed": 89,
+      "pending": [
+        "bytes_acsl-bits_byte32_false_control_ensures",
+        "bytes_acsl-bits_nan_store_is_nan_ensures",
+        "bytes_acsl-bits_nan_store_is_nan_ensures_2",
+        "bytes_acsl-bits_nan_stores_equal_control_ensures"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-special-cut18-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-special-cut18.json",
+      "raw_sha256": "1a58ede09e007791409dc9594f23f650106bb77d1fd56ca3b244be85c7e7d1e8"
+    },
+    "native-v6-word-proof19": {
+      "exit": 0,
+      "seconds": 65.03527514199959,
+      "total": 60,
+      "passed": 56,
+      "pending": [
+        "bytes_acsl-bits_arbitrary_value_roundtrip_ensures",
+        "bytes_acsl-bits_codec_false_ensures",
+        "bytes_acsl-bits_independent_nan_stores_equal_ensures",
+        "bytes_acsl-bits_non_nan_value_roundtrip_assert_decoded_input_non_nan"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-word-proof19-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-word-proof19.json",
+      "raw_sha256": "aec59b8bc0d88b6f1dca168472edafdcce4fd7062c4e0881d5039deb388b8a47"
+    },
+    "native-v6-mask-bridge20": {
+      "exit": 0,
+      "seconds": 18.09321484802058,
+      "total": 8,
+      "passed": 5,
+      "pending": [
+        "bytes_acsl-bits_bridge_false_ensures",
+        "bytes_acsl-bits_proof_nan_mask_ensures",
+        "bytes_acsl-bits_proof_non_nan_mask_ensures"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-mask-bridge20-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-mask-bridge20.json",
+      "raw_sha256": "8f01879d33c37de6e3d39ae0bca337c739ab18cc9dbc17980ee26c9b491b16c2"
+    },
+    "native-v6-word-proof21": {
+      "exit": 0,
+      "seconds": 67.77548555698013,
+      "total": 65,
+      "passed": 61,
+      "pending": [
+        "bytes_acsl-bits_arbitrary_value_roundtrip_ensures",
+        "bytes_acsl-bits_codec_false_ensures",
+        "bytes_acsl-bits_independent_nan_stores_equal_ensures",
+        "bytes_acsl-bits_non_nan_value_roundtrip_assert_decoded_input_non_nan"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-word-proof21-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-word-proof21.json",
+      "raw_sha256": "038dae13a66d8b616aa41c628da1c6e5cd92f8131479d23bd01545c4727425d9"
+    },
+    "native-v6-special-proof22": {
+      "exit": 0,
+      "seconds": 77.98732887901133,
+      "total": 99,
+      "passed": 95,
+      "pending": [
+        "bytes_acsl-bits_byte32_false_control_ensures",
+        "bytes_acsl-bits_nan_store_is_nan_ensures",
+        "bytes_acsl-bits_nan_store_is_nan_ensures_2",
+        "bytes_acsl-bits_nan_stores_equal_control_ensures"
+      ],
+      "result": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-special-proof22-result.json",
+      "raw": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/native-v6-special-proof22.json",
+      "raw_sha256": "b3f3be9e3d7d8214c10c2d589c288ab90ad3ca2e6bda6f418713a3076b4eac84"
+    }
+  },
+  "current_gaps": [
+    {
+      "property": "non_nan_value_roundtrip_assert_decoded_input_non_nan",
+      "reason": "Missing checked integer lemma from (u&exp)!=exp OR (u&mantissa)==0 to non-NaN unsigned-word intervals. The IEEE interval-classification body and decoded-word equivalence cuts are actually proved."
+    },
+    {
+      "properties": [
+        "nan_store_is_nan_ensures",
+        "nan_store_is_nan_ensures_2"
+      ],
+      "reason": "Missing checked integer lemma from NaN unsigned-word intervals to exp==0x7f800000 AND mantissa!=0. Byte-copy classification and interval cuts are actually proved."
+    }
+  ],
+  "new_cut_coverage": {
+    "native-v6-word-proof21": {
+      "copied_input_word": [
+        {
+          "goal": "bytes_acsl-bits_non_nan_value_roundtrip_assert_copied_input_word",
+          "passed": true
+        }
+      ],
+      "decoded_word_nan_equiv": [
+        {
+          "goal": "bytes_acsl-bits_non_nan_value_roundtrip_assert_decoded_word_nan_equiv",
+          "passed": true
+        }
+      ],
+      "decoded_input_non_nan": [
+        {
+          "goal": "bytes_acsl-bits_non_nan_value_roundtrip_assert_decoded_input_non_nan",
+          "passed": false
+        }
+      ],
+      "encoded_copy_word": [
+        {
+          "goal": "bytes_acsl-bits_non_nan_value_roundtrip_assert_encoded_copy_word",
+          "passed": true
+        }
+      ]
+    },
+    "native-v6-special-proof22": {
+      "copied_special_word": [
+        {
+          "goal": "bytes_acsl-bits_decode_minus_infinity_assert_copied_special_word",
+          "passed": true
+        },
+        {
+          "goal": "bytes_acsl-bits_decode_plus_infinity_assert_copied_special_word",
+          "passed": true
+        },
+        {
+          "goal": "bytes_acsl-bits_decode_subnormal_assert_copied_special_word",
+          "passed": true
+        }
+      ],
+      "copied_nan_word": [
+        {
+          "goal": "bytes_acsl-bits_nan_store_is_nan_assert_copied_nan_word",
+          "passed": true
+        }
+      ],
+      "copied_nan_interval": [
+        {
+          "goal": "bytes_acsl-bits_nan_store_is_nan_assert_copied_nan_interval",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "ordinary_c_identity": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/.build/qualification-llvm-word21/result.json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/maxpool-address-wave2/.build/qualification-llvm-special22/result.json"
+  ],
+  "preserved_negative_controls": [
+    "bookkeeping false",
+    "wrong integer shift",
+    "unbounded float inverse",
+    "NaN payload inverse",
+    "false representation",
+    "arbitrary payload value-copy equality",
+    "independent NaN payload equality",
+    "false codec",
+    "two-site NaN payload equality",
+    "false special control",
+    "impossible FMA",
+    "wrong unfused FMA"
+  ],
+  "old_failures": "All original failed raw/logs and qualification-results remain unchanged; later proof-only versions append new evidence."
+}

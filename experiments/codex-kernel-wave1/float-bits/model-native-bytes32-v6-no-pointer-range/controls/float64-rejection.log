@@ -1,0 +1,27 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "5", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-auto-depth", "30", "-wp-print", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/probes/unsupported-float64.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing experiments/codex-kernel-wave1/float-bits/probes/unsupported-float64.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function unsupported_float64_load
+[wp] Failure: Experimental byte codec supports binary32 only
+[kernel] Current source was: <unknown location>
+  The full backtrace is:
+  Raised at Wp__Register.step_finally in file "src/plugins/wp/register.ml", line 972, characters 41-48
+  Called from Wp__Register.step_finally in file "src/plugins/wp/register.ml", line 973, characters 2-12
+  Called from Wp__Register.step_finally in file "src/plugins/wp/register.ml", line 973, characters 2-12
+  Called from Wp__Register.step_finally in file "src/plugins/wp/register.ml", line 973, characters 2-12
+  Called from Wp__Register.step_finally in file "src/plugins/wp/register.ml", line 973, characters 2-12
+  Called from Stdlib__Queue.iter.iter in file "queue.ml", line 121, characters 6-15
+  Called from Frama_c_kernel__Boot.play_analysis in file "src/kernel_internals/runtime/boot.ml", line 24, characters 4-17
+  Called from Frama_c_kernel__Cmdline.play_in_toplevel_one_shot in file "src/kernel_services/cmdline_parameters/cmdline.ml", line 951, characters 2-9
+  Called from Frama_c_kernel__Cmdline.play_in_toplevel in file "src/kernel_services/cmdline_parameters/cmdline.ml", line 1005, characters 18-64
+  Called from Frama_c_kernel__Cmdline.catch_toplevel_run in file "src/kernel_services/cmdline_parameters/cmdline.ml", line 192, characters 4-8
+  
+  Plug-in wp aborted: internal error.
+  Please report as 'crash' at https://git.frama-c.com/pub/frama-c/issues
+  Your Frama-C version is 33.0 (Arsenic).
+  Note that a version and a backtrace alone often do not contain enough
+  information to understand the bug. Guidelines for reporting bugs are at:
+  https://git.frama-c.com/pub/frama-c/-/wikis/Guidelines-for-reporting-bugs

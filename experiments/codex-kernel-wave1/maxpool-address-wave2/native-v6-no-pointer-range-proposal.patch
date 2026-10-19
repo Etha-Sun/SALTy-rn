@@ -1,0 +1,27 @@
+--- a/src/plugins/wp/MemBytes.ml
++++ b/src/plugins/wp/MemBytes.ml
+@@ -890,16 +890,6 @@
+       type key = unit
+       type data = Lang.lfun
+ 
+-      let ranges () =
+-        let a = Lang.freshvar ~basename:"a" MemAddr.t_addr in
+-        let prop = MemAddr.in_uintptr_range (e_var a) in
+-        Definitions.define_lemma {
+-          l_kind = Admit ; l_name = "pointers_int_range" ;
+-          l_triggers = [] ; l_forall = [a] ;
+-          l_cluster = pointer_cluster () ;
+-          l_lemma = prop ;
+-        }
+-
+       let compile () =
+         let lfun = Lang.generated_p "framed" in
+         let m = Lang.freshvar ~basename:"m" WBytes.t_memory in
+@@ -916,7 +906,6 @@
+           d_cluster = pointer_cluster () ; d_types = 0 ;
+           d_params = [ m ] ; d_definition = Predicate (Def, body)
+         };
+-        ranges () ;
+         lfun
+     end)
+ 

@@ -1,0 +1,13 @@
+--- a/src/plugins/wp/MemBytes.ml
++++ b/src/plugins/wp/MemBytes.ml
+@@ -431,9 +431,7 @@
+   | Float32 ->
+     let choice = Lang.freshvar ~basename:"nan_store_bits" Lang.t_int in
+     let bits = Cint.convert UInt32 (e_var choice) in
+-    let exp = e_fun Cint.f_land [bits;e_int 0x7f800000] in
+-    let frac = e_fun Cint.f_land [bits;e_int 0x007fffff] in
+-    let is_nan_bits = e_and [e_eq exp (e_int 0x7f800000); e_neq frac e_zero] in
++    let is_nan_bits = e_prop (p_call codec32_is_nan [e_fun codec32_decode [bits]]) in
+     let nan_bits = e_if is_nan_bits bits (e_int 0x7fc00000) in
+     e_if (e_prop (p_call codec32_is_nan [f])) nan_bits
+       (e_fun codec32_encode [f])

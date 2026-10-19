@@ -1,0 +1,27 @@
+--- /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v5-bookkeeping/.build/source/src/plugins/wp/MemBytes.ml	2026-10-19 02:33:43.202987412 -0500
++++ /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/MemBytes.ml	2026-10-19 15:49:13.131157099 -0500
+@@ -890,16 +890,6 @@
+       type key = unit
+       type data = Lang.lfun
+ 
+-      let ranges () =
+-        let a = Lang.freshvar ~basename:"a" MemAddr.t_addr in
+-        let prop = MemAddr.in_uintptr_range (e_var a) in
+-        Definitions.define_lemma {
+-          l_kind = Admit ; l_name = "pointers_int_range" ;
+-          l_triggers = [] ; l_forall = [a] ;
+-          l_cluster = pointer_cluster () ;
+-          l_lemma = prop ;
+-        }
+-
+       let compile () =
+         let lfun = Lang.generated_p "framed" in
+         let m = Lang.freshvar ~basename:"m" WBytes.t_memory in
+@@ -916,7 +906,6 @@
+           d_cluster = pointer_cluster () ; d_types = 0 ;
+           d_params = [ m ] ; d_definition = Predicate (Def, body)
+         };
+-        ranges () ;
+         lfun
+     end)
+ 
