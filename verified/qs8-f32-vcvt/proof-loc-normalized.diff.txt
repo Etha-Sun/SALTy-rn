@@ -1,0 +1,312 @@
+--- shim.h
+@@ replace
+- \wp::proof SolveArray: proof_mul_replace, proof_mul_scale_replace, __riscv_vfcvt_f_x_v_f32m8,
++ \wp::proof SolveArray: proof_qcvt_lane, test_neon, test_rvv, proof_center_lane, proof_center_vector, proof_qcvt_transfer, proof_mul_replace, proof_mul_scale_replace, __riscv_vfcvt_f_x_v_f32m8,
+--- integer-qs8-f32-vcvt.c
+@@ insert
++ ensures store_lane0: same_float(p[0],a.lane[0]);
++ ensures store_lane1: same_float(p[1],a.lane[1]);
+--- neon.c
+@@ insert
++ */
++ /*@
++ requires batch>0;
++ requires batch<=SIZE_MAX/4-7;
++ requires \valid_read(input+(0..batch+7-1));
++ requires \valid(output+(0..batch-1));
++ requires \valid_read(params);
++ requires \separated(output+(0..batch-1),input+(0..batch+7-1));
++ requires \separated(output+(0..batch-1),params);
++ requires params->scalar.zero_point != INT32_MIN;
++ terminates \true;
++ assigns output[0..batch-1];
++ ensures kernel_output: \forall integer j; 0<=j<\at(batch,Pre) ==>
++ same_value(\at(output,Pre)[j],qcvt(\at(input[j],Pre),\at(params->scalar.zero_point,Pre),\at(params->scalar.scale,Pre)));
+--- neon.c
+@@ delete
+- /*@ assert \forall integer j; 0<=j<4 ==> same_float(vy_lo.lane[j],(float)centered(input_base[total-batch+j],zp0)); */
+--- neon.c
+@@ delete
+- /*@ assert \forall integer j; 0<=j<4 ==> same_float(vy_hi.lane[j],(float)centered(input_base[total-batch+4+j],zp0)); */
+--- neon.c
+@@ replace
+- for(size_t k=0;k<4;k++) {
+- /@ assert same_float(before_mul1.lane[k],(float)centered(input_base[total-batch+k],zp0)); @/
++ for(int k=0;k<4;k++) {
++ /@ assert same_float(before_mul1.lane[k],(float)vwx_lo.lane[k]); @/
+--- neon.c
+@@ replace
+- proof_qcvt_eval(vy_lo.lane[k],before_mul1.lane[k],vscale.lane[k],input_base[total-batch+k],zp0,scale0);
++ /@ assert lane_index_0_0: (size_t)k==k; @/
++ /@ assert lane_index_0_1: (size_t)(total-batch)==total-batch; @/
++ /@ assert lane_index_0_2: (size_t)((size_t)(total-batch)+(size_t)k)==total-batch+k; @/
++ proof_qcvt_lane(vy_lo.lane[k],before_mul1.lane[k],vscale.lane[k],vwx_lo.lane[k],input_base[total-batch+k],zp0,scale0);
+--- neon.c
+@@ replace
+- for(size_t k=0;k<4;k++) {
+- /@ assert same_float(before_mul2.lane[k],(float)centered(input_base[total-batch+4+k],zp0)); @/
++ for(int k=0;k<4;k++) {
++ /@ assert same_float(before_mul2.lane[k],(float)vwx_hi.lane[k]); @/
+--- neon.c
+@@ replace
+- proof_qcvt_eval(vy_hi.lane[k],before_mul2.lane[k],vscale.lane[k],input_base[total-batch+4+k],zp0,scale0);
++ /@ assert lane_index_1_0: (size_t)k==k; @/
++ /@ assert lane_index_1_1: (size_t)(total-batch)==total-batch; @/
++ /@ assert lane_index_1_2: (size_t)((size_t)(total-batch)+4)==total-batch+4; @/
++ /@ assert lane_index_1_3: (size_t)((size_t)(total-batch+4)+(size_t)k)==total-batch+4+k; @/
++ proof_qcvt_lane(vy_hi.lane[k],before_mul2.lane[k],vscale.lane[k],vwx_hi.lane[k],input_base[total-batch+4+k],zp0,scale0);
+--- neon.c
+@@ insert
++ /*@ assert bulk_prefix: \forall integer j; 0<=j<done ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
++ /*@ assert bulk_scale: same_float(params->scalar.scale,scale0); */
++ //@ ghost check_same_float_trans();
++ //@ ghost check_same_value_trans();
++ /*@ assert tail_origin_exact: done==total-batch; */
+--- neon.c
+@@ replace
+- /*@ assert \forall integer j; 0<=j<8 ==> vhx.lane[j]==centered(input_base[total-batch+j],zp0); */
++ /*@ assert \forall integer j; 0<=j<8 ==> vhx.lane[j]==centered(input_base[done+j],zp0); */
+--- neon.c
+@@ replace
+- /*@ assert \forall integer j; 0<=j<4 ==> vwx_lo.lane[j]==centered(input_base[total-batch+j],zp0); */
++ /*@ assert \forall integer j; 0<=j<4 ==> vwx_lo.lane[j]==centered(input_base[done+j],zp0); */
+--- neon.c
+@@ delete
+- /*@ assert \forall integer j; 0<=j<4 ==> same_float(vy.lane[j],(float)centered(input_base[total-batch+j],zp0)); */
+--- neon.c
+@@ replace
+- loop invariant \forall integer j; 0<=j<k ==> same_value(vy.lane[j],qcvt(input_base[total-batch+j],zp0,scale0));
++ loop invariant \forall integer j; 0<=j<k ==> same_value(vy.lane[j],qcvt(input_base[done+j],zp0,scale0));
+--- neon.c
+@@ replace
+- for(size_t k=0;k<4;k++) {
+- /@ assert same_float(before_mul3.lane[k],(float)centered(input_base[total-batch+k],zp0)); @/
++ for(int k=0;k<4;k++) {
++ /@ assert same_float(before_mul3.lane[k],(float)vwx_lo.lane[k]); @/
+--- neon.c
+@@ replace
+- proof_qcvt_eval(vy.lane[k],before_mul3.lane[k],vscale.lane[k],input_base[total-batch+k],zp0,scale0);
++ /@ assert lane_index_2_0: (size_t)k==k; @/
++ /@ assert lane_index_2_1: (size_t)(total-batch)==total-batch; @/
++ /@ assert lane_index_2_2: (size_t)((size_t)(total-batch)+(size_t)k)==total-batch+k; @/
++ /@ assert tail_current_index_0: (size_t)(done+(size_t)k)==done+k; @/
++ proof_qcvt_lane(vy.lane[k],before_mul3.lane[k],vscale.lane[k],vwx_lo.lane[k],input_base[done+k],zp0,scale0);
+--- neon.c
+@@ insert
++ /*@ assert done4_no_wrap: (size_t)(done+4)==done+4; */
+--- neon.c
+@@ insert
++ /*@ assert tail_four_origin: done==total-batch+4; */
+--- neon.c
+@@ delete
+- /*@ assert \forall integer j; 0<=j<4 ==> same_float(vy.lane[j],(float)centered(input_base[total-batch+4+j],zp0)); */
+--- neon.c
+@@ replace
+- loop invariant \forall integer j; 0<=j<k ==> same_value(vy.lane[j],qcvt(input_base[total-batch+4+j],zp0,scale0));
++ loop invariant \forall integer j; 0<=j<k ==> same_value(vy.lane[j],qcvt(input_base[done+j],zp0,scale0));
+--- neon.c
+@@ replace
+- for(size_t k=0;k<4;k++) {
+- /@ assert same_float(before_mul4.lane[k],(float)centered(input_base[total-batch+4+k],zp0)); @/
++ for(int k=0;k<4;k++) {
++ /@ assert same_float(before_mul4.lane[k],(float)vwx_hi.lane[k]); @/
+--- neon.c
+@@ replace
+- proof_qcvt_eval(vy.lane[k],before_mul4.lane[k],vscale.lane[k],input_base[total-batch+4+k],zp0,scale0);
++ /@ assert lane_index_3_0: (size_t)k==k; @/
++ /@ assert lane_index_3_1: (size_t)(total-batch)==total-batch; @/
++ /@ assert lane_index_3_2: (size_t)((size_t)(total-batch)+4)==total-batch+4; @/
++ /@ assert lane_index_3_3: (size_t)((size_t)(total-batch+4)+(size_t)k)==total-batch+4+k; @/
++ /@ assert tail_current_index_1: (size_t)(done+(size_t)k)==done+k; @/
++ proof_qcvt_lane(vy.lane[k],before_mul4.lane[k],vscale.lane[k],vwx_hi.lane[k],input_base[done+k],zp0,scale0);
+--- neon.c
+@@ insert
++ /*@ assert tail4_prefix: \forall integer j; 0<=j<done ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
++ /*@ assert tail4_scale: same_float(params->scalar.scale,scale0); */
++ /*@ ghost
++ if(batch & 4) {
++ /@ assert tail_window_hi: \forall integer j; 0<=j<4 ==> same_value(vy.lane[j],qcvt(input_base[done+j],zp0,scale0)); @/
++ } else {
++ /@ assert tail_window_lo: \forall integer j; 0<=j<4 ==> same_value(vy.lane[j],qcvt(input_base[done+j],zp0,scale0)); @/
++ }
++ */
++ /*@ assert tail_vector_window: \forall integer j; 0<=j<4 ==> same_value(vy.lane[j],qcvt(input_base[done+j],zp0,scale0)); */
+--- neon.c
+@@ insert
++ /*@ ghost
++ /@ assert tail_index_4: (size_t)(done+0)==done+0; @/
++ proof_qcvt_transfer(vy_lo.lane[0],vy.lane[0],input_base[done+0],zp0,scale0);
++ /@ assert tail_index_5: (size_t)(done+1)==done+1; @/
++ proof_qcvt_transfer(vy_lo.lane[1],vy.lane[1],input_base[done+1],zp0,scale0);
++ */
+--- neon.c
+@@ insert
++ /*@ assert tail2_output_pointer: output==output_base+done; */
+--- neon.c
+@@ replace
+- /*@ assert same_float(params->scalar.scale,scale0); */
++ /*@ assert tail2_scale_pair: same_float(params->scalar.scale,\at(params->scalar.scale,Tail2)); */
++ /*@ assert tail2_scale_frame: same_float(params->scalar.scale,scale0); */
+--- neon.c
+@@ replace
+- /@ assert same_float(output_base[k],vy_lo.lane[k-(done)]); @/
++ /@ assert tail2_store_value: same_float(output_base[k],vy_lo.lane[k-(done)]); @/
+--- neon.c
+@@ insert
++ /*@ assert done2_no_wrap: (size_t)(done+2)==done+2; */
+--- neon.c
+@@ insert
++ /*@ assert tail_high_window: \forall integer j; 0<=j<2 ==> same_value(vy.lane[j+2],qcvt(input_base[done+j],zp0,scale0)); */
+--- neon.c
+@@ insert
++ /*@ ghost
++ /@ assert tail_index_6: (size_t)(done+0)==done+0; @/
++ proof_qcvt_transfer(vy_lo.lane[0],vy.lane[2],input_base[done+0],zp0,scale0);
++ /@ assert tail_index_7: (size_t)(done+1)==done+1; @/
++ proof_qcvt_transfer(vy_lo.lane[1],vy.lane[3],input_base[done+1],zp0,scale0);
++ */
+--- neon.c
+@@ insert
++ /*@ assert tail2_prefix: \forall integer j; 0<=j<done ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
++ /*@ assert tail2_scale: same_float(params->scalar.scale,scale0); */
+--- neon.c
+@@ insert
++ /*@ assert tail1_output_pointer: output==output_base+done; */
+--- neon.c
+@@ insert
++ /*@ assert tail1_written: same_float(output_base[done],vy_lo.lane[0]); */
+--- neon.c
+@@ insert
++ loop invariant tail1_old_prefix_frame: \forall integer j; 0<=j<done ==> same_value(\at(output_base[j],Tail1),qcvt(input_base[j],zp0,scale0));
++ loop invariant tail1_written_frame: same_float(output_base[done],vy_lo.lane[0]);
+--- neon.c
+@@ replace
+- /@ assert same_value(\at((output_base)[\at(k,Here)],Tail1),qcvt(input_base[k],zp0,scale0)); @/
++ /@ assert tail1_old_prefix: same_value(\at((output_base)[\at(k,Here)],Tail1),qcvt(input_base[k],zp0,scale0)); @/
+--- neon.c
+@@ replace
+- /@ assert same_float(output_base[k],vy_lo.lane[k-(done)]); @/
++ /@ assert tail1_k_exact: k==done; @/
++ /@ assert tail1_lane_exact: k-done==0; @/
++ /@ assert tail1_store_value: same_float(output_base[k],vy_lo.lane[k-(done)]); @/
+--- neon.c
+@@ insert
++ /*@ assert tail1_prefix_complete: \forall integer j; 0<=j<done+1 ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
++ /*@ assert done1_no_wrap: (size_t)(done+1)==done+1; */
+--- neon.c
+@@ insert
++ /*@ assert tail1_updated_prefix: \forall integer j; 0<=j<done ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
+--- neon.c
+@@ insert
++ /*@ assert tail_final_cursor: done==total; */
++ /*@ assert tail_final_prefix: \forall integer j; 0<=j<done ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
+--- neon.c
+@@ replace
+- /*@ assert \forall integer j; 0<=j<total ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
++ /*@ assert final_prefix: \forall integer j; 0<=j<total ==> same_value(output_base[j],qcvt(input_base[j],zp0,scale0)); */
+--- neon.c
+@@ replace
+- /*@ ghost
+- /@ loop invariant 0<=k<=total;
+- loop invariant \forall integer j; 0<=j<k ==> same_value(output_base[j],qcvt(input_base[j],params->scalar.zero_point,params->scalar.scale));
+- loop assigns k; loop variant total-k; @/
+- for(size_t k=0;k<total;k++) {
+- proof_qcvt_rebase(output_base[k],input_base[k],zp0,scale0,params->scalar.zero_point,params->scalar.scale);
+- }
+- */
++ //@ ghost check_qcvt_scale_congruence();
++ //@ ghost check_same_value_trans();
++ /*@ assert final_scale_symmetric: same_float(scale0,params->scalar.scale); */
+--- rvv.c
+@@ insert
++ /*@
++ requires batch>0;
++ requires batch<=SIZE_MAX/4-7;
++ requires \valid_read(input+(0..batch+7-1));
++ requires \valid(output+(0..batch-1));
++ requires \valid_read(params);
++ requires \separated(output+(0..batch-1),input+(0..batch+7-1));
++ requires \separated(output+(0..batch-1),params);
++ requires params->scalar.zero_point != INT32_MIN;
++ terminates \true;
++ assigns output[0..batch-1];
++ ensures kernel_output: \forall integer j; 0<=j<\at(batch,Pre) ==>
++ same_value(\at(output,Pre)[j],qcvt(\at(input[j],Pre),\at(params->scalar.zero_point,Pre),\at(params->scalar.scale,Pre)));
++ */
+--- rvv.c
+@@ insert
++ //@ ghost size_t chunk_offset=total-batch;
++ /*@ assert offset_exact: chunk_offset==total-batch; */
+--- rvv.c
+@@ insert
++ //@ ghost vint16m4_t before_sub=vhx;
+--- rvv.c
+@@ replace
+- /*@ assert \forall integer j; 0<=j<vl ==> vhx.lane[j]==centered(input_base[total-batch+j],zp0); */
++ //@ ghost proof_center_vector(vhx,before_sub,input_base,zp0,vl,chunk_offset);
++ /*@ assert bridge_center: \forall integer j; 0<=j<vl ==> vhx.lane[j]==centered(input_base[total-batch+j],zp0); */
+--- rvv.c
+@@ delete
+- /*@ assert \forall integer j; 0<=j<vl ==> same_float(vy.lane[j],(float)centered(input_base[total-batch+j],zp0)); */
+--- rvv.c
+@@ replace
+- for(size_t k=0;k<vl;k++) {
+- /@ assert same_float(before_rvv_mul.lane[k],(float)centered(input_base[total-batch+k],zp0)); @/
++ for(int k=0;k<vl;k++) {
++ /@ assert same_float(before_rvv_mul.lane[k],(float)vwx.lane[k]); @/
+--- rvv.c
+@@ replace
+- proof_qcvt_eval(vy.lane[k],before_rvv_mul.lane[k],scale,input_base[total-batch+k],zp0,scale0);
++ /@ assert rvv_index_k: (size_t)k==k; @/
++ /@ assert rvv_index_base: (size_t)(total-batch)==total-batch; @/
++ /@ assert rvv_index_sum: (size_t)((size_t)(total-batch)+(size_t)k)==total-batch+k; @/
++ proof_qcvt_lane(vy.lane[k],before_rvv_mul.lane[k],scale,vwx.lane[k],input_base[total-batch+k],zp0,scale0);
+--- harness.c
+@@ replace
+- /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
++ /*@ loop invariant 0<=i<=n; loop invariant output_same: i<n ==> same_value(left[i],right[i]); loop assigns i; loop variant n-i; */
+--- unit.c
+@@ insert
++ /*@ ghost
++ /@ requires same_float(out,a);
++ requires same_value(a,qcvt(x,z,s));
++ terminates \true; assigns \nothing;
++ ensures same_value(out,qcvt(x,z,s)); @/
++ void proof_qcvt_transfer(float out,float a,int8_t x,int32_t z,float s) {}
++ */
++ /*@ ghost
++ /@ requires z!=INT32_MIN;
++ requires -128<=x<=127;
++ requires out==(int16_t)L_wrap16((uint64_t)((uint64_t)(int64_t)x-(uint64_t)(int64_t)(int16_t)z));
++ terminates \true; assigns \nothing;
++ ensures out==centered(x,z); @/
++ void proof_center_lane(int16_t out,int16_t x,int32_t z) {}
++ /@ requires vl<=32;
++ requires off+vl<=SIZE_MAX;
++ requires z!=INT32_MIN;
++ requires \valid_read(p+(off..off+vl-1));
++ requires \forall integer j; 0<=j<vl ==> extended.lane[j]==p[off+j];
++ requires \forall integer j; 0<=j<vl ==> out.lane[j]==(int16_t)L_wrap16((uint64_t)((uint64_t)(int64_t)extended.lane[j]-(uint64_t)(int64_t)(int16_t)z));
++ terminates \true; assigns \nothing;
++ ensures \forall integer j; 0<=j<vl ==> out.lane[j]==centered(p[off+j],z); @/
++ void proof_center_vector(vint16m4_t out,vint16m4_t extended,const int8_t *p,int32_t z,size_t vl,size_t off) {
++ /@ loop invariant 0<=k<=vl;
++ loop invariant \forall integer j; 0<=j<k ==> out.lane[j]==centered(p[off+j],z);
++ loop assigns k; loop variant vl-k; @/
++ for(int k=0;k<vl;k++) {
++ /@ assert extended.lane[k]==p[off+k]; @/
++ proof_center_lane(out.lane[k],extended.lane[k],z);
++ }
++ }
++ */
++ /*@ ghost
++ /@ requires same_float(a,(float)wide);
++ requires wide==centered(x,z);
++ requires same_float(b,s);
++ requires same_value(out,fp_mul32(a,b));
++ terminates \true; assigns \nothing;
++ ensures same_value(out,qcvt(x,z,s)); @/
++ void proof_qcvt_lane(float out,float a,float b,int32_t wide,int8_t x,int32_t z,float s) {
++ proof_qcvt_eval(out,a,b,x,z,s);
++ }
++ */
