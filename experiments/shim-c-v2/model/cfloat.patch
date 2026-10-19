@@ -1,0 +1,80 @@
+--- official/cfloat.mlw
++++ native-cfloat-v2/cfloat.mlw
+@@ -48,46 +48,14 @@
+ 
+   (* To_float *)
+ 
+-  function to_f32 real : f32
+-  function to_f64 real : f64
+-
+-  axiom to_float_is_finite_32: forall f:f32. is_finite_f32(f) -> F32.eq (to_f32( of_f32 f )) f
+-  axiom to_f32_range_round: forall x. F32.in_range x -> of_f32 (to_f32 x) = F32.round Rounding.RNE x
+-  axiom to_f32_range_finite: forall x. F32.in_range x -> is_finite_f32 (to_f32 x)
+-  axiom to_f32_minus_infinity: forall x. x <. -. F32.max_real -> is_negative_infinite_f32 (to_f32 x)
+-  axiom to_f32_plus_infinity: forall x. x >. F32.max_real -> is_positive_infinite_f32 (to_f32 x)
+-
+-  axiom to_float_is_finite_64: forall f:f64. is_finite_f64(f) -> F64.eq (to_f64( of_f64 f )) f
+-  axiom to_f64_range_round: forall x. F64.in_range x -> of_f64 (to_f64 x) = F64.round Rounding.RNE x
+-  axiom to_f64_range_finite: forall x. F64.in_range x -> is_finite_f64 (to_f64 x)
+-  axiom to_f64_minus_infinity: forall x. x <. -. F64.max_real -> is_negative_infinite_f64 (to_f64 x)
+-  axiom to_f64_plus_infinity: forall x. x >. F64.max_real -> is_positive_infinite_f64 (to_f64 x)
+-
+-  (* Note: This is OK as we have in Why3 ieee_float:
+-
+-     axiom Round_idempotent :
+-       forall m1 m2:mode, x:real. round m1 (round m2 x) = round m2 x
+-
+-     So we can round RNE (to_f32/64 behavior) after any rounding.
+-  *)
+-  function round_float (m: Rounding.mode) (r: real) : f32 =
+-    to_f32 (F32.round m r)
+-
+-  function round_double (m: Rounding.mode) (r: real) : f64 =
+-    to_f64 (F64.round m r)
+-
+-  (* Take care of +0/-0 *)
+-  axiom is_zero_to_f32_zero: F32.is_zero (to_f32 0.0)
+-  axiom is_zero_to_f64_zero: F64.is_zero (to_f64 0.0)
+-
+-  lemma real_0_is_zero_f32: forall f:f32. 0.0 = of_f32 f -> F32.is_zero f
+-  lemma real_0_is_zero_f64: forall f:f64. 0.0 = of_f64 f -> F64.is_zero f
+-
+-  (* Conversions *)
+-  axiom f32_to_f64:
+-    forall f:f32 [to_f64 (of_f32 f)]. to_f64 (of_f32 f) = Cnv.to_float64 Rounding.RNE f
+-  axiom f64_to_f32:
+-    forall f:f64 [to_f32 (of_f64 f)]. to_f32 (of_f64 f) = Cnv.to_float32 Rounding.RNE f
++  (* Native IEEE real conversions; interpreted by native-cfloat.drv.
++     No real roundtrip is used for rounding-mode conversions. *)
++  function from_real32 Rounding.mode real : f32
++  function from_real64 Rounding.mode real : f64
++  function to_f32 (x:real) : f32 = from_real32 Rounding.RNE x
++  function to_f64 (x:real) : f64 = from_real64 Rounding.RNE x
++  function round_float (m:Rounding.mode) (x:real) : f32 = from_real32 m x
++  function round_double (m:Rounding.mode) (x:real) : f64 = from_real64 m x
+ 
+   (* Finite Constants *)
+ 
+@@ -164,18 +132,9 @@
+ 
+   (* Sign *)
+ 
+-  function sign_f32 (f: f32) : sign
+-
+-  axiom positive_f32_sign:
+-    forall f:f32. F32.is_positive f <-> sign_f32 f = Positive
+-  axiom negative_f32_sign:
+-    forall f:f32. F32.is_negative f <-> sign_f32 f = Negative
+-
+-  function sign_f64 (f: f64) : sign
+-
+-  axiom positive_f64_sign:
+-    forall f:f64. F64.is_positive f <-> sign_f64 f = Positive
+-  axiom negative_f64_sign:
+-    forall f:f64. F64.is_negative f <-> sign_f64 f = Negative
++  (* ACSL only specifies sign on non-NaN values. Positive on NaN is an
++     explicit totalization; it is not a NaN sign-bit operation. *)
++  function sign_f32 (f:f32) : sign = if F32.is_negative f then Negative else Positive
++  function sign_f64 (f:f64) : sign = if F64.is_negative f then Negative else Positive
+ 
+ end

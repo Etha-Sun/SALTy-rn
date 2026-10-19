@@ -1,0 +1,122 @@
+[
+  {
+    "name": "to_float_is_finite_32",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "to_f32_range_round",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "to_f32_range_finite",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "to_f32_minus_infinity",
+    "original_kind": "axiom",
+    "audit": "Incorrect overflow cutoff for RNE: values just above max_real still round to max_finite.",
+    "replacement": "Exact native SMT real-to-FP conversion handles overflow threshold and rounding mode."
+  },
+  {
+    "name": "to_f32_plus_infinity",
+    "original_kind": "axiom",
+    "audit": "Incorrect overflow cutoff for RNE: values just above max_real still round to max_finite.",
+    "replacement": "Exact native SMT real-to-FP conversion handles overflow threshold and rounding mode."
+  },
+  {
+    "name": "to_float_is_finite_64",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "to_f64_range_round",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "to_f64_range_finite",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "to_f64_minus_infinity",
+    "original_kind": "axiom",
+    "audit": "Incorrect overflow cutoff for RNE: values just above max_real still round to max_finite.",
+    "replacement": "Exact native SMT real-to-FP conversion handles overflow threshold and rounding mode."
+  },
+  {
+    "name": "to_f64_plus_infinity",
+    "original_kind": "axiom",
+    "audit": "Incorrect overflow cutoff for RNE: values just above max_real still round to max_finite.",
+    "replacement": "Exact native SMT real-to-FP conversion handles overflow threshold and rounding mode."
+  },
+  {
+    "name": "is_zero_to_f32_zero",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "is_zero_to_f64_zero",
+    "original_kind": "axiom",
+    "audit": "Property compatible with exact native conversion; no longer a trusted axiom.",
+    "replacement": "Exact native SMT real-to-FP conversion (zero and finite roundtrip/classification consequences)."
+  },
+  {
+    "name": "real_0_is_zero_f32",
+    "original_kind": "lemma",
+    "audit": "Invalid without finite premise: fp.to_real on NaN/Inf is unspecified.",
+    "replacement": "No axiom. Guard finite when deriving a real equality; native FP predicate remains exact."
+  },
+  {
+    "name": "real_0_is_zero_f64",
+    "original_kind": "lemma",
+    "audit": "Invalid without finite premise: fp.to_real on NaN/Inf is unspecified.",
+    "replacement": "No axiom. Guard finite when deriving a real equality; native FP predicate remains exact."
+  },
+  {
+    "name": "f32_to_f64",
+    "original_kind": "axiom",
+    "audit": "Invalid unguarded FP-to-real-to-FP bridge: NaN and signed zero are lost.",
+    "replacement": "No bridge axiom. Actual mixed-FP frontend casts remain outside admitted core until frontend repaired; native conversion reference tested separately."
+  },
+  {
+    "name": "f64_to_f32",
+    "original_kind": "axiom",
+    "audit": "Invalid unguarded FP-to-real-to-FP bridge: NaN and signed zero are lost.",
+    "replacement": "No bridge axiom. Actual mixed-FP frontend casts remain outside admitted core until frontend repaired; native conversion reference tested separately."
+  },
+  {
+    "name": "positive_f32_sign",
+    "original_kind": "axiom",
+    "audit": "Invalid on NaN under native SMT predicates",
+    "replacement": "Definition sign = if fp.isNegative then Negative else Positive; non-NaN semantics preserved, explicit Positive totalization on NaN."
+  },
+  {
+    "name": "negative_f32_sign",
+    "original_kind": "axiom",
+    "audit": "Invalid on NaN under native SMT predicates",
+    "replacement": "Definition sign = if fp.isNegative then Negative else Positive; non-NaN semantics preserved, explicit Positive totalization on NaN."
+  },
+  {
+    "name": "positive_f64_sign",
+    "original_kind": "axiom",
+    "audit": "Invalid on NaN under native SMT predicates",
+    "replacement": "Definition sign = if fp.isNegative then Negative else Positive; non-NaN semantics preserved, explicit Positive totalization on NaN."
+  },
+  {
+    "name": "negative_f64_sign",
+    "original_kind": "axiom",
+    "audit": "Invalid on NaN under native SMT predicates",
+    "replacement": "Definition sign = if fp.isNegative then Negative else Positive; non-NaN semantics preserved, explicit Positive totalization on NaN."
+  }
+]

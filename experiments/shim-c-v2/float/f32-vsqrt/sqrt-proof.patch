@@ -1,0 +1,37 @@
+--- a/sqrt.c
++++ b/sqrt.c
+@@ -3,6 +3,8 @@
+    A binary32 product has at most 48 significant bits, so double compares
+    the candidate square exactly. Adjacent-float midpoint squares need at
+    most 50 bits and are also exact. No libc calls or errno writes. */
++/*@ logic float fp_sqrt32(float x); */
++/*@ assigns \nothing; ensures same_value(\result,fp_sqrt32(x)); */
+ float f32_sqrt(float x) {
+   uint32_t bits=float_bits(x),magnitude=bits&UINT32_C(0x7fffffff);
+   if(magnitude>UINT32_C(0x7f800000)) return x+x;
+@@ -10,6 +12,7 @@
+   if(bits&UINT32_C(0x80000000)) return bits_float(UINT32_C(0x7fc00000));
+   if(magnitude==UINT32_C(0x7f800000)) return x;
+   uint32_t lo=0,hi=UINT32_C(0x5f800000);
++  /*@ loop invariant 0<=lo<hi<=1602224128; loop assigns lo,hi; loop variant hi-lo; */
+   while(hi-lo>1) {
+     uint32_t mid=(lo+hi)/2;
+     double y=(double)bits_float(mid);
+@@ -22,13 +25,17 @@
+   if((double)x>square) return bits_float(hi);
+   return bits_float((lo&1)?hi:lo);
+ }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> same_value(\result.lane[j],fp_sqrt32(a.lane[j])); */
+ float32x4_t vsqrtq_f32(float32x4_t a) {
+   float32x4_t r;
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> same_value(r.lane[j],fp_sqrt32(a.lane[j])); loop assigns i,r.lane[0..3]; loop variant 4-i; */
+   for(size_t i=0;i<4;i++) r.lane[i]=f32_sqrt(a.lane[i]);
+   return r;
+ }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> same_value(\result.lane[j],fp_sqrt32(a.lane[j])); */
+ vfloat32m8_t __riscv_vfsqrt_v_f32m8(vfloat32m8_t a,size_t vl) {
+   vfloat32m8_t r={{0}};
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> same_value(r.lane[j],fp_sqrt32(a.lane[j])); loop assigns i,r.lane[0..31]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++) r.lane[i]=f32_sqrt(a.lane[i]);
+   return r;
+ }

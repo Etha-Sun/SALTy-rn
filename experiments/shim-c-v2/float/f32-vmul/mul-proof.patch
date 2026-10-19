@@ -1,0 +1,46 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -8,8 +8,23 @@
+ float32x4_t vsubq_f32(float32x4_t a, float32x4_t b);
+ vfloat32m8_t __riscv_vfsub_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+ float f32_sub(float a, float b);
++/*@
++  logic float fp_mul32(float a,float b);
++  lemma fp_mul_congruence: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    same_value(fp_mul32(a,b),fp_mul32(c,d));
++*/
++/*@ ghost
++/@ requires same_value(a,fp_mul32(x,y));
++    requires same_value(b,fp_mul32(x,y));
++    terminates \true; assigns \nothing; ensures same_value(a,b); @/
++void proof_mul_join(float a,float b,float x,float y) {}
++*/
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<4 ==> same_value(\result.lane[i],fp_mul32(a.lane[i],b.lane[i])); */
+ float32x4_t vmulq_f32(float32x4_t a, float32x4_t b);
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_value(\result.lane[i],fp_mul32(a.lane[i],b.lane[i])); */
+ vfloat32m8_t __riscv_vfmul_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
++/*@ assigns \nothing; ensures same_value(\result,fp_mul32(a,b)); */
+ float f32_mul(float a, float b);
+ float32x4_t vdivq_f32(float32x4_t a, float32x4_t b);
+ vfloat32m8_t __riscv_vfdiv_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+--- a/mul.c
++++ b/mul.c
+@@ -2,11 +2,17 @@
+ float f32_mul(float a, float b) { return a * b; }
+ float32x4_t vmulq_f32(float32x4_t a, float32x4_t b) {
+   float32x4_t r = {{0}};
++  /*@ loop invariant 0<=i<=4;
++      loop invariant \forall integer j; 0<=j<i ==> same_value(r.lane[j],fp_mul32(a.lane[j],b.lane[j]));
++      loop assigns i,r.lane[0..3]; loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) r.lane[i] = f32_mul(a.lane[i], b.lane[i]);
+   return r;
+ }
+ vfloat32m8_t __riscv_vfmul_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl) {
+   vfloat32m8_t r = {{0}};
++  /*@ loop invariant 0<=i<=vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_value(r.lane[j],fp_mul32(a.lane[j],b.lane[j]));
++      loop assigns i,r.lane[0..31]; loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) r.lane[i] = f32_mul(a.lane[i], b.lane[i]);
+   return r;
+ }
