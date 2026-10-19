@@ -1,0 +1,5 @@
+#include "spec.h"
+#include "u32_shim.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"

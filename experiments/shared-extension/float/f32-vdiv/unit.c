@@ -1,0 +1,7 @@
+#include "spec.h"
+#include "base.c"
+#include "float_ops.c"
+#include "div.c"
+#include "neon.c"
+#include "rvv.c"
+#include "harness.c"

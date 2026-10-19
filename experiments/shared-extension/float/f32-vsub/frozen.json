@@ -1,0 +1,88 @@
+{
+  "name": "f32-vsub",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/float/shared/shim.h",
+      "sha256": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de"
+    },
+    "base.h": {
+      "path": "experiments/shared-extension/float/shared/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "experiments/shared-extension/float/shared/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "clamp.h": {
+      "path": "experiments/shared-extension/float/shared/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "float_ops.h": {
+      "path": "experiments/shared-extension/float/shared/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "extensions.h": {
+      "path": "experiments/shared-extension/float/shared/extensions.h",
+      "sha256": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+    },
+    "extensions.driver": {
+      "path": "experiments/shared-extension/float/shared/extensions.driver",
+      "sha256": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6"
+    },
+    "base.c": {
+      "path": "experiments/shared-extension/float/shared/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "float_ops.c": {
+      "path": "experiments/shared-extension/float/shared/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "sub.c": {
+      "path": "experiments/shared-extension/float/shared/sub.c",
+      "sha256": "d5faae2660abad1f38d21805b22f41124cfe81721c80465e587a6543c791cc5c"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/float/f32-vsub/neon.c",
+      "sha256": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/float/f32-vsub/rvv.c",
+      "sha256": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/float/f32-vsub/spec.h",
+      "sha256": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/float/f32-vsub/harness.c",
+      "sha256": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/float/f32-vsub/interface.json",
+      "sha256": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/float/f32-vsub/unit.c",
+      "sha256": "8f1085aa7d60b2ff54cbf1e372eb34ee08655ae65d1baa0f47a14db99d7d3138"
+    },
+    "generate.py": {
+      "path": "experiments/shared-extension/float/generate.py",
+      "sha256": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a"
+    },
+    "modules.json": {
+      "path": "experiments/shared-extension/float/f32-vsub/modules.json",
+      "sha256": "d59e9070591a1d92cbda721059c61c49f9c50e8079c79232d148df1a19ad12ff"
+    }
+  },
+  "proof_patches": [
+    "verified/shared/base-proof.patch",
+    "verified/shared/float_ops-proof.patch",
+    "experiments/shared-extension/float/shared/sub-proof.patch",
+    "experiments/shared-extension/float/f32-vsub/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "extensions.driver",
+  "observation": "number-or-both-nan; signed-zero numeric equality; no FP flags",
+  "original_target": null,
+  "VLEN_bits": 128
+}
