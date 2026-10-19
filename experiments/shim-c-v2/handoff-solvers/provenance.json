@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "purpose": "Independent relocated environment; does not replace historical solver locks or validate historical proof results.",
+  "platform": "Linux gpublaze 5.15.0-198-generic #208-Ubuntu SMP Fri Sep 4 10:22:38 UTC 2026 x86_64 x86_64 x86_64 GNU/Linux",
+  "solvers": [
+    {
+      "name": "z3",
+      "expected_version": "4.12.5",
+      "source_url": "https://github.com/Z3Prover/z3/releases/download/z3-4.12.5/z3-4.12.5-x64-glibc-2.31.zip",
+      "archive_sha256": "dc83a4a19eb9647abff15f37b60b0d0f02e77dd2dc8238a86b0eca35f0ac8c74",
+      "binary_path": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/z3-4.12.5-x64-glibc-2.31/bin/z3",
+      "binary_sha256": "260a93f9ad37363d880d251c79e3af07888ef3b2171eb8ec8d4d3808678a3e84",
+      "version_output": "Z3 version 4.12.5 - 64 bit\n",
+      "dependencies": {
+        "command": [
+          "ldd",
+          "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/z3-4.12.5-x64-glibc-2.31/bin/z3"
+        ],
+        "returncode": 0,
+        "stdout": "\tlinux-vdso.so.1 (0x00007ffea67d1000)\n\tlibpthread.so.0 => /lib/x86_64-linux-gnu/libpthread.so.0 (0x00007f31a60a4000)\n\tlibstdc++.so.6 => /lib/x86_64-linux-gnu/libstdc++.so.6 (0x00007f31a5e78000)\n\tlibm.so.6 => /lib/x86_64-linux-gnu/libm.so.6 (0x00007f31a5d91000)\n\tlibgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f31a5d71000)\n\tlibc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f31a5b48000)\n\t/lib64/ld-linux-x86-64.so.2 (0x00007f31a7bbe000)\n",
+        "stderr": ""
+      },
+      "smoke": {
+        "input": "(set-logic QF_BV)\n(assert (= #x00 #x01))\n(check-sat)\n",
+        "stdout": "unsat\n",
+        "returncode": 0
+      },
+      "additional_solver_smoke": [
+        {
+          "name": "bv_sat",
+          "input": "(set-logic QF_BV)\n(assert (= #x00 #x00))\n(check-sat)\n",
+          "expected": "sat",
+          "stdout": "sat\n",
+          "returncode": 0
+        },
+        {
+          "name": "ieee_nan_self_equal_false",
+          "input": "(set-logic QF_FP)\n(assert (fp.eq (_ NaN 8 24) (_ NaN 8 24)))\n(check-sat)\n",
+          "expected": "unsat",
+          "stdout": "unsat\n",
+          "returncode": 0
+        },
+        {
+          "name": "ieee_nan_isnan_true",
+          "input": "(set-logic QF_FP)\n(assert (fp.isNaN (_ NaN 8 24)))\n(check-sat)\n",
+          "expected": "sat",
+          "stdout": "sat\n",
+          "returncode": 0
+        }
+      ]
+    },
+    {
+      "name": "cvc5",
+      "expected_version": "1.2.1",
+      "source_url": "https://github.com/cvc5/cvc5/releases/download/cvc5-1.2.1/cvc5-Linux-x86_64-static.zip",
+      "archive_sha256": "6d44abc233980a14d72cc5809287d27c3335b1d6ee863381d0b5ffcbd0d8de56",
+      "binary_path": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/cvc5-Linux-x86_64-static/bin/cvc5",
+      "binary_sha256": "ee4c6787a95218a571080a599bdf579aca5b0f1e4f27687f70f46d4d12148974",
+      "version_output": "This is cvc5 version 1.2.1 [git tag 1.2.1 branch HEAD]\ncompiled with GCC version 9.4.0\non Jan 27 2025 19:58:17\n\nCopyright (c) 2009-2025 by the authors and their institutional\naffiliations listed at https://cvc5.github.io/people.html\n\ncvc5 is open-source and is covered by the BSD license (modified).\n\nTHIS SOFTWARE IS PROVIDED AS-IS, WITHOUT ANY WARRANTIES.\nUSE AT YOUR OWN RISK.\n\nThis version of cvc5 is linked against the following non-(L)GPL'ed\nthird party libraries.\n\n  CaDiCaL - Simplified Satisfiability Solver\n  See https://github.com/arminbiere/cadical for copyright information.\n\n  Editline Library\n  See https://thrysoee.dk/editline\n  for copyright information.\n\n  SymFPU - The Symbolic Floating Point Unit\n  See https://github.com/martin-cs/symfpu/tree/CVC4 for copyright information.\n\nThis version of cvc5 is linked against the following third party\nlibraries covered by the LGPLv3 license.\nSee licenses/lgpl-3.0.txt for more information.\n\n  GMP - Gnu Multi Precision Arithmetic Library\n  See http://gmplib.org for copyright information.\n\n  LibPoly polynomial library\n  See https://github.com/SRI-CSL/libpoly for copyright and\n  licensing information.\n\ncvc5 is statically linked against these libraries. To recompile\nthis version of cvc5 with different versions of these libraries\nfollow the instructions on https://github.com/cvc5/cvc5/blob/main/INSTALL.md\n\nSee the file COPYING (distributed with the source code, and with\nall binaries) for the full cvc5 copyright, licensing, and (lack of)\nwarranty information.\n\n",
+      "dependencies": {
+        "command": [
+          "ldd",
+          "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/cvc5-Linux-x86_64-static/bin/cvc5"
+        ],
+        "returncode": 1,
+        "stdout": "",
+        "stderr": "\tnot a dynamic executable\n"
+      },
+      "smoke": {
+        "input": "(set-logic QF_BV)\n(assert (= #x00 #x01))\n(check-sat)\n",
+        "stdout": "unsat\n",
+        "returncode": 0
+      },
+      "additional_solver_smoke": [
+        {
+          "name": "bv_sat",
+          "input": "(set-logic QF_BV)\n(assert (= #x00 #x00))\n(check-sat)\n",
+          "expected": "sat",
+          "stdout": "sat\n",
+          "returncode": 0
+        },
+        {
+          "name": "ieee_nan_self_equal_false",
+          "input": "(set-logic QF_FP)\n(assert (fp.eq (_ NaN 8 24) (_ NaN 8 24)))\n(check-sat)\n",
+          "expected": "unsat",
+          "stdout": "unsat\n",
+          "returncode": 0
+        },
+        {
+          "name": "ieee_nan_isnan_true",
+          "input": "(set-logic QF_FP)\n(assert (fp.isNaN (_ NaN 8 24)))\n(check-sat)\n",
+          "expected": "sat",
+          "stdout": "sat\n",
+          "returncode": 0
+        }
+      ]
+    }
+  ]
+}

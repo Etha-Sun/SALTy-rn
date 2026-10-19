@@ -1,0 +1,95 @@
+{
+  "name": "f32-vadd",
+  "model": "Typed+float",
+  "driver": "float.driver",
+  "VLEN_bits": 128,
+  "files": {
+    "float.driver": {
+      "path": "verified/f32-vadd-v2/float.driver",
+      "sha256": "95a638d50dfac1d444e9996ce9e2de27898b3579728963be375503da1c68f355"
+    },
+    "base.c": {
+      "path": "verified/f32-vadd-v2/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "shim.h": {
+      "path": "verified/f32-vadd-v2/shim.h",
+      "sha256": "d3fd51718f5e1d4c29ab067ba62a1a78cdaefaf276f7e9ef2feb569eb7d1f19f"
+    },
+    "float_ops.c": {
+      "path": "verified/f32-vadd-v2/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "clamp.h": {
+      "path": "verified/f32-vadd-v2/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "base.h": {
+      "path": "verified/f32-vadd-v2/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "verified/f32-vadd-v2/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "float_ops.h": {
+      "path": "verified/f32-vadd-v2/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "neon.c": {
+      "path": "verified/f32-vadd-v2/neon.c",
+      "sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5"
+    },
+    "rvv.c": {
+      "path": "verified/f32-vadd-v2/rvv.c",
+      "sha256": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593"
+    },
+    "spec.h": {
+      "path": "verified/f32-vadd-v2/spec.h",
+      "sha256": "998b84b82ca57bb6f8352d1ac4af5798b96387811f533085049e2088276c510f"
+    },
+    "harness.c": {
+      "path": "verified/f32-vadd-v2/harness.c",
+      "sha256": "5a346e97cf20f2640917dc37cf3cc25e165b9356203f2501ddca20913b6591e4"
+    },
+    "interface.json": {
+      "path": "verified/f32-vadd-v2/interface.json",
+      "sha256": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531"
+    },
+    "unit.c": {
+      "path": "verified/f32-vadd-v2/unit.c",
+      "sha256": "ac8080cde96dabeb13e2195df742b60cf118e03eb5e70401047b1d94a9600113"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v7.py",
+      "sha256": "1e2cdae5c517223e9576a9fa79e111db20d8458305defa617c3c391b3cef4fb9"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/handoff-model-front/float_model_lock.json",
+      "sha256": "a04db83a4cb7bf0b5832a119c558e101dd433dfcd80309bc64920ce6c01baf8b"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_modular_v7.py",
+      "sha256": "4f77888cc54a86f7936464a40328d29e1a6af66564f1c5607476c77879ee20e9"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "verified/f32-vadd-v2/proof.patch"
+  ],
+  "previous_version": "verified/f32-vadd-v2",
+  "wp_share": "experiments/shim-c-v2/handoff-model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/handoff-model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "proof_method": "Modular WP, extra checked kernel ensures only; frozen public spec and C unchanged",
+  "environment_relocation": {
+    "previous_frozen_sha256": "444d10b19d564351b480b9d6befcb808195d79b727daa03f758cc740f71e10d4",
+    "semantics_control": "experiments/shim-c-v2/handoff-local/semantic-local-02-summary.json",
+    "scope": "All original implementation/spec/shim/checker/proof inputs retained; only model environment paths and runtime binaries relocated."
+  }
+}

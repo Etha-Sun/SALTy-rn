@@ -1,0 +1,5 @@
+#include "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/unit.c"
+/*@ assigns \nothing; ensures \false; */
+void shim_control_false(void) {}
+/*@ assigns \nothing; ensures \true; */
+void shim_control_true(void) {}

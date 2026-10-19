@@ -1,0 +1,60 @@
+['/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/logs/local-smoke-01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/float.driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/unit.c', '-wp-skip-fct', '__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8']
+# Actual pinned execution: ['/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'tip,z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/logs/local-smoke-01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/float.driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/unit.c', '-wp-skip-fct', '__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8', '-wp-share', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/wp-share', '-wp-why3-config', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/logs/local-smoke-01.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/unit.c", "-wp-skip-fct", "__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/f32-vadd/.build/local-smoke-01/annotated/float.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel] neon.c:7: Warning: 
+  found two contracts (old location: spec.h:5-15). Merging them
+[kernel] neon.c:7: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:5-15). Keeping only the first one
+[kernel] rvv.c:1: Warning: 
+  found two contracts (old location: spec.h:24-34). Merging them
+[kernel] rvv.c:1: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:24-34). Keeping only the first one
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[rte:annot] annotating function f32_add
+[rte:annot] annotating function proof_add_prefix_step
+[rte:annot] annotating function proof_add_transfer
+[rte:annot] annotating function proof_check_fp_add_congruence
+[rte:annot] annotating function proof_check_fp_add_transport
+[rte:annot] annotating function proof_check_same_float_refl
+[rte:annot] annotating function proof_check_same_float_value
+[rte:annot] annotating function proof_check_same_value_refl
+[rte:annot] annotating function proof_check_same_value_trans
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function test_neon
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function test_rvv
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] 571 goals scheduled
+[wp] Proved goals:  611 / 611
+  Terminating:    20
+  Unreachable:    20
+  Qed:           302 (0.59ms-67ms-1.2s)
+  CVC5 1.2.1:    266 (10ms-540ms-22.4s)
+  Z3 4.12.5:       2 (35ms-774ms)
+  Script:          1 (Tactic) (Qed 8ms) (Z3 28ms)
+[wp] Updated session
+   - 1 new valid script
