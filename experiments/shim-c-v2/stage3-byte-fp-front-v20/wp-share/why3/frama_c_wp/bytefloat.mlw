@@ -1,0 +1,11 @@
+theory Bytefloat
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+
+  (* Primitive symbols interpreted ONLY by the two reviewed native SMT drivers.
+     No codec axiom, inverse law, range assumption, or abstract Real encoding. *)
+  function decode32 int : f32
+  function decode64 int : f64
+  function encode32 f32 int : int
+  function encode64 f64 int : int
+end

@@ -1,0 +1,61 @@
+import "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/z3.drv"
+
+theory frama_c_wp.bytefloat.Bytefloat
+ syntax function decode32 "((_ to_fp 8 24) ((_ int2bv 32) %1))"
+ syntax function encode32 "(bv2int (ite (fp.isNaN %1) (bvor (bvand ((_ int2bv 32) %2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) %2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv %1)))"
+ syntax function decode64 "((_ to_fp 11 53) ((_ int2bv 64) %1))"
+ syntax function encode64 "(bv2int (ite (fp.isNaN %1) (bvor (bvand ((_ int2bv 64) %2) #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand ((_ int2bv 64) %2) #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv %1)))"
+end
+
+theory nativebv.NativeBV
+ syntax type b32 "(_ BitVec 32)"
+ syntax function of_int32 "((_ int2bv 32) %1)"
+ syntax function to_uint32 "(bv2int %1)"
+ syntax function decode_bv32 "((_ to_fp 8 24) %1)"
+ syntax function encode_bv32 "(ite (fp.isNaN %1) (bvor (bvand %2 #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand %2 #x7fffffff) #x007fffff)))) (fp.to_ieee_bv %1))"
+ syntax type b64 "(_ BitVec 64)"
+ syntax function of_int64 "((_ int2bv 64) %1)"
+ syntax function to_uint64 "(bv2int %1)"
+ syntax function decode_bv64 "((_ to_fp 11 53) %1)"
+ syntax function encode_bv64 "(ite (fp.isNaN %1) (bvor (bvand %2 #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand %2 #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv %1))"
+end
+
+(* Existing Why3 transformations only. The selected theorem has a checked body.
+   Instantiate that theorem before native FP conversion reaches the solver. *)
+transformation "introduce_premises"
+transformation "inline_trivial"
+transformation "instantiate_predicate"
+theory trigger.StoreTrigger32
+ meta "instantiate:auto" prop checked_store_read32_trigger
+end
+
+theory triggerframe02.LoadFrameTrigger32
+ meta "instantiate:auto" prop checked_decode_frame32_trigger
+end
+(* These are pre-existing MemBytes library lemmas with explicit triggers.
+   Only instantiate their existing statements; add no memory law. *)
+theory frama_c_wp.membytes_le.MemBytes
+ meta "instantiate:auto" prop read_uint64_write_uint32_sep
+ meta "instantiate:auto" prop read_sint64_write_uint32_sep
+end
+
+theory triggerwide.StoreWideTrigger32
+ meta "instantiate:auto" prop checked_store_read32_wide_trigger
+end
+
+theory wordtriggers.WordByteTriggers
+ meta "instantiate:auto" prop checked_word_byte0_trigger
+ meta "instantiate:auto" prop checked_word_byte1_trigger
+ meta "instantiate:auto" prop checked_word_byte2_trigger
+ meta "instantiate:auto" prop checked_word_byte3_trigger
+end
+
+theory readtriggers.ReadInverseTrigger32
+ meta "instantiate:auto" prop checked_read_inverse_trigger
+end
+
+theory copyframe.CopyFrame
+ meta "instantiate:auto" prop checked_copy_other_block_uint32
+ meta "instantiate:auto" prop checked_copy_other_block_uint8
+ meta "instantiate:auto" prop checked_copy_other_block_sint8
+end

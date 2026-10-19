@@ -1,0 +1,15 @@
+module Read64Bytes
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_read64_equal_bytes (m1:memory) (m2:memory) (a:addr) (c:addr) : unit
+  ensures { read_uint8 m1 (shift a 0) = read_uint8 m2 (shift c 0) /\
+            read_uint8 m1 (shift a 1) = read_uint8 m2 (shift c 1) /\
+            read_uint8 m1 (shift a 2) = read_uint8 m2 (shift c 2) /\
+            read_uint8 m1 (shift a 3) = read_uint8 m2 (shift c 3) /\
+            read_uint8 m1 (shift a 4) = read_uint8 m2 (shift c 4) /\
+            read_uint8 m1 (shift a 5) = read_uint8 m2 (shift c 5) /\
+            read_uint8 m1 (shift a 6) = read_uint8 m2 (shift c 6) /\
+            read_uint8 m1 (shift a 7) = read_uint8 m2 (shift c 7) -> read_uint64 m1 a = read_uint64 m2 c }
+ = ()
+end

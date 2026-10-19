@@ -1,0 +1,11 @@
+module DecodeInjective64
+ use int.Int
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use ieee_float.Float64 as FP
+ use compose64.Compose64Cuts
+ let lemma checked_decode_injective64 (n:int) (m:int) : unit
+  ensures { 0 <= n < 18446744073709551616 /\ 0 <= m < 18446744073709551616 /\ not FP.is_nan (decode64 n) /\ decode64 n = decode64 m -> n = m }
+ = checked_integer_inverse64 n 0;
+   checked_integer_inverse64 m 0
+end

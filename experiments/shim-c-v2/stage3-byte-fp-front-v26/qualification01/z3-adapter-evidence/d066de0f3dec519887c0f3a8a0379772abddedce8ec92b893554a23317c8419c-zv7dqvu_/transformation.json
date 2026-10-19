@@ -1,0 +1,934 @@
+{
+  "original_sha256": "d066de0f3dec519887c0f3a8a0379772abddedce8ec92b893554a23317c8419c",
+  "sliced_sha256": "daaf6f927796d1d3f69e7002caf5b23f2684503ba9fe66e9ee94ee6055a6e80b",
+  "goal_sha256": "23a2c3ecddb91dd562f7b32ba733d8e9b0eb654359ac0209a851ebb7e8f10a49",
+  "goal_byte_identical": true,
+  "removed": [
+    {
+      "name": "CompatOrderMult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (=> (<= x y) (=> (<= 0 z) (<= (* x z) (* y z))))))"
+    },
+    {
+      "name": "Abs_le",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (= (<= (abs1 x) y) (and (<= (- y) x) (<= x y)))))"
+    },
+    {
+      "name": "Abs_pos",
+      "assertion": "(assert (forall ((x Int)) (<= 0 (abs1 x))))"
+    },
+    {
+      "name": "Div_bound",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (and (<= 0 x) (< 0 y)) (and (<= 0 (div1 x y)) (<= (div1 x y) x)))))"
+    },
+    {
+      "name": "Mod_bound",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=>\n      (not (= y 0))\n      (and (< (- (abs1 y)) (mod1 x y)) (< (mod1 x y) (abs1 y))))))"
+    },
+    {
+      "name": "Div_sign_pos",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= 0 x) (< 0 y)) (<= 0 (div1 x y)))))"
+    },
+    {
+      "name": "Div_sign_neg",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= x 0) (< 0 y)) (<= (div1 x y) 0))))"
+    },
+    {
+      "name": "Mod_sign_pos",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (and (<= 0 x) (not (= y 0))) (<= 0 (mod1 x y)))))"
+    },
+    {
+      "name": "Mod_sign_neg",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (and (<= x 0) (not (= y 0))) (<= (mod1 x y) 0))))"
+    },
+    {
+      "name": "Rounds_toward_zero",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (not (= y 0)) (<= (abs1 (* (div1 x y) y)) (abs1 x)))))"
+    },
+    {
+      "name": "Div_1",
+      "assertion": "(assert (forall ((x Int)) (= (div1 x 1) x)))"
+    },
+    {
+      "name": "Mod_1",
+      "assertion": "(assert (forall ((x Int)) (= (mod1 x 1) 0)))"
+    },
+    {
+      "name": "Div_inf",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= 0 x) (< x y)) (= (div1 x y) 0))))"
+    },
+    {
+      "name": "Mod_inf",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= 0 x) (< x y)) (= (mod1 x y) x))))"
+    },
+    {
+      "name": "Div_mult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (! (=>\n         (and (< 0 x) (and (<= 0 y) (<= 0 z)))\n         (= (div1 (+ (* x y) z) x) (+ y (div1 z x)))) :pattern ((div1\n                                                                  (+ (* x y) z)\n                                                                  x)) )))"
+    },
+    {
+      "name": "Mod_mult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (! (=>\n         (and (< 0 x) (and (<= 0 y) (<= 0 z)))\n         (= (mod1 (+ (* x y) z) x) (mod1 z x))) :pattern ((mod1\n                                                            (+ (* x y) z)\n                                                            x)) )))"
+    },
+    {
+      "name": "CompatOrderMult",
+      "assertion": "(assert\n  (forall ((x Real) (y Real) (z Real))\n    (=> (<= x y) (=> (<= 0.0 z) (<= (* x z) (* y z))))))"
+    },
+    {
+      "name": "c_euclidian",
+      "assertion": "(assert\n  (forall ((n Int) (d Int))\n    (! (=> (not (= d 0)) (= n (+ (* (div1 n d) d) (mod1 n d)))) :pattern (\n    (div1\n      n\n      d)\n    (mod1 n d)) )))"
+    },
+    {
+      "name": "cdiv_neutral",
+      "assertion": "(assert (forall ((a Int)) (! (= (div1 a 1) a) :pattern ((div1 a 1)) )))"
+    },
+    {
+      "name": "cdiv_inv",
+      "assertion": "(assert\n  (forall ((a Int))\n    (! (=> (not (= a 0)) (= (div1 a a) 1)) :pattern ((div1 a a)) )))"
+    },
+    {
+      "name": "cdiv_closed_remainder",
+      "assertion": "(assert\n  (forall ((a Int) (b Int) (n Int))\n    (=>\n      (<= 0 a)\n      (=>\n        (<= 0 b)\n        (=>\n          (and (<= 0 (- b a)) (< (- b a) n))\n          (=> (= (mod1 a n) (mod1 b n)) (= a b)))))))"
+    },
+    {
+      "name": "is_bool0",
+      "assertion": "(assert (is_bool 0))"
+    },
+    {
+      "name": "is_bool1",
+      "assertion": "(assert (is_bool 1))"
+    },
+    {
+      "name": "to_uint8'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x 0)\n      (= (to_uint8 x) (to_uint8 (+ x 256)))\n      (ite (<= 256 x)\n        (= (to_uint8 x) (to_uint8 (- x 256)))\n        (= (to_uint8 x) x)))))"
+    },
+    {
+      "name": "to_sint8'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x (- 128))\n      (= (to_sint8 x) (to_sint8 (+ x 256)))\n      (ite (<= 128 x)\n        (= (to_sint8 x) (to_sint8 (- x 256)))\n        (= (to_sint8 x) x)))))"
+    },
+    {
+      "name": "to_uint16'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x 0)\n      (= (to_uint16 x) (to_uint16 (+ x 65536)))\n      (ite (<= 65536 x)\n        (= (to_uint16 x) (to_uint16 (- x 65536)))\n        (= (to_uint16 x) x)))))"
+    },
+    {
+      "name": "to_sint16'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x (- 32768))\n      (= (to_sint16 x) (to_sint16 (+ x 65536)))\n      (ite (<= 32768 x)\n        (= (to_sint16 x) (to_sint16 (- x 65536)))\n        (= (to_sint16 x) x)))))"
+    },
+    {
+      "name": "to_uint32'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x 0)\n      (= (to_uint32 x) (to_uint32 (+ x 4294967296)))\n      (ite (<= 4294967296 x)\n        (= (to_uint32 x) (to_uint32 (- x 4294967296)))\n        (= (to_uint32 x) x)))))"
+    },
+    {
+      "name": "to_sint32'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x (- 2147483648))\n      (= (to_sint32 x) (to_sint32 (+ x 4294967296)))\n      (ite (<= 2147483648 x)\n        (= (to_sint32 x) (to_sint32 (- x 4294967296)))\n        (= (to_sint32 x) x)))))"
+    },
+    {
+      "name": "to_sint64'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x (- 9223372036854775808))\n      (= (to_sint64 x) (to_sint64 (+ x 18446744073709551616)))\n      (ite (<= 9223372036854775808 x)\n        (= (to_sint64 x) (to_sint64 (- x 18446744073709551616)))\n        (= (to_sint64 x) x)))))"
+    },
+    {
+      "name": "to_uint128'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x 0)\n      (= (to_uint128 x) (to_uint128\n                          (+ x 340282366920938463463374607431768211456)))\n      (ite (<= 340282366920938463463374607431768211456 x)\n        (= (to_uint128 x) (to_uint128\n                            (- x 340282366920938463463374607431768211456)))\n        (= (to_uint128 x) x)))))"
+    },
+    {
+      "name": "to_sint128'def",
+      "assertion": "(assert\n  (forall ((x Int))\n    (ite (< x (- 170141183460469231731687303715884105728))\n      (= (to_sint128 x) (to_sint128\n                          (+ x 340282366920938463463374607431768211456)))\n      (ite (<= 170141183460469231731687303715884105728 x)\n        (= (to_sint128 x) (to_sint128\n                            (- x 340282366920938463463374607431768211456)))\n        (= (to_sint128 x) x)))))"
+    },
+    {
+      "name": "is_to_uint8",
+      "assertion": "(assert (forall ((x Int)) (is_uint8 (to_uint8 x))))"
+    },
+    {
+      "name": "is_to_sint8",
+      "assertion": "(assert (forall ((x Int)) (is_sint8 (to_sint8 x))))"
+    },
+    {
+      "name": "is_to_uint16",
+      "assertion": "(assert (forall ((x Int)) (is_uint16 (to_uint16 x))))"
+    },
+    {
+      "name": "is_to_sint16",
+      "assertion": "(assert (forall ((x Int)) (is_sint16 (to_sint16 x))))"
+    },
+    {
+      "name": "is_to_uint32",
+      "assertion": "(assert (forall ((x Int)) (is_uint32 (to_uint32 x))))"
+    },
+    {
+      "name": "is_to_sint32",
+      "assertion": "(assert (forall ((x Int)) (is_sint32 (to_sint32 x))))"
+    },
+    {
+      "name": "is_to_uint64",
+      "assertion": "(assert (forall ((x Int)) (is_uint64 (to_uint64 x))))"
+    },
+    {
+      "name": "is_to_sint64",
+      "assertion": "(assert (forall ((x Int)) (is_sint64 (to_sint64 x))))"
+    },
+    {
+      "name": "is_to_uint128",
+      "assertion": "(assert (forall ((x Int)) (is_uint128 (to_uint128 x))))"
+    },
+    {
+      "name": "is_to_sint128",
+      "assertion": "(assert (forall ((x Int)) (is_sint128 (to_sint128 x))))"
+    },
+    {
+      "name": "id_uint8",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_uint8 x) (= (to_uint8 x) x)) :pattern ((to_uint8 x)) )))"
+    },
+    {
+      "name": "id_sint8",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint8 x) (= (to_sint8 x) x)) :pattern ((to_sint8 x)) )))"
+    },
+    {
+      "name": "id_uint16",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_uint16 x) (= (to_uint16 x) x)) :pattern ((to_uint16 x)) )))"
+    },
+    {
+      "name": "id_sint16",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint16 x) (= (to_sint16 x) x)) :pattern ((to_sint16 x)) )))"
+    },
+    {
+      "name": "id_uint32",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_uint32 x) (= (to_uint32 x) x)) :pattern ((to_uint32 x)) )))"
+    },
+    {
+      "name": "id_sint32",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint32 x) (= (to_sint32 x) x)) :pattern ((to_sint32 x)) )))"
+    },
+    {
+      "name": "id_uint64",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_uint64 x) (= (to_uint64 x) x)) :pattern ((to_uint64 x)) )))"
+    },
+    {
+      "name": "id_sint64",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint64 x) (= (to_sint64 x) x)) :pattern ((to_sint64 x)) )))"
+    },
+    {
+      "name": "id_uint128",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_uint128 x) (= (to_uint128 x) x)) :pattern ((to_uint128 x)) )))"
+    },
+    {
+      "name": "id_sint128",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint128 x) (= (to_sint128 x) x)) :pattern ((to_sint128 x)) )))"
+    },
+    {
+      "name": "id_uint8_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= 0 x) (< x 256)) (= (to_uint8 x) x)) :pattern ((to_uint8\n                                                                    x)) )))"
+    },
+    {
+      "name": "id_sint8_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= (- 128) x) (< x 128)) (= (to_sint8 x) x)) :pattern (\n    (to_sint8\n      x)) )))"
+    },
+    {
+      "name": "id_uint16_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= 0 x) (< x 65536)) (= (to_uint16 x) x)) :pattern (\n    (to_uint16\n      x)) )))"
+    },
+    {
+      "name": "id_sint16_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= (- 32768) x) (< x 32768)) (= (to_sint16 x) x)) :pattern (\n    (to_sint16\n      x)) )))"
+    },
+    {
+      "name": "id_uint32_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= 0 x) (< x 4294967296)) (= (to_uint32 x) x)) :pattern (\n    (to_uint32\n      x)) )))"
+    },
+    {
+      "name": "id_sint32_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= (- 2147483648) x) (< x 2147483648)) (= (to_sint32 x) x)) :pattern (\n    (to_sint32\n      x)) )))"
+    },
+    {
+      "name": "id_uint64_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (and (<= 0 x) (< x 18446744073709551616)) (= (to_uint64 x) x)) :pattern (\n    (to_uint64\n      x)) )))"
+    },
+    {
+      "name": "id_sint64_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=>\n         (and (<= (- 9223372036854775808) x) (< x 9223372036854775808))\n         (= (to_sint64 x) x)) :pattern ((to_sint64 x)) )))"
+    },
+    {
+      "name": "id_uint128_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=>\n         (and (<= 0 x) (< x 340282366920938463463374607431768211456))\n         (= (to_uint128 x) x)) :pattern ((to_uint128 x)) )))"
+    },
+    {
+      "name": "id_sint128_inl",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=>\n         (and\n           (<= (- 170141183460469231731687303715884105728) x)\n           (< x 170141183460469231731687303715884105728))\n         (= (to_sint128 x) x)) :pattern ((to_sint128 x)) )))"
+    },
+    {
+      "name": "proj_int8",
+      "assertion": "(assert (forall ((x Int)) (= (to_sint8 (to_uint8 x)) (to_sint8 x))))"
+    },
+    {
+      "name": "proj_int16",
+      "assertion": "(assert (forall ((x Int)) (= (to_sint16 (to_uint16 x)) (to_sint16 x))))"
+    },
+    {
+      "name": "proj_int32",
+      "assertion": "(assert (forall ((x Int)) (= (to_sint32 (to_uint32 x)) (to_sint32 x))))"
+    },
+    {
+      "name": "proj_int64",
+      "assertion": "(assert (forall ((x Int)) (= (to_sint64 (to_uint64 x)) (to_sint64 x))))"
+    },
+    {
+      "name": "proj_int128",
+      "assertion": "(assert (forall ((x Int)) (= (to_sint128 (to_uint128 x)) (to_sint128 x))))"
+    },
+    {
+      "name": "Mod_0",
+      "assertion": "(assert (forall ((y Int)) (=> (not (= y 0)) (= (mod 0 y) 0))))"
+    },
+    {
+      "name": "Mod_1_left",
+      "assertion": "(assert (forall ((y Int)) (=> (< 1 y) (= (mod 1 y) 1))))"
+    },
+    {
+      "name": "Mod_minus1_left",
+      "assertion": "(assert (forall ((y Int)) (=> (< 1 y) (= (mod (- 1) y) (- y 1)))))"
+    },
+    {
+      "name": "Mod_mult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (! (=> (< 0 x) (= (mod (+ (* x y) z) x) (mod z x))) :pattern ((mod (+ (* x y) z) x)) )))"
+    },
+    {
+      "name": "uint16_mod",
+      "assertion": "(assert (forall ((x Int)) (= (to_uint16 x) (mod x 65536))))"
+    },
+    {
+      "name": "sint16_mod",
+      "assertion": "(assert\n  (forall ((x Int))\n    (= (to_sint16 x) (ite (< (mod x 65536) 32768)\n                       (mod x 65536)\n                       (- (mod x 65536) 65536)))))"
+    },
+    {
+      "name": "uint32_mod",
+      "assertion": "(assert (forall ((x Int)) (= (to_uint32 x) (mod x 4294967296))))"
+    },
+    {
+      "name": "sint32_mod",
+      "assertion": "(assert\n  (forall ((x Int))\n    (= (to_sint32 x) (ite (< (mod x 4294967296) 2147483648)\n                       (mod x 4294967296)\n                       (- (mod x 4294967296) 4294967296)))))"
+    },
+    {
+      "name": "uint64_mod",
+      "assertion": "(assert (forall ((x Int)) (= (to_uint64 x) (mod x 18446744073709551616))))"
+    },
+    {
+      "name": "sint64_mod",
+      "assertion": "(assert\n  (forall ((x Int))\n    (= (to_sint64 x) (ite (< (mod x 18446744073709551616) 9223372036854775808)\n                       (mod x 18446744073709551616)\n                       (- (mod x 18446744073709551616) 18446744073709551616)))))"
+    },
+    {
+      "name": "centered_mod16",
+      "assertion": "(assert\n  (forall ((x Int) (z Int))\n    (= (wrap16 (to_uint64 (+ (to_sint16 (- z)) x))) (wrap16\n                                                      (to_uint64\n                                                        (- (to_uint64 x) \n                                                        (to_uint64\n                                                          (to_sint16 z))))))))"
+    },
+    {
+      "name": "Assoc",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (= (land (land x y) z) (land x (land y z)))))"
+    },
+    {
+      "name": "Comm",
+      "assertion": "(assert (forall ((x Int) (y Int)) (= (land x y) (land y x))))"
+    },
+    {
+      "name": "Assoc",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (= (lxor (lxor x y) z) (lxor x (lxor y z)))))"
+    },
+    {
+      "name": "Comm",
+      "assertion": "(assert (forall ((x Int) (y Int)) (= (lxor x y) (lxor y x))))"
+    },
+    {
+      "name": "Assoc",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int)) (= (lor (lor x y) z) (lor x (lor y z)))))"
+    },
+    {
+      "name": "Comm",
+      "assertion": "(assert (forall ((x Int) (y Int)) (= (lor x y) (lor y x))))"
+    },
+    {
+      "name": "land_idemp",
+      "assertion": "(assert (forall ((x Int)) (! (= (land x x) x) :pattern ((land x x)) )))"
+    },
+    {
+      "name": "land_idemp_bis",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (= (land x (land x y)) (land x y)) :pattern ((land x (land x y))) )))"
+    },
+    {
+      "name": "land_0",
+      "assertion": "(assert (forall ((x Int)) (! (= (land 0 x) 0) :pattern ((land 0 x)) )))"
+    },
+    {
+      "name": "land_0bis",
+      "assertion": "(assert (forall ((x Int)) (! (= (land x 0) 0) :pattern ((land x 0)) )))"
+    },
+    {
+      "name": "land_1",
+      "assertion": "(assert\n  (forall ((x Int)) (! (= (land (- 1) x) x) :pattern ((land (- 1) x)) )))"
+    },
+    {
+      "name": "land_1bis",
+      "assertion": "(assert\n  (forall ((x Int)) (! (= (land x (- 1)) x) :pattern ((land x (- 1))) )))"
+    },
+    {
+      "name": "lor_idemp",
+      "assertion": "(assert (forall ((x Int)) (! (= (lor x x) x) :pattern ((lor x x)) )))"
+    },
+    {
+      "name": "lor_idemp_bis",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (= (lor x (lor x y)) (lor x y)) :pattern ((lor x (lor x y))) )))"
+    },
+    {
+      "name": "lor_1",
+      "assertion": "(assert\n  (forall ((x Int)) (! (= (lor (- 1) x) (- 1)) :pattern ((lor (- 1) x)) )))"
+    },
+    {
+      "name": "lor_1bis",
+      "assertion": "(assert\n  (forall ((x Int)) (! (= (lor x (- 1)) (- 1)) :pattern ((lor x (- 1))) )))"
+    },
+    {
+      "name": "lor_0",
+      "assertion": "(assert (forall ((x Int)) (! (= (lor 0 x) x) :pattern ((lor 0 x)) )))"
+    },
+    {
+      "name": "lor_0bis",
+      "assertion": "(assert (forall ((x Int)) (! (= (lor x 0) x) :pattern ((lor x 0)) )))"
+    },
+    {
+      "name": "lxor_nilpotent",
+      "assertion": "(assert (forall ((x Int)) (! (= (lxor x x) 0) :pattern ((lxor x x)) )))"
+    },
+    {
+      "name": "lxor_nilpotent_bis",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (= (lxor x (lxor x y)) y) :pattern ((lxor x (lxor x y))) )))"
+    },
+    {
+      "name": "lxor_1",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (= (lxor (- 1) x) (lnot x)) :pattern ((lxor (- 1) x)) )))"
+    },
+    {
+      "name": "lxor_1bis",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (= (lxor x (- 1)) (lnot x)) :pattern ((lxor x (- 1))) )))"
+    },
+    {
+      "name": "lxor_0",
+      "assertion": "(assert (forall ((x Int)) (! (= (lxor 0 x) x) :pattern ((lxor 0 x)) )))"
+    },
+    {
+      "name": "lxor_0bis",
+      "assertion": "(assert (forall ((x Int)) (! (= (lxor x 0) x) :pattern ((lxor x 0)) )))"
+    },
+    {
+      "name": "lsl_0",
+      "assertion": "(assert (forall ((x Int)) (= (lsl x 0) x)))"
+    },
+    {
+      "name": "lsl_1",
+      "assertion": "(assert (forall ((x Int)) (= (lsl x 1) (* 2 x))))"
+    },
+    {
+      "name": "lsl_add",
+      "assertion": "(assert\n  (forall ((x Int) (p Int) (q Int))\n    (=> (<= 0 p) (=> (<= 0 q) (= (lsl (lsl x p) q) (lsl x (+ p q)))))))"
+    },
+    {
+      "name": "lsr_0",
+      "assertion": "(assert (forall ((x Int)) (= (lsr x 0) x)))"
+    },
+    {
+      "name": "lsr_1",
+      "assertion": "(assert (forall ((x Int)) (=> (<= 0 x) (= (lsr x 1) (div1 x 2)))))"
+    },
+    {
+      "name": "lsr_add",
+      "assertion": "(assert\n  (forall ((x Int) (p Int) (q Int))\n    (=> (<= 0 p) (=> (<= 0 q) (= (lsr (lsr x p) q) (lsr x (+ p q)))))))"
+    },
+    {
+      "name": "lsl_lsr_add",
+      "assertion": "(assert\n  (forall ((x Int) (p Int) (q Int))\n    (=> (and (<= 0 q) (<= q p)) (= (lsr (lsl x p) q) (lsl x (- p q))))))"
+    },
+    {
+      "name": "bit_test_def",
+      "assertion": "(assert\n  (forall ((x Int) (k Int))\n    (! (= (= (bit_testb x k) true) (bit_test x k)) :pattern ((bit_testb x k)) )))"
+    },
+    {
+      "name": "bit_test_extraction",
+      "assertion": "(assert\n  (forall ((x Int) (k Int))\n    (! (=> (<= 0 k) (= (not (= (land x (lsl 1 k)) 0)) (bit_test x k))) :pattern (\n    (land\n      x\n      (lsl 1 k))) :pattern ((land (lsl 1 k) x)) )))"
+    },
+    {
+      "name": "lsl_1_0",
+      "assertion": "(assert (= (lsl 1 0) 1))"
+    },
+    {
+      "name": "bit_test_extraction_bis",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (not (= (land 1 x) 0)) (bit_test x 0)) :pattern ((land x 1)) :pattern (\n    (land\n      1\n      x)) )))"
+    },
+    {
+      "name": "bit_test_extraction_bis_eq",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (bit_test x 0) (= (land 1 x) 1)) :pattern ((land x 1)) :pattern (\n    (land\n      1\n      x)) )))"
+    },
+    {
+      "name": "lnot_extraction",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 0 i) (= (bit_test (lnot x) i) (not (bit_test x i)))) :pattern (\n    (bit_test\n      (lnot x)\n      i)) )))"
+    },
+    {
+      "name": "land_extraction",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (i Int))\n    (! (=>\n         (<= 0 i)\n         (= (bit_test (land x y) i) (and (bit_test x i) (bit_test y i)))) :pattern (\n    (bit_test\n      (land x y)\n      i)) )))"
+    },
+    {
+      "name": "lor_extraction",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (i Int))\n    (! (=>\n         (<= 0 i)\n         (= (bit_test (lor x y) i) (or (bit_test x i) (bit_test y i)))) :pattern (\n    (bit_test\n      (lor x y)\n      i)) )))"
+    },
+    {
+      "name": "lxor_extraction",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (i Int))\n    (! (=>\n         (<= 0 i)\n         (= (bit_test (lxor x y) i) (= (bit_test x i) (not (bit_test y i))))) :pattern (\n    (bit_test\n      (lxor x y)\n      i)) )))"
+    },
+    {
+      "name": "land_1_lsl_1",
+      "assertion": "(assert\n  (forall ((a Int) (x Int) (n Int))\n    (! (=>\n         (<= 0 n)\n         (=> (< a (lsl 1 n)) (< (+ (* 2 a) (land 1 x)) (lsl 1 (+ 1 n))))) :pattern (\n    (lsl\n      1\n      (+ 1 n))\n    (lsl 1 n)\n    (+ (* 2 a) (land 1 x))) )))"
+    },
+    {
+      "name": "lsl_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (n Int) (m Int))\n    (! (=>\n         (<= 0 n)\n         (=>\n           (<= 0 m)\n           (=> (<= n m) (= (bit_test (lsl x n) m) (bit_test x (- m n)))))) :pattern (\n    (bit_test\n      (lsl x n)\n      m)) )))"
+    },
+    {
+      "name": "lsl_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (n Int) (m Int))\n    (! (=> (<= 0 n) (=> (<= 0 m) (=> (< m n) (not (bit_test (lsl x n) m))))) :pattern (\n    (bit_test\n      (lsl x n)\n      m)) )))"
+    },
+    {
+      "name": "lsr_extractionl",
+      "assertion": "(assert\n  (forall ((x Int) (n Int) (m Int))\n    (! (=>\n         (<= 0 n)\n         (=> (<= 0 m) (= (bit_test (lsr x n) m) (bit_test x (+ m n))))) :pattern (\n    (bit_test\n      (lsr x n)\n      m)) )))"
+    },
+    {
+      "name": "lsl1_extraction",
+      "assertion": "(assert\n  (forall ((i Int) (j Int))\n    (! (=> (<= 0 i) (=> (<= 0 j) (= (bit_test (lsl 1 i) j) (= i j)))) :pattern (\n    (bit_test\n      (lsl 1 i)\n      j)) )))"
+    },
+    {
+      "name": "to_uint8_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 8 i) (=> (is_uint8 x) (not (bit_test x i)))) :pattern (\n    (is_uint8\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_uint8_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 8))\n         (= (bit_test (to_uint8 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                   (to_uint8\n                                                                    x)\n                                                                   i)) )))"
+    },
+    {
+      "name": "to_uint16_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 16 i) (=> (is_uint16 x) (not (bit_test x i)))) :pattern (\n    (is_uint16\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_uint16_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 16))\n         (= (bit_test (to_uint16 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                    (to_uint16\n                                                                    x)\n                                                                    i)) )))"
+    },
+    {
+      "name": "to_uint32_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 32 i) (=> (is_uint32 x) (not (bit_test x i)))) :pattern (\n    (is_uint32\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_uint32_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 32))\n         (= (bit_test (to_uint32 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                    (to_uint32\n                                                                    x)\n                                                                    i)) )))"
+    },
+    {
+      "name": "to_uint64_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 64 i) (=> (is_uint64 x) (not (bit_test x i)))) :pattern (\n    (is_uint64\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_uint64_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 64))\n         (= (bit_test (to_uint64 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                    (to_uint64\n                                                                    x)\n                                                                    i)) )))"
+    },
+    {
+      "name": "to_sint8_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 7 i) (=> (is_sint8 x) (= (bit_test x i) (< x 0)))) :pattern (\n    (is_sint8\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_sint8_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 7))\n         (= (bit_test (to_sint8 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                   (to_sint8\n                                                                    x)\n                                                                   i)) )))"
+    },
+    {
+      "name": "to_sint16_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 15 i) (=> (is_sint16 x) (= (bit_test x i) (< x 0)))) :pattern (\n    (is_sint16\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_sint16_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 15))\n         (= (bit_test (to_sint16 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                    (to_sint16\n                                                                    x)\n                                                                    i)) )))"
+    },
+    {
+      "name": "to_sint32_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 31 i) (=> (is_sint32 x) (= (bit_test x i) (< x 0)))) :pattern (\n    (is_sint32\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_sint32_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 31))\n         (= (bit_test (to_sint32 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                    (to_sint32\n                                                                    x)\n                                                                    i)) )))"
+    },
+    {
+      "name": "to_sint64_extraction_sup",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=> (<= 63 i) (=> (is_sint64 x) (= (bit_test x i) (< x 0)))) :pattern (\n    (is_sint64\n      x)\n    (bit_test x i)) )))"
+    },
+    {
+      "name": "to_sint64_extraction_inf",
+      "assertion": "(assert\n  (forall ((x Int) (i Int))\n    (! (=>\n         (and (<= 0 i) (< i 63))\n         (= (bit_test (to_sint64 x) i) (bit_test x i))) :pattern ((bit_test\n                                                                    (to_sint64\n                                                                    x)\n                                                                    i)) )))"
+    },
+    {
+      "name": "is_uint_lxor",
+      "assertion": "(assert\n  (forall ((n Int) (x Int) (y Int))\n    (=>\n      (is_uint n x)\n      (=> (is_uint n y) (= (to_uint n (lxor x y)) (lxor x y))))))"
+    },
+    {
+      "name": "is_uint8_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint8 x) (=> (is_uint8 y) (is_uint8 (lxor x y))))))"
+    },
+    {
+      "name": "is_uint8_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint8 x)\n         (=> (is_uint8 y) (= (to_uint8 (lxor x y)) (lxor x y)))) :pattern (\n    (to_uint8\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_uint8_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint8 x) (=> (is_uint8 y) (is_uint8 (lor x y))))))"
+    },
+    {
+      "name": "is_uint8_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (is_uint8 x) (=> (is_uint8 y) (= (to_uint8 (lor x y)) (lor x y)))) :pattern (\n    (to_uint8\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_uint8_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint8 x) (=> (is_uint8 y) (is_uint8 (land x y))))))"
+    },
+    {
+      "name": "is_uint8_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint8 x)\n         (=> (is_uint8 y) (= (to_uint8 (land x y)) (land x y)))) :pattern (\n    (to_uint8\n      (land x y))) )))"
+    },
+    {
+      "name": "is_uint8_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_uint8 x) (is_uint8 (lsr x y))))))"
+    },
+    {
+      "name": "is_uint8_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_uint8 x) (= (to_uint8 (lsr x y)) (lsr x y)))) :pattern (\n    (to_uint8\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_uint8_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 8)) (= (to_uint8 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_uint8\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint8_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 8 y) (= (to_uint8 (lsl 1 y)) 0)) :pattern ((to_uint8\n                                                            (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint16_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint16 x) (=> (is_uint16 y) (is_uint16 (lxor x y))))))"
+    },
+    {
+      "name": "is_uint16_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint16 x)\n         (=> (is_uint16 y) (= (to_uint16 (lxor x y)) (lxor x y)))) :pattern (\n    (to_uint16\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_uint16_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint16 x) (=> (is_uint16 y) (is_uint16 (lor x y))))))"
+    },
+    {
+      "name": "is_uint16_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint16 x)\n         (=> (is_uint16 y) (= (to_uint16 (lor x y)) (lor x y)))) :pattern (\n    (to_uint16\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_uint16_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint16 x) (=> (is_uint16 y) (is_uint16 (land x y))))))"
+    },
+    {
+      "name": "is_uint16_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint16 x)\n         (=> (is_uint16 y) (= (to_uint16 (land x y)) (land x y)))) :pattern (\n    (to_uint16\n      (land x y))) )))"
+    },
+    {
+      "name": "is_uint16_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_uint16 x) (is_uint16 (lsr x y))))))"
+    },
+    {
+      "name": "is_uint16_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_uint16 x) (= (to_uint16 (lsr x y)) (lsr x y)))) :pattern (\n    (to_uint16\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_uint16_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 16)) (= (to_uint16 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_uint16\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint16_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 16 y) (= (to_uint16 (lsl 1 y)) 0)) :pattern ((to_uint16\n                                                              (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint32_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint32 x) (=> (is_uint32 y) (is_uint32 (lxor x y))))))"
+    },
+    {
+      "name": "is_uint32_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint32 x)\n         (=> (is_uint32 y) (= (to_uint32 (lxor x y)) (lxor x y)))) :pattern (\n    (to_uint32\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_uint32_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint32 x) (=> (is_uint32 y) (is_uint32 (lor x y))))))"
+    },
+    {
+      "name": "is_uint32_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint32 x)\n         (=> (is_uint32 y) (= (to_uint32 (lor x y)) (lor x y)))) :pattern (\n    (to_uint32\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_uint32_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint32 x) (=> (is_uint32 y) (is_uint32 (land x y))))))"
+    },
+    {
+      "name": "is_uint32_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint32 x)\n         (=> (is_uint32 y) (= (to_uint32 (land x y)) (land x y)))) :pattern (\n    (to_uint32\n      (land x y))) )))"
+    },
+    {
+      "name": "is_uint32_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_uint32 x) (is_uint32 (lsr x y))))))"
+    },
+    {
+      "name": "is_uint32_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_uint32 x) (= (to_uint32 (lsr x y)) (lsr x y)))) :pattern (\n    (to_uint32\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_uint32_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 32)) (= (to_uint32 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_uint32\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint32_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 32 y) (= (to_uint32 (lsl 1 y)) 0)) :pattern ((to_uint32\n                                                              (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint64_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint64 x) (=> (is_uint64 y) (is_uint64 (lxor x y))))))"
+    },
+    {
+      "name": "is_uint64_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint64 x)\n         (=> (is_uint64 y) (= (to_uint64 (lxor x y)) (lxor x y)))) :pattern (\n    (to_uint64\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_uint64_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint64 x) (=> (is_uint64 y) (is_uint64 (lor x y))))))"
+    },
+    {
+      "name": "is_uint64_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint64 x)\n         (=> (is_uint64 y) (= (to_uint64 (lor x y)) (lor x y)))) :pattern (\n    (to_uint64\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_uint64_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_uint64 x) (=> (is_uint64 y) (is_uint64 (land x y))))))"
+    },
+    {
+      "name": "is_uint64_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_uint64 x)\n         (=> (is_uint64 y) (= (to_uint64 (land x y)) (land x y)))) :pattern (\n    (to_uint64\n      (land x y))) )))"
+    },
+    {
+      "name": "is_uint64_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_uint64 x) (is_uint64 (lsr x y))))))"
+    },
+    {
+      "name": "is_uint64_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_uint64 x) (= (to_uint64 (lsr x y)) (lsr x y)))) :pattern (\n    (to_uint64\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_uint64_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 64)) (= (to_uint64 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_uint64\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_uint64_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 64 y) (= (to_uint64 (lsl 1 y)) 0)) :pattern ((to_uint64\n                                                              (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint8_lnot",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint8 x) (= (to_sint8 (lnot x)) (lnot x))) :pattern ((to_sint8\n                                                                    (lnot x))) )))"
+    },
+    {
+      "name": "is_sint8_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint8 x) (=> (is_sint8 y) (is_sint8 (lxor x y))))))"
+    },
+    {
+      "name": "is_sint8_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint8 x)\n         (=> (is_sint8 y) (= (to_sint8 (lxor x y)) (lxor x y)))) :pattern (\n    (to_sint8\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_sint8_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint8 x) (=> (is_sint8 y) (is_sint8 (lor x y))))))"
+    },
+    {
+      "name": "is_sint8_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (is_sint8 x) (=> (is_sint8 y) (= (to_sint8 (lor x y)) (lor x y)))) :pattern (\n    (to_sint8\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_sint8_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint8 x) (=> (is_sint8 y) (is_sint8 (land x y))))))"
+    },
+    {
+      "name": "is_sint8_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint8 x)\n         (=> (is_sint8 y) (= (to_sint8 (land x y)) (land x y)))) :pattern (\n    (to_sint8\n      (land x y))) )))"
+    },
+    {
+      "name": "is_sint8_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_sint8 x) (is_sint8 (lsr x y))))))"
+    },
+    {
+      "name": "is_sint8_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_sint8 x) (= (to_sint8 (lsr x y)) (lsr x y)))) :pattern (\n    (to_sint8\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_sint8_lsl1",
+      "assertion": "(assert (= (lsl 1 7) 128))"
+    },
+    {
+      "name": "is_sint8_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 7)) (= (to_sint8 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_sint8\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint8_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 8 y) (= (to_sint8 (lsl 1 y)) 0)) :pattern ((to_sint8\n                                                            (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint16_lnot",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint16 x) (= (to_sint16 (lnot x)) (lnot x))) :pattern (\n    (to_sint16\n      (lnot x))) )))"
+    },
+    {
+      "name": "is_sint16_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint16 x) (=> (is_sint16 y) (is_sint16 (lxor x y))))))"
+    },
+    {
+      "name": "is_sint16_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint16 x)\n         (=> (is_sint16 y) (= (to_sint16 (lxor x y)) (lxor x y)))) :pattern (\n    (to_sint16\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_sint16_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint16 x) (=> (is_sint16 y) (is_sint16 (lor x y))))))"
+    },
+    {
+      "name": "is_sint16_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint16 x)\n         (=> (is_sint16 y) (= (to_sint16 (lor x y)) (lor x y)))) :pattern (\n    (to_sint16\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_sint16_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint16 x) (=> (is_sint16 y) (is_sint16 (land x y))))))"
+    },
+    {
+      "name": "is_sint16_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint16 x)\n         (=> (is_sint16 y) (= (to_sint16 (land x y)) (land x y)))) :pattern (\n    (to_sint16\n      (land x y))) )))"
+    },
+    {
+      "name": "is_sint16_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_sint16 x) (is_sint16 (lsr x y))))))"
+    },
+    {
+      "name": "is_sint16_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_sint16 x) (= (to_sint16 (lsr x y)) (lsr x y)))) :pattern (\n    (to_sint16\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_sint16_lsl1",
+      "assertion": "(assert (= (lsl 1 15) 32768))"
+    },
+    {
+      "name": "is_sint16_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 15)) (= (to_sint16 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_sint16\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint16_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 16 y) (= (to_sint16 (lsl 1 y)) 0)) :pattern ((to_sint16\n                                                              (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint32_lnot",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint32 x) (= (to_sint32 (lnot x)) (lnot x))) :pattern (\n    (to_sint32\n      (lnot x))) )))"
+    },
+    {
+      "name": "is_sint32_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint32 x) (=> (is_sint32 y) (is_sint32 (lxor x y))))))"
+    },
+    {
+      "name": "is_sint32_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint32 x)\n         (=> (is_sint32 y) (= (to_sint32 (lxor x y)) (lxor x y)))) :pattern (\n    (to_sint32\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_sint32_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint32 x) (=> (is_sint32 y) (is_sint32 (lor x y))))))"
+    },
+    {
+      "name": "is_sint32_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint32 x)\n         (=> (is_sint32 y) (= (to_sint32 (lor x y)) (lor x y)))) :pattern (\n    (to_sint32\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_sint32_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint32 x) (=> (is_sint32 y) (is_sint32 (land x y))))))"
+    },
+    {
+      "name": "is_sint32_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint32 x)\n         (=> (is_sint32 y) (= (to_sint32 (land x y)) (land x y)))) :pattern (\n    (to_sint32\n      (land x y))) )))"
+    },
+    {
+      "name": "is_sint32_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_sint32 x) (is_sint32 (lsr x y))))))"
+    },
+    {
+      "name": "is_sint32_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_sint32 x) (= (to_sint32 (lsr x y)) (lsr x y)))) :pattern (\n    (to_sint32\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_sint32_lsl1",
+      "assertion": "(assert (= (lsl 1 31) 2147483648))"
+    },
+    {
+      "name": "is_sint32_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 31)) (= (to_sint32 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_sint32\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint32_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 32 y) (= (to_sint32 (lsl 1 y)) 0)) :pattern ((to_sint32\n                                                              (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint64_lnot",
+      "assertion": "(assert\n  (forall ((x Int))\n    (! (=> (is_sint64 x) (= (to_sint64 (lnot x)) (lnot x))) :pattern (\n    (to_sint64\n      (lnot x))) )))"
+    },
+    {
+      "name": "is_sint64_lxor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint64 x) (=> (is_sint64 y) (is_sint64 (lxor x y))))))"
+    },
+    {
+      "name": "is_sint64_lxor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint64 x)\n         (=> (is_sint64 y) (= (to_sint64 (lxor x y)) (lxor x y)))) :pattern (\n    (to_sint64\n      (lxor x y))) )))"
+    },
+    {
+      "name": "is_sint64_lor_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint64 x) (=> (is_sint64 y) (is_sint64 (lor x y))))))"
+    },
+    {
+      "name": "is_sint64_lor",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint64 x)\n         (=> (is_sint64 y) (= (to_sint64 (lor x y)) (lor x y)))) :pattern (\n    (to_sint64\n      (lor x y))) )))"
+    },
+    {
+      "name": "is_sint64_land_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (is_sint64 x) (=> (is_sint64 y) (is_sint64 (land x y))))))"
+    },
+    {
+      "name": "is_sint64_land",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=>\n         (is_sint64 x)\n         (=> (is_sint64 y) (= (to_sint64 (land x y)) (land x y)))) :pattern (\n    (to_sint64\n      (land x y))) )))"
+    },
+    {
+      "name": "is_sint64_lsr_closure",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (<= 0 y) (=> (is_sint64 x) (is_sint64 (lsr x y))))))"
+    },
+    {
+      "name": "is_sint64_lsr",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (<= 0 y) (=> (is_sint64 x) (= (to_sint64 (lsr x y)) (lsr x y)))) :pattern (\n    (to_sint64\n      (lsr x y))) )))"
+    },
+    {
+      "name": "is_sint64_lsl1",
+      "assertion": "(assert (= (lsl 1 63) 9223372036854775808))"
+    },
+    {
+      "name": "is_sint64_lsl1_inf",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (and (<= 0 y) (< y 63)) (= (to_sint64 (lsl 1 y)) (lsl 1 y))) :pattern (\n    (to_sint64\n      (lsl 1 y))) )))"
+    },
+    {
+      "name": "is_sint64_lsl1_sup",
+      "assertion": "(assert\n  (forall ((y Int))\n    (! (=> (<= 64 y) (= (to_sint64 (lsl 1 y)) 0)) :pattern ((to_sint64\n                                                              (lsl 1 y))) )))"
+    },
+    {
+      "name": "lor_addition",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (= (land x y) 0) (= (+ x y) (lor x y))) :pattern ((land x y)\n    (lor x y)) )))"
+    },
+    {
+      "name": "lxor_addition",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (! (=> (= (land x y) 0) (= (+ x y) (lxor x y))) :pattern ((land x y)\n    (lxor x y)) )))"
+    }
+  ],
+  "argv": [
+    "-smt2",
+    "-T:30",
+    "/tmp/why_3a7810_zilch-T-wp_goal.smt2"
+  ],
+  "qualification": false
+}

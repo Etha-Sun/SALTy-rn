@@ -1,0 +1,165 @@
+{
+  "status": "in_progress_not_qualification",
+  "scope": "v19 WP imported additional Why3 body lemmas; no solver run and no model modification",
+  "source_comparison": "All imported copies were found byte-identical to the prototype sources listed below. Actual proof evidence leaf review is pending the read-only tool responses; this file does not claim all lemmas have been accepted.",
+  "theories": [
+    {
+      "installed": "frama_c_wp/bytefloat.mlw",
+      "prototype": "why3/frama_c_wp/bytefloat.mlw",
+      "lemmas": [],
+      "note": "Native primitive declarations; solver driver interpretation is separately audited TCB."
+    },
+    {
+      "installed": "nativebv.mlw",
+      "prototype": "checked-lemmas-v3/why3/nativebv.mlw",
+      "lemmas": []
+    },
+    {
+      "installed": "frama_c_wp/bytefloat_checked.mlw",
+      "prototype": "checked-subset-v4/subset.mlw",
+      "lemmas": [
+        "checked_decodeencode32",
+        "checked_encoderange32",
+        "checked_decodeencode64",
+        "checked_encoderange64"
+      ],
+      "evidence": "checked-subset-v4/root-z301"
+    },
+    {
+      "installed": "prerequisites.mlw",
+      "prototype": "checked-lemmas-v3/prerequisites.mlw",
+      "lemmas": [
+        "bv_inverse32",
+        "int_roundtrip32",
+        "bv_inverse64",
+        "int_roundtrip64"
+      ],
+      "evidence": "checked-lemmas-v3/root-z301; native-int64-cvc5-v6",
+      "note": "First prerequisite batch exit2: int64 roundtrip needs its separate later CVC5 evidence, not the first failed batch."
+    },
+    {
+      "installed": "interfaces.mlw",
+      "prototype": "checked-lemmas-v3/interfaces.mlw",
+      "lemmas": [
+        "interface32",
+        "interface64"
+      ],
+      "evidence": "checked-lemmas-v3/root-z301"
+    },
+    {
+      "installed": "compose32.mlw",
+      "prototype": "compose32-cuts-v6/compose.mlw",
+      "lemmas": [
+        "checked_integer_inverse32"
+      ],
+      "evidence": "compose32-cuts-v6/root01"
+    },
+    {
+      "installed": "compose64.mlw",
+      "prototype": "compose64-cuts-v7/compose.mlw",
+      "lemmas": [
+        "checked_integer_inverse64"
+      ],
+      "evidence": "compose64-cuts-v7/root01"
+    },
+    {
+      "installed": "injective32.mlw",
+      "prototype": "decode-injective-v10/injective32.mlw",
+      "lemmas": [
+        "checked_decode_injective32"
+      ],
+      "evidence": "decode-injective-v10/root01"
+    },
+    {
+      "installed": "injective64.mlw",
+      "prototype": "decode-injective-v10/injective64.mlw",
+      "lemmas": [
+        "checked_decode_injective64"
+      ],
+      "evidence": "decode-injective-v10/root01"
+    },
+    {
+      "installed": "zero32.mlw",
+      "prototype": "zero-unique-v11/zero32.mlw",
+      "lemmas": [
+        "checked_negative_zero32"
+      ],
+      "evidence": "zero-unique-v11/result.json"
+    },
+    {
+      "installed": "zero64.mlw",
+      "prototype": "zero-unique-v11/zero64.mlw",
+      "lemmas": [
+        "checked_negative_zero64"
+      ],
+      "evidence": "zero-unique-v11/result.json"
+    },
+    {
+      "installed": "memoryread.mlw",
+      "prototype": "store-read-v16/memoryread.mlw",
+      "lemmas": [
+        "checked_read_write32",
+        "checked_read_frame32"
+      ],
+      "evidence": "store-read-v16/memory-root01.json"
+    },
+    {
+      "installed": "storeread.mlw",
+      "prototype": "store-read-v16/store-read.mlw",
+      "lemmas": [
+        "checked_store_read32"
+      ],
+      "evidence": "store-read-v16/store-root01.json"
+    },
+    {
+      "installed": "loadframe.mlw",
+      "prototype": "store-read-v16/loadframe.mlw",
+      "lemmas": [
+        "checked_decode_frame32"
+      ],
+      "evidence": "store-read-v16/frame-root01.json"
+    },
+    {
+      "installed": "trigger.mlw",
+      "prototype": "store-trigger-v17/trigger.mlw",
+      "lemmas": [
+        "checked_store_read32_trigger"
+      ],
+      "evidence": "store-trigger-v17/root04-rewrite.json",
+      "note": "Earlier failed attempts are retained."
+    },
+    {
+      "installed": "triggerframe02.mlw",
+      "prototype": "load-trigger-v18/triggerframe02.mlw",
+      "lemmas": [
+        "checked_decode_frame32_trigger"
+      ],
+      "evidence": "load-trigger-v18/root02.json"
+    },
+    {
+      "installed": "triggerwide.mlw",
+      "prototype": "store-trigger-wide01/triggerwide.mlw",
+      "lemmas": [
+        "checked_store_read32_wide_trigger"
+      ],
+      "evidence": "store-trigger-wide01/root01.json",
+      "note": "Exact byte-identical copied theory, not just a similarly named prototype."
+    },
+    {
+      "installed": "read64.mlw",
+      "prototype": "read64-bytes-v14/read64.mlw",
+      "lemmas": [
+        "checked_read64_equal_bytes"
+      ],
+      "evidence": "read64-bytes-v14/root01.json",
+      "note": "Copied file; not found among driver imports, reachability must be distinguished from active dependencies."
+    }
+  ],
+  "remaining_audit": [
+    "Record exact source and evidence SHA256 after filesystem command returns",
+    "Check actual leaf results and total expected leaves, especially int64 prerequisite",
+    "Separate historical run-time source hash evidence from present byte identity",
+    "Do not treat read02 partial-byte proof or codec qualification as complete"
+  ],
+  "superseded_by": "experiments/shim-c-v2/stage3-proof-next/root-review/byte19-complete/DEPENDENCY-AUDIT.json"
+}

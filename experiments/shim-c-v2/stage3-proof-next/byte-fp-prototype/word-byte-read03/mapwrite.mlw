@@ -1,0 +1,27 @@
+module MapWrite4
+  use int.Int
+  use map.Map as M
+
+  let lemma checked_four_sets (b:M.map int int) (o v0 v1 v2 v3:int)
+    ensures { let b3 = M.set b (o+3) v3 in
+              let b2 = M.set b3 (o+2) v2 in
+              let b1 = M.set b2 (o+1) v1 in
+              let b0 = M.set b1 o v0 in
+              M.get b0 o = v0 /\ M.get b0 (o+1) = v1 /\
+              M.get b0 (o+2) = v2 /\ M.get b0 (o+3) = v3 }
+  = let b3 = pure { M.set b (o+3) v3 } in
+    assert { M.get b3 (o+3) = v3 };
+    let b2 = pure { M.set b3 (o+2) v2 } in
+    assert { M.get b2 (o+2) = v2 };
+    assert { M.get b2 (o+3) = M.get b3 (o+3) };
+    let b1 = pure { M.set b2 (o+1) v1 } in
+    assert { M.get b1 (o+1) = v1 };
+    assert { M.get b1 (o+2) = M.get b2 (o+2) };
+    assert { M.get b1 (o+3) = M.get b2 (o+3) };
+    let b0 = pure { M.set b1 o v0 } in
+    assert { M.get b0 o = v0 };
+    assert { M.get b0 (o+1) = M.get b1 (o+1) };
+    assert { M.get b0 (o+2) = M.get b1 (o+2) };
+    assert { M.get b0 (o+3) = M.get b1 (o+3) };
+    ()
+end

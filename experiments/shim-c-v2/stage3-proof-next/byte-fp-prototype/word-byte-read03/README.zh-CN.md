@@ -1,0 +1,1 @@
+此候选将四次 map.set 的读取事实单独放入仅依赖 int/map 的真实 lemma body，再由原 WordBytes32 调用。无新 requires/axiom。原 read02 四个 postcondition 不变。必须分别验证 mapwrite 的全部 body/assert/post 与 wordbytes 的全部 body，不能只看主结论。当前仅 typecheck，不是 solver 通过；root-commands.json 为建议完整小组命令。主 agent 独立 read06 若已解决问题，不需重复求解。

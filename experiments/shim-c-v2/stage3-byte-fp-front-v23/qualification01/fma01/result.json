@@ -1,0 +1,144 @@
+{
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/install/bin/frama-c",
+    "-load-module",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/observer-new/observer.cmxs",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-model",
+    "Bytes+float",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/why3-02.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "tip,z3,cvc5",
+    "-wp-timeout",
+    "30",
+    "-wp-memlimit",
+    "2048",
+    "-wp-par",
+    "4",
+    "-wp-cache",
+    "none",
+    "-wp-driver",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/bytefloat.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver",
+    "-cpp-command",
+    "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.",
+    "-cpp-frama-c-compliant",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma01/.build/session",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma01/raw.json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma.c"
+  ],
+  "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23",
+  "input_snapshot_sha256": "cc19dae5f55a4ba32c304455b3ade7d285c49a3d9ac27e47e1ed530a2e48852f",
+  "runner_sha256": "c30262a6f3905db4b8028fee5976a27004dc7638596588d15194e6b534955a1c",
+  "budget_seconds": 400,
+  "qualification": false,
+  "exit": 0,
+  "seconds": 35.707,
+  "raw_total": 66,
+  "raw_passed": 62,
+  "inputs_unchanged": true,
+  "pending": [
+    {
+      "goal": "bytes_bytefloat_fma_false_control_ensures",
+      "property": "false_control_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma.c",
+      "line": 4,
+      "function": "false_control",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_wrong_fused_ensures",
+      "property": "wrong_fused_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma.c",
+      "line": 8,
+      "function": "wrong_fused",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00141,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_wrong_nan_ensures",
+      "property": "wrong_nan_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma.c",
+      "line": 12,
+      "function": "wrong_nan",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00141,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_wrong_zero_ensures",
+      "property": "wrong_zero_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v23/qualification01/fma.c",
+      "line": 22,
+      "function": "wrong_zero",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00135,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ]
+}

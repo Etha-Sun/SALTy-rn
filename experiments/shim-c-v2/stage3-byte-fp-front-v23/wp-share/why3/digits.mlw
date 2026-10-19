@@ -1,0 +1,22 @@
+module ByteDigits32
+ use int.Int
+ use int.ComputerDivision as CD
+ let lemma checked_byte_digits32 (b0 b1 b2 b3:int) : unit
+ ensures { 0<=b0<=255 /\ 0<=b1<=255 /\ 0<=b2<=255 /\ 0<=b3<=255 ->
+   let n=b0+256*b1+65536*b2+16777216*b3 in
+   CD.mod n 256=b0 /\ CD.mod (CD.div n 256) 256=b1 /\
+   CD.mod (CD.div n 65536) 256=b2 /\ CD.mod (CD.div n 16777216) 256=b3 }
+ = if 0<=b0 && b0<=255 && 0<=b1 && b1<=255 && 0<=b2 && b2<=255 && 0<=b3 && b3<=255 then begin
+    let n=b0+256*b1+65536*b2+16777216*b3 in
+    assert { 0<=n };
+    assert { 0<=b0+256*b1<65536 };
+    assert { 0<=b0+256*b1+65536*b2<16777216 };
+    assert { CD.div n 256=b1+256*b2+65536*b3 };
+    assert { CD.div n 65536=b2+256*b3 };
+    assert { CD.div n 16777216=b3 };
+    assert { CD.mod n 256=b0 };
+    assert { CD.mod (b1+256*b2+65536*b3) 256=b1 };
+    assert { CD.mod (b2+256*b3) 256=b2 };
+    assert { CD.mod b3 256=b3 };
+   end
+end

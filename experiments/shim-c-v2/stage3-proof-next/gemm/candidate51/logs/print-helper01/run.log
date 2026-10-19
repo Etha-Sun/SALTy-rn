@@ -1,0 +1,395 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "none", "-wp-print", "-wp-par", "2", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate51/logs/print-helper01/.build/session", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate51/logs/print-helper01/raw.json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate51/.build/diagnostic01/annotated/unit.c", "-wp-fct", "vld1_f32,vdupq_lane_f32", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate51/.build/diagnostic01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vld1_f32
+[rte:annot] annotating function vdupq_lane_f32
+
+Goal Post-condition ("fp_memory.c", line 9) in 'vld1_f32':
+Let a = global(L_r_6471).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 2).
+Let a_2 = shiftfield_F4_lane(a).
+Let a_3 = Mptr_0[global(P_p_6467)].
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 1).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a_3, 0), 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+      P_ext_same(a_1[shift_float32(a_2, i_1)], a_1[shift_float32(a_3, i_1)]))).
+  (* Else *)
+  Have: 2 <= v.
+}
+Prove: P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]).
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_a_load_fixed_0' in 'vld1_f32':
+Let a = global(L_r_6471).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 2).
+Let a_2 = shiftfield_F4_lane(a).
+Let a_3 = Mptr_0[global(P_p_6467)].
+Let a_4 = shift_float32(a_3, 0).
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_4, 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+      P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]))).
+  (* Else *)
+  Have: 2 <= v.
+}
+Prove: P_ext_same(Mf32_undef_0[shift_float32(a_2, 0)], a_1[a_4]).
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_a_load_fixed_1' in 'vld1_f32':
+Let a = global(L_r_6471).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 2).
+Let a_2 = shiftfield_F4_lane(a).
+Let a_3 = Mptr_0[global(P_p_6467)].
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a_3, 0), 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+      P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]))).
+  (* Else *)
+  Have: 2 <= v.
+}
+Prove: P_ext_same(Mf32_undef_0[shift_float32(a_2, 1)],
+         a_1[shift_float32(a_3, 1)]).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("fp_memory.c", line 11):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("fp_memory.c", line 11):
+Let a = Mptr_0[global(P_p_6467)].
+Let a_1 = global(L_r_6471).
+Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 2).
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a, 0), 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+      P_ext_same(a_2[shift_float32(shiftfield_F4_lane(a_1), i)],
+        a_2[shift_float32(a, i)]))).
+  (* Then *)
+  Have: v <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0[P_p_6467 <- 1][L_r_6471 <- 2][L_i_6472 <- 1],
+          shift_float32(a, v), 1).
+}
+Prove: to_uint64(1 + v) <= 2.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("fp_memory.c", line 11):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("fp_memory.c", line 11):
+Let x = to_uint64(1 + v).
+Let a = Mptr_0[global(P_p_6467)].
+Let a_1 = shift_float32(a, v).
+Let a_2 = global(L_r_6471).
+Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, 2).
+Let a_4 = shiftfield_F4_lane(a_2).
+Let a_5 = a_3[shift_float32(a_4, v) <- a_3[a_1]].
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a, 0), 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+      P_ext_same(a_3[shift_float32(a_4, i_1)], a_3[shift_float32(a, i_1)]))).
+  (* Then *)
+  Have: v <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0[P_p_6467 <- 1][L_r_6471 <- 2][L_i_6472 <- 1], a_1,
+          1).
+  (* Invariant *)
+  Have: x <= 2.
+}
+Prove: P_ext_same(a_5[shift_float32(a_4, i)], a_5[shift_float32(a, i)]).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("fp_memory.c", line 12):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("fp_memory.c", line 12):
+Let a = global(L_r_6471).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 2).
+Let a_2 = Mptr_0[global(P_p_6467)].
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a_2, 0), 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+      P_ext_same(a_1[shift_float32(shiftfield_F4_lane(a), i)],
+        a_1[shift_float32(a_2, i)]))).
+  (* Then *)
+  Have: v <= 1.
+}
+Prove: valid_rd(Malloc_0[P_p_6467 <- 1][L_r_6471 <- 2][L_i_6472 <- 1],
+         shift_float32(a_2, v), 1).
+
+------------------------------------------------------------
+
+Goal Loop assigns ("fp_memory.c", line 11) (1/2):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("fp_memory.c", line 11) (2/2):
+Effect at line 12
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vld1_f32':
+Effect at line 12
+Assume {
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(Mptr_0[global(P_p_6467)], 0), 2).
+}
+Prove: invalid(Malloc_0, global(L_i_6472), 1) /\
+    invalid(Malloc_0, global(L_r_6471), 2).
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("fp_memory.c", line 12):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("fp_memory.c", line 12):
+Let x = to_uint64(1 + v).
+Let a = global(L_r_6471).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 2).
+Let a_2 = shiftfield_F4_lane(a).
+Let a_3 = Mptr_0[global(P_p_6467)].
+Let a_4 = shift_float32(a_3, v).
+Let a_5 = a_1[shift_float32(a_2, v) <- a_1[a_4]].
+Assume {
+  Type: is_uint64(v).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a_3, 0), 2).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 2).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+      P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]))).
+  (* Then *)
+  Have: v <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0[P_p_6467 <- 1][L_r_6471 <- 2][L_i_6472 <- 1], a_4,
+          1).
+  (* Invariant *)
+  Have: x <= 2.
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+      P_ext_same(a_5[shift_float32(a_2, i)], a_5[shift_float32(a_3, i)]))).
+}
+Prove: v < x.
+
+------------------------------------------------------------
+
+Goal Termination-condition (generated by kernel from "fp_memory.c", line 25) in 'vdupq_lane_f32':
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Post-condition ("fp_memory.c", line 24) in 'vdupq_lane_f32':
+Let a = global(L_tmp_6504).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let x = Mint_0[global(P_lane_6494)].
+Let a_2 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6493)), x)].
+Let a_3 = shiftfield_F5_lane(a).
+Assume {
+  Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 3).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x <= 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: P_next_vec4_splat(Load_S5(a, a_1), a_2) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+       P_ext_same(a_1[shift_float32(a_3, i_1)], a_2)))).
+}
+Prove: P_ext_same(a_1[shift_float32(a_3, i)], a_2).
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_dup_lane_aggregate' in 'vdupq_lane_f32':
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_a_dup_fixed_0' in 'vdupq_lane_f32':
+Let a = global(L_tmp_6504).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let x = Mint_0[global(P_lane_6494)].
+Let a_2 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6493)), x)].
+Let a_3 = shiftfield_F5_lane(a).
+Assume {
+  Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x <= 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: P_next_vec4_splat(Load_S5(a, a_1), a_2) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(a_1[shift_float32(a_3, i)], a_2)))).
+}
+Prove: P_ext_same(Mf32_undef_0[shift_float32(a_3, 0)], a_2).
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_a_dup_fixed_1' in 'vdupq_lane_f32':
+Let a = global(L_tmp_6504).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let x = Mint_0[global(P_lane_6494)].
+Let a_2 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6493)), x)].
+Let a_3 = shiftfield_F5_lane(a).
+Assume {
+  Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x <= 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: P_next_vec4_splat(Load_S5(a, a_1), a_2) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(a_1[shift_float32(a_3, i)], a_2)))).
+}
+Prove: P_ext_same(Mf32_undef_0[shift_float32(a_3, 1)], a_2).
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_a_dup_fixed_2' in 'vdupq_lane_f32':
+Let a = global(L_tmp_6504).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let x = Mint_0[global(P_lane_6494)].
+Let a_2 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6493)), x)].
+Let a_3 = shiftfield_F5_lane(a).
+Assume {
+  Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x <= 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: P_next_vec4_splat(Load_S5(a, a_1), a_2) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(a_1[shift_float32(a_3, i)], a_2)))).
+}
+Prove: P_ext_same(Mf32_undef_0[shift_float32(a_3, 2)], a_2).
+
+------------------------------------------------------------
+
+Goal Post-condition 'next_a_dup_fixed_3' in 'vdupq_lane_f32':
+Let a = global(L_tmp_6504).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let x = Mint_0[global(P_lane_6494)].
+Let a_2 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6493)), x)].
+Let a_3 = shiftfield_F5_lane(a).
+Assume {
+  Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x <= 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: P_next_vec4_splat(Load_S5(a, a_1), a_2) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(a_1[shift_float32(a_3, i)], a_2)))).
+}
+Prove: P_ext_same(Mf32_undef_0[shift_float32(a_3, 3)], a_2).
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated by kernel from "fp_memory.c", line 25) in 'vdupq_lane_f32':
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("fp_memory.c", line 25):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("fp_memory.c", line 25):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vdupq_lane_f32' (1/2):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vdupq_lane_f32' (2/2):
+Call Result at line 25
+Let a = global(L_tmp_6504).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let x = Mint_0[global(P_lane_6494)].
+Let a_2 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6493)), x)].
+Assume {
+  Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+  (* Heap *)
+  Type: linked(Malloc_0).
+  (* Pre-condition *)
+  Have: (0 <= x) /\ (x <= 1).
+  (* Call 'vdupq_n_f32' *)
+  Have: P_next_vec4_splat(Load_S5(a, a_1), a_2) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_ext_same(a_1[shift_float32(shiftfield_F5_lane(a), i)], a_2)))).
+}
+Prove: invalid(Malloc_0, a, 4).
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vdupq_lane_f32':
+Prove: true.
+
+------------------------------------------------------------

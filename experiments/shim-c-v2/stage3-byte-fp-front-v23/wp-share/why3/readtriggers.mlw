@@ -1,0 +1,14 @@
+module ReadInverseTrigger32
+ use int.Int
+ use int.ComputerDivision as CD
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use readinverse.ReadInverse32
+ let lemma checked_read_inverse_trigger () : unit
+ ensures { forall m:memory,a:addr [read_uint32 m a]. bytes m ->
+   read_uint8 m a = CD.mod (read_uint32 m a) 256 /\
+   read_uint8 m (shift a 1) = CD.mod (CD.div (read_uint32 m a) 256) 256 /\
+   read_uint8 m (shift a 2) = CD.mod (CD.div (read_uint32 m a) 65536) 256 /\
+   read_uint8 m (shift a 3) = CD.mod (CD.div (read_uint32 m a) 16777216) 256 }
+ = ()
+end

@@ -1,0 +1,17 @@
+module ReadJoin32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_read_join32 (m:memory) (a:addr) : unit
+ ensures { bytes m -> read_uint32 m a = read_uint8 m a + 256*read_uint8 m (shift a 1) + 65536*read_uint8 m (shift a 2) + 16777216*read_uint8 m (shift a 3) }
+ = if pure { bytes m } then begin
+    memory_unsigned32_bytes m a;
+    assert { read_uint8 m a=raw_get m a };
+    assert { read_uint8 m (shift a 1)=raw_get m (shift a 1) };
+    assert { read_uint8 m (shift a 2)=raw_get m (shift a 2) };
+    assert { read_uint8 m (shift a 3)=raw_get m (shift a 3) };
+   end
+ let lemma checked_read_join_trigger () : unit
+ ensures { forall m:memory,a:addr [read_uint32 m a]. bytes m -> read_uint32 m a = read_uint8 m a + 256*read_uint8 m (shift a 1) + 65536*read_uint8 m (shift a 2) + 16777216*read_uint8 m (shift a 3) }
+ = ()
+end

@@ -1,0 +1,10 @@
+module LoadFrame32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.bytefloat.Bytefloat
+ use memoryread.MemoryRead32
+ let lemma checked_decode_frame32 (m:memory) (aw:addr) (ar:addr) (v:int) : unit
+ ensures { separated aw 4 ar 4 -> decode32 (read_uint32 (write_uint32 m aw v) ar) = decode32 (read_uint32 m ar) }
+ = checked_read_frame32 m aw ar v
+end

@@ -1,5 +1,33 @@
 # 第三阶段九项：后续 proof 与独立审核
 
+
+## 最新阶段记录（ROOT05）
+
+仅原九项，新增整核仍 **0/9**，无新kernel反例，manifest不变、不push。
+
+- GEMM61扩大组 **85/89**，四个第二轮A输入前件未证；64增加9个真实标量source/dup/transport断言，连同原4个A前件和4个after完整定点 **17/17**，原全部扩大组正复验。62已扩展高四通道真实两轮FMA，仍在补入口/权重关系。完整库存61=**1330**、62=**1404**、64=**1339**，各另36项真实CFG-only；不同版本结果不拼接。
+- DW27原range组3/3保留，全部新增义务及旧assigns扩大closure仍在运行。29新无requires分离helper真实body **2/2**，caller四个base/frame/local/normalized目标 **0/4**；没有关闭权重frame，不把helper绿色作kernel进展。
+- Byte25只保留原SMT已有`Q_memcmp_zero`，完整codec **479/488**：6预设负post和3个真实copy-word目标未证。五组语义控制的pending均精确为预设负post。26新增真实body字节到word组合关系 **6/6**，独立native控制运行中。标准入口/锁独立冻结为未qualified候选，尚未用于任何kernel。
+- SPMM独立实际Typed+raw控制 **39/45**，两负post和四个真实指针转换/步进目标未过。原MemAddr已有valid→statically_allocated及条件逆；不能误称这条事实不存在。现有任务仍需消除`to_uint64(int_of_addr(p))`并连接非零步进，不能借Bytes专用Admit范围补Typed。整数wrap绿色不代表地址桥通过。
+- 65/66是生成器变量/正则错误，均未产生冻结候选或VC；错误记录保留，67修正后独立执行。read-join12第一次是重复Why3 loadpath环境错误，第二次独立runner真实6/6。
+
+后续同轮结果：GEMM67 bias/入口组12/16，4个真实load cut通过、4个bias_ref仍未证。DW27 closure预算1800秒结束且无最终raw；不能拼入早先3/3。Byte26 codec仍479/488，memory从31/34退为30/34（positive_loop不变量超时），不采纳、不资格认证。audit20复核140候选、30169锁条目，原C/spec及requires保持。
+
+逐项原始结果与SHA见 `PROGRESS-ROOT05.json`。资格控制、局部证明、完整库存与整核验收严格分开。
+
+## 最新阶段记录（ROOT04）
+
+仍只处理原九项，新增整核 **0/9**；原C、shim、spec、wrapper和旧模型/锁/checker未改，manifest SHA保持，禁止push。
+
+- GEMM56新增真实body结果组合helper **2/2**，首lane调用关系 **6/6**。59扩展第一轮四lane为 **23/24**，唯一剩A lane3输入关系；四条after仅在全部前件债务下成立。61增加无requires的真实body共同值transport **2/2**，a0/ground/a3/after3定点 **4/4**，扩大组仍进行中。完整库存59为 **1307**，60为 **1327**（另34 CFG）；60新增四个第二轮snapshot，库存差分只有20新cut，没有遗漏新增assigns/RTE。
+- DW24新增索引5项均过，局部 **6/8**。27将range策略精确匹配到目标左lane，自由变量真实被选中；prefix保持与all-lane组 **3/3**。两个脚本各含上下边界和0–3全部六支且全Valid，完整closure扩大复验进行中。26宽泛匹配选中无关常量，600秒超时无raw，失败保留。
+- Byte新read逆向body **11+12**项、whole-read触发body **1**项、异对象copy-frame body **3**项均通过。旧依赖14组重新记录实际solver输入，**30/30**且SHA前后不变。
+- Byte22实际已有read_uint32 ground实例，但可选Z3裁剪丢了原shift_uint32与ComputerDivision约束，局部27/30；23只恢复保留原有三个断言，partial-frame完整 **30/30**。旧21 codec完整 **463/488**：6个预期负post加19项真实未证，不是资格通过。23完整正反控制及24新copy-frame控制仍进行中；所有Bytes版本仍未qualified、未用于kernel。
+- SPMM仍缺整数地址stride与typed偏移关系。新root04边界文档列出独立修复应证明的布局/回绕/别名/原域义务；没有新反例，不以超时宣称kernel错误。
+
+134个候选通过原C/token/spec与无新requires审核，30169个外部锁条目核对。准确结果路径和SHA见 `PROGRESS-ROOT04.json`；诊断、不同候选及进行中结果不拼成整核通过。
+
+
 ## 最新阶段记录（ROOT03）
 
 仍 **0/9 新整核通过**，没有新 kernel 反例，manifest 未改，未 push。以下更新覆盖下文较旧局部计数；历史日志保留。
