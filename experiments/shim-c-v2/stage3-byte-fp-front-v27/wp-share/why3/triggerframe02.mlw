@@ -1,0 +1,12 @@
+module LoadFrameTrigger32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use loadframe.LoadFrame32
+ let lemma checked_decode_frame32_trigger () : unit
+ ensures { forall m:memory,aw:addr,ar:addr,v:int [read_uint32 (write_uint32 m aw v) ar].
+ separated aw 4 ar 4 -> decode32 (read_uint32 (write_uint32 m aw v) ar) = decode32 (read_uint32 m ar) }
+ = ()
+end

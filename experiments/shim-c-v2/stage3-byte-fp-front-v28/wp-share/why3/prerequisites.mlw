@@ -1,0 +1,39 @@
+module BVInverse32
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use nativebv.NativeBV
+  use ieee_float.Float32 as FP
+  let lemma bv_inverse32 (b:b32) (s:b32) : unit
+    ensures { not FP.is_nan (decode_bv32 b) -> encode_bv32 (decode_bv32 b) s = b }
+  = ()
+end
+
+module IntRoundtrip32
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use nativebv.NativeBV
+  use ieee_float.Float32 as FP
+  let lemma int_roundtrip32 (n:int) : unit
+    ensures { 0 <= n < 4294967296 -> to_uint32 (of_int32 n) = n }
+  = ()
+end
+
+module BVInverse64
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use nativebv.NativeBV
+  use ieee_float.Float64 as FP
+  let lemma bv_inverse64 (b:b64) (s:b64) : unit
+    ensures { not FP.is_nan (decode_bv64 b) -> encode_bv64 (decode_bv64 b) s = b }
+  = ()
+end
+
+module IntRoundtrip64
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use nativebv.NativeBV
+  use ieee_float.Float64 as FP
+  let lemma int_roundtrip64 (n:int) : unit
+    ensures { 0 <= n < 18446744073709551616 -> to_uint64 (of_int64 n) = n }
+  = ()
+end

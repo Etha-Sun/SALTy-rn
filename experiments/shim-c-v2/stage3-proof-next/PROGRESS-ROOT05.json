@@ -234,6 +234,77 @@
       "pending_properties": null,
       "exit": 124,
       "whole_kernel_accepted": false
+    },
+    {
+      "result": "experiments/shim-c-v2/stage3-proof-next/gemm/candidate64/logs/full-focus-root01/result.json",
+      "sha256": "62fd0c0221331491abd01639c7d8614e42ab53a3ecff55141d8c7802a2226ea5",
+      "kind": "kernel-diagnostic",
+      "passed": 98,
+      "total": 98,
+      "inputs_unchanged": true,
+      "pending_properties": [],
+      "whole_kernel_accepted": false
+    },
+    {
+      "result": "experiments/shim-c-v2/stage3-proof-next/gemm/candidate62/logs/high-root01/result.json",
+      "sha256": "734442831685c85caa6dd33499dfe4c9396b90f583c12283552574d806a6033c",
+      "kind": "kernel-diagnostic",
+      "passed": 60,
+      "total": 76,
+      "inputs_unchanged": true,
+      "pending_properties": [
+        "equivalent_loop_invariant_next_high_inv_0",
+        "equivalent_loop_invariant_next_high_inv_1",
+        "equivalent_loop_invariant_next_high_inv_2",
+        "equivalent_loop_invariant_next_high_inv_3",
+        "equivalent_assert_next_high_pre_w0_0",
+        "equivalent_assert_next_high_pre_w0_1",
+        "equivalent_assert_next_high_pre_w0_2",
+        "equivalent_assert_next_high_pre_w0_3",
+        "equivalent_assert_next_high_pre_w1_0",
+        "equivalent_assert_next_high_pre_w1_1",
+        "equivalent_assert_next_high_pre_w1_2",
+        "equivalent_assert_next_high_pre_w1_3",
+        "equivalent_assert_next_high_after1_0",
+        "equivalent_assert_next_high_after1_1",
+        "equivalent_assert_next_high_after1_2",
+        "equivalent_assert_next_high_after1_3"
+      ],
+      "whole_kernel_accepted": false
+    },
+    {
+      "result": "experiments/shim-c-v2/stage3-proof-next/gemm/candidate68/logs/bias-root01/result.json",
+      "sha256": "85c57c6bb57adf1eb917bcbecd65aa401f9b12ded1407dd68e516f63d1c8cf94",
+      "kind": "kernel-diagnostic",
+      "passed": 26,
+      "total": 32,
+      "inputs_unchanged": true,
+      "pending_properties": [
+        "equivalent_assert_next_high_bias_weight_0",
+        "equivalent_assert_next_high_bias_weight_1",
+        "equivalent_assert_next_high_bias_weight_2",
+        "equivalent_assert_next_high_bias_weight_3",
+        "equivalent_assert_next_high_bias_seed_2",
+        "equivalent_assert_next_high_bias_seed_3"
+      ],
+      "whole_kernel_accepted": false
+    },
+    {
+      "result": "experiments/shim-c-v2/stage3-byte-fp-front-v27/qualification01/codec-root01/result.json",
+      "sha256": "4e09512905e2a2e0b12f369cd8b5d20373c6c050df9053fab596534de4c3f534",
+      "kind": "model-control",
+      "passed": 482,
+      "total": 488,
+      "inputs_unchanged": true,
+      "pending_properties": [
+        "abstract_negative_fixed_payload_ensures",
+        "abstract_negative_shared_seed_ensures",
+        "negative_false_ensures",
+        "negative_nan_self_equal_ensures",
+        "negative_wrong_finite_ensures",
+        "negative_wrong_zero_bits_ensures"
+      ],
+      "whole_kernel_accepted": false
     }
   ],
   "complete_inventory": {
@@ -241,7 +312,8 @@
     "candidate62": 1404,
     "candidate64": 1339,
     "cfg_only_each": 36,
-    "note": "Full generation only; no logical obligations removed just because trivial or terminate/exit suffix."
+    "note": "Full generation only; no logical obligations removed just because trivial or terminate/exit suffix.",
+    "candidate68": 1441
   },
   "byte_read_join_body": {
     "result": "byte-fp-prototype/read-join12/body-root02/result.json",
@@ -250,22 +322,22 @@
   },
   "byte_standard_candidates": {
     "v25": "UNQUALIFIED, three positive codec obligations pending; no standard replay performed",
-    "v26": "UNQUALIFIED: codec479/488 still three true copy-word pending; memory30/34 has positive_loop invariant regression, all old controls preserved"
+    "v26": "UNQUALIFIED: codec479/488 still three true copy-word pending; memory30/34 has positive_loop invariant regression, all old controls preserved",
+    "v27": "UNQUALIFIED pending strict v7 known-case replay. Codec482/488, only six expected false posts; all five controls exact, observer semantic rows identical."
   },
   "spmm_boundary": "Integer wrap/relative offset facts are separate from pointer conversion. Existing MemAddr contains valid_rd => statically_allocated and conditional inverse; Typed raw uint64 encoding range/affine connection is still unproved. Bytes-specific Admit range must not be transplanted. No kernel counterexample.",
   "in_progress": [
-    "GEMM64 complete expanded low-lane focus",
-    "GEMM62 high four lanes",
-    "Byte27 signed-byte word bridge native codec controls"
+    "Byte27 strict v7 f32-vadd replay"
   ],
   "pushed": false,
-  "candidate_count": 140,
-  "source_audit": "root-review/audit20.json",
-  "contract_audit": "root-review/audit20-contracts.json",
+  "candidate_count": 141,
+  "source_audit": "root-review/audit21.json",
+  "contract_audit": "root-review/audit21-contracts.json",
   "locked_entries": 30169,
   "byte_signed_join_body": {
     "result": "byte-fp-prototype/read-signed-join13/body-root01/result.json",
     "valid": 5,
     "qualified": false
-  }
+  },
+  "local_checkpoint": "691d6876"
 }
