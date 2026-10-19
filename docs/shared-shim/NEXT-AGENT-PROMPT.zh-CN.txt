@@ -1,0 +1,28 @@
+你接手我的仓库 https://github.com/Etha-Sun/SALTy-rn ，使用 feat/shim-c 最新提交。请直接推进工作，用中文沟通。
+
+先读 AGENTS.md 顶部当前分支说明，再完整读 docs/shared-shim/HANDOFF.zh-CN.md。这份交接文档包含目标、目录组织、环境恢复、复验命令、剩余26项卡点、修改边界和代码倾向。根目录 SERVER_HANDOFF.zh-CN.md 的 Sail/Coq 是另一条历史路线，不要切过去；Arcadia-Y:verification 是最初参考分支，不是本次推送目标。
+
+当前结果基线 be5a536：原4项整数已收录；原隔离的7项浮点在修复后的独立模型下全部完整通过、打包canonical复验通过，合计3970/3970；剩26项实际补过proof并完整尝试，新增整核通过0，GEMM尚未通过，另3项缺target。本轮无新kernel反例。先看 experiments/shim-c-v2/REPORT.zh-CN.md、RESULTS.json、MODEL-AND-TCB.zh-CN.txt、integer/STATUS.json 和 complex-v3-next/FINAL-STATUS.zh-CN.md，不要把旧绿色记录算当前结果。
+
+目标：共享普通C shim + 简单family模板生成spec.h和wrapper；先冻结原C/shim/spec/wrapper，再由agent补proof，实际验证原NEON与RVV程序输出等价。最终公开功能目标就是输出相等。文件分开neon.c、rvv.c、spec.h、harness.c，每kernel一个proof.patch；辅助ghost/helper放patch里。额外proof helper文件确有必要才解释提出。
+
+环境优先复用同服务器worktree：
+/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence
+真修复版Frama-C经 experiments/shim-c-v2/model-front/frama-c.py 调用。Frama-C33/OCaml4.14.2/Why3 1.8.2/Z3 4.12.5/CVC5 1.2.1；详情见交接和 ENVIRONMENT-HANDOFF.json。编译器、opam、wp-share、求解器不在Git；配置/锁包含绝对路径和binary SHA。新机器不能仅clone+装官方Frama-C就声称恢复。保留旧锁，独立重建/换路径后新建环境版本、跑正反语义控制、冻结新manifest再实际复验。没有从零一键bootstrap已验证的承诺。不要修改全局环境或要求我提供密钥。
+
+先检查branch/status/remote、已有文件与资源，核对冻结SHA；环境恢复后只跑一个已通过小case，使用全新run名和绝对--framac路径，保留canonical日志。先证明环境可用，再继续剩余kernel，不要直接并发重跑33项。
+
+接下来优先qs8-f32-vcvt（剩11项）、qu8-f32-vcvt（剩8项）：全部intrinsic已通过，补kernel/wrapper关系后必须完整检查；再考虑f32-vcmul（helper全过，主程序41项）和共享uintptr/float位表示/struct packing桥，之后推进GEMM。可以高并发agent，但各自独立候选目录/日志、固定模型、有限内存和时间预算，主agent独立验收。
+
+绝不能：
+1. 原地改已冻结实现、shim、公共spec/wrapper或旧模型/锁/checker；改SHA掩盖变化；覆盖旧证据。
+2. 放宽前提/加finite或非NaN限制、弱化输出关系、改普通C、加入axiom/assume/admit、无body外部ghost合同或跳过实际callee/body。
+3. 用已知不健全的Bytes+float模型或Real抽象获得绿灯；整数Byte必须保持编译器级拒绝float codec。
+4. 把局部helper/定点VC通过、仅global6/6、超时0/0或历史记录说成整核通过。
+5. 偷换FMA为普通乘加、改变浮点观察或固定VL范围；把未证直接说成kernel有bug。
+
+可以在新独立版本补共享shim/简单模板、证明注释/循环不变量/有body且检查的ghost/checked策略；真正工具缺陷可独立修复并先审计/正反控制；真kernel反例可保留原target再修新target，重新冻结再证。已有v7只允许在真实kernel定义前补需body验证的ensures，不准加新requires/assigns/terminates/wrapper合同；integer原型条件不齐，不能照搬v7偷偷加前提。
+
+验收必须同时满足complete=true、所有raw VC通过、pending空、source_guard/unchanged/model_inputs_unchanged/model_control.accepted为true、missing_body_ensures/global_lemmas空，原C/token/spec保持、proof及模型SHA核对，并保留全部日志。通过只是在声明C/shim模型、原合法域、固定VLEN128和RNE下的输出关系；ISA→shim和工具链仍在TCB。浮点是数值相等或双方NaN，不比较零符号位/payload/flags。
+
+代码保持小、简单、局部，不建复杂生成器、不夹带重构、不堆无用测试。保持旧版本；发现真kernel错误时独立保留原版和修复版。请先简短报告HEAD、环境状态、理解的范围和第一个具体任务，然后动手；完成阶段提交相关源码/证据/文档并更新逐项状态。我已授权推送本分支到自己的origin，禁止force-push或覆盖无关用户工作。

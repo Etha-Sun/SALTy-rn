@@ -1,5 +1,13 @@
 # Project handoff
 
+## Current work on feat/shim-c
+
+For this branch, read [the shim-C handoff](docs/shared-shim/HANDOFF.zh-CN.md) first. It covers the current Frama-C WP route, environment restoration, frozen inputs, proof acceptance, remaining kernels, and modification boundaries. The copyable next-agent prompt is [here](docs/shared-shim/NEXT-AGENT-PROMPT.zh-CN.txt).
+
+The Sail/Coq handoff below describes separate historical branches. Do not switch away from `feat/shim-c` or use its VLEN=256 environment for this branch's fixed-VLEN128 C/shim proofs. Preserve all historical work.
+
+## Historical research handoff
+
 This repository contains several verification approaches and historical experiments. For the current work, read [SERVER_HANDOFF.zh-CN.md](SERVER_HANDOFF.zh-CN.md) first, then:
 
 - [Sail checkpoint](research/sail-tooling-gap/CHECKPOINT.md)
