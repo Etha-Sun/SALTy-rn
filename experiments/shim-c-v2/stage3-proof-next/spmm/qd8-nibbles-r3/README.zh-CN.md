@@ -1,0 +1,3 @@
+r3仅把无requires byte helper空body替换为完整uint8 switch：256个case各一条命名assert验证两个原整数关系，之后return；default含必须证明false的覆盖义务。原两post保留。原r2失败及proof不改。代码由简单for range(256)生成，不扩kernel输入长度。
+
+sourceguard通过；case-coverage列出0..255恰各一次。固定observer none完整786goal正常退出（包括编译器为大量return生成的frame/exit义务），不能只验256assert或两个post。完整闭包qd8_byte_parts,qd8_nibble_scalar；执行器沿r2全输入前后核验，strategy仍为普通原proof策略，byte helper旧bitwise绑定已移除。none结果不等于solver通过。

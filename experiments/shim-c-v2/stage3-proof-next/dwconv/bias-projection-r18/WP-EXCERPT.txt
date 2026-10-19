@@ -1,0 +1,42 @@
+
+Goal Assertion 'next_prestate_loaded0' ("rvv.c", line 88):
+Let a = global(L_vacc_9221).
+Let a_1 = Mf32_0[shift_float32(shiftfield_F6_lane(a), 0)].
+Let a_2 = Load_S6(a, Mf32_70).
+Let a_3 = global(L_w_9214).
+Let a_4 = Mptr_0[a_3].
+Let a_5 = Mf32_1[shift_float32(a_4, 0)].
+Let a_6 = global(L_vl_9218).
+Let x = Mint_54[a_6].
+Let a_7 = Mptr_47[a_3].
+Let a_8 = shift_float32(a_7, 0).
+Let a_9 = global(L_W0_9206).
+Let a_10 = global(L_c_9213).
+Let x_1 = Mint_54[a_10].
+  (* Assertion 'stage3_vl' *)
+  Have: (x = (if (x_1 <= 3) then x_1 else 4)) /\ (0 < x) /\ (x <= x_1).
+  (* Assertion 'stage3_store_range' *)
+  Have: (x_1 <= x_2) /\ (x <= x_1).
+  (* Assertion 'next_bias_address' *)
+  Have: a_4 = shift_float32(Mptr_0[a_9], 16 * ((x_2 - x_1) / 4)).
+  Have: (Mf32_68 = Mf32_1) /\ (Mptr_0 = Mptr_47).
+  Have: (Init_113 = Init_114) /\ (Malloc_48 = Malloc_49) /\
+      (Mf32_68 = Mf32_69) /\ (Mint_11 = Mint_10).
+  (* Call '__riscv_vle32_v_f32m4' *)
+  Have: (a_2 = __riscv_vle32_v_f32m4_0) /\ (x <= 16) /\
+      valid_rd(Malloc_48, a_8, x) /\
+      (((0 < x) -> P_next_m4_bias0(__riscv_vle32_v_f32m4_0, Mf32_69[a_8]))) /\
+      (forall i_27 : Z. ((0 <= i_27) -> ((i_27 < x) ->
+       P_ext_same((__riscv_vle32_v_f32m4_0.F6_lane)[i_27],
+         Mf32_69[shift_float32(a_7, i_27)])))).
+  (* Return Effects *)
+  Have: (memcpy(Init_114, a, Init_undef_23, a, 16) = Init_115) /\
+      (memcpy(Mf32_69, a, Mf32_undef_23, a, 16) = Mf32_70).
+  (* Assertion 'next_predicate_loaded0' *)
+  Have: P_next_m4_bias0(a_2, a_5).
+  Have: (Mf32_70 = Mf32_0) /\ (Mint_10 = Mint_9).
+  (* Call 'next_m4_project' *)
+  Have: P_ext_same(a_1, L_next_m4_lane0(Load_S6(a, Mf32_0))).
+}
+Prove: P_ext_same(a_1, a_5).
+

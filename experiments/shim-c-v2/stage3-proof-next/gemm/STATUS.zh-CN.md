@@ -90,3 +90,7 @@ candidate07 从05派生：增加标量 t 范围及固定4lane具体索引/读取
 33完整无solver库存1238=1226body+12globals，另CFG32；两阶段正常exit0、final计数吻合、SHA保持。相较19精确新增9项（seed、4first、4full），删A aggregate 1项；无额外隐藏ghost初始化/assigns/RTE新增项。全部新增9项均在scalar-chain01的11项验收集合中，剩2项是原acc_before_0/acc_first。
 
 33 root实际正常8/11，未证seed、原acc_before_0、原acc_first。8个frame在含未证seed的背景下通过，不算独立链闭合。34以4项原vacc lane/gacc ground替换seed，完整库存1241（1229body+12global，CFG32）；新增12项全在14项focus中。35用4个真实body、无requires ghost投影helper替代裸ghost读取，typed predicate全部有定义，helper先验。36从33删除未证seed，独立复验8frame，避免依赖未证新假设；静态/none已通过，待root求解。
+
+34 scalar-ground01 正常9/14，未证ground_1/2/3与原acc_before_0/acc_first，只有ground_0闭合。35 projection-helper01真实body完整8/8，调用方新增8个assigns分支尚需验收；完整库存1254=1242body+12globals、CFG40。36 scalar-frames01 删除seed后实际完整8/8、SHA不变：原31独立lane0第一次frame扩展为4lane第一次与整段load/dup链frame，仍不包含入口gacc与FMA步关系。36完整库存1237=1225body+12globals、CFG32。
+
+35 projection-caller01 为300秒退出124、无完整raw、SHA真。同selector完整none库存571（11关系目标+560 assigns），覆盖新增caller所属全部property组。部分stream为5valid/6nonvalid/560无结果，seed及四first frame均timeout；不能采用为改善，不与helper8/8相加。37退回33裸scalar路线，仅新增完整定义的typed-record/scalar四lane投影predicate与其自身cut；先投影cut+seed二项实证，再决定是否扩大。

@@ -1,0 +1,14 @@
+{
+  "source_guard": true,
+  "proof_sha256": "436eea23d07203e812193e2897b730afa8fbc18c999304543afe30d9da2c1f40",
+  "changes": "Add no-requires actual empty ghost next_m4_transitive(vfloat32m4_t v,float y), assigns nothing; ensures forall float x: next_m4_bias0(v,x) && ext_same(y,next_m4_lane0(v)) ==> ext_same(y,x). Call with vacc,vacc.lane[0] immediately after next_m4_project.",
+  "reason_for_quantified_x": "The original source value is a prestate ACSL term. Quantification permits direct instantiation without postheap ghost snapshot reads or illegal ACSL at-expression in C argument. No new domain premise.",
+  "old_goals_retained": [
+    "next_predicate_loaded0",
+    "next_prestate_loaded0",
+    "next_bias_local",
+    "next_bias_normalized"
+  ],
+  "complete": false,
+  "worker_solver_run": false
+}

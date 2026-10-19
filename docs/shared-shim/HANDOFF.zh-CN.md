@@ -1,6 +1,9 @@
+<!-- ROOT02 current progress: supersedes earlier partial counts below. -->
+最新局部进展见 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT02.json`：QD8 r7真实shift闭包64/64；IGEMM r3扩展组26/26，完整771项尝试进行中；DWCONV19 helper2/2、GEMM40选定10/24。仍0/9整核通过，manifest未改，不push。模型Bytes实验尚未认证，不能用于kernel。
+
 ## 最新续作提示
 
-截至本次续作，新增整核仍0/9，禁止push。新bitwised v2的QD8真实round helper调用组18/18与正反控制已闭合，正式单一f32-vadd工具回归已571/571、全部严格验收成立，独立QUALIFICATION-ROOT01.json允许固定新Typed/IEEE版本继续九项，原canonical模型不变。Bytes v6已证64位字节读取引理让zero42/42、numeric82/82，其他正控制247/248仍有partial-byte-frame，额外内存控制尚未全过；未资格认证，未用于kernel。CONV r4唯一完整尝试正常逻辑分母2328，等待最终raw。最新细节与失败均见stage3-proof-next/REPORT.zh-CN.md，不采用下文较旧局部计数作为最新状态。
+截至本次续作，新增整核仍0/9，禁止push。新bitwised v2的QD8真实round helper调用组18/18与正反控制已闭合，正式单一f32-vadd工具回归已571/571、全部严格验收成立，独立QUALIFICATION-ROOT01.json允许固定新Typed/IEEE版本继续九项，原canonical模型不变。QD8 nibble算术helper完整784/784，但真实bits/shift/and为42/47，caller尚未闭合；GEMM36无未证seed的八frame8/8，39等价展开不变量后相关组9/23，完整分母1243；DW17投影helper2/2、真实loader13/13，但caller2/6。CONV r4完整2328义务尝试3500秒缺raw：493通过、68已尝试未证、1767无完成结果；另轮globals6/6不拼入full。所有Bytes版本仍未资格认证、未用于kernel，内存控制最好28/34。最新细节与失败均见stage3-proof-next/REPORT.zh-CN.md，不采用下文较旧局部计数作为最新状态。
 
 ## 2026-10-19 后续独立审核补充
 

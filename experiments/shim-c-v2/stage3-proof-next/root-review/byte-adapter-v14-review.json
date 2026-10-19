@@ -1,0 +1,30 @@
+{
+  "reviewer": "solvers",
+  "scope": "read-only adapter and preparation script, not full model qualification",
+  "model_qualified": false,
+  "core_argument": "For a single valid query, deleting whole assertions strengthens the proof obligation: UNSAT of the reduced conjunction implies UNSAT of the original. Remaining terms are not rewritten.",
+  "findings": [
+    {
+      "severity": "must_fix_before_qualification",
+      "issue": "Unrecognized top-level commands are not actually rejected despite docstring; echo/output-producing commands pass through, while solver stdout is forwarded unchanged.",
+      "evidence": "reduce_task has only a blacklist, no whitelist. Why3 call_provers.ml analyse_result gives Answer Valid priority (line261), even among multiple answers. Thus actual result must be isolated from arbitrary output; generated fixed Why3 input narrows exposure but does not implement claimed general fail-closed guarantee.",
+      "recommendation": "New version whitelist actual generated commands and strictly validate solver exit/output. Preserve v14."
+    },
+    {
+      "severity": "evidence_integrity",
+      "issue": "Evidence filenames depend only on original SMT hash; parallel invocations with different CLI/timeouts can overwrite stdout/stderr and metadata.",
+      "recommendation": "Unique per-invocation directory, include argv, solver SHA, exit code and output hashes."
+    }
+  ],
+  "other_limits": [
+    "Substring detection may remove more assertions than semantically necessary, but this only strengthens the task.",
+    "Unsupported occurrence in retained goal/definition rejects conservatively.",
+    "No SMT solver run was performed by reviewer.",
+    "Source/input/output hashes do not by themselves qualify a new FP/BV model."
+  ],
+  "inputs": {
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/supported-assumptions-adapter.py": "821b5dde41700d1bb44e3982e787a289c9bd3729fa9b348012e8d75e43793277",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/byte-fp-prototype/prepare-supported-front-v14.py": "13b8c7756d4f43540a68c76ff84c8842cded8f275efd81e5c1003deb5fa5968f",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/opam/shim-local/.opam-switch/sources/why3.1.8.2/src/driver/call_provers.ml": "2c090733b90b8112600ed4d8d0909c26861a4d754f4ae5e39a3f6f31b9c2ead3"
+  }
+}

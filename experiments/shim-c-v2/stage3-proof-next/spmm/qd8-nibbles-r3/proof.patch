@@ -1,0 +1,858 @@
+--- a/fp_arithmetic.c
++++ b/fp_arithmetic.c
+@@ -1,23 +1,45 @@
+ #include "fp_primitives.h"
++/*@ lemma ext_fma_congruence: \forall float a,b,x,y;
++ ext_same(a,b) ==> ext_same(shim_fma32(x,y,a),shim_fma32(x,y,b)); */
+ 
++/*@ assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
+ float32x4_t vfmaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */ a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); /*@ assert ext_same(a.lane[i],shim_fma32(b.lane[i],c.lane[i],\at(a,Pre).lane[i])); */ }
+   return a;
+ }
+ 
+-float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<2; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<4; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { for(int i=0;i<2;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ assigns errno; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 2-i; */
++for(int i=0;i<2;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+ 
+-float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
+ 
+-float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
+ 
+-float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_sub32(a.lane[j],b.lane[j])); */
++float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
+ 
+-float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];a.lane[i]=a.lane[i]+p;}return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],complex_mul32(b.lane[j],c.lane[j]))); */
++float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),complex_mul32(b.lane[j],c.lane[j]))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];
++ /*@ assert ext_same(p,complex_mul32(b.lane[i],c.lane[i])); */
++ /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */
++ a.lane[i]=a.lane[i]+p;
++ /*@ assert ext_same(a.lane[i],complex_add32(\at(a,Pre).lane[i],complex_mul32(b.lane[i],c.lane[i]))); */}return a; }
+ 
+ float vaddv_f32(float32x2_t a) { return a.lane[0]+a.lane[1]; }
+ 
+--- a/fp_arithmetic_m8.c
++++ b/fp_arithmetic_m8.c
+@@ -1,11 +1,21 @@
+ #include "fp_primitives.h"
+ 
+-vfloat32m8_t __riscv_vfmul_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b;return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b)); */
++vfloat32m8_t __riscv_vfmul_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b;return a; }
+ 
+-vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
+ 
+-vfloat32m8_t __riscv_vfmul_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++vfloat32m8_t __riscv_vfmul_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
+ 
+-vfloat32m8_t __riscv_vfmacc_vf_f32m8(vfloat32m8_t a,float b,vfloat32m8_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b,c.lane[i],a.lane[i]);return a; }
++/*@ requires vl<=32; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b,c.lane[j],a.lane[j])); */
++vfloat32m8_t __riscv_vfmacc_vf_f32m8(vfloat32m8_t a,float b,vfloat32m8_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b,c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b,c.lane[i],a.lane[i]); return a; }
+ 
+-vfloat32m8_t __riscv_vfmacc_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,vfloat32m8_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ requires vl<=32; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++vfloat32m8_t __riscv_vfmacc_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,vfloat32m8_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+--- a/fp_masks_m8.c
++++ b/fp_masks_m8.c
+@@ -1,9 +1,17 @@
+ #include "fp_primitives.h"
+ 
+-vbool4_t __riscv_vmfgt_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t c,size_t vl) { vbool4_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>c.lane[i];return r; }
++/*@ requires vl<=32;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(\lt_float(c.lane[j],a.lane[j])?1:0); */
++vbool4_t __riscv_vmfgt_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t c,size_t vl) { vbool4_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(c.lane[j],a.lane[j])?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>c.lane[i];return r; }
+ 
+-vbool4_t __riscv_vmfne_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t c,size_t vl) { vbool4_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=c.lane[i];return r; }
++/*@ requires vl<=32;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(!\eq_float(a.lane[j],c.lane[j])?1:0); */
++vbool4_t __riscv_vmfne_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t c,size_t vl) { vbool4_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(!\eq_float(a.lane[j],c.lane[j])?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=c.lane[i];return r; }
+ 
+-vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t c,vbool4_t mask,size_t vl) { for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c.lane[i];return a; }
++/*@ requires vl<=32;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],mask.lane[j]?c.lane[j]:a.lane[j]); */
++vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t c,vbool4_t mask,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],mask.lane[j]?c.lane[j]:\at(a.lane[j],Pre)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c.lane[i];return a; }
+ 
+-vfloat32m8_t __riscv_vfmerge_vfm_f32m8(vfloat32m8_t a,float c,vbool4_t mask,size_t vl) { for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c;return a; }
++/*@ requires vl<=32;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],mask.lane[j]?c:a.lane[j]); */
++vfloat32m8_t __riscv_vfmerge_vfm_f32m8(vfloat32m8_t a,float c,vbool4_t mask,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],mask.lane[j]?c:\at(a.lane[j],Pre)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c;return a; }
+--- a/fp_memory.c
++++ b/fp_memory.c
+@@ -1,69 +1,106 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires \valid_read(p+(0..4-1)); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],p[j])); */
+ float32x4_t vld1q_f32(const float *p) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@ requires \valid_read(p+(0..2-1)); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],p[j])); */
+ float32x2_t vld1_f32(const float *p) {
+-  float32x2_t r; for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
++  float32x2_t r; /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 2-i; */
++for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vdupq_n_f32(float x) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
+ }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],*p)); */
+ float32x4_t vld1q_dup_f32(const float *p) { return vdupq_n_f32(*p); }
+ 
++/*@ requires 0<=lane<2; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],v.lane[lane])); */
+ float32x4_t vdupq_lane_f32(float32x2_t v,int lane) { return vdupq_n_f32(v.lane[lane]); }
+ 
+-void vst1q_f32(float *p,float32x4_t v) { for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..4-1)); assigns p[0..4-1]; ensures \forall integer j; 0<=j<4 ==> (ext_same(p[j],v.lane[j])); */
++void vst1q_f32(float *p,float32x4_t v) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..4-1]; loop variant 4-i; */
++for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
+ 
+-void vst1_f32(float *p,float32x2_t v) { for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..2-1)); assigns p[0..2-1]; ensures \forall integer j; 0<=j<2 ==> (ext_same(p[j],v.lane[j])); */
++void vst1_f32(float *p,float32x2_t v) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..2-1]; loop variant 2-i; */
++for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
+ 
++/*@ requires \valid(p); requires 0<=lane<2; assigns p[0..1-1]; ensures ext_same(*p,v.lane[lane]); */
+ void vst1_lane_f32(float *p,float32x2_t v,int lane) { *p=v.lane[lane]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j])); */
+ float32x2_t vget_low_f32(float32x4_t v) { float32x2_t r={{v.lane[0],v.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j+2])); */
+ float32x2_t vget_high_f32(float32x4_t v) { float32x2_t r={{v.lane[2],v.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<RVV_CAP ? n : RVV_CAP; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vmovq_n_f32(float x) { return vdupq_n_f32(x); }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],*p)); */
+ float32x2_t vld1_dup_f32(const float *p) { float32x2_t r={{*p,*p}};return r; }
+ 
+ float32x4x2_t vld2q_dup_f32(const float *p) { float32x4x2_t r={{vdupq_n_f32(p[0]),vdupq_n_f32(p[1])}};return r; }
+ 
+ float32x2x2_t vld2_dup_f32(const float *p) { float32x2x2_t r={{vld1_dup_f32(p),vld1_dup_f32(p+1)}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ((j<2 ? ext_same(\result.lane[j],a.lane[j]) : ext_same(\result.lane[j],b.lane[j-2]))); */
+ float32x4_t vcombine_f32(float32x2_t a,float32x2_t b) { float32x4_t r={{a.lane[0],a.lane[1],b.lane[0],b.lane[1]}};return r; }
+ 
+-float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
++/*@ requires 0<=n<=4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j+n<4 ? ext_same(\result.lane[j],a.lane[j+n]) : ext_same(\result.lane[j],b.lane[j+n-4])); */
++float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (j+n<4 ? ext_same(r.lane[j],a.lane[j+n]) : ext_same(r.lane[j],b.lane[j+n-4]));  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
+ 
++/*@ requires 0<=n<2; assigns \nothing; ensures ext_same(\result,a.lane[n]); */
+ float vget_lane_f32(float32x2_t a,int n) { return a.lane[n]; }
+ 
++/*@ requires \valid_read(p); requires 0<=n<4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j==n ? ext_same(\result.lane[j],*p) : ext_same(\result.lane[j],a.lane[j])); */
+ float32x4_t vld1q_lane_f32(const float *p,float32x4_t a,int n) { a.lane[n]=*p;return a; }
+ 
++/*@ requires \valid(p); requires 0<=n<4; assigns p[0..1-1]; ensures ext_same(*p,a.lane[n]); */
+ void vst1q_lane_f32(float *p,float32x4_t a,int n) { *p=a.lane[n]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2]) : ext_same(\result.lane[j],b.lane[j/2])); */
+ float32x4_t vzip1q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[0],b.lane[0],a.lane[1],b.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2+2]) : ext_same(\result.lane[j],b.lane[j/2+2])); */
+ float32x4_t vzip2q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[2],b.lane[2],a.lane[3],b.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==16; */
+ size_t __riscv_vsetvlmax_e32m4(void) { return 16; }
+ 
++/*@  assigns \nothing; ensures \result==(n<4?n:4); */
+ size_t __riscv_vsetvl_e32m1(size_t n) { return n<4?n:4; }
+ 
++/*@  assigns \nothing; ensures \result==4; */
+ size_t __riscv_vsetvlmax_e32m1(void) { return 4; }
+ 
++/*@  assigns \nothing; ensures \result==(n<8?n:8); */
+ size_t __riscv_vsetvl_e32m2(size_t n) { return n<8?n:8; }
+ 
++/*@  assigns \nothing; ensures \result==8; */
+ size_t __riscv_vsetvlmax_e32m2(void) { return 8; }
+ 
++/*@  assigns \nothing; ensures \result==(n<32?n:32); */
+ size_t __riscv_vsetvl_e32m8(size_t n) { return n<32?n:32; }
+ 
++/*@  assigns \nothing; ensures \result==32; */
+ size_t __riscv_vsetvlmax_e32m8(void) { return 32; }
+ 
+-int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j]); */
++int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
+ 
+-int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j+4]); */
++int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j+4]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
+--- a/fp_memory_m8.c
++++ b/fp_memory_m8.c
+@@ -1,11 +1,21 @@
+ #include "fp_primitives.h"
+ 
+-vfloat32m8_t __riscv_vle32_v_f32m8(const float *p,size_t vl) { vfloat32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
++/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],p[j])); */
++vfloat32m8_t __riscv_vle32_v_f32m8(const float *p,size_t vl) { vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
+ 
+-void __riscv_vse32_v_f32m8(float *p,vfloat32m8_t a,size_t vl) { for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
++/*@ requires vl<=32; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j; 0<=j<vl ==> (ext_same(p[j],a.lane[j])); */
++void __riscv_vse32_v_f32m8(float *p,vfloat32m8_t a,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],a.lane[j]));  loop assigns i,p[0..vl-1]; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
+ 
+-vfloat32m8_t __riscv_vfmv_v_f_f32m8(float x,size_t vl) { vfloat32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=x;return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],x)); */
++vfloat32m8_t __riscv_vfmv_v_f_f32m8(float x,size_t vl) { vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=x;return r; }
+ 
+-vfloat32m8_t __riscv_vfslide1up_vf_f32m8(vfloat32m8_t a,float x,size_t vl) { vfloat32m8_t r=a;for(size_t i=0;i<vl;i++)r.lane[i]=i?a.lane[i-1]:x;return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (j==0 ? ext_same(\result.lane[j],x) : ext_same(\result.lane[j],a.lane[j-1])); */
++vfloat32m8_t __riscv_vfslide1up_vf_f32m8(vfloat32m8_t a,float x,size_t vl) { vfloat32m8_t r=a;/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (j==0 ? ext_same(r.lane[j],x) : ext_same(r.lane[j],a.lane[j-1]));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=i?a.lane[i-1]:x;return r; }
+ 
+-vfloat32m8_t __riscv_vfslide1down_vf_f32m8(vfloat32m8_t a,float x,size_t vl) { vfloat32m8_t r=a;for(size_t i=0;i<vl;i++)r.lane[i]=i+1<vl?a.lane[i+1]:x;return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (j+1<vl ? ext_same(\result.lane[j],a.lane[j+1]) : ext_same(\result.lane[j],x)); */
++vfloat32m8_t __riscv_vfslide1down_vf_f32m8(vfloat32m8_t a,float x,size_t vl) { vfloat32m8_t r=a;/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (j+1<vl ? ext_same(r.lane[j],a.lane[j+1]) : ext_same(r.lane[j],x));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=i+1<vl?a.lane[i+1]:x;return r; }
+--- a/fp_minmax.c
++++ b/fp_minmax.c
+@@ -1,12 +1,15 @@
+ #include "fp_primitives.h"
+ 
++/*@ assigns \nothing; ensures \result==(\is_NaN(x)?1:0); */
+ int fp_nan(float x) { return x != x; }
+ 
++/*@ assigns \nothing; ensures \is_NaN(\result); */
+ float canonical_nan(void) {
+   uint32_t bits=UINT32_C(0x7fc00000); float value;
+   memcpy(&value,&bits,sizeof(value)); return value;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_min32(a,b)); */
+ float min_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -14,6 +17,7 @@
+   return a < b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_max32(a,b)); */
+ float max_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -21,6 +25,7 @@
+   return a > b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_min32(a,b)); */
+ float neon_min(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return min_number(a,b);
+@@ -29,6 +34,7 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_max32(a,b)); */
+ float neon_max(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return max_number(a,b);
+@@ -37,16 +43,24 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
+ float32x4_t vminq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
+ float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
+-float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
++float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
+ 
+-float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
++float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
+--- a/fp_minmax_m8.c
++++ b/fp_minmax_m8.c
+@@ -1,9 +1,17 @@
+ #include "fp_primitives.h"
+ 
+-vfloat32m8_t __riscv_vfmax_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b);return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_max32(a.lane[j],b)); */
++vfloat32m8_t __riscv_vfmax_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_max32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b);return a; }
+ 
+-vfloat32m8_t __riscv_vfmin_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b);return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_min32(a.lane[j],b)); */
++vfloat32m8_t __riscv_vfmin_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_min32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b);return a; }
+ 
+-vfloat32m8_t __riscv_vfmax_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b.lane[i]);return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_max32(a.lane[j],b.lane[j])); */
++vfloat32m8_t __riscv_vfmax_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b.lane[i]);return a; }
+ 
+-vfloat32m8_t __riscv_vfmin_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b.lane[i]);return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_min32(a.lane[j],b.lane[j])); */
++vfloat32m8_t __riscv_vfmin_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b.lane[i]);return a; }
+--- a/fp_primitives.h
++++ b/fp_primitives.h
+@@ -1,6 +1,21 @@
+ #ifndef COMPLEX_FP_PRIMITIVES_H
+ #define COMPLEX_FP_PRIMITIVES_H
+ #include "native_types.h"
++/*@
++ predicate ext_same(float x,float y) = (\is_NaN(x) && \is_NaN(y)) || (\eq_float(x,y) && \sign(x)==\sign(y));
++ logic float complex_add32(float x,float y);
++ logic float complex_sub32(float x,float y);
++ logic float complex_mul32(float x,float y);
++ logic float ext_num_min32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(a,b)?a:(\lt_float(b,a)?b:(\sign(a)==\Negative?a:b))));
++ logic float ext_num_max32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(b,a)?a:(\lt_float(a,b)?b:(\sign(a)==\Positive?a:b))));
++ logic float ext_neon_min32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_min32(a,b));
++ logic float ext_neon_max32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_max32(a,b));
++ lemma ext_same_refl: \forall float a; ext_same(a,a);
++ lemma ext_same_trans: \forall float a,b,c; ext_same(a,b) && ext_same(b,c) ==> ext_same(a,c);
++ lemma ext_add_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_add32(a,c),complex_add32(b,c));
++ lemma ext_mul_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_mul32(a,c),complex_mul32(b,c));
++ lemma ext_sub_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_sub32(a,c),complex_sub32(b,c));
++*/
+ int fp_nan(float x);
+ float canonical_nan(void);
+ float min_number(float a,float b);
+@@ -187,4 +202,11 @@
+ vint32m8_t __riscv_vsra_vx_i32m8(vint32m8_t a,unsigned n,size_t vl);
+ vfloat32m8_t __riscv_vfcvt_f_x_v_f32m8(vint32m8_t a,size_t vl);
+ vfloat32m1_t __riscv_vlse32_v_f32m1_m(vbool32_t mask,const float *p,ptrdiff_t stride,size_t vl);
++
++/*@ logic integer stage3_signed_nibble(integer u)=u<8?u:u-16; */
++
++
++/*@ \wp::strategy Stage3Child: \prover("cvc5",10), \prover("z3",10);
++    \wp::strategy Stage3Array: \tactic("Wp.array",\ingoal(A[I[V]][J]),\children(Stage3Child)), Stage3Child;
++    \wp::proof Stage3Array: equivalent, bits_i8, __riscv_vsll_vx_i8m2, __riscv_vand_vx_i8m2, __riscv_vle8_v_i8m2, __riscv_vsext_vf2_i16m4; */
+ #endif
+--- a/harness.c
++++ b/harness.c
+@@ -4,6 +4,11 @@
+   struct xnn_qd8_quantization_params q={zero_point,inv_scale};
+   test_neon(1,nc,k,input,k,weights,left,nc*4,64,&params,&q);
+   test_rvv(1,nc,k,input,k,weights,right,nc*4,64,&params,&q);
++  /*@ loop invariant 0<=i<=nc;
++      loop invariant \forall integer j; 0<=j<i ==> (\eq_float(left[j],right[j]) || (\is_NaN(left[j]) && \is_NaN(right[j])));
++      loop assigns i;
++      loop variant nc-i;
++  */
+   for(size_t i=0;i<nc;i++)if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }
+--- a/neon.c
++++ b/neon.c
+@@ -35,6 +35,14 @@
+ 
+   const int8x8_t vmask = vmov_n_s8(INT8_C(0xF0));
+   kc = round_up_po2(kc, 2);
++  //@ ghost size_t NC=nc,KC=kc;
++  //@ ghost const int8_t *A=a;
++  //@ ghost float *C=c;
++  /*@ loop invariant stage3_nc: 0<nc<=NC && (NC-nc)%16==0;
++      loop invariant qd8_neon_even_kc: 0<KC && KC%2==0 && kc==KC;
++      loop invariant a0==A;
++      loop invariant c0==C+(NC-nc);
++      loop assigns nc,a0,c0,w,C[0..NC-1],errno; loop variant nc; */
+   do {
+     int32x4_t vksum0123 = vld1q_s32(w); w = (const int32_t*) w + 4;
+     int32x4_t vksum4567 = vld1q_s32(w); w = (const int32_t*) w + 4;
+@@ -47,6 +55,12 @@
+     int32x4_t vacc0xCDEF = vmulq_s32(vksumCDEF, vzp0);
+ 
+     size_t k = kc;
++    //@ ghost const unsigned char *stage3_weights=(const unsigned char*)w;
++    /*@ loop invariant qd8_neon_k: 0<=k<=KC && k%2==0;
++        loop invariant qd8_neon_count: k/2+(KC-k)/2==KC/2;
++        loop invariant stage3_input_cursor: a0==A+(KC-k);
++        loop invariant stage3_weight_cursor: (const unsigned char*)w==stage3_weights+8*(KC-k);
++        loop assigns k,a0,w,vacc0x0123,vacc0x4567,vacc0x89AB,vacc0xCDEF; loop variant k; */
+     while (k >= 8 * sizeof(int8_t)) {
+       const int8x8_t va0 = vld1_s8(a0); a0 += 8;
+       const int16x8_t vxa0 = vmovl_s8(va0);
+--- a/quantized.c
++++ b/quantized.c
+@@ -10,6 +10,7 @@
+ 
+ int32_t bits_i32(uint32_t u) { int32_t r;memcpy(&r,&u,4);return r; }
+ 
++/*@ assigns \nothing; ensures \result==(int8_t)u; */
+ int8_t bits_i8(uint8_t u) { int8_t r;memcpy(&r,&u,1);return r; }
+ 
+ int32_t arithmetic_shift32(int32_t x,unsigned n) { int64_t d=INT64_C(1)<<n;int64_t v=x;return (int32_t)(v>=0?v/d:-((-v+d-1)/d)); }
+@@ -34,13 +35,17 @@
+ 
+ vint32m8_t __riscv_vmul_vx_i32m8(vint32m8_t a,int32_t x,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=bits_i32((uint32_t)a.lane[i]*(uint32_t)x);return a; }
+ 
+-vint8m2_t __riscv_vle8_v_i8m2(const int8_t *p,size_t vl) { vint8m2_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
++/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
++vint8m2_t __riscv_vle8_v_i8m2(const int8_t *p,size_t vl) { vint8m2_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
+ 
+-vint8m2_t __riscv_vsll_vx_i8m2(vint8m2_t a,unsigned n,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=bits_i8((uint8_t)((uint8_t)a.lane[i]<<n));return a; }
++/*@ requires vl<=32; requires n<8; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==(int8_t)((uint8_t)\at(a.lane[j],Pre)<<n); */
++vint8m2_t __riscv_vsll_vx_i8m2(vint8m2_t a,unsigned n,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==(int8_t)((uint8_t)\at(a.lane[j],Pre)<<n); loop invariant \forall integer j;i<=j<32 ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */ for(size_t i=0;i<vl;i++)a.lane[i]=bits_i8((uint8_t)((uint8_t)a.lane[i]<<n));return a; }
+ 
+-vint8m2_t __riscv_vand_vx_i8m2(vint8m2_t a,int8_t x,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=bits_i8((uint8_t)a.lane[i]&(uint8_t)x);return a; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==(int8_t)((uint8_t)\at(a.lane[j],Pre)&(uint8_t)x); */
++vint8m2_t __riscv_vand_vx_i8m2(vint8m2_t a,int8_t x,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==(int8_t)((uint8_t)\at(a.lane[j],Pre)&(uint8_t)x); loop invariant \forall integer j;i<=j<32 ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */ for(size_t i=0;i<vl;i++)a.lane[i]=bits_i8((uint8_t)a.lane[i]&(uint8_t)x);return a; }
+ 
+-vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl) { vint16m4_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i];return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==a.lane[j]; */
++vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl) { vint16m4_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==a.lane[j]; loop assigns i,r; loop variant vl-i; */for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i];return r; }
+ 
+ vint32m8_t __riscv_vwmacc_vx_i32m8(vint32m8_t a,int16_t x,vint16m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=bits_i32((uint32_t)a.lane[i]+(uint32_t)((int32_t)x*b.lane[i]));return a; }
+ 
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,10 +1,305 @@
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures qd8_byte_shift: (uint8_t)((unsigned)u<<4)==16*(u%16);
++    ensures qd8_byte_mask: ((unsigned)u & 240U)==16*(u/16);
++@/
++static void qd8_byte_parts(uint8_t u) {
++  switch(u) {
++    case 0: /@ assert qd8_byte_case_000: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 1: /@ assert qd8_byte_case_001: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 2: /@ assert qd8_byte_case_002: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 3: /@ assert qd8_byte_case_003: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 4: /@ assert qd8_byte_case_004: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 5: /@ assert qd8_byte_case_005: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 6: /@ assert qd8_byte_case_006: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 7: /@ assert qd8_byte_case_007: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 8: /@ assert qd8_byte_case_008: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 9: /@ assert qd8_byte_case_009: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 10: /@ assert qd8_byte_case_010: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 11: /@ assert qd8_byte_case_011: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 12: /@ assert qd8_byte_case_012: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 13: /@ assert qd8_byte_case_013: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 14: /@ assert qd8_byte_case_014: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 15: /@ assert qd8_byte_case_015: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 16: /@ assert qd8_byte_case_016: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 17: /@ assert qd8_byte_case_017: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 18: /@ assert qd8_byte_case_018: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 19: /@ assert qd8_byte_case_019: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 20: /@ assert qd8_byte_case_020: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 21: /@ assert qd8_byte_case_021: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 22: /@ assert qd8_byte_case_022: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 23: /@ assert qd8_byte_case_023: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 24: /@ assert qd8_byte_case_024: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 25: /@ assert qd8_byte_case_025: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 26: /@ assert qd8_byte_case_026: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 27: /@ assert qd8_byte_case_027: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 28: /@ assert qd8_byte_case_028: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 29: /@ assert qd8_byte_case_029: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 30: /@ assert qd8_byte_case_030: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 31: /@ assert qd8_byte_case_031: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 32: /@ assert qd8_byte_case_032: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 33: /@ assert qd8_byte_case_033: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 34: /@ assert qd8_byte_case_034: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 35: /@ assert qd8_byte_case_035: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 36: /@ assert qd8_byte_case_036: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 37: /@ assert qd8_byte_case_037: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 38: /@ assert qd8_byte_case_038: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 39: /@ assert qd8_byte_case_039: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 40: /@ assert qd8_byte_case_040: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 41: /@ assert qd8_byte_case_041: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 42: /@ assert qd8_byte_case_042: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 43: /@ assert qd8_byte_case_043: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 44: /@ assert qd8_byte_case_044: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 45: /@ assert qd8_byte_case_045: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 46: /@ assert qd8_byte_case_046: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 47: /@ assert qd8_byte_case_047: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 48: /@ assert qd8_byte_case_048: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 49: /@ assert qd8_byte_case_049: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 50: /@ assert qd8_byte_case_050: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 51: /@ assert qd8_byte_case_051: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 52: /@ assert qd8_byte_case_052: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 53: /@ assert qd8_byte_case_053: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 54: /@ assert qd8_byte_case_054: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 55: /@ assert qd8_byte_case_055: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 56: /@ assert qd8_byte_case_056: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 57: /@ assert qd8_byte_case_057: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 58: /@ assert qd8_byte_case_058: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 59: /@ assert qd8_byte_case_059: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 60: /@ assert qd8_byte_case_060: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 61: /@ assert qd8_byte_case_061: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 62: /@ assert qd8_byte_case_062: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 63: /@ assert qd8_byte_case_063: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 64: /@ assert qd8_byte_case_064: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 65: /@ assert qd8_byte_case_065: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 66: /@ assert qd8_byte_case_066: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 67: /@ assert qd8_byte_case_067: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 68: /@ assert qd8_byte_case_068: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 69: /@ assert qd8_byte_case_069: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 70: /@ assert qd8_byte_case_070: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 71: /@ assert qd8_byte_case_071: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 72: /@ assert qd8_byte_case_072: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 73: /@ assert qd8_byte_case_073: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 74: /@ assert qd8_byte_case_074: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 75: /@ assert qd8_byte_case_075: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 76: /@ assert qd8_byte_case_076: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 77: /@ assert qd8_byte_case_077: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 78: /@ assert qd8_byte_case_078: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 79: /@ assert qd8_byte_case_079: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 80: /@ assert qd8_byte_case_080: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 81: /@ assert qd8_byte_case_081: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 82: /@ assert qd8_byte_case_082: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 83: /@ assert qd8_byte_case_083: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 84: /@ assert qd8_byte_case_084: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 85: /@ assert qd8_byte_case_085: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 86: /@ assert qd8_byte_case_086: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 87: /@ assert qd8_byte_case_087: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 88: /@ assert qd8_byte_case_088: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 89: /@ assert qd8_byte_case_089: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 90: /@ assert qd8_byte_case_090: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 91: /@ assert qd8_byte_case_091: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 92: /@ assert qd8_byte_case_092: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 93: /@ assert qd8_byte_case_093: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 94: /@ assert qd8_byte_case_094: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 95: /@ assert qd8_byte_case_095: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 96: /@ assert qd8_byte_case_096: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 97: /@ assert qd8_byte_case_097: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 98: /@ assert qd8_byte_case_098: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 99: /@ assert qd8_byte_case_099: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 100: /@ assert qd8_byte_case_100: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 101: /@ assert qd8_byte_case_101: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 102: /@ assert qd8_byte_case_102: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 103: /@ assert qd8_byte_case_103: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 104: /@ assert qd8_byte_case_104: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 105: /@ assert qd8_byte_case_105: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 106: /@ assert qd8_byte_case_106: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 107: /@ assert qd8_byte_case_107: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 108: /@ assert qd8_byte_case_108: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 109: /@ assert qd8_byte_case_109: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 110: /@ assert qd8_byte_case_110: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 111: /@ assert qd8_byte_case_111: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 112: /@ assert qd8_byte_case_112: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 113: /@ assert qd8_byte_case_113: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 114: /@ assert qd8_byte_case_114: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 115: /@ assert qd8_byte_case_115: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 116: /@ assert qd8_byte_case_116: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 117: /@ assert qd8_byte_case_117: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 118: /@ assert qd8_byte_case_118: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 119: /@ assert qd8_byte_case_119: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 120: /@ assert qd8_byte_case_120: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 121: /@ assert qd8_byte_case_121: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 122: /@ assert qd8_byte_case_122: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 123: /@ assert qd8_byte_case_123: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 124: /@ assert qd8_byte_case_124: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 125: /@ assert qd8_byte_case_125: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 126: /@ assert qd8_byte_case_126: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 127: /@ assert qd8_byte_case_127: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 128: /@ assert qd8_byte_case_128: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 129: /@ assert qd8_byte_case_129: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 130: /@ assert qd8_byte_case_130: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 131: /@ assert qd8_byte_case_131: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 132: /@ assert qd8_byte_case_132: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 133: /@ assert qd8_byte_case_133: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 134: /@ assert qd8_byte_case_134: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 135: /@ assert qd8_byte_case_135: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 136: /@ assert qd8_byte_case_136: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 137: /@ assert qd8_byte_case_137: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 138: /@ assert qd8_byte_case_138: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 139: /@ assert qd8_byte_case_139: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 140: /@ assert qd8_byte_case_140: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 141: /@ assert qd8_byte_case_141: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 142: /@ assert qd8_byte_case_142: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 143: /@ assert qd8_byte_case_143: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 144: /@ assert qd8_byte_case_144: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 145: /@ assert qd8_byte_case_145: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 146: /@ assert qd8_byte_case_146: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 147: /@ assert qd8_byte_case_147: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 148: /@ assert qd8_byte_case_148: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 149: /@ assert qd8_byte_case_149: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 150: /@ assert qd8_byte_case_150: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 151: /@ assert qd8_byte_case_151: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 152: /@ assert qd8_byte_case_152: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 153: /@ assert qd8_byte_case_153: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 154: /@ assert qd8_byte_case_154: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 155: /@ assert qd8_byte_case_155: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 156: /@ assert qd8_byte_case_156: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 157: /@ assert qd8_byte_case_157: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 158: /@ assert qd8_byte_case_158: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 159: /@ assert qd8_byte_case_159: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 160: /@ assert qd8_byte_case_160: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 161: /@ assert qd8_byte_case_161: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 162: /@ assert qd8_byte_case_162: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 163: /@ assert qd8_byte_case_163: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 164: /@ assert qd8_byte_case_164: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 165: /@ assert qd8_byte_case_165: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 166: /@ assert qd8_byte_case_166: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 167: /@ assert qd8_byte_case_167: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 168: /@ assert qd8_byte_case_168: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 169: /@ assert qd8_byte_case_169: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 170: /@ assert qd8_byte_case_170: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 171: /@ assert qd8_byte_case_171: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 172: /@ assert qd8_byte_case_172: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 173: /@ assert qd8_byte_case_173: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 174: /@ assert qd8_byte_case_174: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 175: /@ assert qd8_byte_case_175: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 176: /@ assert qd8_byte_case_176: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 177: /@ assert qd8_byte_case_177: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 178: /@ assert qd8_byte_case_178: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 179: /@ assert qd8_byte_case_179: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 180: /@ assert qd8_byte_case_180: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 181: /@ assert qd8_byte_case_181: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 182: /@ assert qd8_byte_case_182: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 183: /@ assert qd8_byte_case_183: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 184: /@ assert qd8_byte_case_184: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 185: /@ assert qd8_byte_case_185: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 186: /@ assert qd8_byte_case_186: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 187: /@ assert qd8_byte_case_187: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 188: /@ assert qd8_byte_case_188: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 189: /@ assert qd8_byte_case_189: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 190: /@ assert qd8_byte_case_190: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 191: /@ assert qd8_byte_case_191: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 192: /@ assert qd8_byte_case_192: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 193: /@ assert qd8_byte_case_193: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 194: /@ assert qd8_byte_case_194: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 195: /@ assert qd8_byte_case_195: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 196: /@ assert qd8_byte_case_196: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 197: /@ assert qd8_byte_case_197: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 198: /@ assert qd8_byte_case_198: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 199: /@ assert qd8_byte_case_199: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 200: /@ assert qd8_byte_case_200: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 201: /@ assert qd8_byte_case_201: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 202: /@ assert qd8_byte_case_202: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 203: /@ assert qd8_byte_case_203: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 204: /@ assert qd8_byte_case_204: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 205: /@ assert qd8_byte_case_205: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 206: /@ assert qd8_byte_case_206: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 207: /@ assert qd8_byte_case_207: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 208: /@ assert qd8_byte_case_208: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 209: /@ assert qd8_byte_case_209: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 210: /@ assert qd8_byte_case_210: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 211: /@ assert qd8_byte_case_211: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 212: /@ assert qd8_byte_case_212: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 213: /@ assert qd8_byte_case_213: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 214: /@ assert qd8_byte_case_214: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 215: /@ assert qd8_byte_case_215: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 216: /@ assert qd8_byte_case_216: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 217: /@ assert qd8_byte_case_217: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 218: /@ assert qd8_byte_case_218: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 219: /@ assert qd8_byte_case_219: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 220: /@ assert qd8_byte_case_220: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 221: /@ assert qd8_byte_case_221: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 222: /@ assert qd8_byte_case_222: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 223: /@ assert qd8_byte_case_223: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 224: /@ assert qd8_byte_case_224: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 225: /@ assert qd8_byte_case_225: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 226: /@ assert qd8_byte_case_226: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 227: /@ assert qd8_byte_case_227: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 228: /@ assert qd8_byte_case_228: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 229: /@ assert qd8_byte_case_229: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 230: /@ assert qd8_byte_case_230: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 231: /@ assert qd8_byte_case_231: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 232: /@ assert qd8_byte_case_232: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 233: /@ assert qd8_byte_case_233: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 234: /@ assert qd8_byte_case_234: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 235: /@ assert qd8_byte_case_235: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 236: /@ assert qd8_byte_case_236: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 237: /@ assert qd8_byte_case_237: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 238: /@ assert qd8_byte_case_238: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 239: /@ assert qd8_byte_case_239: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 240: /@ assert qd8_byte_case_240: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 241: /@ assert qd8_byte_case_241: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 242: /@ assert qd8_byte_case_242: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 243: /@ assert qd8_byte_case_243: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 244: /@ assert qd8_byte_case_244: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 245: /@ assert qd8_byte_case_245: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 246: /@ assert qd8_byte_case_246: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 247: /@ assert qd8_byte_case_247: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 248: /@ assert qd8_byte_case_248: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 249: /@ assert qd8_byte_case_249: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 250: /@ assert qd8_byte_case_250: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 251: /@ assert qd8_byte_case_251: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 252: /@ assert qd8_byte_case_252: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 253: /@ assert qd8_byte_case_253: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 254: /@ assert qd8_byte_case_254: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    case 255: /@ assert qd8_byte_case_255: (uint8_t)((unsigned)u<<4)==16*(u%16) && ((unsigned)u & 240U)==16*(u/16); @/ return;
++    default: /@ assert qd8_byte_cases_exhausted: \false; @/ return;
++  }
++}
++*/
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures qd8_scalar_low: (int8_t)((uint8_t)x<<4)==16*stage3_signed_nibble((uint8_t)x%16);
++    ensures qd8_scalar_high: (int8_t)((uint8_t)x & (uint8_t)240)==16*stage3_signed_nibble((uint8_t)x/16);
++@/
++static void qd8_nibble_scalar(int8_t x) {
++  uint8_t u=(uint8_t)x;
++  qd8_byte_parts(u);
++  unsigned lo=u%16;
++  unsigned hi=u/16;
++  /@ assert qd8_nibble_shift_mod: (uint8_t)(u<<4)==16*(u%16); @/
++  /@ assert qd8_nibble_mask_div: (u & 240U)==16*(u/16); @/
++  if (lo<8) {
++    /@ assert qd8_nibble_low_positive: (int8_t)(u<<4)==16*lo; @/
++  } else {
++    /@ assert qd8_nibble_low_negative: (int8_t)(u<<4)==16*(lo-16); @/
++  }
++  if (hi<8) {
++    /@ assert qd8_nibble_high_positive: (int8_t)(u & 240U)==16*hi; @/
++  } else {
++    /@ assert qd8_nibble_high_negative: (int8_t)(u & 240U)==16*(hi-16); @/
++  }
++}
++*/
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
++/*@ requires vl<=32; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+ static inline vfloat32m8_t salty_min_vf_m8(vfloat32m8_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m8(__builtin_nanf(""),vl);
+   vbool4_t nan=__riscv_vmfne_vv_f32m8_b4(a,a,vl);
+   vfloat32m8_t r=__riscv_vfmin_vf_f32m8(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m8(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=32; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+ static inline vfloat32m8_t salty_max_vf_m8(vfloat32m8_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m8(__builtin_nanf(""),vl);
+   vbool4_t nan=__riscv_vmfne_vv_f32m8_b4(a,a,vl);
+@@ -37,7 +332,15 @@
+   float* c0 = c;
+ 
+   kc = round_up_po2(kc, 2);
+-
++  //@ ghost size_t NC=nc,KC=kc;
++  //@ ghost const int8_t *A=a;
++  //@ ghost float *C=c;
++
++  /*@ loop invariant stage3_nc: 0<nc<=NC && (NC-nc)%16==0;
++      loop invariant qd8_rvv_even_kc: 0<KC && KC%2==0 && kc==KC;
++      loop invariant a0==A;
++      loop invariant c0==C+(NC-nc);
++      loop assigns nc,a0,c0,w,C[0..NC-1],errno; loop variant nc; */
+   do {
+     // The weights are packed in fixed blocks of NR=16.
+     // We limit vl to 16 to process exactly one block per iteration,
+@@ -52,6 +355,12 @@
+     vint32m8_t vacc = __riscv_vmul_vx_i32m8(vksum, zp0, vl);
+ 
+     size_t k = kc;
++    //@ ghost const unsigned char *stage3_weights=(const unsigned char*)w;
++    /*@ loop invariant qd8_rvv_k: 0<=k<=KC && k%2==0;
++        loop invariant qd8_rvv_count: k/2+(KC-k)/2==KC/2;
++        loop invariant stage3_input_cursor: a0==A+(KC-k);
++        loop invariant stage3_weight_cursor: (const unsigned char*)w==stage3_weights+8*(KC-k);
++        loop assigns k,a0,w,vacc; loop variant k; */
+     while (k > 0) {
+       int16_t a_val0 = (int16_t) a0[0];
+       int16_t a_val1 = (int16_t) a0[1];
+@@ -68,6 +377,18 @@
+       vint8m2_t vb_c1 = __riscv_vand_vx_i8m2(vb_c01, (int8_t) 0xF0, vl);
+ 
+       // Sign-extend to 16-bit
++      /*@ ghost
++        size_t qd8_j=0;
++        /@ loop invariant qd8_nibble_index: 0<=qd8_j<=vl && vl<=32;
++           loop invariant qd8_nibble_low_prefix: \forall integer j;0<=j<qd8_j ==> vb_c0.lane[j]==16*stage3_signed_nibble((uint8_t)vb_c01.lane[j]%16);
++           loop invariant qd8_nibble_high_prefix: \forall integer j;0<=j<qd8_j ==> vb_c1.lane[j]==16*stage3_signed_nibble((uint8_t)vb_c01.lane[j]/16);
++           loop assigns qd8_j;
++           loop variant vl-qd8_j;
++        @/
++        for (;qd8_j<vl;++qd8_j) qd8_nibble_scalar(vb_c01.lane[qd8_j]);
++      */
++      /*@ assert stage3_low_nibble: \forall integer j;0<=j<vl ==> vb_c0.lane[j]==16*stage3_signed_nibble((uint8_t)vb_c01.lane[j]%16); */
++      /*@ assert stage3_high_nibble: \forall integer j;0<=j<vl ==> vb_c1.lane[j]==16*stage3_signed_nibble((uint8_t)vb_c01.lane[j]/16); */
+       vint16m4_t vxb_c0 = __riscv_vsext_vf2_i16m4(vb_c0, vl);
+       vint16m4_t vxb_c1 = __riscv_vsext_vf2_i16m4(vb_c1, vl);
+ 
+--- a/utils.c
++++ b/utils.c
+@@ -4,6 +4,35 @@
+ 
+ size_t round_down_po2(size_t n,size_t q) { return n & ~(q-1); }
+ 
+-size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures qd8_clear_half: (x & (SIZE_MAX-1))==2*(x/2);
++    ensures qd8_clear_compensation: (x & (SIZE_MAX-1))==x-x%2;
++@/
++static void qd8_clear_low(size_t x) {
++  /@ assert qd8_clear_split: x==2*(x/2)+x%2; @/
++  /@ assert qd8_clear_shift_half: (x>>1)==x/2; @/
++  /@ assert qd8_clear_shift_restore: ((x>>1)<<1)==2*(x>>1); @/
++  /@ assert qd8_clear_restored_range: 0<=((x>>1)<<1)<=x; @/
++  /@ assert qd8_clear_restored_even: ((x>>1)<<1)%2==0; @/
++  /@ assert qd8_clear_shift_mask: (x & (SIZE_MAX-1))==((x>>1)<<1); @/
++}
++*/
++/*@ \wp::strategy Qd8BitChild: \prover("z3",30), \prover("cvc5",30);
++    \wp::strategy Qd8Bit64: \tactic("Wp.bitwised",\ingoal(A==(18446744073709551614 & B)),\param("Wp.bitwised.range",64),\children(Qd8BitChild)), Qd8BitChild;
++    \wp::proof Qd8Bit64: qd8_clear_low;
++*/
++/*@ ensures qd8_round_range: q==2 && n<=SIZE_MAX-2 ==> n<=\result<=n+1;
++    ensures qd8_round_even: q==2 && n<=SIZE_MAX-2 ==> \result%2==0;
++    ensures qd8_round_count: q==2 && n<=SIZE_MAX-2 ==> \result==2*((n+1)/2);
++    ensures qd8_round_positive: q==2 && 0<n<=SIZE_MAX-2 ==> 0<\result;
++*/
++size_t round_up_po2(size_t n,size_t q) {
++  /*@ assert qd8_round_sum_exact: q==2 && n<=SIZE_MAX-2 ==> (size_t)((size_t)(n+q)-1)==n+1; */
++  /*@ assert qd8_round_mask_value: q==2 ==> (size_t)(~(size_t)(q-1))==SIZE_MAX-1; */
++  //@ ghost qd8_clear_low((size_t)(n+1));
++  /*@ assert qd8_round_mask_half: n<=SIZE_MAX-2 ==> ((size_t)(n+1) & (SIZE_MAX-1))==2*((n+1)/2); */
++  return (n+q-1)&~(q-1);
++}
+ 
+ size_t doz(size_t n,size_t d) { return n>d?n-d:0; }

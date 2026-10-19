@@ -1,0 +1,98 @@
+{
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v1/.build/install/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-model",
+    "Bytes+float",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/why3-02.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "z3,cvc5",
+    "-wp-timeout",
+    "30",
+    "-wp-memlimit",
+    "2048",
+    "-wp-par",
+    "1",
+    "-wp-cache",
+    "none",
+    "-wp-driver",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/bytefloat.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver",
+    "-cpp-command",
+    "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.",
+    "-cpp-frama-c-compliant",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/qualification01/store-instance01/.build/session",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/qualification01/store-instance01/raw.json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/qualification01/memory.c",
+    "-wp-fct",
+    "positive_store,negative_false"
+  ],
+  "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9",
+  "input_snapshot_sha256": "d448ecf3a453258cb9bb8431489b10ee1306d980e89ad06ce8a966e02480f4da",
+  "runner_sha256": "cbfad543c71ce867dafb2ce66c06cfad4f53017ca0a36a6c597737326fb25cad",
+  "budget_seconds": 100,
+  "qualification": false,
+  "exit": 0,
+  "seconds": 62.414,
+  "raw_total": 5,
+  "raw_passed": 3,
+  "inputs_unchanged": true,
+  "pending": [
+    {
+      "goal": "bytes_bytefloat_fma_negative_false_ensures",
+      "property": "negative_false_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/qualification01/memory.c",
+      "line": 27,
+      "function": "negative_false",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_positive_store_ensures",
+      "property": "positive_store_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v9/qualification01/memory.c",
+      "line": 7,
+      "function": "positive_store",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00132,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ]
+}

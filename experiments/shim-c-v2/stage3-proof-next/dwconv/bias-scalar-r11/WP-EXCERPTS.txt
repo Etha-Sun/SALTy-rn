@@ -1,0 +1,97 @@
+'next_scalar_loaded0' ("rvv.c", line 87):
+(* Assertion 'stage3_vl' *)
+  Have: (x = (if (x_1 <= 3) then x_1 else 4)) /\ (0 < x) /\ (x <= x_1).
+  (* Assertion 'stage3_store_range' *)
+  Have: (x_1 <= x_2) /\ (x <= x_1).
+  (* Assertion 'next_bias_address' *)
+  Have: a_4 = shift_float32(Mptr_46[a_7], 16 * ((x_2 - x_1) / 4)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_48, a_5, 1).
+  (* Initializer *)
+  Init: (Init_113[a_6]=true).
+  (* Initializer *)
+  Init: Mf32_67[a_5] = Mf32_67[a_6].
+  Have: (Init_113 = Init_114) /\ (Malloc_48 = Malloc_49) /\
+      (Mf32_67 = Mf32_68) /\ (Mint_10 = Mint_9).
+  (* Call '__riscv_vle32_v_f32m4' *)
+  Have: (Load_S6(a, Mf32_0) = __riscv_vle32_v_f32m4_0) /\ (x <= 16) /\
+      valid_rd(Malloc_48, a_5, x) /\
+      (forall i_27 : Z. ((0 <= i_27) -> ((i_27 < x) ->
+       P_ext_same((__riscv_vle32_v_f32m4_0.F6_lane)[i_27],
+         Mf32_68[shift_float32(a_4, i_27)])))).
+  (* Return Effects *)
+  Have: (memcpy(Init_114, a, Init_undef_23, a, 16) = Init_115) /\
+      (memcpy(Mf32_68, a, Mf32_undef_23, a, 16) = Mf32_0).
+  (* Initializer *)
+  Init: Mf32_0[shift_float32(shiftfield_F6_lane(a), 0)] = a_1.
+}
+Prove: P_ext_same(a_1, Mf32_0[a_6]).
+
+
+
+'next_scalar_frame0' ("rvv.c", line 88):
+(* Assertion 'stage3_vl' *)
+  Have: (x = (if (x_1 <= 3) then x_1 else 4)) /\ (0 < x) /\ (x <= x_1).
+  (* Assertion 'stage3_store_range' *)
+  Have: (x_1 <= x_2) /\ (x <= x_1).
+  (* Assertion 'next_bias_address' *)
+  Have: a_6 = shift_float32(Mptr_0[a_8], 16 * ((x_2 - x_1) / 4)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_48, a_7, 1).
+  (* Initializer *)
+  Init: (Init_113[a_1]=true).
+  (* Initializer *)
+  Init: Mf32_67[a_7] = Mf32_67[a_1].
+  Have: (Init_113 = Init_114) /\ (Malloc_48 = Malloc_49) /\
+      (Mf32_67 = Mf32_68) /\ (Mint_10 = Mint_9).
+  (* Call '__riscv_vle32_v_f32m4' *)
+  Have: (Load_S6(a_3, Mf32_0) = __riscv_vle32_v_f32m4_0) /\ (x <= 16) /\
+      valid_rd(Malloc_48, a_7, x) /\
+      (forall i_27 : Z. ((0 <= i_27) -> ((i_27 < x) ->
+       P_ext_same((__riscv_vle32_v_f32m4_0.F6_lane)[i_27],
+         Mf32_68[shift_float32(a_6, i_27)])))).
+  (* Return Effects *)
+  Have: (memcpy(Init_114, a_3, Init_undef_23, a_3, 16) = Init_115) /\
+      (memcpy(Mf32_68, a_3, Mf32_undef_23, a_3, 16) = Mf32_0).
+  (* Initializer *)
+  Init: Mf32_0[shift_float32(shiftfield_F6_lane(a_3), 0)] = a.
+  (* Assertion 'next_scalar_loaded0' *)
+  Have: P_ext_same(a, a_2).
+}
+Prove: P_ext_same(Mf32_0[a_7], a_2).
+
+
+
+'next_scalar_local0' ("rvv.c", line 89):
+(* Assertion 'stage3_vl' *)
+  Have: (x = (if (x_1 <= 3) then x_1 else 4)) /\ (0 < x) /\ (x <= x_1).
+  (* Assertion 'stage3_store_range' *)
+  Have: (x_1 <= x_2) /\ (x <= x_1).
+  (* Assertion 'next_bias_address' *)
+  Have: a_1 = shift_float32(Mptr_0[a_10], 16 * ((x_2 - x_1) / 4)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_48, a_2, 1).
+  (* Initializer *)
+  Init: (Init_113[a_4]=true).
+  (* Initializer *)
+  Init: Mf32_67[a_2] = Mf32_67[a_4].
+  Have: (Init_113 = Init_114) /\ (Malloc_48 = Malloc_49) /\
+      (Mf32_67 = Mf32_68) /\ (Mint_10 = Mint_9).
+  (* Call '__riscv_vle32_v_f32m4' *)
+  Have: (Load_S6(a_7, Mf32_0) = __riscv_vle32_v_f32m4_0) /\ (x <= 16) /\
+      valid_rd(Malloc_48, a_2, x) /\
+      (forall i_27 : Z. ((0 <= i_27) -> ((i_27 < x) ->
+       P_ext_same((__riscv_vle32_v_f32m4_0.F6_lane)[i_27],
+         Mf32_68[shift_float32(a_1, i_27)])))).
+  (* Return Effects *)
+  Have: (memcpy(Init_114, a_7, Init_undef_23, a_7, 16) = Init_115) /\
+      (memcpy(Mf32_68, a_7, Mf32_undef_23, a_7, 16) = Mf32_0).
+  (* Initializer *)
+  Init: a_8 = a_6.
+  (* Assertion 'next_scalar_loaded0' *)
+  Have: P_ext_same(a_6, a_5).
+  (* Assertion 'next_scalar_frame0' *)
+  Have: P_ext_same(a_3, a_5).
+}
+Prove: P_ext_same(a_8, a_3).
+

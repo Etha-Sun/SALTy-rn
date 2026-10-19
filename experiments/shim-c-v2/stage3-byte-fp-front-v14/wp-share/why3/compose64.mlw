@@ -1,0 +1,20 @@
+module Compose64Cuts
+ use int.Int
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use nativebv.NativeBV
+ use ieee_float.Float64 as FP
+ use prerequisites.BVInverse64
+ use prerequisites.IntRoundtrip64
+ use interfaces.Interface64
+ let lemma checked_integer_inverse64 (n:int) (seed:int) : unit
+  ensures { 0 <= n < 18446744073709551616 /\ not FP.is_nan (decode64 n) -> encode64 (decode64 n) seed = n }
+ = interface64 n (decode64 n) seed;
+   assert { decode64 n = decode_bv64 (of_int64 n) };
+   assert { encode64 (decode64 n) seed = to_uint64 (encode_bv64 (decode_bv64 (of_int64 n)) (of_int64 seed)) };
+   bv_inverse64 (of_int64 n) (of_int64 seed);
+   assert { not FP.is_nan (decode64 n) -> encode_bv64 (decode_bv64 (of_int64 n)) (of_int64 seed) = of_int64 n };
+   assert { not FP.is_nan (decode64 n) -> encode64 (decode64 n) seed = to_uint64 (of_int64 n) };
+   int_roundtrip64 n;
+   assert { 0 <= n < 18446744073709551616 -> to_uint64 (of_int64 n) = n }
+end

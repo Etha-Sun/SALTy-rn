@@ -1,0 +1,53 @@
+--- r17/fp_memory_m4.c
++++ r18/fp_memory_m4.c
+@@ -5,7 +5,7 @@
+ */
+ /*@ ghost
+  /@ assigns \nothing;
+-    ensures next_m4_projection0: \valid_read(p) ==> ext_same(p->lane[0],next_m4_lane0(*p)); @/
++    ensures next_m4_projection0: ext_same(p->lane[0],next_m4_lane0(*p)); @/
+  static void next_m4_project(const vfloat32m4_t *p) {}
+ */
+ 
+--- r17/rvv.c
++++ r18/rvv.c
+@@ -54,7 +54,9 @@
+ #line 27 "./rvv.c"
+ #line 27 "./rvv.c"
+ #line 27 "./rvv.c"
++#line 27 "./rvv.c"
+   assert(channels != 0);
++#line 28 "./rvv.c"
+ #line 28 "./rvv.c"
+ #line 28 "./rvv.c"
+ #line 28 "./rvv.c"
+@@ -93,6 +95,7 @@
+ #line 32 "./rvv.c"
+ #line 32 "./rvv.c"
+ #line 32 "./rvv.c"
++#line 32 "./rvv.c"
+     assert(i0 != NULL);
+     if XNN_UNPREDICTABLE(i0 != zero) {
+       i0 = (const float*) ((uintptr_t) i0 + input_offset);
+@@ -110,11 +113,13 @@
+ #line 37 "./rvv.c"
+ #line 37 "./rvv.c"
+ #line 37 "./rvv.c"
++#line 37 "./rvv.c"
+     assert(i1 != NULL);
+     if XNN_UNPREDICTABLE(i1 != zero) {
+       i1 = (const float*) ((uintptr_t) i1 + input_offset);
+     }
+     const float* i2 = input[2];
++#line 42 "./rvv.c"
+ #line 42 "./rvv.c"
+ #line 42 "./rvv.c"
+ #line 42 "./rvv.c"
+@@ -172,7 +177,6 @@
+       /*@ ghost next_bias_before_load: ; */
+       vfloat32m4_t vacc = __riscv_vle32_v_f32m4(w, vl);
+       /*@ assert next_predicate_loaded0: next_m4_bias0(vacc,\at(w[0],next_bias_before_load)); */
+-      /*@ assert next_projection_valid: \valid_read(&vacc); */
+       /*@ ghost next_m4_project(&vacc); */
+       /*@ assert next_prestate_loaded0: ext_same(vacc.lane[0],\at(w[0],next_bias_before_load)); */
+       /*@ assert next_bias_local: \forall integer j;0<=j<vl ==> ext_same(vacc.lane[j],w[j]); */

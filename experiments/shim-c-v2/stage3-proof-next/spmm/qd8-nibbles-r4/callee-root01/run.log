@@ -1,0 +1,2698 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/observer-new/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-strategy-engine", "-wp-debug", "1", "-wp-msg-key", "script:allgoals,strategy", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-fct", "bits_i8,__riscv_vsll_vx_i8m2,__riscv_vand_vx_i8m2", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r4/callee-root01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r4/.build/callee-root01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r4/.build/callee-root01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r4/.build/callee-root01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function bits_i8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vsll_vx_i8m2
+[rte:annot] annotating function __riscv_vand_vx_i8m2
+[wp] quantized.c:14: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] 47 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition ("quantized.c", line 13) in 'bits_i8':
+  quantized.c:14: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+  Let a = global(L_r_6889).
+  Let a_1 = shift_sint8(a, 0).
+  Let a_2 = memcpy(Mchar_0, a_1, Mchar_undef_0, a_1, 1).
+  Let m = Malloc_0[P_u_6886 <- 1][L_r_6889 <- 1].
+  Let x = Mint_0[global(P_u_6886)].
+  Let x_1 = Mchar_undef_0[a].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint8_chunk(Mint_0) /\ is_uint8(x) /\
+        is_sint8(x_1) /\ is_sint8_chunk(a_2).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (a_1 != shift_sint8(w, 0)) /\
+        (L_memcmp(Mchar_0, a_2, a, w, 1) = 0) /\ P_valid_or_empty(m, a, 1) /\
+        P_valid_read_or_empty(m, w, 1).
+  }
+  Prove: x_1 = to_sint8(x).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Strategy Stage3Array: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Trying
+    \tactic("Wp.array",
+      \ingoal(\target:A[I -> V][J]),
+      \select(\target),
+      \children(Stage3Child)
+      )
+[wp:strategy] [typed_raw_fma_complex_fp_bits_i8_ensures] Trying Stage3Child
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Strategy Stage3Child: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Trying \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Trying \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Strategy Stage3Child: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_bits_i8_ensures] Strategy Stage3Array: failed
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i8_ensures (Qed 38ms) (CVC5) (Stronger)
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'bits_i8':
+  Call Effect at line 14
+  quantized.c:14: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+  Let a = global(L_r_6889).
+  Let a_1 = shift_sint8(a, 0).
+  Let a_2 = memcpy(Mchar_0, a_1, Mchar_undef_0, a_1, 1).
+  Let m = Malloc_0[P_u_6886 <- 1][L_r_6889 <- 1].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8(Mchar_undef_0[a]) /\
+        is_sint8_chunk(a_2).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (a_1 != shift_sint8(w, 0)) /\
+        (L_memcmp(Mchar_0, a_2, a, w, 1) = 0) /\ P_valid_or_empty(m, a, 1) /\
+        P_valid_read_or_empty(m, w, 1).
+  }
+  Prove: invalid(Malloc_0, a_1, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'bits_i8' at call 'memcpy' ("quantized.c", line 14)
+  :
+  quantized.c:14: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: P_valid_or_empty(Malloc_0[P_u_6886 <- 1][L_r_6889 <- 1],
+           global(L_r_6889), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'bits_i8' at call 'memcpy' ("quantized.c", line 14)
+  :
+  quantized.c:14: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: P_valid_read_or_empty(Malloc_0[P_u_6886 <- 1][L_r_6889 <- 1], w, 1).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i8_call_memcpy_requires_valid_src (Qed 30ms) (Z3) (Stronger)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'bits_i8' at call 'memcpy' ("quantized.c", line 14)
+  :
+  quantized.c:14: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+  Prove: shift_sint8(global(L_r_6889), 0) != shift_sint8(w, 0).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i8_call_memcpy_requires_separation (Qed 41ms) (Z3) (Stronger)
+[wp:script:allgoals] 
+  Goal Post-condition ("quantized.c", line 41) in '__riscv_vsll_vx_i8m2':
+  Let x = Mint_1[global(P_vl_6979)].
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_1 = Mint_0[global(P_n_6978)].
+  Let a_3 = global(L_i_6983).
+  Let a_4 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_3 <- v]) /\ is_uint32(x_1) /\ is_uint64(x) /\
+        is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_5 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_5] = to_sint8(lsl(to_uint8(Mchar_0[a_5]), x_1))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_5 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_5] = Mchar_0[a_5]))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: a_1[a_4] = to_sint8(lsl(to_uint8(Mchar_0[a_4]), x_1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 42):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 42):
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x = Mint_1[global(P_n_6978)].
+  Let x_1 = lsl(to_uint8(a_4), x).
+  Let x_2 = Mint_0[global(P_vl_6979)].
+  Let a_5 = global(L_i_6983).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_1) /\
+        is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint32(x) /\ is_uint64(x_2) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_1[a_3 <- to_sint8(x_1)]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_2 <= 32.
+    (* Pre-condition *)
+    Have: x <= 7.
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_2.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_2).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_6] = to_sint8(lsl(to_uint8(Mchar_0[a_6]), x))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_6] = Mchar_0[a_6]))).
+    (* Then *)
+    Have: v < x_2.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x) /\ (x <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_1 <= 2147483647.
+  }
+  Prove: to_uint64(1 + v) <= x_2.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 42):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 42):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_1[global(P_vl_6979)].
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x_2 = Mint_0[global(P_n_6978)].
+  Let x_3 = lsl(to_uint8(a_4), x_2).
+  Let a_5 = global(L_i_6983).
+  Let a_6 = a_1[a_3 <- to_sint8(x_3)].
+  Let a_7 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint32(x_2) /\
+        is_uint64(x_1) /\ is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_6).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: x_2 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_8] = to_sint8(lsl(to_uint8(Mchar_0[a_8]), x_2))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_8] = Mchar_0[a_8]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x_2) /\ (x_2 <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_3 <= 2147483647.
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: a_6[a_7] = to_sint8(lsl(to_uint8(Mchar_0[a_7]), x_2)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 42):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 42):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x_1 = Mint_0[global(P_n_6978)].
+  Let x_2 = lsl(to_uint8(a_4), x_1).
+  Let a_5 = a_1[a_3 <- to_sint8(x_2)].
+  Let x_3 = Mint_1[global(P_vl_6979)].
+  Let a_6 = global(L_i_6983).
+  Let a_7 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_6 <- v]) /\ is_uint32(x_1) /\
+        is_uint64(x_3) /\ is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_5).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (x <= i) /\ (i <= 31).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_3 <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_3.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_3).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_8] = to_sint8(lsl(to_uint8(Mchar_0[a_8]), x_1))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_8] = Mchar_0[a_8]))).
+    (* Then *)
+    Have: v < x_3.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x_1) /\ (x_1 <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_2 <= 2147483647.
+    (* Invariant *)
+    Have: x <= x_3.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < x) ->
+        (a_5[a_8] = to_sint8(lsl(to_uint8(Mchar_0[a_8]), x_1))))).
+  }
+  Prove: a_5[a_7] = Mchar_0[a_7].
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 42):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 42):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,shift' ("quantized.c", line 42):
+  Let x = Mint_1[global(P_vl_6979)].
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_1 = Mint_0[global(P_n_6978)].
+  Let a_3 = global(L_i_6983).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_3 <- v]) /\ is_uint32(x_1) /\ is_uint64(x) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_1[shift_sint8(a_2, v)]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. let a_4 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_4] = to_sint8(lsl(to_uint8(Mchar_0[a_4]), x_1))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_4 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_4] = Mchar_0[a_4]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: (0 <= x_1) /\ (x_1 <= 31).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("quantized.c", line 42):
+  Let x = Mint_0[global(P_n_6978)].
+  Let x_1 = Mint_1[global(P_vl_6979)].
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = global(L_i_6983).
+  Let a_4 = a_1[shift_sint8(a_2, v)].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_3 <- v]) /\ is_uint32(x) /\ is_uint64(x_1) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: x <= 7.
+    (* Initializer *)
+    Init: Mint_1[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_5] = to_sint8(lsl(to_uint8(Mchar_0[a_5]), x))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_5] = Mchar_0[a_5]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x) /\ (x <= 31).
+  }
+  Prove: lsl(to_uint8(a_4), x) <= 2147483647.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Strategy Stage3Array: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Trying
+    \tactic("Wp.array",
+      \ingoal(\target:A[I -> V][J]),
+      \select(\target),
+      \children(Stage3Child)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Trying
+    Stage3Child
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Strategy Stage3Child: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Strategy Stage3Child: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow] Strategy Stage3Array: failed
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vsll_vx_i8m2_assert_rte_signed_overflow (Qed 48ms) (Z3)
+[wp:script:allgoals] 
+  Goal Loop assigns ("quantized.c", line 42) (2/2):
+  Call Result at line 42
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vsll_vx_i8m2':
+  Effect at line 42
+  Let x = Mint_1[global(P_vl_6979)].
+  Let a = global(L_i_6983).
+  Let x_1 = Mint_0[global(P_n_6978)].
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint64_chunk(Mint_1) /\
+        is_uint32(x_1) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(P_a_6977), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vsll_vx_i8m2' (2/2):
+  Effect at line 42
+  Let x = Mint_1[global(P_vl_6979)].
+  Let a = global(L_i_6983).
+  Let x_1 = Mint_0[global(P_n_6978)].
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint64_chunk(Mint_1) /\
+        is_uint32(x_1) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(P_a_6977), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("quantized.c", line 42):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("quantized.c", line 42):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_6977).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x_1 = Mint_0[global(P_n_6978)].
+  Let x_2 = lsl(to_uint8(a_4), x_1).
+  Let a_5 = a_1[a_3 <- to_sint8(x_2)].
+  Let x_3 = Mint_1[global(P_vl_6979)].
+  Let a_6 = global(L_i_6983).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_6 <- v]) /\ is_uint32(x_1) /\
+        is_uint64(x_3) /\ is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_5).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_3 <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Initializer *)
+    Init: Mint_1[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_3.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_3).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_7] = to_sint8(lsl(to_uint8(Mchar_0[a_7]), x_1))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_7] = Mchar_0[a_7]))).
+    (* Then *)
+    Have: v < x_3.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x_1) /\ (x_1 <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_2 <= 2147483647.
+    (* Invariant *)
+    Have: x <= x_3.
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < x) -> (a_5[a_7] = to_sint8(lsl(to_uint8(Mchar_0[a_7]), x_1))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((x <= i) ->
+        ((i <= 31) -> (a_5[a_7] = Mchar_0[a_7]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("quantized.c", line 44) in '__riscv_vand_vx_i8m2':
+  Let x = Mint_0[global(P_vl_6992)].
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_1 = to_uint8(Mchar_0[global(P_x_6991)]).
+  Let a_3 = global(L_i_6996).
+  Let a_4 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_3 <- v]) /\ is_uint64(x) /\
+        is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_5 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_5] = to_sint8(land(x_1, to_uint8(Mchar_0[a_5])))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_5 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_5] = Mchar_0[a_5]))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: a_1[a_4] = to_sint8(land(x_1, to_uint8(Mchar_0[a_4]))).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 45):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 45):
+  Let x = Mint_0[global(P_vl_6992)].
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_1 = Mchar_0[global(P_x_6991)].
+  Let x_2 = to_uint8(x_1).
+  Let a_3 = global(L_i_6996).
+  Let a_4 = shift_sint8(a_2, v).
+  Let a_5 = a_1[a_4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_3 <- v]) /\ is_sint8(x_1) /\ is_uint64(x) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_5) /\
+        is_sint8_chunk(a_1[a_4
+                         <- to_sint8(land(255, land(x_2, to_uint8(a_5))))]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_6] = to_sint8(land(x_2, to_uint8(Mchar_0[a_6])))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_6] = Mchar_0[a_6]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: to_uint64(1 + v) <= x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 45):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 45):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_0[global(P_vl_6992)].
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_2 = Mchar_0[global(P_x_6991)].
+  Let x_3 = to_uint8(x_2).
+  Let a_3 = global(L_i_6996).
+  Let a_4 = shift_sint8(a_2, v).
+  Let a_5 = a_1[a_4].
+  Let a_6 = a_1[a_4 <- to_sint8(land(255, land(x_3, to_uint8(a_5))))].
+  Let a_7 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_3 <- v]) /\ is_sint8(x_2) /\ is_uint64(x_1) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_5) /\ is_sint8_chunk(a_6).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_8] = to_sint8(land(x_3, to_uint8(Mchar_0[a_8])))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_8] = Mchar_0[a_8]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: a_6[a_7] = to_sint8(land(x_3, to_uint8(Mchar_0[a_7]))).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved] Strategy Stage3Array: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved] Trying
+    \tactic("Wp.array",
+      \ingoal(\target:A[I -> V][J]),
+      \select(\target),
+      \children(Stage3Child)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved] Strategy Stage3Array: proved
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 45):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 45):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let x_1 = Mchar_0[global(P_x_6991)].
+  Let x_2 = to_uint8(x_1).
+  Let a_4 = a_1[a_3].
+  Let a_5 = a_1[a_3 <- to_sint8(land(255, land(x_2, to_uint8(a_4))))].
+  Let x_3 = Mint_0[global(P_vl_6992)].
+  Let a_6 = global(L_i_6996).
+  Let a_7 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_6 <- v]) /\ is_sint8(x_1) /\ is_uint64(x_3) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4) /\ is_sint8_chunk(a_5).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (x <= i) /\ (i <= 31).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_3 <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_3.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_3).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_8] = to_sint8(land(x_2, to_uint8(Mchar_0[a_8])))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_8] = Mchar_0[a_8]))).
+    (* Then *)
+    Have: v < x_3.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_3.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < x) ->
+        (a_5[a_8] = to_sint8(land(x_2, to_uint8(Mchar_0[a_8])))))).
+  }
+  Prove: a_5[a_7] = Mchar_0[a_7].
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 45):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 45):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("quantized.c", line 45) (2/2):
+  Call Result at line 45
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vand_vx_i8m2':
+  Effect at line 45
+  Let x = Mint_0[global(P_vl_6992)].
+  Let a = global(L_i_6996).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(P_a_6990), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vand_vx_i8m2' (2/2):
+  Effect at line 45
+  Let x = Mint_0[global(P_vl_6992)].
+  Let a = global(L_i_6996).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(P_a_6990), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("quantized.c", line 45):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("quantized.c", line 45):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let x_1 = Mchar_0[global(P_x_6991)].
+  Let x_2 = to_uint8(x_1).
+  Let a_4 = a_1[a_3].
+  Let a_5 = a_1[a_3 <- to_sint8(land(255, land(x_2, to_uint8(a_4))))].
+  Let x_3 = Mint_0[global(P_vl_6992)].
+  Let a_6 = global(L_i_6996).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_6 <- v]) /\ is_sint8(x_1) /\ is_uint64(x_3) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4) /\ is_sint8_chunk(a_5).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_3 <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_3.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_3).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_7] = to_sint8(land(x_2, to_uint8(Mchar_0[a_7])))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_7] = Mchar_0[a_7]))).
+    (* Then *)
+    Have: v < x_3.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_3.
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < x) -> (a_5[a_7] = to_sint8(land(x_2, to_uint8(Mchar_0[a_7])))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((x <= i) ->
+        ((i <= 31) -> (a_5[a_7] = Mchar_0[a_7]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0 (generated by wp):
+  Let x = to_uint64(1 + i).
+  Let x_1 = Mint_0[global(P_vl_6992)].
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_2 = Mchar_0[global(P_x_6991)].
+  Let x_3 = to_uint8(x_2).
+  Let a_3 = global(L_i_6996).
+  Let a_4 = shift_sint8(a_2, i).
+  Let a_5 = a_1[a_4].
+  Let x_4 = to_sint8(land(255, land(x_3, to_uint8(a_5)))).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(i) /\
+        is_uint64_chunk(Mint_0[a_3 <- i]) /\ is_sint8(x_2) /\ is_uint64(x_1) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_5) /\
+        is_sint8_chunk(a_1[a_4 <- x_4]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: i <= x_1.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_6 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < i) ->
+        (a_1[a_6] = to_sint8(land(x_3, to_uint8(Mchar_0[a_6])))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_6 = shift_sint8(a_2, i_1) in ((i <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_6] = Mchar_0[a_6]))).
+    (* Then *)
+    Have: i < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: i <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: x_4 = to_sint8(land(x_3, to_uint8(Mchar_0[a_4]))).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Strategy Stage3Child: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Strategy Stage3Child: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Strategy Stage3Array: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Trying
+    \tactic("Wp.array",
+      \ingoal(\target:A[I -> V][J]),
+      \select(\target),
+      \children(Stage3Child)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Trying
+    Stage3Child
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Strategy Stage3Child: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Strategy Stage3Child: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-0] Strategy Stage3Array: failed
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved-1 (generated by wp):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_0[global(P_vl_6992)].
+  Let a = global(P_a_6990).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_2 = Mchar_0[global(P_x_6991)].
+  Let x_3 = to_uint8(x_2).
+  Let a_3 = global(L_i_6996).
+  Let a_4 = shift_sint8(a_2, v).
+  Let a_5 = a_1[a_4].
+  Let a_6 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_3 <- v]) /\ is_sint8(x_2) /\ is_uint64(x_1) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_5) /\
+        is_sint8_chunk(a_1[a_4
+                         <- to_sint8(land(255, land(x_3, to_uint8(a_5))))]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7327), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7328), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7329), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7330), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7331), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7332), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7333), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7334), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7335), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7336), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7337), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7338), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7339), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7340), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7341), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7342), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7723), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7731), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7745), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7753), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7779), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7780), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7781), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7782), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7783), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7784), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7785), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7786), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7787), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7788), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7789), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7790), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7791), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7792), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7793), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7794), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_7] = to_sint8(land(x_3, to_uint8(Mchar_0[a_7])))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_7] = Mchar_0[a_7]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+    (* Diff Indices *)
+    When: v != i.
+  }
+  Prove: a_1[a_6] = to_sint8(land(x_3, to_uint8(Mchar_0[a_6]))).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vand_vx_i8m2_loop_invariant_2_preserved (Tactic) (Qed 119ms) (CVC5 1/2 130ms)
+[wp] Proved goals:   42 / 47
+  Qed:            26 (30ms-24ms-119ms)
+  CVC5 1.2.1:     16 (53ms-211ms-482ms)
+  Timeout:         5
+[wp] Updated session
+   - 5 new scripts to complete
+[wp] Logging keys: strategy,script:allgoals.

@@ -1,0 +1,2220 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/observer-new/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-strategy-engine", "-wp-debug", "1", "-wp-msg-key", "script:allgoals,strategy", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-fct", "qd8_shift8_bound,__riscv_vsll_vx_i8m2", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/shift-callee-root01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/.build/shift-callee-root01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/.build/shift-callee-root01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/.build/shift-callee-root01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vsll_vx_i8m2
+[rte:annot] annotating function qd8_shift8_bound
+[wp] 64 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition ("quantized.c", line 80) in '__riscv_vsll_vx_i8m2':
+  Let x = Mint_1[global(P_vl_7015)].
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_1 = Mint_0[global(P_n_7014)].
+  Let a_3 = global(L_i_7019).
+  Let a_4 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_3 <- v]) /\ is_uint32(x_1) /\ is_uint64(x) /\
+        is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i_1 : Z. let x_2 = lsl(i_1, x_1) in ((0 <= i_1) ->
+        ((i_1 <= 255) -> ((0 <= x_2) /\ (x_2 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_5 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_5] = to_sint8(lsl(to_uint8(Mchar_0[a_5]), x_1))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_5 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_5] = Mchar_0[a_5]))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: a_1[a_4] = to_sint8(lsl(to_uint8(Mchar_0[a_4]), x_1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 81):
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x = Mint_1[global(P_n_7014)].
+  Let x_1 = lsl(to_uint8(a_4), x).
+  Let x_2 = Mint_0[global(P_vl_7015)].
+  Let a_5 = global(L_i_7019).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_1) /\
+        is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint32(x) /\ is_uint64(x_2) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_1[a_3 <- to_sint8(x_1)]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_2 <= 32.
+    (* Pre-condition *)
+    Have: x <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i : Z. let x_3 = lsl(i, x) in ((0 <= i) -> ((i <= 255) ->
+        ((0 <= x_3) /\ (x_3 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_2.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_2).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_6] = to_sint8(lsl(to_uint8(Mchar_0[a_6]), x))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_6] = Mchar_0[a_6]))).
+    (* Then *)
+    Have: v < x_2.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x) /\ (x <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_1 <= 2147483647.
+  }
+  Prove: to_uint64(1 + v) <= x_2.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 81):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_1[global(P_vl_7015)].
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x_2 = Mint_0[global(P_n_7014)].
+  Let x_3 = lsl(to_uint8(a_4), x_2).
+  Let a_5 = global(L_i_7019).
+  Let a_6 = a_1[a_3 <- to_sint8(x_3)].
+  Let a_7 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint32(x_2) /\
+        is_uint64(x_1) /\ is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_6).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: x_2 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i_1 : Z. let x_4 = lsl(i_1, x_2) in ((0 <= i_1) ->
+        ((i_1 <= 255) -> ((0 <= x_4) /\ (x_4 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_8] = to_sint8(lsl(to_uint8(Mchar_0[a_8]), x_2))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_8] = Mchar_0[a_8]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x_2) /\ (x_2 <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_3 <= 2147483647.
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: a_6[a_7] = to_sint8(lsl(to_uint8(Mchar_0[a_7]), x_2)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("quantized.c", line 81):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x_1 = Mint_0[global(P_n_7014)].
+  Let x_2 = lsl(to_uint8(a_4), x_1).
+  Let a_5 = a_1[a_3 <- to_sint8(x_2)].
+  Let x_3 = Mint_1[global(P_vl_7015)].
+  Let a_6 = global(L_i_7019).
+  Let a_7 = shift_sint8(a_2, i).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_6 <- v]) /\ is_uint32(x_1) /\
+        is_uint64(x_3) /\ is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_5).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (x <= i) /\ (i <= 31).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_3 <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i_1 : Z. let x_4 = lsl(i_1, x_1) in ((0 <= i_1) ->
+        ((i_1 <= 255) -> ((0 <= x_4) /\ (x_4 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_3.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_3).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_1[a_8] = to_sint8(lsl(to_uint8(Mchar_0[a_8]), x_1))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_8] = Mchar_0[a_8]))).
+    (* Then *)
+    Have: v < x_3.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x_1) /\ (x_1 <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_2 <= 2147483647.
+    (* Invariant *)
+    Have: x <= x_3.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_8 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < x) ->
+        (a_5[a_8] = to_sint8(lsl(to_uint8(Mchar_0[a_8]), x_1))))).
+  }
+  Prove: a_5[a_7] = Mchar_0[a_7].
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'qd8_shift8_all' ("quantized.c", line 81):
+  Let x = Mint_0[global(P_n_7014)].
+  Let x_1 = Mint_1[global(P_vl_7015)].
+  Let x_2 = lsl(i, x).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint64_chunk(Mint_1) /\ is_uint32(x) /\
+        is_uint64(x_1).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: x <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i_1 : Z. let x_3 = lsl(i_1, x) in ((0 <= i_1) ->
+        ((i_1 <= 255) -> ((0 <= x_3) /\ (x_3 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[global(L_i_7019)] = 0.
+  }
+  Prove: (0 <= x_2) /\ (x_2 <= 32640).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'qd8_shift8_all' ("quantized.c", line 81):
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x = Mint_0[global(P_n_7014)].
+  Let x_1 = lsl(to_uint8(a_4), x).
+  Let x_2 = Mint_1[global(P_vl_7015)].
+  Let a_5 = global(L_i_7019).
+  Let x_3 = lsl(i, x).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint32(x) /\ is_uint64(x_2) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_1[a_3 <- to_sint8(x_1)]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i_1)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i_1)] = 0))).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i_1)] = 0))).
+    (* Pre-condition *)
+    Have: x_2 <= 32.
+    (* Pre-condition *)
+    Have: x <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i_1 : Z. let x_4 = lsl(i_1, x) in ((0 <= i_1) ->
+        ((i_1 <= 255) -> ((0 <= x_4) /\ (x_4 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_2.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_2).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_6 = shift_sint8(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) -> (a_1[a_6] = to_sint8(lsl(to_uint8(Mchar_0[a_6]), x))))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_6 = shift_sint8(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 <= 31) -> (a_1[a_6] = Mchar_0[a_6]))).
+    (* Then *)
+    Have: v < x_2.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x) /\ (x <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_1 <= 2147483647.
+  }
+  Prove: (0 <= x_3) /\ (x_3 <= 32640).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'qd8_shift8_n' ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'qd8_shift8_n' ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,shift' ("quantized.c", line 81):
+  Let x = Mint_1[global(P_vl_7015)].
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let x_1 = Mint_0[global(P_n_7014)].
+  Let a_3 = global(L_i_7019).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_3 <- v]) /\ is_uint32(x_1) /\ is_uint64(x) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_1[shift_sint8(a_2, v)]).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i)] = 0))).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i : Z. let x_2 = lsl(i, x_1) in ((0 <= i) -> ((i <= 255) ->
+        ((0 <= x_2) /\ (x_2 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. let a_4 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_4] = to_sint8(lsl(to_uint8(Mchar_0[a_4]), x_1))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_4 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_4] = Mchar_0[a_4]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: (0 <= x_1) /\ (x_1 <= 31).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("quantized.c", line 81):
+  Let x = Mint_0[global(P_n_7014)].
+  Let x_1 = Mint_1[global(P_vl_7015)].
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = global(L_i_7019).
+  Let a_4 = a_1[shift_sint8(a_2, v)].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_3 <- v]) /\ is_uint32(x) /\ is_uint64(x_1) /\
+        is_sint8_chunk(a_1) /\ is_sint8(a_4).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: x <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i : Z. let x_2 = lsl(i, x) in ((0 <= i) -> ((i <= 255) ->
+        ((0 <= x_2) /\ (x_2 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_5] = to_sint8(lsl(to_uint8(Mchar_0[a_5]), x))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_5] = Mchar_0[a_5]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x) /\ (x <= 31).
+  }
+  Prove: lsl(to_uint8(a_4), x) <= 2147483647.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("quantized.c", line 81) (2/2):
+  Call Result at line 81
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vsll_vx_i8m2' (2/2):
+  Effect at line 81
+  Let x = Mint_1[global(P_vl_7015)].
+  Let a = global(L_i_7019).
+  Let x_1 = Mint_0[global(P_n_7014)].
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint64_chunk(Mint_1) /\
+        is_uint32(x_1) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i : Z. let x_2 = lsl(i, x_1) in ((0 <= i) -> ((i <= 255) ->
+        ((0 <= x_2) /\ (x_2 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(P_a_7013), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vsll_vx_i8m2' (2/2):
+  Effect at line 81
+  Let x = Mint_1[global(P_vl_7015)].
+  Let a = global(L_i_7019).
+  Let x_1 = Mint_0[global(P_n_7014)].
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint64_chunk(Mint_1) /\
+        is_uint32(x_1) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i : Z. let x_2 = lsl(i, x_1) in ((0 <= i) -> ((i <= 255) ->
+        ((0 <= x_2) /\ (x_2 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(P_a_7013), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("quantized.c", line 81):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("quantized.c", line 81):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_7013).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 32).
+  Let a_2 = shiftfield_F28_lane(a).
+  Let a_3 = shift_sint8(a_2, v).
+  Let a_4 = a_1[a_3].
+  Let x_1 = Mint_0[global(P_n_7014)].
+  Let x_2 = lsl(to_uint8(a_4), x_1).
+  Let a_5 = a_1[a_3 <- to_sint8(x_2)].
+  Let x_3 = Mint_1[global(P_vl_7015)].
+  Let a_6 = global(L_i_7019).
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint64_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_6 <- v]) /\ is_uint32(x_1) /\
+        is_uint64(x_3) /\ is_sint8_chunk(a_1) /\ is_sint8(a_4) /\
+        is_sint8_chunk(a_5).
+    (* Heap *)
+    Type: sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7364), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7365), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7366), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7367), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7368), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7369), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7370), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7371), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7372), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7373), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7374), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7375), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7376), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7377), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7378), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7379), i)] = 0))).
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string17_7760), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string18_7768), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string19_7782), 0)] = 0.
+    (* Initializer *)
+    Init: Mchar_0[shift_sint8(global(K___fc_lit_string20_7790), 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string21_7816), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string22_7817), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string23_7818), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string24_7819), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string25_7820), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string26_7821), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string27_7822), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string28_7823), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 24) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string29_7824), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string30_7825), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string31_7826), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string32_7827), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string33_7828), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string34_7829), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string35_7830), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string36_7831), i)] = 0))).
+    (* Pre-condition *)
+    Have: x_3 <= 32.
+    (* Pre-condition *)
+    Have: x_1 <= 7.
+    (* Call 'qd8_shift8_bound' *)
+    Have: forall i : Z. let x_4 = lsl(i, x_1) in ((0 <= i) -> ((i <= 255) ->
+        ((0 <= x_4) /\ (x_4 <= 32640)))).
+    (* Initializer *)
+    Init: Mint_1[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_3.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_3).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < v) -> (a_1[a_7] = to_sint8(lsl(to_uint8(Mchar_0[a_7]), x_1))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((v <= i) ->
+        ((i <= 31) -> (a_1[a_7] = Mchar_0[a_7]))).
+    (* Then *)
+    Have: v < x_3.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,shift' *)
+    Have: (0 <= x_1) /\ (x_1 <= 31).
+    (* Assertion 'rte,signed_overflow' *)
+    Have: x_2 <= 2147483647.
+    (* Invariant *)
+    Have: x <= x_3.
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((0 <= i) ->
+        ((i < x) -> (a_5[a_7] = to_sint8(lsl(to_uint8(Mchar_0[a_7]), x_1))))).
+    (* Invariant *)
+    Have: forall i : Z. let a_7 = shift_sint8(a_2, i) in ((x <= i) ->
+        ((i <= 31) -> (a_5[a_7] = Mchar_0[a_7]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (1/9):
+  Tags: Default.
+  Let x = Mint_0[global(P_n_6857)].
+  Let x_1 = lsl(i, x).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint32(x).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255) /\ (x <= 7).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Default *)
+    Have: (x != 0) /\ (x != 1) /\ (x != 2) /\ (x != 3) /\ (x != 4) /\
+        (x != 5) /\ (x != 6) /\ (x != 7).
+  }
+  Prove: (0 <= x_1) /\ (x_1 <= 32640).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (2/9):
+  Tags: Case 7.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 7 *)
+    Have: Mint_0[global(P_n_6857)] = 7.
+  }
+  Prove: lsl(i, 7) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (3/9):
+  Tags: Case 6.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 6 *)
+    Have: Mint_0[global(P_n_6857)] = 6.
+  }
+  Prove: lsl(i, 6) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (4/9):
+  Tags: Case 5.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 5 *)
+    Have: Mint_0[global(P_n_6857)] = 5.
+  }
+  Prove: lsl(i, 5) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (5/9):
+  Tags: Case 4.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 4 *)
+    Have: Mint_0[global(P_n_6857)] = 4.
+  }
+  Prove: lsl(i, 4) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (6/9):
+  Tags: Case 3.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 3 *)
+    Have: Mint_0[global(P_n_6857)] = 3.
+  }
+  Prove: lsl(i, 3) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (7/9):
+  Tags: Case 2.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 2 *)
+    Have: Mint_0[global(P_n_6857)] = 2.
+  }
+  Prove: lsl(i, 2) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (8/9):
+  Tags: Case 1.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 1 *)
+    Have: Mint_0[global(P_n_6857)] = 1.
+  }
+  Prove: lsl(i, 1) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (9/9):
+  Tags: Case 0.
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_1' ("quantized.c", line 8):
+  Assume { (* Goal *) When: (0 <= i) /\ (i <= 255). }
+  Prove: (2 * i) = lsl(i, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_2' ("quantized.c", line 9):
+  Assume { (* Goal *) When: (0 <= i) /\ (i <= 255). }
+  Prove: P_qd8_shift_same(lsl(i, 2), lsl(lsl(i, 1), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_2' ("quantized.c", line 10):
+  Let x = lsl(i, 1).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_2' ("quantized.c", line 11):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+  }
+  Prove: (4 * i) = lsl(i, 2).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_3' ("quantized.c", line 12):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 3), lsl(lsl(i, 2), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_3' ("quantized.c", line 13):
+  Let x = lsl(i, 2).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_3' ("quantized.c", line 14):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+  }
+  Prove: (8 * i) = lsl(i, 3).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_4' ("quantized.c", line 15):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 4), lsl(lsl(i, 3), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_4' ("quantized.c", line 16):
+  Let x = lsl(i, 3).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_4' ("quantized.c", line 17):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+  }
+  Prove: (16 * i) = lsl(i, 4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_5' ("quantized.c", line 18):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 5), lsl(lsl(i, 4), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_5' ("quantized.c", line 19):
+  Let x = lsl(i, 4).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_5' ("quantized.c", line 20):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+  }
+  Prove: (32 * i) = lsl(i, 5).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_6' ("quantized.c", line 21):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 6), lsl(lsl(i, 5), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_6' ("quantized.c", line 22):
+  Let x = lsl(i, 5).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_6' ("quantized.c", line 23):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+  }
+  Prove: (64 * i) = lsl(i, 6).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_7' ("quantized.c", line 24):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 7), lsl(lsl(i, 6), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_7' ("quantized.c", line 25):
+  Let x = lsl(i, 6).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_7' ("quantized.c", line 26):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+  }
+  Prove: (128 * i) = lsl(i, 7).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_0' ("quantized.c", line 28):
+  Tags: Case 0.
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_1' ("quantized.c", line 29):
+  Tags: Case 1.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 1 *)
+    Have: Mint_0[global(P_n_6857)] = 1.
+  }
+  Prove: lsl(i, 1) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_2' ("quantized.c", line 30):
+  Tags: Case 2.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 2 *)
+    Have: Mint_0[global(P_n_6857)] = 2.
+  }
+  Prove: lsl(i, 2) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_3' ("quantized.c", line 31):
+  Tags: Case 3.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 3 *)
+    Have: Mint_0[global(P_n_6857)] = 3.
+  }
+  Prove: lsl(i, 3) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_4' ("quantized.c", line 32):
+  Tags: Case 4.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 4 *)
+    Have: Mint_0[global(P_n_6857)] = 4.
+  }
+  Prove: lsl(i, 4) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_5' ("quantized.c", line 33):
+  Tags: Case 5.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 5 *)
+    Have: Mint_0[global(P_n_6857)] = 5.
+  }
+  Prove: lsl(i, 5) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_6' ("quantized.c", line 34):
+  Tags: Case 6.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 6 *)
+    Have: Mint_0[global(P_n_6857)] = 6.
+  }
+  Prove: lsl(i, 6) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_7' ("quantized.c", line 35):
+  Tags: Case 7.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 7 *)
+    Have: Mint_0[global(P_n_6857)] = 7.
+  }
+  Prove: lsl(i, 7) <= 32640.
+  
+  ------------------------------------------------------------
+[wp] Proved goals:   66 / 66
+  Terminating:     1
+  Unreachable:     1
+  Qed:            19 (0.73ms-29ms-74ms)
+  CVC5 1.2.1:     45 (82ms-751ms)
+[wp] Logging keys: strategy,script:allgoals.

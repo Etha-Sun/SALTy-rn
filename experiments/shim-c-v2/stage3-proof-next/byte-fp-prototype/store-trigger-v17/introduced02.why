@@ -1,0 +1,32 @@
+theory StoreTrigger32
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use why3.Bool.Bool *)
+  
+  (* use why3.Unit.Unit *)
+  
+  (* use int.Int *)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  (* use frama_c_wp.membytes_le.MemBytes *)
+  
+  (* use frama_c_wp.cfloat.Cfloat *)
+  
+  (* use frama_c_wp.bytefloat.Bytefloat *)
+  
+  (* use storeread.StoreRead32 *)
+  
+  goal checked_store_read32_trigger'vc :
+    forall m:int -> int -> int, a:addr, v:t, seed:int
+     [read_uint32 (write_uint32 m a (encode32 v seed)) a].
+     decode32 (read_uint32 (write_uint32 m a (encode32 v seed)) a) = v
+  
+  axiom checked_store_read32_trigger :
+    forall m:int -> int -> int, a:addr, v:t, seed:int
+     [read_uint32 (write_uint32 m a (encode32 v seed)) a].
+     decode32 (read_uint32 (write_uint32 m a (encode32 v seed)) a) = v
+  
+end
+

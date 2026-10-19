@@ -1,0 +1,852 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/observer-new/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-strategy-engine", "-wp-debug", "1", "-wp-msg-key", "script:allgoals,strategy", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-fct", "qd8_shift8_bound", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/shift-helper-root01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/.build/shift-helper-root01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/.build/shift-helper-root01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r7/.build/shift-helper-root01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function qd8_shift8_bound
+[wp] 38 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (1/9):
+  Tags: Default.
+  Let x = Mint_0[global(P_n_6857)].
+  Let x_1 = lsl(i, x).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint32(x).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255) /\ (x <= 7).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Default *)
+    Have: (x != 0) /\ (x != 1) /\ (x != 2) /\ (x != 3) /\ (x != 4) /\
+        (x != 5) /\ (x != 6) /\ (x != 7).
+  }
+  Prove: (0 <= x_1) /\ (x_1 <= 32640).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (2/9):
+  Tags: Case 7.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 7 *)
+    Have: Mint_0[global(P_n_6857)] = 7.
+  }
+  Prove: lsl(i, 7) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (3/9):
+  Tags: Case 6.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 6 *)
+    Have: Mint_0[global(P_n_6857)] = 6.
+  }
+  Prove: lsl(i, 6) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (4/9):
+  Tags: Case 5.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 5 *)
+    Have: Mint_0[global(P_n_6857)] = 5.
+  }
+  Prove: lsl(i, 5) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (5/9):
+  Tags: Case 4.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 4 *)
+    Have: Mint_0[global(P_n_6857)] = 4.
+  }
+  Prove: lsl(i, 4) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (6/9):
+  Tags: Case 3.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 3 *)
+    Have: Mint_0[global(P_n_6857)] = 3.
+  }
+  Prove: lsl(i, 3) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (7/9):
+  Tags: Case 2.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 2 *)
+    Have: Mint_0[global(P_n_6857)] = 2.
+  }
+  Prove: lsl(i, 2) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (8/9):
+  Tags: Case 1.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 1 *)
+    Have: Mint_0[global(P_n_6857)] = 1.
+  }
+  Prove: lsl(i, 1) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_shift8_bound_all' in 'qd8_shift8_bound' (9/9):
+  Tags: Case 0.
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_1' ("quantized.c", line 8):
+  Assume { (* Goal *) When: (0 <= i) /\ (i <= 255). }
+  Prove: (2 * i) = lsl(i, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_2' ("quantized.c", line 9):
+  Assume { (* Goal *) When: (0 <= i) /\ (i <= 255). }
+  Prove: P_qd8_shift_same(lsl(i, 2), lsl(lsl(i, 1), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_2' ("quantized.c", line 10):
+  Let x = lsl(i, 1).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_2' ("quantized.c", line 11):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+  }
+  Prove: (4 * i) = lsl(i, 2).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_3' ("quantized.c", line 12):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 3), lsl(lsl(i, 2), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_3' ("quantized.c", line 13):
+  Let x = lsl(i, 2).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_3' ("quantized.c", line 14):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+  }
+  Prove: (8 * i) = lsl(i, 3).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_4' ("quantized.c", line 15):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 4), lsl(lsl(i, 3), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_4' ("quantized.c", line 16):
+  Let x = lsl(i, 3).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_4' ("quantized.c", line 17):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+  }
+  Prove: (16 * i) = lsl(i, 4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_5' ("quantized.c", line 18):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 5), lsl(lsl(i, 4), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_5' ("quantized.c", line 19):
+  Let x = lsl(i, 4).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_5' ("quantized.c", line 20):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+  }
+  Prove: (32 * i) = lsl(i, 5).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_6' ("quantized.c", line 21):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 6), lsl(lsl(i, 5), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_6' ("quantized.c", line 22):
+  Let x = lsl(i, 5).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_6' ("quantized.c", line 23):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+  }
+  Prove: (64 * i) = lsl(i, 6).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_nested_7' ("quantized.c", line 24):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+  }
+  Prove: P_qd8_shift_same(lsl(i, 7), lsl(lsl(i, 6), 1)).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_double_7' ("quantized.c", line 25):
+  Let x = lsl(i, 6).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+  }
+  Prove: (2 * x) = lsl(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_exact_7' ("quantized.c", line 26):
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+  }
+  Prove: (128 * i) = lsl(i, 7).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_0' ("quantized.c", line 28):
+  Tags: Case 0.
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_1' ("quantized.c", line 29):
+  Tags: Case 1.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 1 *)
+    Have: Mint_0[global(P_n_6857)] = 1.
+  }
+  Prove: lsl(i, 1) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_2' ("quantized.c", line 30):
+  Tags: Case 2.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 2 *)
+    Have: Mint_0[global(P_n_6857)] = 2.
+  }
+  Prove: lsl(i, 2) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_3' ("quantized.c", line 31):
+  Tags: Case 3.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 3 *)
+    Have: Mint_0[global(P_n_6857)] = 3.
+  }
+  Prove: lsl(i, 3) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_4' ("quantized.c", line 32):
+  Tags: Case 4.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 4 *)
+    Have: Mint_0[global(P_n_6857)] = 4.
+  }
+  Prove: lsl(i, 4) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_5' ("quantized.c", line 33):
+  Tags: Case 5.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 5 *)
+    Have: Mint_0[global(P_n_6857)] = 5.
+  }
+  Prove: lsl(i, 5) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_6' ("quantized.c", line 34):
+  Tags: Case 6.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 6 *)
+    Have: Mint_0[global(P_n_6857)] = 6.
+  }
+  Prove: lsl(i, 6) <= 32640.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_shift8_case_7' ("quantized.c", line 35):
+  Tags: Case 7.
+  Assume {
+    Type: is_uint32_chunk(Mint_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 255).
+    (* Assertion 'qd8_shift8_nested_2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 2), lsl(lsl(i_1, 1), 1)))).
+    (* Assertion 'qd8_shift8_nested_3' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 3), lsl(lsl(i_1, 2), 1)))).
+    (* Assertion 'qd8_shift8_nested_4' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 4), lsl(lsl(i_1, 3), 1)))).
+    (* Assertion 'qd8_shift8_nested_5' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 5), lsl(lsl(i_1, 4), 1)))).
+    (* Assertion 'qd8_shift8_nested_6' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 6), lsl(lsl(i_1, 5), 1)))).
+    (* Assertion 'qd8_shift8_nested_7' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+        P_qd8_shift_same(lsl(i_1, 7), lsl(lsl(i_1, 6), 1)))).
+    (* Case 7 *)
+    Have: Mint_0[global(P_n_6857)] = 7.
+  }
+  Prove: lsl(i, 7) <= 32640.
+  
+  ------------------------------------------------------------
+[wp] Proved goals:   40 / 40
+  Terminating:     1
+  Unreachable:     1
+  Qed:             4 (1ms-32ms-69ms)
+  CVC5 1.2.1:     34 (108ms-475ms-721ms)
+[wp] Logging keys: strategy,script:allgoals.

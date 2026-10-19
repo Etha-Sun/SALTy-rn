@@ -1,0 +1,102 @@
+{
+  "name": "f32-dwconv-minmax",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/neon.c",
+      "sha256": "bdb7f141b37fc1f90c29f7ad39b40f34f5c67d44feac1c56529ea995b0fc177e"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/rvv.c",
+      "sha256": "05ab39b30b84b05090cd646af0edf83912a057e6a34c75ee5034e8356569ce1f"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/spec.h",
+      "sha256": "f7ac64384853567a93bbc1908f7b121fc9002f2c73f4044d0704850875a24fa3"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/harness.c",
+      "sha256": "a8f12b23ed3f5b6f79a81e6607cdbfac473855616efd97c3379c7d7752deb25b"
+    },
+    "native_types.h": {
+      "path": "experiments/shared-extension/complex/shared/native_types.h",
+      "sha256": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1"
+    },
+    "fp_primitives.h": {
+      "path": "experiments/shared-extension/complex/shared/fp_primitives.h",
+      "sha256": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "fp_minmax.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax.c",
+      "sha256": "92ea301e85f8ce7cf917bf21104087d7619cb8c5c674f4e7c32b879565a05381"
+    },
+    "fp_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory.c",
+      "sha256": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b"
+    },
+    "fp_arithmetic.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic.c",
+      "sha256": "ce46742c5a7717cc8e4ecdaf2820e03b0139f220dd034aaac8633307aad3c9a3"
+    },
+    "fp_memory_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory_m4.c",
+      "sha256": "70a9fb8d6ef08a7dc600c0759e6f06450ecf605ff855d0c22beb97e80b7cb2dd"
+    },
+    "fp_arithmetic_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic_m4.c",
+      "sha256": "ee1555baaa35553f9faa0c78faeed7fe9d33fe2bd6e0422f6dfb60640bf1cd7a"
+    },
+    "fp_minmax_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax_m4.c",
+      "sha256": "8e499e6bf5216a9910cebda40218e06f2594e60e036c9e4c36d75007945217d2"
+    },
+    "fp_masks_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks_m4.c",
+      "sha256": "e07e40fd80d9b5fa7caa44aa57c0d88f7e1ec3e5e716f1f210db500387395d83"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/unit.c",
+      "sha256": "2c582a2459bd31dd5fc4f52b7744f475f02994810f669ff0411e155a2f18c1ce"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v4.py",
+      "sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/handoff-model-plus/float_model_lock.json",
+      "sha256": "f6756e5cf0665df060894ccf02993483bd8306f52795a3dd5f739296e110fc67"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/stage3-proof-next/dwconv/bias-aggregate-r15/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "VLEN_bits": 128,
+  "scope": "Actual NEON and preserved/repaired RVV, all output memory under declared wrapper; FMA/libc and representation bridges not assumed proved",
+  "previous_version": "experiments/shim-c-v2/stage3-proof-next/dwconv/bias-r8",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "wp_share": "experiments/shim-c-v2/handoff-model-plus/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/handoff-model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 3,
+  "wp_budget": 300,
+  "wp_model_variant": "Typed+raw+float",
+  "model_variant_reason": "Safe Raw model retains aggregate initializer relationships; ordinary C and public spec unchanged.",
+  "proof_stage": "Bias prestate r13 from r8: one let-bound aggregate loaded-pre assertion referring directly to real pre-load memory label; no post-state ghost scalar, no r10 disjoint premise, no added contracts"
+}

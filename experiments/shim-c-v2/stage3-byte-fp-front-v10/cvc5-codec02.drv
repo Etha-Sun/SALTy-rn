@@ -1,0 +1,77 @@
+import "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/cvc5.drv"
+
+theory frama_c_wp.bytefloat.Bytefloat
+ syntax function decode32 "((_ to_fp 8 24) ((_ int2bv 32) %1))"
+ syntax function encode32 "(bv2nat (ite (fp.isNaN %1) (bvor (bvand ((_ int2bv 32) %2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) %2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv %1)))"
+ syntax function decode64 "((_ to_fp 11 53) ((_ int2bv 64) %1))"
+ syntax function encode64 "(bv2nat (ite (fp.isNaN %1) (bvor (bvand ((_ int2bv 64) %2) #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand ((_ int2bv 64) %2) #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv %1)))"
+end
+
+theory nativebv.NativeBV
+ syntax type b32 "(_ BitVec 32)"
+ syntax function of_int32 "((_ int2bv 32) %1)"
+ syntax function to_uint32 "(bv2int %1)"
+ syntax function decode_bv32 "((_ to_fp 8 24) %1)"
+ syntax function encode_bv32 "(ite (fp.isNaN %1) (bvor (bvand %2 #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand %2 #x7fffffff) #x007fffff)))) (fp.to_ieee_bv %1))"
+ syntax type b64 "(_ BitVec 64)"
+ syntax function of_int64 "((_ int2bv 64) %1)"
+ syntax function to_uint64 "(bv2int %1)"
+ syntax function decode_bv64 "((_ to_fp 11 53) %1)"
+ syntax function encode_bv64 "(ite (fp.isNaN %1) (bvor (bvand %2 #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand %2 #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv %1))"
+end
+
+theory frama_c_wp.bytefloat_checked.DecodeEncode32
+ remove prop checked_decodeencode32
+end
+
+theory frama_c_wp.bytefloat_checked.EncodeRange32
+ remove prop checked_encoderange32
+end
+
+theory frama_c_wp.bytefloat_checked.DecodeEncode64
+ remove prop checked_decodeencode64
+end
+
+theory frama_c_wp.bytefloat_checked.EncodeRange64
+ remove prop checked_encoderange64
+end
+
+theory prerequisites.BVInverse32
+ remove prop bv_inverse32
+end
+
+theory prerequisites.IntRoundtrip32
+ remove prop int_roundtrip32
+end
+
+theory interfaces.Interface32
+ remove prop interface32
+end
+
+theory compose32.Compose32Cuts
+ remove prop checked_integer_inverse32
+end
+
+theory prerequisites.BVInverse64
+ remove prop bv_inverse64
+end
+
+theory prerequisites.IntRoundtrip64
+ remove prop int_roundtrip64
+end
+
+theory interfaces.Interface64
+ remove prop interface64
+end
+
+theory compose64.Compose64Cuts
+ remove prop checked_integer_inverse64
+end
+
+theory storeread.StoreRead32
+ remove prop checked_store_read32
+end
+
+theory trigger.StoreTrigger32
+ remove prop checked_store_read32_trigger
+end

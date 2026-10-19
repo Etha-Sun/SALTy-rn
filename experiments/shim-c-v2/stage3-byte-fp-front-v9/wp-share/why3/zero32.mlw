@@ -1,0 +1,9 @@
+module NegativeZero32
+ use int.Int
+ use frama_c_wp.bytefloat.Bytefloat
+ use ieee_float.Float32 as FP
+ use injective32.DecodeInjective32
+ let lemma checked_negative_zero32 (n:int) : unit
+   ensures { 0 <= n < 4294967296 /\ decode32 n = FP.neg FP.zeroF -> n = 2147483648 }
+ = checked_decode_injective32 n 2147483648
+end

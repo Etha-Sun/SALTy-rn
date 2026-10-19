@@ -1,0 +1,24 @@
+{
+  "source": "experiments/shim-c-v2/stage3-proof-next/spmm/igemm-cursor-r2/k-why3-export03/run.log",
+  "source_sha256": "38256dd79c75e1182329e28b68a83f0df60ad44a3486c1d0d74db720aaa25acb",
+  "kernel": "f32-igemm",
+  "read_only": true,
+  "solver_run": false,
+  "target": "x_1 % 4 = 0 && x_1 <= x_8 && 0 <= x_1",
+  "bindings": {
+    "x_1": "Mint_0[global(L_k_9238)]",
+    "x": "Mint_0[global(L_kc_9216)]",
+    "x_8": "Mint_0[global(L_KC_9227)]",
+    "x_27": "Mint_8[global(L_kc_9216)]",
+    "x_4": "Mint_8[global(L_KC_9227)]"
+  },
+  "available_facts": [
+    "Init x=x_1",
+    "Init x_27=x_4",
+    "to_uint64(x_27 % 4)=0",
+    "Mint_0=Mint_8[nc<-v_1][tmp<-8 or v_1]"
+  ],
+  "conclusion": "This goal is integer map store-frame and modulo normalization, not float aggregate Load_S6 projection. The unconditional m4 projection helper is irrelevant; no blind transplant. Existing global address definitions distinguish nc/tmp from kc/KC, so semantic impossibility is not established.",
+  "next_minimal_candidate": "Split current kc==KC and kc%4==0 immediately before size_t k=kc, retaining each cut own obligations. If the frame equality itself remains hard, isolate the actual scalar-address store/read identity as a diagnostic first; an empty no-requires helper cannot assert arbitrary pointer separation. No source candidate has been added yet.",
+  "scope": "R2 print records both generated backend globals and simplified WP labels with different numeric IDs; quote each within its own section, not mix them."
+}

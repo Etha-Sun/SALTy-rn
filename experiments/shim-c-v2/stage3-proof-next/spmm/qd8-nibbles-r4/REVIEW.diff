@@ -1,0 +1,13 @@
+--- nibbles-r3/rvv.c
++++ nibbles-r4/rvv.c
+@@ -382,8 +382,8 @@
+         /@ loop invariant qd8_nibble_index: 0<=qd8_j<=vl && vl<=32;
+            loop invariant qd8_nibble_low_prefix: \forall integer j;0<=j<qd8_j ==> vb_c0.lane[j]==16*stage3_signed_nibble((uint8_t)vb_c01.lane[j]%16);
+            loop invariant qd8_nibble_high_prefix: \forall integer j;0<=j<qd8_j ==> vb_c1.lane[j]==16*stage3_signed_nibble((uint8_t)vb_c01.lane[j]/16);
+-           loop assigns qd8_j;
+-           loop variant vl-qd8_j;
++           loop assigns (qd8_nibble_frame: qd8_j);
++           loop variant (qd8_nibble_variant: vl-qd8_j);
+         @/
+         for (;qd8_j<vl;++qd8_j) qd8_nibble_scalar(vb_c01.lane[qd8_j]);
+       */

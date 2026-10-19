@@ -1,0 +1,41 @@
+(* Four original proved bodies; fresh file requires independent replay. *)
+
+module DecodeEncode32
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use frama_c_wp.bytefloat.Bytefloat
+  use ieee_float.Float32 as FP
+  let lemma checked_decodeencode32 (v:f32) (seed:int) : unit
+    ensures { decode32 (encode32 v seed) = v }
+  = ()
+end
+
+module EncodeRange32
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use frama_c_wp.bytefloat.Bytefloat
+  use ieee_float.Float32 as FP
+  let lemma checked_encoderange32 (v:f32) (seed:int) : unit
+    ensures { 0 <= encode32 v seed < 4294967296 }
+  = ()
+end
+
+module DecodeEncode64
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use frama_c_wp.bytefloat.Bytefloat
+  use ieee_float.Float64 as FP
+  let lemma checked_decodeencode64 (v:f64) (seed:int) : unit
+    ensures { decode64 (encode64 v seed) = v }
+  = ()
+end
+
+module EncodeRange64
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use frama_c_wp.bytefloat.Bytefloat
+  use ieee_float.Float64 as FP
+  let lemma checked_encoderange64 (v:f64) (seed:int) : unit
+    ensures { 0 <= encode64 v seed < 18446744073709551616 }
+  = ()
+end

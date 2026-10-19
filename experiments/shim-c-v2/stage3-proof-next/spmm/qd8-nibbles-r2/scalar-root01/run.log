@@ -1,0 +1,393 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/observer-new/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-strategy-engine", "-wp-debug", "1", "-wp-msg-key", "script:allgoals,strategy", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-fct", "qd8_byte_parts,qd8_nibble_scalar", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r2/scalar-root01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r2/.build/scalar-root01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r2/.build/scalar-root01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r2/.build/scalar-root01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function qd8_byte_parts
+[rte:annot] annotating function qd8_nibble_scalar
+[wp] 15 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_byte_shift' in 'qd8_byte_parts':
+  Let x = Mint_0[global(P_u_7703)].
+  Assume { Type: is_uint8_chunk(Mint_0) /\ is_uint8(x). }
+  Prove: (16 * (x % 16)) = to_uint8(lsl(x, 4)).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift] Strategy Qd8Byte8: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",8),
+      \children(Qd8ByteLeaf)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift] Strategy Qd8Byte8: proved
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_byte_mask' in 'qd8_byte_parts':
+  Let x = Mint_0[global(P_u_7703)].
+  Assume { Type: is_uint8_chunk(Mint_0) /\ is_uint8(x). }
+  Prove: (16 * (x / 16)) = land(240, x).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask] Strategy Qd8Byte8: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",8),
+      \children(Qd8ByteLeaf)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask] Strategy Qd8Byte8: proved
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_scalar_low' in 'qd8_nibble_scalar':
+  Let x = Mint_1[global(L_hi_7711)].
+  Let x_1 = Mint_1[global(L_lo_7710)].
+  Let x_2 = Mint_0[global(L_u_7709)].
+  Let x_3 = x_2 / 16.
+  Let x_4 = x_2 % 16.
+  Let x_5 = lsl(x_2, 4).
+  Assume {
+    Type: is_uint32_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint8(x_2) /\
+        is_uint32(x) /\ is_uint32(x_1).
+    (* Call 'qd8_byte_parts' *)
+    Have: ((16 * x_3) = land(240, x_2)) /\ ((16 * x_4) = to_uint8(x_5)).
+    (* Initializer *)
+    Init: x_1 = to_uint32(x_4).
+    (* Initializer *)
+    Init: x = to_uint32(x_3).
+    If x_1 <= 7
+    Then {
+      (* Assertion 'qd8_nibble_low_positive' *)
+      Have: (16 * x_1) = to_sint8(x_5).
+    }
+    Else {
+      (* Assertion 'qd8_nibble_low_negative' *)
+      Have: (256 + to_sint8(x_5)) = (16 * x_1).
+    }
+    If x <= 7
+    Then {
+      (* Assertion 'qd8_nibble_high_positive' *)
+      Have: (16 * x) = to_sint8(land(240, x_2)).
+    }
+    Else {
+      (* Assertion 'qd8_nibble_high_negative' *)
+      Have: (256 + to_sint8(land(240, x_2))) = (16 * x).
+    }
+  }
+  Prove: (16 * L_stage3_signed_nibble(x_4)) = to_sint8(x_5).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_scalar_high' in 'qd8_nibble_scalar':
+  Let x = Mint_1[global(L_hi_7711)].
+  Let x_1 = Mint_1[global(L_lo_7710)].
+  Let x_2 = Mint_0[global(L_u_7709)].
+  Let x_3 = x_2 / 16.
+  Let x_4 = x_2 % 16.
+  Let x_5 = land(240, x_2).
+  Assume {
+    Type: is_uint32_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint8(x_2) /\
+        is_uint32(x) /\ is_uint32(x_1).
+    (* Call 'qd8_byte_parts' *)
+    Have: ((16 * x_3) = x_5) /\ ((16 * x_4) = to_uint8(lsl(x_2, 4))).
+    (* Initializer *)
+    Init: x_1 = to_uint32(x_4).
+    (* Initializer *)
+    Init: x = to_uint32(x_3).
+    If x_1 <= 7
+    Then {
+      (* Assertion 'qd8_nibble_low_positive' *)
+      Have: (16 * x_1) = to_sint8(lsl(x_2, 4)).
+    }
+    Else {
+      (* Assertion 'qd8_nibble_low_negative' *)
+      Have: (256 + to_sint8(lsl(x_2, 4))) = (16 * x_1).
+    }
+    If x <= 7
+    Then {
+      (* Assertion 'qd8_nibble_high_positive' *)
+      Have: (16 * x) = to_sint8(x_5).
+    }
+    Else {
+      (* Assertion 'qd8_nibble_high_negative' *)
+      Have: (256 + to_sint8(x_5)) = (16 * x).
+    }
+  }
+  Prove: (16 * L_stage3_signed_nibble(x_3)) = to_sint8(x_5).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_nibble_shift_mod' ("rvv.c", line 23):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_nibble_mask_div' ("rvv.c", line 24):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_nibble_low_positive' ("rvv.c", line 26):
+  Let x = Mint_0[global(L_lo_7710)].
+  Let x_1 = Mint_0[global(L_hi_7711)].
+  Let x_2 = Mint_1[global(L_u_7709)].
+  Let x_3 = x_2 / 16.
+  Let x_4 = x_2 % 16.
+  Let x_5 = lsl(x_2, 4).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint8(x_2) /\
+        is_uint32(x_1) /\ is_uint32(x).
+    (* Call 'qd8_byte_parts' *)
+    Have: ((16 * x_3) = land(240, x_2)) /\ ((16 * x_4) = to_uint8(x_5)).
+    (* Initializer *)
+    Init: x = to_uint32(x_4).
+    (* Initializer *)
+    Init: x_1 = to_uint32(x_3).
+    (* Then *)
+    Have: x <= 7.
+  }
+  Prove: (16 * x) = to_sint8(x_5).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_nibble_low_negative' ("rvv.c", line 28):
+  Let x = Mint_1[global(L_lo_7710)].
+  Let x_1 = Mint_1[global(L_hi_7711)].
+  Let x_2 = Mint_0[global(L_u_7709)].
+  Let x_3 = x_2 / 16.
+  Let x_4 = x_2 % 16.
+  Let x_5 = lsl(x_2, 4).
+  Assume {
+    Type: is_uint32_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint8(x_2) /\
+        is_uint32(x_1) /\ is_uint32(x).
+    (* Call 'qd8_byte_parts' *)
+    Have: ((16 * x_3) = land(240, x_2)) /\ ((16 * x_4) = to_uint8(x_5)).
+    (* Initializer *)
+    Init: x = to_uint32(x_4).
+    (* Initializer *)
+    Init: x_1 = to_uint32(x_3).
+    (* Else *)
+    Have: 8 <= x.
+  }
+  Prove: (256 + to_sint8(x_5)) = (16 * x).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_nibble_high_positive' ("rvv.c", line 31):
+  Let x = Mint_0[global(L_hi_7711)].
+  Let x_1 = Mint_0[global(L_lo_7710)].
+  Let x_2 = Mint_1[global(L_u_7709)].
+  Let x_3 = x_2 / 16.
+  Let x_4 = x_2 % 16.
+  Let x_5 = land(240, x_2).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint8(x_2) /\
+        is_uint32(x) /\ is_uint32(x_1).
+    (* Call 'qd8_byte_parts' *)
+    Have: ((16 * x_3) = x_5) /\ ((16 * x_4) = to_uint8(lsl(x_2, 4))).
+    (* Initializer *)
+    Init: x_1 = to_uint32(x_4).
+    (* Initializer *)
+    Init: x = to_uint32(x_3).
+    If x_1 <= 7
+    Then {
+      (* Assertion 'qd8_nibble_low_positive' *)
+      Have: (16 * x_1) = to_sint8(lsl(x_2, 4)).
+    }
+    Else {
+      (* Assertion 'qd8_nibble_low_negative' *)
+      Have: (256 + to_sint8(lsl(x_2, 4))) = (16 * x_1).
+    }
+    (* Then *)
+    Have: x <= 7.
+  }
+  Prove: (16 * x) = to_sint8(x_5).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_nibble_high_negative' ("rvv.c", line 33):
+  Let x = Mint_1[global(L_hi_7711)].
+  Let x_1 = Mint_1[global(L_lo_7710)].
+  Let x_2 = Mint_0[global(L_u_7709)].
+  Let x_3 = x_2 / 16.
+  Let x_4 = x_2 % 16.
+  Let x_5 = land(240, x_2).
+  Assume {
+    Type: is_uint32_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint8(x_2) /\
+        is_uint32(x) /\ is_uint32(x_1).
+    (* Call 'qd8_byte_parts' *)
+    Have: ((16 * x_3) = x_5) /\ ((16 * x_4) = to_uint8(lsl(x_2, 4))).
+    (* Initializer *)
+    Init: x_1 = to_uint32(x_4).
+    (* Initializer *)
+    Init: x = to_uint32(x_3).
+    If x_1 <= 7
+    Then {
+      (* Assertion 'qd8_nibble_low_positive' *)
+      Have: (16 * x_1) = to_sint8(lsl(x_2, 4)).
+    }
+    Else {
+      (* Assertion 'qd8_nibble_low_negative' *)
+      Have: (256 + to_sint8(lsl(x_2, 4))) = (16 * x_1).
+    }
+    (* Else *)
+    Have: 8 <= x.
+  }
+  Prove: (256 + to_sint8(x_5)) = (16 * x).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-0 (generated by wp):
+  Let x = Mint_0[global(P_u_7703)].
+  Let x_1 = x % 16.
+  Assume { Type: is_uint8_chunk(Mint_0) /\ is_uint8(x). }
+  Prove: (0 <= x_1) /\ (x_1 <= 15).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1 (generated by wp):
+  Let x = Mint_0[global(P_u_7703)].
+  Let x_1 = 16 * (x % 16).
+  Assume { Type: is_uint8_chunk(Mint_0) /\ is_uint8(x). }
+  Prove: (bit_test(x_1, 4) <-> bit_test(x, 0)) /\
+      (bit_test(x_1, 5) <-> bit_test(x, 1)) /\
+      (bit_test(x_1, 6) <-> bit_test(x, 2)) /\
+      (bit_test(x_1, 7) <-> bit_test(x, 3)) /\ (!bit_test(x_1, 0)) /\
+      (!bit_test(x_1, 1)) /\ (!bit_test(x_1, 2)) /\ (!bit_test(x_1, 3)).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Strategy Qd8ByteLeaf: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Strategy Qd8ByteLeaf: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Strategy Qd8Byte8: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",8),
+      \children(Qd8ByteLeaf)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Trying
+    Qd8ByteLeaf
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Strategy Qd8ByteLeaf: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Strategy Qd8ByteLeaf: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift-1] Strategy Qd8Byte8: failed
+[wp] [Timeout] typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_shift (Tactic) (Qed 0.85ms) (CVC5 1/2 566ms) (Z3)
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-0 (generated by wp):
+  Let x = Mint_0[global(P_u_7703)].
+  Assume { Type: is_uint8_chunk(Mint_0) /\ is_uint8(x). }
+  Prove: (0 <= land(240, x)) /\ ((-15) <= x) /\ (x <= 255).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1 (generated by wp):
+  Let x = Mint_0[global(P_u_7703)].
+  Let x_1 = 16 * (x / 16).
+  Assume { Type: is_uint8_chunk(Mint_0) /\ is_uint8(x). }
+  Prove: (bit_test(x_1, 4) <-> bit_test(x, 4)) /\
+      (bit_test(x_1, 5) <-> bit_test(x, 5)) /\
+      (bit_test(x_1, 6) <-> bit_test(x, 6)) /\
+      (bit_test(x_1, 7) <-> bit_test(x, 7)) /\ (!bit_test(x_1, 0)) /\
+      (!bit_test(x_1, 1)) /\ (!bit_test(x_1, 2)) /\ (!bit_test(x_1, 3)).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Strategy Qd8ByteLeaf: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Strategy Qd8ByteLeaf: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Strategy Qd8Byte8: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",8),
+      \children(Qd8ByteLeaf)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Trying
+    Qd8ByteLeaf
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Strategy Qd8ByteLeaf: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Strategy Qd8ByteLeaf: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask-1] Strategy Qd8Byte8: failed
+[wp] [Timeout] typed_raw_fma_complex_fp_qd8_byte_parts_ensures_qd8_byte_mask (Tactic) (Qed 1ms) (CVC5 1/2 495ms) (Z3)
+[wp] Proved goals:   15 / 17
+  Terminating:     1
+  Unreachable:     1
+  Qed:             7 (0.85ms-33ms-125ms)
+  CVC5 1.2.1:      6 (507ms-741ms)
+  Timeout:         2
+[wp] Updated session
+   - 2 new scripts to complete
+[wp] Logging keys: strategy,script:allgoals.

@@ -1,0 +1,9 @@
+module NegativeZero64
+ use int.Int
+ use frama_c_wp.bytefloat.Bytefloat
+ use ieee_float.Float64 as FP
+ use injective64.DecodeInjective64
+ let lemma checked_negative_zero64 (n:int) : unit
+   ensures { 0 <= n < 18446744073709551616 /\ decode64 n = FP.neg FP.zeroF -> n = 9223372036854775808 }
+ = checked_decode_injective64 n 9223372036854775808
+end

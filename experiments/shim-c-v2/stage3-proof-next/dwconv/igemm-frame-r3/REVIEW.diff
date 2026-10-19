@@ -1,0 +1,33 @@
+--- r4/rvv.c
++++ igemm-cursor-r1/rvv.c
+@@ -58,7 +58,9 @@
+   //@ ghost float *C=c;
+   float* c0 = c;
+ 
+-  /*@ loop invariant stage3_nc: 0<nc<=NC && (NC-nc)%8==0;
++  /*@ loop invariant igemm_outer_kc_equal: kc==KC;
++      loop invariant igemm_outer_kc_multiple: kc%4==0;
++      loop invariant stage3_nc: 0<nc<=NC && (NC-nc)%8==0;
+       loop invariant a==A;
+       loop invariant c0==C+(NC-nc);
+       loop invariant w==W+((NC-nc)/8)*(8+8*(KC/4)*(KS/sizeof(void*)));
+@@ -71,7 +73,9 @@
+     w += 8;
+ 
+     size_t p = ks;
+-    /*@ loop invariant stage3_positions: 0<p<=KS && p%sizeof(void*)==0;
++    /*@ loop invariant igemm_positions_kc_equal: kc==KC;
++        loop invariant igemm_positions_kc_multiple: kc%4==0;
++        loop invariant stage3_positions: 0<p<=KS && p%sizeof(void*)==0;
+         loop invariant a==A+(KS-p)/sizeof(void*);
+         loop invariant w==W+((NC-nc)/8)*(8+8*(KC/4)*(KS/sizeof(void*)))+8+8*((KS-p)/sizeof(void*))*(KC/4);
+         loop invariant stage3_position_acc_rvv_0: \forall integer j;0<=j<vl ==> ext_same(vacc.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,j,((KS-p)/sizeof(void*))*(KC/4),KC/4,KS/sizeof(void*)));
+@@ -87,6 +91,8 @@
+       }
+       a += 1;
+ 
++      /*@ assert igemm_entry_kc_equal: kc==KC; */
++      /*@ assert igemm_entry_kc_multiple: kc%4==0; */
+       size_t k = kc;
+       //@ ghost const float *stage3_row=a0;
+       //@ ghost const float *stage3_weights=w;

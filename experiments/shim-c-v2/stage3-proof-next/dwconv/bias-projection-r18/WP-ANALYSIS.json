@@ -1,0 +1,27 @@
+{
+  "print_exit": 0,
+  "source_sha256": "41f112effc1c6a55a856c3c0933ee4f1e08694a5453dd1501e74ca8be7d08f1e",
+  "bindings": {
+    "a1": "Mf32_0[field_lane(vacc)+0]",
+    "a2": "Load_S6(vacc,Mf32_70)",
+    "a5": "Mf32_1[w_pre+0]"
+  },
+  "facts": [
+    "P_next_m4_bias0(a2,a5)",
+    "Mf32_70=Mf32_0",
+    "P_ext_same(a1,L_next_m4_lane0(Load_S6(vacc,Mf32_0)))"
+  ],
+  "goal": "P_ext_same(a1,a5)",
+  "analysis": "Unlike r13, a proved explicit projection fact now reaches the exact postheap Mf32_0. The accepted predicate cut is on Mf32_70, explicitly equal to Mf32_0. No new memory frame or valid antecedent is missing in this displayed final chain. Remaining work is congruence across heap equality, predicate definition unfolding and ext_same transitivity in large context; timeout does not establish any absent semantic fact.",
+  "possible_next_body_bridge": "A no-requires by-value helper with conditional ensures next_m4_bias0(v,x) && ext_same(y,next_m4_lane0(v)) ==> ext_same(y,x), real empty body, would isolate predicate unfolding/transitivity. Must independently prove body then all caller RTE and the linking conditions; do not assume a new cut. No implementation prepared yet.",
+  "caller_result": {
+    "passed": 2,
+    "total": 5,
+    "pending": [
+      "next_prestate_loaded0",
+      "next_bias_local",
+      "next_bias_normalized"
+    ]
+  },
+  "complete": false
+}

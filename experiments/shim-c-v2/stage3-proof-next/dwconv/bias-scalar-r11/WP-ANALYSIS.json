@@ -1,0 +1,14 @@
+{
+  "print_exit": 0,
+  "print_sha256": "225ef8c433e14836e7ff508322222becc4fa67b9aac412b68d208b45925a25fe",
+  "vl_positive_preserved": true,
+  "actual_have": "x=min(c,4) and 0<x and x<=c; loader call additionally x<=16 and valid_rd(...,w,x)",
+  "heap_transition": "Before snapshot: Mf32_67[w0]=Mf32_67[ghost_weight0]. Call sees Mf32_68=Mf32_67. Return copy: Mf32_0=memcpy(Mf32_68,vacc,Mf32_undef_23,vacc,16).",
+  "first_goal": "P_ext_same(returned_scalar,Mf32_0[ghost_weight0])",
+  "first_missing_bridge": "Even ghost_weight0 is addressed in post-copy heap. Need preserve scalar ghost snapshot across return copy; not loss of vl>0. No proof that this required frame is false.",
+  "second_goal": "P_ext_same(Mf32_0[w0],Mf32_0[ghost_weight0]); needs caller-side weight/snapshot frame in post-copy heap.",
+  "third_goal": "P_ext_same(post vacc.lane[0],post w[0]); preceding scalar cuts remain unproved, so no independent closure.",
+  "callee_body_boundary": "Successful actual loader body check gives logical return relation to call-time p[j]. Aggregate assignment at caller produces separate memory-copy effects and frame obligations. The body result alone is not proof of these caller effects.",
+  "comparison": "No claim of a Typed model bug. Small GEMM scalar frame passed; isolated DW ordinary-C diagnostic pending root execution.",
+  "next_diagnostic": "bias-load-diagnostic12/command.json selects same actual loader body and no-requires local-array probe, including false control."
+}

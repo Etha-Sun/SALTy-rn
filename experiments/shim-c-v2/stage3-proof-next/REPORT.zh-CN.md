@@ -1,5 +1,29 @@
 # 第三阶段九项：后续 proof 与独立审核
 
+## 2026-10-19 最新闭合的局部链（ROOT02）
+
+- QD8 r7 用有定义的等式 predicate 保留被前端提前化简的 nested shift 项，没有新增断言数量或假设。完整移位 helper **38/38**，连同真实 vsll body **64/64**，原移位溢出义务闭合。r8 新 AND helper **4/4**；真实 AND 调用链仍在验证。
+- IGEMM r3 给真实循环补 kc 保持不变量，新增10项与原 k 建立/保持共 **12/12**；原16项加新增10项扩展回归 **26/26**。新完整库存 **771 = 762 body + 9 globals**（另30 CFG）；完整尝试已启动，不能将26/26作整核结果。
+- DWCONV r18 去掉投影 helper 的 valid 前件，完整 helper **2/2**，caller **2/5**，原三个物理字段关系仍未证。r19 新增按值 ext_same 传递 helper **2/2**，正在验证 caller；完整库存850，新增两个helper义务。
+- GEMM40 helper **5/5**、选定组 **10/24**，新valid通过，但原14个未证关系未改善。GEMM41在循环状态改变后重新实例化投影helper，helper **5/5**，选定组仍在跑；完整库存1249且新增一个wrapper assigns分支，不能漏验。
+- `audit15` 与 contracts 覆盖 **101 个候选、30169 个外部锁条目**，原C/spec/checker一致，无新增requires。后续r19/r8等候选还需下一轮审计。
+
+证据索引 `PROGRESS-ROOT02.json` 固定已完成结果的SHA。Bytes/IEEE v14/v15 memory **29/34**，比v11闭合了variant；三个预设false和两个真目标仍未证，模型仍未认证、未用于任何kernel。v14 adapter审查发现未知输出命令及证据碰撞风险，保留记录；独立v15收紧命令白名单和输出。v16更强子任务尝试仍在实验；所有原模型/锁保持。
+
+以上依然 **0/9 新整核通过，无push**。运行中的结果不计入本节。
+
+## 2026-10-19 后续实测（整核仍为 0/9）
+
+只在原九项及其共享依赖内推进，未 push。以下局部结果不组成整核验收，`verified/manifest.json` 未变。
+
+- QD8 nibble-r3 的两个算术 helper 完整 raw **784/784**，包含 256 个互斥 byte case、default 覆盖、全部后置条件和函数体义务，输入 SHA 前后相同。r4 的 bits_i8/shift/and 三个真实 body 为 **42/47**；未证为 bits_i8 后置条件、memcpy valid_src/separation、shift 溢出、and 前缀保持。caller 全选组 300 秒、仅命名组 180 秒均缺最终 raw，不能声称调用闭包。r5 新 shift helper 与真实 vsll 合跑 300 秒也未完成；r6 正以实际 nested-shift 归一断言继续尝试，没有新增 requires。
+- GEMM candidate35 projection helper **8/8**，但 caller 571 项选择组 300 秒缺 raw。candidate36 删除未证 seed 后，八个标量 frame 独立 **8/8**。candidate37 新 projection 与 seed **0/2**。candidate34 的 `-wp-unfold-assigns -1` 对四个公式逐字不变，未重复耗用 solver。candidate39 将一条四 lane forall 不变量等价展开成四条标量不变量，相关完整组 **9/23**：仅 lane0 建立与八 frame 通过，七个新建立/保持及七个原 acc 关系仍未证；不能以公式归一化改善冒充 proof 闭合。其完整分母 **1243 = 1231 body + 12 globals**，另 32 CFG。candidate38 是子工具排队后晚到的同思路 none 候选，没有 solver 成绩。
+- DWCONV 小型真实 loader 诊断 probe12 **20/21**，唯一未过是预设 false post。r13 prestate 关系 **0/1**；r15 的逻辑 let 投影产生同一物理字段公式，未重复求解。r17 无 requires 的投影 helper **2/2**、带中间 ensures 的真实 loader **13/13**；caller **2/6**，仅 bias address 与 by-value predicate 关系通过，局部有效性、原物理字段 prestate/local/normalized 仍未证。新完整库存 **849 = 840 body + 9 globals**，另 44 CFG，caller 全部 frame/RTE/callee requires 清单保留。
+- CONV r4 完整 body 尝试运行 **3500.288 秒**后预算结束：完整 2328 库存中 **493 valid、68 已尝试未证、1767 无完成结果**，没有最终 raw/normal-exit，故不能验收。随后串行 globals **6/6** 单独记录，不拼入 full 通过数。证据在 `dwconv/conv-cursor-inline-r4/FULL-ROOT01-STREAM.json`。
+- `root-review/audit13.json` 与 contracts 审核核对 **93 个候选、30169 条外部锁记录**，原 C/spec/checker 引用及许可的固定模型版本一致，无新增 requires；之后的新候选另需审核。
+
+共享 Bytes/IEEE 实验仍**未认证、未用于任何 kernel**。v8 增加已由真实 body 与 Why3 标准 rewrite 检查的 store/read 触发形式；v9 的实例化没有匹配局部 let，v10 展开该 let 后实际 store 与别名最后写入控制通过，memory 从 26/34 提升到 **28/34**。v11 加 frame 触发及既有内存引理实例化后仍 28/34；剩三个真目标（邻接 frame、循环数值保持、variant）与三个预设假 post。v12/v13 的 solver 配置对照退化且预算结束缺 raw，未采用。旧锁不改，native IEEE/BV 定义未替换成 Real；上述支持不构成模型资格。
+
 本地分支 `feat/shim-c`，阶段检查点 `c729f55`，后续工作继续。只处理原第三阶段九项及其真实依赖。原 C/shim、公共 spec/wrapper、已冻结模型/锁和旧 checker 不变。用户未授权 push。**新增整核通过仍为 0/9**，没有新的 kernel 反例。
 
 ## 完整尝试与完整分母

@@ -1,0 +1,578 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-bitwised-front-v2/.build/observer-new/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "1", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "qd8_shift8_bound", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r6/shift-export-smt-root01/annotated/unit.c", "-wp-no-strategy-engine", "-wp-prop", "qd8_shift8_exact_2", "-wp-print", "-wp-out", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r6/shift-export-smt-root01/wp", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r6/shift-export-smt-root01/session", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r6/shift-export-smt-root01/raw.json", "-wp-no-qed", "-wp-no-clean", "-wp-prover", "z3", "-wp-debug", "1", "-wp-msg-key", "prover:pp_task,print-generated", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r6/shift-export-smt-root01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function qd8_shift8_bound
+[wp] 1 goal scheduled
+---------------------------------------------
+--- Context 'typed_raw_fma_complex_fp_qd8_shift8_bound' Cluster 'Axiomatic13' 
+---------------------------------------------
+theory Axiomatic13
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use real.Abs *)
+  
+  (* use frama_c_wp.cmath.Cmath *)
+  
+  (* use real.Square *)
+  
+  (* use frama_c_wp.cmath.Square1 *)
+  
+  (* use frama_c_wp.cfloat.Cfloat *)
+  
+  predicate P_ext_same (x:t) (y:t) =
+    is_NaN_f32 x /\ is_NaN_f32 y \/ sign_f32 y = sign_f32 x /\ eq_f32 x y
+  
+  lemma Q_ext_add_congruence :
+    forall a:t, b:t, c:t.
+     P_ext_same a b -> P_ext_same (add_f32 a c) (add_f32 b c)
+  
+  (* use frama_c_wp.fma.Fma *)
+  
+  lemma Q_ext_fma_congruence :
+    forall a:t, b:t, x:t, y:t.
+     P_ext_same a b -> P_ext_same (fma_f32 x y a) (fma_f32 x y b)
+  
+  lemma Q_ext_mul_congruence :
+    forall a:t, b:t, c:t.
+     P_ext_same a b -> P_ext_same (mul_f32 a c) (mul_f32 b c)
+  
+  lemma Q_ext_same_refl : forall a:t. P_ext_same a a
+  
+  lemma Q_ext_same_trans :
+    forall a:t, b:t, c:t. P_ext_same a b -> P_ext_same b c -> P_ext_same a c
+  
+  lemma Q_ext_sub_congruence :
+    forall a:t, b:t, c:t.
+     P_ext_same a b -> P_ext_same (sub_f32 a c) (sub_f32 b c)
+  
+end
+---------------------------------------------
+--- Context 'typed_raw_fma_complex_fp_qd8_shift8_bound' Cluster 'Chunk' 
+---------------------------------------------
+theory Chunk
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  (* use frama_c_wp.cint.Cint *)
+  
+  predicate is_sint8_chunk (m:addr -> int) =
+    forall a:addr. is_sint8 (get m a)
+  
+  predicate is_sint32_chunk (m:addr -> int) =
+    forall a:addr. is_sint32 (get m a)
+  
+  predicate is_uint32_chunk (m:addr -> int) =
+    forall a:addr. is_uint32 (get m a)
+  
+end
+---------------------------------------------
+--- Context 'typed_raw_fma_complex_fp_qd8_shift8_bound' Cluster 'Globals' 
+---------------------------------------------
+theory Globals
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  constant G___fc_heap_status_3854 : int = 3855
+  
+  constant P_n_6854 : int = 6855
+  
+  constant K___fc_lit_string36_7828 : int = (- 7829)
+  
+  constant K___fc_lit_string35_7827 : int = (- 7828)
+  
+  constant K___fc_lit_string34_7826 : int = (- 7827)
+  
+  constant K___fc_lit_string33_7825 : int = (- 7826)
+  
+  constant K___fc_lit_string32_7824 : int = (- 7825)
+  
+  constant K___fc_lit_string31_7823 : int = (- 7824)
+  
+  constant K___fc_lit_string30_7822 : int = (- 7823)
+  
+  constant K___fc_lit_string29_7821 : int = (- 7822)
+  
+  constant K___fc_lit_string28_7820 : int = (- 7821)
+  
+  constant K___fc_lit_string27_7819 : int = (- 7820)
+  
+  constant K___fc_lit_string26_7818 : int = (- 7819)
+  
+  constant K___fc_lit_string25_7817 : int = (- 7818)
+  
+  constant K___fc_lit_string24_7816 : int = (- 7817)
+  
+  constant K___fc_lit_string23_7815 : int = (- 7816)
+  
+  constant K___fc_lit_string22_7814 : int = (- 7815)
+  
+  constant K___fc_lit_string21_7813 : int = (- 7814)
+  
+  constant K___fc_lit_string20_7787 : int = (- 7788)
+  
+  constant K___fc_lit_string19_7779 : int = (- 7780)
+  
+  constant K___fc_lit_string18_7765 : int = (- 7766)
+  
+  constant K___fc_lit_string17_7757 : int = (- 7758)
+  
+  constant K___fc_lit_string16_7376 : int = (- 7377)
+  
+  constant K___fc_lit_string15_7375 : int = (- 7376)
+  
+  constant K___fc_lit_string14_7374 : int = (- 7375)
+  
+  constant K___fc_lit_string13_7373 : int = (- 7374)
+  
+  constant K___fc_lit_string12_7372 : int = (- 7373)
+  
+  constant K___fc_lit_string11_7371 : int = (- 7372)
+  
+  constant K___fc_lit_string10_7370 : int = (- 7371)
+  
+  constant K___fc_lit_string9_7369 : int = (- 7370)
+  
+  constant K___fc_lit_string8_7368 : int = (- 7369)
+  
+  constant K___fc_lit_string7_7367 : int = (- 7368)
+  
+  constant K___fc_lit_string6_7366 : int = (- 7367)
+  
+  constant K___fc_lit_string5_7365 : int = (- 7366)
+  
+  constant K___fc_lit_string4_7364 : int = (- 7365)
+  
+  constant K___fc_lit_string3_7363 : int = (- 7364)
+  
+  constant K___fc_lit_string2_7362 : int = (- 7363)
+  
+  constant K___fc_lit_string1_7361 : int = (- 7362)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  axiom Q_G___fc_heap_status_3854_region : region G___fc_heap_status_3854 = 0
+  
+  axiom Q_G___fc_heap_status_3854_linked :
+    forall t:int -> int. linked t -> get t G___fc_heap_status_3854 = 1
+  
+  axiom Q_G___fc_heap_status_3854_binit : binit G___fc_heap_status_3854
+  
+  axiom Q_P_n_6854_region : region P_n_6854 = 1
+  
+  axiom Q_P_n_6854_linked :
+    forall t:int -> int. linked t -> get t P_n_6854 = 0
+  
+  axiom Q_P_n_6854_binit : binit P_n_6854
+  
+  axiom Q_K___fc_lit_string36_7828_region :
+    region K___fc_lit_string36_7828 = 0
+  
+  axiom Q_K___fc_lit_string36_7828_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string36_7828 = 6
+  
+  axiom Q_K___fc_lit_string36_7828_binit : binit K___fc_lit_string36_7828
+  
+  axiom Q_K___fc_lit_string35_7827_region :
+    region K___fc_lit_string35_7827 = 0
+  
+  axiom Q_K___fc_lit_string35_7827_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string35_7827 = 10
+  
+  axiom Q_K___fc_lit_string35_7827_binit : binit K___fc_lit_string35_7827
+  
+  axiom Q_K___fc_lit_string34_7826_region :
+    region K___fc_lit_string34_7826 = 0
+  
+  axiom Q_K___fc_lit_string34_7826_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string34_7826 = 6
+  
+  axiom Q_K___fc_lit_string34_7826_binit : binit K___fc_lit_string34_7826
+  
+  axiom Q_K___fc_lit_string33_7825_region :
+    region K___fc_lit_string33_7825 = 0
+  
+  axiom Q_K___fc_lit_string33_7825_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string33_7825 = 10
+  
+  axiom Q_K___fc_lit_string33_7825_binit : binit K___fc_lit_string33_7825
+  
+  axiom Q_K___fc_lit_string32_7824_region :
+    region K___fc_lit_string32_7824 = 0
+  
+  axiom Q_K___fc_lit_string32_7824_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string32_7824 = 6
+  
+  axiom Q_K___fc_lit_string32_7824_binit : binit K___fc_lit_string32_7824
+  
+  axiom Q_K___fc_lit_string31_7823_region :
+    region K___fc_lit_string31_7823 = 0
+  
+  axiom Q_K___fc_lit_string31_7823_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string31_7823 = 10
+  
+  axiom Q_K___fc_lit_string31_7823_binit : binit K___fc_lit_string31_7823
+  
+  axiom Q_K___fc_lit_string30_7822_region :
+    region K___fc_lit_string30_7822 = 0
+  
+  axiom Q_K___fc_lit_string30_7822_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string30_7822 = 6
+  
+  axiom Q_K___fc_lit_string30_7822_binit : binit K___fc_lit_string30_7822
+  
+  axiom Q_K___fc_lit_string29_7821_region :
+    region K___fc_lit_string29_7821 = 0
+  
+  axiom Q_K___fc_lit_string29_7821_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string29_7821 = 25
+  
+  axiom Q_K___fc_lit_string29_7821_binit : binit K___fc_lit_string29_7821
+  
+  axiom Q_K___fc_lit_string28_7820_region :
+    region K___fc_lit_string28_7820 = 0
+  
+  axiom Q_K___fc_lit_string28_7820_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string28_7820 = 6
+  
+  axiom Q_K___fc_lit_string28_7820_binit : binit K___fc_lit_string28_7820
+  
+  axiom Q_K___fc_lit_string27_7819_region :
+    region K___fc_lit_string27_7819 = 0
+  
+  axiom Q_K___fc_lit_string27_7819_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string27_7819 = 8
+  
+  axiom Q_K___fc_lit_string27_7819_binit : binit K___fc_lit_string27_7819
+  
+  axiom Q_K___fc_lit_string26_7818_region :
+    region K___fc_lit_string26_7818 = 0
+  
+  axiom Q_K___fc_lit_string26_7818_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string26_7818 = 6
+  
+  axiom Q_K___fc_lit_string26_7818_binit : binit K___fc_lit_string26_7818
+  
+  axiom Q_K___fc_lit_string25_7817_region :
+    region K___fc_lit_string25_7817 = 0
+  
+  axiom Q_K___fc_lit_string25_7817_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string25_7817 = 8
+  
+  axiom Q_K___fc_lit_string25_7817_binit : binit K___fc_lit_string25_7817
+  
+  axiom Q_K___fc_lit_string24_7816_region :
+    region K___fc_lit_string24_7816 = 0
+  
+  axiom Q_K___fc_lit_string24_7816_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string24_7816 = 6
+  
+  axiom Q_K___fc_lit_string24_7816_binit : binit K___fc_lit_string24_7816
+  
+  axiom Q_K___fc_lit_string23_7815_region :
+    region K___fc_lit_string23_7815 = 0
+  
+  axiom Q_K___fc_lit_string23_7815_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string23_7815 = 8
+  
+  axiom Q_K___fc_lit_string23_7815_binit : binit K___fc_lit_string23_7815
+  
+  axiom Q_K___fc_lit_string22_7814_region :
+    region K___fc_lit_string22_7814 = 0
+  
+  axiom Q_K___fc_lit_string22_7814_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string22_7814 = 6
+  
+  axiom Q_K___fc_lit_string22_7814_binit : binit K___fc_lit_string22_7814
+  
+  axiom Q_K___fc_lit_string21_7813_region :
+    region K___fc_lit_string21_7813 = 0
+  
+  axiom Q_K___fc_lit_string21_7813_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string21_7813 = 8
+  
+  axiom Q_K___fc_lit_string21_7813_binit : binit K___fc_lit_string21_7813
+  
+  axiom Q_K___fc_lit_string20_7787_region :
+    region K___fc_lit_string20_7787 = 0
+  
+  axiom Q_K___fc_lit_string20_7787_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string20_7787 = 1
+  
+  axiom Q_K___fc_lit_string20_7787_binit : binit K___fc_lit_string20_7787
+  
+  axiom Q_K___fc_lit_string19_7779_region :
+    region K___fc_lit_string19_7779 = 0
+  
+  axiom Q_K___fc_lit_string19_7779_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string19_7779 = 1
+  
+  axiom Q_K___fc_lit_string19_7779_binit : binit K___fc_lit_string19_7779
+  
+  axiom Q_K___fc_lit_string18_7765_region :
+    region K___fc_lit_string18_7765 = 0
+  
+  axiom Q_K___fc_lit_string18_7765_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string18_7765 = 1
+  
+  axiom Q_K___fc_lit_string18_7765_binit : binit K___fc_lit_string18_7765
+  
+  axiom Q_K___fc_lit_string17_7757_region :
+    region K___fc_lit_string17_7757 = 0
+  
+  axiom Q_K___fc_lit_string17_7757_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string17_7757 = 1
+  
+  axiom Q_K___fc_lit_string17_7757_binit : binit K___fc_lit_string17_7757
+  
+  axiom Q_K___fc_lit_string16_7376_region :
+    region K___fc_lit_string16_7376 = 0
+  
+  axiom Q_K___fc_lit_string16_7376_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string16_7376 = 7
+  
+  axiom Q_K___fc_lit_string16_7376_binit : binit K___fc_lit_string16_7376
+  
+  axiom Q_K___fc_lit_string15_7375_region :
+    region K___fc_lit_string15_7375 = 0
+  
+  axiom Q_K___fc_lit_string15_7375_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string15_7375 = 10
+  
+  axiom Q_K___fc_lit_string15_7375_binit : binit K___fc_lit_string15_7375
+  
+  axiom Q_K___fc_lit_string14_7374_region :
+    region K___fc_lit_string14_7374 = 0
+  
+  axiom Q_K___fc_lit_string14_7374_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string14_7374 = 7
+  
+  axiom Q_K___fc_lit_string14_7374_binit : binit K___fc_lit_string14_7374
+  
+  axiom Q_K___fc_lit_string13_7373_region :
+    region K___fc_lit_string13_7373 = 0
+  
+  axiom Q_K___fc_lit_string13_7373_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string13_7373 = 10
+  
+  axiom Q_K___fc_lit_string13_7373_binit : binit K___fc_lit_string13_7373
+  
+  axiom Q_K___fc_lit_string12_7372_region :
+    region K___fc_lit_string12_7372 = 0
+  
+  axiom Q_K___fc_lit_string12_7372_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string12_7372 = 7
+  
+  axiom Q_K___fc_lit_string12_7372_binit : binit K___fc_lit_string12_7372
+  
+  axiom Q_K___fc_lit_string11_7371_region :
+    region K___fc_lit_string11_7371 = 0
+  
+  axiom Q_K___fc_lit_string11_7371_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string11_7371 = 10
+  
+  axiom Q_K___fc_lit_string11_7371_binit : binit K___fc_lit_string11_7371
+  
+  axiom Q_K___fc_lit_string10_7370_region :
+    region K___fc_lit_string10_7370 = 0
+  
+  axiom Q_K___fc_lit_string10_7370_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string10_7370 = 7
+  
+  axiom Q_K___fc_lit_string10_7370_binit : binit K___fc_lit_string10_7370
+  
+  axiom Q_K___fc_lit_string9_7369_region : region K___fc_lit_string9_7369 = 0
+  
+  axiom Q_K___fc_lit_string9_7369_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string9_7369 = 25
+  
+  axiom Q_K___fc_lit_string9_7369_binit : binit K___fc_lit_string9_7369
+  
+  axiom Q_K___fc_lit_string8_7368_region : region K___fc_lit_string8_7368 = 0
+  
+  axiom Q_K___fc_lit_string8_7368_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string8_7368 = 7
+  
+  axiom Q_K___fc_lit_string8_7368_binit : binit K___fc_lit_string8_7368
+  
+  axiom Q_K___fc_lit_string7_7367_region : region K___fc_lit_string7_7367 = 0
+  
+  axiom Q_K___fc_lit_string7_7367_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string7_7367 = 8
+  
+  axiom Q_K___fc_lit_string7_7367_binit : binit K___fc_lit_string7_7367
+  
+  axiom Q_K___fc_lit_string6_7366_region : region K___fc_lit_string6_7366 = 0
+  
+  axiom Q_K___fc_lit_string6_7366_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string6_7366 = 7
+  
+  axiom Q_K___fc_lit_string6_7366_binit : binit K___fc_lit_string6_7366
+  
+  axiom Q_K___fc_lit_string5_7365_region : region K___fc_lit_string5_7365 = 0
+  
+  axiom Q_K___fc_lit_string5_7365_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string5_7365 = 8
+  
+  axiom Q_K___fc_lit_string5_7365_binit : binit K___fc_lit_string5_7365
+  
+  axiom Q_K___fc_lit_string4_7364_region : region K___fc_lit_string4_7364 = 0
+  
+  axiom Q_K___fc_lit_string4_7364_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string4_7364 = 7
+  
+  axiom Q_K___fc_lit_string4_7364_binit : binit K___fc_lit_string4_7364
+  
+  axiom Q_K___fc_lit_string3_7363_region : region K___fc_lit_string3_7363 = 0
+  
+  axiom Q_K___fc_lit_string3_7363_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string3_7363 = 8
+  
+  axiom Q_K___fc_lit_string3_7363_binit : binit K___fc_lit_string3_7363
+  
+  axiom Q_K___fc_lit_string2_7362_region : region K___fc_lit_string2_7362 = 0
+  
+  axiom Q_K___fc_lit_string2_7362_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string2_7362 = 7
+  
+  axiom Q_K___fc_lit_string2_7362_binit : binit K___fc_lit_string2_7362
+  
+  axiom Q_K___fc_lit_string1_7361_region : region K___fc_lit_string1_7361 = 0
+  
+  axiom Q_K___fc_lit_string1_7361_linked :
+    forall t:int -> int. linked t -> get t K___fc_lit_string1_7361 = 8
+  
+  axiom Q_K___fc_lit_string1_7361_binit : binit K___fc_lit_string1_7361
+  
+end
+[wp:print-generated] 
+  theory WP
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use frama_c_wp.memaddr.MemAddr *)
+    
+    (* use Chunk *)
+    
+    (* use Globals *)
+    
+    (* use frama_c_wp.cbits.Cbits *)
+    
+    goal wp_goal :
+      forall t:int -> int, t1:addr -> int, t2:addr -> int, i:int.
+       0 <= i ->
+       i <= 255 ->
+       is_sint8_chunk t1 ->
+       is_uint32_chunk t2 ->
+       linked t ->
+       is_uint32 (get t2 (global P_n_6854)) ->
+       (forall i1:int. 0 <= i1 -> i1 <= 255 -> (2 * i1) = lsl i1 1) ->
+       (forall i1:int.
+         let x = lsl i1 1 in 0 <= i1 -> i1 <= 255 -> (2 * x) = lsl x 1) ->
+       (4 * i) = lsl i 2
+    
+  end
+[wp] [Timeout] typed_raw_fma_complex_fp_qd8_shift8_bound_assert_qd8_shift8_exact_2 (Z3)
+[wp] Proved goals:    0 / 1
+  Qed:             0
+  Timeout:         1
+
+Goal Assertion 'qd8_shift8_exact_2' ("quantized.c", line 10):
+Assume {
+  Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+      is_uint32(Mint_0[global(P_n_6854)]).
+  (* Heap *)
+  Type: linked(Malloc_0).
+  Type: is_uint32_chunk(Mint_0).
+  Type: is_uint32_chunk(Mint_0).
+  Type: is_uint32_chunk(Mint_0).
+  Type: is_uint32_chunk(Mint_0).
+  Type: is_uint32_chunk(Mint_0).
+  Type: is_uint32_chunk(Mint_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 255).
+  (* Frame In *)
+  Have: Malloc_0[P_n_6854 <- 1] = Malloc_1.
+  (* Assertion 'qd8_shift8_exact_1' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 255) ->
+      ((2 * i_1) = lsl(i_1, 1)))).
+  (* Assertion 'qd8_shift8_double_2' *)
+  Have: forall i_1 : Z. let x = lsl(i_1, 1) in ((0 <= i_1) ->
+      ((i_1 <= 255) -> ((2 * x) = lsl(x, 1)))).
+}
+Prove: (4 * i) = lsl(i, 2).
+Prover Z3 4.12.5 returns Timeout (1s)
+
+------------------------------------------------------------
+[wp] Logging keys: prover:pp_task,print-generated.
