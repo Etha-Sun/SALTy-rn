@@ -1,3 +1,5 @@
+最新ROOT06：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT06.json` 和 REPORT 顶部。GEMM71 bias组38/38、完整库存1453；新增6个ghost读取RTE及高四路FMA扩大组待验，72继续前移真实高weight的load关系。DW2d root30完整1655，worker240秒/root480秒均超时无raw。Byte30 codec482/488（六个预期负post）、真实store45/46；31加入已证generic memcpy body20/20+trigger1和算术2/2，store仍45/46，未qualified。Byte27正式v7已知vadd1800秒超时无raw，不算通过。所有Byte版本未用于九项验收。新增整核仍0/9，原C/spec/旧锁/manifest保持，禁止push。以下计数保留历史。
+
 最新ROOT05：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT05.json` 和REPORT顶部。GEMM61为85/89，64新9个source/dup/transport及旧8项定点17/17；同候选扩大组98/98，完整1339项尚未验收；本地检查点691d6876，未push。62高四lane扩展完整库存1404。DW29 helper2/2、caller0/4。Byte25 codec479/488仍3真目标+6负post；26新body6/6正在控制，所有Bytes仍未qualified、禁止kernel采用。SPMM原模型已有valid→static事实，Typed raw地址范围及affine仍未证，独立控制39/45不算kernel错误。新增整核0/9、manifest不变、不push。以下计数保留历史。
 
 最新ROOT04：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT04.json` 与 REPORT 顶部。GEMM56首FMA lane0调用6/6，59四lane23/24，61实际补transport后a3定点4/4；完整库存59=1307、60=1327，扩大组仍在跑。DW27前缀/所有lane关系3/3，完整新增义务closure仍在跑。Byte23 partial-frame30/30、依赖14组30/30，但完整正反控制及严格known-case未完成，所有Bytes仍未qualified、不得用于kernel。新增整核仍0/9，manifest不变，不push。以下旧计数作为历史保留。

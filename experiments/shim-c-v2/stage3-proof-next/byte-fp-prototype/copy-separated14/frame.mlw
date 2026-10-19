@@ -1,0 +1,38 @@
+module CheckedMemcpyFrame32
+  use int.Int
+  use map.Map as M
+  use frama_c_wp.sequence.Seq as S
+  use frama_c_wp.memaddr.MemAddr
+  use frama_c_wp.membytes_le.Offset as O
+  use frama_c_wp.membytes_le.RWBytes as RW
+  use frama_c_wp.membytes_le.ValueBlockRW as VB
+  use frama_c_wp.membytes_le.MemBytes
+  let lemma checked_memcpy_frame32
+    (mtgt msrc:memory) (ptgt psrc ar:addr) (size:int) : unit
+    ensures { separated ptgt size ar 4 ->
+      read_uint32 (memcpy mtgt ptgt msrc psrc size) ar = read_uint32 mtgt ar }
+  = if pure { separated ptgt size ar 4 } then begin
+      if size <= 0 then begin
+        assert { psrc.offset + size <= psrc.offset };
+        assert { to_seq (M.get msrc psrc.base) psrc.offset (psrc.offset + size) = S.L.Nil };
+        assert { RW.bwrite_seq (M.get mtgt ptgt.base) ptgt.offset S.L.Nil = M.get mtgt ptgt.base };
+        assert { memcpy mtgt ptgt msrc psrc size = mtgt };
+      end else if ptgt.base = ar.base then begin
+        let copied = to_seq (M.get msrc psrc.base) psrc.offset (psrc.offset + size) in
+        assert { S.length copied = size };
+        assert { ar.offset + 4 <= ptgt.offset \/ ptgt.offset + size <= ar.offset };
+        assert { O.sepoffset ptgt.offset (S.length copied) ar.offset 4 };
+        RW.bread_32bits_bwrite_seq_sep (M.get mtgt ptgt.base) ar.offset ptgt.offset copied;
+        assert { RW.bread_32bits (RW.bwrite_seq (M.get mtgt ptgt.base) ptgt.offset copied) ar.offset =
+                 RW.bread_32bits (M.get mtgt ptgt.base) ar.offset };
+        assert { VB.bread_uint32 (RW.bwrite_seq (M.get mtgt ptgt.base) ptgt.offset copied) ar.offset =
+                 VB.bread_uint32 (M.get mtgt ptgt.base) ar.offset };
+        assert { M.get (memcpy mtgt ptgt msrc psrc size) ar.base =
+                 RW.bwrite_seq (M.get mtgt ptgt.base) ptgt.offset copied };
+        assert { M.get mtgt ptgt.base = M.get mtgt ar.base };
+      end else begin
+        assert { ar.base <> ptgt.base };
+        assert { M.get (memcpy mtgt ptgt msrc psrc size) ar.base = M.get mtgt ar.base };
+      end
+    end
+end

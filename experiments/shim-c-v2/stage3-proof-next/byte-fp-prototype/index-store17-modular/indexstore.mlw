@@ -1,0 +1,35 @@
+module IndexStore32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use storeread.StoreRead32
+ use loadframe.LoadFrame32
+ let lemma checked_index_load32 (m:memory) (a:addr) (v:f32)
+   (seed i j:int) : unit
+ ensures { decode32 (read_uint32
+   (write_uint32 m (shift a (4*i)) (encode32 v seed)) (shift a (4*j))) =
+   (if i=j then v else decode32 (read_uint32 m (shift a (4*j)))) }
+ = if i=j then begin
+     checked_store_read32 m (shift a (4*i)) v seed
+   end else begin
+     assert { 4*i+4 <= 4*j \/ 4*j+4 <= 4*i };
+     assert { separated (shift a (4*i)) 4 (shift a (4*j)) 4 };
+     checked_decode_frame32 m (shift a (4*i)) (shift a (4*j)) (encode32 v seed)
+   end
+end
+module IndexStoreTrigger32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use IndexStore32
+ let lemma checked_index_load32_trigger () : unit
+ ensures { forall m:memory,a:addr,v:f32,seed i j:int
+ [read_uint32 (write_uint32 m (shift a (4*i)) (encode32 v seed)) (shift a (4*j))].
+ decode32 (read_uint32 (write_uint32 m (shift a (4*i)) (encode32 v seed)) (shift a (4*j))) =
+ (if i=j then v else decode32 (read_uint32 m (shift a (4*j)))) }
+ = ()
+end

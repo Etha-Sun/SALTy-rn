@@ -1,0 +1,26 @@
+{
+  "source": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v30/qualification01/z3-adapter-evidence/4019f901a886b1479132911219621bc39fc16d7c707665e106117fe89f574894-mefu1tsj/expanded.smt2",
+  "source_sha256": "7b8de9b01ad63f2c8a2567de809459bc917c92cd179f11983740ff0bf8f1d978",
+  "goal_unchanged": true,
+  "removed_assertions": [
+    "(assert\n  (forall ((x Int) (y Int))\n    (=> (not (= y 0)) (= x (+ (* y (div1 x y)) (mod1 x y))))))",
+    "(assert\n  (forall ((n Int) (d Int))\n    (! (and\n         (=> (<= 0 n) (=> (< 0 d) (and (<= 0 (mod1 n d)) (< (mod1 n d) d))))\n         (and\n           (=>\n             (<= n 0)\n             (=> (< 0 d) (and (< (- d) (mod1 n d)) (<= (mod1 n d) 0))))\n           (and\n             (=>\n               (<= 0 n)\n               (=> (< d 0) (and (<= 0 (mod1 n d)) (< (mod1 n d) (- d)))))\n             (=>\n               (<= n 0)\n               (=> (< d 0) (and (< d (mod1 n d)) (<= (mod1 n d) 0))))))) :pattern (\n    (mod1\n      n\n      d)) )))",
+    "(assert\n  (forall ((m (Array Int Int)) (p addr) (n Int))\n    (=\n      (valid_rw m p n)\n      (=>\n        (< 0 n)\n        (and\n          (< 0 (base p))\n          (and (<= 0 (offset p)) (<= (+ (offset p) n) (select m (base p)))))))))",
+    "(assert\n  (forall ((m (Array Int Int)) (p addr) (n Int))\n    (=\n      (valid_rd m p n)\n      (=>\n        (< 0 n)\n        (and\n          (not (= 0 (base p)))\n          (and (<= 0 (offset p)) (<= (+ (offset p) n) (select m (base p)))))))))",
+    "(assert\n  (forall ((p addr) (lp Int) (q addr) (lq Int))\n    (=\n      (included p lp q lq)\n      (=>\n        (< 0 lp)\n        (and\n          (<= 0 lq)\n          (and\n            (= (base p) (base q))\n            (and\n              (<= (offset q) (offset p))\n              (<= (+ (offset p) lp) (+ (offset q) lq)))))))))",
+    "(assert\n  (forall ((m (Array Int (Array Int Int))) (a addr) (v Int))\n    (! (=> (is_uint32 v) (= (read_uint32 (write_uint32 m a v) a) v)) :pattern (\n    (read_uint32\n      (write_uint32 m a v)\n      a)) )))",
+    "(assert\n  (forall ((m (Array Int (Array Int Int))) (a addr) (v Int))\n    (! (=> (is_uint64 v) (= (read_uint64 (write_uint64 m a v) a) v)) :pattern (\n    (read_uint64\n      (write_uint64 m a v)\n      a)) )))",
+    "(assert\n  (forall ((m (Array Int (Array Int Int))) (ar addr) (aw addr) (v Int))\n    (! (=>\n         (separated aw 8 ar 8)\n         (= (read_uint64 (write_uint64 m aw v) ar) (read_uint64 m ar))) :pattern (\n    (read_uint64\n      (write_uint64 m aw v)\n      ar)) )))",
+    "(assert\n  (forall ((a Float32) (b Float32))\n    (= (P_same_value a b) (or (fp.eq a b) (and (fp.isNaN a) (fp.isNaN b))))))"
+  ],
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/bin/z3",
+    "-smt2",
+    "-T:15",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/byte30-rvv-store02/2/task.smt2"
+  ],
+  "exit": 0,
+  "seconds": 15.01199041691143,
+  "stdout": "timeout\n",
+  "qualified": false
+}

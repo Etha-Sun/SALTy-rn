@@ -1,0 +1,57 @@
+{
+  "base": "candidate71",
+  "scope": "f32-gemm-minmax, NEON row 0 high four lanes only",
+  "changes": {
+    "relocated_existing_assertions": [
+      "next_high_bound0_0",
+      "next_high_bound0_1",
+      "next_high_bound0_2",
+      "next_high_bound0_3",
+      "next_high_bound1_0",
+      "next_high_bound1_1",
+      "next_high_bound1_2",
+      "next_high_bound1_3"
+    ],
+    "added_assertions": [
+      "next_high_load0_0",
+      "next_high_load0_1",
+      "next_high_load0_2",
+      "next_high_load0_3",
+      "next_high_load1_0",
+      "next_high_load1_1",
+      "next_high_load1_2",
+      "next_high_load1_3"
+    ],
+    "retained_original_frame_assertions": [
+      "next_high_pre_w0_0",
+      "next_high_pre_w0_1",
+      "next_high_pre_w0_2",
+      "next_high_pre_w0_3",
+      "next_high_pre_w1_0",
+      "next_high_pre_w1_1",
+      "next_high_pre_w1_2",
+      "next_high_pre_w1_3"
+    ]
+  },
+  "evidence": {
+    "source": "candidate62/logs/high-root01/run.log",
+    "weight": "Actual high load post relates scalar to its load-time weight memory. First high pre_w occurs after four unrelated low-half FMAs; unlike low-half next_lane cuts there is no immediate high-load frozen-memory cut. Candidate adds this local split but requires both split and retained later frame goals.",
+    "after1": "Printed after1_0 includes matching A, weight, old accumulator, recursive FMA antecedents and ground next_fma_result_relation. No new FMA helper or additional after1 assumptions are introduced; existing four after1 are selected for recheck."
+  },
+  "validation": {
+    "source_guard": true,
+    "solver_started_by_worker": false,
+    "inventory": {
+      "complete": true,
+      "logical": 1461,
+      "body": 1449,
+      "globals": 12,
+      "cfg_only": 36,
+      "delta_from_71": 8,
+      "both_runs_exit": 0,
+      "both_runs_inputs_unchanged": true
+    }
+  },
+  "complete": false,
+  "warning": "No full-kernel success. New load cuts and retained pre_w must all pass; unchanged candidate71 ghost read RTE remain dependencies."
+}

@@ -1,0 +1,23 @@
+module Interface32
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use nativebv.NativeBV
+  use ieee_float.Float32 as FP
+  use frama_c_wp.bytefloat.Bytefloat
+  let lemma interface32 (n:int) (v:f32) (seed:int) : unit
+    ensures { decode32 n = decode_bv32 (of_int32 n) }
+    ensures { encode32 v seed = to_uint32 (encode_bv32 v (of_int32 seed)) }
+  = ()
+end
+
+module Interface64
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use nativebv.NativeBV
+  use ieee_float.Float64 as FP
+  use frama_c_wp.bytefloat.Bytefloat
+  let lemma interface64 (n:int) (v:f64) (seed:int) : unit
+    ensures { decode64 n = decode_bv64 (of_int64 n) }
+    ensures { encode64 v seed = to_uint64 (encode_bv64 v (of_int64 seed)) }
+  = ()
+end

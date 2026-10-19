@@ -1,5 +1,17 @@
 # 第三阶段九项：后续 proof 与独立审核
 
+## 最新阶段记录（ROOT06）
+
+仍仅原九项，新增整核 **0/9**；实现、公共spec/wrapper与旧模型/锁保持，manifest不变，不push。
+
+- GEMM70 bias **29/32**；71将真实load后关系拆为postweight和已证transport，bias **38/38**，完整库存 **1453**（另36 CFG），比70新增6个cut及6个ghost读取RTE。新RTE完整检查与高四路两轮FMA扩大组仍在跑；不能把38/38计整核。首次按自动goal-id选RTE生成0项，明确无验收意义，已改用实际mem_access属性重跑。
+- DW2d root30实际补两侧精确高度写回关系；完整库存 **1655**。worker定点240秒无raw，root另名480秒复核也无raw；两次均不能计通过，未证目标保留。
+- Bytes29/30完整codec **482/488**、五组正反控制均符合预期；30真实store组 **45/46**，剩RVV loop保持。31增加真实body泛化memcpy保持（主15+递归2+sequence3=20项全过、触发器1项）及整数后继2项，实际store仍45/46，继续未qualified。
+- Bytes27正式v7已知vadd在1800秒预算超时，无最终raw，complete=false；source_guard/unchanged/model_inputs_unchanged/model_control.accepted均真也不能认定通过。旧失败和日志完整保留，不修改旧锁。
+- audit22核对 **144候选、30169锁条目**，原C/token/spec与requires保持。
+
+详见 `PROGRESS-ROOT06.json`；运行中结果待完成后追加，局部与整核严格区分。
+
 
 ## 最新阶段记录（ROOT05）
 

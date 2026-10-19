@@ -1,0 +1,12 @@
+module CopyFrameTrigger32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frame.CheckedMemcpyFrame32
+ let lemma checked_memcpy_frame32_trigger () : unit
+ ensures { forall mtgt msrc:memory,ptgt psrc ar:addr,size:int
+ [read_uint32 (memcpy mtgt ptgt msrc psrc size) ar].
+ separated ptgt size ar 4 ->
+ read_uint32 (memcpy mtgt ptgt msrc psrc size) ar = read_uint32 mtgt ar }
+ = ()
+end

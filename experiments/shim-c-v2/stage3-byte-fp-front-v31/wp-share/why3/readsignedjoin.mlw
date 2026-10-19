@@ -1,0 +1,24 @@
+module ReadSignedJoin32
+ use int.Int
+ use frama_c_wp.cint.Cint
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_signed_byte (m:memory) (a:addr) : unit
+ ensures { bytes m -> to_uint8 (read_sint8 m a) = raw_get m a }
+ = if pure { bytes m } then begin
+    assert { 0<=raw_get m a<=255 };
+    assert { read_sint8 m a=to_sint8 (raw_get m a) };
+   end
+ let lemma checked_signed_join32 (m:memory) (a:addr) : unit
+ ensures { bytes m -> read_uint32 m a = to_uint8 (read_sint8 m a) + 256*to_uint8 (read_sint8 m (shift a 1)) + 65536*to_uint8 (read_sint8 m (shift a 2)) + 16777216*to_uint8 (read_sint8 m (shift a 3)) }
+ = if pure { bytes m } then begin
+    memory_unsigned32_bytes m a;
+    checked_signed_byte m a;
+    checked_signed_byte m (shift a 1);
+    checked_signed_byte m (shift a 2);
+    checked_signed_byte m (shift a 3);
+   end
+ let lemma checked_signed_join_trigger () : unit
+ ensures { forall m:memory,a:addr [read_uint32 m a]. bytes m -> read_uint32 m a = to_uint8 (read_sint8 m a) + 256*to_uint8 (read_sint8 m (shift a 1)) + 65536*to_uint8 (read_sint8 m (shift a 2)) + 16777216*to_uint8 (read_sint8 m (shift a 3)) }
+ = ()
+end

@@ -1,0 +1,145 @@
+{
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/install/bin/frama-c",
+    "-load-module",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/observer-new/observer.cmxs",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-model",
+    "Bytes+float",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/why3-02.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "tip,z3,cvc5",
+    "-wp-timeout",
+    "30",
+    "-wp-memlimit",
+    "2048",
+    "-wp-par",
+    "4",
+    "-wp-cache",
+    "none",
+    "-wp-driver",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/bytefloat.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver",
+    "-cpp-command",
+    "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.",
+    "-cpp-frama-c-compliant",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/qualification01/highbits-root01/.build/session",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/qualification01/highbits-root01/raw.json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/qualification01/highbits.c"
+  ],
+  "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31",
+  "input_snapshot_sha256": "b64c2a3a779aca4d1e60a32f922384b001acbfcd8ae7bf398c295c9b94aea09d",
+  "runner_sha256": "c30262a6f3905db4b8028fee5976a27004dc7638596588d15194e6b534955a1c",
+  "budget_seconds": 600,
+  "qualification": false,
+  "exit": 0,
+  "seconds": 90.425,
+  "raw_total": 10,
+  "raw_passed": 7,
+  "inputs_unchanged": true,
+  "pending": [
+    {
+      "goal": "bytes_bytefloat_fma_false_bit62_ensures_deliberately_false_bit62",
+      "property": "false_bit62_ensures_deliberately_false_bit62",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/qualification01/highbits.c",
+      "line": 24,
+      "function": "false_bit62",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00107,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.0535,
+          "success": 1
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "subgoals": 2,
+      "tactics": 1,
+      "proved": 1,
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_false_bit63_ensures_deliberately_false_bit63",
+      "property": "false_bit63_ensures_deliberately_false_bit63",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/qualification01/highbits.c",
+      "line": 28,
+      "function": "false_bit63",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00125,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.0429,
+          "success": 1
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "subgoals": 2,
+      "tactics": 1,
+      "proved": 1,
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_false_ignore_high_ensures_deliberately_false_ignore_high",
+      "property": "false_ignore_high_ensures_deliberately_false_ignore_high",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v31/qualification01/highbits.c",
+      "line": 32,
+      "function": "false_ignore_high",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00195,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.0625,
+          "success": 1
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "subgoals": 2,
+      "tactics": 1,
+      "proved": 1,
+      "timeout": 1
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "original_sha256": "48ff9ac9fd5f5f4b6955aca55fe27aff6828725992aa46234c21f23e31cc4385",
+  "sliced_sha256": "410cda05f087d44aeb7b94cc2a49bddd6132a6ac053e9683e5b9bda6f51c41f8",
+  "goal_sha256": "4922ac0bb2e21ddc27e52c69575887f1e03747d41dcddf360e92f74f095e3beb",
+  "goal_byte_identical": true,
+  "removed": [
+    {
+      "name": "CompatOrderMult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (=> (<= x y) (=> (<= 0 z) (<= (* x z) (* y z))))))"
+    },
+    {
+      "name": "Abs_le",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (= (<= (abs1 x) y) (and (<= (- y) x) (<= x y)))))"
+    },
+    {
+      "name": "Abs_pos",
+      "assertion": "(assert (forall ((x Int)) (<= 0 (abs1 x))))"
+    },
+    {
+      "name": "Div_bound",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (and (<= 0 x) (< 0 y)) (and (<= 0 (div1 x y)) (<= (div1 x y) x)))))"
+    },
+    {
+      "name": "Mod_bound",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=>\n      (not (= y 0))\n      (and (< (- (abs1 y)) (mod1 x y)) (< (mod1 x y) (abs1 y))))))"
+    },
+    {
+      "name": "Div_sign_pos",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= 0 x) (< 0 y)) (<= 0 (div1 x y)))))"
+    },
+    {
+      "name": "Div_sign_neg",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= x 0) (< 0 y)) (<= (div1 x y) 0))))"
+    },
+    {
+      "name": "Mod_sign_pos",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (and (<= 0 x) (not (= y 0))) (<= 0 (mod1 x y)))))"
+    },
+    {
+      "name": "Mod_sign_neg",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (and (<= x 0) (not (= y 0))) (<= (mod1 x y) 0))))"
+    },
+    {
+      "name": "Rounds_toward_zero",
+      "assertion": "(assert\n  (forall ((x Int) (y Int))\n    (=> (not (= y 0)) (<= (abs1 (* (div1 x y) y)) (abs1 x)))))"
+    },
+    {
+      "name": "Div_1",
+      "assertion": "(assert (forall ((x Int)) (= (div1 x 1) x)))"
+    },
+    {
+      "name": "Mod_1",
+      "assertion": "(assert (forall ((x Int)) (= (mod1 x 1) 0)))"
+    },
+    {
+      "name": "Div_inf",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= 0 x) (< x y)) (= (div1 x y) 0))))"
+    },
+    {
+      "name": "Mod_inf",
+      "assertion": "(assert\n  (forall ((x Int) (y Int)) (=> (and (<= 0 x) (< x y)) (= (mod1 x y) x))))"
+    },
+    {
+      "name": "Div_mult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (! (=>\n         (and (< 0 x) (and (<= 0 y) (<= 0 z)))\n         (= (div1 (+ (* x y) z) x) (+ y (div1 z x)))) :pattern ((div1\n                                                                  (+ (* x y) z)\n                                                                  x)) )))"
+    },
+    {
+      "name": "Mod_mult",
+      "assertion": "(assert\n  (forall ((x Int) (y Int) (z Int))\n    (! (=>\n         (and (< 0 x) (and (<= 0 y) (<= 0 z)))\n         (= (mod1 (+ (* x y) z) x) (mod1 z x))) :pattern ((mod1\n                                                            (+ (* x y) z)\n                                                            x)) )))"
+    },
+    {
+      "name": "CompatOrderMult",
+      "assertion": "(assert\n  (forall ((x Real) (y Real) (z Real))\n    (=> (<= x y) (=> (<= 0.0 z) (<= (* x z) (* y z))))))"
+    },
+    {
+      "name": "c_euclidian",
+      "assertion": "(assert\n  (forall ((n Int) (d Int))\n    (! (=> (not (= d 0)) (= n (+ (* (div1 n d) d) (mod1 n d)))) :pattern (\n    (div1\n      n\n      d)\n    (mod1 n d)) )))"
+    },
+    {
+      "name": "cdiv_neutral",
+      "assertion": "(assert (forall ((a Int)) (! (= (div1 a 1) a) :pattern ((div1 a 1)) )))"
+    },
+    {
+      "name": "cdiv_inv",
+      "assertion": "(assert\n  (forall ((a Int))\n    (! (=> (not (= a 0)) (= (div1 a a) 1)) :pattern ((div1 a a)) )))"
+    },
+    {
+      "name": "cdiv_closed_remainder",
+      "assertion": "(assert\n  (forall ((a Int) (b Int) (n Int))\n    (=>\n      (<= 0 a)\n      (=>\n        (<= 0 b)\n        (=>\n          (and (<= 0 (- b a)) (< (- b a) n))\n          (=> (= (mod1 a n) (mod1 b n)) (= a b)))))))"
+    }
+  ],
+  "argv": [
+    "-smt2",
+    "-T:30",
+    "/tmp/why_e5a784_zilch-T-wp_goal.smt2"
+  ],
+  "qualification": false
+}
