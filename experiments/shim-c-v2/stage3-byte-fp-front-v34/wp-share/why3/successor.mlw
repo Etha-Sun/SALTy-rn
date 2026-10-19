@@ -1,0 +1,10 @@
+module CheckedSuccessor64
+ use int.Int
+ use frama_c_wp.cint.Cint
+ let lemma checked_u64_successor(i:int):unit
+ ensures {0<=i<18446744073709551615 -> to_uint64 (i+1)=i+1}
+ = ()
+ let lemma checked_u64_successor_trigger():unit
+ ensures {forall i:int [to_uint64 (i+1)]. 0<=i<18446744073709551615 -> to_uint64 (i+1)=i+1}
+ = ()
+end

@@ -1,0 +1,66 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root32/inventory-focus-raw.json", "-wp-fct", "root32_index_step", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root32/.build/guard01/annotated/unit.c", "-wp-no-strategy-engine", "-wp-no-clean", "-wp-no-qed", "-wp-print", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root32/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function root32_index_step
+
+Goal Post-condition 'root32_shift' in 'root32_index_step':
+Let a = Mptr_0[global(P_p_6929)].
+Let a_1 = Mptr_0[global(P_base_6930)].
+Let x = Mint_0[global(P_c_6932)].
+Let x_1 = -x.
+Let x_2 = Mint_0[global(P_n_6931)].
+Let x_3 = Mint_0[global(P_v_6933)].
+Assume {
+  Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\ is_uint64(x) /\
+      is_uint64(x_2) /\ is_uint64(x_3).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  Type: is_uint64_chunk(Mint_0).
+  Type: true.
+  Type: true.
+  (* Goal *)
+  When: (a = shift_uint32(a_1, x_2 - x)) /\ (x_3 <= x) /\ (x <= x_2).
+  (* Frame In *)
+  Have: Malloc_0[P_p_6929 <- 1][P_base_6930 <- 1][P_n_6931 <- 1][P_c_6932
+          <- 1][P_v_6933 <- 1] = Malloc_1.
+  (* Frame Out *)
+  Have: Malloc_1[P_p_6929 <- 0][P_base_6930 <- 0][P_n_6931 <- 0][P_c_6932
+          <- 0][P_v_6933 <- 0] = Malloc_2.
+}
+Prove: shift_uint32(a_1, x_2 + x_3 - x) = shift_uint32(a, x_3).
+
+------------------------------------------------------------
+
+Goal Post-condition 'root32_sub' in 'root32_index_step':
+Let x = Mint_0[global(P_v_6933)].
+Let x_1 = Mint_0[global(P_c_6932)].
+Let x_2 = Mint_0[global(P_n_6931)].
+Let x_3 = to_uint64(x_1 - x).
+Assume {
+  Type: is_sint8_chunk(Mchar_0) /\ is_uint64_chunk(Mint_0) /\
+      is_uint64(x_1) /\ is_uint64(x_2) /\ is_uint64(x).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  Type: is_uint64_chunk(Mint_0).
+  Type: true.
+  Type: true.
+  (* Goal *)
+  When: (x <= x_1) /\ (x_1 <= x_2).
+  (* Frame In *)
+  Have: Malloc_0[P_p_6929 <- 1][P_base_6930 <- 1][P_n_6931 <- 1][P_c_6932
+          <- 1][P_v_6933 <- 1] = Malloc_1.
+  (* Frame Out *)
+  Have: Malloc_1[P_p_6929 <- 0][P_base_6930 <- 0][P_n_6931 <- 0][P_c_6932
+          <- 0][P_v_6933 <- 0] = Malloc_2.
+}
+Prove: (x_1 = (x + x_3)) /\ (x_3 <= x_2).
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'root32_index_step':
+Prove: true.
+
+------------------------------------------------------------

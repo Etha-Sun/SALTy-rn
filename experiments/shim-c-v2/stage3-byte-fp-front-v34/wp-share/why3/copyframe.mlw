@@ -1,0 +1,17 @@
+module CopyFrame
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_copy_other_block_uint32 () : unit
+ ensures { forall m ms:memory, dst src a:addr, n:int [read_uint32 (memcpy m dst ms src n) a].
+   a.base <> dst.base -> read_uint32 (memcpy m dst ms src n) a = read_uint32 m a }
+ = ()
+ let lemma checked_copy_other_block_uint8 () : unit
+ ensures { forall m ms:memory, dst src a:addr, n:int [read_uint8 (memcpy m dst ms src n) a].
+   a.base <> dst.base -> read_uint8 (memcpy m dst ms src n) a = read_uint8 m a }
+ = ()
+ let lemma checked_copy_other_block_sint8 () : unit
+ ensures { forall m ms:memory, dst src a:addr, n:int [read_sint8 (memcpy m dst ms src n) a].
+   a.base <> dst.base -> read_sint8 (memcpy m dst ms src n) a = read_sint8 m a }
+ = ()
+end

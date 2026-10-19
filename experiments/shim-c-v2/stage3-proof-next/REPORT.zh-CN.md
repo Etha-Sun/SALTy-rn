@@ -1,5 +1,20 @@
 # 第三阶段九项：后续 proof 与独立审核
 
+## 最新阶段记录（ROOT07）
+
+原九项新增整核仍 **0/9**，未 push；冻结原 C/token/spec 和旧模型/锁保持，manifest 不变。
+
+- GEMM74 第一高组 lane0：完整新传递 helper **2/2**、实际 source/load/ground/原结果关系组 **7/7**。实际 WP 证实缺口为同一地址的量词实例与 ext_same 传递，不是索引错位。76独立扩至其余七lane，真实求解中；不得将预测56项当已通过。71较早高组完整 **64/76**，八weight前件与四after1未证；71 memory-RTE 预算900秒无raw，保留失败。
+- GEMM76 全部可达 callee 逻辑 body **373/378**，五个真实未证目标全部属于 canonical_nan（ensures、assigns、memcpy valid_src/valid_dest/separation）。没有跳过该函数。77另以 checked Wp.unfold 展开已有ground关系，不新增前提，测试第二轮FMA结果。
+- Argmax32 helper **3/3**、focus **9/10**；33细化实际u32循环写域后仍 **9/10**，唯一 pending 是 root32_before_merges。33启动 equivalent 的全部真实inline调用闭包，包含原 main 旧债；34独立对同一合取目标用 checked split，全部子分支必须通过。
+- Byte33 codec 实际 **481/488**：除六个预设负post，memcpy_requires_valid_dest_28 是真实未证前提。五个其他语义控制预期一致，有/无observer的memory语义raw逐项相同，但仍 **未qualified**，未启动其严格复验。该valid_dest原任务只删除完整auto_instance假设的更强查询，Z3实际UNSAT（0.993秒）；34独立加入该两秒搜索备选，旧模型/任务不变，必须重新完成全部控制。
+- audit24 核对151候选、30169锁条目、公共合同无新增requires；77/34等后续候选另须审计。详见 PROGRESS-ROOT07.json。局部、callee与整核结果不拼接。
+
+
+ROOT07 后续：GEMM76 高weight扩大组实际 **48/56**，未证四个第二轮source关系和四个after1；完整库存 **1483**（1471 body+12 global，另40 CFG）。77顶层假设选择器未成功应用，**4/8**，不计进展；79仅改为查找嵌套上下文继续尝试。78为生成器变量遮蔽错误，无冻结或VC，保留失败记录。Argmax34 checked split 为2/3子分支通过，整体仍9/10；唯一未证子分支是索引指针等式。Byte34六组控制均精确符合预期，observer语义raw相同，store **46/46** 和主程序五目标 **5/5**；正式 v7 已知例复验已启动（独立3600秒锁），资格仍false，不能用于九项验收。
+
+ROOT07 依赖补查：GEMM76 原有六条 next_w_frame_0..5 实测 **0/6**。这六条现存断言是部分 load/FMA 局部组的前置证明债，未关闭；此前局部7/7、48/56等绝不是完整依赖闭包。完整日志与raw单独保留于 frames-root01。
+
 ## 最新阶段记录（ROOT06）
 
 仍仅原九项，新增整核 **0/9**；实现、公共spec/wrapper与旧模型/锁保持，manifest不变，不push。
@@ -10,7 +25,11 @@
 - Bytes27正式v7已知vadd在1800秒预算超时，无最终raw，complete=false；source_guard/unchanged/model_inputs_unchanged/model_control.accepted均真也不能认定通过。旧失败和日志完整保留，不修改旧锁。
 - audit22核对 **144候选、30169锁条目**，原C/token/spec与requires保持。
 
-详见 `PROGRESS-ROOT06.json`；运行中结果待完成后追加，局部与整核严格区分。
+随后结果：73通过真实无requires传递helper **2/2**、全部bias **38/38**；实际删除的是6个辅助ghost C读取RTE（原kernel安全义务全部保留），逻辑库存 **1449**、另38 CFG。72高weight定点 **16/28**，8个新load关系和4个after1仍未证，完整库存1461。argmax root31 **5/8**，新增after-store及原rebased通过，before-store、advanced、channel-bounds保持仍未证；root32新算术/指针组合body **3/3**，caller复验进行中。
+
+Byte33真实store **46/46**、五个代表性主程序目标 **5/5**；新增choice body/trigger及通用uint64范围6/6，实际SMT确认ground实例匹配。仍未qualified，需完整正反控制、有/无observer比较和正式v7已知案例全通过。独立标准锁已冻结，预算3600秒；不改旧失败和旧锁。
+
+本地检查点 `28e9bf71`，未push。详见 `PROGRESS-ROOT06.json`；运行中结果待完成后追加，局部与整核严格区分。
 
 
 ## 最新阶段记录（ROOT05）

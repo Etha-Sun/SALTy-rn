@@ -1,0 +1,11 @@
+module DecodeInjective32
+ use int.Int
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use ieee_float.Float32 as FP
+ use compose32.Compose32Cuts
+ let lemma checked_decode_injective32 (n:int) (m:int) : unit
+  ensures { 0 <= n < 4294967296 /\ 0 <= m < 4294967296 /\ not FP.is_nan (decode32 n) /\ decode32 n = decode32 m -> n = m }
+ = checked_integer_inverse32 n 0;
+   checked_integer_inverse32 m 0
+end

@@ -1,0 +1,12 @@
+module MemoryRead32
+ use int.Int
+ use frama_c_wp.cint.Cint
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_read_write32 (m:memory) (a:addr) (v:int) : unit
+ ensures { is_uint32 v -> read_uint32 (write_uint32 m a v) a = v }
+ = ()
+ let lemma checked_read_frame32 (m:memory) (aw:addr) (ar:addr) (v:int) : unit
+ ensures { separated aw 4 ar 4 -> read_uint32 (write_uint32 m aw v) ar = read_uint32 m ar }
+ = ()
+end

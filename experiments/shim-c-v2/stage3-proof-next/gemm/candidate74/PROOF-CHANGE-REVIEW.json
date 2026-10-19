@@ -1,0 +1,39 @@
+{
+  "base": "candidate73",
+  "source_evidence": "candidate72/logs/weight-root01/run.log, next_high_load0_0",
+  "diagnosis": {
+    "index": "Identical normalized x10=12+8*t+block_stride, a36=shift_float32(a35,x10). No remaining unsigned wrap mismatch in this obligation.",
+    "load_post": "ext_same(actual_lane,a31[a36])",
+    "frozen_frame": "forall i in original domain, ext_same(a31[shift_float32(a35,i)],next_read(Stage3Block,W0,i))",
+    "gap": "Specific instantiation and ext_same transitivity; preserve the load-time a31 memory rather than introduce an after-copy memory lookup."
+  },
+  "changes": {
+    "moved_existing_bound": "next_high_bound0_0",
+    "label": "NextHighWeight0 before actual high load",
+    "new_cuts": [
+      "next_high_source0_0",
+      "next_high_actual0_0",
+      "next_high_weightjoin0_0",
+      "next_high_load0_0"
+    ],
+    "new_body_helper": "next_weight_transitive(float x): assigns nothing; forall float y,z, ext_same(x,y)&&ext_same(y,z) implies ext_same(x,z); empty body; no requires",
+    "new_ghost_pointer_reads": 0,
+    "retained_downstream_targets": [
+      "next_high_pre_w0_0",
+      "next_high_after0_0"
+    ]
+  },
+  "validation": {
+    "source_guard": true,
+    "inventory": {
+      "complete": true,
+      "logical": 1455,
+      "body": 1443,
+      "globals": 12,
+      "cfg": 40,
+      "both_exit0_inputs_unchanged": true
+    },
+    "solver": "root execution; no pass claimed"
+  },
+  "complete": false
+}

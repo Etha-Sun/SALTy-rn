@@ -1,0 +1,1 @@
+root32 继承 root31/argmax 原 unary 模型，冻结 files 相同且 source_guard=true。保留全部旧断言。新增 pre-merge cursor/range 和 post-store range 两个断言，均是需实证的债务；新增无 requires 空 body helper 的两个条件 ensures，显式实例化 pointer shift 与 size_t subtraction。helper assigns nothing，必须完整 body 验证；不赋予任何实际 C callee 新 assigns/requires。尚未运行 solver，不宣称进展已证。

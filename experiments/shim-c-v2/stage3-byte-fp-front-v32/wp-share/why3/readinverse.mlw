@@ -1,0 +1,24 @@
+module ReadInverse32
+ use int.Int
+ use int.ComputerDivision as CD
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use digits.ByteDigits32
+ let lemma checked_read_inverse32 (m:memory) (a:addr) : unit
+ ensures { bytes m -> read_uint8 m a = CD.mod (read_uint32 m a) 256 }
+ ensures { bytes m -> read_uint8 m (shift a 1) = CD.mod (CD.div (read_uint32 m a) 256) 256 }
+ ensures { bytes m -> read_uint8 m (shift a 2) = CD.mod (CD.div (read_uint32 m a) 65536) 256 }
+ ensures { bytes m -> read_uint8 m (shift a 3) = CD.mod (CD.div (read_uint32 m a) 16777216) 256 }
+ = if pure { bytes m } then begin
+    memory_unsigned32_bytes m a;
+    assert { 0<=raw_get m a<=255 };
+    assert { read_uint8 m a=raw_get m a };
+    assert { 0<=raw_get m (shift a 1)<=255 };
+    assert { read_uint8 m (shift a 1)=raw_get m (shift a 1) };
+    assert { 0<=raw_get m (shift a 2)<=255 };
+    assert { read_uint8 m (shift a 2)=raw_get m (shift a 2) };
+    assert { 0<=raw_get m (shift a 3)<=255 };
+    assert { read_uint8 m (shift a 3)=raw_get m (shift a 3) };
+    checked_byte_digits32 (read_uint8 m a) (read_uint8 m (shift a 1)) (read_uint8 m (shift a 2)) (read_uint8 m (shift a 3));
+   end
+end

@@ -1,0 +1,41 @@
+module ChoiceFrame32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use storeread.StoreRead32
+ use loadframe.LoadFrame32
+ let lemma checked_choice_load32 (m:memory) (aw ar:addr) (v:f32) (seed:int) : unit
+ ensures { (aw=ar -> decode32 (read_uint32 (write_uint32 m aw (encode32 v seed)) ar)=v) /\
+ (separated aw 4 ar 4 -> decode32 (read_uint32 (write_uint32 m aw (encode32 v seed)) ar)=decode32(read_uint32 m ar)) }
+ = checked_store_read32 m aw v seed;
+   checked_decode_frame32 m aw ar (encode32 v seed)
+end
+module ChoiceFrameTrigger32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use ChoiceFrame32
+ let lemma checked_choice_load32_trigger () : unit
+ ensures { forall m:memory,aw ar:addr,v:f32,seed:int
+ [read_uint32 (write_uint32 m aw (encode32 v seed)) ar].
+ (aw=ar -> decode32 (read_uint32 (write_uint32 m aw (encode32 v seed)) ar)=v) /\
+ (separated aw 4 ar 4 -> decode32 (read_uint32 (write_uint32 m aw (encode32 v seed)) ar)=decode32(read_uint32 m ar)) }
+ = ()
+end
+module RangeIdentity64
+ use int.Int
+ use frama_c_wp.cint.Cint
+ let lemma checked_u64_in_range (x:int):unit
+ ensures { 0<=x<18446744073709551616 -> to_uint64 x=x }
+ = if 0<=x && x<18446744073709551616 then begin
+     assert { not (x<0) /\ not (x>=max_uint64) };
+     assert { to_uint64 x=x }
+   end
+ let lemma checked_u64_in_range_trigger ():unit
+ ensures { forall x:int [to_uint64 x]. 0<=x<18446744073709551616 -> to_uint64 x=x }
+ = ()
+end

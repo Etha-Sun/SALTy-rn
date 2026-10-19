@@ -1,0 +1,30 @@
+{
+  "base": "candidate71",
+  "scope": "High bias lanes 1..3 proof-only transitivity",
+  "change": "Replace three next_splat_transport(x,w[j],w[j]) ghost calls with next_bias_transitive(x,snapshot), whose empty body must prove an unconditional forall-y transitivity postcondition. Replace existing three loadjoin predicates with concrete instances of that postcondition.",
+  "contract": {
+    "requires": [],
+    "assigns": "nothing",
+    "ensures": "forall float y; (ext_same(x,y) && ext_same(y,z)) ==> ext_same(x,z)",
+    "body": "{}",
+    "extra_domain_restrictions": false
+  },
+  "safety_boundary": "Only auxiliary ghost C reads of w[j] are removed. Logical w[j] references remain in mandatory assertions. All real vld1q input-validity contracts, kernel C reads, original RTE, postweight and load assertions remain unchanged and mandatory. No implication alone establishes its antecedents.",
+  "verification": {
+    "guard": true,
+    "body_inventory": {
+      "complete": true,
+      "body_logical": 1437,
+      "globals": 12,
+      "total_logical": 1449,
+      "cfg": 38,
+      "delta_from71": {
+        "logical": -4,
+        "cfg": 2
+      },
+      "both_runs_exit0_and_inputs_unchanged": true
+    },
+    "helper_and_bias_solver": "root owns execution; no pass claimed here"
+  },
+  "complete": false
+}

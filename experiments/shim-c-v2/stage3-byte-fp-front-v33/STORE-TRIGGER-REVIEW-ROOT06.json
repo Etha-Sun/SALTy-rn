@@ -1,0 +1,77 @@
+{
+  "qualified": false,
+  "store_raw_total": 46,
+  "store_raw_passed": 46,
+  "rvv_goal_actual_smt": [
+    {
+      "source": "experiments/shim-c-v2/stage3-byte-fp-front-v33/qualification01/z3-adapter-evidence/0564b4f844e515ec1d875a3093a2fa94998e131795eb016ad7ffda0c086fb1fd-xwtl7wwp/original.smt2",
+      "source_sha256": "0564b4f844e515ec1d875a3093a2fa94998e131795eb016ad7ffda0c086fb1fd",
+      "choice_ground_instances": [],
+      "uint64_ground_instances": [],
+      "executions": [
+        {
+          "kind": "sliced",
+          "command": [
+            "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/bin/z3",
+            "-smt2",
+            "-T:5",
+            "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v33/qualification01/z3-adapter-evidence/0564b4f844e515ec1d875a3093a2fa94998e131795eb016ad7ffda0c086fb1fd-xwtl7wwp/sliced.smt2"
+          ],
+          "exit": 0,
+          "seconds": 0.67006946192123,
+          "source_sha256": "9f5c3708a60bd18e35c0da3f92907f5ca8141ef1d632199213da8839d580df55",
+          "stdout_sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "actual_outputs": {
+        "sliced": "unsat\n"
+      }
+    },
+    {
+      "source": "experiments/shim-c-v2/stage3-byte-fp-front-v33/qualification01/z3-adapter-evidence/f3d11d98618b4ad4f64f301e50671382c638fdf4d278212675b8bc5ea3c45904-y6kgxb3_/original.smt2",
+      "source_sha256": "f3d11d98618b4ad4f64f301e50671382c638fdf4d278212675b8bc5ea3c45904",
+      "choice_ground_instances": [
+        "(assert\n  (and\n    (=>\n      (= (shift_float32 a i) (shift_float32 a i))\n      (= ((_ to_fp 8 24) ((_ int2bv 32) (read_uint32\n                                          (write_uint32\n                                            (memcpy1\n                                              t3\n                                              (shift_float32 a 0)\n                                              t4\n                                              (shift_float32 a 0)\n                                              (* 4 i3))\n                                            (shift_float32 a i)\n                                            (bv2int (ite (fp.isNaN (select \n                                            (F18_lane\n                                              S) i)) (bvor (bvand ((_ int2bv 32) \n                                            i2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) \n                                            i2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv (select \n                                            (F18_lane\n                                              S) i)))))\n                                          (shift_float32 a i)))) (select \n      (F18_lane\n        S) i)))\n    (=>\n      (separated (shift_float32 a i) 4 (shift_float32 a i) 4)\n      (= ((_ to_fp 8 24) ((_ int2bv 32) (read_uint32\n                                          (write_uint32\n                                            (memcpy1\n                                              t3\n                                              (shift_float32 a 0)\n                                              t4\n                                              (shift_float32 a 0)\n                                              (* 4 i3))\n                                            (shift_float32 a i)\n                                            (bv2int (ite (fp.isNaN (select \n                                            (F18_lane\n                                              S) i)) (bvor (bvand ((_ int2bv 32) \n                                            i2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) \n                                            i2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv (select \n                                            (F18_lane\n                                              S) i)))))\n                                          (shift_float32 a i)))) ((_ to_fp 8 24) ((_ int2bv 32) \n      (read_uint32\n        (memcpy1 t3 (shift_float32 a 0) t4 (shift_float32 a 0) (* 4 i3))\n        (shift_float32 a i))))))))",
+        "(assert\n  (and\n    (=>\n      (= (shift_float32 a i) (shift_float32 a i1))\n      (= ((_ to_fp 8 24) ((_ int2bv 32) (read_uint32\n                                          (write_uint32\n                                            (memcpy1\n                                              t3\n                                              (shift_float32 a 0)\n                                              t4\n                                              (shift_float32 a 0)\n                                              (* 4 i3))\n                                            (shift_float32 a i)\n                                            (bv2int (ite (fp.isNaN (select \n                                            (F18_lane\n                                              S) i)) (bvor (bvand ((_ int2bv 32) \n                                            i2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) \n                                            i2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv (select \n                                            (F18_lane\n                                              S) i)))))\n                                          (shift_float32 a i1)))) (select \n      (F18_lane\n        S) i)))\n    (=>\n      (separated (shift_float32 a i) 4 (shift_float32 a i1) 4)\n      (= ((_ to_fp 8 24) ((_ int2bv 32) (read_uint32\n                                          (write_uint32\n                                            (memcpy1\n                                              t3\n                                              (shift_float32 a 0)\n                                              t4\n                                              (shift_float32 a 0)\n                                              (* 4 i3))\n                                            (shift_float32 a i)\n                                            (bv2int (ite (fp.isNaN (select \n                                            (F18_lane\n                                              S) i)) (bvor (bvand ((_ int2bv 32) \n                                            i2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) \n                                            i2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv (select \n                                            (F18_lane\n                                              S) i)))))\n                                          (shift_float32 a i1)))) ((_ to_fp 8 24) ((_ int2bv 32) \n      (read_uint32\n        (memcpy1 t3 (shift_float32 a 0) t4 (shift_float32 a 0) (* 4 i3))\n        (shift_float32 a i1))))))))"
+      ],
+      "uint64_ground_instances": [
+        "(assert\n  (=>\n    (and (<= 0 (+ 1 i)) (< (+ 1 i) 18446744073709551616))\n    (= (to_uint64 (+ 1 i)) (+ 1 i))))"
+      ],
+      "executions": [
+        {
+          "kind": "sliced",
+          "command": [
+            "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/bin/z3",
+            "-smt2",
+            "-T:5",
+            "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v33/qualification01/z3-adapter-evidence/f3d11d98618b4ad4f64f301e50671382c638fdf4d278212675b8bc5ea3c45904-y6kgxb3_/sliced.smt2"
+          ],
+          "exit": 0,
+          "seconds": 5.009142922936007,
+          "source_sha256": "a98e9644fd6f0b30dd0e8a16a476bd54144c212ae5da981054b183ac50050141",
+          "stdout_sha256": "7ed6120912d915f6ba8ef82ba3ec0b703265a0979bc0a243e0144580ad0c0b6b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "kind": "expanded",
+          "command": [
+            "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/bin/z3",
+            "-smt2",
+            "-T:10",
+            "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v33/qualification01/z3-adapter-evidence/f3d11d98618b4ad4f64f301e50671382c638fdf4d278212675b8bc5ea3c45904-y6kgxb3_/expanded.smt2"
+          ],
+          "exit": 0,
+          "seconds": 0.1355467550456524,
+          "source_sha256": "4654723cd064a5ff7e90b4b6d6cc99906254a97f80c350070e88e789bf7cb21c",
+          "stdout_sha256": "5c17dfcc2a8f1f30d9e96df6a9825a5030ade046d560332c19de74d93d591a18",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "actual_outputs": {
+        "sliced": "timeout\n",
+        "expanded": "unsat\n"
+      }
+    }
+  ]
+}
