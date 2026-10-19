@@ -1,0 +1,113 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vrndne/logs/run02.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vrndne/.build/run02/annotated/extensions.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vrndne/.build/run02/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfabs_v_f32m8
+[rte:annot] annotating function __riscv_vfadd_vf_f32m8
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfsgnj_vv_f32m8
+[rte:annot] annotating function __riscv_vfsub_vf_f32m8
+[rte:annot] annotating function __riscv_vfsub_vv_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmfgt_vf_f32m8_b4
+[rte:annot] annotating function __riscv_vmfne_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmslt_vx_i32m8_b4
+[rte:annot] annotating function __riscv_vor_vx_u32m8
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_i32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_u32m8
+[rte:annot] annotating function __riscv_vreinterpret_v_u32m8_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function bits_float
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_add
+[rte:annot] annotating function f32_sub
+[rte:annot] annotating function float_bits
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function proof_sub_join
+[rte:annot] annotating function vabsq_f32
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vbslq_f32
+[rte:annot] annotating function vcaltq_f32
+[rte:annot] annotating function vcltq_s32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vmovq_n_s32
+[rte:annot] annotating function vmovq_n_u32
+[rte:annot] annotating function vorrq_u32
+[rte:annot] annotating function vreinterpretq_f32_u32
+[rte:annot] annotating function vreinterpretq_s32_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vsubq_f32
+[wp] neon.c:13: Warning: Statement specifications not yet supported (skipped).
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] representation.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] representation.c:3: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] representation.c:4: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] representation.c:4: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [300 goals...]
+[wp] bits.c:10: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] bits.c:10: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] Computing [400 goals...]
+[wp] bits.c:24: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] bits.c:24: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] 710 goals scheduled
+[wp] [Timeout] typed_extensions_float_bits_ensures (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_float_bits_assigns_normal (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_float_bits_call_memcpy_requires_valid_dest (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_float_bits_call_memcpy_requires_valid_src (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_ensures (Qed 6ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_assigns_normal (Qed 3ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_call_memcpy_requires_valid_dest (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_call_memcpy_requires_valid_src (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_vreinterpretq_s32_f32_loop_invariant_2_preserved (Qed 7ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_vreinterpretq_s32_f32_loop_assigns_part2 (Qed 8ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_vreinterpretq_s32_f32_call_memcpy_requires_valid_dest (Qed 6ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_vreinterpretq_s32_f32_call_memcpy_requires_valid_src (Qed 7ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_vreinterpretq_s32_f32_call_memcpy_requires_separation (Qed 12ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_vbslq_f32_loop_invariant_2_preserved (Qed 24ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_2_preserved (Qed 8ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_riscv_vreinterpret_v_f32m8_i32m8_loop_assigns_part2 (Qed 9ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_valid_src (Qed 6ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_separation (Qed 6ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_equivalent_ensures_equal (Qed 1.4s) (Alt-Ergo)
+[wp] Proved goals:  749 / 768
+  Terminating:      29
+  Unreachable:      29
+  Qed:             495 (0.99ms-31ms-1.4s)
+  Alt-Ergo 2.6.2:  111 (41ms-111ms-326ms)
+  CVC5 1.2.1:       81 (6ms-82ms-227ms)
+  Z3 4.12.5:         4 (3.7s-8.5s)
+  Timeout:          19

@@ -1,0 +1,96 @@
+{
+  "timestamp_utc": "2026-10-19T02:48:49.765534+00:00",
+  "solver": {
+    "path": "/home/ycsun/verus-x86-linux/z3",
+    "sha256": "260a93f9ad37363d880d251c79e3af07888ef3b2171eb8ec8d4d3808678a3e84",
+    "version": "Z3 version 4.12.5 - 64 bit"
+  },
+  "sources": {
+    "cfloat.mlw": {
+      "path": "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/share/frama-c/share/wp/why3/frama_c_wp/cfloat.mlw",
+      "sha256": "c885fef3fda7754a95f44d5ef8480cf278dc8fe35c6797866713c820697654de"
+    },
+    "smt-libv2-floats.gen": {
+      "path": "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/share/why3/drivers/smt-libv2-floats.gen",
+      "sha256": "0a920898ee2dc742538bfa47cdd06aa0abb68541591a6bc2bc3b502ab0540317"
+    },
+    "integer.driver": {
+      "path": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/shared/integer.driver",
+      "sha256": "3cee00de573425187ccd881c1e0c4391926780b7f2418c23a9699ed117f8b8b1"
+    }
+  },
+  "line_evidence": {
+    "cfloat.mlw": {
+      "28": "two constructor sign datatype",
+      "169-172": "unconditional f32 positive and negative iff sign axioms",
+      "176-179": "same unconditional f64 axioms"
+    },
+    "smt-libv2-floats.gen": {
+      "42": "is_nan mapped to fp.isNaN",
+      "43-44": "is_positive and is_negative mapped directly to native fp predicates"
+    }
+  },
+  "runs": [
+    {
+      "file": "experiments/shared-extension/integer/proof-records/soundness-audit/sign-nan.smt2",
+      "sha256": "c2a6ecceac8583a23b624dfc67b13c125d5fbd43ba44616ec4169edade79cad2",
+      "command": [
+        "/home/ycsun/verus-x86-linux/z3",
+        "-T:10",
+        "experiments/shared-extension/integer/proof-records/soundness-audit/sign-nan.smt2"
+      ],
+      "exit": 0,
+      "stdout": "unsat\n",
+      "stderr": ""
+    },
+    {
+      "file": "experiments/shared-extension/integer/proof-records/soundness-audit/sign-nan-instance.smt2",
+      "sha256": "b04da14bfb63cd2826b572bd5f7caacab01b35e1436d4edfbcdcd95c4df1e841",
+      "command": [
+        "/home/ycsun/verus-x86-linux/z3",
+        "-T:10",
+        "experiments/shared-extension/integer/proof-records/soundness-audit/sign-nan-instance.smt2"
+      ],
+      "exit": 0,
+      "stdout": "unsat\n",
+      "stderr": ""
+    },
+    {
+      "file": "experiments/shared-extension/integer/proof-records/soundness-audit/native-nan-control.smt2",
+      "sha256": "9f96a77055f8241a5bea1d86229f4c36b06381635a3dcad5a09a933c22661331",
+      "command": [
+        "/home/ycsun/verus-x86-linux/z3",
+        "-T:10",
+        "experiments/shared-extension/integer/proof-records/soundness-audit/native-nan-control.smt2"
+      ],
+      "exit": 0,
+      "stdout": "sat\n(((fp.isPositive nan32) false)\n ((fp.isNegative nan32) false))\n",
+      "stderr": ""
+    },
+    {
+      "file": "experiments/shared-extension/integer/proof-records/soundness-audit/one-sign-axiom-control.smt2",
+      "sha256": "7b96a873a50f647fe6dbb6b40b33749544da1211b603f9239a353779bdadaefe",
+      "command": [
+        "/home/ycsun/verus-x86-linux/z3",
+        "-T:10",
+        "experiments/shared-extension/integer/proof-records/soundness-audit/one-sign-axiom-control.smt2"
+      ],
+      "exit": 0,
+      "stdout": "timeout\n",
+      "stderr": ""
+    },
+    {
+      "file": "experiments/shared-extension/integer/proof-records/soundness-audit/one-sign-instance-control.smt2",
+      "sha256": "3bb38b49d743d30c86d6237879494099eb1c371af541291b0a8b6332941340da",
+      "command": [
+        "/home/ycsun/verus-x86-linux/z3",
+        "-T:10",
+        "experiments/shared-extension/integer/proof-records/soundness-audit/one-sign-instance-control.smt2"
+      ],
+      "exit": 0,
+      "stdout": "sat\n",
+      "stderr": ""
+    }
+  ],
+  "conclusion": "The two unconditional binary32 sign axioms are inconsistent with native SMT floating-point NaN. This witness uses no kernel, user lemma, custom arithmetic mapping, or precondition. Float proofs importing this context must remain quarantined pending a separate model fix and complete replay. Other suspected conversion issues remain unconfirmed."
+}

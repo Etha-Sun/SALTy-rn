@@ -1,0 +1,36 @@
+[kernel] Parsing /tmp/complex-u32-assert-probe/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 3 goals scheduled
+[wp] [Timeout] typed_vmov_n_u32_assert (Qed 0.73ms) (Z3)
+[wp] Proved goals:    4 / 5
+  Terminating:     1
+  Unreachable:     1
+  Qed:             2 (0.24ms)
+  Timeout:         1
+
+Goal Post-condition ("/tmp/complex-u32-assert-probe/u32_shim.c", line 8) in 'vmov_n_u32':
+Prove: true.
+Prover Qed returns Valid (0.53ms)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/complex-u32-assert-probe/u32_shim.c", line 9):
+Let a = r.F1_lane.
+Let a_1 = a[0].
+Let a_2 = a[1].
+Assume { Type: IsS1(r) /\ is_uint32(a_1) /\ is_uint32(a_2). }
+Prove: a_2 = a_1.
+Prover Z3 4.12.5 returns Timeout (Qed:0.73ms) (2s)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vmov_n_u32':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

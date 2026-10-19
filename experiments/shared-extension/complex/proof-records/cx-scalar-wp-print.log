@@ -1,0 +1,57 @@
+[kernel] Parsing experiments/shared-extension/complex/cases/f32-vcmul/.build/cxproof01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function complex_add
+[rte:annot] annotating function complex_sub
+[rte:annot] annotating function complex_mul
+[wp] 6 goals scheduled
+[wp] Proved goals:   12 / 12
+  Terminating:     3
+  Unreachable:     3
+  Qed:             3 (0.63ms-0.59ms-1ms)
+  Z3 4.12.5:       3 (16ms-24ms)
+
+Goal Post-condition ("experiments/shared-extension/complex/cases/f32-vcmul/.build/cxproof01/annotated/complex_fp.c", line 2) in 'complex_add':
+Prove: P_cx_same_float(add_f32(a, b), add_f32(a, b)).
+Prover Z3 4.12.5 returns Valid (Qed:0.63ms) (16ms) (25325)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'complex_add':
+Effect at line 3
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/shared-extension/complex/cases/f32-vcmul/.build/cxproof01/annotated/complex_fp.c", line 4) in 'complex_sub':
+Prove: P_cx_same_float(sub_f32(a, b), sub_f32(a, b)).
+Prover Z3 4.12.5 returns Valid (Qed:1ms) (18ms) (25388)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'complex_sub':
+Effect at line 5
+Prove: true.
+Prover Qed returns Valid (0.55ms)
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/shared-extension/complex/cases/f32-vcmul/.build/cxproof01/annotated/complex_fp.c", line 6) in 'complex_mul':
+Prove: P_cx_same_float(mul_f32(a, b), mul_f32(a, b)).
+Prover Z3 4.12.5 returns Valid (Qed:1ms) (24ms) (25975)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'complex_mul':
+Effect at line 7
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

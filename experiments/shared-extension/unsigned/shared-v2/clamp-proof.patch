@@ -1,0 +1,348 @@
+--- a/clamp.h
++++ b/clamp.h
+@@ -1,24 +1,162 @@
+ #ifndef SHARED_CLAMP_H
+ #define SHARED_CLAMP_H
+ 
++/*@
++  logic integer u8_read{L}(uint8_t *p, integer k) = p[k];
++  logic integer u8_clamped(integer x, integer lo, integer hi) =
++    x<lo ? lo : (x>hi ? hi : x);
++*/
++/*@ ghost
++  /@ requires 1<=b<=7;
++     terminates \true;
++     assigns \nothing;
++     ensures (b & 4)==(b>=4?4:0);
++     ensures (b & 2)==((b%4)>=2?2:0);
++     ensures (b & 1)==b%2;
++  @/
++  void u8_tail_bits(size_t b) {
++    switch(b) {
++      case 1: break; case 2: break; case 3: break; case 4: break;
++      case 5: break; case 6: break; case 7: break;
++    }
++  }
++*/
++
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<16 ==> \result.lane[j]==(x);
++*/
+ uint8x16_t vdupq_n_u8(uint8_t x);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<16 ==> \result.lane[j]==(a.lane[j]>b.lane[j]?a.lane[j]:b.lane[j]);
++*/
+ uint8x16_t vmaxq_u8(uint8x16_t a, uint8x16_t b);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<16 ==> \result.lane[j]==(a.lane[j]<b.lane[j]?a.lane[j]:b.lane[j]);
++*/
+ uint8x16_t vminq_u8(uint8x16_t a, uint8x16_t b);
++/*@
++  requires \valid(p+(0..15));
++  terminates \true;
++  assigns p[0..15];
++  ensures \forall integer j; 0<=j<16 ==> p[j]==a.lane[j];
++  ensures \forall uint8_t *q; \valid_read(q) && \separated(q,(p)+(0..16-1)) ==> *q==\old(*q);
++*/
+ void vst1q_u8(uint8_t *p, uint8x16_t a);
++/*@
++  requires \valid_read(p+(0..7));
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==p[j];
++*/
+ uint8x8_t vld1_u8(const uint8_t *p);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(a.lane[j]);
++*/
+ uint8x8_t vget_low_u8(uint8x16_t a);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(a.lane[j]>b.lane[j]?a.lane[j]:b.lane[j]);
++*/
+ uint8x8_t vmax_u8(uint8x8_t a, uint8x8_t b);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(a.lane[j]<b.lane[j]?a.lane[j]:b.lane[j]);
++*/
+ uint8x8_t vmin_u8(uint8x8_t a, uint8x8_t b);
++/*@
++  requires \valid(p+(0..7));
++  terminates \true;
++  assigns p[0..7];
++  ensures \forall integer j; 0<=j<8 ==> p[j]==a.lane[j];
++  ensures \forall uint8_t *q; \valid_read(q) && \separated(q,(p)+(0..8-1)) ==> *q==\old(*q);
++*/
+ void vst1_u8(uint8_t *p, uint8x8_t a);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.byte[j]==a.lane[j];
++*/
+ uint32x2_t vreinterpret_u32_u8(uint8x8_t a);
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.byte[j]==a.lane[j];
++*/
+ uint16x4_t vreinterpret_u16_u8(uint8x8_t a);
++/*@
++  requires 0<=lane<2;
++  requires \valid((uint8_t*)p+(0..3));
++  terminates \true;
++  assigns ((uint8_t*)p)[0..3];
++  ensures \forall integer j; 0<=j<4 ==> ((uint8_t*)p)[j]==a.byte[4*lane+j];
++  ensures \forall uint8_t *q; \valid_read(q) && \separated(q,((uint8_t*)p)+(0..4-1)) ==> *q==\old(*q);
++*/
+ void vst1_lane_u32(uint8_t *p, uint32x2_t a, int lane);
++/*@
++  requires 0<=lane<4;
++  requires \valid((uint8_t*)p+(0..1));
++  terminates \true;
++  assigns ((uint8_t*)p)[0..1];
++  ensures \forall integer j; 0<=j<2 ==> ((uint8_t*)p)[j]==a.byte[2*lane+j];
++  ensures \forall uint8_t *q; \valid_read(q) && \separated(q,((uint8_t*)p)+(0..2-1)) ==> *q==\old(*q);
++*/
+ void vst1_lane_u16(uint8_t *p, uint16x4_t a, int lane);
++/*@
++  requires 0<=offset<8;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(j+offset<8?a.lane[j+offset]:b.lane[j+offset-8]);
++*/
+ uint8x8_t vext_u8(uint8x8_t a, uint8x8_t b, int offset);
++/*@
++  requires 0<=lane<8;
++  requires \valid(p);
++  terminates \true;
++  assigns *p;
++  ensures *p==a.lane[lane];
++  ensures \forall uint8_t *q; \valid_read(q) && \separated(q,(p)+(0..1-1)) ==> *q==\old(*q);
++*/
+ void vst1_lane_u8(uint8_t *p, uint8x8_t a, int lane);
++/*@
++  requires vl<=128;
++  requires \valid_read(p+(0..vl-1));
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==p[j];
++*/
+ vuint8m8_t __riscv_vle8_v_u8m8(const uint8_t *p, size_t vl);
++/*@
++  requires vl<=128;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(a.lane[j]>b?a.lane[j]:b);
++*/
+ vuint8m8_t __riscv_vmax_vx_u8m8(vuint8m8_t a, uint8_t b, size_t vl);
++/*@
++  requires vl<=128;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(a.lane[j]<b?a.lane[j]:b);
++*/
+ vuint8m8_t __riscv_vmin_vx_u8m8(vuint8m8_t a, uint8_t b, size_t vl);
++/*@
++  requires vl<=128;
++  requires \valid(p+(0..vl-1));
++  terminates \true;
++  assigns p[0..vl-1];
++  ensures \forall integer j; 0<=j<vl ==> p[j]==a.lane[j];
++  ensures \forall uint8_t *q; \valid_read(q) && \separated(q,(p)+(0..vl-1)) ==> *q==\old(*q);
++*/
+ void __riscv_vse8_v_u8m8(uint8_t *p, vuint8m8_t a, size_t vl);
+ 
+ #endif
+--- a/clamp.c
++++ b/clamp.c
+@@ -2,65 +2,139 @@
+ 
+ uint8x16_t vdupq_n_u8(uint8_t x) {
+   uint8x16_t r;
++  /*@ loop invariant 0<=i<=16;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(x);
++      loop assigns i,r;
++      loop variant 16-i;
++  */
+   for (size_t i=0;i<16;i++) r.lane[i]=x;
+   return r;
+ }
+ uint8x16_t vmaxq_u8(uint8x16_t a, uint8x16_t b) {
+   uint8x16_t r;
++  /*@ loop invariant 0<=i<=16;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]>b.lane[j]?a.lane[j]:b.lane[j]);
++      loop assigns i,r;
++      loop variant 16-i;
++  */
+   for (size_t i=0;i<16;i++) r.lane[i]=a.lane[i]>b.lane[i]?a.lane[i]:b.lane[i];
+   return r;
+ }
+ uint8x16_t vminq_u8(uint8x16_t a, uint8x16_t b) {
+   uint8x16_t r;
++  /*@ loop invariant 0<=i<=16;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]<b.lane[j]?a.lane[j]:b.lane[j]);
++      loop assigns i,r;
++      loop variant 16-i;
++  */
+   for (size_t i=0;i<16;i++) r.lane[i]=a.lane[i]<b.lane[i]?a.lane[i]:b.lane[i];
+   return r;
+ }
+ void vst1q_u8(uint8_t *p, uint8x16_t a) {
++  /*@ loop invariant 0<=i<=16;
++      loop invariant \forall integer j; 0<=j<i ==> p[j]==(a.lane[j]);
++      loop invariant \forall uint8_t *outside; \valid_read(outside) && \separated(outside,(p)+(0..16-1)) ==> *outside==\at(*outside,Pre);
++      loop assigns i,p[0..16-1];
++      loop variant 16-i;
++  */
+   for (size_t i=0;i<16;i++) p[i]=a.lane[i];
+ }
+ uint8x8_t vld1_u8(const uint8_t *p) {
+   uint8x8_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(p[j]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.lane[i]=p[i];
+   return r;
+ }
+ uint8x8_t vget_low_u8(uint8x16_t a) {
+   uint8x8_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.lane[i]=a.lane[i];
+   return r;
+ }
+ uint8x8_t vmax_u8(uint8x8_t a, uint8x8_t b) {
+   uint8x8_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]>b.lane[j]?a.lane[j]:b.lane[j]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.lane[i]=a.lane[i]>b.lane[i]?a.lane[i]:b.lane[i];
+   return r;
+ }
+ uint8x8_t vmin_u8(uint8x8_t a, uint8x8_t b) {
+   uint8x8_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]<b.lane[j]?a.lane[j]:b.lane[j]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.lane[i]=a.lane[i]<b.lane[i]?a.lane[i]:b.lane[i];
+   return r;
+ }
+ void vst1_u8(uint8_t *p, uint8x8_t a) {
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> p[j]==(a.lane[j]);
++      loop invariant \forall uint8_t *outside; \valid_read(outside) && \separated(outside,(p)+(0..8-1)) ==> *outside==\at(*outside,Pre);
++      loop assigns i,p[0..8-1];
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) p[i]=a.lane[i];
+ }
+ uint32x2_t vreinterpret_u32_u8(uint8x8_t a) {
+   uint32x2_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.byte[j]==(a.lane[j]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.byte[i]=a.lane[i];
+   return r;
+ }
+ uint16x4_t vreinterpret_u16_u8(uint8x8_t a) {
+   uint16x4_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.byte[j]==(a.lane[j]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.byte[i]=a.lane[i];
+   return r;
+ }
+ void vst1_lane_u32(uint8_t *p, uint32x2_t a, int lane) {
+   uint8_t *q=p;
++  /*@ loop invariant 0<=i<=4;
++      loop invariant \forall integer j; 0<=j<i ==> q[j]==(a.byte[4*lane+j]);
++      loop invariant \forall uint8_t *outside; \valid_read(outside) && \separated(outside,((uint8_t*)p)+(0..4-1)) ==> *outside==\at(*outside,Pre);
++      loop assigns i,q[0..4-1];
++      loop variant 4-i;
++  */
+   for (size_t i=0;i<4;i++) q[i]=a.byte[4*lane+i];
+ }
+ void vst1_lane_u16(uint8_t *p, uint16x4_t a, int lane) {
+   uint8_t *q=p;
++  /*@ loop invariant 0<=i<=2;
++      loop invariant \forall integer j; 0<=j<i ==> q[j]==(a.byte[2*lane+j]);
++      loop invariant \forall uint8_t *outside; \valid_read(outside) && \separated(outside,((uint8_t*)p)+(0..2-1)) ==> *outside==\at(*outside,Pre);
++      loop assigns i,q[0..2-1];
++      loop variant 2-i;
++  */
+   for (size_t i=0;i<2;i++) q[i]=a.byte[2*lane+i];
+ }
+ uint8x8_t vext_u8(uint8x8_t a, uint8x8_t b, int offset) {
+   uint8x8_t r;
++  /*@ loop invariant 0<=i<=8;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(j+offset<8?a.lane[j+offset]:b.lane[j+offset-8]);
++      loop assigns i,r;
++      loop variant 8-i;
++  */
+   for (size_t i=0;i<8;i++) r.lane[i]=i+offset<8?a.lane[i+offset]:b.lane[i+offset-8];
+   return r;
+ }
+@@ -69,17 +143,40 @@
+ }
+ vuint8m8_t __riscv_vle8_v_u8m8(const uint8_t *p, size_t vl) {
+   vuint8m8_t r={{0}};
++  /*@ loop invariant 0<=i<=vl;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(p[j]);
++      loop assigns i,r;
++      loop variant vl-i;
++  */
+   for (size_t i=0;i<vl;i++) r.lane[i]=p[i];
+   return r;
+ }
+ vuint8m8_t __riscv_vmax_vx_u8m8(vuint8m8_t a, uint8_t b, size_t vl) {
++  /*@ loop invariant 0<=i<=vl;
++      loop invariant \forall integer j; 0<=j<i ==> a.lane[j]==(\at(a.lane[j],Pre)>b?\at(a.lane[j],Pre):b);
++      loop invariant \forall integer j; i<=j<128 ==> a.lane[j]==\at(a.lane[j],Pre);
++      loop assigns i,a;
++      loop variant vl-i;
++  */
+   for (size_t i=0;i<vl;i++) a.lane[i]=a.lane[i]>b?a.lane[i]:b;
+   return a;
+ }
+ vuint8m8_t __riscv_vmin_vx_u8m8(vuint8m8_t a, uint8_t b, size_t vl) {
++  /*@ loop invariant 0<=i<=vl;
++      loop invariant \forall integer j; 0<=j<i ==> a.lane[j]==(\at(a.lane[j],Pre)<b?\at(a.lane[j],Pre):b);
++      loop invariant \forall integer j; i<=j<128 ==> a.lane[j]==\at(a.lane[j],Pre);
++      loop assigns i,a;
++      loop variant vl-i;
++  */
+   for (size_t i=0;i<vl;i++) a.lane[i]=a.lane[i]<b?a.lane[i]:b;
+   return a;
+ }
+ void __riscv_vse8_v_u8m8(uint8_t *p, vuint8m8_t a, size_t vl) {
++  /*@ loop invariant 0<=i<=vl;
++      loop invariant \forall integer j; 0<=j<i ==> p[j]==(a.lane[j]);
++      loop invariant \forall uint8_t *outside; \valid_read(outside) && \separated(outside,(p)+(0..vl-1)) ==> *outside==\at(*outside,Pre);
++      loop assigns i,p[0..vl-1];
++      loop variant vl-i;
++  */
+   for (size_t i=0;i<vl;i++) p[i]=a.lane[i];
+ }

@@ -1,0 +1,323 @@
+--- a/shim.h
++++ b/shim.h
+@@ -6,6 +6,19 @@
+ #include <limits.h>
+ #include <math.h>
+ #include <string.h>
++/*@
++  logic integer L_sat16(integer x)=x>32767?32767:x< -32768?-32768:x;
++  logic integer L_sat8(integer x)=x>127?127:x< -128?-128:x;
++  logic integer L_satu8(integer x)=x>255?255:x<0?0:x;
++  logic integer L_sat32(integer x)=x>2147483647?2147483647:x< -2147483648?-2147483648:x;
++  logic integer L_wrap8(integer x)=(int8_t)(uint8_t)x;
++  logic integer L_wrap16(integer x)=(int16_t)(uint16_t)x;
++  logic integer L_wrap32(integer x)=(int32_t)(uint32_t)x;
++  logic integer L_asr64(integer x,integer s)=s==0?x:s>=63?(x<0?-1:0):(x>=0?x/(1<<s):-1-((-1-x)/(1<<s)));
++  logic integer L_round_shift(integer x,integer s,integer mode)=s==0?x:s>=63?0:L_asr64(x,s)+(mode==0 && ((uint64_t)x & ((uint64_t)1<<(s-1))) ? 1:0);
++  predicate same_value(float a,float b)=\eq_float(a,b)||(\is_NaN(a)&&\is_NaN(b));
++  predicate same_float(float a,float b)=same_value(a,b)&&((\is_NaN(a)&&\is_NaN(b))||\sign(a)==\sign(b));
++*/
+ #define XNN_OOB_READS
+ #define XNN_UNLIKELY(x) (x)
+ #define XNN_LIKELY(x) (x)
+--- a/integer-qs8-vcvt.c
++++ b/integer-qs8-vcvt.c
+@@ -1,30 +1,280 @@
+ #include "shim.h"
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_sat16(x);
++*/
+ int16_t sat16(int64_t x) { return x>32767?32767:x< -32768?-32768:(int16_t)x; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_sat8(x);
++*/
+ int8_t sat8(int64_t x) { return x>127?127:x< -128?-128:(int8_t)x; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_wrap16(x);
++*/
+ int16_t wrap16(uint64_t x) { uint16_t u=(uint16_t)x; return u<=INT16_MAX?(int16_t)u:(int16_t)(-1-(int64_t)(UINT16_MAX-u)); }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_asr64(x,s);
++*/
+ int64_t asr64(int64_t x, unsigned s) { if(!s)return x; if(s>=63)return x<0?-1:0; return x>=0?x/((int64_t)1<<s):-1-((-1-x)/((int64_t)1<<s)); }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_round_shift(x,s,mode);
++*/
+ int64_t round_shift(int64_t x, unsigned s, int mode) { if(!s)return x; if(s>=63)return 0; int64_t q=asr64(x,s); if(mode==0 && ((uint64_t)x & ((uint64_t)1<<(s-1)))) q++; return q; }
+-int8x8_t vld1_s8(const int8_t *p) { int8x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=p[i]; return r; }
+-void vst1_s8(int8_t *p, int8x8_t a) { for(size_t i=0;i<8;i++)p[i]=a.lane[i]; }
++/*@
++  requires \valid_read(p+(0..8-1));
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int8_t)(p[j]);
++*/
++int8x8_t vld1_s8(const int8_t *p) { int8x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(p[j]);
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=p[i]; return r; }
++/*@
++  requires \valid(p+(0..8-1));
++  terminates \true;
++  assigns p[0..8-1];
++  ensures \forall integer j; 0<=j<8 ==> p[j]==a.lane[j];
++*/
++void vst1_s8(int8_t *p, int8x8_t a) { /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> p[j]==a.lane[j];
++  loop assigns i,p[0..8-1];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++)p[i]=a.lane[i]; }
++/*@
++  requires \valid(p);
++  requires 0<=n<8;
++  terminates \true;
++  assigns *p;
++  ensures *p==a.lane[n];
++*/
+ void vst1_lane_s8(int8_t *p,int8x8_t a,int n) { *p=a.lane[n]; }
+-int8x8_t vext_s8(int8x8_t a,int8x8_t b,int n) { int8x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=i+(size_t)n<8?a.lane[i+n]:b.lane[i+n-8]; return r; }
+-int16x8_t vdupq_n_s16(int16_t x) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=x; return r; }
++/*@
++  requires 0<=n<=8;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int8_t)(j+(size_t)n<8?a.lane[j+n]:b.lane[j+n-8]);
++*/
++int8x8_t vext_s8(int8x8_t a,int8x8_t b,int n) { int8x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(j+(size_t)n<8?a.lane[j+n]:b.lane[j+n-8]);
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=i+(size_t)n<8?a.lane[i+n]:b.lane[i+n-8]; return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(x);
++*/
++int16x8_t vdupq_n_s16(int16_t x) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(x);
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=x; return r; }
+ void vst1_lane_u16(void *p,uint16x4_t a,int n) { unsigned char *q=p; uint16_t x=a.lane[n]; for(size_t i=0;i<2;i++)q[i]=(unsigned char)(x>>(8*i)); }
+ void vst1_lane_u32(void *p,uint32x2_t a,int n) { unsigned char *q=p; uint32_t x=a.lane[n]; for(size_t i=0;i<4;i++)q[i]=(unsigned char)(x>>(8*i)); }
+ uint16x4_t vreinterpret_u16_s8(int8x8_t a) { uint16x4_t r; memcpy(&r,&a,sizeof r); return r; }
+ uint32x2_t vreinterpret_u32_s8(int8x8_t a) { uint32x2_t r; memcpy(&r,&a,sizeof r); return r; }
+-int16x8_t vsubw_s8(int16x8_t a,int8x8_t b) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)((int64_t)a.lane[i]-b.lane[i])); return r; }
+-int8x8_t vqmovn_s16(int16x8_t a) { int8x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=sat8(a.lane[i]); return r; }
+-int16x8_t vqaddq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b.lane[i]); return r; }
+-int16x8_t vshlq_n_s16(int16x8_t a,int n) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<n); return r; }
+-int16x8_t vqrdmulhq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=sat16(round_shift((int64_t)a.lane[i]*b.lane[i],15,0)); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)a.lane[j]-b.lane[j])));
++*/
++int16x8_t vsubw_s8(int16x8_t a,int8x8_t b) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)a.lane[j]-b.lane[j])));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)((int64_t)a.lane[i]-b.lane[i])); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int8_t)(L_sat8(a.lane[j]));
++*/
++int8x8_t vqmovn_s16(int16x8_t a) { int8x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(L_sat8(a.lane[j]));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=sat8(a.lane[i]); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b.lane[j]));
++*/
++int16x8_t vqaddq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b.lane[j]));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b.lane[i]); return r; }
++/*@
++  requires 0<=n<32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)(uint16_t)a.lane[j]<<n));
++*/
++int16x8_t vshlq_n_s16(int16x8_t a,int n) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)(uint16_t)a.lane[j]<<n));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<n); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_sat16(L_round_shift((int64_t)a.lane[j]*b.lane[j],15,0)));
++*/
++int16x8_t vqrdmulhq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16(L_round_shift((int64_t)a.lane[j]*b.lane[j],15,0)));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=sat16(round_shift((int64_t)a.lane[i]*b.lane[i],15,0)); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==(n<32?n:32);
++*/
+ size_t __riscv_vsetvl_e8m2(size_t n) { return n<32?n:32; }
+-vint8m2_t __riscv_vle8_v_i8m2(const int8_t *p,size_t vl) { vint8m2_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=p[i]; return r; }
+-void __riscv_vse8_v_i8m2(int8_t *p,vint8m2_t a,size_t vl) { for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
+-vint16m4_t __riscv_vsll_vx_i16m4(vint16m4_t a,unsigned s,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<(s&15)); return r; }
+-vint16m4_t __riscv_vsadd_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b); return r; }
+-vint16m4_t __riscv_vrsub_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)((int64_t)b-a.lane[i])); return r; }
+-vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=a.lane[i]; return r; }
+-vint32m8_t __riscv_vwmul_vx_i32m8(vint16m4_t a,int16_t b,size_t vl) { vint32m8_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=(int32_t)a.lane[i]*b; return r; }
+-vint8m2_t __riscv_vnclip_wx_i8m2(vint16m4_t a,unsigned s,int mode,size_t vl) { vint8m2_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=sat8(round_shift(a.lane[i],s&15,mode)); return r; }
+-vint16m4_t __riscv_vnclip_wx_i16m4(vint32m8_t a,unsigned s,int mode,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=sat16(round_shift(a.lane[i],s&31,mode)); return r; }
++/*@
++  requires vl<=32;
++  requires \valid_read(p+(0..vl-1));
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int8_t)(p[j]);
++*/
++vint8m2_t __riscv_vle8_v_i8m2(const int8_t *p,size_t vl) { vint8m2_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(p[j]);
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=p[i]; return r; }
++/*@
++  requires vl<=32;
++  requires \valid(p+(0..vl-1));
++  terminates \true;
++  assigns p[0..vl-1];
++  ensures \forall integer j; 0<=j<vl ==> p[j]==a.lane[j];
++*/
++void __riscv_vse8_v_i8m2(int8_t *p,vint8m2_t a,size_t vl) { /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> p[j]==a.lane[j];
++  loop assigns i,p[0..vl-1];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)(uint16_t)a.lane[j]<<(s&15)));
++*/
++vint16m4_t __riscv_vsll_vx_i16m4(vint16m4_t a,unsigned s,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)(uint16_t)a.lane[j]<<(s&15)));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<(s&15)); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b));
++*/
++vint16m4_t __riscv_vsadd_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)b-a.lane[j])));
++*/
++vint16m4_t __riscv_vrsub_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)b-a.lane[j])));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)((int64_t)b-a.lane[i])); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(a.lane[j]);
++*/
++vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(a.lane[j]);
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=a.lane[i]; return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int32_t)((int32_t)a.lane[j]*b);
++*/
++vint32m8_t __riscv_vwmul_vx_i32m8(vint16m4_t a,int16_t b,size_t vl) { vint32m8_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int32_t)((int32_t)a.lane[j]*b);
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=(int32_t)a.lane[i]*b; return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int8_t)(L_sat8(L_round_shift(a.lane[j],s&15,mode)));
++*/
++vint8m2_t __riscv_vnclip_wx_i8m2(vint16m4_t a,unsigned s,int mode,size_t vl) { vint8m2_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(L_sat8(L_round_shift(a.lane[j],s&15,mode)));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=sat8(round_shift(a.lane[i],s&15,mode)); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_sat16(L_round_shift(a.lane[j],s&31,mode)));
++*/
++vint16m4_t __riscv_vnclip_wx_i16m4(vint32m8_t a,unsigned s,int mode,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16(L_round_shift(a.lane[j],s&31,mode)));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=sat16(round_shift(a.lane[i],s&31,mode)); return r; }

@@ -1,0 +1,14 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix02.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix02/annotated/integer.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix02/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[kernel] harness.c:19: 
+  syntax error:
+  Location: "harness.c", line 19,
+            included from unit.c, line 16, character 0,
+            before or at token: {
+  17        /@ assert params->scalar.zero_point==\at(params->scalar.zero_point,BeforeSecond); @/
+  18        /@ assert same_value(read_float{BeforeSecond}(left,k),qcvt(input[k],params->scalar.zero_point,read_float{BeforeSecond}(&params->scalar.scale,0))); @/
+  19        proof_qcvt_frame(left[k],read_float{BeforeSecond}(left,k),input[k],params->scalar.zero_point,read_float{BeforeSecond}(&params->scalar.scale,0),params->scalar.scale);
+                                               ^
+  20        /@ assert same_value(left[k],qcvt(input[k],params->scalar.zero_point,params->scalar.scale)); @/
+  21        /@ assert same_value(right[k],qcvt(input[k],params->scalar.zero_point,params->scalar.scale)); @/
+[kernel] Frama-C aborted: invalid user input.

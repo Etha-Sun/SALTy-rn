@@ -1,0 +1,68 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/f32-vcmul-raw/logs/raw01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/f32-vcmul-raw/.build/raw01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/f32-vcmul-raw/.build/raw01/annotated/unit.c']
+# Actual frozen model variant: ['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/f32-vcmul-raw/logs/raw01.json', '-wp-model', 'Typed+raw+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/f32-vcmul-raw/.build/raw01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/f32-vcmul-raw/.build/raw01/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m4
+[rte:annot] annotating function __riscv_vfmul_vv_f32m4
+[rte:annot] annotating function __riscv_vfsub_vv_f32m4
+[rte:annot] annotating function __riscv_vle32_v_f32m4
+[rte:annot] annotating function __riscv_vse32_v_f32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function complex_add
+[rte:annot] annotating function complex_mul
+[rte:annot] annotating function complex_sub
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vmlaq_f32
+[rte:annot] annotating function vmlsq_f32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] harness.c:6: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:22: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:26: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [300 goals...]
+[wp] 333 goals scheduled
+[wp] [Timeout] typed_raw_complex_fp_equivalent_terminates_part2 (Qed 633ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_terminates_part3 (Qed 24ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_terminates_part4 (Qed 592ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_ensures_equal (Qed 973ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_rte_mem_access (Qed 569ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_rte_mem_access_2 (Qed 562ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part02 (Qed 536ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part06 (Qed 50ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part21 (Qed 81ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part23 (Qed 108ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part27 (Qed 282ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part28 (Qed 277ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_normal_part29 (Qed 589ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part02 (Qed 27ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part15 (Qed 64ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part32 (Qed 108ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part34 (Qed 115ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part38 (Qed 289ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part39 (Qed 290ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part40 (Qed 583ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assigns_exit_part52 (Qed 764ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_requires (Qed 42ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_2_requires (Qed 69ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_3_requires (Qed 73ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_4_requires (Qed 78ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vst1q_f32_requires (Qed 98ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vst1q_f32_2_requires (Qed 103ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_5_requires (Qed 54ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_6_requires (Qed 70ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_7_requires (Qed 75ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vld1q_f32_8_requires (Qed 80ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_call_vst1_f32_requires (Qed 107ms) (Alt-Ergo)

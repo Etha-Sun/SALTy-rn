@@ -1,0 +1,6 @@
+(set-logic ALL)
+(declare-datatypes () ((Sign Positive Negative)))
+(declare-fun sign32 ((_ FloatingPoint 8 24)) Sign)
+(define-fun nan32 () (_ FloatingPoint 8 24) (_ NaN 8 24))
+(assert (= (fp.isPositive nan32) (= (sign32 nan32) Positive)))
+(check-sat)

@@ -1,0 +1,41 @@
+[kernel] Parsing /tmp/float-original-control.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Missing RTE guards
+[wp] 4 goals scheduled
+[wp] Proved goals:    8 / 8
+  Terminating:     2
+  Unreachable:     2
+  Qed:             2 (0.17ms)
+  Z3 4.12.5:       2 (4.8s-7.1s)
+
+Goal Post-condition ("experiments/shared-extension/float/f32-vlrelu/.build/run02/annotated/extensions.h", line 22) in 'f32_sub':
+Prove: P_same_value(sub_f32(a, b), L_fp_sub32(a, b)).
+Prover CVC5 1.2.1 returns Unknown (Qed:0.68ms)
+Prover Z3 4.12.5 returns Valid (Qed:0.68ms) (7.1s) (31533336)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'f32_sub':
+Effect at line 2
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("/tmp/float-original-control.c", line 2) in 'inconsistent_control':
+Prove: false.
+Prover CVC5 1.2.1 returns Unknown
+Prover Z3 4.12.5 returns Valid (4.8s) (34258701)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'inconsistent_control':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

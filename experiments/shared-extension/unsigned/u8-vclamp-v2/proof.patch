@@ -1,0 +1,349 @@
+--- a/neon.c
++++ b/neon.c
+@@ -13,6 +13,9 @@
+     uint8_t* output,
+     const struct xnn_u8_minmax_params* restrict params) XNN_OOB_READS
+ {
++  /*@ ghost size_t nn_n=batch; */
++  /*@ ghost const uint8_t *nn_in=input; */
++  /*@ ghost uint8_t *nn_out=output; */
+   assert(batch != 0);
+   assert(batch % sizeof(uint8_t) == 0);
+   assert(input != NULL);
+@@ -21,6 +24,13 @@
+   const uint8x16_t voutput_max = vdupq_n_u8(params->scalar.max);
+   const uint8x16_t voutput_min = vdupq_n_u8(params->scalar.min);
+ 
++  /*@ loop invariant 0<=batch<=nn_n;
++      loop invariant input==nn_in+nn_n-batch;
++      loop invariant output==nn_out+nn_n-batch;
++      loop invariant \forall integer j; 0<=j<nn_n-batch ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++      loop assigns batch,input,output,nn_out[0..nn_n-1];
++      loop variant batch;
++  */
+   for (; batch >= 64; batch -= 64) {
+     uint8x16_t vacc0 = vld1q_u8(input); input += 16;
+     uint8x16_t vacc1 = vld1q_u8(input); input += 16;
+@@ -37,35 +47,242 @@
+     vacc2 = vminq_u8(vacc2, voutput_max);
+     vacc3 = vminq_u8(vacc3, voutput_max);
+ 
++    /*@ assert \forall integer j; 0<=j<16 ==> vacc0.lane[j]==u8_clamped(nn_in[nn_n-batch+0+j],params->scalar.min,params->scalar.max); */
++    /*@ ghost Before64_0: ; */
+     vst1q_u8(output, vacc0); output += 16;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(nn_n-batch+0)+(16);
++         loop invariant merge_Before64_0: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (nn_n-batch+0)+(16)-k;
++      @/
++      for (size_t k=0;k<(nn_n-batch+0)+(16);k++) {
++        /@ assert valid_in_Before64_0: \valid_read(nn_in+k); @/
++        /@ assert sep_in_Before64_0: \separated(nn_in+k,nn_out+((nn_n-batch+0)..(nn_n-batch+0)+(16)-1)); @/
++        /@ assert frame_in_Before64_0: nn_in[k]==u8_read{Before64_0}(nn_in,k); @/
++        if (k<(nn_n-batch+0)) {
++          /@ assert valid_out_Before64_0: \valid_read(nn_out+k); @/
++          /@ assert sep_out_Before64_0: \separated(nn_out+k,nn_out+((nn_n-batch+0)..(nn_n-batch+0)+(16)-1)); @/
++          /@ assert frame_out_Before64_0: nn_out[k]==u8_read{Before64_0}(nn_out,k); @/
++          /@ assert old_clamp_Before64_0: u8_read{Before64_0}(nn_out,k)==u8_clamped(u8_read{Before64_0}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(nn_n-batch+0)<(16); @/
++          /@ assert stored_lane_Before64_0: nn_out[k]==vacc0.lane[k-(nn_n-batch+0)]; @/
++          /@ assert lane_clamp_Before64_0: vacc0.lane[k-(nn_n-batch+0)]==u8_clamped(u8_read{Before64_0}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_Before64_0: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
++    /*@ assert \forall integer j; 0<=j<nn_n-batch+16 ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
++    /*@ assert \forall integer j; 0<=j<16 ==> vacc1.lane[j]==u8_clamped(nn_in[nn_n-batch+16+j],params->scalar.min,params->scalar.max); */
++    /*@ ghost Before64_1: ; */
+     vst1q_u8(output, vacc1); output += 16;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(nn_n-batch+16)+(16);
++         loop invariant merge_Before64_1: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (nn_n-batch+16)+(16)-k;
++      @/
++      for (size_t k=0;k<(nn_n-batch+16)+(16);k++) {
++        /@ assert valid_in_Before64_1: \valid_read(nn_in+k); @/
++        /@ assert sep_in_Before64_1: \separated(nn_in+k,nn_out+((nn_n-batch+16)..(nn_n-batch+16)+(16)-1)); @/
++        /@ assert frame_in_Before64_1: nn_in[k]==u8_read{Before64_1}(nn_in,k); @/
++        if (k<(nn_n-batch+16)) {
++          /@ assert valid_out_Before64_1: \valid_read(nn_out+k); @/
++          /@ assert sep_out_Before64_1: \separated(nn_out+k,nn_out+((nn_n-batch+16)..(nn_n-batch+16)+(16)-1)); @/
++          /@ assert frame_out_Before64_1: nn_out[k]==u8_read{Before64_1}(nn_out,k); @/
++          /@ assert old_clamp_Before64_1: u8_read{Before64_1}(nn_out,k)==u8_clamped(u8_read{Before64_1}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(nn_n-batch+16)<(16); @/
++          /@ assert stored_lane_Before64_1: nn_out[k]==vacc1.lane[k-(nn_n-batch+16)]; @/
++          /@ assert lane_clamp_Before64_1: vacc1.lane[k-(nn_n-batch+16)]==u8_clamped(u8_read{Before64_1}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_Before64_1: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
++    /*@ assert \forall integer j; 0<=j<nn_n-batch+32 ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
++    /*@ assert \forall integer j; 0<=j<16 ==> vacc2.lane[j]==u8_clamped(nn_in[nn_n-batch+32+j],params->scalar.min,params->scalar.max); */
++    /*@ ghost Before64_2: ; */
+     vst1q_u8(output, vacc2); output += 16;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(nn_n-batch+32)+(16);
++         loop invariant merge_Before64_2: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (nn_n-batch+32)+(16)-k;
++      @/
++      for (size_t k=0;k<(nn_n-batch+32)+(16);k++) {
++        /@ assert valid_in_Before64_2: \valid_read(nn_in+k); @/
++        /@ assert sep_in_Before64_2: \separated(nn_in+k,nn_out+((nn_n-batch+32)..(nn_n-batch+32)+(16)-1)); @/
++        /@ assert frame_in_Before64_2: nn_in[k]==u8_read{Before64_2}(nn_in,k); @/
++        if (k<(nn_n-batch+32)) {
++          /@ assert valid_out_Before64_2: \valid_read(nn_out+k); @/
++          /@ assert sep_out_Before64_2: \separated(nn_out+k,nn_out+((nn_n-batch+32)..(nn_n-batch+32)+(16)-1)); @/
++          /@ assert frame_out_Before64_2: nn_out[k]==u8_read{Before64_2}(nn_out,k); @/
++          /@ assert old_clamp_Before64_2: u8_read{Before64_2}(nn_out,k)==u8_clamped(u8_read{Before64_2}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(nn_n-batch+32)<(16); @/
++          /@ assert stored_lane_Before64_2: nn_out[k]==vacc2.lane[k-(nn_n-batch+32)]; @/
++          /@ assert lane_clamp_Before64_2: vacc2.lane[k-(nn_n-batch+32)]==u8_clamped(u8_read{Before64_2}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_Before64_2: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
++    /*@ assert \forall integer j; 0<=j<nn_n-batch+48 ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
++    /*@ assert \forall integer j; 0<=j<16 ==> vacc3.lane[j]==u8_clamped(nn_in[nn_n-batch+48+j],params->scalar.min,params->scalar.max); */
++    /*@ ghost Before64_3: ; */
+     vst1q_u8(output, vacc3); output += 16;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(nn_n-batch+48)+(16);
++         loop invariant merge_Before64_3: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (nn_n-batch+48)+(16)-k;
++      @/
++      for (size_t k=0;k<(nn_n-batch+48)+(16);k++) {
++        /@ assert valid_in_Before64_3: \valid_read(nn_in+k); @/
++        /@ assert sep_in_Before64_3: \separated(nn_in+k,nn_out+((nn_n-batch+48)..(nn_n-batch+48)+(16)-1)); @/
++        /@ assert frame_in_Before64_3: nn_in[k]==u8_read{Before64_3}(nn_in,k); @/
++        if (k<(nn_n-batch+48)) {
++          /@ assert valid_out_Before64_3: \valid_read(nn_out+k); @/
++          /@ assert sep_out_Before64_3: \separated(nn_out+k,nn_out+((nn_n-batch+48)..(nn_n-batch+48)+(16)-1)); @/
++          /@ assert frame_out_Before64_3: nn_out[k]==u8_read{Before64_3}(nn_out,k); @/
++          /@ assert old_clamp_Before64_3: u8_read{Before64_3}(nn_out,k)==u8_clamped(u8_read{Before64_3}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(nn_n-batch+48)<(16); @/
++          /@ assert stored_lane_Before64_3: nn_out[k]==vacc3.lane[k-(nn_n-batch+48)]; @/
++          /@ assert lane_clamp_Before64_3: vacc3.lane[k-(nn_n-batch+48)]==u8_clamped(u8_read{Before64_3}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_Before64_3: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
++    /*@ assert \forall integer j; 0<=j<nn_n-batch+64 ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
+   }
++  /*@ loop invariant 0<=batch<=nn_n;
++      loop invariant input==nn_in+nn_n-batch;
++      loop invariant output==nn_out+nn_n-batch;
++      loop invariant \forall integer j; 0<=j<nn_n-batch ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++      loop invariant batch<64;
++      loop assigns batch,input,output,nn_out[0..nn_n-1];
++      loop variant batch;
++  */
+   for (; batch >= 8; batch -= 8) {
+     uint8x8_t vacc = vld1_u8(input); input += 8;
+ 
+     vacc = vmin_u8(vacc, vget_low_u8(voutput_max));
+     vacc = vmax_u8(vacc, vget_low_u8(voutput_min));
+ 
++    /*@ assert \forall integer j; 0<=j<8 ==> vacc.lane[j]==u8_clamped(nn_in[nn_n-batch+j],params->scalar.min,params->scalar.max); */
++    /*@ ghost Before8: ; */
+     vst1_u8(output, vacc); output += 8;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(nn_n-batch)+(8);
++         loop invariant merge_Before8: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (nn_n-batch)+(8)-k;
++      @/
++      for (size_t k=0;k<(nn_n-batch)+(8);k++) {
++        /@ assert valid_in_Before8: \valid_read(nn_in+k); @/
++        /@ assert sep_in_Before8: \separated(nn_in+k,nn_out+((nn_n-batch)..(nn_n-batch)+(8)-1)); @/
++        /@ assert frame_in_Before8: nn_in[k]==u8_read{Before8}(nn_in,k); @/
++        if (k<(nn_n-batch)) {
++          /@ assert valid_out_Before8: \valid_read(nn_out+k); @/
++          /@ assert sep_out_Before8: \separated(nn_out+k,nn_out+((nn_n-batch)..(nn_n-batch)+(8)-1)); @/
++          /@ assert frame_out_Before8: nn_out[k]==u8_read{Before8}(nn_out,k); @/
++          /@ assert old_clamp_Before8: u8_read{Before8}(nn_out,k)==u8_clamped(u8_read{Before8}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(nn_n-batch)<(8); @/
++          /@ assert stored_lane_Before8: nn_out[k]==vacc.lane[k-(nn_n-batch)]; @/
++          /@ assert lane_clamp_Before8: vacc.lane[k-(nn_n-batch)]==u8_clamped(u8_read{Before8}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_Before8: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
+   }
++  /*@ assert 0<=batch<8; */
+   if XNN_UNLIKELY(batch != 0) {
+     uint8x8_t vacc = vld1_u8(input); input += 8;
+ 
+     vacc = vmin_u8(vacc, vget_low_u8(voutput_max));
+     vacc = vmax_u8(vacc, vget_low_u8(voutput_min));
+ 
++    /*@ ghost size_t tail_start=nn_n-batch; */
++    /*@ assert 1<=batch<=7; */
++    /*@ ghost u8_tail_bits(batch); */
++    /*@ assert (batch & 4)==(batch>=4?4:0); */
++    /*@ assert (batch & 2)==((batch%4)>=2?2:0); */
++    /*@ assert (batch & 1)==batch%2; */
++    /*@ assert \forall integer j; 0<=j<8 ==> vacc.lane[j]==u8_clamped(nn_in[tail_start+j],params->scalar.min,params->scalar.max); */
+     if (batch & 4) {
++      /*@ ghost BeforeTail4: ; */
+       vst1_lane_u32((void*) output, vreinterpret_u32_u8(vacc), 0); output += 4;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(tail_start)+(4);
++         loop invariant merge_BeforeTail4: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (tail_start)+(4)-k;
++      @/
++      for (size_t k=0;k<(tail_start)+(4);k++) {
++        /@ assert valid_in_BeforeTail4: \valid_read(nn_in+k); @/
++        /@ assert sep_in_BeforeTail4: \separated(nn_in+k,nn_out+((tail_start)..(tail_start)+(4)-1)); @/
++        /@ assert frame_in_BeforeTail4: nn_in[k]==u8_read{BeforeTail4}(nn_in,k); @/
++        if (k<(tail_start)) {
++          /@ assert valid_out_BeforeTail4: \valid_read(nn_out+k); @/
++          /@ assert sep_out_BeforeTail4: \separated(nn_out+k,nn_out+((tail_start)..(tail_start)+(4)-1)); @/
++          /@ assert frame_out_BeforeTail4: nn_out[k]==u8_read{BeforeTail4}(nn_out,k); @/
++          /@ assert old_clamp_BeforeTail4: u8_read{BeforeTail4}(nn_out,k)==u8_clamped(u8_read{BeforeTail4}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(tail_start)<(4); @/
++          /@ assert stored_lane_BeforeTail4: nn_out[k]==vacc.lane[k-(tail_start)]; @/
++          /@ assert lane_clamp_BeforeTail4: vacc.lane[k-(tail_start)]==u8_clamped(u8_read{BeforeTail4}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_BeforeTail4: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
+       vacc = vext_u8(vacc, vacc, 4);
+     }
++    /*@ assert \forall integer j; 0<=j<batch%4 ==> vacc.lane[j]==u8_clamped(nn_in[tail_start+(batch>=4?4:0)+j],params->scalar.min,params->scalar.max); */
++    /*@ assert output==nn_out+tail_start+(batch>=4?4:0); */
++    /*@ assert \forall integer j; 0<=j<tail_start+(batch>=4?4:0) ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
+     if (batch & 2) {
++      /*@ ghost BeforeTail2: ; */
+       vst1_lane_u16((void*) output, vreinterpret_u16_u8(vacc), 0); output += 2;
++    /*@ ghost
++      /@ loop invariant 0<=k<=(tail_start+(batch>=4?4:0))+(2);
++         loop invariant merge_BeforeTail2: \forall integer j; 0<=j<k ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (tail_start+(batch>=4?4:0))+(2)-k;
++      @/
++      for (size_t k=0;k<(tail_start+(batch>=4?4:0))+(2);k++) {
++        /@ assert valid_in_BeforeTail2: \valid_read(nn_in+k); @/
++        /@ assert sep_in_BeforeTail2: \separated(nn_in+k,nn_out+((tail_start+(batch>=4?4:0))..(tail_start+(batch>=4?4:0))+(2)-1)); @/
++        /@ assert frame_in_BeforeTail2: nn_in[k]==u8_read{BeforeTail2}(nn_in,k); @/
++        if (k<(tail_start+(batch>=4?4:0))) {
++          /@ assert valid_out_BeforeTail2: \valid_read(nn_out+k); @/
++          /@ assert sep_out_BeforeTail2: \separated(nn_out+k,nn_out+((tail_start+(batch>=4?4:0))..(tail_start+(batch>=4?4:0))+(2)-1)); @/
++          /@ assert frame_out_BeforeTail2: nn_out[k]==u8_read{BeforeTail2}(nn_out,k); @/
++          /@ assert old_clamp_BeforeTail2: u8_read{BeforeTail2}(nn_out,k)==u8_clamped(u8_read{BeforeTail2}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(tail_start+(batch>=4?4:0))<(2); @/
++          /@ assert stored_lane_BeforeTail2: nn_out[k]==vacc.lane[k-(tail_start+(batch>=4?4:0))]; @/
++          /@ assert lane_clamp_BeforeTail2: vacc.lane[k-(tail_start+(batch>=4?4:0))]==u8_clamped(u8_read{BeforeTail2}(nn_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_BeforeTail2: nn_out[k]==u8_clamped(nn_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
+       vacc = vext_u8(vacc, vacc, 2);
+     }
++    /*@ assert batch%2==0 || vacc.lane[0]==u8_clamped(nn_in[tail_start+(batch>=4?4:0)+((batch%4)>=2?2:0)],params->scalar.min,params->scalar.max); */
++    /*@ assert output==nn_out+tail_start+(batch>=4?4:0)+((batch%4)>=2?2:0); */
++    /*@ assert \forall integer j; 0<=j<tail_start+(batch>=4?4:0)+((batch%4)>=2?2:0) ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
+     if (batch & 1) {
+       vst1_lane_u8(output, vacc, 0);
+     }
+   }
++  /*@ assert \forall integer j; 0<=j<nn_n ==> nn_out[j]==u8_clamped(nn_in[j],params->scalar.min,params->scalar.max); */
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -4,6 +4,9 @@
+     uint8_t* output,
+     const struct xnn_u8_minmax_params* restrict params) XNN_OOB_READS
+ {
++  /*@ ghost size_t rr_n=batch; */
++  /*@ ghost const uint8_t *rr_in=input; */
++  /*@ ghost uint8_t *rr_out=output; */
+   assert(batch != 0);
+   assert(batch % sizeof(uint8_t) == 0);
+   assert(input != NULL);
+@@ -12,6 +15,13 @@
+   const uint8_t min = (uint8_t) params->scalar.min;
+   const uint8_t max = (uint8_t) params->scalar.max;
+ 
++  /*@ loop invariant 0<=batch<=rr_n;
++      loop invariant input==rr_in+rr_n-batch;
++      loop invariant output==rr_out+rr_n-batch;
++      loop invariant \forall integer j; 0<=j<rr_n-batch ==> rr_out[j]==u8_clamped(rr_in[j],params->scalar.min,params->scalar.max);
++      loop assigns batch,input,output,rr_out[0..rr_n-1];
++      loop variant batch;
++  */
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m8(batch);
+     
+@@ -20,10 +30,38 @@
+     vacc = __riscv_vmax_vx_u8m8(vacc, min, vl);
+     vacc = __riscv_vmin_vx_u8m8(vacc, max, vl);
+     
++    /*@ assert \forall integer j; 0<=j<vl ==> vacc.lane[j]==u8_clamped(rr_in[rr_n-batch+j],params->scalar.min,params->scalar.max); */
++    /*@ ghost BeforeRVV: ; */
+     __riscv_vse8_v_u8m8(output, vacc, vl);
++    /*@ ghost
++      /@ loop invariant 0<=k<=(rr_n-batch)+(vl);
++         loop invariant merge_BeforeRVV: \forall integer j; 0<=j<k ==> rr_out[j]==u8_clamped(rr_in[j],params->scalar.min,params->scalar.max);
++         loop assigns k;
++         loop variant (rr_n-batch)+(vl)-k;
++      @/
++      for (size_t k=0;k<(rr_n-batch)+(vl);k++) {
++        /@ assert valid_in_BeforeRVV: \valid_read(rr_in+k); @/
++        /@ assert sep_in_BeforeRVV: \separated(rr_in+k,rr_out+((rr_n-batch)..(rr_n-batch)+(vl)-1)); @/
++        /@ assert frame_in_BeforeRVV: rr_in[k]==u8_read{BeforeRVV}(rr_in,k); @/
++        if (k<(rr_n-batch)) {
++          /@ assert valid_out_BeforeRVV: \valid_read(rr_out+k); @/
++          /@ assert sep_out_BeforeRVV: \separated(rr_out+k,rr_out+((rr_n-batch)..(rr_n-batch)+(vl)-1)); @/
++          /@ assert frame_out_BeforeRVV: rr_out[k]==u8_read{BeforeRVV}(rr_out,k); @/
++          /@ assert old_clamp_BeforeRVV: u8_read{BeforeRVV}(rr_out,k)==u8_clamped(u8_read{BeforeRVV}(rr_in,k),params->scalar.min,params->scalar.max); @/
++        } else {
++          /@ assert 0<=k-(rr_n-batch)<(vl); @/
++          /@ assert stored_lane_BeforeRVV: rr_out[k]==vacc.lane[k-(rr_n-batch)]; @/
++          /@ assert lane_clamp_BeforeRVV: vacc.lane[k-(rr_n-batch)]==u8_clamped(u8_read{BeforeRVV}(rr_in,k),params->scalar.min,params->scalar.max); @/
++        }
++        /@ assert point_clamp_BeforeRVV: rr_out[k]==u8_clamped(rr_in[k],params->scalar.min,params->scalar.max); @/
++      }
++    */
++
++    /*@ assert \forall integer j; 0<=j<rr_n-batch+vl ==> rr_out[j]==u8_clamped(rr_in[j],params->scalar.min,params->scalar.max); */
+     
+     input += vl;
+     output += vl;
+     batch -= vl;
+   }
++  /*@ assert \forall integer j; 0<=j<rr_n ==> rr_out[j]==u8_clamped(rr_in[j],params->scalar.min,params->scalar.max); */
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -4,6 +4,11 @@
+   struct xnn_u8_minmax_params params={{lower,upper}};
+   test_neon(n,input,left,&params);
+   test_rvv(n,input,right,&params);
++  /*@ loop invariant 0<=i<=n;
++      loop invariant \forall integer j; 0<=j<n ==> left[j]==right[j];
++      loop assigns i;
++      loop variant n-i;
++  */
+   for (size_t i=0;i<n;i++) {
+     if (!(left[i]==right[i])) return 0;
+   }

@@ -1,0 +1,28 @@
+[kernel] Parsing /tmp/complex-u32-final-library/u32_shim.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Missing RTE guards
+[wp] 2 goals scheduled
+[wp] [Unknown] typed_raw_riscv_vcreate_v_u32m4x2_ensures (Qed)
+[wp] [Cache] not used
+[wp] Proved goals:    3 / 4
+  Terminating:     1
+  Unreachable:     1
+  Qed:             1
+  Unknown:         1
+
+Goal Post-condition ("/tmp/complex-u32-final-library/u32_shim.c", line 60) in '__riscv_vcreate_v_u32m4x2':
+Let a = shiftfield_F6_val(global(L_r_2608)).
+Assume { (* Goal *) When: (0 <= i) /\ (i <= 15). }
+Prove: (Mint_0[shift_uint32(shiftfield_F4_lane(shift_S4(a, 0)), i)]
+          = Mint_0[shift_uint32(shiftfield_F4_lane(global(P_a_2601)), i)]) /\
+    (Mint_0[shift_uint32(shiftfield_F4_lane(shift_S4(a, 1)), i)]
+       = Mint_0[shift_uint32(shiftfield_F4_lane(global(P_b_2602)), i)]).
+Prover Qed returns Unknown (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '__riscv_vcreate_v_u32m4x2':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

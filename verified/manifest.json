@@ -74,7 +74,9 @@
         "LLVM_IR_byte_identical": true,
         "public_spec_frozen": true,
         "negative_tests": "tests/verification/proof_separation/evidence"
-      }
+      },
+      "negative_control_evidence": "../experiments/shared-extension/model-audit/qs8-rsum-false.json",
+      "negative_control_scope": "Impossible postcondition was not proved; this is not a consistency theorem."
     },
     {
       "name": "qu8-rsum",
@@ -162,7 +164,9 @@
         "LLVM_IR_byte_identical": true,
         "public_spec_frozen": true,
         "negative_tests": "../tests/verification/shared_shim/guard-results.json"
-      }
+      },
+      "negative_control_evidence": "../experiments/shared-extension/model-audit/qu8-rsum-false.json",
+      "negative_control_scope": "Impossible postcondition was not proved; this is not a consistency theorem."
     },
     {
       "name": "s8-vclamp",
@@ -250,11 +254,97 @@
         "LLVM_IR_byte_identical": true,
         "public_spec_frozen": true,
         "negative_tests": "../tests/verification/shared_shim/guard-results.json"
-      }
+      },
+      "negative_control_evidence": "../experiments/shared-extension/model-audit/s8-vclamp-false.json",
+      "negative_control_scope": "Impossible postcondition was not proved; this is not a consistency theorem."
     },
     {
-      "name": "f32-vadd",
+      "name": "u8-vclamp",
       "status": "proved_under_declared_c_model",
+      "proof_file": "u8-vclamp-v3/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/unsigned-v3/base-proof.patch",
+        "shared-extension/unsigned-v3/clamp-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 688,
+        "total": 688
+      },
+      "seconds": 322.288,
+      "source_and_evidence_sha256": {
+        "shared-extension/unsigned-v3/clamp.c": "02548bd83718ac51c30d242814dbbad92933b5d4a002043c2cd5ac47e3ba29d8",
+        "u8-vclamp-v3/frozen.json": "75e819facba425547d55da3e588fda0d7978e8392dbd2200acd74092630f3906",
+        "u8-vclamp-v3/unit.c": "417706cc243d1a9b4f4ec4c73648b744eeb842a907ba9be15c5596fc2da8f45f",
+        "u8-vclamp-v3/proof.patch": "2fb7acfff543bfb951125e3ccdd1640c90c798d2bf5eaafae2e6d592776aa620",
+        "u8-vclamp-v3/logs/canonical01-summary.json": "95e634cd7af558c85ab62542cfb1404e8f22518a59cb8c6a7f9f2109e84ba0bd",
+        "u8-vclamp-v3/rvv.c": "293667db57d7f2f22b197b23195ed31d6185d67bb14cf608ace658a32d36678d",
+        "u8-vclamp-v3/interface.json": "e108131e82274a432dd771c8fc995e936da7b012860e944d668303614c868dcc",
+        "u8-vclamp-v3/logs/canonical01.log": "c2f6dd5b4c26193c2449ccf99769073e430142a30927f63c3d2615f8fc8fb675",
+        "shared-extension/unsigned-v3/shim.h": "38ffbe87029a3681c4de4b335bfb2dd90bd2fc30744b262f8a59053d30ff3b8f",
+        "shared-extension/unsigned-v3/base.c": "de158f1bd3e0777d4eae7704bc7d36db8aa2cd38b782d1a1b918f3ce1821b424",
+        "shared-extension/unsigned-v3/clamp-proof.patch": "9e51d45d04fc7857174823ee01e587762bb6672ebba718b619dbe0bf8fec0dfd",
+        "shared-extension/unsigned-v3/base.h": "ed8826352c3ce311228d9d243650d3260247af1d7e3184c5b025f6420260a41f",
+        "shared-extension/unsigned-v3/clamp.h": "f7ad30417591142c87a6a6370e97dd03fca02c8a744c14370456c69c7bf5a118",
+        "u8-vclamp-v3/neon.c": "e52c7c97805aec65922f07f19c7496015596e375b17306258f9e5f4805528f57",
+        "u8-vclamp-v3/logs/llvm-byte-audit.json": "d8ae81ce5a320a37cc43756a8be51c19397ef406b28775958a5fc3b2ac9f91bc",
+        "u8-vclamp-v3/logs/canonical01.json": "8dc7dbc7dc3866a98b4a46280ea40d47703f13a704ffa1c2bab50d3082b1c4ad",
+        "u8-vclamp-v3/logs/llvm-identity.json": "718d05fdff822c3e025646b27f33b3628cf5c490659349980f6facaa6ccb41a4",
+        "u8-vclamp-v3/spec.h": "9c5cf339cd0d52f17012d669e4866808db4d3c7f3ea3d64094217d882699ce36",
+        "u8-vclamp-v3/harness.c": "48d974b385a0e79a4f2bc90da1db1c3daf350a55d58689666cc8e93cd7394d03",
+        "shared-extension/unsigned-v3/base-proof.patch": "c15ddb9d37c4db8262542ba3844f4fd92f78a59d464af5f6780f5a2a84426c73",
+        "u8-vclamp-v3/original/rvv.c": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "source_freeze": "u8-vclamp-v3/frozen.json",
+      "proof_evidence": "u8-vclamp-v3/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed",
+      "body_functions": 27,
+      "global_lemmas": [],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/unsigned-v3/base-proof.patch": "c15ddb9d37c4db8262542ba3844f4fd92f78a59d464af5f6780f5a2a84426c73",
+        "verified/shared-extension/unsigned-v3/clamp-proof.patch": "9e51d45d04fc7857174823ee01e587762bb6672ebba718b619dbe0bf8fec0dfd",
+        "verified/u8-vclamp-v3/proof.patch": "2fb7acfff543bfb951125e3ccdd1640c90c798d2bf5eaafae2e6d592776aa620"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 2974,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "new actual RVV implementation; original empty target retained",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "exact byte values",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "u8-vclamp-v3/logs/llvm-identity.json",
+      "llvm_byte_evidence": "u8-vclamp-v3/logs/llvm-byte-audit.json",
+      "negative_control_evidence": "u8-vclamp-v3/logs/model-control01/summary.json",
+      "negative_control_scope": "Impossible postcondition was not proved; this is not a consistency theorem."
+    }
+  ],
+  "gemm_repair_admitted": false,
+  "shared_suite_results": "../docs/shared-shim/RESULTS.zh-CN.txt",
+  "kernel_inventory": "../docs/shared-shim/inventory.json",
+  "shared_extension_results": "../docs/shared-shim/EXTENSION-RESULTS.zh-CN.txt",
+  "quarantined_programs": [
+    {
+      "name": "f32-vadd",
+      "status": "quarantined_model_inconsistency",
       "proof_file": "f32-vadd/proof.patch",
       "proof_helper_files": [],
       "shared_proof_files": [
@@ -345,10 +435,600 @@
         "LLVM_IR_byte_identical": true,
         "public_spec_frozen": true,
         "negative_tests": "../tests/verification/shared_shim/guard-results.json"
-      }
+      },
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "../experiments/shared-extension/float/model-audit/float-baseline-control.json"
+    },
+    {
+      "name": "f32-vmul",
+      "status": "quarantined_model_inconsistency",
+      "proof_file": "f32-vmul/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/float/base-proof.patch",
+        "shared-extension/float/float_ops-proof.patch",
+        "shared-extension/float/mul-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 468,
+        "total": 468
+      },
+      "seconds": 212.82,
+      "source_and_evidence_sha256": {
+        "f32-vmul/unit.c": "50f8ce85025581d0f99a643cd783feec6197641bc4479bb4b7acc9c67ea495ac",
+        "shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "shared-extension/float/mul.c": "c63398341dbcb8191ad0537971f48f51c6c541fbfad383f7efe7e625a2cc43c1",
+        "f32-vmul/logs/canonical01-summary.json": "c19039235a08f6287a034d998a128c3c506da2ebfbd921d88c3f674c65bb1090",
+        "f32-vmul/rvv.c": "6f2acd553de265d3b8304d47009bb725dde8118539acf948cbdf0f7de79f235c",
+        "f32-vmul/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "shared-extension/float/mul-proof.patch": "e73b728d88a14977369900860187e5d8bd5631207ffceee012bb840507982fcc",
+        "f32-vmul/neon.c": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c",
+        "shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vmul/modules.json": "31367658d5e4ea8238a32ca1980eb843795c6a05b8dc00f2b67f35f17a7dcbf0",
+        "f32-vmul/proof.patch": "27471c1eac8520ac54ae2d6c467fd036a47dd7d9722ec57b69cedf0973649bb5",
+        "f32-vmul/logs/llvm-byte-audit.json": "a6ce782c2a4cd6e6627f29b023a37d536c6023b03d7fa2556fc6ccefe10bdcf1",
+        "f32-vmul/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "f32-vmul/frozen.json": "2bb009ca2c890bc67f960f03a20e5d6fc88a2a84529034da32b7dce69f9e05ae",
+        "f32-vmul/logs/llvm-identity.json": "78d471a8355175522b574f9496d23f73e810f9bc54ceb0f5621f7cfdb6216671",
+        "f32-vmul/logs/canonical01.json": "500ce15df77ed635d138e0fd0206ea9e60b418f64f609b59ba052561f70f7f3a",
+        "shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "f32-vmul/spec.h": "3c7f0c587ad5414af9933ba3ddb96fe2d1c69d34d64d7d22892b3a57caae962b",
+        "f32-vmul/logs/canonical01.log": "1ab57d65dfc2fe5fec5cad373a96139e37d1c9feaed6d414c016b1e917c81dab"
+      },
+      "source_freeze": "f32-vmul/frozen.json",
+      "proof_evidence": "f32-vmul/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed+float",
+      "body_functions": 24,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "fp_mul_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/shared-extension/float/mul-proof.patch": "e73b728d88a14977369900860187e5d8bd5631207ffceee012bb840507982fcc",
+        "verified/f32-vmul/proof.patch": "27471c1eac8520ac54ae2d6c467fd036a47dd7d9722ec57b69cedf0973649bb5"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 4249,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "original RVV target",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "f32-vmul/logs/llvm-identity.json",
+      "llvm_byte_evidence": "f32-vmul/logs/llvm-byte-audit.json",
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "f32-vmul/logs/model-control01/summary.json",
+      "quarantine_evidence_sha256": "c22de04f7985890d279bca9b13761ecc1bd6960739d9312f0f62eec497bcaea8"
+    },
+    {
+      "name": "f32-vsub",
+      "status": "quarantined_model_inconsistency",
+      "proof_file": "f32-vsub/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/float/base-proof.patch",
+        "shared-extension/float/float_ops-proof.patch",
+        "shared-extension/float/sub-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 481,
+        "total": 481
+      },
+      "seconds": 225.194,
+      "source_and_evidence_sha256": {
+        "f32-vsub/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "f32-vsub/frozen.json": "383a5eb950b24d662e88261923d8a68fae1e8d21a31dd3607c18b4264842ded7",
+        "shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "f32-vsub/logs/canonical01-summary.json": "309c262ec68067e5a916040776e245f186aa06795288818da22a04e812567c7c",
+        "shared-extension/float/sub.driver": "d1591895fa331eaaf173857e8d9caa8b9d204c2367f6144f8631c90eb1e21cfa",
+        "f32-vsub/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "f32-vsub/unit.c": "8f1085aa7d60b2ff54cbf1e372eb34ee08655ae65d1baa0f47a14db99d7d3138",
+        "shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vsub/logs/llvm-byte-audit.json": "2556f28e973d17dd9f91bb4df3cdaaf4238867e23e31d1bae8af0327241dcece",
+        "f32-vsub/rvv.c": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c",
+        "f32-vsub/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "f32-vsub/logs/llvm-identity.json": "bf5125ce836ba726eb22993846d3699d7546c799a25680c6c0110f9ce518fafe",
+        "f32-vsub/neon.c": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+        "f32-vsub/logs/canonical01.json": "030b47f315a1fc4764fa24c75475bf379f83f16cbb2ad240dc8a3557ee34d1e4",
+        "shared-extension/float/sub.c": "d5faae2660abad1f38d21805b22f41124cfe81721c80465e587a6543c791cc5c",
+        "shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared-extension/float/sub-proof.patch": "d55909ab97820b8246d377d728a1cbeb7a423d724d57732cd4b959db4bde043d",
+        "f32-vsub/logs/canonical01.log": "72c013dde14ac24cb799002ce038a312a8efd07b2206380c6438064b3bfd630e",
+        "shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "f32-vsub/modules.json": "d59e9070591a1d92cbda721059c61c49f9c50e8079c79232d148df1a19ad12ff",
+        "f32-vsub/proof.patch": "37527d86d1c5a610ef6ef88643e31803e5a1bb3d2b5339037fd482ca3126c737"
+      },
+      "source_freeze": "f32-vsub/frozen.json",
+      "proof_evidence": "f32-vsub/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed+float",
+      "body_functions": 24,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "fp_sub_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/shared-extension/float/sub-proof.patch": "d55909ab97820b8246d377d728a1cbeb7a423d724d57732cd4b959db4bde043d",
+        "verified/f32-vsub/proof.patch": "37527d86d1c5a610ef6ef88643e31803e5a1bb3d2b5339037fd482ca3126c737"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 4249,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "original RVV target",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "f32-vsub/logs/llvm-identity.json",
+      "llvm_byte_evidence": "f32-vsub/logs/llvm-byte-audit.json",
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "f32-vsub/logs/model-control01/summary.json",
+      "quarantine_evidence_sha256": "78f6cf289a77cd0ea779a766d000afb3a782ce3d492e282ff09b5fa46ef4e581"
+    },
+    {
+      "name": "f32-vdiv",
+      "status": "quarantined_model_inconsistency",
+      "proof_file": "f32-vdiv/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/float/base-proof.patch",
+        "shared-extension/float/float_ops-proof.patch",
+        "shared-extension/float/div-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 481,
+        "total": 481
+      },
+      "seconds": 228.475,
+      "source_and_evidence_sha256": {
+        "shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "f32-vdiv/proof.patch": "e3efe2f75ffe3f71bba2f99433c21f09114ec0e3c4e285ee653d530b73ba3684",
+        "shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "f32-vdiv/modules.json": "e709c0b5abd16b65a2b086ae1e828b55dc00047e7750c2e3dc368046361a0e38",
+        "f32-vdiv/logs/llvm-byte-audit.json": "c0859d20f76f0bfceab10375e2d1c154c6ea63cf30ae1a7277796d6670faf1b3",
+        "f32-vdiv/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "f32-vdiv/frozen.json": "660a1f7bf3358d9509fc0eaf62f8b06500757c90d6f4d126e4f256fa3155d08a",
+        "f32-vdiv/logs/llvm-identity.json": "20753635f177ed6c671cf9dc9e05bd70aff0acf576e59eae41e2d93324435d45",
+        "shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "f32-vdiv/logs/canonical01.json": "5a4e90a683bd9106c4964afd60e5148aecdbed7b607304f141e44e0a60b4abf4",
+        "shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "f32-vdiv/spec.h": "3c7f0c587ad5414af9933ba3ddb96fe2d1c69d34d64d7d22892b3a57caae962b",
+        "f32-vdiv/logs/canonical01.log": "e23eb241c23e041b473a05841489aaa635e8ce6d346607b3d41964bf054bfafc",
+        "f32-vdiv/unit.c": "108bac801f6a47fb37bed46da1c8e403e5ffd74247f4fa25cd3c3f4b16fd27b4",
+        "shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vdiv/rvv.c": "5637c46cc781ada609567f65a010b3d698a010e090834e36c587873ede1e1f3d",
+        "f32-vdiv/logs/canonical01-summary.json": "8fe9b3ab979f9b0a5deffc6627965b8b022530eebe2dc707042c58fe11cd8551",
+        "f32-vdiv/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared-extension/float/div.c": "242cf5697b67ddaae5af716876c3032dafe734ac33e7d4e6adb360c896d3c012",
+        "f32-vdiv/neon.c": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0",
+        "shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "shared-extension/float/div-proof.patch": "e61038a626eb27ba363d8c08ed8fccfefb1f14b4709902289a37eb7469bca600"
+      },
+      "source_freeze": "f32-vdiv/frozen.json",
+      "proof_evidence": "f32-vdiv/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed+float",
+      "body_functions": 24,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "fp_div_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/shared-extension/float/div-proof.patch": "e61038a626eb27ba363d8c08ed8fccfefb1f14b4709902289a37eb7469bca600",
+        "verified/f32-vdiv/proof.patch": "e3efe2f75ffe3f71bba2f99433c21f09114ec0e3c4e285ee653d530b73ba3684"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 4249,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "original RVV target",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "f32-vdiv/logs/llvm-identity.json",
+      "llvm_byte_evidence": "f32-vdiv/logs/llvm-byte-audit.json",
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "f32-vdiv/logs/model-control01/summary.json",
+      "quarantine_evidence_sha256": "6ca8c9085187588c3c8d8fa2e577a81306d7c06db0c16a10cc183ec864edaa3e"
+    },
+    {
+      "name": "f32-vmin",
+      "status": "quarantined_model_inconsistency",
+      "proof_file": "f32-vmin/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/float/base-proof.patch",
+        "shared-extension/float/float_ops-proof.patch",
+        "shared-extension/float/min-proof.patch",
+        "shared-extension/float/mask-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 528,
+        "total": 528
+      },
+      "seconds": 249.362,
+      "source_and_evidence_sha256": {
+        "f32-vmin/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "f32-vmin/unit.c": "cfe68085a1e1436c6afc2d0a6a8ecd55dd59ee38300d47d9d7f264ea6b44fd68",
+        "shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "shared-extension/float/min.c": "26677268e6e203c9d470b2846ea7e0f2ed7d290fd73ead993c4d7d3b5cdb0e9e",
+        "f32-vmin/logs/canonical01-summary.json": "7c203965cf86be20a0859e76b1dcbc6234d75b5d76d7d5f50a859ae4d89a5217",
+        "f32-vmin/rvv.c": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+        "shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "f32-vmin/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "f32-vmin/neon.c": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+        "shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vmin/logs/llvm-byte-audit.json": "59c16c22489b61afa9bc2332050737661c5f8d45ec9589e6bb59993b813f2e36",
+        "f32-vmin/proof.patch": "3237715a430225375aea75f9e8fee221094430d137275975f4d5e96937ed49be",
+        "f32-vmin/modules.json": "3ac379b8ad0f3bace52bf13f857a025e196967b15518424ee532d3253507b559",
+        "shared-extension/float/mask-proof.patch": "9107e0f5d0b6a9278bd816a3989298647be1494938941fe0c46dc842c7f05698",
+        "f32-vmin/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "shared-extension/float/min-proof.patch": "225c70477b9f03091ba256e83090aeff91fe8e801e0fb91b1b29585bf260d569",
+        "f32-vmin/frozen.json": "d7fedb51ec30535597d676c84e4e0dacb3129915c1bc113268609e4f4c7eb846",
+        "f32-vmin/logs/llvm-identity.json": "537065ca58848e9bf88c6e9732b856ff919da66685afca1015455fd109ef50ca",
+        "f32-vmin/logs/canonical01.json": "3f15c215857d802dbddbb74eeee4bb5baca724aba6ac9c01889d96c191725eb2",
+        "shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "f32-vmin/logs/canonical01.log": "20b5095e1f24c483449baf3b2046eeb3330e3dd2a5e198ca60c089ba9f7ef292",
+        "shared-extension/float/mask.c": "78846cf89ec7fbbe5fea754f50c8aa422df0efaca9a97d57cc7d50eccfd74a84",
+        "f32-vmin/original/rvv.c": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e"
+      },
+      "source_freeze": "f32-vmin/frozen.json",
+      "proof_evidence": "f32-vmin/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed+float",
+      "body_functions": 25,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "fp_min_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/shared-extension/float/min-proof.patch": "225c70477b9f03091ba256e83090aeff91fe8e801e0fb91b1b29585bf260d569",
+        "verified/shared-extension/float/mask-proof.patch": "9107e0f5d0b6a9278bd816a3989298647be1494938941fe0c46dc842c7f05698",
+        "verified/f32-vmin/proof.patch": "3237715a430225375aea75f9e8fee221094430d137275975f4d5e96937ed49be"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 4543,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "repaired NaN propagation; original retained",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "f32-vmin/logs/llvm-identity.json",
+      "llvm_byte_evidence": "f32-vmin/logs/llvm-byte-audit.json",
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "f32-vmin/logs/model-control01/summary.json",
+      "quarantine_evidence_sha256": "4d673739cdbea6e3f7a3a6cb925a3b891c7d9d1a77ff847adc5097fdfbcaacca"
+    },
+    {
+      "name": "f32-vmax",
+      "status": "quarantined_model_inconsistency",
+      "proof_file": "f32-vmax/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/float/base-proof.patch",
+        "shared-extension/float/float_ops-proof.patch",
+        "shared-extension/float/max-proof.patch",
+        "shared-extension/float/mask-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 528,
+        "total": 528
+      },
+      "seconds": 249.545,
+      "source_and_evidence_sha256": {
+        "f32-vmax/proof.patch": "bcc8d9ddeb5debe14981149548868b34436c60786b205c94badcfcc5ddbcf320",
+        "f32-vmax/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "f32-vmax/frozen.json": "5cb8ff06e44e0a699c127656686548e09413a91ba2b5db2dcbf07756af1a1489",
+        "shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "f32-vmax/logs/canonical01.json": "07410f4cc4a37444988b8112824da10d25c3171adc8e0bc2be91fc04abd3b285",
+        "shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "f32-vmax/logs/llvm-identity.json": "1cf1eef438880c31c6848ea9ab179a32e060826b944d733237b45e17283ea223",
+        "shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "f32-vmax/logs/canonical01.log": "90aefd8c2b26d96970c83a8f9c1ac90aff5b169f7d7cba8fa7f6b8f764c90472",
+        "shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "f32-vmax/spec.h": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3",
+        "shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "f32-vmax/unit.c": "1a0992b66d5dd1bfeefc269653f88803bd93ae979dc7f014afd0dbcd5ce1cc08",
+        "shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "f32-vmax/logs/canonical01-summary.json": "e7a3fb44969919fe34667b1f995bdeeaa6993719985b75c1262920535515444d",
+        "shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vmax/rvv.c": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+        "f32-vmax/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "shared-extension/float/mask-proof.patch": "9107e0f5d0b6a9278bd816a3989298647be1494938941fe0c46dc842c7f05698",
+        "f32-vmax/neon.c": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+        "shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared-extension/float/max.c": "ffb8d0f1d89c54213aacd43e6472967df94b225be84dc9711c893ea996c1cb4a",
+        "f32-vmax/logs/llvm-byte-audit.json": "696a0ad70e21bb9bd2ac682f221dc924aea83e5b48959922b3f01268c51472c8",
+        "shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939",
+        "shared-extension/float/max-proof.patch": "ccf61998d42a71612e14956050b5b8f14f0ac92b2e0b23eaa48aa92f051b7c4f",
+        "shared-extension/float/mask.c": "78846cf89ec7fbbe5fea754f50c8aa422df0efaca9a97d57cc7d50eccfd74a84",
+        "f32-vmax/modules.json": "d21c700351d8ddc0d68f26fd68f01a88b1654fc2a6a87de80f0f57753017192b",
+        "f32-vmax/original/rvv.c": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6"
+      },
+      "source_freeze": "f32-vmax/frozen.json",
+      "proof_evidence": "f32-vmax/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed+float",
+      "body_functions": 25,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "fp_max_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/shared-extension/float/max-proof.patch": "ccf61998d42a71612e14956050b5b8f14f0ac92b2e0b23eaa48aa92f051b7c4f",
+        "verified/shared-extension/float/mask-proof.patch": "9107e0f5d0b6a9278bd816a3989298647be1494938941fe0c46dc842c7f05698",
+        "verified/f32-vmax/proof.patch": "bcc8d9ddeb5debe14981149548868b34436c60786b205c94badcfcc5ddbcf320"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 4525,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "repaired NaN propagation; original retained",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "f32-vmax/logs/llvm-identity.json",
+      "llvm_byte_evidence": "f32-vmax/logs/llvm-byte-audit.json",
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "f32-vmax/logs/model-control01/summary.json",
+      "quarantine_evidence_sha256": "25feb0a961118286a0182332d2dbe8fb141ef97cb2d942ca7faa8d07d18e0219"
+    },
+    {
+      "name": "f32-vmulc",
+      "status": "quarantined_model_inconsistency",
+      "proof_file": "f32-vmulc/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared-extension/float/base-proof.patch",
+        "shared-extension/float/float_ops-proof.patch",
+        "shared-extension/float/mul-proof.patch",
+        "shared-extension/float/mulc-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: final outputs equal under frozen observation",
+      "raw_obligations": {
+        "passed": 496,
+        "total": 496
+      },
+      "seconds": 224.749,
+      "source_and_evidence_sha256": {
+        "shared-extension/float/generate.py": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a",
+        "shared-extension/float/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared-extension/float/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared-extension/float/shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+        "f32-vmulc/spec.h": "28f7773cd42823f479a316362f6377f534ca3ef89499d9ca620e32c03034c532",
+        "shared-extension/float/extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+        "f32-vmulc/unit.c": "7b6ecc9c632bc2918c7eeb81d9e694799fdd964b31ec850df6a36ca041268c6f",
+        "shared-extension/float/mul.c": "c63398341dbcb8191ad0537971f48f51c6c541fbfad383f7efe7e625a2cc43c1",
+        "f32-vmulc/logs/llvm-byte-audit.json": "1abbe92c0b68d948d8cc1d6225b273623e8a38b1cd58f737e3b8a1da5444fb21",
+        "shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "shared-extension/float/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "shared-extension/float/mul-proof.patch": "e73b728d88a14977369900860187e5d8bd5631207ffceee012bb840507982fcc",
+        "f32-vmulc/logs/canonical01.json": "4ff082e6e3d0cabec0329588614e88cd381209f82c470e8511b3e97764fc2f7e",
+        "f32-vmulc/rvv.c": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a",
+        "f32-vmulc/interface.json": "656c30f7b44df505a32deb9a7c9599035edc3e23b2d3bfe72ebbd88186831528",
+        "f32-vmulc/logs/llvm-identity.json": "0e078b532adf0e52f731d87c89ea9ea290cb7bb3b35a15c72d9d31c5c064fc5d",
+        "shared-extension/float/mulc-proof.patch": "a2fa5395f867fc4672b55ba05e48b315ebe2c9c968616edcf33366e69c69c78d",
+        "shared-extension/float/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "f32-vmulc/neon.c": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+        "shared-extension/float/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "f32-vmulc/logs/canonical01.log": "9578a7a2089a5559de7e9e0d1b1851b64d48894465aef0297926a27d54da848c",
+        "shared-extension/float/mulc.c": "ac96a49082c87d42bd4f286f040dd6f245bd7be0b4d3dbbd0c73cdcca83dfec5",
+        "f32-vmulc/modules.json": "59da7ce76fc3a3a19bc3ff8c3541dbc2a2470dd714acbfba63311977242d92c5",
+        "f32-vmulc/proof.patch": "3992b8875c0412b51aa1a04c13a89304e9cfa4a6c894851141ef38e186699c4d",
+        "f32-vmulc/logs/canonical01-summary.json": "d0f5f2ecb291b843107fd3081b423a304640d389e9de0ead15c8a07863d37a8b",
+        "f32-vmulc/harness.c": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c",
+        "f32-vmulc/frozen.json": "c0093b27180bebd0b010b9c6bed1f12d51de294225f1e0ba26832610ffe92575",
+        "shared-extension/float/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared-extension/float/extensions.h": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+      },
+      "source_freeze": "f32-vmulc/frozen.json",
+      "proof_evidence": "f32-vmulc/logs/canonical01-summary.json",
+      "isa_to_c_shim_proved": false,
+      "model": "Typed+float",
+      "body_functions": 26,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "fp_mul_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared-extension/float/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared-extension/float/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/shared-extension/float/mul-proof.patch": "e73b728d88a14977369900860187e5d8bd5631207ffceee012bb840507982fcc",
+        "verified/shared-extension/float/mulc-proof.patch": "a2fa5395f867fc4672b55ba05e48b315ebe2c9c968616edcf33366e69c69c78d",
+        "verified/f32-vmulc/proof.patch": "3992b8875c0412b51aa1a04c13a89304e9cfa4a6c894851141ef38e186699c4d"
+      },
+      "implementation_unchanged_checks": {
+        "preprocessed_C_tokens": 4328,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "proof_phase_C_edits": 0,
+        "negative_tests": "../experiments/shared-extension/guard-results.json"
+      },
+      "target_revision": "original RVV target",
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "schedule": "min(AVL,capacity); no arbitrary schedule theorem",
+        "length": "symbolic length under spec.h preconditions; not finite native regression",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Frama-C/Why3 memory and float models plus drivers remain trusted",
+          "Typed additional memory hypotheses and unsupported alignment/valid_function guards retained",
+          "No general ghost noninterference theorem; restricted proof syntax guarded and host IR byte equality checked"
+        ]
+      },
+      "llvm_identity_evidence": "f32-vmulc/logs/llvm-identity.json",
+      "llvm_byte_evidence": "f32-vmulc/logs/llvm-byte-audit.json",
+      "historical_status": "proved_under_declared_c_model",
+      "quarantine_reason": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "quarantine_evidence": "f32-vmulc/logs/model-control01/summary.json",
+      "quarantine_evidence_sha256": "4a7ffd1dfc462abdcfb9f93c5fe10c7df744a6d5e3d84251751a06968563c851"
     }
-  ],
-  "gemm_repair_admitted": false,
-  "shared_suite_results": "../docs/shared-shim/RESULTS.zh-CN.txt",
-  "kernel_inventory": "../docs/shared-shim/inventory.json"
+  ]
 }

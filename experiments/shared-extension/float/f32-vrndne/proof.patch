@@ -1,0 +1,85 @@
+--- a/neon.c
++++ b/neon.c
+@@ -10,12 +10,20 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const float *i_base=input;
++  //@ ghost float *o_base=output;
++  //@ ghost size_t total=batch/sizeof(float);
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input != NULL);
+   assert(output != NULL);
+ 
+   const float32x4_t vmagic_number = vreinterpretq_f32_u32(vmovq_n_u32(UINT32_C(0x4B000000)));
++  /*@ loop invariant 0<=batch<=4*total && batch%4==0;
++      loop invariant input==i_base+(total-batch/4);
++      loop invariant output==o_base+(total-batch/4);
++      loop invariant \valid(output+(0..batch/4-1));
++      loop assigns batch,input,output,o_base[0..total-1]; loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     const float32x4_t vx0123 = vld1q_f32(input); input += 4;
+ 
+@@ -32,6 +40,8 @@
+ 
+     vst1q_f32(output, vy0123); output += 4;
+   }
++  //@ assert batch==0 || batch==4 || batch==8 || batch==12;
++  //@ ghost proof_f32_tail_bits(batch);
+   if XNN_UNLIKELY(batch != 0) {
+     const float32x4_t vx = vld1q_f32(input);
+     const float32x4_t vabsx = vabsq_f32(vx);
+--- a/rvv.c
++++ b/rvv.c
+@@ -4,12 +4,20 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const float *i_base=input;
++  //@ ghost float *o_base=output;
++  //@ ghost size_t total=batch/sizeof(float);
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input != NULL);
+   assert(output != NULL);
+ 
+   size_t n = batch / sizeof(float);
++  /*@ loop invariant 0<=n<=total;
++      loop invariant input==i_base+(total-n);
++      loop invariant output==o_base+(total-n);
++      loop invariant \valid(output+(0..n-1));
++      loop assigns n,input,output,o_base[0..total-1]; loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(n);
+     vfloat32m8_t vx = __riscv_vle32_v_f32m8(input, vl);
+--- a/harness.c
++++ b/harness.c
+@@ -4,6 +4,7 @@
+   struct xnn_f32_default_params params={0};
+   test_neon(n*sizeof(float),input,left,&params);
+   test_rvv(n*sizeof(float),input,right,&params);
++  /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
+   for(size_t i=0;i<n;i++) {
+     if (!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i]))) return 0;
+   }
+--- a/unit.c
++++ b/unit.c
+@@ -1,4 +1,17 @@
+ #include "spec.h"
++/*@ ghost
++/@ requires b==0 || b==4 || b==8 || b==12;
++    terminates \true;
++    assigns \nothing;
++    ensures tail_eight: ((b & 8) != 0) <==> (b==8 || b==12);
++    ensures tail_four: ((b & 4) != 0) <==> (b==4 || b==12);
++    ensures tail_parts: b/4 == ((b & 8) != 0 ? 2 : 0) + ((b & 4) != 0 ? 1 : 0);
++    ensures tail_remaining: (b%8)/4 == ((b & 4) != 0 ? 1 : 0);
++    ensures tail_after_two: b/4 - ((b & 8) != 0 ? 2 : 0) == (b%8)/4; @/
++void proof_f32_tail_bits(size_t b) {
++  switch (b) { case 0: break; case 4: break; case 8: break; case 12: break; }
++}
++*/
+ #include "base.c"
+ #include "float_ops.c"
+ #include "representation.c"

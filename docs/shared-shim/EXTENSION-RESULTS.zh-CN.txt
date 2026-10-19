@@ -1,0 +1,138 @@
+共享 shim 扩展结果：feat/shim-c
+
+当前可采纳结论：40项中4项完整通过、26项未完成proof、3项缺target、7项浮点结果隔离。
+开始前已提交416f48c。旧4个case目录及verified/shared逐字保留；旧f32-vadd的
+证明有效性因本轮发现模型问题而撤回，原始文件与成功日志不删除、不篡改。
+
+最重要的新发现：系统浮点模型不一致
+
+旧f32-vadd的完整上下文以及新浮点上下文里，一个无前置条件、空函数体的
+ensures \false 被Z3判valid。独立11行C也复现，无须任何kernel或自定义算术driver。
+导出的SMT与最小ground模型查明：
+- sign类型只有Positive/Negative两种；
+- Cfloat对所有浮点（含NaN）断言isPositive(f) iff sign(f)=Positive，负号同理；
+- Why3 native FP driver映射到fp.isPositive/fp.isNegative，对NaN二者都false；
+- 两条公理在NaN上的实例与二值枚举冲突，Z3实际check-sat=unsat。
+这不是kernel反例，也不是solver证明能力强；不一致的前提可以证明任意结论。
+
+来源已核对：缓存官方Frama-C33.0归档SHA与tools/setup_frama.py固定SHA一致；
+从归档单独抽出的cfloat.mlw、Why3浮点driver、ieee_float.mlw和安装版逐字相同。
+结论只针对本地这套33.0归档/Why3 native FP组合，不推断其他版本或整个Frama-C。
+仅删\sign、改成reciprocal predicate的候选也未解决false-control，未被采用。
+没有修改vendor、换实数模型、排除NaN、修改公开spec或添加公理来获得通过。
+FP32/FP64实数转换还有待独立调查的嫌疑，未把猜测写成已确认根因。
+
+因此旧f32-vadd与新vsub/vmul/vdiv/vmulc/vmin/vmax共7项移入manifest的
+quarantined_programs，保留全部原始raw/log/源码冻结/LLVM字节证据，停止计入通过数。
+complex非融合库的195/195也在同上下文false-control下失败，必须隔离；nanf候选的
+81/81虽未误证false（5秒timeout），也没有因此建立一致性，不能当作有效证明结论。
+浮点局部目标的“通过百分比”现在只作诊断记录；修好模型后必须完整重新验证。
+
+首选阅读证据：
+experiments/shared-extension/float/model-audit/README.zh-CN.txt
+experiments/shared-extension/float/model-audit/float-sign-minimal.c
+experiments/shared-extension/float/model-audit/false-control-original.smt2
+experiments/shared-extension/integer/proof-records/soundness-audit/README.zh-CN.txt
+experiments/shared-extension/integer/proof-records/soundness-audit/bundle-provenance.json
+experiments/shared-extension/complex/proof-records/consistency-audit/summary.json
+
+仍通过的4项
+qs8-rsum  579/579：旧记录，本轮原样保留。
+qu8-rsum  567/567：旧记录，本轮原样保留。
+s8-vclamp 688/688：旧记录，本轮原样保留。
+u8-vclamp 688/688：本轮新增，正式v3重放322.288秒，verified/u8-vclamp-v3/。
+4项均运行了同上下文false-control，均未把false判为valid；这只是未触发矛盾的
+反向控制，不是模型一致性元证明。实际许可范围及TCB仍须保留。
+u8的真实RVV头检查通过，ASan/UBSan 4097例通过；原target为空，原空文件保留。
+v2自定义unsigned max/min名字不存在真实API，v3已修为vmaxu/vminu，重新冻结重放。
+旧v1/v2不作当前交付入口；manifest明确指向v3，避免按目录存在误判。
+
+本轮做到了哪些，以及没有全部跑通的原因
+
+33个新增有实现的case已补普通C shim/调用接口，真实Frama解析、有限回归并进入WP。
+proof阶段实现/spec被冻结；分别由其他agent补注释/ghost proof。保留每轮源码、
+proof/checker SHA与失败日志。大kernel总预算600秒，无最终raw JSON的0/0表示
+未产生最终报告，绝不等于“没有目标”“零失败”或“发现反例”。
+complex13实际scheduled目标265–1084；10个integer均实际运行WP。完整40项逐项
+结果/路径/每轮记录/行数见experiments/shared-extension/results.json。
+
+26项未完成proof的具体分组：
+- qs8-vadd-minmax、qu8-vadd-minmax、qs8-vcvt、qs8-vlrelu：模宽、算术移位、
+  舍入/饱和、byte lane store与尾部/关系不变量。qs8-vcvt历史498/531仍未闭合。
+- qs8-f32-vcvt、qu8-f32-vcvt：完整float值、scale frame、逐向量对应；
+  现 additionally 受上述浮点模型问题影响，不采纳局部lemma或prefix通过数。
+- f32-f16-vcvt、qs8-vmul-minmax-fp32：float bits/FP16/magic-bias表示桥和舍入证明，
+  还须先解决浮点模型不一致。
+- qs8-rdsum、qu8-rdsum：uintptr_t偏移转指针、row/channel模32归约与内存frame。
+- x32-transposec、x32-packw-gemm-goi：strided/segment store、nested tuple初始化内容，
+  uintptr_t桥、分块/保留padding关系。Typed小例4/5，Typed+raw小例5/5；
+  实际u32库仍152/162，说明换模型不是自动完成整核proof。
+- f32-vcmul：没有FMA；原非融合库结果因模型不一致隔离。实际uintptr_t偏移桥和
+  prefix/frame仍未闭合，真实安装模型缺p整数地址+偏移等于typed shift的对应。
+- f32-maxpool、f32-argmaxpool：没有FMA；NaN/bit-select、pointer table、tie/index、
+  多层窗口及frame。argmax粗粒度module带入未调用原语的额外义务，可按闭包细拆。
+- f32-gemm-minmax、f32-igemm-minmax、f32-spmm-minmax、f32-dwconv-minmax、
+  f32-dwconv2d-chw、f32-conv-hwc2chw：另需精确fmaf值模型、packed/indirect/sparse
+  内存关系、多层循环；当前libc fmaf只有assigns，没有IEEE结果postcondition。
+- qd8-f32-qc4w-gemm-minmax：packed byte/int32/float内存、nibble/模算术、FMA及tile proof。
+- f32-raddstoreexpminusmax：指数多项式的位表示/FMA与确定归约顺序的prefix proof。
+- f32-vlrelu、f32-vrndne、f32-vsqrt：位表示桥及最终输出组合；sqrt还需nearest-even
+  算法正确性。run02消除了6项普通tail/frame目标，但剩余比例不代表有效浮点证明。
+
+这些是未完成工作和模型障碍，不是无法解决的结论。应先修复并独立核验浮点模型，
+再补共享表示/FMA/指针桥、按接口族增加关系不变量。不能说只补intrinsic就能证所有kernel。
+
+3项缺target
+qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32。
+missing-targets.json保存源hash与203/223/222行记录。要先实现实际RVV，才有两个程序可比较。
+这不是验证框架证明了不兼容；本轮未编造目标实现来凑通过数。
+
+保留原版并修复的14组target候选
+f32-vmin/vmax：NaN propagation；qs8/qu8-vadd：移位编码；qs8-vcvt：极值饱和高乘；
+qs8-vmul：magic-bias位算法与数值转换差异；maxpool、IGEMM、CHW卷积、qc4w：NaN clamp；
+SPMM：融合/非融合、NaN与非零dmap cursor reset；dwconv：固定4-channel packed权重
+与vl推进不同；HWC卷积：NaN、第二输出行缺upper clamp、先读zero[-3]再merge的
+真实ASan越界，改为masked load；radd：原归约树差1ULP，按NEON分组修复，不放宽为容差。
+这些差异均相对于所选spec域与C shim行为；不等于所有产品参数域/真实硬件已证有bug。
+修复与原版/反例/native记录都保留；浮点修复当前只有回归，未进入正式通过列表。
+已有GEMM修复来自前轮；本轮NEON源码全部逐字不变。
+ARM vmlaq与vfmaq未混同，官方参考：https://arm-software.github.io/acle/neon_intrinsics/advsimd.html
+真实RVV头检查：float9/9，complex12/13（本地旧头缺pack tuple API）；integer/u8共11项
+6项过，其余5项为本地3参数header与目标显式VXRM的4参数调用不符，未据此判kernel错误。
+语法检查和native执行都不是ISA→shim证明。
+
+规格、实现、proof和实际补充成本
+每case独立neon.c、rvv.c、spec.h、harness.c、唯一proof.patch；共享primitive的合同/
+循环证明另存共享patch，因为多kernel复用。它们也要证明实际函数体，不能变成自由假设。
+u8-v3唯一case proof新增252个非空补丁行（含ACSL/ghost/定界行），spec53行、wrapper11行。
+浮点6个被隔离的case proof为195–207个新增非空行，保留作历史工作量，不称有效证明。
+float模板生成器56行、integer接口生成器45行；通用checker173行、精确内存模型适配39行。
+同一已有逐元素接口族：3字段配置、缺失primitive、agent proof；不是每次手写生成的59行spec。
+新矩阵/归约/布局族：这轮仍需按kernel写合同/接口模板，尚不能从C自动推出合法内存域/
+调用对应。三字段配置不能自动发明新布局。所有case逐文件LOC在results.json。
+共享C物理行数：float220、integer主库195、complex模块536、unsigned旧库96；不少函数
+单行很长，不能只用LOC评价复杂度。integer闭包projection是从主库生成的副本，不重复算手写。
+不伪报人工工时，不把agent写proof算作零成本。
+
+当前TCB和边界
+除solver外包括：所选原C/合法域与观察关系；ISA→shim/参数ABI/VL/FP环境对应；
+Frama前端/RTE/WP/内存及浮点模型/libc合同；Why3翻译/driver；冻结与补丁/目标覆盖检查器；
+编译/预处理和执行环境。本轮已实际暴露其中浮点模型层的不一致。
+固定LP64/little-endian、ARM64分支、VLEN128；e32m1容量4、e32m8容量32，VL不统一为8。
+总长度是spec前置条件下的符号长度；不证明任意硬件VLEN或任意VL选择，schedule=min(AVL,capacity)。
+浮点期望观察为数值相等或双方NaN，不比较NaN payload、正负零位、FP flags/errno；但该
+浮点结论目前暂停。Typed附加内存假设、不支持的alignment/valid_function guard仍在日志，
+不宣称穷尽C UB。token/host LLVM IR相同是实现隔离证据，不是编译器/ghost非干涉元定理。
+
+复核入口
+verified/manifest.json：当前4项与显式隔离的7项，原始通过记录保留。
+experiments/shared-extension/final-freeze-audit.json：冻结C/spec与旧case逐字不变。
+experiments/shared-extension/guard-results.json：1个正例、7个拒绝篡改/公理等负例，只检guard。
+experiments/shared-extension/model-audit/：4个整数案例false-control（未误证）。
+tools/shim_c_model_audit.py：重放同上下文false/true控制，保存原始记录；未误证不等于一致性定理。
+tests/verification/shared_shim/campaign_results.py：当前字节/raw/覆盖审计，不重跑SMT。
+各case README给重放命令；必须用新名字，保护历史证据。不push、不创建PR。
+
+一致性诊断工具为60行，保留原checker不变。完成普通重放后可运行：
+python3 tools/shim_c_model_audit.py verified/u8-vclamp-v3 --run canonical01 --audit-name control02 --prover-bin /path/to/provers/bin
+它检查同一model/driver上下文的false/true控制，拒绝覆盖旧审计名；返回未触发拒绝并不证明一致。

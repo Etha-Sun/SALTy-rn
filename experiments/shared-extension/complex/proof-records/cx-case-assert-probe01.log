@@ -1,0 +1,2272 @@
+[kernel] Parsing /tmp/cx-case-proof-probe3/unit.c (with preprocessing)
+[wp] Running WP plugin...
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Missing RTE guards
+[wp] 8 goals scheduled
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert (Qed 30ms) (CVC5)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_2 (Qed 62ms) (CVC5)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_3 (Qed 63ms) (CVC5)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_4 (Qed 879ms) (CVC5)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_5 (Qed 1s) (CVC5)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_6 (Qed 1s) (CVC5)
+[wp] [Timeout] typed_raw_complex_fp_equivalent_assert_7 (Qed 1s) (CVC5)
+[wp] Proved goals:    1 / 8
+  Qed:             0 (30ms-1.3s)
+  CVC5 1.2.1:      1 (665ms)
+  Timeout:         7
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/neon.c", line 34):
+Let a = Mptr_0[global(L_output_3193)].
+Let x = Mint_0[global(L_batch_3190)].
+Let a_1 = Mptr_0[global(L_input_b_3192)].
+Let a_2 = Mptr_0[global(L_ai_3200)].
+Let a_3 = Mptr_0[global(L_input_a_3191)].
+Let a_4 = Mptr_0[global(L_cx_a_3196)].
+Let x_1 = Mint_0[global(L_cx_total_3195)].
+Let a_5 = Mptr_0[global(P_left_2835)].
+Let a_6 = Mptr_0[global(P_b_2834)].
+Let a_7 = Mptr_0[global(P_a_2833)].
+Let x_2 = Mint_0[global(P_n_2832)].
+Let a_8 = shift_float32(a_6, 0).
+Let x_3 = 2 * x_2.
+Let x_4 = 3 + x_3.
+Let a_9 = shift_float32(a_5, 0).
+Let a_10 = shift_float32(Mptr_0[global(P_right_2836)], 0).
+Let a_11 = shift_float32(a_7, 0).
+Assume {
+  Type: is_uint64(x) /\ is_uint64(x_1) /\ is_uint64(x_2).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_2) /\ (x_2 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_11, x_4).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_8, x_4).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_9, x_3).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_10, x_3).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_9, x_3, a_10, x_3) /\ separated(a_11, x_4, a_9, x_3) /\
+      separated(a_11, x_4, a_10, x_3).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_8, x_4, a_9, x_3) /\ separated(a_8, x_4, a_10, x_3).
+  (* Initializer *)
+  Init: x = to_uint64(4 * x_2).
+  (* Initializer *)
+  Init: a_7 = a_3.
+  (* Initializer *)
+  Init: a_6 = a_1.
+  (* Initializer *)
+  Init: a_5 = a.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3194)] = global(L_params_2837).
+  (* Initializer *)
+  Init: x_1 = to_uint64(x / 4).
+  (* Initializer *)
+  Init: a_3 = a_4.
+  (* Initializer *)
+  Init: a_1 = Mptr_0[global(L_cx_b_3197)].
+  (* Initializer *)
+  Init: a = Mptr_0[global(L_cx_o_3198)].
+  (* Call '__FC_assert' *)
+  Have: x != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_3 != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Initializer *)
+  Init: a_3 = Mptr_0[global(L_ar_3199)].
+  (* Initializer *)
+  Init: a_2 = addr_of_int(to_uint64(x + to_uint64(int_of_addr(a_3)))).
+  (* Initializer *)
+  Init: a_1 = Mptr_0[global(L_br_3201)].
+  (* Initializer *)
+  Init: Mptr_0[global(L_bi_3202)] =
+      addr_of_int(to_uint64(x + to_uint64(int_of_addr(a_1)))).
+  (* Initializer *)
+  Init: a = Mptr_0[global(L_or_3203)].
+  (* Initializer *)
+  Init: Mptr_0[global(L_oi_3204)] =
+      addr_of_int(to_uint64(x + to_uint64(int_of_addr(a)))).
+}
+Prove: a_2 = shift_float32(a_4, x_1).
+Prover CVC5 1.2.1 returns Timeout (Qed:30ms) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:30ms) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/neon.c", line 35):
+Let a = Mptr_0[global(L_ai_3200)].
+Let a_1 = Mptr_0[global(L_cx_a_3196)].
+Let x = Mint_0[global(L_cx_total_3195)].
+Let a_2 = Mptr_0[global(L_output_3193)].
+Let x_1 = Mint_0[global(L_batch_3190)].
+Let a_3 = Mptr_0[global(L_bi_3202)].
+Let a_4 = Mptr_0[global(L_input_b_3192)].
+Let a_5 = Mptr_0[global(L_input_a_3191)].
+Let a_6 = Mptr_0[global(L_cx_b_3197)].
+Let a_7 = Mptr_0[global(P_left_2835)].
+Let a_8 = Mptr_0[global(P_b_2834)].
+Let a_9 = Mptr_0[global(P_a_2833)].
+Let x_2 = Mint_0[global(P_n_2832)].
+Let a_10 = shift_float32(a_8, 0).
+Let x_3 = 2 * x_2.
+Let x_4 = 3 + x_3.
+Let a_11 = shift_float32(a_7, 0).
+Let a_12 = shift_float32(Mptr_0[global(P_right_2836)], 0).
+Let a_13 = shift_float32(a_9, 0).
+Assume {
+  Type: is_uint64(x_1) /\ is_uint64(x) /\ is_uint64(x_2).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_2) /\ (x_2 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_13, x_4).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_10, x_4).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_11, x_3).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_12, x_3).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_11, x_3, a_12, x_3) /\ separated(a_13, x_4, a_11, x_3) /\
+      separated(a_13, x_4, a_12, x_3).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_10, x_4, a_11, x_3) /\ separated(a_10, x_4, a_12, x_3).
+  (* Initializer *)
+  Init: x_1 = to_uint64(4 * x_2).
+  (* Initializer *)
+  Init: a_9 = a_5.
+  (* Initializer *)
+  Init: a_8 = a_4.
+  (* Initializer *)
+  Init: a_7 = a_2.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3194)] = global(L_params_2837).
+  (* Initializer *)
+  Init: x = to_uint64(x_1 / 4).
+  (* Initializer *)
+  Init: a_5 = a_1.
+  (* Initializer *)
+  Init: a_4 = a_6.
+  (* Initializer *)
+  Init: a_2 = Mptr_0[global(L_cx_o_3198)].
+  (* Call '__FC_assert' *)
+  Have: x_1 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_1 % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Call '__FC_assert' *)
+  Have: a_4 != null.
+  (* Call '__FC_assert' *)
+  Have: a_2 != null.
+  (* Initializer *)
+  Init: a_5 = Mptr_0[global(L_ar_3199)].
+  (* Initializer *)
+  Init: a = addr_of_int(to_uint64(x_1 + to_uint64(int_of_addr(a_5)))).
+  (* Initializer *)
+  Init: a_4 = Mptr_0[global(L_br_3201)].
+  (* Initializer *)
+  Init: a_3 = addr_of_int(to_uint64(x_1 + to_uint64(int_of_addr(a_4)))).
+  (* Initializer *)
+  Init: a_2 = Mptr_0[global(L_or_3203)].
+  (* Initializer *)
+  Init: Mptr_0[global(L_oi_3204)] =
+      addr_of_int(to_uint64(x_1 + to_uint64(int_of_addr(a_2)))).
+  (* Assertion *)
+  Have: a = shift_float32(a_1, x).
+}
+Prove: a_3 = shift_float32(a_6, x).
+Prover CVC5 1.2.1 returns Timeout (Qed:62ms) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:62ms) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/neon.c", line 36):
+Let a = Mptr_0[global(L_bi_3202)].
+Let a_1 = Mptr_0[global(L_cx_b_3197)].
+Let x = Mint_0[global(L_cx_total_3195)].
+Let a_2 = Mptr_0[global(L_ai_3200)].
+Let a_3 = Mptr_0[global(L_cx_a_3196)].
+Let a_4 = Mptr_0[global(L_oi_3204)].
+Let a_5 = Mptr_0[global(L_output_3193)].
+Let x_1 = Mint_0[global(L_batch_3190)].
+Let a_6 = Mptr_0[global(L_input_b_3192)].
+Let a_7 = Mptr_0[global(L_input_a_3191)].
+Let a_8 = Mptr_0[global(L_cx_o_3198)].
+Let a_9 = Mptr_0[global(P_left_2835)].
+Let a_10 = Mptr_0[global(P_b_2834)].
+Let a_11 = Mptr_0[global(P_a_2833)].
+Let x_2 = Mint_0[global(P_n_2832)].
+Let a_12 = shift_float32(a_10, 0).
+Let x_3 = 2 * x_2.
+Let x_4 = 3 + x_3.
+Let a_13 = shift_float32(a_9, 0).
+Let a_14 = shift_float32(Mptr_0[global(P_right_2836)], 0).
+Let a_15 = shift_float32(a_11, 0).
+Assume {
+  Type: is_uint64(x_1) /\ is_uint64(x) /\ is_uint64(x_2).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_2) /\ (x_2 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_15, x_4).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_12, x_4).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_13, x_3).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_14, x_3).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_13, x_3, a_14, x_3) /\ separated(a_15, x_4, a_13, x_3) /\
+      separated(a_15, x_4, a_14, x_3).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_12, x_4, a_13, x_3) /\ separated(a_12, x_4, a_14, x_3).
+  (* Initializer *)
+  Init: x_1 = to_uint64(4 * x_2).
+  (* Initializer *)
+  Init: a_11 = a_7.
+  (* Initializer *)
+  Init: a_10 = a_6.
+  (* Initializer *)
+  Init: a_9 = a_5.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3194)] = global(L_params_2837).
+  (* Initializer *)
+  Init: x = to_uint64(x_1 / 4).
+  (* Initializer *)
+  Init: a_7 = a_3.
+  (* Initializer *)
+  Init: a_6 = a_1.
+  (* Initializer *)
+  Init: a_5 = a_8.
+  (* Call '__FC_assert' *)
+  Have: x_1 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_1 % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_7 != null.
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Initializer *)
+  Init: a_7 = Mptr_0[global(L_ar_3199)].
+  (* Initializer *)
+  Init: a_2 = addr_of_int(to_uint64(x_1 + to_uint64(int_of_addr(a_7)))).
+  (* Initializer *)
+  Init: a_6 = Mptr_0[global(L_br_3201)].
+  (* Initializer *)
+  Init: a = addr_of_int(to_uint64(x_1 + to_uint64(int_of_addr(a_6)))).
+  (* Initializer *)
+  Init: a_5 = Mptr_0[global(L_or_3203)].
+  (* Initializer *)
+  Init: a_4 = addr_of_int(to_uint64(x_1 + to_uint64(int_of_addr(a_5)))).
+  (* Assertion *)
+  Have: a_2 = shift_float32(a_3, x).
+  (* Assertion *)
+  Have: a = shift_float32(a_1, x).
+}
+Prove: a_4 = shift_float32(a_8, x).
+Prover CVC5 1.2.1 returns Timeout (Qed:63ms) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:63ms) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/neon.c", lines 91-92):
+Let x = Mint_0[global(L_cx_total_3195)].
+Let a = global(L_cx_o_3198).
+Let a_1 = Mptr_1[a].
+Let a_2 = shift_float32(a_1, 0).
+Let x_1 = 2 * x.
+Let a_3 = memcpy(Mf32_1, a_2, Mf32_undef_0, a_2, x_1).
+Let a_4 = global(L_cx_a_3196).
+Let a_5 = Mptr_1[a_4].
+Let a_6 = global(L_cx_b_3197).
+Let a_7 = Mptr_1[a_6].
+Let x_2 = 4 * x.
+Let x_3 = Mint_0[global(L_batch_3190)].
+Let x_4 = x_3 / 4.
+Let m = Malloc_0[P_n_2832 <- 1][P_a_2833 <- 1][P_b_2834 <- 1][P_left_2835
+          <- 1][P_right_2836 <- 1][L___retres_3038 <- 1][L_params_2837 <- 1]
+          [L_batch_3190 <- 1][L_input_a_3191 <- 1][L_input_b_3192 <- 1]
+          [L_output_3193 <- 1][L_params_3194 <- 1][L_cx_total_3195 <- 1]
+          [L_cx_a_3196 <- 1][L_cx_b_3197 <- 1][L_cx_o_3198 <- 1][L_ar_3199
+          <- 1][L_ai_3200 <- 1][L_br_3201 <- 1][L_bi_3202 <- 1][L_or_3203
+          <- 1][L_oi_3204 <- 1].
+Let x_5 = 3 + x_1.
+Let a_8 = Mptr_1[global(L_oi_3204)].
+Let x_6 = -x_4.
+Let x_7 = x_1 - x_4.
+Let a_9 = Mptr_1[global(L_or_3203)].
+Let x_8 = x - x_4.
+Let a_10 = Mptr_1[global(L_bi_3202)].
+Let a_11 = Mptr_1[global(L_br_3201)].
+Let a_12 = Mptr_1[global(L_ai_3200)].
+Let a_13 = Mptr_1[global(L_ar_3199)].
+Let a_14 = Mptr_1[global(L_output_3193)].
+Let a_15 = Mptr_1[global(L_input_b_3192)].
+Let a_16 = Mptr_1[global(L_input_a_3191)].
+Let a_17 = Mptr_1[global(P_left_2835)].
+Let a_18 = Mptr_1[global(P_b_2834)].
+Let a_19 = Mptr_1[global(P_a_2833)].
+Let x_9 = Mint_0[global(P_n_2832)].
+Let a_20 = shift_float32(a_18, 0).
+Let x_10 = 2 * x_9.
+Let x_11 = 3 + x_10.
+Let a_21 = shift_float32(a_17, 0).
+Let a_22 = shift_float32(Mptr_1[global(P_right_2836)], 0).
+Let a_23 = shift_float32(a_19, 0).
+Let a_24 = Mptr_0[a].
+Let a_25 = Mptr_0[a_4].
+Let a_26 = Mptr_0[a_6].
+Assume {
+  Type: is_uint64(v) /\ is_uint64(x_3) /\
+      is_uint64(Mint_0[global(L_batch_3230)]) /\ is_uint64(x) /\
+      is_uint64(Mint_0[global(L_cx_total_3235)]) /\
+      is_uint64(Mint_0[global(L_n_3245)]) /\ is_uint64(x_9).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_1).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_9) /\ (x_9 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_23, x_11).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_20, x_11).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_21, x_10).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_22, x_10).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_21, x_10, a_22, x_10) /\
+      separated(a_23, x_11, a_21, x_10) /\ separated(a_23, x_11, a_22, x_10).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_20, x_11, a_21, x_10) /\
+      separated(a_20, x_11, a_22, x_10).
+  (* Initializer *)
+  Init: x_3 = to_uint64(4 * x_9).
+  (* Initializer *)
+  Init: a_19 = a_16.
+  (* Initializer *)
+  Init: a_18 = a_15.
+  (* Initializer *)
+  Init: a_17 = a_14.
+  (* Initializer *)
+  Init: Mptr_1[global(L_params_3194)] = global(L_params_2837).
+  (* Initializer *)
+  Init: x = to_uint64(x_4).
+  (* Initializer *)
+  Init: a_16 = a_5.
+  (* Initializer *)
+  Init: a_15 = a_7.
+  (* Initializer *)
+  Init: a_14 = a_1.
+  (* Call '__FC_assert' *)
+  Have: x_3 != 0.
+  (* Call '__FC_assert' *)
+  Have: a_16 != null.
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_14 != null.
+  (* Initializer *)
+  Init: a_16 = a_13.
+  (* Initializer *)
+  Init: a_12 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_16)))).
+  (* Initializer *)
+  Init: a_15 = a_11.
+  (* Initializer *)
+  Init: a_10 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_15)))).
+  (* Initializer *)
+  Init: a_14 = a_9.
+  (* Initializer *)
+  Init: a_8 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_14)))).
+  (* Assertion *)
+  Have: a_12 = shift_float32(a_5, x).
+  (* Assertion *)
+  Have: a_10 = shift_float32(a_7, x).
+  (* Assertion *)
+  Have: a_8 = shift_float32(a_1, x).
+  (* Invariant *)
+  Have: ((x_3 % 4) = 0) /\ (0 <= x_3) /\ (x_3 <= x_2).
+  (* Invariant *)
+  Have: a_13 = shift_float32(a_5, x_8).
+  (* Invariant *)
+  Have: a_12 = shift_float32(a_5, x_7).
+  (* Invariant *)
+  Have: a_11 = shift_float32(a_7, x_8).
+  (* Invariant *)
+  Have: a_10 = shift_float32(a_7, x_7).
+  (* Invariant *)
+  Have: a_9 = shift_float32(a_1, x_8).
+  (* Invariant *)
+  Have: a_8 = shift_float32(a_1, x_7).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_5, 0), x_5).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_7, 0), x_5).
+  (* Invariant *)
+  Have: valid_rw(m, a_2, x_1).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_4) < x) ->
+      (P_cx_same_value(Mf32_1[shift_float32(a_1, i_1)],
+         L_cx_real(Mf32_1, a_5, a_7, x, i_1)) /\
+       P_cx_same_value(Mf32_1[shift_float32(a_1, i_1 + x)],
+         L_cx_imag(Mf32_1, a_5, a_7, x, i_1))))).
+  (* Invariant *)
+  Have: ((v % 4) = 0) /\ (0 <= v) /\ (v <= x_2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + (v / 4)) < x) ->
+      (P_cx_same_value(a_3[shift_float32(a_1, i_1)],
+         L_cx_real(a_3, a_5, a_7, x, i_1)) /\
+       P_cx_same_value(a_3[shift_float32(a_1, i_1 + x)],
+         L_cx_imag(a_3, a_5, a_7, x, i_1))))).
+  (* Else *)
+  Have: v <= 15.
+  If v != 0
+  Then {
+    Let a_27 = global(L_tmp_5_3216).
+    Let a_28 = memcpy(a_3, a_27, Mf32_undef_1, a_27, 4).
+    Let a_29 = global(L_tmp_6_3218).
+    Let a_30 = memcpy(a_28, a_29, Mf32_undef_2, a_29, 4).
+    Let a_31 = global(L_tmp_7_3220).
+    Let a_32 = memcpy(a_30, a_31, Mf32_undef_3, a_31, 4).
+    Let a_33 = global(L_tmp_8_3222).
+    Let a_34 = memcpy(a_32, a_33, Mf32_undef_4, a_33, 4).
+    Let a_35 = global(L_vaccr_3223).
+    Let a_36 = memcpy(a_34, a_35, Mf32_undef_5, a_35, 4).
+    Let a_37 = global(L_vacci_3224).
+    Let a_38 = memcpy(a_36, a_37, Mf32_undef_6, a_37, 4).
+    Let a_39 = memcpy(a_38, a_35, Mf32_undef_7, a_35, 4).
+    Let a_40 = memcpy(a_39, a_37, Mf32_undef_8, a_37, 4).
+    Let a_41 = global(L_vaccr_lo_3225).
+    Let a_42 = memcpy(a_40, a_41, Mf32_undef_9, a_41, 2).
+    Let a_43 = global(L_vacci_lo_3226).
+    Let a_44 = shiftfield_F2_lane(a_37).
+    Let a_45 = shiftfield_F2_lane(a_35).
+    Let a_46 = global(L_vai_3217).
+    Let a_47 = shiftfield_F2_lane(a_46).
+    Let a_48 = global(L_vbr_3219).
+    Let a_49 = shiftfield_F2_lane(a_48).
+    Let a_50 = global(L_vbi_3221).
+    Let a_51 = shiftfield_F2_lane(a_50).
+    Let a_52 = global(L_var_3215).
+    Let a_53 = shiftfield_F2_lane(a_52).
+    Let m_1 = m[L_var_3215 <- 4][L_tmp_5_3216 <- 4][L_vai_3217 <- 4]
+                [L_tmp_6_3218 <- 4][L_vbr_3219 <- 4][L_tmp_7_3220 <- 4]
+                [L_vbi_3221 <- 4][L_tmp_8_3222 <- 4][L_vaccr_3223 <- 4]
+                [L_vacci_3224 <- 4][L_vaccr_lo_3225 <- 2][L_vacci_lo_3226
+                <- 2].
+    Let x_12 = -(v / 4).
+    Let x_13 = x_1 - (v / 4).
+    Let x_14 = x - (v / 4).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_52, a_28) = Load_S2(a_27, a_28)) /\
+        valid_rd(m_1, shift_float32(a_5, x_14), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_3[shift_float32(a_53, i_1)],
+           a_3[shift_float32(a_5, i_1 + x - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_46, a_30) = Load_S2(a_29, a_30)) /\
+        valid_rd(m_1, shift_float32(a_5, x_13), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_3[shift_float32(a_47, i_1)],
+           a_28[shift_float32(a_5, i_1 + x_1 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_48, a_32) = Load_S2(a_31, a_32)) /\
+        valid_rd(m_1, shift_float32(a_7, x_14), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_3[shift_float32(a_49, i_1)],
+           a_30[shift_float32(a_7, i_1 + x - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_50, a_34) = Load_S2(a_33, a_34)) /\
+        valid_rd(m_1, shift_float32(a_7, x_13), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_3[shift_float32(a_51, i_1)],
+           a_32[shift_float32(a_7, i_1 + x_1 - (v / 4))])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_36[shift_float32(a_45, i_1)],
+          mul_f32(a_3[shift_float32(a_53, i_1)],
+            a_3[shift_float32(a_49, i_1)])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_38[shift_float32(a_44, i_1)],
+          mul_f32(a_3[shift_float32(a_53, i_1)],
+            a_3[shift_float32(a_51, i_1)])))).
+    (* Call 'vmlsq_f32' *)
+    Have: forall i_1 : Z. let a_54 = shift_float32(a_45, i_1) in
+        ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_39[a_54],
+          sub_f32(a_36[a_54],
+            mul_f32(a_3[shift_float32(a_47, i_1)],
+              a_3[shift_float32(a_51, i_1)]))))).
+    (* Call 'vmlaq_f32' *)
+    Have: forall i_1 : Z. let a_54 = shift_float32(a_44, i_1) in
+        ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_40[a_54],
+          add_f32(a_38[a_54],
+            mul_f32(a_3[shift_float32(a_47, i_1)],
+              a_3[shift_float32(a_49, i_1)]))))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_cx_same_float(a_42[shift_float32(shiftfield_F3_lane(a_41), i_1)],
+          a_39[shift_float32(a_45, i_1)]))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_cx_same_float(memcpy(a_42, a_43, Mf32_undef_10, a_43, 2)
+                          [shift_float32(shiftfield_F3_lane(a_43), i_1)],
+          a_40[shift_float32(a_44, i_1)]))).
+    If bit_test(v, 3)
+    Then {
+      Let a_54 = shift_float32(a_1, x_14).
+      Let a_55 = memcpy(memcpy(a_42, a_43, Mf32_undef_10, a_43, 2), a_54,
+                   Mf32_undef_11, a_54, 2).
+      Let a_56 = shift_float32(a_1, x_13).
+      Let a_57 = memcpy(a_55, a_56, Mf32_undef_12, a_56, 2).
+      Let a_58 = memcpy(a_57, a_41, Mf32_undef_13, a_41, 2).
+      Let a_59 = shiftfield_F3_lane(a_43).
+      Let a_60 = shiftfield_F3_lane(a_41).
+      Let a_61 = global(L_oi_3204).
+      Let a_62 = global(L_or_3203).
+      Let a_63 = global(L_bi_3202).
+      Let a_64 = global(L_br_3201).
+      Let a_65 = global(L_ai_3200).
+      Let x_15 = 4 + x - (v / 4).
+      Let x_16 = 4 + x_1 - (v / 4).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_54, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           P_cx_same_float(a_55[shift_float32(a_1, i_1 + x - (v / 4))],
+             a_42[shift_float32(a_60, i_1)])))).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_56, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           P_cx_same_float(a_57[shift_float32(a_1, i_1 + x_1 - (v / 4))],
+             a_55[shift_float32(a_59, i_1)])))).
+      Have: Mptr_1[a_61 <- a_56][a_62 <- a_54][a_63
+              <- shift_float32(a_7, x_13)][a_64 <- shift_float32(a_7, x_14)]
+              [a_65 <- shift_float32(a_5, x_13)][global(L_ar_3199)
+              <- shift_float32(a_5, x_15)][a_65 <- shift_float32(a_5, x_16)]
+              [a_64 <- shift_float32(a_7, x_15)][a_63
+              <- shift_float32(a_7, x_16)][a_62
+              <- shift_float32(a_1, 2 + x - (v / 4))][a_61
+              <- shift_float32(a_1, 2 + x_1 - (v / 4))] = Mptr_0.
+      (* Call 'vget_high_f32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+          P_cx_same_float(a_58[shift_float32(a_60, i_1)],
+            a_57[shift_float32(a_45, 2 + i_1)]))).
+      (* Call 'vget_high_f32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+          P_cx_same_float(Mf32_2[shift_float32(a_59, i_1)],
+            a_57[shift_float32(a_44, 2 + i_1)]))).
+      (* Return Effects *)
+      Have: memcpy(a_58, a_43, Mf32_undef_14, a_43, 2) = Mf32_2.
+    }
+    Else {
+      Have: (Mptr_1[a_61 <- a_56][a_62 <- a_54][a_63
+               <- shift_float32(a_7, x_13)][a_64 <- shift_float32(a_7, x_14)]
+               [a_65 <- shift_float32(a_5, x_13)][global(L_ar_3199)
+               <- shift_float32(a_5, x_15)][a_65 <- shift_float32(a_5, x_16)]
+               [a_64 <- shift_float32(a_7, x_15)][a_63
+               <- shift_float32(a_7, x_16)] = Mptr_0) /\
+          (memcpy(a_42, a_43, Mf32_undef_10, a_43, 2) = Mf32_2).
+    }
+    If bit_test(v, 2)
+    Then {
+      Let a_66 = Mptr_0[a_62].
+      Let m_2 = Mf32_3[a_66 <- v_1].
+      Let a_67 = Mptr_0[a_61].
+      Have: Mf32_2 = Mf32_3.
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_1, Mf32_3[shift_float32(a_60, 0)]) /\
+          valid_rw(m_1, a_66, 1).
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_2, m_2[shift_float32(a_59, 0)]) /\
+          valid_rw(m_1, a_67, 1).
+      (* Call Effects *)
+      Have: m_2[a_67 <- v_2] = Mf32_0.
+    }
+    Else { Have: Mf32_2 = Mf32_0. }
+  }
+  Else {
+    Have: (a_3 = Mf32_0) /\
+        (Mptr_1[a_61 <- shift_float32(a_1, x_1)][a_62 <- a_8][a_63
+           <- shift_float32(a_7, x_1)][a_64 <- a_10][a_65
+           <- shift_float32(a_5, x_1)][global(L_ar_3199) <- a_12] = Mptr_0).
+  }
+}
+Prove: P_cx_same_value(Mf32_0[shift_float32(a_24, i)],
+         L_cx_real(Mf32_0, a_25, a_26, x, i)) /\
+    P_cx_same_value(Mf32_0[shift_float32(a_24, i + x)],
+      L_cx_imag(Mf32_0, a_25, a_26, x, i)).
+Prover CVC5 1.2.1 returns Timeout (Qed:879ms) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:879ms) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/rvv.c", line 26):
+Let x = Mint_0[global(L_n_3245)].
+Let x_1 = Mint_0[global(L_cx_total_3235)].
+Let a = Mptr_0[global(L_output_3233)].
+Let x_2 = Mint_0[global(L_batch_3230)].
+Let a_1 = Mptr_0[global(L_input_b_3232)].
+Let a_2 = Mptr_0[global(L_ai_3240)].
+Let a_3 = Mptr_0[global(L_input_a_3231)].
+Let a_4 = Mptr_0[global(L_cx_a_3236)].
+Let a_5 = global(L_params_2837).
+Let a_6 = global(P_right_2836).
+Let a_7 = global(P_b_2834).
+Let a_8 = global(P_a_2833).
+Let x_3 = Mint_0[global(L_batch_3190)].
+Let x_4 = Mint_0[global(L_cx_total_3195)].
+Let a_9 = global(L_cx_o_3198).
+Let a_10 = Mptr_0[a_9].
+Let a_11 = global(L_cx_a_3196).
+Let a_12 = Mptr_0[a_11].
+Let a_13 = global(L_cx_b_3197).
+Let a_14 = Mptr_0[a_13].
+Let a_15 = Mptr_1[a_9].
+Let a_16 = shift_float32(a_15, 0).
+Let x_5 = 2 * x_4.
+Let a_17 = memcpy(Mf32_0, a_16, Mf32_undef_0, a_16, x_5).
+Let a_18 = Mptr_1[a_11].
+Let a_19 = Mptr_1[a_13].
+Let x_6 = 4 * x_4.
+Let x_7 = x_3 / 4.
+Let m = Malloc_0[P_n_2832 <- 1][P_a_2833 <- 1][P_b_2834 <- 1][P_left_2835
+          <- 1][P_right_2836 <- 1][L___retres_3038 <- 1][L_params_2837 <- 1]
+          [L_batch_3190 <- 1][L_input_a_3191 <- 1][L_input_b_3192 <- 1]
+          [L_output_3193 <- 1][L_params_3194 <- 1][L_cx_total_3195 <- 1]
+          [L_cx_a_3196 <- 1][L_cx_b_3197 <- 1][L_cx_o_3198 <- 1][L_ar_3199
+          <- 1][L_ai_3200 <- 1][L_br_3201 <- 1][L_bi_3202 <- 1][L_or_3203
+          <- 1][L_oi_3204 <- 1].
+Let x_8 = 3 + x_5.
+Let a_20 = Mptr_1[global(L_oi_3204)].
+Let x_9 = -x_7.
+Let x_10 = x_5 - x_7.
+Let a_21 = Mptr_1[global(L_or_3203)].
+Let x_11 = x_4 - x_7.
+Let a_22 = Mptr_1[global(L_bi_3202)].
+Let a_23 = Mptr_1[global(L_br_3201)].
+Let a_24 = Mptr_1[global(L_ai_3200)].
+Let a_25 = Mptr_1[global(L_ar_3199)].
+Let a_26 = Mptr_1[global(L_output_3193)].
+Let a_27 = Mptr_1[global(L_input_b_3192)].
+Let a_28 = Mptr_1[global(L_input_a_3191)].
+Let a_29 = Mptr_1[global(P_left_2835)].
+Let a_30 = Mptr_1[a_7].
+Let a_31 = Mptr_1[a_8].
+Let x_12 = Mint_0[global(P_n_2832)].
+Let a_32 = shift_float32(a_30, 0).
+Let x_13 = 2 * x_12.
+Let x_14 = 3 + x_13.
+Let a_33 = shift_float32(a_29, 0).
+Let a_34 = shift_float32(Mptr_1[a_6], 0).
+Let a_35 = shift_float32(a_31, 0).
+Assume {
+  Type: is_uint64(v) /\ is_uint64(x_3) /\ is_uint64(x_2) /\ is_uint64(x_4) /\
+      is_uint64(x_1) /\ is_uint64(x) /\ is_uint64(x_12).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_1).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_12) /\ (x_12 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_35, x_14).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_32, x_14).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_33, x_13).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_34, x_13).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_33, x_13, a_34, x_13) /\
+      separated(a_35, x_14, a_33, x_13) /\ separated(a_35, x_14, a_34, x_13).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_32, x_14, a_33, x_13) /\
+      separated(a_32, x_14, a_34, x_13).
+  (* Initializer *)
+  Init: x_3 = to_uint64(4 * x_12).
+  (* Initializer *)
+  Init: a_31 = a_28.
+  (* Initializer *)
+  Init: a_30 = a_27.
+  (* Initializer *)
+  Init: a_29 = a_26.
+  (* Initializer *)
+  Init: Mptr_1[global(L_params_3194)] = a_5.
+  (* Initializer *)
+  Init: x_4 = to_uint64(x_7).
+  (* Initializer *)
+  Init: a_28 = a_18.
+  (* Initializer *)
+  Init: a_27 = a_19.
+  (* Initializer *)
+  Init: a_26 = a_15.
+  (* Call '__FC_assert' *)
+  Have: x_3 != 0.
+  (* Call '__FC_assert' *)
+  Have: a_28 != null.
+  (* Call '__FC_assert' *)
+  Have: a_27 != null.
+  (* Call '__FC_assert' *)
+  Have: a_26 != null.
+  (* Initializer *)
+  Init: a_28 = a_25.
+  (* Initializer *)
+  Init: a_24 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_28)))).
+  (* Initializer *)
+  Init: a_27 = a_23.
+  (* Initializer *)
+  Init: a_22 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_27)))).
+  (* Initializer *)
+  Init: a_26 = a_21.
+  (* Initializer *)
+  Init: a_20 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_26)))).
+  (* Assertion *)
+  Have: a_24 = shift_float32(a_18, x_4).
+  (* Assertion *)
+  Have: a_22 = shift_float32(a_19, x_4).
+  (* Assertion *)
+  Have: a_20 = shift_float32(a_15, x_4).
+  (* Invariant *)
+  Have: ((x_3 % 4) = 0) /\ (0 <= x_3) /\ (x_3 <= x_6).
+  (* Invariant *)
+  Have: a_25 = shift_float32(a_18, x_11).
+  (* Invariant *)
+  Have: a_24 = shift_float32(a_18, x_10).
+  (* Invariant *)
+  Have: a_23 = shift_float32(a_19, x_11).
+  (* Invariant *)
+  Have: a_22 = shift_float32(a_19, x_10).
+  (* Invariant *)
+  Have: a_21 = shift_float32(a_15, x_11).
+  (* Invariant *)
+  Have: a_20 = shift_float32(a_15, x_10).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_18, 0), x_8).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_19, 0), x_8).
+  (* Invariant *)
+  Have: valid_rw(m, a_16, x_5).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((i + x_7) < x_4) ->
+      (P_cx_same_value(Mf32_0[shift_float32(a_15, i)],
+         L_cx_real(Mf32_0, a_18, a_19, x_4, i)) /\
+       P_cx_same_value(Mf32_0[shift_float32(a_15, i + x_4)],
+         L_cx_imag(Mf32_0, a_18, a_19, x_4, i))))).
+  (* Invariant *)
+  Have: ((v % 4) = 0) /\ (0 <= v) /\ (v <= x_6).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((i + (v / 4)) < x_4) ->
+      (P_cx_same_value(a_17[shift_float32(a_15, i)],
+         L_cx_real(a_17, a_18, a_19, x_4, i)) /\
+       P_cx_same_value(a_17[shift_float32(a_15, i + x_4)],
+         L_cx_imag(a_17, a_18, a_19, x_4, i))))).
+  (* Else *)
+  Have: v <= 15.
+  If v != 0
+  Then {
+    Let a_36 = global(L_tmp_5_3216).
+    Let a_37 = memcpy(a_17, a_36, Mf32_undef_1, a_36, 4).
+    Let a_38 = global(L_tmp_6_3218).
+    Let a_39 = memcpy(a_37, a_38, Mf32_undef_2, a_38, 4).
+    Let a_40 = global(L_tmp_7_3220).
+    Let a_41 = memcpy(a_39, a_40, Mf32_undef_3, a_40, 4).
+    Let a_42 = global(L_tmp_8_3222).
+    Let a_43 = memcpy(a_41, a_42, Mf32_undef_4, a_42, 4).
+    Let a_44 = global(L_vaccr_3223).
+    Let a_45 = memcpy(a_43, a_44, Mf32_undef_5, a_44, 4).
+    Let a_46 = global(L_vacci_3224).
+    Let a_47 = memcpy(a_45, a_46, Mf32_undef_6, a_46, 4).
+    Let a_48 = memcpy(a_47, a_44, Mf32_undef_7, a_44, 4).
+    Let a_49 = memcpy(a_48, a_46, Mf32_undef_8, a_46, 4).
+    Let a_50 = global(L_vaccr_lo_3225).
+    Let a_51 = memcpy(a_49, a_50, Mf32_undef_9, a_50, 2).
+    Let a_52 = global(L_vacci_lo_3226).
+    Let a_53 = shiftfield_F2_lane(a_46).
+    Let a_54 = shiftfield_F2_lane(a_44).
+    Let a_55 = global(L_vai_3217).
+    Let a_56 = shiftfield_F2_lane(a_55).
+    Let a_57 = global(L_vbr_3219).
+    Let a_58 = shiftfield_F2_lane(a_57).
+    Let a_59 = global(L_vbi_3221).
+    Let a_60 = shiftfield_F2_lane(a_59).
+    Let a_61 = global(L_var_3215).
+    Let a_62 = shiftfield_F2_lane(a_61).
+    Let m_1 = m[L_var_3215 <- 4][L_tmp_5_3216 <- 4][L_vai_3217 <- 4]
+                [L_tmp_6_3218 <- 4][L_vbr_3219 <- 4][L_tmp_7_3220 <- 4]
+                [L_vbi_3221 <- 4][L_tmp_8_3222 <- 4][L_vaccr_3223 <- 4]
+                [L_vacci_3224 <- 4][L_vaccr_lo_3225 <- 2][L_vacci_lo_3226
+                <- 2].
+    Let x_15 = -(v / 4).
+    Let x_16 = x_5 - (v / 4).
+    Let x_17 = x_4 - (v / 4).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_61, a_37) = Load_S2(a_36, a_37)) /\
+        valid_rd(m_1, shift_float32(a_18, x_17), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_17[shift_float32(a_62, i)],
+           a_17[shift_float32(a_18, i + x_4 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_55, a_39) = Load_S2(a_38, a_39)) /\
+        valid_rd(m_1, shift_float32(a_18, x_16), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_17[shift_float32(a_56, i)],
+           a_37[shift_float32(a_18, i + x_5 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_57, a_41) = Load_S2(a_40, a_41)) /\
+        valid_rd(m_1, shift_float32(a_19, x_17), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_17[shift_float32(a_58, i)],
+           a_39[shift_float32(a_19, i + x_4 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_59, a_43) = Load_S2(a_42, a_43)) /\
+        valid_rd(m_1, shift_float32(a_19, x_16), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_17[shift_float32(a_60, i)],
+           a_41[shift_float32(a_19, i + x_5 - (v / 4))])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        P_cx_same_float(a_45[shift_float32(a_54, i)],
+          mul_f32(a_17[shift_float32(a_62, i)], a_17[shift_float32(a_58, i)])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        P_cx_same_float(a_47[shift_float32(a_53, i)],
+          mul_f32(a_17[shift_float32(a_62, i)], a_17[shift_float32(a_60, i)])))).
+    (* Call 'vmlsq_f32' *)
+    Have: forall i : Z. let a_63 = shift_float32(a_54, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_cx_same_float(a_48[a_63],
+          sub_f32(a_45[a_63],
+            mul_f32(a_17[shift_float32(a_56, i)],
+              a_17[shift_float32(a_60, i)]))))).
+    (* Call 'vmlaq_f32' *)
+    Have: forall i : Z. let a_63 = shift_float32(a_53, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_cx_same_float(a_49[a_63],
+          add_f32(a_47[a_63],
+            mul_f32(a_17[shift_float32(a_56, i)],
+              a_17[shift_float32(a_58, i)]))))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+        P_cx_same_float(a_51[shift_float32(shiftfield_F3_lane(a_50), i)],
+          a_48[shift_float32(a_54, i)]))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+        P_cx_same_float(memcpy(a_51, a_52, Mf32_undef_10, a_52, 2)
+                          [shift_float32(shiftfield_F3_lane(a_52), i)],
+          a_49[shift_float32(a_53, i)]))).
+    If bit_test(v, 3)
+    Then {
+      Let a_63 = shift_float32(a_15, x_17).
+      Let a_64 = memcpy(memcpy(a_51, a_52, Mf32_undef_10, a_52, 2), a_63,
+                   Mf32_undef_11, a_63, 2).
+      Let a_65 = shift_float32(a_15, x_16).
+      Let a_66 = memcpy(a_64, a_65, Mf32_undef_12, a_65, 2).
+      Let a_67 = memcpy(a_66, a_50, Mf32_undef_13, a_50, 2).
+      Let a_68 = shiftfield_F3_lane(a_52).
+      Let a_69 = shiftfield_F3_lane(a_50).
+      Let a_70 = global(L_oi_3204).
+      Let a_71 = global(L_or_3203).
+      Let a_72 = global(L_bi_3202).
+      Let a_73 = global(L_br_3201).
+      Let a_74 = global(L_ai_3200).
+      Let x_18 = 4 + x_4 - (v / 4).
+      Let x_19 = 4 + x_5 - (v / 4).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_63, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           P_cx_same_float(a_64[shift_float32(a_15, i + x_4 - (v / 4))],
+             a_51[shift_float32(a_69, i)])))).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_65, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           P_cx_same_float(a_66[shift_float32(a_15, i + x_5 - (v / 4))],
+             a_64[shift_float32(a_68, i)])))).
+      Have: Mptr_1[a_70 <- a_65][a_71 <- a_63][a_72
+              <- shift_float32(a_19, x_16)][a_73
+              <- shift_float32(a_19, x_17)][a_74
+              <- shift_float32(a_18, x_16)][global(L_ar_3199)
+              <- shift_float32(a_18, x_18)][a_74
+              <- shift_float32(a_18, x_19)][a_73
+              <- shift_float32(a_19, x_18)][a_72
+              <- shift_float32(a_19, x_19)][a_71
+              <- shift_float32(a_15, 2 + x_4 - (v / 4))][a_70
+              <- shift_float32(a_15, 2 + x_5 - (v / 4))] = Mptr_0.
+      (* Call 'vget_high_f32' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+          P_cx_same_float(a_67[shift_float32(a_69, i)],
+            a_66[shift_float32(a_54, 2 + i)]))).
+      (* Call 'vget_high_f32' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+          P_cx_same_float(Mf32_1[shift_float32(a_68, i)],
+            a_66[shift_float32(a_53, 2 + i)]))).
+      (* Return Effects *)
+      Have: memcpy(a_67, a_52, Mf32_undef_14, a_52, 2) = Mf32_1.
+    }
+    Else {
+      Have: (Mptr_1[a_70 <- a_65][a_71 <- a_63][a_72
+               <- shift_float32(a_19, x_16)][a_73
+               <- shift_float32(a_19, x_17)][a_74
+               <- shift_float32(a_18, x_16)][global(L_ar_3199)
+               <- shift_float32(a_18, x_18)][a_74
+               <- shift_float32(a_18, x_19)][a_73
+               <- shift_float32(a_19, x_18)][a_72
+               <- shift_float32(a_19, x_19)] = Mptr_0) /\
+          (memcpy(a_51, a_52, Mf32_undef_10, a_52, 2) = Mf32_1).
+    }
+    If bit_test(v, 2)
+    Then {
+      Let a_75 = Mptr_0[a_71].
+      Let m_2 = Mf32_2[a_75 <- v_1].
+      Let a_76 = Mptr_0[a_70].
+      Have: Mf32_1 = Mf32_2.
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_1, Mf32_2[shift_float32(a_69, 0)]) /\
+          valid_rw(m_1, a_75, 1).
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_2, m_2[shift_float32(a_68, 0)]) /\
+          valid_rw(m_1, a_76, 1).
+      (* Call Effects *)
+      Have: m_2[a_76 <- v_2] = Mf32_3.
+    }
+    Else { Have: Mf32_1 = Mf32_3. }
+  }
+  Else {
+    Have: (a_17 = Mf32_3) /\
+        (Mptr_1[a_70 <- shift_float32(a_15, x_5)][a_71 <- a_20][a_72
+           <- shift_float32(a_19, x_5)][a_73 <- a_22][a_74
+           <- shift_float32(a_18, x_5)][global(L_ar_3199) <- a_24] = Mptr_0).
+  }
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) -> ((i < x_4) ->
+      (P_cx_same_value(Mf32_3[shift_float32(a_10, i)],
+         L_cx_real(Mf32_3, a_12, a_14, x_4, i)) /\
+       P_cx_same_value(Mf32_3[shift_float32(a_10, i + x_4)],
+         L_cx_imag(Mf32_3, a_12, a_14, x_4, i))))).
+  (* Initializer *)
+  Init: x_2 = x_3.
+  (* Initializer *)
+  Init: Mptr_0[a_8] = a_3.
+  (* Initializer *)
+  Init: Mptr_0[a_7] = a_1.
+  (* Initializer *)
+  Init: Mptr_0[a_6] = a.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3234)] = a_5.
+  (* Initializer *)
+  Init: x_1 = to_uint64(x_2 / 4).
+  (* Initializer *)
+  Init: a_3 = a_4.
+  (* Initializer *)
+  Init: a_1 = Mptr_0[global(L_cx_b_3237)].
+  (* Initializer *)
+  Init: a = Mptr_0[global(L_cx_o_3238)].
+  (* Call '__FC_assert' *)
+  Have: x_2 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_2 % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_3 != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Initializer *)
+  Init: a_3 = Mptr_0[global(L_ar_3239)].
+  (* Initializer *)
+  Init: a_2 = addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_3)))).
+  (* Initializer *)
+  Init: a_1 = Mptr_0[global(L_br_3241)].
+  (* Initializer *)
+  Init: Mptr_0[global(L_bi_3242)] =
+      addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_1)))).
+  (* Initializer *)
+  Init: a = Mptr_0[global(L_out_r_3243)].
+  (* Initializer *)
+  Init: Mptr_0[global(L_out_i_3244)] =
+      addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a)))).
+  (* Initializer *)
+  Init: x = x_1.
+}
+Prove: a_2 = shift_float32(a_4, x_1).
+Prover CVC5 1.2.1 returns Timeout (Qed:1s) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:1s) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/rvv.c", line 27):
+Let a = Mptr_0[global(L_ai_3240)].
+Let a_1 = Mptr_0[global(L_cx_a_3236)].
+Let x = Mint_0[global(L_cx_total_3235)].
+Let x_1 = Mint_0[global(L_n_3245)].
+Let a_2 = Mptr_0[global(L_output_3233)].
+Let x_2 = Mint_0[global(L_batch_3230)].
+Let a_3 = Mptr_0[global(L_bi_3242)].
+Let a_4 = Mptr_0[global(L_input_b_3232)].
+Let a_5 = Mptr_0[global(L_input_a_3231)].
+Let a_6 = Mptr_0[global(L_cx_b_3237)].
+Let a_7 = global(L_params_2837).
+Let a_8 = global(P_right_2836).
+Let a_9 = global(P_b_2834).
+Let a_10 = global(P_a_2833).
+Let x_3 = Mint_0[global(L_batch_3190)].
+Let x_4 = Mint_0[global(L_cx_total_3195)].
+Let a_11 = global(L_cx_o_3198).
+Let a_12 = Mptr_0[a_11].
+Let a_13 = global(L_cx_a_3196).
+Let a_14 = Mptr_0[a_13].
+Let a_15 = global(L_cx_b_3197).
+Let a_16 = Mptr_0[a_15].
+Let a_17 = Mptr_1[a_11].
+Let a_18 = shift_float32(a_17, 0).
+Let x_5 = 2 * x_4.
+Let a_19 = memcpy(Mf32_0, a_18, Mf32_undef_0, a_18, x_5).
+Let a_20 = Mptr_1[a_13].
+Let a_21 = Mptr_1[a_15].
+Let x_6 = 4 * x_4.
+Let x_7 = x_3 / 4.
+Let m = Malloc_0[P_n_2832 <- 1][P_a_2833 <- 1][P_b_2834 <- 1][P_left_2835
+          <- 1][P_right_2836 <- 1][L___retres_3038 <- 1][L_params_2837 <- 1]
+          [L_batch_3190 <- 1][L_input_a_3191 <- 1][L_input_b_3192 <- 1]
+          [L_output_3193 <- 1][L_params_3194 <- 1][L_cx_total_3195 <- 1]
+          [L_cx_a_3196 <- 1][L_cx_b_3197 <- 1][L_cx_o_3198 <- 1][L_ar_3199
+          <- 1][L_ai_3200 <- 1][L_br_3201 <- 1][L_bi_3202 <- 1][L_or_3203
+          <- 1][L_oi_3204 <- 1].
+Let x_8 = 3 + x_5.
+Let a_22 = Mptr_1[global(L_oi_3204)].
+Let x_9 = -x_7.
+Let x_10 = x_5 - x_7.
+Let a_23 = Mptr_1[global(L_or_3203)].
+Let x_11 = x_4 - x_7.
+Let a_24 = Mptr_1[global(L_bi_3202)].
+Let a_25 = Mptr_1[global(L_br_3201)].
+Let a_26 = Mptr_1[global(L_ai_3200)].
+Let a_27 = Mptr_1[global(L_ar_3199)].
+Let a_28 = Mptr_1[global(L_output_3193)].
+Let a_29 = Mptr_1[global(L_input_b_3192)].
+Let a_30 = Mptr_1[global(L_input_a_3191)].
+Let a_31 = Mptr_1[global(P_left_2835)].
+Let a_32 = Mptr_1[a_9].
+Let a_33 = Mptr_1[a_10].
+Let x_12 = Mint_0[global(P_n_2832)].
+Let a_34 = shift_float32(a_32, 0).
+Let x_13 = 2 * x_12.
+Let x_14 = 3 + x_13.
+Let a_35 = shift_float32(a_31, 0).
+Let a_36 = shift_float32(Mptr_1[a_8], 0).
+Let a_37 = shift_float32(a_33, 0).
+Assume {
+  Type: is_uint64(v) /\ is_uint64(x_3) /\ is_uint64(x_2) /\ is_uint64(x_4) /\
+      is_uint64(x) /\ is_uint64(x_1) /\ is_uint64(x_12).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_1).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_12) /\ (x_12 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_37, x_14).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_34, x_14).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_35, x_13).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_36, x_13).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_35, x_13, a_36, x_13) /\
+      separated(a_37, x_14, a_35, x_13) /\ separated(a_37, x_14, a_36, x_13).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_34, x_14, a_35, x_13) /\
+      separated(a_34, x_14, a_36, x_13).
+  (* Initializer *)
+  Init: x_3 = to_uint64(4 * x_12).
+  (* Initializer *)
+  Init: a_33 = a_30.
+  (* Initializer *)
+  Init: a_32 = a_29.
+  (* Initializer *)
+  Init: a_31 = a_28.
+  (* Initializer *)
+  Init: Mptr_1[global(L_params_3194)] = a_7.
+  (* Initializer *)
+  Init: x_4 = to_uint64(x_7).
+  (* Initializer *)
+  Init: a_30 = a_20.
+  (* Initializer *)
+  Init: a_29 = a_21.
+  (* Initializer *)
+  Init: a_28 = a_17.
+  (* Call '__FC_assert' *)
+  Have: x_3 != 0.
+  (* Call '__FC_assert' *)
+  Have: a_30 != null.
+  (* Call '__FC_assert' *)
+  Have: a_29 != null.
+  (* Call '__FC_assert' *)
+  Have: a_28 != null.
+  (* Initializer *)
+  Init: a_30 = a_27.
+  (* Initializer *)
+  Init: a_26 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_30)))).
+  (* Initializer *)
+  Init: a_29 = a_25.
+  (* Initializer *)
+  Init: a_24 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_29)))).
+  (* Initializer *)
+  Init: a_28 = a_23.
+  (* Initializer *)
+  Init: a_22 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_28)))).
+  (* Assertion *)
+  Have: a_26 = shift_float32(a_20, x_4).
+  (* Assertion *)
+  Have: a_24 = shift_float32(a_21, x_4).
+  (* Assertion *)
+  Have: a_22 = shift_float32(a_17, x_4).
+  (* Invariant *)
+  Have: ((x_3 % 4) = 0) /\ (0 <= x_3) /\ (x_3 <= x_6).
+  (* Invariant *)
+  Have: a_27 = shift_float32(a_20, x_11).
+  (* Invariant *)
+  Have: a_26 = shift_float32(a_20, x_10).
+  (* Invariant *)
+  Have: a_25 = shift_float32(a_21, x_11).
+  (* Invariant *)
+  Have: a_24 = shift_float32(a_21, x_10).
+  (* Invariant *)
+  Have: a_23 = shift_float32(a_17, x_11).
+  (* Invariant *)
+  Have: a_22 = shift_float32(a_17, x_10).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_20, 0), x_8).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_21, 0), x_8).
+  (* Invariant *)
+  Have: valid_rw(m, a_18, x_5).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((i + x_7) < x_4) ->
+      (P_cx_same_value(Mf32_0[shift_float32(a_17, i)],
+         L_cx_real(Mf32_0, a_20, a_21, x_4, i)) /\
+       P_cx_same_value(Mf32_0[shift_float32(a_17, i + x_4)],
+         L_cx_imag(Mf32_0, a_20, a_21, x_4, i))))).
+  (* Invariant *)
+  Have: ((v % 4) = 0) /\ (0 <= v) /\ (v <= x_6).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((i + (v / 4)) < x_4) ->
+      (P_cx_same_value(a_19[shift_float32(a_17, i)],
+         L_cx_real(a_19, a_20, a_21, x_4, i)) /\
+       P_cx_same_value(a_19[shift_float32(a_17, i + x_4)],
+         L_cx_imag(a_19, a_20, a_21, x_4, i))))).
+  (* Else *)
+  Have: v <= 15.
+  If v != 0
+  Then {
+    Let a_38 = global(L_tmp_5_3216).
+    Let a_39 = memcpy(a_19, a_38, Mf32_undef_1, a_38, 4).
+    Let a_40 = global(L_tmp_6_3218).
+    Let a_41 = memcpy(a_39, a_40, Mf32_undef_2, a_40, 4).
+    Let a_42 = global(L_tmp_7_3220).
+    Let a_43 = memcpy(a_41, a_42, Mf32_undef_3, a_42, 4).
+    Let a_44 = global(L_tmp_8_3222).
+    Let a_45 = memcpy(a_43, a_44, Mf32_undef_4, a_44, 4).
+    Let a_46 = global(L_vaccr_3223).
+    Let a_47 = memcpy(a_45, a_46, Mf32_undef_5, a_46, 4).
+    Let a_48 = global(L_vacci_3224).
+    Let a_49 = memcpy(a_47, a_48, Mf32_undef_6, a_48, 4).
+    Let a_50 = memcpy(a_49, a_46, Mf32_undef_7, a_46, 4).
+    Let a_51 = memcpy(a_50, a_48, Mf32_undef_8, a_48, 4).
+    Let a_52 = global(L_vaccr_lo_3225).
+    Let a_53 = memcpy(a_51, a_52, Mf32_undef_9, a_52, 2).
+    Let a_54 = global(L_vacci_lo_3226).
+    Let a_55 = shiftfield_F2_lane(a_48).
+    Let a_56 = shiftfield_F2_lane(a_46).
+    Let a_57 = global(L_vai_3217).
+    Let a_58 = shiftfield_F2_lane(a_57).
+    Let a_59 = global(L_vbr_3219).
+    Let a_60 = shiftfield_F2_lane(a_59).
+    Let a_61 = global(L_vbi_3221).
+    Let a_62 = shiftfield_F2_lane(a_61).
+    Let a_63 = global(L_var_3215).
+    Let a_64 = shiftfield_F2_lane(a_63).
+    Let m_1 = m[L_var_3215 <- 4][L_tmp_5_3216 <- 4][L_vai_3217 <- 4]
+                [L_tmp_6_3218 <- 4][L_vbr_3219 <- 4][L_tmp_7_3220 <- 4]
+                [L_vbi_3221 <- 4][L_tmp_8_3222 <- 4][L_vaccr_3223 <- 4]
+                [L_vacci_3224 <- 4][L_vaccr_lo_3225 <- 2][L_vacci_lo_3226
+                <- 2].
+    Let x_15 = -(v / 4).
+    Let x_16 = x_5 - (v / 4).
+    Let x_17 = x_4 - (v / 4).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_63, a_39) = Load_S2(a_38, a_39)) /\
+        valid_rd(m_1, shift_float32(a_20, x_17), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_19[shift_float32(a_64, i)],
+           a_19[shift_float32(a_20, i + x_4 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_57, a_41) = Load_S2(a_40, a_41)) /\
+        valid_rd(m_1, shift_float32(a_20, x_16), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_19[shift_float32(a_58, i)],
+           a_39[shift_float32(a_20, i + x_5 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_59, a_43) = Load_S2(a_42, a_43)) /\
+        valid_rd(m_1, shift_float32(a_21, x_17), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_19[shift_float32(a_60, i)],
+           a_41[shift_float32(a_21, i + x_4 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_61, a_45) = Load_S2(a_44, a_45)) /\
+        valid_rd(m_1, shift_float32(a_21, x_16), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_19[shift_float32(a_62, i)],
+           a_43[shift_float32(a_21, i + x_5 - (v / 4))])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        P_cx_same_float(a_47[shift_float32(a_56, i)],
+          mul_f32(a_19[shift_float32(a_64, i)], a_19[shift_float32(a_60, i)])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        P_cx_same_float(a_49[shift_float32(a_55, i)],
+          mul_f32(a_19[shift_float32(a_64, i)], a_19[shift_float32(a_62, i)])))).
+    (* Call 'vmlsq_f32' *)
+    Have: forall i : Z. let a_65 = shift_float32(a_56, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_cx_same_float(a_50[a_65],
+          sub_f32(a_47[a_65],
+            mul_f32(a_19[shift_float32(a_58, i)],
+              a_19[shift_float32(a_62, i)]))))).
+    (* Call 'vmlaq_f32' *)
+    Have: forall i : Z. let a_65 = shift_float32(a_55, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_cx_same_float(a_51[a_65],
+          add_f32(a_49[a_65],
+            mul_f32(a_19[shift_float32(a_58, i)],
+              a_19[shift_float32(a_60, i)]))))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+        P_cx_same_float(a_53[shift_float32(shiftfield_F3_lane(a_52), i)],
+          a_50[shift_float32(a_56, i)]))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+        P_cx_same_float(memcpy(a_53, a_54, Mf32_undef_10, a_54, 2)
+                          [shift_float32(shiftfield_F3_lane(a_54), i)],
+          a_51[shift_float32(a_55, i)]))).
+    If bit_test(v, 3)
+    Then {
+      Let a_65 = shift_float32(a_17, x_17).
+      Let a_66 = memcpy(memcpy(a_53, a_54, Mf32_undef_10, a_54, 2), a_65,
+                   Mf32_undef_11, a_65, 2).
+      Let a_67 = shift_float32(a_17, x_16).
+      Let a_68 = memcpy(a_66, a_67, Mf32_undef_12, a_67, 2).
+      Let a_69 = memcpy(a_68, a_52, Mf32_undef_13, a_52, 2).
+      Let a_70 = shiftfield_F3_lane(a_54).
+      Let a_71 = shiftfield_F3_lane(a_52).
+      Let a_72 = global(L_oi_3204).
+      Let a_73 = global(L_or_3203).
+      Let a_74 = global(L_bi_3202).
+      Let a_75 = global(L_br_3201).
+      Let a_76 = global(L_ai_3200).
+      Let x_18 = 4 + x_4 - (v / 4).
+      Let x_19 = 4 + x_5 - (v / 4).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_65, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           P_cx_same_float(a_66[shift_float32(a_17, i + x_4 - (v / 4))],
+             a_53[shift_float32(a_71, i)])))).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_67, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           P_cx_same_float(a_68[shift_float32(a_17, i + x_5 - (v / 4))],
+             a_66[shift_float32(a_70, i)])))).
+      Have: Mptr_1[a_72 <- a_67][a_73 <- a_65][a_74
+              <- shift_float32(a_21, x_16)][a_75
+              <- shift_float32(a_21, x_17)][a_76
+              <- shift_float32(a_20, x_16)][global(L_ar_3199)
+              <- shift_float32(a_20, x_18)][a_76
+              <- shift_float32(a_20, x_19)][a_75
+              <- shift_float32(a_21, x_18)][a_74
+              <- shift_float32(a_21, x_19)][a_73
+              <- shift_float32(a_17, 2 + x_4 - (v / 4))][a_72
+              <- shift_float32(a_17, 2 + x_5 - (v / 4))] = Mptr_0.
+      (* Call 'vget_high_f32' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+          P_cx_same_float(a_69[shift_float32(a_71, i)],
+            a_68[shift_float32(a_56, 2 + i)]))).
+      (* Call 'vget_high_f32' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+          P_cx_same_float(Mf32_1[shift_float32(a_70, i)],
+            a_68[shift_float32(a_55, 2 + i)]))).
+      (* Return Effects *)
+      Have: memcpy(a_69, a_54, Mf32_undef_14, a_54, 2) = Mf32_1.
+    }
+    Else {
+      Have: (Mptr_1[a_72 <- a_67][a_73 <- a_65][a_74
+               <- shift_float32(a_21, x_16)][a_75
+               <- shift_float32(a_21, x_17)][a_76
+               <- shift_float32(a_20, x_16)][global(L_ar_3199)
+               <- shift_float32(a_20, x_18)][a_76
+               <- shift_float32(a_20, x_19)][a_75
+               <- shift_float32(a_21, x_18)][a_74
+               <- shift_float32(a_21, x_19)] = Mptr_0) /\
+          (memcpy(a_53, a_54, Mf32_undef_10, a_54, 2) = Mf32_1).
+    }
+    If bit_test(v, 2)
+    Then {
+      Let a_77 = Mptr_0[a_73].
+      Let m_2 = Mf32_2[a_77 <- v_1].
+      Let a_78 = Mptr_0[a_72].
+      Have: Mf32_1 = Mf32_2.
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_1, Mf32_2[shift_float32(a_71, 0)]) /\
+          valid_rw(m_1, a_77, 1).
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_2, m_2[shift_float32(a_70, 0)]) /\
+          valid_rw(m_1, a_78, 1).
+      (* Call Effects *)
+      Have: m_2[a_78 <- v_2] = Mf32_3.
+    }
+    Else { Have: Mf32_1 = Mf32_3. }
+  }
+  Else {
+    Have: (a_19 = Mf32_3) /\
+        (Mptr_1[a_72 <- shift_float32(a_17, x_5)][a_73 <- a_22][a_74
+           <- shift_float32(a_21, x_5)][a_75 <- a_24][a_76
+           <- shift_float32(a_20, x_5)][global(L_ar_3199) <- a_26] = Mptr_0).
+  }
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) -> ((i < x_4) ->
+      (P_cx_same_value(Mf32_3[shift_float32(a_12, i)],
+         L_cx_real(Mf32_3, a_14, a_16, x_4, i)) /\
+       P_cx_same_value(Mf32_3[shift_float32(a_12, i + x_4)],
+         L_cx_imag(Mf32_3, a_14, a_16, x_4, i))))).
+  (* Initializer *)
+  Init: x_2 = x_3.
+  (* Initializer *)
+  Init: Mptr_0[a_10] = a_5.
+  (* Initializer *)
+  Init: Mptr_0[a_9] = a_4.
+  (* Initializer *)
+  Init: Mptr_0[a_8] = a_2.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3234)] = a_7.
+  (* Initializer *)
+  Init: x = to_uint64(x_2 / 4).
+  (* Initializer *)
+  Init: a_5 = a_1.
+  (* Initializer *)
+  Init: a_4 = a_6.
+  (* Initializer *)
+  Init: a_2 = Mptr_0[global(L_cx_o_3238)].
+  (* Call '__FC_assert' *)
+  Have: x_2 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_2 % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Call '__FC_assert' *)
+  Have: a_4 != null.
+  (* Call '__FC_assert' *)
+  Have: a_2 != null.
+  (* Initializer *)
+  Init: a_5 = Mptr_0[global(L_ar_3239)].
+  (* Initializer *)
+  Init: a = addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_5)))).
+  (* Initializer *)
+  Init: a_4 = Mptr_0[global(L_br_3241)].
+  (* Initializer *)
+  Init: a_3 = addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_4)))).
+  (* Initializer *)
+  Init: a_2 = Mptr_0[global(L_out_r_3243)].
+  (* Initializer *)
+  Init: Mptr_0[global(L_out_i_3244)] =
+      addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_2)))).
+  (* Initializer *)
+  Init: x_1 = x.
+  (* Assertion *)
+  Have: a = shift_float32(a_1, x).
+}
+Prove: a_3 = shift_float32(a_6, x).
+Prover CVC5 1.2.1 returns Timeout (Qed:1s) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:1s) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/rvv.c", line 28):
+Let a = Mptr_0[global(L_bi_3242)].
+Let a_1 = Mptr_0[global(L_cx_b_3237)].
+Let x = Mint_0[global(L_cx_total_3235)].
+Let a_2 = Mptr_0[global(L_ai_3240)].
+Let a_3 = Mptr_0[global(L_cx_a_3236)].
+Let x_1 = Mint_0[global(L_n_3245)].
+Let a_4 = Mptr_0[global(L_out_i_3244)].
+Let a_5 = Mptr_0[global(L_output_3233)].
+Let x_2 = Mint_0[global(L_batch_3230)].
+Let a_6 = Mptr_0[global(L_input_b_3232)].
+Let a_7 = Mptr_0[global(L_input_a_3231)].
+Let a_8 = Mptr_0[global(L_cx_o_3238)].
+Let a_9 = global(L_params_2837).
+Let a_10 = global(P_right_2836).
+Let a_11 = global(P_b_2834).
+Let a_12 = global(P_a_2833).
+Let x_3 = Mint_0[global(L_batch_3190)].
+Let x_4 = Mint_0[global(L_cx_total_3195)].
+Let a_13 = global(L_cx_o_3198).
+Let a_14 = Mptr_0[a_13].
+Let a_15 = global(L_cx_a_3196).
+Let a_16 = Mptr_0[a_15].
+Let a_17 = global(L_cx_b_3197).
+Let a_18 = Mptr_0[a_17].
+Let a_19 = Mptr_1[a_13].
+Let a_20 = shift_float32(a_19, 0).
+Let x_5 = 2 * x_4.
+Let a_21 = memcpy(Mf32_0, a_20, Mf32_undef_0, a_20, x_5).
+Let a_22 = Mptr_1[a_15].
+Let a_23 = Mptr_1[a_17].
+Let x_6 = 4 * x_4.
+Let x_7 = x_3 / 4.
+Let m = Malloc_0[P_n_2832 <- 1][P_a_2833 <- 1][P_b_2834 <- 1][P_left_2835
+          <- 1][P_right_2836 <- 1][L___retres_3038 <- 1][L_params_2837 <- 1]
+          [L_batch_3190 <- 1][L_input_a_3191 <- 1][L_input_b_3192 <- 1]
+          [L_output_3193 <- 1][L_params_3194 <- 1][L_cx_total_3195 <- 1]
+          [L_cx_a_3196 <- 1][L_cx_b_3197 <- 1][L_cx_o_3198 <- 1][L_ar_3199
+          <- 1][L_ai_3200 <- 1][L_br_3201 <- 1][L_bi_3202 <- 1][L_or_3203
+          <- 1][L_oi_3204 <- 1].
+Let x_8 = 3 + x_5.
+Let a_24 = Mptr_1[global(L_oi_3204)].
+Let x_9 = -x_7.
+Let x_10 = x_5 - x_7.
+Let a_25 = Mptr_1[global(L_or_3203)].
+Let x_11 = x_4 - x_7.
+Let a_26 = Mptr_1[global(L_bi_3202)].
+Let a_27 = Mptr_1[global(L_br_3201)].
+Let a_28 = Mptr_1[global(L_ai_3200)].
+Let a_29 = Mptr_1[global(L_ar_3199)].
+Let a_30 = Mptr_1[global(L_output_3193)].
+Let a_31 = Mptr_1[global(L_input_b_3192)].
+Let a_32 = Mptr_1[global(L_input_a_3191)].
+Let a_33 = Mptr_1[global(P_left_2835)].
+Let a_34 = Mptr_1[a_11].
+Let a_35 = Mptr_1[a_12].
+Let x_12 = Mint_0[global(P_n_2832)].
+Let a_36 = shift_float32(a_34, 0).
+Let x_13 = 2 * x_12.
+Let x_14 = 3 + x_13.
+Let a_37 = shift_float32(a_33, 0).
+Let a_38 = shift_float32(Mptr_1[a_10], 0).
+Let a_39 = shift_float32(a_35, 0).
+Assume {
+  Type: is_uint64(v) /\ is_uint64(x_3) /\ is_uint64(x_2) /\ is_uint64(x_4) /\
+      is_uint64(x) /\ is_uint64(x_1) /\ is_uint64(x_12).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_1).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_12) /\ (x_12 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_39, x_14).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_36, x_14).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_37, x_13).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_38, x_13).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_37, x_13, a_38, x_13) /\
+      separated(a_39, x_14, a_37, x_13) /\ separated(a_39, x_14, a_38, x_13).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_36, x_14, a_37, x_13) /\
+      separated(a_36, x_14, a_38, x_13).
+  (* Initializer *)
+  Init: x_3 = to_uint64(4 * x_12).
+  (* Initializer *)
+  Init: a_35 = a_32.
+  (* Initializer *)
+  Init: a_34 = a_31.
+  (* Initializer *)
+  Init: a_33 = a_30.
+  (* Initializer *)
+  Init: Mptr_1[global(L_params_3194)] = a_9.
+  (* Initializer *)
+  Init: x_4 = to_uint64(x_7).
+  (* Initializer *)
+  Init: a_32 = a_22.
+  (* Initializer *)
+  Init: a_31 = a_23.
+  (* Initializer *)
+  Init: a_30 = a_19.
+  (* Call '__FC_assert' *)
+  Have: x_3 != 0.
+  (* Call '__FC_assert' *)
+  Have: a_32 != null.
+  (* Call '__FC_assert' *)
+  Have: a_31 != null.
+  (* Call '__FC_assert' *)
+  Have: a_30 != null.
+  (* Initializer *)
+  Init: a_32 = a_29.
+  (* Initializer *)
+  Init: a_28 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_32)))).
+  (* Initializer *)
+  Init: a_31 = a_27.
+  (* Initializer *)
+  Init: a_26 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_31)))).
+  (* Initializer *)
+  Init: a_30 = a_25.
+  (* Initializer *)
+  Init: a_24 = addr_of_int(to_uint64(x_3 + to_uint64(int_of_addr(a_30)))).
+  (* Assertion *)
+  Have: a_28 = shift_float32(a_22, x_4).
+  (* Assertion *)
+  Have: a_26 = shift_float32(a_23, x_4).
+  (* Assertion *)
+  Have: a_24 = shift_float32(a_19, x_4).
+  (* Invariant *)
+  Have: ((x_3 % 4) = 0) /\ (0 <= x_3) /\ (x_3 <= x_6).
+  (* Invariant *)
+  Have: a_29 = shift_float32(a_22, x_11).
+  (* Invariant *)
+  Have: a_28 = shift_float32(a_22, x_10).
+  (* Invariant *)
+  Have: a_27 = shift_float32(a_23, x_11).
+  (* Invariant *)
+  Have: a_26 = shift_float32(a_23, x_10).
+  (* Invariant *)
+  Have: a_25 = shift_float32(a_19, x_11).
+  (* Invariant *)
+  Have: a_24 = shift_float32(a_19, x_10).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_22, 0), x_8).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_23, 0), x_8).
+  (* Invariant *)
+  Have: valid_rw(m, a_20, x_5).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((i + x_7) < x_4) ->
+      (P_cx_same_value(Mf32_0[shift_float32(a_19, i)],
+         L_cx_real(Mf32_0, a_22, a_23, x_4, i)) /\
+       P_cx_same_value(Mf32_0[shift_float32(a_19, i + x_4)],
+         L_cx_imag(Mf32_0, a_22, a_23, x_4, i))))).
+  (* Invariant *)
+  Have: ((v % 4) = 0) /\ (0 <= v) /\ (v <= x_6).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((i + (v / 4)) < x_4) ->
+      (P_cx_same_value(a_21[shift_float32(a_19, i)],
+         L_cx_real(a_21, a_22, a_23, x_4, i)) /\
+       P_cx_same_value(a_21[shift_float32(a_19, i + x_4)],
+         L_cx_imag(a_21, a_22, a_23, x_4, i))))).
+  (* Else *)
+  Have: v <= 15.
+  If v != 0
+  Then {
+    Let a_40 = global(L_tmp_5_3216).
+    Let a_41 = memcpy(a_21, a_40, Mf32_undef_1, a_40, 4).
+    Let a_42 = global(L_tmp_6_3218).
+    Let a_43 = memcpy(a_41, a_42, Mf32_undef_2, a_42, 4).
+    Let a_44 = global(L_tmp_7_3220).
+    Let a_45 = memcpy(a_43, a_44, Mf32_undef_3, a_44, 4).
+    Let a_46 = global(L_tmp_8_3222).
+    Let a_47 = memcpy(a_45, a_46, Mf32_undef_4, a_46, 4).
+    Let a_48 = global(L_vaccr_3223).
+    Let a_49 = memcpy(a_47, a_48, Mf32_undef_5, a_48, 4).
+    Let a_50 = global(L_vacci_3224).
+    Let a_51 = memcpy(a_49, a_50, Mf32_undef_6, a_50, 4).
+    Let a_52 = memcpy(a_51, a_48, Mf32_undef_7, a_48, 4).
+    Let a_53 = memcpy(a_52, a_50, Mf32_undef_8, a_50, 4).
+    Let a_54 = global(L_vaccr_lo_3225).
+    Let a_55 = memcpy(a_53, a_54, Mf32_undef_9, a_54, 2).
+    Let a_56 = global(L_vacci_lo_3226).
+    Let a_57 = shiftfield_F2_lane(a_50).
+    Let a_58 = shiftfield_F2_lane(a_48).
+    Let a_59 = global(L_vai_3217).
+    Let a_60 = shiftfield_F2_lane(a_59).
+    Let a_61 = global(L_vbr_3219).
+    Let a_62 = shiftfield_F2_lane(a_61).
+    Let a_63 = global(L_vbi_3221).
+    Let a_64 = shiftfield_F2_lane(a_63).
+    Let a_65 = global(L_var_3215).
+    Let a_66 = shiftfield_F2_lane(a_65).
+    Let m_1 = m[L_var_3215 <- 4][L_tmp_5_3216 <- 4][L_vai_3217 <- 4]
+                [L_tmp_6_3218 <- 4][L_vbr_3219 <- 4][L_tmp_7_3220 <- 4]
+                [L_vbi_3221 <- 4][L_tmp_8_3222 <- 4][L_vaccr_3223 <- 4]
+                [L_vacci_3224 <- 4][L_vaccr_lo_3225 <- 2][L_vacci_lo_3226
+                <- 2].
+    Let x_15 = -(v / 4).
+    Let x_16 = x_5 - (v / 4).
+    Let x_17 = x_4 - (v / 4).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_65, a_41) = Load_S2(a_40, a_41)) /\
+        valid_rd(m_1, shift_float32(a_22, x_17), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_21[shift_float32(a_66, i)],
+           a_21[shift_float32(a_22, i + x_4 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_59, a_43) = Load_S2(a_42, a_43)) /\
+        valid_rd(m_1, shift_float32(a_22, x_16), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_21[shift_float32(a_60, i)],
+           a_41[shift_float32(a_22, i + x_5 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_61, a_45) = Load_S2(a_44, a_45)) /\
+        valid_rd(m_1, shift_float32(a_23, x_17), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_21[shift_float32(a_62, i)],
+           a_43[shift_float32(a_23, i + x_4 - (v / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_63, a_47) = Load_S2(a_46, a_47)) /\
+        valid_rd(m_1, shift_float32(a_23, x_16), 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         P_cx_same_float(a_21[shift_float32(a_64, i)],
+           a_45[shift_float32(a_23, i + x_5 - (v / 4))])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        P_cx_same_float(a_49[shift_float32(a_58, i)],
+          mul_f32(a_21[shift_float32(a_66, i)], a_21[shift_float32(a_62, i)])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        P_cx_same_float(a_51[shift_float32(a_57, i)],
+          mul_f32(a_21[shift_float32(a_66, i)], a_21[shift_float32(a_64, i)])))).
+    (* Call 'vmlsq_f32' *)
+    Have: forall i : Z. let a_67 = shift_float32(a_58, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_cx_same_float(a_52[a_67],
+          sub_f32(a_49[a_67],
+            mul_f32(a_21[shift_float32(a_60, i)],
+              a_21[shift_float32(a_64, i)]))))).
+    (* Call 'vmlaq_f32' *)
+    Have: forall i : Z. let a_67 = shift_float32(a_57, i) in ((0 <= i) ->
+        ((i <= 3) ->
+        P_cx_same_float(a_53[a_67],
+          add_f32(a_51[a_67],
+            mul_f32(a_21[shift_float32(a_60, i)],
+              a_21[shift_float32(a_62, i)]))))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+        P_cx_same_float(a_55[shift_float32(shiftfield_F3_lane(a_54), i)],
+          a_52[shift_float32(a_58, i)]))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+        P_cx_same_float(memcpy(a_55, a_56, Mf32_undef_10, a_56, 2)
+                          [shift_float32(shiftfield_F3_lane(a_56), i)],
+          a_53[shift_float32(a_57, i)]))).
+    If bit_test(v, 3)
+    Then {
+      Let a_67 = shift_float32(a_19, x_17).
+      Let a_68 = memcpy(memcpy(a_55, a_56, Mf32_undef_10, a_56, 2), a_67,
+                   Mf32_undef_11, a_67, 2).
+      Let a_69 = shift_float32(a_19, x_16).
+      Let a_70 = memcpy(a_68, a_69, Mf32_undef_12, a_69, 2).
+      Let a_71 = memcpy(a_70, a_54, Mf32_undef_13, a_54, 2).
+      Let a_72 = shiftfield_F3_lane(a_56).
+      Let a_73 = shiftfield_F3_lane(a_54).
+      Let a_74 = global(L_oi_3204).
+      Let a_75 = global(L_or_3203).
+      Let a_76 = global(L_bi_3202).
+      Let a_77 = global(L_br_3201).
+      Let a_78 = global(L_ai_3200).
+      Let x_18 = 4 + x_4 - (v / 4).
+      Let x_19 = 4 + x_5 - (v / 4).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_67, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           P_cx_same_float(a_68[shift_float32(a_19, i + x_4 - (v / 4))],
+             a_55[shift_float32(a_73, i)])))).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_1, a_69, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           P_cx_same_float(a_70[shift_float32(a_19, i + x_5 - (v / 4))],
+             a_68[shift_float32(a_72, i)])))).
+      Have: Mptr_1[a_74 <- a_69][a_75 <- a_67][a_76
+              <- shift_float32(a_23, x_16)][a_77
+              <- shift_float32(a_23, x_17)][a_78
+              <- shift_float32(a_22, x_16)][global(L_ar_3199)
+              <- shift_float32(a_22, x_18)][a_78
+              <- shift_float32(a_22, x_19)][a_77
+              <- shift_float32(a_23, x_18)][a_76
+              <- shift_float32(a_23, x_19)][a_75
+              <- shift_float32(a_19, 2 + x_4 - (v / 4))][a_74
+              <- shift_float32(a_19, 2 + x_5 - (v / 4))] = Mptr_0.
+      (* Call 'vget_high_f32' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+          P_cx_same_float(a_71[shift_float32(a_73, i)],
+            a_70[shift_float32(a_58, 2 + i)]))).
+      (* Call 'vget_high_f32' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+          P_cx_same_float(Mf32_1[shift_float32(a_72, i)],
+            a_70[shift_float32(a_57, 2 + i)]))).
+      (* Return Effects *)
+      Have: memcpy(a_71, a_56, Mf32_undef_14, a_56, 2) = Mf32_1.
+    }
+    Else {
+      Have: (Mptr_1[a_74 <- a_69][a_75 <- a_67][a_76
+               <- shift_float32(a_23, x_16)][a_77
+               <- shift_float32(a_23, x_17)][a_78
+               <- shift_float32(a_22, x_16)][global(L_ar_3199)
+               <- shift_float32(a_22, x_18)][a_78
+               <- shift_float32(a_22, x_19)][a_77
+               <- shift_float32(a_23, x_18)][a_76
+               <- shift_float32(a_23, x_19)] = Mptr_0) /\
+          (memcpy(a_55, a_56, Mf32_undef_10, a_56, 2) = Mf32_1).
+    }
+    If bit_test(v, 2)
+    Then {
+      Let a_79 = Mptr_0[a_75].
+      Let m_2 = Mf32_2[a_79 <- v_1].
+      Let a_80 = Mptr_0[a_74].
+      Have: Mf32_1 = Mf32_2.
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_1, Mf32_2[shift_float32(a_73, 0)]) /\
+          valid_rw(m_1, a_79, 1).
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_2, m_2[shift_float32(a_72, 0)]) /\
+          valid_rw(m_1, a_80, 1).
+      (* Call Effects *)
+      Have: m_2[a_80 <- v_2] = Mf32_3.
+    }
+    Else { Have: Mf32_1 = Mf32_3. }
+  }
+  Else {
+    Have: (a_21 = Mf32_3) /\
+        (Mptr_1[a_74 <- shift_float32(a_19, x_5)][a_75 <- a_24][a_76
+           <- shift_float32(a_23, x_5)][a_77 <- a_26][a_78
+           <- shift_float32(a_22, x_5)][global(L_ar_3199) <- a_28] = Mptr_0).
+  }
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) -> ((i < x_4) ->
+      (P_cx_same_value(Mf32_3[shift_float32(a_14, i)],
+         L_cx_real(Mf32_3, a_16, a_18, x_4, i)) /\
+       P_cx_same_value(Mf32_3[shift_float32(a_14, i + x_4)],
+         L_cx_imag(Mf32_3, a_16, a_18, x_4, i))))).
+  (* Initializer *)
+  Init: x_2 = x_3.
+  (* Initializer *)
+  Init: Mptr_0[a_12] = a_7.
+  (* Initializer *)
+  Init: Mptr_0[a_11] = a_6.
+  (* Initializer *)
+  Init: Mptr_0[a_10] = a_5.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3234)] = a_9.
+  (* Initializer *)
+  Init: x = to_uint64(x_2 / 4).
+  (* Initializer *)
+  Init: a_7 = a_3.
+  (* Initializer *)
+  Init: a_6 = a_1.
+  (* Initializer *)
+  Init: a_5 = a_8.
+  (* Call '__FC_assert' *)
+  Have: x_2 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_2 % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_7 != null.
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Initializer *)
+  Init: a_7 = Mptr_0[global(L_ar_3239)].
+  (* Initializer *)
+  Init: a_2 = addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_7)))).
+  (* Initializer *)
+  Init: a_6 = Mptr_0[global(L_br_3241)].
+  (* Initializer *)
+  Init: a = addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_6)))).
+  (* Initializer *)
+  Init: a_5 = Mptr_0[global(L_out_r_3243)].
+  (* Initializer *)
+  Init: a_4 = addr_of_int(to_uint64(x_2 + to_uint64(int_of_addr(a_5)))).
+  (* Initializer *)
+  Init: x_1 = x.
+  (* Assertion *)
+  Have: a_2 = shift_float32(a_3, x).
+  (* Assertion *)
+  Have: a = shift_float32(a_1, x).
+}
+Prove: a_4 = shift_float32(a_8, x).
+Prover CVC5 1.2.1 returns Timeout (Qed:1s) (2s)
+Prover Z3 4.12.5 returns Timeout (Qed:1s) (2s)
+
+------------------------------------------------------------
+
+Goal Assertion ("/tmp/cx-case-proof-probe3/rvv.c", lines 71-72):
+Let x = Mint_0[global(L_cx_total_3235)].
+Let a = Mptr_0[global(L_cx_o_3238)].
+Let a_1 = shift_float32(a, 0).
+Let x_1 = 2 * x.
+Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x_1).
+Let a_3 = Mptr_0[global(L_cx_a_3236)].
+Let a_4 = Mptr_0[global(L_cx_b_3237)].
+Let x_2 = Mint_0[global(L_n_3245)].
+Let m = Malloc_1[L_batch_3190 <- 0][L_input_a_3191 <- 0][L_input_b_3192 <- 0]
+          [L_output_3193 <- 0][L_params_3194 <- 0][L_cx_total_3195 <- 0]
+          [L_cx_a_3196 <- 0][L_cx_b_3197 <- 0][L_cx_o_3198 <- 0][L_ar_3199
+          <- 0][L_ai_3200 <- 0][L_br_3201 <- 0][L_bi_3202 <- 0][L_or_3203
+          <- 0][L_oi_3204 <- 0][L_batch_3230 <- 1][L_input_a_3231 <- 1]
+          [L_input_b_3232 <- 1][L_output_3233 <- 1][L_params_3234 <- 1]
+          [L_cx_total_3235 <- 1][L_cx_a_3236 <- 1][L_cx_b_3237 <- 1]
+          [L_cx_o_3238 <- 1][L_ar_3239 <- 1][L_ai_3240 <- 1][L_br_3241 <- 1]
+          [L_bi_3242 <- 1][L_out_r_3243 <- 1][L_out_i_3244 <- 1][L_n_3245
+          <- 1].
+Let x_3 = 3 + x_1.
+Let a_5 = Mptr_0[global(L_out_i_3244)].
+Let x_4 = -x_2.
+Let x_5 = x_1 - x_2.
+Let a_6 = Mptr_0[global(L_out_r_3243)].
+Let x_6 = x - x_2.
+Let a_7 = Mptr_0[global(L_bi_3242)].
+Let a_8 = Mptr_0[global(L_br_3241)].
+Let a_9 = Mptr_0[global(L_ai_3240)].
+Let a_10 = Mptr_0[global(L_ar_3239)].
+Let a_11 = Mptr_0[global(L_output_3233)].
+Let x_7 = Mint_0[global(L_batch_3230)].
+Let a_12 = Mptr_0[global(L_input_b_3232)].
+Let a_13 = Mptr_0[global(L_input_a_3231)].
+Let a_14 = global(L_params_2837).
+Let a_15 = global(P_right_2836).
+Let a_16 = global(P_b_2834).
+Let a_17 = global(P_a_2833).
+Let x_8 = Mint_0[global(L_batch_3190)].
+Let x_9 = Mint_0[global(L_cx_total_3195)].
+Let a_18 = global(L_cx_o_3198).
+Let a_19 = Mptr_0[a_18].
+Let a_20 = global(L_cx_a_3196).
+Let a_21 = Mptr_0[a_20].
+Let a_22 = global(L_cx_b_3197).
+Let a_23 = Mptr_0[a_22].
+Let a_24 = Mptr_1[a_18].
+Let a_25 = shift_float32(a_24, 0).
+Let x_10 = 2 * x_9.
+Let a_26 = memcpy(Mf32_1, a_25, Mf32_undef_1, a_25, x_10).
+Let a_27 = Mptr_1[a_20].
+Let a_28 = Mptr_1[a_22].
+Let x_11 = 4 * x_9.
+Let x_12 = x_8 / 4.
+Let m_1 = Malloc_0[P_n_2832 <- 1][P_a_2833 <- 1][P_b_2834 <- 1][P_left_2835
+            <- 1][P_right_2836 <- 1][L___retres_3038 <- 1][L_params_2837
+            <- 1][L_batch_3190 <- 1][L_input_a_3191 <- 1][L_input_b_3192
+            <- 1][L_output_3193 <- 1][L_params_3194 <- 1][L_cx_total_3195
+            <- 1][L_cx_a_3196 <- 1][L_cx_b_3197 <- 1][L_cx_o_3198 <- 1]
+            [L_ar_3199 <- 1][L_ai_3200 <- 1][L_br_3201 <- 1][L_bi_3202 <- 1]
+            [L_or_3203 <- 1][L_oi_3204 <- 1].
+Let x_13 = 3 + x_10.
+Let a_29 = Mptr_1[global(L_oi_3204)].
+Let x_14 = -x_12.
+Let x_15 = x_10 - x_12.
+Let a_30 = Mptr_1[global(L_or_3203)].
+Let x_16 = x_9 - x_12.
+Let a_31 = Mptr_1[global(L_bi_3202)].
+Let a_32 = Mptr_1[global(L_br_3201)].
+Let a_33 = Mptr_1[global(L_ai_3200)].
+Let a_34 = Mptr_1[global(L_ar_3199)].
+Let a_35 = Mptr_1[global(L_output_3193)].
+Let a_36 = Mptr_1[global(L_input_b_3192)].
+Let a_37 = Mptr_1[global(L_input_a_3191)].
+Let a_38 = Mptr_1[global(P_left_2835)].
+Let a_39 = Mptr_1[a_16].
+Let a_40 = Mptr_1[a_17].
+Let x_17 = Mint_0[global(P_n_2832)].
+Let a_41 = shift_float32(a_39, 0).
+Let x_18 = 2 * x_17.
+Let x_19 = 3 + x_18.
+Let a_42 = shift_float32(a_38, 0).
+Let a_43 = shift_float32(Mptr_1[a_15], 0).
+Let a_44 = shift_float32(a_40, 0).
+Assume {
+  Type: is_uint64(v) /\ is_uint64(v_1) /\ is_uint64(x_8) /\ is_uint64(x_7) /\
+      is_uint64(x_9) /\ is_uint64(x) /\
+      is_uint64(Mint_0[global(L_i_2838)]) /\ is_uint64(x_2) /\
+      is_uint64(x_17).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_1).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x).
+  (* Pre-condition 'length' *)
+  Have: (0 < x_17) /\ (x_17 <= 1152921504606846972).
+  (* Pre-condition 'a_memory' *)
+  Have: valid_rd(Malloc_0, a_44, x_19).
+  (* Pre-condition 'b_memory' *)
+  Have: valid_rd(Malloc_0, a_41, x_19).
+  (* Pre-condition 'left_memory' *)
+  Have: valid_rw(Malloc_0, a_42, x_18).
+  (* Pre-condition 'right_memory' *)
+  Have: valid_rw(Malloc_0, a_43, x_18).
+  (* Pre-condition 'a_disjoint' *)
+  Have: separated(a_42, x_18, a_43, x_18) /\
+      separated(a_44, x_19, a_42, x_18) /\ separated(a_44, x_19, a_43, x_18).
+  (* Pre-condition 'b_disjoint' *)
+  Have: separated(a_41, x_19, a_42, x_18) /\
+      separated(a_41, x_19, a_43, x_18).
+  (* Initializer *)
+  Init: x_8 = to_uint64(4 * x_17).
+  (* Initializer *)
+  Init: a_40 = a_37.
+  (* Initializer *)
+  Init: a_39 = a_36.
+  (* Initializer *)
+  Init: a_38 = a_35.
+  (* Initializer *)
+  Init: Mptr_1[global(L_params_3194)] = a_14.
+  (* Initializer *)
+  Init: x_9 = to_uint64(x_12).
+  (* Initializer *)
+  Init: a_37 = a_27.
+  (* Initializer *)
+  Init: a_36 = a_28.
+  (* Initializer *)
+  Init: a_35 = a_24.
+  (* Call '__FC_assert' *)
+  Have: x_8 != 0.
+  (* Call '__FC_assert' *)
+  Have: a_37 != null.
+  (* Call '__FC_assert' *)
+  Have: a_36 != null.
+  (* Call '__FC_assert' *)
+  Have: a_35 != null.
+  (* Initializer *)
+  Init: a_37 = a_34.
+  (* Initializer *)
+  Init: a_33 = addr_of_int(to_uint64(x_8 + to_uint64(int_of_addr(a_37)))).
+  (* Initializer *)
+  Init: a_36 = a_32.
+  (* Initializer *)
+  Init: a_31 = addr_of_int(to_uint64(x_8 + to_uint64(int_of_addr(a_36)))).
+  (* Initializer *)
+  Init: a_35 = a_30.
+  (* Initializer *)
+  Init: a_29 = addr_of_int(to_uint64(x_8 + to_uint64(int_of_addr(a_35)))).
+  (* Assertion *)
+  Have: a_33 = shift_float32(a_27, x_9).
+  (* Assertion *)
+  Have: a_31 = shift_float32(a_28, x_9).
+  (* Assertion *)
+  Have: a_29 = shift_float32(a_24, x_9).
+  (* Invariant *)
+  Have: ((x_8 % 4) = 0) /\ (0 <= x_8) /\ (x_8 <= x_11).
+  (* Invariant *)
+  Have: a_34 = shift_float32(a_27, x_16).
+  (* Invariant *)
+  Have: a_33 = shift_float32(a_27, x_15).
+  (* Invariant *)
+  Have: a_32 = shift_float32(a_28, x_16).
+  (* Invariant *)
+  Have: a_31 = shift_float32(a_28, x_15).
+  (* Invariant *)
+  Have: a_30 = shift_float32(a_24, x_16).
+  (* Invariant *)
+  Have: a_29 = shift_float32(a_24, x_15).
+  (* Invariant *)
+  Have: valid_rd(m_1, shift_float32(a_27, 0), x_13).
+  (* Invariant *)
+  Have: valid_rd(m_1, shift_float32(a_28, 0), x_13).
+  (* Invariant *)
+  Have: valid_rw(m_1, a_25, x_10).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_12) < x_9) ->
+      (P_cx_same_value(Mf32_1[shift_float32(a_24, i_1)],
+         L_cx_real(Mf32_1, a_27, a_28, x_9, i_1)) /\
+       P_cx_same_value(Mf32_1[shift_float32(a_24, i_1 + x_9)],
+         L_cx_imag(Mf32_1, a_27, a_28, x_9, i_1))))).
+  (* Invariant *)
+  Have: ((v_1 % 4) = 0) /\ (0 <= v_1) /\ (v_1 <= x_11).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + (v_1 / 4)) < x_9) ->
+      (P_cx_same_value(a_26[shift_float32(a_24, i_1)],
+         L_cx_real(a_26, a_27, a_28, x_9, i_1)) /\
+       P_cx_same_value(a_26[shift_float32(a_24, i_1 + x_9)],
+         L_cx_imag(a_26, a_27, a_28, x_9, i_1))))).
+  (* Else *)
+  Have: v_1 <= 15.
+  If v_1 != 0
+  Then {
+    Let m_2 = m_1[L_var_3215 <- 4][L_tmp_5_3216 <- 4][L_vai_3217 <- 4]
+                [L_tmp_6_3218 <- 4][L_vbr_3219 <- 4][L_tmp_7_3220 <- 4]
+                [L_vbi_3221 <- 4][L_tmp_8_3222 <- 4][L_vaccr_3223 <- 4]
+                [L_vacci_3224 <- 4][L_vaccr_lo_3225 <- 2][L_vacci_lo_3226
+                <- 2].
+    Let a_45 = global(L_tmp_5_3216).
+    Let a_46 = memcpy(a_26, a_45, Mf32_undef_2, a_45, 4).
+    Let a_47 = global(L_tmp_6_3218).
+    Let a_48 = memcpy(a_46, a_47, Mf32_undef_3, a_47, 4).
+    Let a_49 = global(L_tmp_7_3220).
+    Let a_50 = memcpy(a_48, a_49, Mf32_undef_4, a_49, 4).
+    Let a_51 = global(L_tmp_8_3222).
+    Let a_52 = memcpy(a_50, a_51, Mf32_undef_5, a_51, 4).
+    Let a_53 = global(L_vaccr_3223).
+    Let a_54 = memcpy(a_52, a_53, Mf32_undef_6, a_53, 4).
+    Let a_55 = global(L_vacci_3224).
+    Let a_56 = memcpy(a_54, a_55, Mf32_undef_7, a_55, 4).
+    Let a_57 = memcpy(a_56, a_53, Mf32_undef_8, a_53, 4).
+    Let a_58 = memcpy(a_57, a_55, Mf32_undef_9, a_55, 4).
+    Let a_59 = global(L_vaccr_lo_3225).
+    Let a_60 = memcpy(a_58, a_59, Mf32_undef_10, a_59, 2).
+    Let a_61 = global(L_vacci_lo_3226).
+    Let a_62 = shiftfield_F2_lane(a_55).
+    Let a_63 = shiftfield_F2_lane(a_53).
+    Let a_64 = global(L_vai_3217).
+    Let a_65 = shiftfield_F2_lane(a_64).
+    Let a_66 = global(L_vbr_3219).
+    Let a_67 = shiftfield_F2_lane(a_66).
+    Let a_68 = global(L_vbi_3221).
+    Let a_69 = shiftfield_F2_lane(a_68).
+    Let a_70 = global(L_var_3215).
+    Let a_71 = shiftfield_F2_lane(a_70).
+    Let x_20 = -(v_1 / 4).
+    Let x_21 = x_10 - (v_1 / 4).
+    Let x_22 = x_9 - (v_1 / 4).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_70, a_46) = Load_S2(a_45, a_46)) /\
+        valid_rd(m_2, shift_float32(a_27, x_22), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_26[shift_float32(a_71, i_1)],
+           a_26[shift_float32(a_27, i_1 + x_9 - (v_1 / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_64, a_48) = Load_S2(a_47, a_48)) /\
+        valid_rd(m_2, shift_float32(a_27, x_21), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_26[shift_float32(a_65, i_1)],
+           a_46[shift_float32(a_27, i_1 + x_10 - (v_1 / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_66, a_50) = Load_S2(a_49, a_50)) /\
+        valid_rd(m_2, shift_float32(a_28, x_22), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_26[shift_float32(a_67, i_1)],
+           a_48[shift_float32(a_28, i_1 + x_9 - (v_1 / 4))])))).
+    (* Call 'vld1q_f32' *)
+    Have: (Load_S2(a_68, a_52) = Load_S2(a_51, a_52)) /\
+        valid_rd(m_2, shift_float32(a_28, x_21), 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_cx_same_float(a_26[shift_float32(a_69, i_1)],
+           a_50[shift_float32(a_28, i_1 + x_10 - (v_1 / 4))])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_54[shift_float32(a_63, i_1)],
+          mul_f32(a_26[shift_float32(a_71, i_1)],
+            a_26[shift_float32(a_67, i_1)])))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_56[shift_float32(a_62, i_1)],
+          mul_f32(a_26[shift_float32(a_71, i_1)],
+            a_26[shift_float32(a_69, i_1)])))).
+    (* Call 'vmlsq_f32' *)
+    Have: forall i_1 : Z. let a_72 = shift_float32(a_63, i_1) in
+        ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_57[a_72],
+          sub_f32(a_54[a_72],
+            mul_f32(a_26[shift_float32(a_65, i_1)],
+              a_26[shift_float32(a_69, i_1)]))))).
+    (* Call 'vmlaq_f32' *)
+    Have: forall i_1 : Z. let a_72 = shift_float32(a_62, i_1) in
+        ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_cx_same_float(a_58[a_72],
+          add_f32(a_56[a_72],
+            mul_f32(a_26[shift_float32(a_65, i_1)],
+              a_26[shift_float32(a_67, i_1)]))))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_cx_same_float(a_60[shift_float32(shiftfield_F3_lane(a_59), i_1)],
+          a_57[shift_float32(a_63, i_1)]))).
+    (* Call 'vget_low_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_cx_same_float(memcpy(a_60, a_61, Mf32_undef_11, a_61, 2)
+                          [shift_float32(shiftfield_F3_lane(a_61), i_1)],
+          a_58[shift_float32(a_62, i_1)]))).
+    If bit_test(v_1, 3)
+    Then {
+      Let a_72 = shift_float32(a_24, x_22).
+      Let a_73 = memcpy(memcpy(a_60, a_61, Mf32_undef_11, a_61, 2), a_72,
+                   Mf32_undef_12, a_72, 2).
+      Let a_74 = shift_float32(a_24, x_21).
+      Let a_75 = memcpy(a_73, a_74, Mf32_undef_13, a_74, 2).
+      Let a_76 = memcpy(a_75, a_59, Mf32_undef_14, a_59, 2).
+      Let a_77 = shiftfield_F3_lane(a_61).
+      Let a_78 = shiftfield_F3_lane(a_59).
+      Let a_79 = global(L_oi_3204).
+      Let a_80 = global(L_or_3203).
+      Let a_81 = global(L_bi_3202).
+      Let a_82 = global(L_br_3201).
+      Let a_83 = global(L_ai_3200).
+      Let x_23 = 4 + x_9 - (v_1 / 4).
+      Let x_24 = 4 + x_10 - (v_1 / 4).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_2, a_72, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           P_cx_same_float(a_73[shift_float32(a_24, i_1 + x_9 - (v_1 / 4))],
+             a_60[shift_float32(a_78, i_1)])))).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(m_2, a_74, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           P_cx_same_float(a_75[shift_float32(a_24, i_1 + x_10 - (v_1 / 4))],
+             a_73[shift_float32(a_77, i_1)])))).
+      Have: Mptr_1[a_79 <- a_74][a_80 <- a_72][a_81
+              <- shift_float32(a_28, x_21)][a_82
+              <- shift_float32(a_28, x_22)][a_83
+              <- shift_float32(a_27, x_21)][global(L_ar_3199)
+              <- shift_float32(a_27, x_23)][a_83
+              <- shift_float32(a_27, x_24)][a_82
+              <- shift_float32(a_28, x_23)][a_81
+              <- shift_float32(a_28, x_24)][a_80
+              <- shift_float32(a_24, 2 + x_9 - (v_1 / 4))][a_79
+              <- shift_float32(a_24, 2 + x_10 - (v_1 / 4))] = Mptr_0.
+      (* Call 'vget_high_f32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+          P_cx_same_float(a_76[shift_float32(a_78, i_1)],
+            a_75[shift_float32(a_63, 2 + i_1)]))).
+      (* Call 'vget_high_f32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+          P_cx_same_float(Mf32_2[shift_float32(a_77, i_1)],
+            a_75[shift_float32(a_62, 2 + i_1)]))).
+      (* Return Effects *)
+      Have: memcpy(a_76, a_61, Mf32_undef_15, a_61, 2) = Mf32_2.
+    }
+    Else {
+      Have: (Mptr_1[a_79 <- a_74][a_80 <- a_72][a_81
+               <- shift_float32(a_28, x_21)][a_82
+               <- shift_float32(a_28, x_22)][a_83
+               <- shift_float32(a_27, x_21)][global(L_ar_3199)
+               <- shift_float32(a_27, x_23)][a_83
+               <- shift_float32(a_27, x_24)][a_82
+               <- shift_float32(a_28, x_23)][a_81
+               <- shift_float32(a_28, x_24)] = Mptr_0) /\
+          (memcpy(a_60, a_61, Mf32_undef_11, a_61, 2) = Mf32_2).
+    }
+    If bit_test(v_1, 2)
+    Then {
+      Let a_84 = Mptr_0[a_80].
+      Let m_3 = Mf32_3[a_84 <- v_2].
+      Let a_85 = Mptr_0[a_79].
+      Have: Mf32_2 = Mf32_3.
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_2, Mf32_3[shift_float32(a_78, 0)]) /\
+          valid_rw(m_2, a_84, 1).
+      (* Call 'vst1_lane_f32' *)
+      Have: P_cx_same_float(v_3, m_3[shift_float32(a_77, 0)]) /\
+          valid_rw(m_2, a_85, 1).
+      (* Call Effects *)
+      Have: m_3[a_85 <- v_3] = Mf32_0.
+    }
+    Else { Have: Mf32_2 = Mf32_0. }
+    (* Block Out *)
+    Have: m_2[L_var_3215 <- 0][L_tmp_5_3216 <- 0][L_vai_3217 <- 0]
+            [L_tmp_6_3218 <- 0][L_vbr_3219 <- 0][L_tmp_7_3220 <- 0]
+            [L_vbi_3221 <- 0][L_tmp_8_3222 <- 0][L_vaccr_3223 <- 0]
+            [L_vacci_3224 <- 0][L_vaccr_lo_3225 <- 0][L_vacci_lo_3226 <- 0] =
+        Malloc_1.
+  }
+  Else {
+    Have: (a_26 = Mf32_0) /\
+        (Mptr_1[a_79 <- shift_float32(a_24, x_10)][a_80 <- a_29][a_81
+           <- shift_float32(a_28, x_10)][a_82 <- a_31][a_83
+           <- shift_float32(a_27, x_10)][global(L_ar_3199) <- a_33] = Mptr_0) /\
+        (m_1 = Malloc_1).
+  }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x_9) ->
+      (P_cx_same_value(Mf32_0[shift_float32(a_19, i_1)],
+         L_cx_real(Mf32_0, a_21, a_23, x_9, i_1)) /\
+       P_cx_same_value(Mf32_0[shift_float32(a_19, i_1 + x_9)],
+         L_cx_imag(Mf32_0, a_21, a_23, x_9, i_1))))).
+  (* Initializer *)
+  Init: x_7 = x_8.
+  (* Initializer *)
+  Init: Mptr_0[a_17] = a_13.
+  (* Initializer *)
+  Init: Mptr_0[a_16] = a_12.
+  (* Initializer *)
+  Init: Mptr_0[a_15] = a_11.
+  (* Initializer *)
+  Init: Mptr_0[global(L_params_3234)] = a_14.
+  (* Initializer *)
+  Init: x = to_uint64(x_7 / 4).
+  (* Initializer *)
+  Init: a_13 = a_3.
+  (* Initializer *)
+  Init: a_12 = a_4.
+  (* Initializer *)
+  Init: a_11 = a.
+  (* Call '__FC_assert' *)
+  Have: x_7 != 0.
+  (* Call '__FC_assert' *)
+  Have: to_uint64(x_7 % 4) = 0.
+  (* Call '__FC_assert' *)
+  Have: a_13 != null.
+  (* Call '__FC_assert' *)
+  Have: a_12 != null.
+  (* Call '__FC_assert' *)
+  Have: a_11 != null.
+  (* Initializer *)
+  Init: a_13 = a_10.
+  (* Initializer *)
+  Init: a_9 = addr_of_int(to_uint64(x_7 + to_uint64(int_of_addr(a_13)))).
+  (* Initializer *)
+  Init: a_12 = a_8.
+  (* Initializer *)
+  Init: a_7 = addr_of_int(to_uint64(x_7 + to_uint64(int_of_addr(a_12)))).
+  (* Initializer *)
+  Init: a_11 = a_6.
+  (* Initializer *)
+  Init: a_5 = addr_of_int(to_uint64(x_7 + to_uint64(int_of_addr(a_11)))).
+  (* Initializer *)
+  Init: x_2 = x.
+  (* Assertion *)
+  Have: a_9 = shift_float32(a_3, x).
+  (* Assertion *)
+  Have: a_7 = shift_float32(a_4, x).
+  (* Assertion *)
+  Have: a_5 = shift_float32(a, x).
+  (* Invariant *)
+  Have: (x_2 <= x) /\ (0 <= x_2).
+  (* Invariant *)
+  Have: a_10 = shift_float32(a_3, x_6).
+  (* Invariant *)
+  Have: a_9 = shift_float32(a_3, x_5).
+  (* Invariant *)
+  Have: a_8 = shift_float32(a_4, x_6).
+  (* Invariant *)
+  Have: a_7 = shift_float32(a_4, x_5).
+  (* Invariant *)
+  Have: a_6 = shift_float32(a, x_6).
+  (* Invariant *)
+  Have: a_5 = shift_float32(a, x_5).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_3, 0), x_3).
+  (* Invariant *)
+  Have: valid_rd(m, shift_float32(a_4, 0), x_3).
+  (* Invariant *)
+  Have: valid_rw(m, a_1, x_1).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_2) < x) ->
+      (P_cx_same_value(Mf32_0[shift_float32(a, i_1)],
+         L_cx_real(Mf32_0, a_3, a_4, x, i_1)) /\
+       P_cx_same_value(Mf32_0[shift_float32(a, i_1 + x)],
+         L_cx_imag(Mf32_0, a_3, a_4, x, i_1))))).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= x).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((v + i_1) < x) ->
+      (P_cx_same_value(a_2[shift_float32(a, i_1)],
+         L_cx_real(a_2, a_3, a_4, x, i_1)) /\
+       P_cx_same_value(a_2[shift_float32(a, i_1 + x)],
+         L_cx_imag(a_2, a_3, a_4, x, i_1))))).
+  (* Else *)
+  Have: v <= 0.
+}
+Prove: P_cx_same_value(a_2[shift_float32(a, i)],
+         L_cx_real(a_2, a_3, a_4, x, i)) /\
+    P_cx_same_value(a_2[shift_float32(a, i + x)],
+      L_cx_imag(a_2, a_3, a_4, x, i)).
+Prover CVC5 1.2.1 returns Valid (Qed:1.3s) (665ms) (430010)
+
+------------------------------------------------------------

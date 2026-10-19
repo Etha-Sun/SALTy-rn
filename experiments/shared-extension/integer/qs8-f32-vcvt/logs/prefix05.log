@@ -1,0 +1,60 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix05.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix05/annotated/integer.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix05/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfcvt_f_x_v_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle8_v_i8m2
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsext_vf2_i16m4
+[rte:annot] annotating function __riscv_vsext_vf2_i32m8
+[rte:annot] annotating function __riscv_vsub_vx_i16m4
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function proof_qcvt_eval
+[rte:annot] annotating function proof_qcvt_join
+[rte:annot] annotating function proof_qcvt_rebase
+[rte:annot] annotating function proof_tail8
+[rte:annot] annotating function vaddw_s8
+[rte:annot] annotating function vcvtq_f32_s32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vdupq_n_s16
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vld1_s8
+[rte:annot] annotating function vmovl_s16
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function wrap16
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] 787 goals scheduled
+[wp] [Timeout] typed_integer_lemma_centered_mod16 (Qed 2ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_proof_qcvt_eval_ensures (Qed 4ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_loop_invariant_13_preserved (Qed 297ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_loop_invariant_15_preserved (Qed 324ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_loop_invariant_21_preserved (Qed 498ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_66 (Qed 607ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_loop_invariant_25_preserved (Qed 841ms) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_73 (Qed 1.3s) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_82 (Qed 1.5s) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_85 (Qed 1.8s) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_100 (Qed 3.4s) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_102 (Qed 3.7s) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_loop_invariant_41_preserved (Qed 3.5s) (Alt-Ergo)
+[wp] [Timeout] typed_integer_equivalent_assert_106 (Qed 3.4s) (Alt-Ergo)

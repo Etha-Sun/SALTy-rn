@@ -1,0 +1,79 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/x32-transposec-raw/logs/raw01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/x32-transposec-raw/.build/raw01/annotated/unit.c']
+# Actual frozen model variant: ['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/x32-transposec-raw/logs/raw01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/model-variants/x32-transposec-raw/.build/raw01/annotated/unit.c', '-wp-model', 'Typed+raw']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vcreate_v_u32m4x2
+[rte:annot] annotating function __riscv_vle32_v_u32m1
+[rte:annot] annotating function __riscv_vle32_v_u32m4
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vmv_v_x_u32m1
+[rte:annot] annotating function __riscv_vse32_v_u32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsse32_v_u32m4
+[rte:annot] annotating function __riscv_vsse32_v_u32m8
+[rte:annot] annotating function __riscv_vsseg2e32_v_u32m4x2
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function vdup_n_u32
+[rte:annot] annotating function vld1_lane_u32
+[rte:annot] annotating function vld1_u32
+[rte:annot] annotating function vld2_lane_u32
+[rte:annot] annotating function vmov_n_u32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vzip_u32
+[wp] Computing [100 goals...]
+[wp] u32_shim.c:38: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] u32_shim.c:38: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint32*)
+[wp] u32_shim.c:72: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] u32_shim.c:72: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint32*)
+[wp] Computing [200 goals...]
+[wp] rvv.c:19: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] harness.c:5: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:13: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:30: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:25: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [300 goals...]
+[wp] 265 goals scheduled
+[wp] [Timeout] typed_raw_round_down_po2_ensures (Qed 3ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_loop_invariant_2_preserved (Qed 18ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_loop_invariant_3_preserved (Qed 13ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_assert_rte_mem_access (Qed 19ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_loop_assigns_part3 (Qed 29ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vcreate_v_u32m4x2_ensures (Qed 6ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_loop_invariant_2_preserved (Qed 19ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_loop_invariant_3_preserved (Qed 13ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_assert_rte_mem_access (Qed 13ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_loop_assigns_part3 (Qed 20ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_equivalent_terminates_part2 (Qed 4.1s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_terminates_part3 (Qed 179ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_terminates_part4 (Qed 223ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_terminates_part5 (Qed 3.8s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_terminates_part6 (Qed 4.1s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_ensures_equal (Qed 4.4s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assert_rte_mem_access (Qed 4.0s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assert_rte_mem_access_2 (Qed 4.2s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_normal_part02 (Qed 3.7s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_normal_part13 (Qed 175ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_normal_part15 (Qed 210ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_normal_part19 (Qed 304ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_normal_part20 (Qed 328ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_normal_part32 (Qed 3.9s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part10 (Qed 194ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part12 (Qed 209ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part18 (Qed 324ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part24 (Qed 382ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part25 (Qed 370ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part37 (Qed 3.9s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assigns_exit_part39 (Qed 4.2s) (Alt-Ergo)

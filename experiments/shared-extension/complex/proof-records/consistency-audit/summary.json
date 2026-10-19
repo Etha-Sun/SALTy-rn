@@ -1,0 +1,33 @@
+{
+  "frozen_inputs_changed": false,
+  "control": "No-precondition empty C function with assigns \\nothing; ensures \\false; scope only inconsistent_control.",
+  "complex-library": {
+    "original_raw": "195/195 historical raw statuses; NOT accepted as proof after consistency failure",
+    "model": "Typed+raw+float",
+    "false_control_ensures": "valid by Z3 4.12.5 in 4.74 seconds",
+    "claim": "quarantine library and dependent float results; all-count pass cannot establish correctness in this context",
+    "artifacts": {
+      "complex-library-false-control.json": "87032737af2a790e1e32d58142337e8edb6594d43e5ff6dd4bcef47993d71376",
+      "complex-library-false-control.log": "d66a71cbff3eff9570eab58f368a2e083c8fad95796022ed63854b7fdead37eb",
+      "complex-library-false-control.c": "40891013f200f9ca625d63541889cf8b43f52fc9d3cbba39cbe98245e923110f"
+    }
+  },
+  "minmax-nanf": {
+    "original_raw": "81/81 historical candidate raw statuses",
+    "model": "Typed+float",
+    "false_control_ensures": "not proved within 5 seconds; verdict timeout",
+    "claim": "control does not detect contradiction here; timeout does not establish consistency or certify those 81 goals",
+    "artifacts": {
+      "minmax-nanf-false-control.json": "e280261b6a41cfbb8d4b38c22ccb4d8e09adeda01a2d719414f00b1f1e5cf811",
+      "minmax-nanf-false-control.log": "1570fa811e3e25b9c4900154963896cae30c7f60b88ffff50e0fc5dc29e26109",
+      "minmax-nanf-false-control.c": "f23930157a5c5b6f52f822342adf3840a1ae66df6c78478786a189245d9f9163"
+    }
+  },
+  "independent_sign_audit": {
+    "cfloat": "bundle/share/frama-c/share/wp/why3/frama_c_wp/cfloat.mlw lines 169-172,176-179",
+    "driver": "bundle/share/why3/drivers/smt-libv2-floats.gen lines43-44 map is_positive/is_negative to fp.isPositive/fp.isNegative",
+    "generated_smt": "/tmp/float-sign-smt/typed/inconsistent_control_ensures_Why3_Z3_4_12_5.smt2:191,295,299",
+    "contradiction": "sign has exactly Positive and Negative; for NaN both SMT fp.isPositive and fp.isNegative are false; the two equivalences force its sign to be neither constructor. Thus this imported SMT context is inconsistent, independently of project global lemmas or custom arithmetic mappings.",
+    "scope_caution": "Failure depends on actual imported/filtered SMT context; cannot automatically attribute every float or integer goal to the contradiction without examining that context."
+  }
+}

@@ -1,6 +1,13 @@
 已验证程序目录
 
-当前收录旧qs8-rsum及共享shim路线qu8-rsum、s8-vclamp、f32-vadd。
+模型审计更正：当前manifest仅4个整数case可采纳；旧f32-vadd和新增6个浮点case
+已列quarantined_programs，不能把下方历史浮点“通过”数字当作有效证明。
+当前Frama-C33/Why3浮点模型可误证false，最小复现及40项结果见上述EXTENSION-RESULTS。
+
+当前收录条目以manifest.json为准；最新共享支持扩展结果见
+../docs/shared-shim/EXTENSION-RESULTS.zh-CN.txt，40项台账在
+../experiments/shared-extension/results.json。子目录也保留显式标记的历史版本，
+不能只凭目录存在就判断当前已验收。旧版说明与结果如下。
 neon.c/rvv.c保留干净实现，spec.h单独放公共规格，proof.patch集中证明材料。
 build.py将标准补丁应用到临时副本，再检查实现token和公共规格不变。
 没有额外proof helper文件；普通C shim与调用wrapper单独保存。

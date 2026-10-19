@@ -1,0 +1,167 @@
+{
+  "method": "Reconstruct exact uint32 LCG calls in historical native.c (seed 13, multiplier 1664525, increment 1013904223); no rerun and no alteration of historical logs.",
+  "findings": {
+    "qs8-f32-vcvt": {
+      "sampled_field": "params.scalar.scale",
+      "counts": {
+        "nan": 33,
+        "infinity": 0,
+        "subnormal": 44,
+        "zero": 0,
+        "finite_normal": 9403
+      },
+      "first": {
+        "finite_normal": {
+          "trial": 0,
+          "n": 1,
+          "index": 0,
+          "bits": "9eaff49f"
+        },
+        "subnormal": {
+          "trial": 0,
+          "n": 12,
+          "index": 0,
+          "bits": "007ca205"
+        },
+        "nan": {
+          "trial": 0,
+          "n": 53,
+          "index": 0,
+          "bits": "7fde6267"
+        }
+      },
+      "native_source_sha256": "0c6aa0f5be2e753fb833365f0e651f795bfbfe9927efe6003d8d24714c92a4dc",
+      "historical_finite_only_label_correct": false
+    },
+    "qu8-f32-vcvt": {
+      "sampled_field": "params.scalar.scale",
+      "counts": {
+        "nan": 33,
+        "infinity": 0,
+        "subnormal": 44,
+        "zero": 0,
+        "finite_normal": 9403
+      },
+      "first": {
+        "finite_normal": {
+          "trial": 0,
+          "n": 1,
+          "index": 0,
+          "bits": "9eaff49f"
+        },
+        "subnormal": {
+          "trial": 0,
+          "n": 12,
+          "index": 0,
+          "bits": "007ca205"
+        },
+        "nan": {
+          "trial": 0,
+          "n": 53,
+          "index": 0,
+          "bits": "7fde6267"
+        }
+      },
+      "native_source_sha256": "8fc3b2a580496cf14542a63bd8637c902eb926e5437ed784a0c66434ad1fa474",
+      "historical_finite_only_label_correct": false
+    },
+    "qu8-f32-vcvt-v2": {
+      "sampled_field": "params.scalar.scale",
+      "counts": {
+        "nan": 33,
+        "infinity": 0,
+        "subnormal": 44,
+        "zero": 0,
+        "finite_normal": 9403
+      },
+      "first": {
+        "finite_normal": {
+          "trial": 0,
+          "n": 1,
+          "index": 0,
+          "bits": "9eaff49f"
+        },
+        "subnormal": {
+          "trial": 0,
+          "n": 12,
+          "index": 0,
+          "bits": "007ca205"
+        },
+        "nan": {
+          "trial": 0,
+          "n": 53,
+          "index": 0,
+          "bits": "7fde6267"
+        }
+      },
+      "native_source_sha256": "8fc3b2a580496cf14542a63bd8637c902eb926e5437ed784a0c66434ad1fa474",
+      "historical_finite_only_label_correct": false
+    },
+    "qs8-vmul-minmax-fp32": {
+      "sampled_field": "params.scalar.scale",
+      "counts": {
+        "nan": 41,
+        "infinity": 0,
+        "subnormal": 35,
+        "zero": 0,
+        "finite_normal": 9404
+      },
+      "first": {
+        "finite_normal": {
+          "trial": 0,
+          "n": 1,
+          "index": 0,
+          "bits": "4a5cb972"
+        },
+        "subnormal": {
+          "trial": 5,
+          "n": 72,
+          "index": 0,
+          "bits": "806d7e0a"
+        },
+        "nan": {
+          "trial": 7,
+          "n": 74,
+          "index": 0,
+          "bits": "ffee898a"
+        }
+      },
+      "native_source_sha256": "0f7aa5bf5427ead814ad5de8db5550d76f80c66653eed69a166da67ecc78cd65",
+      "historical_finite_only_label_correct": false
+    },
+    "f32-f16-vcvt": {
+      "sampled_field": "input[0..299]",
+      "counts": {
+        "nan": 11180,
+        "infinity": 0,
+        "subnormal": 11096,
+        "zero": 0,
+        "finite_normal": 2821724
+      },
+      "first": {
+        "finite_normal": {
+          "trial": 0,
+          "n": 1,
+          "index": 0,
+          "bits": "3db92208"
+        },
+        "nan": {
+          "trial": 0,
+          "n": 1,
+          "index": 76,
+          "bits": "ffa3d624"
+        },
+        "subnormal": {
+          "trial": 0,
+          "n": 3,
+          "index": 4,
+          "bits": "801b8d74"
+        }
+      },
+      "native_source_sha256": "c6334f8f7aad9dc3b48c4d0ba596dad8c65f786acb24f20dc0c0a92a9655a432",
+      "historical_finite_only_label_correct": false
+    }
+  },
+  "note": "Raw uint32 generation has no finite filter, but deterministic historical samples contain no infinity. Full spec allows NaN/Inf independently of finite regression coverage.",
+  "supplementary_regression": "proof-records/native-specials-results.json explicitly covers +/-Inf, qNaN/sNaN, +/-0 and subnormal after the historical run; historical native-results.json retained unchanged."
+}

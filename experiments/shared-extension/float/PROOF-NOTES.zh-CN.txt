@@ -1,0 +1,38 @@
+一致性审计警报（2026-10-19 UTC）
+
+原本6个新float case raw checker complete=true，但独立的无前置 ensures false 空函数
+在旧f32-vadd与新bits同一注释上下文中都被Z3判Valid。原始WP报告保留，所有float
+“通过”结论暂停接纳；不能把solver valid数量当作健全性证明。完整日志见 model-audit/。
+与 kernel 本身不等价是不同问题；整数case不因这一float上下文问题自动失效。
+导出的SMT已定位sign两构造子与NaN fp.isPositive/fp.isNegative的全局前提矛盾；
+独立ground实例直接UNSAT。reciprocal替代语法仍失败，修复尚未完成。
+
+Float proof campaign（agent 工作记录）
+
+所有实现、公开 spec、wrapper、driver 由 root 冻结后补 proof。只修改 proof.patch；
+同一个已冻结 case 若工具模型有缺项，保留旧记录，由 root 显式批准新的冻结清单。
+本 agent 不修改任何实现、公开 spec、driver 或冻结清单。
+
+策略：复用既有 f32-vadd 的 same_float（保留零符号的参数观察）、same_value
+（数值相等或双方 NaN）及共享读写 frame。用 ghost pointwise 循环显式实例化
+Typed 内存的数组不变式。这些 ghost 循环不限制真实输入长度，全部有 termination
+目标。尾部仅对真实余数 0/4/8/12 字节做 case split。
+
+sub/mul/div/mulc：算术由现有 WP IEEE binary32 操作映射；同一操作共享标量
+合同和向量 active-lane 合同，每个实际 C body 都需验证。未假设有限浮点数，未排除
+NaN、Inf 或除数零。输出比较仍不观察 NaN payload、signed-zero 位差、FP flags。
+
+min/max：分别给 ARM NaN propagation 和 RVV minimumNumber/maximumNumber 建模。
+修复后的 RVV target 用 mask+merge 恢复 NaN propagation。原版保留，不在 shim
+中偷偷统一原始语义。signed-zero 的 shim 规则保留，但当前输出规格只观察数值。
+
+representation/bits：repr32/from_repr32 是待建立的逻辑函数符号。它们没有 axioms，
+float_bits/bits_float 的 C body 必须证明对应 postcondition，不能作为外部可信合同
+跳过。若失败，这就是未闭合的表示桥接目标；其消费者的通过目标不构成全程序证明。
+
+sqrt：纯 C 二分/舍入实现有循环范围和 variant，目标是 existing IEEE sqrt 模型。
+位表示和 nearest-even 算法正确性都必须证明，不能只凭 native stress test 宣称通过。
+
+每次检查使用新的 logs 名称，保留 raw/log/summary。complete 必须同时满足所有
+raw obligations passed、所有 body ensures/global lemma 有覆盖、冻结与 proof/checker
+哈希未变化。失败或运行中记录均不得列入 verified。

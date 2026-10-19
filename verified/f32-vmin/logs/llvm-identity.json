@@ -1,0 +1,54 @@
+{
+  "plain": {
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-O0",
+      "-g0",
+      "-S",
+      "-emit-llvm",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "-"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "unit_sha256": "cfe68085a1e1436c6afc2d0a6a8ecd55dd59ee38300d47d9d7f264ea6b44fd68"
+  },
+  "annotated": {
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-O0",
+      "-g0",
+      "-S",
+      "-emit-llvm",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "-"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "unit_sha256": "1612038030afd833a00e1c8dee3250fff76d0e22fdbbf6f9edfdbd3c1929bf20"
+  },
+  "llvm_diff": {
+    "command": [
+      "llvm-diff-14",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/verified/f32-vmin/.build/canonical01/llvm/plain.ll",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/verified/f32-vmin/.build/canonical01/llvm/annotated.ll"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "in function vminq_f32:\n  in block %65 / %65:\n    >   %66 = phi float [ %39, %36 ], [ %64, %63 ]\n    <   %66 = phi float [ %39, %36 ], [ %64, %63 ]\n        %67 = getelementptr inbounds %struct.float32x4_t, %struct.float32x4_t* %5, i32 0, i32 0\n        %68 = load i64, i64* %8, align 8\n        %69 = getelementptr inbounds [4 x float], [4 x float]* %67, i64 0, i64 %68\n    >   store float %66, float* %69, align 4\n    <   store float %66, float* %69, align 4\n  in block %61 / %61:\n    >   %62 = phi float [ %58, %57 ], [ %60, %59 ]\n    <   %62 = phi float [ %58, %57 ], [ %60, %59 ]\n  in block %63 / %63:\n    >   %64 = phi float [ %52, %46 ], [ %62, %61 ]\n    <   %64 = phi float [ %52, %46 ], [ %62, %61 ]\n\nin function __riscv_vfmin_vv_f32m8:\n  in block %75 / %75:\n    >   %76 = phi float [ %33, %30 ], [ %74, %73 ]\n    <   %76 = phi float [ %33, %30 ], [ %74, %73 ]\n        %77 = getelementptr inbounds %struct.vfloat32m8_t, %struct.vfloat32m8_t* %0, i32 0, i32 0\n        %78 = load i64, i64* %6, align 8\n        %79 = getelementptr inbounds [32 x float], [32 x float]* %77, i64 0, i64 %78\n    >   store float %76, float* %79, align 4\n    <   store float %76, float* %79, align 4\n  in block %67 / %67:\n    >   %68 = phi float [ %64, %63 ], [ %66, %65 ]\n    <   %68 = phi float [ %64, %63 ], [ %66, %65 ]\n  in block %71 / %71:\n    >   %72 = phi float [ %45, %44 ], [ %70, %69 ]\n    <   %72 = phi float [ %45, %44 ], [ %70, %69 ]\n  in block %69 / %69:\n    >   %70 = phi float [ %58, %52 ], [ %68, %67 ]\n    <   %70 = phi float [ %58, %52 ], [ %68, %67 ]\n  in block %73 / %73:\n    >   %74 = phi float [ %39, %38 ], [ %72, %71 ]\n    <   %74 = phi float [ %39, %38 ], [ %72, %71 ]\n"
+  },
+  "llvm_ir_byte_identical": true,
+  "plain_ir_sha256": "f5027e33a2d7b51c5a7621d18b9cac502216fa96e63298fc6da6e4ad5de54a67",
+  "annotated_ir_sha256": "f5027e33a2d7b51c5a7621d18b9cac502216fa96e63298fc6da6e4ad5de54a67",
+  "clang_version": "Ubuntu clang version 14.0.0-1ubuntu1.1",
+  "scope": "Same host compiler and flags, assertions enabled; no general C/ISA equivalence or ghost noninterference theorem.",
+  "passed": false
+}

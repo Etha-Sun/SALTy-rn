@@ -1,0 +1,89 @@
+--- a/neon.c
++++ b/neon.c
+@@ -14,6 +14,9 @@
+     int8_t* output,
+     const struct xnn_qs8_cvt_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const int8_t *input_base=input;
++  //@ ghost int8_t *output_base=output;
++  //@ ghost size_t total=batch;
+   assert(batch != 0);
+   assert(batch % sizeof(int8_t) == 0);
+   assert(input != NULL);
+@@ -22,6 +25,13 @@
+   const int16x8_t vinput_zero_point = vdupq_n_s16(params->scalar.input_zero_point);
+   const int16x8_t vmultiplier = vdupq_n_s16(-params->scalar.multiplier);
+   const int16x8_t voutput_zero_point = vdupq_n_s16(params->scalar.output_zero_point);
++  /*@ loop invariant 0<=batch<=total;
++      loop invariant input==input_base+(total-batch);
++      loop invariant output==output_base+(total-batch);
++      loop invariant \valid_read(input_base+(0..total+6));
++      loop invariant \valid(output_base+(0..total-1));
++      loop assigns batch,input,output,output_base[0..total-1];
++      loop variant batch; */
+   for (; batch >= 8 * sizeof(int8_t); batch -= 8 * sizeof(int8_t)) {
+     const int8x8_t vx = vld1_s8(input); input += 8;
+     int16x8_t vacc = vsubw_s8(vinput_zero_point, vx);
+@@ -31,6 +41,8 @@
+     const int8x8_t vy = vqmovn_s16(vacc);
+     vst1_s8(output, vy); output += 8;
+   }
++  //@ assert 0<=batch<=7;
++  //@ ghost proof_tail8(batch);
+   if XNN_UNLIKELY(batch != 0) {
+     assert(batch >= 1 * sizeof(int8_t));
+     assert(batch <= 7 * sizeof(int8_t));
+--- a/rvv.c
++++ b/rvv.c
+@@ -4,6 +4,9 @@
+     int8_t* output,
+     const struct xnn_qs8_cvt_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const int8_t *input_base=input;
++  //@ ghost int8_t *output_base=output;
++  //@ ghost size_t total=batch;
+   assert(batch != 0);
+   assert(batch % sizeof(int8_t) == 0);
+   assert(input != NULL);
+@@ -13,6 +16,13 @@
+   const int16_t multiplier = (int16_t) -params->scalar.multiplier;
+   const int16_t output_zero_point = params->scalar.output_zero_point;
+ 
++  /*@ loop invariant 0<=batch<=total;
++      loop invariant input==input_base+(total-batch);
++      loop invariant output==output_base+(total-batch);
++      loop invariant \valid_read(input_base+(0..total+6));
++      loop invariant \valid(output_base+(0..total-1));
++      loop assigns batch,input,output,output_base[0..total-1];
++      loop variant batch; */
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m2(batch);
+ 
+--- a/harness.c
++++ b/harness.c
+@@ -2,6 +2,7 @@
+ int equivalent(size_t n, const int8_t *input, int8_t *left, int8_t *right, const struct xnn_qs8_cvt_params* params) {
+   test_neon(n,input,left,params);
+   test_rvv(n,input,right,params);
++  /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
+   for(size_t i=0;i<n;i++) if(!(left[i]==right[i]))return 0;
+   return 1;
+ }
+--- a/unit.c
++++ b/unit.c
+@@ -1,4 +1,15 @@
+ #include "spec.h"
++/*@ ghost
++/@ requires b<=7; terminates \true; assigns \nothing;
++   ensures four: (b&4)!=0 ==> 4<=b;
++   ensures two: (b&2)!=0 ==> 2<=b%4;
++   ensures one: (b&1)!=0 ==> b%2==1;
++   ensures parts: b==((b&4)!=0?4:0)+((b&2)!=0?2:0)+((b&1)!=0?1:0); @/
++void proof_tail8(size_t b) {
++  switch(b) { case 0: break; case 1: break; case 2: break; case 3: break;
++              case 4: break; case 5: break; case 6: break; case 7: break; }
++}
++*/
+ #include "integer-qs8-vcvt.c"
+ #include "neon.c"
+ #include "rvv.c"

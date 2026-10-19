@@ -1,0 +1,3623 @@
+{
+  "scope": "40 inventory kernels; fixed VLEN128 and declared per-wrapper domains; no ISA proof; current failures are proof/model work remaining, not impossibility results",
+  "pre_work_checkpoint": "416f48c",
+  "counts": {
+    "proved": 4,
+    "proof_pending": 26,
+    "missing_target": 3,
+    "model_quarantined": 7
+  },
+  "target_repairs_this_campaign": 14,
+  "entries": [
+    {
+      "kernel": "f32-argmaxpool",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+      "pre_campaign_target_sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-argmaxpool"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "index/tie-breaking and pointer-table loops; float bit-select representation, plus unrelated primitives included by coarse module projection",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-argmaxpool/logs/baseline01-summary.json",
+          "sha256": "d04f9f2ca40055701b022851926fa1f1754c9c7f83e3ecc98e6b2fe061d54465",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.11,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 676,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vand_vx_i8m2",
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmerge_vfm_f32m8",
+            "__riscv_vfmv_v_f_f32m8",
+            "__riscv_vfslide1down_vf_f32m8",
+            "__riscv_vfslide1up_vf_f32m8",
+            "__riscv_vle32_v_f32m8",
+            "__riscv_vle32_v_i32m8",
+            "__riscv_vle32_v_u32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vmerge_vvm_f32m8",
+            "__riscv_vmerge_vxm_u32m8",
+            "__riscv_vmfgt_vv_f32m8_b4",
+            "__riscv_vmfne_vv_f32m8_b4",
+            "__riscv_vmul_vx_i32m8",
+            "__riscv_vmv_v_x_u32m8",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vse32_v_u32m8",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsll_vx_i8m2",
+            "__riscv_vsra_vx_i32m8",
+            "__riscv_vwmacc_vx_i32m8",
+            "arithmetic_shift32",
+            "bits_i32",
+            "bits_i8",
+            "equivalent",
+            "vaddq_u32",
+            "vand_s8",
+            "vbslq_f32",
+            "vbslq_u32",
+            "vcgtq_f32",
+            "vcltq_f32",
+            "vcombine_f32",
+            "vcvtq_f32_s32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vdupq_n_u32",
+            "vextq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_high_u32",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vget_low_u32",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1_s8",
+            "vld1q_dup_f32",
+            "vld1q_dup_s32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld1q_s32",
+            "vld1q_u32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmlal_lane_s16",
+            "vmov_n_s8",
+            "vmovl_s8",
+            "vmovq_n_f32",
+            "vmulq_s32",
+            "vshl_n_s8",
+            "vshrq_n_s32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1_lane_u32",
+            "vst1_u32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vst1q_u32",
+            "vzip1q_f32",
+            "vzip2q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "4bb63e9fd25113fdffbc14ff0ae6c3fe2a10ceca222076a234b46e3a983b307e",
+      "files": {
+        "neon.c": {
+          "lines": 224,
+          "nonempty_lines": 195
+        },
+        "rvv.c": {
+          "lines": 128,
+          "nonempty_lines": 109
+        },
+        "spec.h": {
+          "lines": 52,
+          "nonempty_lines": 51
+        },
+        "harness.c": {
+          "lines": 10,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-conv-hwc2chw",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+      "pre_campaign_target_sha256": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-conv-hwc2chw"
+      ],
+      "target_repair": "missing upper clamp on second row, masked out-of-bounds load, NaN",
+      "new_target_implementation": false,
+      "blocker": "actual fmaf has no IEEE value postcondition in installed libc model; representation/pointer bridges and nested loops remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-conv-hwc2chw/logs/baseline01-summary.json",
+          "sha256": "89dca95587069250dd8ec10cab36c4089b42d9c37efff184f51f5ccb2d3958bc",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.253,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 952,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vadd_vx_i32m1",
+            "__riscv_vadd_vx_u32m1",
+            "__riscv_vfadd_vv_f32m1",
+            "__riscv_vfmacc_vf_f32m1",
+            "__riscv_vfmacc_vv_f32m1",
+            "__riscv_vfmax_vf_f32m1",
+            "__riscv_vfmax_vv_f32m1",
+            "__riscv_vfmerge_vfm_f32m1",
+            "__riscv_vfmin_vf_f32m1",
+            "__riscv_vfmin_vv_f32m1",
+            "__riscv_vfmul_vf_f32m1",
+            "__riscv_vfmul_vv_f32m1",
+            "__riscv_vfmv_f_s_f32m1_f32",
+            "__riscv_vfmv_v_f_f32m1",
+            "__riscv_vfslide1down_vf_f32m1",
+            "__riscv_vfslide1up_vf_f32m1",
+            "__riscv_vid_v_u32m1",
+            "__riscv_vle32_v_f32m1",
+            "__riscv_vlse32_v_f32m1",
+            "__riscv_vlse32_v_f32m1_m",
+            "__riscv_vmand_mm_b32",
+            "__riscv_vmerge_vvm_f32m1",
+            "__riscv_vmfgt_vv_f32m1_b32",
+            "__riscv_vmfne_vv_f32m1_b32",
+            "__riscv_vmsge_vx_i32m1_b32",
+            "__riscv_vmslt_vx_i32m1_b32",
+            "__riscv_vmul_vx_u32m1",
+            "__riscv_vreinterpret_v_u32m1_i32m1",
+            "__riscv_vse32_v_f32m1",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "__riscv_vsub_vx_i32m1",
+            "canonical_nan",
+            "doz",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "round_down_po2",
+            "round_up_po2",
+            "salty_max_vf_m1",
+            "salty_min_vf_m1",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32",
+            "xnn_prefetch_to_l1"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "fddb17e09c86fac82babbd95dab3c791c92e11dd959236225bbb5baebc22c9ef",
+      "files": {
+        "neon.c": {
+          "lines": 650,
+          "nonempty_lines": 514
+        },
+        "rvv.c": {
+          "lines": 238,
+          "nonempty_lines": 208
+        },
+        "spec.h": {
+          "lines": 54,
+          "nonempty_lines": 53
+        },
+        "harness.c": {
+          "lines": 9,
+          "nonempty_lines": 9
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-dwconv-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "bdb7f141b37fc1f90c29f7ad39b40f34f5c67d44feac1c56529ea995b0fc177e",
+      "pre_campaign_target_sha256": "6141be2793eb0f0d30ab23eb4bc4e36b9b9e027b9ed9627d685876208f7d0864",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-dwconv-minmax"
+      ],
+      "target_repair": "fixed four-channel packed weights vs VL layout, NaN",
+      "new_target_implementation": false,
+      "blocker": "actual fmaf has no IEEE value postcondition in installed libc model; representation/pointer bridges and nested loops remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/logs/baseline01-summary.json",
+          "sha256": "b6eed65ea36c7568b73a7a46f7dfccc434b51f51d01d6ee8df63a1f7f958d274",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.09,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 427,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m4",
+            "__riscv_vfadd_vv_f32m4_tu",
+            "__riscv_vfmacc_vf_f32m4",
+            "__riscv_vfmacc_vv_f32m4",
+            "__riscv_vfmadd_vf_f32m4",
+            "__riscv_vfmax_vf_f32m4",
+            "__riscv_vfmerge_vfm_f32m4",
+            "__riscv_vfmin_vf_f32m4",
+            "__riscv_vfmul_vv_f32m4",
+            "__riscv_vfmv_v_f_f32m4",
+            "__riscv_vfredusum_vs_f32m4_f32m1",
+            "__riscv_vfsub_vf_f32m4",
+            "__riscv_vle32_v_f32m4",
+            "__riscv_vmflt_vf_f32m4_b8",
+            "__riscv_vmfne_vv_f32m4_b8",
+            "__riscv_vse32_v_f32m4",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "canonical_nan",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "salty_max_vf_m4",
+            "salty_min_vf_m4",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "989bf695aee07cd59a8540b4e3992da83044c3ff9942c3f695f00c57667229ba",
+      "files": {
+        "neon.c": {
+          "lines": 108,
+          "nonempty_lines": 89
+        },
+        "rvv.c": {
+          "lines": 81,
+          "nonempty_lines": 69
+        },
+        "spec.h": {
+          "lines": 48,
+          "nonempty_lines": 47
+        },
+        "harness.c": {
+          "lines": 8,
+          "nonempty_lines": 8
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-dwconv2d-chw",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+      "pre_campaign_target_sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-dwconv2d-chw"
+      ],
+      "target_repair": "NaN propagation",
+      "new_target_implementation": false,
+      "blocker": "actual fmaf has no IEEE value postcondition in installed libc model; representation/pointer bridges and nested loops remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/logs/baseline01-summary.json",
+          "sha256": "da674c25a421e25c66664a5cd6438d6b5901276d6f0ba3e0318bd2f72bc98bb3",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.205,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 925,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m2",
+            "__riscv_vfmacc_vf_f32m2",
+            "__riscv_vfmacc_vv_f32m2",
+            "__riscv_vfmax_vf_f32m2",
+            "__riscv_vfmax_vv_f32m2",
+            "__riscv_vfmerge_vfm_f32m2",
+            "__riscv_vfmin_vf_f32m2",
+            "__riscv_vfmin_vv_f32m2",
+            "__riscv_vfmul_vf_f32m2",
+            "__riscv_vfmul_vv_f32m2",
+            "__riscv_vfmv_v_f_f32m2",
+            "__riscv_vfslide1down_vf_f32m2",
+            "__riscv_vfslide1up_vf_f32m2",
+            "__riscv_vle32_v_f32m2",
+            "__riscv_vmerge_vvm_f32m2",
+            "__riscv_vmfgt_vv_f32m2_b16",
+            "__riscv_vmfne_vv_f32m2_b16",
+            "__riscv_vreinterpret_v_f32m4_i32m4",
+            "__riscv_vreinterpret_v_i32m4_f32m4",
+            "__riscv_vse32_v_f32m2",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "__riscv_vsll_vx_i32m4",
+            "canonical_nan",
+            "doz",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "round_down_po2",
+            "round_up_po2",
+            "salty_max_vf_m2",
+            "salty_min_vf_m2",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vandq_u32",
+            "vbicq_u32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vdupq_n_u32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_high_u32",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vget_low_u32",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1_s8",
+            "vld1q_dup_f32",
+            "vld1q_dup_s32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld1q_s32",
+            "vld1q_u32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vreinterpretq_f32_s32",
+            "vreinterpretq_f32_u32",
+            "vreinterpretq_s32_f32",
+            "vreinterpretq_u32_f32",
+            "vshlq_n_s32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1_lane_u32",
+            "vst1_u32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vst1q_u32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32",
+            "xnn_prefetch_to_l1"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "a17a50733644c5965c2a78f03a2cef3a5cb9d46f1b61a0c463356e5038e8d5d4",
+      "files": {
+        "neon.c": {
+          "lines": 267,
+          "nonempty_lines": 218
+        },
+        "rvv.c": {
+          "lines": 179,
+          "nonempty_lines": 150
+        },
+        "spec.h": {
+          "lines": 39,
+          "nonempty_lines": 38
+        },
+        "harness.c": {
+          "lines": 8,
+          "nonempty_lines": 8
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-f16-vcvt",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "41a081db8c9503ca62f077ad790dd92d92f2fe374e554cef8a9baf35dabd2aaa",
+      "pre_campaign_target_sha256": "35730ec8f13c282e4b690536c738cce15a455f03eb649395253cf8be4712f851",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/f32-f16-vcvt"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "float bits/IEEE encoding relation plus rounding/magic-bias proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/f32-f16-vcvt/logs/attempt01-summary.json",
+          "sha256": "d4264ce70c8af252cd5a187f16b61fd408a9ed47a2df89892de0dd2dcaf400c4",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.309,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 769,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vadd_vv_u16m4",
+            "__riscv_vadd_vx_u32m8",
+            "__riscv_vand_vx_u16m4",
+            "__riscv_vand_vx_u32m8",
+            "__riscv_vfabs_v_f32m8",
+            "__riscv_vfadd_vv_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle32_v_f32m8",
+            "__riscv_vmaxu_vx_u32m8",
+            "__riscv_vmerge_vxm_u16m4",
+            "__riscv_vmsgtu_vx_u32m8_b4",
+            "__riscv_vnsrl_wx_u16m4",
+            "__riscv_vor_vv_u16m4",
+            "__riscv_vreinterpret_v_f32m8_u32m8",
+            "__riscv_vreinterpret_v_u32m8_f32m8",
+            "__riscv_vse16_v_u16m4",
+            "__riscv_vsetvl_e32m8",
+            "equivalent",
+            "vabsq_f32",
+            "vadd_u16",
+            "vaddq_f32",
+            "vaddq_u16",
+            "vaddq_u32",
+            "vand_u16",
+            "vandq_u16",
+            "vandq_u32",
+            "vbsl_u16",
+            "vbslq_u16",
+            "vcgtq_u32",
+            "vcombine_u16",
+            "vdupq_n_f32",
+            "vdupq_n_u16",
+            "vdupq_n_u32",
+            "vext_u16",
+            "vget_low_u16",
+            "vld1q_f32",
+            "vmaxq_u32",
+            "vmovn_u32",
+            "vmulq_f32",
+            "vorr_u16",
+            "vorrq_u16",
+            "vreinterpret_u32_u16",
+            "vreinterpretq_f32_u32",
+            "vreinterpretq_u32_f32",
+            "vshrn_n_u32",
+            "vst1_lane_u16",
+            "vst1_lane_u32",
+            "vst1_u16",
+            "vst1q_u16"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "8212ca86338c6ec81a6fe542c37245ee957893cc6d56ffe70209783150517827",
+      "files": {
+        "neon.c": {
+          "lines": 147,
+          "nonempty_lines": 108
+        },
+        "rvv.c": {
+          "lines": 58,
+          "nonempty_lines": 41
+        },
+        "spec.h": {
+          "lines": 20,
+          "nonempty_lines": 20
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-gemm-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61",
+      "pre_campaign_target_sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-gemm-minmax"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "actual fmaf has no IEEE value postcondition in installed libc model; representation/pointer bridges and nested loops remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-gemm-minmax/logs/baseline01-summary.json",
+          "sha256": "c367c99a97b6fa7b9829aabad784b00243dcaba846fb1269c8718f4fa684855e",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.113,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 704,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m4",
+            "__riscv_vfadd_vv_f32m4_tu",
+            "__riscv_vfmacc_vf_f32m4",
+            "__riscv_vfmacc_vv_f32m4",
+            "__riscv_vfmadd_vf_f32m4",
+            "__riscv_vfmax_vf_f32m4",
+            "__riscv_vfmerge_vfm_f32m4",
+            "__riscv_vfmin_vf_f32m4",
+            "__riscv_vfmul_vv_f32m4",
+            "__riscv_vfmv_v_f_f32m4",
+            "__riscv_vfredusum_vs_f32m4_f32m1",
+            "__riscv_vfsub_vf_f32m4",
+            "__riscv_vle32_v_f32m4",
+            "__riscv_vmflt_vf_f32m4_b8",
+            "__riscv_vmfne_vv_f32m4_b8",
+            "__riscv_vse32_v_f32m4",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "canonical_nan",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "b24aad5c768bf9d193e5497c00da3a290a07cb8aecbecfcf79e4c5cfa11f9f12",
+      "files": {
+        "neon.c": {
+          "lines": 195,
+          "nonempty_lines": 179
+        },
+        "rvv.c": {
+          "lines": 128,
+          "nonempty_lines": 116
+        },
+        "spec.h": {
+          "lines": 45,
+          "nonempty_lines": 44
+        },
+        "harness.c": {
+          "lines": 10,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-igemm-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "e7a1cb0fa88abfc4588d289781c03daf29832466fbdcc88861fc3f6cf2683b6a",
+      "pre_campaign_target_sha256": "960f7d27592187438b259058dc694e42c369fb7bf82c7c3d5729fadbe86c42fd",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-igemm-minmax"
+      ],
+      "target_repair": "NaN propagation",
+      "new_target_implementation": false,
+      "blocker": "actual fmaf has no IEEE value postcondition in installed libc model; representation/pointer bridges and nested loops remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-igemm-minmax/logs/baseline01-summary.json",
+          "sha256": "fc1ad526f7e603071fff2a0a5236ca42edf50f024a286f26f248e660a0d12b75",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.104,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 436,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m4",
+            "__riscv_vfadd_vv_f32m4_tu",
+            "__riscv_vfmacc_vf_f32m4",
+            "__riscv_vfmacc_vv_f32m4",
+            "__riscv_vfmadd_vf_f32m4",
+            "__riscv_vfmax_vf_f32m4",
+            "__riscv_vfmerge_vfm_f32m4",
+            "__riscv_vfmin_vf_f32m4",
+            "__riscv_vfmul_vv_f32m4",
+            "__riscv_vfmv_v_f_f32m4",
+            "__riscv_vfredusum_vs_f32m4_f32m1",
+            "__riscv_vfsub_vf_f32m4",
+            "__riscv_vle32_v_f32m4",
+            "__riscv_vmflt_vf_f32m4_b8",
+            "__riscv_vmfne_vv_f32m4_b8",
+            "__riscv_vse32_v_f32m4",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "canonical_nan",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "salty_max_vf_m4",
+            "salty_min_vf_m4",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "17e95dd69c6107fbacc4e8e5b572f3dac17ba23aeadd08956cf3839572425a86",
+      "files": {
+        "neon.c": {
+          "lines": 115,
+          "nonempty_lines": 97
+        },
+        "rvv.c": {
+          "lines": 79,
+          "nonempty_lines": 70
+        },
+        "spec.h": {
+          "lines": 49,
+          "nonempty_lines": 48
+        },
+        "harness.c": {
+          "lines": 8,
+          "nonempty_lines": 8
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-maxpool",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+      "pre_campaign_target_sha256": "0194ef9ea40d42ba0496069edf1afa54073893df273b58d00c91ad95faadc894",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-maxpool"
+      ],
+      "target_repair": "NaN propagation",
+      "new_target_implementation": false,
+      "blocker": "NaN/minmax value and float bit representation bridge; indirect window and frame invariants",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-maxpool/logs/baseline01-summary.json",
+          "sha256": "42749baae07466e34ef121588f3d6d0e66ca70636eeef9208e10fefa009682df",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.152,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 731,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfmax_vf_f32m8",
+            "__riscv_vfmax_vv_f32m8",
+            "__riscv_vfmerge_vfm_f32m8",
+            "__riscv_vfmin_vf_f32m8",
+            "__riscv_vfmin_vv_f32m8",
+            "__riscv_vfmv_v_f_f32m8",
+            "__riscv_vfslide1down_vf_f32m8",
+            "__riscv_vfslide1up_vf_f32m8",
+            "__riscv_vle32_v_f32m8",
+            "__riscv_vmerge_vvm_f32m8",
+            "__riscv_vmfgt_vv_f32m8_b4",
+            "__riscv_vmfne_vv_f32m8_b4",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "canonical_nan",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "salty_max_vf_m8",
+            "salty_max_vv_m8",
+            "salty_min_vf_m8",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmovq_n_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vzip1q_f32",
+            "vzip2q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "d83ff168280fb62da57f0242efa8587243ef5def29a94ca8ad47da16b9dacb41",
+      "files": {
+        "neon.c": {
+          "lines": 201,
+          "nonempty_lines": 175
+        },
+        "rvv.c": {
+          "lines": 132,
+          "nonempty_lines": 119
+        },
+        "spec.h": {
+          "lines": 46,
+          "nonempty_lines": 45
+        },
+        "harness.c": {
+          "lines": 10,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-raddstoreexpminusmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+      "pre_campaign_target_sha256": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax"
+      ],
+      "target_repair": "reduction order rounding",
+      "new_target_implementation": false,
+      "blocker": "IEEE FMA and float bits approximation bridge, explicit reduction-order prefix proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/logs/baseline01-summary.json",
+          "sha256": "643290c3859eef7434c45511094118b52323d8f5aefd17446bcb37d7ee7f229b",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.103,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 495,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m4",
+            "__riscv_vfadd_vv_f32m4_tu",
+            "__riscv_vfmacc_vf_f32m4",
+            "__riscv_vfmacc_vv_f32m4",
+            "__riscv_vfmadd_vf_f32m4",
+            "__riscv_vfmerge_vfm_f32m4",
+            "__riscv_vfmul_vv_f32m4",
+            "__riscv_vfmv_v_f_f32m4",
+            "__riscv_vfredusum_vs_f32m4_f32m1",
+            "__riscv_vfsub_vf_f32m4",
+            "__riscv_vle32_v_f32m4",
+            "__riscv_vmerge_vxm_u32m8",
+            "__riscv_vmflt_vf_f32m4_b8",
+            "__riscv_vmfne_vv_f32m4_b8",
+            "__riscv_vreinterpret_v_f32m4_i32m4",
+            "__riscv_vreinterpret_v_i32m4_f32m4",
+            "__riscv_vse32_v_f32m4",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "__riscv_vsll_vx_i32m4",
+            "equivalent",
+            "exp_lanes",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vandq_u32",
+            "vbicq_u32",
+            "vbslq_f32",
+            "vbslq_u32",
+            "vcgtq_f32",
+            "vcltq_f32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vreinterpretq_f32_s32",
+            "vreinterpretq_f32_u32",
+            "vreinterpretq_s32_f32",
+            "vreinterpretq_u32_f32",
+            "vshlq_n_s32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "4f3da36645979d1a4e1b0ea037f3c1fa7ff016d6aca39090e6710fae423db836",
+      "files": {
+        "neon.c": {
+          "lines": 118,
+          "nonempty_lines": 92
+        },
+        "rvv.c": {
+          "lines": 77,
+          "nonempty_lines": 65
+        },
+        "spec.h": {
+          "lines": 27,
+          "nonempty_lines": 26
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-spmm-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "b12e3790357f402147418cd26a06882e3203b4b163fa57446cd85d521b4e1c9c",
+      "pre_campaign_target_sha256": "cab6e94a897f41826f817466e4d61d0ce7ea9aac2934bfcdfdabe9fecb08864e",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-spmm-minmax"
+      ],
+      "target_repair": "fused vs nonfused order, NaN, nonzero cursor displacement reset",
+      "new_target_implementation": false,
+      "blocker": "actual fmaf has no IEEE value postcondition in installed libc model; representation/pointer bridges and nested loops remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/f32-spmm-minmax/logs/baseline01-summary.json",
+          "sha256": "0792a2a42764364c16ceb478df58fd2498a98bc0960ef4ae29047fd47f5b9c35",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.101,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 465,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m8",
+            "__riscv_vfmacc_vf_f32m8",
+            "__riscv_vfmacc_vv_f32m8",
+            "__riscv_vfmax_vf_f32m8",
+            "__riscv_vfmax_vv_f32m8",
+            "__riscv_vfmerge_vfm_f32m8",
+            "__riscv_vfmin_vf_f32m8",
+            "__riscv_vfmin_vv_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vfmul_vv_f32m8",
+            "__riscv_vfmv_v_f_f32m8",
+            "__riscv_vfslide1down_vf_f32m8",
+            "__riscv_vfslide1up_vf_f32m8",
+            "__riscv_vle32_v_f32m8",
+            "__riscv_vmerge_vvm_f32m8",
+            "__riscv_vmfgt_vv_f32m8_b4",
+            "__riscv_vmfne_vv_f32m8_b4",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "canonical_nan",
+            "doz",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "round_down_po2",
+            "round_up_po2",
+            "salty_max_vf_m8",
+            "salty_min_vf_m8",
+            "vaddq_f32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vcombine_f32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1q_dup_f32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlaq_f32",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32",
+            "xnn_prefetch_to_l1"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "f7b204542060fc3bb9e60ba635c946b2c49845954f81a6d6011b4cc2b819948b",
+      "files": {
+        "neon.c": {
+          "lines": 118,
+          "nonempty_lines": 115
+        },
+        "rvv.c": {
+          "lines": 69,
+          "nonempty_lines": 64
+        },
+        "spec.h": {
+          "lines": 49,
+          "nonempty_lines": 49
+        },
+        "harness.c": {
+          "lines": 10,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-vadd",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+      "pre_campaign_target_sha256": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593",
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": []
+    },
+    {
+      "kernel": "f32-vcmul",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294",
+      "pre_campaign_target_sha256": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/f32-vcmul"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "shared nonfused arithmetic library 195/195 proved; actual kernel uintptr_t offset-to-pointer bridge and loop/frame proof remain",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/model-variants/f32-vcmul-raw/logs/raw01-summary.json",
+          "sha256": "9ec25bde18b571bf5ee519dd665b2b529c52ab0c21c29b1ca9f25ec6290a6452",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.283,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 333,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m4",
+            "__riscv_vfmul_vv_f32m4",
+            "__riscv_vfsub_vv_f32m4",
+            "__riscv_vle32_v_f32m4",
+            "__riscv_vse32_v_f32m4",
+            "__riscv_vsetvl_e32m4",
+            "complex_add",
+            "complex_mul",
+            "complex_sub",
+            "equivalent",
+            "vget_high_f32",
+            "vget_low_f32",
+            "vld1q_f32",
+            "vmlaq_f32",
+            "vmlsq_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/complex/model-variants/f32-vcmul-raw/logs/raw02-summary.json",
+          "sha256": "0a5627a530f51df07276ed653048761afe816d2a1c0d99ef522391105cd6ec4a",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.275,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 418,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m4",
+            "__riscv_vfmul_vv_f32m4",
+            "__riscv_vfsub_vv_f32m4",
+            "__riscv_vle32_v_f32m4",
+            "__riscv_vse32_v_f32m4",
+            "__riscv_vsetvl_e32m4",
+            "complex_add",
+            "complex_mul",
+            "complex_sub",
+            "equivalent",
+            "vget_high_f32",
+            "vget_low_f32",
+            "vld1q_f32",
+            "vmlaq_f32",
+            "vmlsq_f32",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "54af34cdbf204bf9967f57a1da04e4538e320a2abebc894f44727882f9d387cf",
+      "files": {
+        "neon.c": {
+          "lines": 66,
+          "nonempty_lines": 58
+        },
+        "rvv.c": {
+          "lines": 50,
+          "nonempty_lines": 42
+        },
+        "spec.h": {
+          "lines": 20,
+          "nonempty_lines": 20
+        },
+        "harness.c": {
+          "lines": 8,
+          "nonempty_lines": 8
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "f32-vdiv",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0",
+      "pre_campaign_target_sha256": "5637c46cc781ada609567f65a010b3d698a010e090834e36c587873ede1e1f3d",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vdiv"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vdiv/logs/run01-summary.json",
+          "sha256": "bb5d3c1551c8f3e088c11989356c1a3784265e11183c53f3a5b02ea8a626d4c8",
+          "complete": false,
+          "exit": 0,
+          "seconds": 214.796,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 467,
+            "total": 468
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 468,
+          "pending_count": 1,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vdiv/logs/run02-summary.json",
+          "sha256": "8c40fa2007d98216400b56fc9048c3387b6eeda62f775b92a60644a7f6a15f19",
+          "complete": true,
+          "exit": 0,
+          "seconds": 228.906,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 481,
+            "total": 481
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 481,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "3e36c05890508a91fcdcdc1b7cd4704dc12d03620812dc6910c153ebc28f1bab",
+      "files": {
+        "neon.c": {
+          "lines": 43,
+          "nonempty_lines": 37
+        },
+        "rvv.c": {
+          "lines": 29,
+          "nonempty_lines": 25
+        },
+        "spec.h": {
+          "lines": 59,
+          "nonempty_lines": 56
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 206
+    },
+    {
+      "kernel": "f32-vlrelu",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+      "pre_campaign_target_sha256": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vlrelu"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "float/integer byte reinterpretation memory and IEEE representation bridge; sqrt also nearest-even algorithm proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vlrelu/logs/run01-summary.json",
+          "sha256": "9c830376bc8d50d79da14a2b605bff302cb3555fa958b2f31a713d78084fbdb7",
+          "complete": false,
+          "exit": 0,
+          "seconds": 474.494,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 692,
+            "total": 717
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 717,
+          "pending_count": 25,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vlrelu/logs/run02-summary.json",
+          "sha256": "6e36c83da0c46f3dba24aaf085c1e1c246fb80441190e6edd10dc88d445154ba",
+          "complete": false,
+          "exit": 0,
+          "seconds": 389.836,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 726,
+            "total": 745
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 745,
+          "pending_count": 19,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "b6fbaa7c1b5977ac50161280896996368f3ade06d62b3b6fc90a1f61ca4b4d84",
+      "files": {
+        "neon.c": {
+          "lines": 47,
+          "nonempty_lines": 40
+        },
+        "rvv.c": {
+          "lines": 32,
+          "nonempty_lines": 25
+        },
+        "spec.h": {
+          "lines": 52,
+          "nonempty_lines": 49
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 32
+    },
+    {
+      "kernel": "f32-vmax",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+      "pre_campaign_target_sha256": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vmax"
+      ],
+      "target_repair": "NaN propagation",
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vmax/logs/run01-summary.json",
+          "sha256": "cd493ad69ec64621acb3d0e69045f60e28b7e41c41e956c4813a6c134a5bbb45",
+          "complete": true,
+          "exit": 0,
+          "seconds": 247.372,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 528,
+            "total": 528
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 528,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "701878125fc4e01ecf54ddd3d2ee8e89c511fb42b1211af2a36b5d6a2f84bf49",
+      "files": {
+        "neon.c": {
+          "lines": 43,
+          "nonempty_lines": 37
+        },
+        "rvv.c": {
+          "lines": 36,
+          "nonempty_lines": 31
+        },
+        "spec.h": {
+          "lines": 59,
+          "nonempty_lines": 56
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 205
+    },
+    {
+      "kernel": "f32-vmin",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+      "pre_campaign_target_sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vmin"
+      ],
+      "target_repair": "NaN propagation",
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vmin/logs/run01-summary.json",
+          "sha256": "882479d779d57991afadd2ca3a6602528c50d016b2dcabbaacee248db73fae56",
+          "complete": false,
+          "exit": 0,
+          "seconds": 224.999,
+          "unchanged": false,
+          "raw_obligations": {
+            "passed": 514,
+            "total": 515
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 515,
+          "pending_count": 1,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vmin/logs/run02-summary.json",
+          "sha256": "5c0d27763131c36789264e10deb2e37bc45dc703812a611eec9952928f219608",
+          "complete": true,
+          "exit": 0,
+          "seconds": 250.391,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 528,
+            "total": 528
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 528,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "5caa8bad9f22d85e3da53fa6d66a1d18d2b274dde7fcb12e0feddfb3db8da0d0",
+      "files": {
+        "neon.c": {
+          "lines": 43,
+          "nonempty_lines": 37
+        },
+        "rvv.c": {
+          "lines": 36,
+          "nonempty_lines": 31
+        },
+        "spec.h": {
+          "lines": 59,
+          "nonempty_lines": 56
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 205
+    },
+    {
+      "kernel": "f32-vmul",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c",
+      "pre_campaign_target_sha256": "6f2acd553de265d3b8304d47009bb725dde8118539acf948cbdf0f7de79f235c",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vmul"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vmul/logs/run02-summary.json",
+          "sha256": "53ee6de584d86284cebc40ac85ba89359e00487715a8256764a7a70b7e96bf7c",
+          "complete": true,
+          "exit": 0,
+          "seconds": 210.181,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 468,
+            "total": 468
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 468,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "7887840d731a65d878cde8bb7d263976b7fce09c3dd551cf57b1801a6a9106d0",
+      "files": {
+        "neon.c": {
+          "lines": 43,
+          "nonempty_lines": 37
+        },
+        "rvv.c": {
+          "lines": 30,
+          "nonempty_lines": 25
+        },
+        "spec.h": {
+          "lines": 59,
+          "nonempty_lines": 56
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 195
+    },
+    {
+      "kernel": "f32-vmulc",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+      "pre_campaign_target_sha256": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vmulc"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vmulc/logs/run01-summary.json",
+          "sha256": "ebb91fdfe6a75d229131fb652170832c4d56ff0c57bde89cdf981f37c5fadd2e",
+          "complete": false,
+          "exit": 0,
+          "seconds": 220.101,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 490,
+            "total": 491
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 491,
+          "pending_count": 1,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vmulc/logs/run02-summary.json",
+          "sha256": "d71e5cb3df2811a0d1ff5a3f040946258baf39c6e3836bd0b652156b1de41abe",
+          "complete": true,
+          "exit": 0,
+          "seconds": 227.099,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 496,
+            "total": 496
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 496,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "648b0af7cb4c46c876fce3007255d99572ec857cb24febf90f967624126e2acb",
+      "files": {
+        "neon.c": {
+          "lines": 43,
+          "nonempty_lines": 36
+        },
+        "rvv.c": {
+          "lines": 26,
+          "nonempty_lines": 24
+        },
+        "spec.h": {
+          "lines": 59,
+          "nonempty_lines": 56
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 207
+    },
+    {
+      "kernel": "f32-vrndne",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "b02a27bfc9953ba14c6a43c583a566ebf6c41966beebdaa7143042fd4cf319fe",
+      "pre_campaign_target_sha256": "29488445db06359d64d9aef2c5477f2fc6ef750733287ca5c75f553f8ea1b530",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vrndne"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "float/integer byte reinterpretation memory and IEEE representation bridge; sqrt also nearest-even algorithm proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vrndne/logs/run01-summary.json",
+          "sha256": "d87fd051867457a31755d82509d6f3e5af5477f08c0c477503b8fefb8f5ce966",
+          "complete": false,
+          "exit": 0,
+          "seconds": 489.891,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 657,
+            "total": 682
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 682,
+          "pending_count": 25,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vrndne/logs/run02-summary.json",
+          "sha256": "189e0de44a594411f377ac0de2c6b00fbcd6d440828b022ae0dfcc83d98e581e",
+          "complete": false,
+          "exit": 0,
+          "seconds": 407.064,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 691,
+            "total": 710
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 710,
+          "pending_count": 19,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "00e7c9cdf13ed474956404dde1f96f25c4fd4de187cc3d3ec80393e772bff8a6",
+      "files": {
+        "neon.c": {
+          "lines": 52,
+          "nonempty_lines": 44
+        },
+        "rvv.c": {
+          "lines": 45,
+          "nonempty_lines": 36
+        },
+        "spec.h": {
+          "lines": 50,
+          "nonempty_lines": 47
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 32
+    },
+    {
+      "kernel": "f32-vsqrt",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "b4970661c787e642b8428f213a4b60bd894f4a63704ffc31ec96087beab4ef3e",
+      "pre_campaign_target_sha256": "b09b69f0e4b7de2a839b71c1207f21ac2f024a7aa173e7ca1b4c19cca5b06012",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vsqrt"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "float/integer byte reinterpretation memory and IEEE representation bridge; sqrt also nearest-even algorithm proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vsqrt/logs/run01-summary.json",
+          "sha256": "eab405d3c9c7d8d9f207550b658b47ab6dfd9477dba683870e178e4ab3a71a50",
+          "complete": false,
+          "exit": 0,
+          "seconds": 274.628,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 313,
+            "total": 329
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 329,
+          "pending_count": 16,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vsqrt/logs/run02-summary.json",
+          "sha256": "1ce3f021f343a5e6daccb26812f01e9abf9040d3f1f3335c1c8f67caa172a3b2",
+          "complete": false,
+          "exit": 0,
+          "seconds": 193.043,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 347,
+            "total": 357
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 357,
+          "pending_count": 10,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "7463ba4c1b74c2276dcda471bbb369250bc58d55f4883fc67418237b51dbc007",
+      "files": {
+        "neon.c": {
+          "lines": 35,
+          "nonempty_lines": 33
+        },
+        "rvv.c": {
+          "lines": 22,
+          "nonempty_lines": 21
+        },
+        "spec.h": {
+          "lines": 50,
+          "nonempty_lines": 47
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 32
+    },
+    {
+      "kernel": "f32-vsub",
+      "status": "model_quarantined",
+      "pre_campaign_source_sha256": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+      "pre_campaign_target_sha256": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c",
+      "candidate_directories": [
+        "experiments/shared-extension/float/f32-vsub"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "A no-precondition empty function with ensures false is reported valid in old float proof context; positive raw-goal counts are not admissible until model consistency is repaired.",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/float/f32-vsub/logs/run01-summary.json",
+          "sha256": "b1a9bdbfd12fa74832c1b017dc7156d95ec1662406c160c67a739d78f5bc4d03",
+          "complete": false,
+          "exit": 1,
+          "seconds": 0.323,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": null,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vv_f32m8",
+            "__riscv_vfsub_vv_f32m8",
+            "__riscv_vle32_v_f32m8",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsetvl_e8m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m8",
+            "equivalent",
+            "f32_add",
+            "f32_sub",
+            "proof_f32_tail_bits",
+            "proof_float_join",
+            "proof_sub_join",
+            "vaddq_f32",
+            "vget_high_f32",
+            "vget_low_f32",
+            "vld1q_f32",
+            "vld1q_s8",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "vsubq_f32"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vsub/logs/run02-summary.json",
+          "sha256": "b40bf48728f4700ba198a71957a83422d55d3afa66f9e3898bba12ebe72e20fa",
+          "complete": false,
+          "exit": 0,
+          "seconds": 211.717,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 467,
+            "total": 468
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 468,
+          "pending_count": 1,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/float/f32-vsub/logs/run03-summary.json",
+          "sha256": "cd89e3d2d4aab590bcb6fc4ee5dc460058d41e59be3ff618ea1e7eba307d00ba",
+          "complete": true,
+          "exit": 0,
+          "seconds": 221.289,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 481,
+            "total": 481
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 481,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "4dbc3e81b0d44dddc78e243b03351400476e197dbe02ad7456919089b0d93a90",
+      "files": {
+        "neon.c": {
+          "lines": 43,
+          "nonempty_lines": 37
+        },
+        "rvv.c": {
+          "lines": 30,
+          "nonempty_lines": 25
+        },
+        "spec.h": {
+          "lines": 59,
+          "nonempty_lines": 56
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 206
+    },
+    {
+      "kernel": "qd8-f32-qc4w-gemm-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "3a234e610298f7998ea073c3c75940beece0ad5d4f5506394465fd902a647b40",
+      "pre_campaign_target_sha256": "94971a31dcc1bbf276c4bf024e93f86b618d011b28816342040dc40e1aa22627",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/qd8-f32-qc4w-gemm-minmax"
+      ],
+      "target_repair": "NaN propagation",
+      "new_target_implementation": false,
+      "blocker": "mixed packed byte/int32/float memory, quantized nibble arithmetic, IEEE FMA and nested tile proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/qd8-f32-qc4w-gemm-minmax/logs/baseline01-summary.json",
+          "sha256": "a220a4f09899b1a9b40499c1f6e02412fa146199c037c4c1a94fb74a6e1b5fd6",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.193,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 1084,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vand_vx_i8m2",
+            "__riscv_vfadd_vv_f32m8",
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmacc_vf_f32m8",
+            "__riscv_vfmacc_vv_f32m8",
+            "__riscv_vfmax_vf_f32m8",
+            "__riscv_vfmax_vv_f32m8",
+            "__riscv_vfmerge_vfm_f32m8",
+            "__riscv_vfmin_vf_f32m8",
+            "__riscv_vfmin_vv_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vfmul_vv_f32m8",
+            "__riscv_vfmv_v_f_f32m8",
+            "__riscv_vfslide1down_vf_f32m8",
+            "__riscv_vfslide1up_vf_f32m8",
+            "__riscv_vle32_v_f32m8",
+            "__riscv_vle32_v_i32m8",
+            "__riscv_vle32_v_u32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vmerge_vvm_f32m8",
+            "__riscv_vmfgt_vv_f32m8_b4",
+            "__riscv_vmfne_vv_f32m8_b4",
+            "__riscv_vmul_vx_i32m8",
+            "__riscv_vmv_v_x_u32m8",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vse32_v_u32m8",
+            "__riscv_vsetvl_e32m1",
+            "__riscv_vsetvl_e32m2",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsetvlmax_e32m1",
+            "__riscv_vsetvlmax_e32m2",
+            "__riscv_vsetvlmax_e32m4",
+            "__riscv_vsetvlmax_e32m8",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsll_vx_i8m2",
+            "__riscv_vsra_vx_i32m8",
+            "__riscv_vwmacc_vx_i32m8",
+            "arithmetic_shift32",
+            "bits_i32",
+            "bits_i8",
+            "canonical_nan",
+            "doz",
+            "equivalent",
+            "fp_nan",
+            "max_number",
+            "min_number",
+            "neon_max",
+            "neon_min",
+            "round_down_po2",
+            "round_up_po2",
+            "salty_max_vf_m8",
+            "salty_min_vf_m8",
+            "vaddq_f32",
+            "vaddq_u32",
+            "vaddv_f32",
+            "vaddvq_f32",
+            "vand_s8",
+            "vcombine_f32",
+            "vcvtq_f32_s32",
+            "vdupq_lane_f32",
+            "vdupq_n_f32",
+            "vdupq_n_u32",
+            "vextq_f32",
+            "vfma_f32",
+            "vfmaq_f32",
+            "vfmaq_lane_f32",
+            "vfmaq_laneq_f32",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_high_u32",
+            "vget_lane_f32",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vget_low_u32",
+            "vld1_dup_f32",
+            "vld1_f32",
+            "vld1_s8",
+            "vld1q_dup_f32",
+            "vld1q_dup_s32",
+            "vld1q_f32",
+            "vld1q_lane_f32",
+            "vld1q_s32",
+            "vld1q_u32",
+            "vld2_dup_f32",
+            "vld2q_dup_f32",
+            "vmax_f32",
+            "vmaxq_f32",
+            "vmin_f32",
+            "vminq_f32",
+            "vmlal_lane_s16",
+            "vmlaq_f32",
+            "vmov_n_s8",
+            "vmovl_s8",
+            "vmovq_n_f32",
+            "vmulq_f32",
+            "vmulq_s32",
+            "vshl_n_s8",
+            "vshrq_n_s32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1_lane_u32",
+            "vst1_u32",
+            "vst1q_f32",
+            "vst1q_lane_f32",
+            "vst1q_u32",
+            "vsubq_f32",
+            "vzip1q_f32",
+            "vzip2q_f32",
+            "xnn_prefetch_to_l1"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "07521fef01b933367d69ddf65d953a7b1f4ffcb15f5a780bcbdcf35792cc1aad",
+      "files": {
+        "neon.c": {
+          "lines": 308,
+          "nonempty_lines": 274
+        },
+        "rvv.c": {
+          "lines": 106,
+          "nonempty_lines": 87
+        },
+        "spec.h": {
+          "lines": 46,
+          "nonempty_lines": 45
+        },
+        "harness.c": {
+          "lines": 9,
+          "nonempty_lines": 9
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "qd8-f32-qc8w-gemm-minmax",
+      "status": "missing_target",
+      "pre_campaign_source_sha256": "07cd24e14b360e03b6dba2bab6f0c5e6f081ac0f78869317094dbd0b8edeed70",
+      "pre_campaign_target_sha256": null,
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "Target implementation absent in upstream; three source bodies preserved, no fabricated equivalence claim",
+      "proof_attempts": []
+    },
+    {
+      "kernel": "qd8-f32-qc8w-igemm-minmax",
+      "status": "missing_target",
+      "pre_campaign_source_sha256": "4547988ffad20dcf9a94335805d7901d6732aa659c2fbe2dc490d8c90a44bfc8",
+      "pre_campaign_target_sha256": null,
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "Target implementation absent in upstream; three source bodies preserved, no fabricated equivalence claim",
+      "proof_attempts": []
+    },
+    {
+      "kernel": "qs8-f32-vcvt",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "d8dbc84351f0154858b2bd940ea42a1e3031ec75a03640a4842a164e219a4063",
+      "pre_campaign_target_sha256": "407dd1c3b927c122de70ce9709cb8aa419d70c7aec219996baa0132723f7534a",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qs8-f32-vcvt"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "integer widening/modulo and float congruence prefix proof; ordinary loop/frame and explicit vector intermediate assertions still pending",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qs8-f32-vcvt/logs/attempt01-summary.json",
+          "sha256": "650ea09a1cf3db6a74c410cad6ca492b1c7e423df00c22442abc39da30dacdcc",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.191,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 359,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vsub_vx_i16m4",
+            "equivalent",
+            "vaddw_s8",
+            "vcvtq_f32_s32",
+            "vdupq_n_f32",
+            "vdupq_n_s16",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_s8",
+            "vmovl_s16",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "wrap16"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix01-summary.json",
+          "sha256": "56fdeb647aa5b9c093e2450b78830ab2323397845a04c472aae252c381e4ad1c",
+          "complete": false,
+          "exit": 0,
+          "seconds": 373.485,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 591,
+            "total": 600
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 600,
+          "pending_count": 9,
+          "missing_body_ensures": [
+            "vget_high_f32"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix02-summary.json",
+          "sha256": "404a108234c91899f0770e49f818e889edc05ec5772dbd6f95a1887c9d97b5c3",
+          "complete": false,
+          "exit": 1,
+          "seconds": 0.37,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": null,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vsub_vx_i16m4",
+            "equivalent",
+            "proof_qcvt_frame",
+            "proof_qcvt_join",
+            "proof_tail8",
+            "vaddw_s8",
+            "vcvtq_f32_s32",
+            "vdupq_n_f32",
+            "vdupq_n_s16",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_s8",
+            "vmovl_s16",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "wrap16"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix03-summary.json",
+          "sha256": "7aa6859920b143f8f3e97042af56adc1316ffd4557323eb12ab6f907161cac29",
+          "complete": false,
+          "exit": 1,
+          "seconds": 0.42,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": null,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vsub_vx_i16m4",
+            "equivalent",
+            "proof_qcvt_join",
+            "proof_tail8",
+            "vaddw_s8",
+            "vcvtq_f32_s32",
+            "vdupq_n_f32",
+            "vdupq_n_s16",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_s8",
+            "vmovl_s16",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "wrap16"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix04-summary.json",
+          "sha256": "8bb447a07ba2c05dba7640f974b97e9772b4e902c188798329ece4fc66f8e312",
+          "complete": false,
+          "exit": 0,
+          "seconds": 447.082,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 614,
+            "total": 626
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 626,
+          "pending_count": 12,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix05-summary.json",
+          "sha256": "677270a974d625722b4d51bd5ba3e53800021daf6f3f40a05fcae0cae814085e",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.288,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 787,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vsub_vx_i16m4",
+            "equivalent",
+            "proof_qcvt_eval",
+            "proof_qcvt_join",
+            "proof_qcvt_rebase",
+            "proof_tail8",
+            "vaddw_s8",
+            "vcvtq_f32_s32",
+            "vdupq_n_f32",
+            "vdupq_n_s16",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_s8",
+            "vmovl_s16",
+            "vmulq_f32",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32",
+            "wrap16"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "2ca86a08496bc0883410dbfbbbb52d8cc30a8792736940b177db1a6911d081db",
+      "files": {
+        "neon.c": {
+          "lines": 68,
+          "nonempty_lines": 56
+        },
+        "rvv.c": {
+          "lines": 34,
+          "nonempty_lines": 26
+        },
+        "spec.h": {
+          "lines": 24,
+          "nonempty_lines": 24
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 314
+    },
+    {
+      "kernel": "qs8-qc8w-gemm-minmax-fp32",
+      "status": "missing_target",
+      "pre_campaign_source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "pre_campaign_target_sha256": null,
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "Target implementation absent in upstream; three source bodies preserved, no fabricated equivalence claim",
+      "proof_attempts": []
+    },
+    {
+      "kernel": "qs8-rdsum",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "63798158b69457fe965a29a3b3371fa3dd7785c13182b75aa4b9c09704dd4d20",
+      "pre_campaign_target_sha256": "338f2b3574d4f206854e67bbe7fe26eba69e699c063171ae1df9654d49e112e4",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qs8-rdsum"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "uintptr_t offset-to-pointer model and nested row reduction/frame invariants",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qs8-rdsum/logs/attempt01-summary.json",
+          "sha256": "b67dbf327794517dd8a2fd338e0ee86a223cfa466e4272af73de96fd9c24d70b",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.201,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 617,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vadd_vv_i32m8",
+            "__riscv_vle32_v_i32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vmv_v_x_i16m4",
+            "__riscv_vmv_v_x_i32m8",
+            "__riscv_vse32_v_i32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vwadd_wv_i16m4",
+            "__riscv_vwadd_wv_i32m8",
+            "equivalent",
+            "vadd_s32",
+            "vaddq_s32",
+            "vaddw_s16",
+            "vaddw_s8",
+            "vdupq_n_s32",
+            "vextq_s32",
+            "vget_high_s16",
+            "vget_low_s16",
+            "vget_low_s32",
+            "vgetq_lane_s32",
+            "vld1_s32",
+            "vld1_s8",
+            "vld1q_s32",
+            "vmovq_n_s16",
+            "vst1_s32",
+            "vst1q_s32",
+            "wrap16",
+            "wrap32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "5e63e90a1a67de51edbca5241a0da9443c101a6201366039a53ad95d99c7a49f",
+      "files": {
+        "neon.c": {
+          "lines": 218,
+          "nonempty_lines": 208
+        },
+        "rvv.c": {
+          "lines": 89,
+          "nonempty_lines": 79
+        },
+        "spec.h": {
+          "lines": 34,
+          "nonempty_lines": 34
+        },
+        "harness.c": {
+          "lines": 8,
+          "nonempty_lines": 8
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "qs8-rsum",
+      "status": "proved",
+      "pre_campaign_source_sha256": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+      "pre_campaign_target_sha256": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": null,
+      "proof_attempts": [],
+      "checked_result": {
+        "raw_obligations": {
+          "passed": 579,
+          "total": 579
+        },
+        "proof_evidence": "qs8-rsum/logs/separated-summary.json"
+      }
+    },
+    {
+      "kernel": "qs8-vadd-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "01a0bdcc9344c5f095a47a79ce0d346bd44e937ceceefd1f12e275f9091456f3",
+      "pre_campaign_target_sha256": "1e8af584a849673c663f114ba74cc436dbd4eb33819113a80424d67bc0abddb1",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qs8-vadd-minmax"
+      ],
+      "target_repair": "negative/large shift encoding",
+      "new_target_implementation": false,
+      "blocker": "modular arithmetic, signed shifts, rounding/saturation lemmas and loop contracts not fully proved",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qs8-vadd-minmax/logs/attempt01-summary.json",
+          "sha256": "e7738264fef77b87698288dfa585f983f5b90cf9d2c790dfb357f3d8068023cf",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.284,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 961,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vmacc_vx_i32m8",
+            "__riscv_vmax_vx_i8m2",
+            "__riscv_vmin_vx_i8m2",
+            "__riscv_vmul_vx_i32m8",
+            "__riscv_vmv_v_x_i32m8",
+            "__riscv_vnclip_wx_i16m4",
+            "__riscv_vnclip_wx_i8m2",
+            "__riscv_vsadd_vx_i16m4",
+            "__riscv_vse8_v_i8m2",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vsll_vx_i32m8",
+            "__riscv_vssra_vx_i32m8",
+            "__riscv_vwsub_vx_i16m4",
+            "asr64",
+            "equivalent",
+            "round_shift",
+            "sat16",
+            "sat8",
+            "vcombine_s16",
+            "vcombine_s8",
+            "vdup_n_s8",
+            "vdupq_n_s16",
+            "vdupq_n_s32",
+            "vdupq_n_s8",
+            "vext_s8",
+            "vget_high_s16",
+            "vget_low_s16",
+            "vget_low_s8",
+            "vld1_s8",
+            "vmax_s8",
+            "vmaxq_s8",
+            "vmin_s8",
+            "vminq_s8",
+            "vmlaq_s32",
+            "vmovl_s16",
+            "vmulq_s32",
+            "vqaddq_s16",
+            "vqmovn_s16",
+            "vqmovn_s32",
+            "vreinterpret_u16_s8",
+            "vreinterpret_u32_s8",
+            "vrshlq_s32",
+            "vst1_lane_s8",
+            "vst1_lane_u16",
+            "vst1_lane_u32",
+            "vst1_s8",
+            "vst1q_s8",
+            "vsubl_s8",
+            "wrap32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "266ff4794e55cd4e1d5c19d9eefe09756a38a97597f5ff2fe1ce8e96e92fddca",
+      "files": {
+        "neon.c": {
+          "lines": 118,
+          "nonempty_lines": 99
+        },
+        "rvv.c": {
+          "lines": 61,
+          "nonempty_lines": 49
+        },
+        "spec.h": {
+          "lines": 27,
+          "nonempty_lines": 27
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 23
+    },
+    {
+      "kernel": "qs8-vcvt",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+      "pre_campaign_target_sha256": "19da29a3dd0c32ac1a44ad5cec73b0e25d81ecd765a60e9a01e6a128c21f4b76",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qs8-vcvt"
+      ],
+      "target_repair": "saturating high multiply narrowing",
+      "new_target_implementation": false,
+      "blocker": "modular arithmetic, signed shifts, rounding/saturation lemmas and loop contracts not fully proved",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qs8-vcvt/logs/attempt01-summary.json",
+          "sha256": "fff39d74b712b4adc9fcf23dd9cf65de8e1a9ead771037531d055816f650beb8",
+          "complete": false,
+          "exit": 0,
+          "seconds": 465.749,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 498,
+            "total": 531
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 531,
+          "pending_count": 33,
+          "missing_body_ensures": [
+            "vreinterpret_u16_s8",
+            "vreinterpret_u32_s8",
+            "vst1_lane_u16",
+            "vst1_lane_u32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "c3c2b129bef15905eec938eb9cb8e8bbd773852ae35bc5a349d7f6d7b30f4994",
+      "files": {
+        "neon.c": {
+          "lines": 57,
+          "nonempty_lines": 53
+        },
+        "rvv.c": {
+          "lines": 44,
+          "nonempty_lines": 34
+        },
+        "spec.h": {
+          "lines": 24,
+          "nonempty_lines": 24
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 34
+    },
+    {
+      "kernel": "qs8-vlrelu",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+      "pre_campaign_target_sha256": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qs8-vlrelu"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "modular arithmetic, signed shifts, rounding/saturation lemmas and loop contracts not fully proved",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qs8-vlrelu/logs/attempt01-summary.json",
+          "sha256": "12fc0d63817de2ad4dd6b38d9fb1d8cb027a698cf8604c756879ce9634adac71",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.206,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 545,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vmerge_vxm_i16m4",
+            "__riscv_vmslt_vx_i16m4_b4",
+            "__riscv_vmv_v_x_i16m4",
+            "__riscv_vnclip_wx_i16m4",
+            "__riscv_vnclip_wx_i8m2",
+            "__riscv_vrsub_vx_i16m4",
+            "__riscv_vsadd_vx_i16m4",
+            "__riscv_vse8_v_i8m2",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vsll_vx_i16m4",
+            "__riscv_vwmul_vv_i32m8",
+            "asr64",
+            "equivalent",
+            "round_shift",
+            "sat16",
+            "sat8",
+            "vbslq_s16",
+            "vcltq_s16",
+            "vdupq_n_s16",
+            "vext_s8",
+            "vld1_s8",
+            "vmovq_n_s16",
+            "vqaddq_s16",
+            "vqmovn_s16",
+            "vqrdmulhq_s16",
+            "vreinterpret_u16_s8",
+            "vreinterpret_u32_s8",
+            "vshlq_n_s16",
+            "vst1_lane_s8",
+            "vst1_lane_u16",
+            "vst1_lane_u32",
+            "vst1_s8",
+            "vsubw_s8",
+            "wrap16"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "49f41973a6231c713879b8b46ad4b60700f223db37e98c769faa58998afaca34",
+      "files": {
+        "neon.c": {
+          "lines": 63,
+          "nonempty_lines": 59
+        },
+        "rvv.c": {
+          "lines": 45,
+          "nonempty_lines": 33
+        },
+        "spec.h": {
+          "lines": 25,
+          "nonempty_lines": 25
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "qs8-vmul-minmax-fp32",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+      "pre_campaign_target_sha256": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qs8-vmul-minmax-fp32"
+      ],
+      "target_repair": "magic-bias bit algorithm vs numeric float conversion",
+      "new_target_implementation": false,
+      "blocker": "float bits/IEEE encoding relation plus rounding/magic-bias proof",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/logs/attempt01-summary.json",
+          "sha256": "c5ff958522ccf48b87c0fabb4ae41b4c0066451e895f33e008b9be93c93efff4",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.298,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 778,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vfadd_vf_f32m8",
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_i8m2",
+            "__riscv_vmax_vx_i8m2",
+            "__riscv_vmin_vx_i8m2",
+            "__riscv_vnclip_wx_i16m4",
+            "__riscv_vnclip_wx_i8m2",
+            "__riscv_vreinterpret_v_f32m8_i32m8",
+            "__riscv_vse8_v_i8m2",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i16m4",
+            "__riscv_vssub_vx_i32m8",
+            "__riscv_vsub_vx_i16m4",
+            "__riscv_vwmul_vv_i32m8",
+            "asr64",
+            "equivalent",
+            "round_shift",
+            "sat16",
+            "sat32",
+            "sat8",
+            "vaddq_f32",
+            "vcombine_s16",
+            "vcvtq_f32_s32",
+            "vdup_n_s8",
+            "vdupq_n_f32",
+            "vdupq_n_s32",
+            "vext_s8",
+            "vget_high_s16",
+            "vget_low_s16",
+            "vld1_s8",
+            "vmax_s8",
+            "vmin_s8",
+            "vmull_s16",
+            "vmulq_f32",
+            "vqmovn_high_s32",
+            "vqmovn_s16",
+            "vqmovn_s32",
+            "vqsubq_s32",
+            "vreinterpret_u16_s8",
+            "vreinterpret_u32_s8",
+            "vreinterpretq_s32_f32",
+            "vst1_lane_s8",
+            "vst1_lane_u16",
+            "vst1_lane_u32",
+            "vst1_s8",
+            "vsubl_s8",
+            "wrap16"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "b43aefc73ec3d9fd41b3832872ef0f25d88ff94646b9651a0fadbf143d306cd4",
+      "files": {
+        "neon.c": {
+          "lines": 135,
+          "nonempty_lines": 110
+        },
+        "rvv.c": {
+          "lines": 57,
+          "nonempty_lines": 46
+        },
+        "spec.h": {
+          "lines": 26,
+          "nonempty_lines": 26
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 23
+    },
+    {
+      "kernel": "qu8-f32-vcvt",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1",
+      "pre_campaign_target_sha256": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qu8-f32-vcvt",
+        "experiments/shared-extension/integer/qu8-f32-vcvt-v2"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "integer widening/modulo and float congruence prefix proof; ordinary loop/frame and explicit vector intermediate assertions still pending",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qu8-f32-vcvt/logs/attempt01-summary.json",
+          "sha256": "cb35261f07f5fed90f8a4ce506b1a43383dc2e916b66adf655992f67122d8325",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.193,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 369,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vadd_vx_u16m4",
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_u8m2",
+            "__riscv_vreinterpret_v_u16m4_i16m4",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vzext_vf2_u16m4",
+            "equivalent",
+            "vaddw_u8",
+            "vcvtq_f32_s32",
+            "vdupq_n_f32",
+            "vdupq_n_s16",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_u8",
+            "vmovl_s16",
+            "vmulq_f32",
+            "vreinterpretq_s16_u16",
+            "vreinterpretq_u16_s16",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/logs/prefix01-summary.json",
+          "sha256": "94fa79f06b33dce18fe05a00143711f29be35bc1313ad10c8920997e0450ea1b",
+          "complete": false,
+          "exit": 0,
+          "seconds": 401.186,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 629,
+            "total": 638
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 638,
+          "pending_count": 9,
+          "missing_body_ensures": [
+            "vget_high_f32"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/logs/prefix02-summary.json",
+          "sha256": "3013d6561e8f7c059a008cf6d7ddd4b10fb835d2a5b213124d40b5457d535f48",
+          "complete": false,
+          "exit": 0,
+          "seconds": 513.968,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 651,
+            "total": 664
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 664,
+          "pending_count": 13,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/logs/prefix03-summary.json",
+          "sha256": "d5a8adea205c0385788983e068c667c174a9e60205dac14590bce34d1adbc9cf",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.311,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 832,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vadd_vx_u16m4",
+            "__riscv_vfcvt_f_x_v_f32m8",
+            "__riscv_vfmul_vf_f32m8",
+            "__riscv_vle8_v_u8m2",
+            "__riscv_vreinterpret_v_u16m4_i16m4",
+            "__riscv_vse32_v_f32m8",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vzext_vf2_u16m4",
+            "equivalent",
+            "proof_mul_join",
+            "proof_qcvt_join",
+            "proof_qcvt_rebase",
+            "proof_tail8",
+            "vaddw_u8",
+            "vcvtq_f32_s32",
+            "vdupq_n_f32",
+            "vdupq_n_s16",
+            "vget_high_f32",
+            "vget_high_s16",
+            "vget_low_f32",
+            "vget_low_s16",
+            "vld1_u8",
+            "vmovl_s16",
+            "vmulq_f32",
+            "vreinterpretq_s16_u16",
+            "vreinterpretq_u16_s16",
+            "vst1_f32",
+            "vst1_lane_f32",
+            "vst1q_f32"
+          ]
+        }
+      ],
+      "floating_context_affected": true,
+      "raw_counts_are_diagnostic_only": true,
+      "frozen_sha256": "c4e113dcfd712030cf8d84a85db3e9a08a3de69801c1e93e880a8ad11e3dad44",
+      "files": {
+        "neon.c": {
+          "lines": 68,
+          "nonempty_lines": 56
+        },
+        "rvv.c": {
+          "lines": 32,
+          "nonempty_lines": 25
+        },
+        "spec.h": {
+          "lines": 24,
+          "nonempty_lines": 24
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 319
+    },
+    {
+      "kernel": "qu8-rdsum",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "513063b3667ea19323f67b1c8076e6aa34be3a475adaf7e22e9cd1c8701f6054",
+      "pre_campaign_target_sha256": "98ed75dac4eb23270fae1b67c8760e2acafb0577450ed83c2e21b0651f3a98e5",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qu8-rdsum"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "uintptr_t offset-to-pointer model and nested row reduction/frame invariants",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qu8-rdsum/logs/attempt01-summary.json",
+          "sha256": "03ad57263f7aea6427b8c5b2e5498886659059ff2ffba84b71b3df86b616bd7d",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.23,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 727,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vadd_vv_u32m8",
+            "__riscv_vle32_v_u32m8",
+            "__riscv_vle8_v_u8m2",
+            "__riscv_vmv_v_x_u16m4",
+            "__riscv_vmv_v_x_u32m8",
+            "__riscv_vse32_v_u32m8",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vwaddu_wv_u16m4",
+            "__riscv_vwaddu_wv_u32m8",
+            "equivalent",
+            "vadd_u32",
+            "vaddq_u32",
+            "vaddw_u16",
+            "vaddw_u8",
+            "vdupq_n_u32",
+            "vextq_u32",
+            "vget_high_u16",
+            "vget_low_u16",
+            "vget_low_u32",
+            "vget_low_u8",
+            "vgetq_lane_u32",
+            "vld1_u32",
+            "vld1_u8",
+            "vld1q_u32",
+            "vld1q_u8",
+            "vmovq_n_u16",
+            "vst1_u32",
+            "vst1q_u32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "77b8e8041b603a5536a3b584e1b91aae45990747a01cceb1a50e10d788d598c3",
+      "files": {
+        "neon.c": {
+          "lines": 272,
+          "nonempty_lines": 261
+        },
+        "rvv.c": {
+          "lines": 101,
+          "nonempty_lines": 84
+        },
+        "spec.h": {
+          "lines": 32,
+          "nonempty_lines": 32
+        },
+        "harness.c": {
+          "lines": 8,
+          "nonempty_lines": 8
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "qu8-rsum",
+      "status": "proved",
+      "pre_campaign_source_sha256": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+      "pre_campaign_target_sha256": "f44a9addcab95a4f9c57e3c65818c05b332d3a6aa9a3fc59ce1fc4cc3943e494",
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": null,
+      "proof_attempts": [],
+      "checked_result": {
+        "raw_obligations": {
+          "passed": 567,
+          "total": 567
+        },
+        "proof_evidence": "qu8-rsum/logs/final02-summary.json"
+      }
+    },
+    {
+      "kernel": "qu8-vadd-minmax",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "7f6435954cc0ac4ab31881da9ff8b16f04abdfc8da0c1a945b15b64f3bcb2294",
+      "pre_campaign_target_sha256": "e211e5fc712d38ea90776aff23bcdfe72ecec23aa08b5999683b483adfb2bbc9",
+      "candidate_directories": [
+        "experiments/shared-extension/integer/qu8-vadd-minmax"
+      ],
+      "target_repair": "large shift encoding",
+      "new_target_implementation": false,
+      "blocker": "modular arithmetic, signed shifts, rounding/saturation lemmas and loop contracts not fully proved",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/integer/qu8-vadd-minmax/logs/attempt01-summary.json",
+          "sha256": "e72c51f4f351659a7723d69541b9e2ac7ed25ee85af7d6d39860f370b4c85c02",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.315,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 858,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vle8_v_u8m2",
+            "__riscv_vmacc_vx_i32m8",
+            "__riscv_vmax_vx_i16m4",
+            "__riscv_vmaxu_vx_u8m2",
+            "__riscv_vminu_vx_u8m2",
+            "__riscv_vmul_vx_i32m8",
+            "__riscv_vmv_v_x_i32m8",
+            "__riscv_vnclip_wx_i16m4",
+            "__riscv_vnclipu_wx_u8m2",
+            "__riscv_vreinterpret_v_i16m4_u16m4",
+            "__riscv_vreinterpret_v_u16m4_i16m4",
+            "__riscv_vsadd_vx_i16m4",
+            "__riscv_vse8_v_u8m2",
+            "__riscv_vsetvl_e8m2",
+            "__riscv_vsext_vf2_i32m8",
+            "__riscv_vsll_vx_i32m8",
+            "__riscv_vssra_vx_i32m8",
+            "__riscv_vwsubu_vx_u16m4",
+            "asr64",
+            "equivalent",
+            "round_shift",
+            "sat16",
+            "satu8",
+            "vcombine_s16",
+            "vdup_n_u8",
+            "vdupq_n_s16",
+            "vdupq_n_s32",
+            "vext_u8",
+            "vget_high_s16",
+            "vget_low_s16",
+            "vld1_u8",
+            "vmax_u8",
+            "vmin_u8",
+            "vmlaq_s32",
+            "vmovl_s16",
+            "vmulq_s32",
+            "vqaddq_s16",
+            "vqmovn_s32",
+            "vqmovun_s16",
+            "vreinterpret_u16_u8",
+            "vreinterpret_u32_u8",
+            "vreinterpretq_s16_u16",
+            "vrshlq_s32",
+            "vst1_lane_u16",
+            "vst1_lane_u32",
+            "vst1_lane_u8",
+            "vst1_u8",
+            "vsubl_u8",
+            "wrap32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "492964550fddbb1b61ca8f293bb7cb0d0ab405dc1e5989bcf5ec4ad47e7fdad7",
+      "files": {
+        "neon.c": {
+          "lines": 101,
+          "nonempty_lines": 82
+        },
+        "rvv.c": {
+          "lines": 74,
+          "nonempty_lines": 60
+        },
+        "spec.h": {
+          "lines": 27,
+          "nonempty_lines": 27
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 23
+    },
+    {
+      "kernel": "s8-vclamp",
+      "status": "proved",
+      "pre_campaign_source_sha256": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+      "pre_campaign_target_sha256": "109360a580298b5e412f3808356668b6511f40b5c9441967c2f060a03fc2ea4e",
+      "candidate_directories": [],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": null,
+      "proof_attempts": [],
+      "checked_result": {
+        "raw_obligations": {
+          "passed": 688,
+          "total": 688
+        },
+        "proof_evidence": "s8-vclamp/logs/final02-summary.json"
+      }
+    },
+    {
+      "kernel": "u8-vclamp",
+      "status": "proved",
+      "pre_campaign_source_sha256": "e52c7c97805aec65922f07f19c7496015596e375b17306258f9e5f4805528f57",
+      "pre_campaign_target_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_directories": [
+        "experiments/shared-extension/unsigned/u8-vclamp",
+        "experiments/shared-extension/unsigned/u8-vclamp-v2",
+        "experiments/shared-extension/unsigned/u8-vclamp-v3"
+      ],
+      "target_repair": null,
+      "new_target_implementation": true,
+      "blocker": null,
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/unsigned/u8-vclamp/logs/proof02-summary.json",
+          "sha256": "0336e2fcb4de09ff24229c093edf2458dd6a6f0dd27cb7edbdb79ba91cb1f2ff",
+          "complete": false,
+          "exit": 0,
+          "seconds": 564.566,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 664,
+            "total": 688
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 688,
+          "pending_count": 24,
+          "missing_body_ensures": []
+        },
+        {
+          "summary": "experiments/shared-extension/unsigned/u8-vclamp-v2/logs/proof01-summary.json",
+          "sha256": "a2c297f7f74522dbed4fd7d0e8f8222c65dab5e401373f212d14330d294b3846",
+          "complete": true,
+          "exit": 0,
+          "seconds": 318.249,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 688,
+            "total": 688
+          },
+          "raw_report_emitted": true,
+          "scheduled_goals_from_log": 688,
+          "pending_count": 0,
+          "missing_body_ensures": []
+        }
+      ],
+      "checked_result": {
+        "raw_obligations": {
+          "passed": 688,
+          "total": 688
+        },
+        "proof_evidence": "u8-vclamp-v3/logs/canonical01-summary.json"
+      },
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "a34d6ff400d87284bba680587c68c469f3c3b872314b9377a244a1588f4fbe51",
+      "files": {
+        "neon.c": {
+          "lines": 71,
+          "nonempty_lines": 61
+        },
+        "rvv.c": {
+          "lines": 29,
+          "nonempty_lines": 23
+        },
+        "spec.h": {
+          "lines": 53,
+          "nonempty_lines": 50
+        },
+        "harness.c": {
+          "lines": 11,
+          "nonempty_lines": 10
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 252
+    },
+    {
+      "kernel": "x32-packw-gemm-goi",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+      "pre_campaign_target_sha256": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/x32-packw-gemm-goi"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "Typed aggregate initialization precision, strided/segment stores and nested tuple contents; full kernel permutation/packing proof remains",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/cases/x32-packw-gemm-goi/logs/u32probe01-summary.json",
+          "sha256": "c1bc06264d614c7533d379b235f29814a04585cdda0e5bb11d7d0c745c92c8a9",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.107,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 331,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vcreate_v_u32m4x2",
+            "__riscv_vle32_v_u32m1",
+            "__riscv_vle32_v_u32m4",
+            "__riscv_vle32_v_u32m8",
+            "__riscv_vmv_v_x_u32m1",
+            "__riscv_vse32_v_u32m1",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsse32_v_u32m4",
+            "__riscv_vsse32_v_u32m8",
+            "__riscv_vsseg2e32_v_u32m4x2",
+            "doz",
+            "equivalent",
+            "round_down_po2",
+            "vdup_n_u32",
+            "vld1_lane_u32",
+            "vld1_u32",
+            "vld2_lane_u32",
+            "vmov_n_u32",
+            "vst1_lane_u32",
+            "vst1_u32",
+            "vzip_u32"
+          ]
+        },
+        {
+          "summary": "experiments/shared-extension/complex/model-variants/x32-packw-gemm-goi-raw/logs/root01-summary.json",
+          "sha256": "138d25ef85bdd570d2183fdda5407ef5e7a15283b473075dd74cce655d96a8c4",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.151,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 335,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vcreate_v_u32m4x2",
+            "__riscv_vle32_v_u32m1",
+            "__riscv_vle32_v_u32m4",
+            "__riscv_vle32_v_u32m8",
+            "__riscv_vmv_v_x_u32m1",
+            "__riscv_vse32_v_u32m1",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsse32_v_u32m4",
+            "__riscv_vsse32_v_u32m8",
+            "__riscv_vsseg2e32_v_u32m4x2",
+            "doz",
+            "equivalent",
+            "round_down_po2",
+            "vdup_n_u32",
+            "vld1_lane_u32",
+            "vld1_u32",
+            "vld2_lane_u32",
+            "vmov_n_u32",
+            "vst1_lane_u32",
+            "vst1_u32",
+            "vzip_u32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "9e70270ddc1d5b5956d66796a30cf7db15c266fd58bd760d970f66a12a294f90",
+      "files": {
+        "neon.c": {
+          "lines": 87,
+          "nonempty_lines": 79
+        },
+        "rvv.c": {
+          "lines": 96,
+          "nonempty_lines": 83
+        },
+        "spec.h": {
+          "lines": 27,
+          "nonempty_lines": 27
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    },
+    {
+      "kernel": "x32-transposec",
+      "status": "proof_pending",
+      "pre_campaign_source_sha256": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a",
+      "pre_campaign_target_sha256": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f",
+      "candidate_directories": [
+        "experiments/shared-extension/complex/cases/x32-transposec"
+      ],
+      "target_repair": null,
+      "new_target_implementation": false,
+      "blocker": "Typed aggregate initialization precision, strided/segment stores and nested tuple contents; full kernel permutation/packing proof remains",
+      "proof_attempts": [
+        {
+          "summary": "experiments/shared-extension/complex/model-variants/x32-transposec-raw/logs/raw01-summary.json",
+          "sha256": "5efe16d097d43a728b4e6c61d8ba282125bce0e40cfebc41a55bcbb9a9b5c7b6",
+          "complete": false,
+          "exit": 124,
+          "seconds": 600.193,
+          "unchanged": true,
+          "raw_obligations": {
+            "passed": 0,
+            "total": 0
+          },
+          "raw_report_emitted": false,
+          "scheduled_goals_from_log": 265,
+          "pending_count": 0,
+          "missing_body_ensures": [
+            "__riscv_vcreate_v_u32m4x2",
+            "__riscv_vle32_v_u32m1",
+            "__riscv_vle32_v_u32m4",
+            "__riscv_vle32_v_u32m8",
+            "__riscv_vmv_v_x_u32m1",
+            "__riscv_vse32_v_u32m1",
+            "__riscv_vsetvl_e32m4",
+            "__riscv_vsetvl_e32m8",
+            "__riscv_vsse32_v_u32m4",
+            "__riscv_vsse32_v_u32m8",
+            "__riscv_vsseg2e32_v_u32m4x2",
+            "doz",
+            "equivalent",
+            "round_down_po2",
+            "vdup_n_u32",
+            "vld1_lane_u32",
+            "vld1_u32",
+            "vld2_lane_u32",
+            "vmov_n_u32",
+            "vst1_lane_u32",
+            "vst1_u32",
+            "vzip_u32"
+          ]
+        }
+      ],
+      "floating_context_affected": false,
+      "raw_counts_are_diagnostic_only": false,
+      "frozen_sha256": "030eb23fdcaef2cffe16f0199fb4f5066940c8f802950fc3c1e7498438e770da",
+      "files": {
+        "neon.c": {
+          "lines": 63,
+          "nonempty_lines": 51
+        },
+        "rvv.c": {
+          "lines": 32,
+          "nonempty_lines": 28
+        },
+        "spec.h": {
+          "lines": 25,
+          "nonempty_lines": 25
+        },
+        "harness.c": {
+          "lines": 7,
+          "nonempty_lines": 7
+        }
+      },
+      "kernel_proof_patch_added_nonempty_lines": 0
+    }
+  ],
+  "shared_support_LOC": {
+    "float": {
+      "C_files": [
+        "experiments/shared-extension/float/shared/base.c",
+        "experiments/shared-extension/float/shared/bits.c",
+        "experiments/shared-extension/float/shared/div.c",
+        "experiments/shared-extension/float/shared/float_ops.c",
+        "experiments/shared-extension/float/shared/mask.c",
+        "experiments/shared-extension/float/shared/max.c",
+        "experiments/shared-extension/float/shared/min.c",
+        "experiments/shared-extension/float/shared/mul.c",
+        "experiments/shared-extension/float/shared/mulc.c",
+        "experiments/shared-extension/float/shared/representation.c",
+        "experiments/shared-extension/float/shared/sqrt.c",
+        "experiments/shared-extension/float/shared/sub.c"
+      ],
+      "C_physical_lines": 220,
+      "C_nonempty_lines": 209,
+      "note": "Integer call-closure projection copies excluded; float/complex shared modules include all candidate support, whether proved or pending; historical base/float support copies included."
+    },
+    "integer": {
+      "C_files": [
+        "experiments/shared-extension/integer/shared/shim.c"
+      ],
+      "C_physical_lines": 195,
+      "C_nonempty_lines": 195,
+      "note": "Integer call-closure projection copies excluded; float/complex shared modules include all candidate support, whether proved or pending; historical base/float support copies included."
+    },
+    "complex": {
+      "C_files": [
+        "experiments/shared-extension/complex/shared/complex_fp.c",
+        "experiments/shared-extension/complex/shared/fp_arithmetic.c",
+        "experiments/shared-extension/complex/shared/fp_arithmetic_m1.c",
+        "experiments/shared-extension/complex/shared/fp_arithmetic_m2.c",
+        "experiments/shared-extension/complex/shared/fp_arithmetic_m4.c",
+        "experiments/shared-extension/complex/shared/fp_arithmetic_m8.c",
+        "experiments/shared-extension/complex/shared/fp_index.c",
+        "experiments/shared-extension/complex/shared/fp_masks.c",
+        "experiments/shared-extension/complex/shared/fp_masks_m1.c",
+        "experiments/shared-extension/complex/shared/fp_masks_m2.c",
+        "experiments/shared-extension/complex/shared/fp_masks_m4.c",
+        "experiments/shared-extension/complex/shared/fp_masks_m8.c",
+        "experiments/shared-extension/complex/shared/fp_memory.c",
+        "experiments/shared-extension/complex/shared/fp_memory_m1.c",
+        "experiments/shared-extension/complex/shared/fp_memory_m2.c",
+        "experiments/shared-extension/complex/shared/fp_memory_m4.c",
+        "experiments/shared-extension/complex/shared/fp_memory_m8.c",
+        "experiments/shared-extension/complex/shared/fp_minmax.c",
+        "experiments/shared-extension/complex/shared/fp_minmax_m1.c",
+        "experiments/shared-extension/complex/shared/fp_minmax_m2.c",
+        "experiments/shared-extension/complex/shared/fp_minmax_m4.c",
+        "experiments/shared-extension/complex/shared/fp_minmax_m8.c",
+        "experiments/shared-extension/complex/shared/fp_repr.c",
+        "experiments/shared-extension/complex/shared/integer_memory.c",
+        "experiments/shared-extension/complex/shared/quantized.c",
+        "experiments/shared-extension/complex/shared/u32_shim.c",
+        "experiments/shared-extension/complex/shared/utils.c"
+      ],
+      "C_physical_lines": 536,
+      "C_nonempty_lines": 350,
+      "note": "Integer call-closure projection copies excluded; float/complex shared modules include all candidate support, whether proved or pending; historical base/float support copies included."
+    },
+    "unsigned": {
+      "C_files": [
+        "experiments/shared-extension/unsigned/shared/base.c",
+        "experiments/shared-extension/unsigned/shared/clamp.c"
+      ],
+      "C_physical_lines": 96,
+      "C_nonempty_lines": 95,
+      "note": "Integer call-closure projection copies excluded; float/complex shared modules include all candidate support, whether proved or pending; historical base/float support copies included."
+    }
+  },
+  "tool_LOC": {
+    "tools/shim_c_campaign.py": 168,
+    "tools/shim_c_campaign_model.py": 39,
+    "experiments/shared-extension/float/generate.py": 56,
+    "experiments/shared-extension/integer/generate_interfaces.py": 45
+  }
+}

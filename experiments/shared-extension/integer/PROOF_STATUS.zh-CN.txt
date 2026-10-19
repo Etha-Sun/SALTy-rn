@@ -1,0 +1,57 @@
+当前重要更正：浮点工具模型一致性审计
+----------------------------------
+本地 Frama-C 33.0 bundle 的 Cfloat sign 两个无条件公理，与 Why3 native IEEE 浮点 NaN 不兼容。
+proof-records/soundness-audit/sign-nan.smt2 全称公理最小提取，以及仅两个 NaN 实例的 sign-nan-instance.smt2，Z3 4.12.5 均实际返回 unsat。
+去掉这些公理的 native NaN 控制为 sat，isPositive/isNegative 同时为 false；仅保留一个 NaN 实例公理也 sat。
+来源、精确命令、行号、SHA、原始输出见该目录 results.json / bundle-provenance.json。
+Cfloat/Why3 driver/IEEE stdlib 都从本地官方归档重新抽到 /tmp 比对，逐字节相同，归档 SHA 与仓库官方URL pin一致。
+该定位仅适用于本地这套 bundle/driver 组合；不泛化为所有 Frama-C 版本或内存/浮点模型有问题。
+所有 Typed+float proof 数字（包括下文独立 lemma 的通过）一律隔离，不可作为有效证明依据。现有 C/native 回归不依赖此逻辑模型。
+停止新 proof；浮点模型需要独立修复、一致性负控制、完整重跑后才能恢复验收。未修改 vendor、冻结 C/spec 或 proof 补丁。
+qs8 prefix05（600.288秒）与qu8-v2 prefix03（832 scheduled、600.311秒）均已自然预算耗尽，无最终raw JSON，unchanged=true；所有新proof已停止，仅保留诊断记录。
+以下历史尝试数字保留原始来源，均未将任何本组 case 宣称为 verified。
+
+整数扩展的独立 proof 阶段
+=======================
+
+原10个kernel都实际运行了完整WP命令（不是只解析或推测），每次2个solver worker、每目标10秒/1024MiB、总600秒。
+原实现者冻结C/spec后才交给本agent。proof只修改共享/各case的.patch和诊断记录，不改C/h/spec/driver/generator/frozen manifest。
+qu8-f32-vcvt-v2是root另外冻结的共享C模型版本：同宽整数reinterpret不用memcpy，kernel和公共规格未变；它不是第11个kernel。
+
+attempt01基线：
+case                         scheduled goals   结果
+f32-f16-vcvt                 769               600秒预算耗尽
+qs8-f32-vcvt                 359               600秒预算耗尽
+qu8-f32-vcvt                 369               600秒预算耗尽
+qs8-vlrelu                   545               600秒预算耗尽
+qs8-vcvt                     531               498/531，33个未解
+qs8-vadd-minmax              961               600秒预算耗尽
+qu8-vadd-minmax              858               600秒预算耗尽
+qs8-rdsum                    617               600秒预算耗尽
+qu8-rdsum                    727               600秒预算耗尽
+qs8-vmul-minmax-fp32          778               600秒预算耗尽
+
+预算耗尽的run：Frama-C未结束并写出最终JSON，因此checker原始raw字段显示0/0。
+这个0/0不表示没有生成目标、不表示0个证明成功，也不表示反例。scheduled数量来自实际日志，Timeout属性逐条保留。
+没有把这些case加入verified。所有run自己的proof hash单独保存；不同版本的部分成功不能拼为完整证明。
+
+接近闭合的两个转换case另做了完整prefix关系证明：NEON主循环8个元素和4/2/1尾部、RVV任意合法vl、公共wrapper逐点相等。
+原prefix01为qs8 591/600、qu8-v2 629/638，并发现遗漏vget_high_f32 postcondition；不能据这些数字宣称完成。
+后续已补高半提取的same_float合同/循环不变量，尝试中间向量断言、参数scale快照与逐lane ghost callback。
+最新每轮完整目标、未解属性、冻结文件/当前proof hash和非空注释LOC见proof-attempts.json。
+
+实际障碍（均不是“kernel一定错了”）：
+1. qs8/qu8-f32转换：整数中心化的模16对应、完整IEEE乘法值/NaN关系、输出与参数scale的内存frame。
+   4个核心lemma曾单独4/4检查通过；整轮仍要求该轮所有lemma/函数体/最终目标一起通过。
+2. qs8-vcvt/vlrelu/vadd：算术右移、舍入、模宽与饱和等式，byte lane store的边界/功能合同、尾部循环与关系不变量尚未补齐。
+   qs8-vcvt的33个原始pending有明确JSON，并非求得反例。
+3. qu8旧模型：同宽signed/unsigned memcpy在Typed内存模型下卡valid_src/dest/separation。v2改逐laneC转换消除此障碍。
+   另实际诊断Bytes+float实验内存模型：旧3个memcpy原语的15个终止/内存前置目标15/15；尚未证明其结果功能性合同或整个kernel。
+4. f32-f16、qmul：float↔integer的memcpy位解释，以及magic-bias/舍入位算法的共享语义证明尚未闭合。
+5. rdsum：多层row/channel不变量、模32归约/odd channel条件，以及uintptr_t→pointer的Typed内存支持；当前仅有lane库与实际完整WP尝试。
+
+回归域审计：历史native-results.json中的finite_only:true标签对浮点case不准确，原记录未修改。
+重建原native.c的精确LCG后，两个f32转换各有33次NaN scale、44次subnormal，但没有Inf；qmul有41次NaN scale；fp16生成输入含NaN也没有Inf。
+证据native-domain-audit.json保留源码hash及计数口径。全域spec允许NaN/Inf，与有限回归采样是否覆盖Inf是两件事。
+另新增proof-records/native-specials.c及结果：三个转换版本+qmul各18060例、fp16 1806例，明确枚举±Inf、quiet/signaling NaN、±0、subnormal与合法zero_point边界，ASan/UBSan无差异。
+这些仍是有限C模型回归，不是无界证明，也没有证明真实ISA到shim的对应、浮点异常标志或NaN payload。

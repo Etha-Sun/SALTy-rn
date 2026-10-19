@@ -1,0 +1,157 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/f32-f16-vcvt/logs/attempt01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/f32-f16-vcvt/.build/attempt01/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vadd_vv_u16m4
+[rte:annot] annotating function __riscv_vadd_vx_u32m8
+[rte:annot] annotating function __riscv_vand_vx_u16m4
+[rte:annot] annotating function __riscv_vand_vx_u32m8
+[rte:annot] annotating function __riscv_vfabs_v_f32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/math.h:1432: Warning: 
+  Neither code nor explicit exits and terminates for function fabsf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmaxu_vx_u32m8
+[rte:annot] annotating function __riscv_vmerge_vxm_u16m4
+[rte:annot] annotating function __riscv_vmsgtu_vx_u32m8_b4
+[rte:annot] annotating function __riscv_vnsrl_wx_u16m4
+[rte:annot] annotating function __riscv_vor_vv_u16m4
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_u32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vreinterpret_v_u32m8_f32m8
+[rte:annot] annotating function __riscv_vse16_v_u16m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vabsq_f32
+[rte:annot] annotating function vadd_u16
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vaddq_u16
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vand_u16
+[rte:annot] annotating function vandq_u16
+[rte:annot] annotating function vandq_u32
+[rte:annot] annotating function vbsl_u16
+[rte:annot] annotating function vbslq_u16
+[rte:annot] annotating function vcgtq_u32
+[rte:annot] annotating function vcombine_u16
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vdupq_n_u16
+[rte:annot] annotating function vdupq_n_u32
+[rte:annot] annotating function vext_u16
+[rte:annot] annotating function vget_low_u16
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vmaxq_u32
+[rte:annot] annotating function vmovn_u32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vorr_u16
+[rte:annot] annotating function vorrq_u16
+[rte:annot] annotating function vreinterpret_u32_u16
+[rte:annot] annotating function vreinterpretq_f32_u32
+[rte:annot] annotating function vreinterpretq_u32_f32
+[rte:annot] annotating function vshrn_n_u32
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u16
+[rte:annot] annotating function vst1q_u16
+[wp] Computing [100 goals...]
+[wp] integer-f32-f16-vcvt.c:27: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer-f32-f16-vcvt.c:27: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] Computing [200 goals...]
+[wp] integer-f32-f16-vcvt.c:150: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer-f32-f16-vcvt.c:150: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] Computing [300 goals...]
+[wp] integer-f32-f16-vcvt.c:244: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x2_t_11*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:244: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint16x4_t_7*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:245: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_12*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:245: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_14*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:246: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_14*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:246: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_12*)
+     (target: sint8*)
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] integer-f32-f16-vcvt.c:502: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vuint32m8_t_20*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:502: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vfloat32m8_t_21*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:503: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vfloat32m8_t_21*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:503: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vuint32m8_t_20*)
+     (target: sint8*)
+[wp] harness.c:5: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:15: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:144: Warning: 
+  Cast with incompatible pointers types (source: uint16*) (target: sint8*)
+[wp] neon.c:140: Warning: 
+  Cast with incompatible pointers types (source: uint16*) (target: sint8*)
+[wp] neon.c:70: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:27: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] 769 goals scheduled
+[wp] [Timeout] typed_vst1_lane_u16_terminates (Qed 4ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u16_assert_rte_index_bound (Qed 5ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u16_assert_rte_index_bound_2 (Qed 4ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u16_assert_rte_mem_access (Qed 8ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u32_terminates (Qed 6ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u32_assert_rte_index_bound (Qed 5ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u32_assert_rte_index_bound_2 (Qed 5ms) (Alt-Ergo)
+[wp] [Timeout] typed_vst1_lane_u32_assert_rte_mem_access (Qed 8ms) (Alt-Ergo)
+[wp] [Timeout] typed_vreinterpret_u32_u16_call_memcpy_requires_valid_dest (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_vreinterpret_u32_u16_call_memcpy_requires_valid_src (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_vreinterpret_u32_u16_call_memcpy_requires_separation (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_vreinterpretq_u32_f32_call_memcpy_requires_valid_dest (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_vreinterpretq_u32_f32_call_memcpy_requires_valid_src (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_vreinterpretq_u32_f32_call_memcpy_requires_separation (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed___riscv_vreinterpret_v_f32m8_u32m8_call_memcpy_requires_valid_dest (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed___riscv_vreinterpret_v_f32m8_u32m8_call_memcpy_requires_valid_src (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed___riscv_vreinterpret_v_f32m8_u32m8_call_memcpy_requires_separation (Qed 5ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_terminates_part2 (Qed 3.1s) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_terminates_part5 (Qed 2.9s) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_ensures_equal (Qed 3s) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_assert_rte_mem_access (Qed 3.2s) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_assert_rte_mem_access_2 (Qed 3.2s) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_assigns_normal_part02 (Qed 2.7s) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_assigns_normal_part16 (Qed 583ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part17 (Qed 548ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part18 (Qed 581ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part22 (Qed 758ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part25 (Qed 712ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part26 (Qed 715ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part27 (Qed 716ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part28 (Qed 722ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part29 (Qed 719ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part32 (Qed 749ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part33 (Qed 811ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part34 (Qed 780ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part35 (Qed 794ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part36 (Qed 875ms) (Alt-Ergo)
+[wp] [Timeout] typed_equivalent_assigns_normal_part37 (Qed 908ms) (Alt-Ergo)

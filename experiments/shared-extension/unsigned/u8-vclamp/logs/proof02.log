@@ -1,0 +1,104 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/unsigned/u8-vclamp/logs/proof02.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/unsigned/u8-vclamp/.build/proof02/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle8_v_u8m8
+[rte:annot] annotating function __riscv_vmax_vx_u8m8
+[rte:annot] annotating function __riscv_vmin_vx_u8m8
+[rte:annot] annotating function __riscv_vse8_v_u8m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function u8_tail_bits
+[rte:annot] annotating function vdupq_n_u8
+[rte:annot] annotating function vext_u8
+[rte:annot] annotating function vget_low_u8
+[rte:annot] annotating function vld1_u8
+[rte:annot] annotating function vld1q_u8
+[rte:annot] annotating function vmax_u8
+[rte:annot] annotating function vmaxq_u8
+[rte:annot] annotating function vmin_u8
+[rte:annot] annotating function vminq_u8
+[rte:annot] annotating function vreinterpret_u16_u8
+[rte:annot] annotating function vreinterpret_u32_u8
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_lane_u8
+[rte:annot] annotating function vst1_u8
+[rte:annot] annotating function vst1q_u8
+[wp] neon.c:16: Warning: Statement specifications not yet supported (skipped).
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] clamp.h:100: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:102: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:101: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.c:115: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.c:112: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:98: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:109: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:111: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:110: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.c:125: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.c:122: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] clamp.h:107: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] Computing [300 goals...]
+[wp] neon.c:250: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:218: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] 688 goals scheduled
+[wp] [Timeout] typed_vst1_lane_u32_ensures (Qed 20ms) (Alt-Ergo) (Stronger, 4 warnings)
+[wp] [Timeout] typed_vst1_lane_u32_ensures_2 (Qed 22ms) (Alt-Ergo) (Stronger, 4 warnings)
+[wp] [Timeout] typed_vst1_lane_u32_loop_invariant_3_preserved (Qed 27ms) (Alt-Ergo) (Stronger, 3 warnings)
+[wp] [Timeout] typed_vst1_lane_u32_assert_rte_mem_access (Qed 17ms) (Alt-Ergo) (Stronger, 3 warnings)
+[wp] [Timeout] typed_vst1_lane_u32_assigns (Qed 11ms) (Alt-Ergo) (Stronger, 4 warnings)
+[wp] [Timeout] typed_vst1_lane_u16_ensures (Qed 19ms) (Alt-Ergo) (Stronger, 4 warnings)
+[wp] [Timeout] typed_vst1_lane_u16_ensures_2 (Qed 18ms) (Alt-Ergo) (Stronger, 4 warnings)
+[wp] [Timeout] typed_vst1_lane_u16_loop_invariant_3_preserved (Qed 24ms) (Alt-Ergo) (Stronger, 3 warnings)
+[wp] [Timeout] typed_vst1_lane_u16_assert_rte_mem_access (Qed 17ms) (Alt-Ergo) (Stronger, 3 warnings)
+[wp] [Timeout] typed_vst1_lane_u16_assigns (Qed 11ms) (Alt-Ergo) (Stronger, 4 warnings)
+[wp] [Timeout] typed_equivalent_assert_frame_in_BeforeTail4 (Qed 344ms) (Alt-Ergo) (Stronger, 5 warnings)
+[wp] [Timeout] typed_equivalent_assert_frame_out_BeforeTail4 (Qed 352ms) (Alt-Ergo) (Stronger, 5 warnings)
+[wp] [Timeout] typed_equivalent_assert_stored_lane_BeforeTail4 (Qed 353ms) (Alt-Ergo) (Stronger, 5 warnings)
+[wp] [Timeout] typed_equivalent_assert_22 (Qed 568ms) (Alt-Ergo) (Stronger, 5 warnings)
+[wp] [Timeout] typed_equivalent_assert_frame_in_BeforeTail2 (Qed 1.3s) (Alt-Ergo) (Stronger, 10 warnings)
+[wp] [Timeout] typed_equivalent_assert_frame_out_BeforeTail2 (Qed 1.2s) (Alt-Ergo) (Stronger, 10 warnings)
+[wp] [Timeout] typed_equivalent_assert_stored_lane_BeforeTail2 (Qed 1.2s) (Alt-Ergo) (Stronger, 10 warnings)
+[wp] [Timeout] typed_equivalent_assert_26 (Qed 1.6s) (Alt-Ergo) (Stronger, 10 warnings)
+[wp] [Timeout] typed_equivalent_assigns_normal_part16 (Qed 290ms) (Alt-Ergo) (Stronger, 5 warnings)
+[wp] [Timeout] typed_equivalent_assigns_normal_part21 (Qed 724ms) (Alt-Ergo) (Stronger, 10 warnings)
+[wp] [Timeout] typed_equivalent_assigns_exit_part46 (Qed 292ms) (Alt-Ergo) (Stronger, 5 warnings)
+[wp] [Timeout] typed_equivalent_assigns_exit_part51 (Qed 721ms) (Alt-Ergo) (Stronger, 10 warnings)
+[wp] [Timeout] typed_equivalent_call_vst1_lane_u32_requires_2 (Qed 284ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_equivalent_call_vst1_lane_u16_requires_2 (Qed 793ms) (Alt-Ergo) (Stronger, 7 warnings)
+[wp] Proved goals:  716 / 740
+  Terminating:      26
+  Unreachable:      26
+  Qed:             398 (3ms-236ms-3.5s)
+  Alt-Ergo 2.6.2:  231 (8ms-72ms-1.6s)
+  CVC5 1.2.1:       35 (36ms-360ms-6.2s)
+  Timeout:          24

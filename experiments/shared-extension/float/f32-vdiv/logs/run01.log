@@ -1,0 +1,49 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vdiv/logs/run01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vdiv/.build/run01/annotated/extensions.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vdiv/.build/run01/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfdiv_vv_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_add
+[rte:annot] annotating function f32_div
+[rte:annot] annotating function proof_div_join
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vdivq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] rvv.c:8: Warning: Statement specifications not yet supported (skipped).
+[wp] neon.c:14: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] 468 goals scheduled
+[wp] [Timeout] typed_extensions_equivalent_assert_62 (Qed 1.2s) (Alt-Ergo)
+[wp] Proved goals:  505 / 506
+  Terminating:      19
+  Unreachable:      19
+  Qed:             264 (0.72ms-190ms-1.6s)
+  Alt-Ergo 2.6.2:  166 (36ms-220ms-1.6s)
+  CVC5 1.2.1:       37 (4ms-221ms-2.7s)
+  Timeout:           1

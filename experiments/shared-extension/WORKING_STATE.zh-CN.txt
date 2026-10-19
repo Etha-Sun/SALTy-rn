@@ -1,0 +1,13 @@
+本轮收尾记录
+
+branch feat/shim-c；开始前checkpoint416f48c。旧4case及verified/shared文件不变。
+当前4 proved、26 proof pending、3 missing target、7 float model quarantined，总40项。
+不是11通过：本轮发现官方33.0 bundle中的Cfloat/Why3 native FP sign/NaN公理不一致，
+原f32-vadd+新6浮点的全绿记录已撤回，所有浮点局部结果只作诊断。原始文件/log/raw均保留。
+唯一新增完整接纳为u8-vclamp-v3，真实unsigned API vmaxu/vminu，688/688，4097native通过。
+全部33新增有实现case真实进入WP，proof agents任务/运行均结束。
+先读docs/shared-shim/EXTENSION-RESULTS.zh-CN.txt、experiments/shared-extension/results.json、
+verified/manifest.json；最小模型复现见float/model-audit及integer/proof-records/soundness-audit。
+没有改vendor；没有有限值域弱化、自由公理、实数替代。下一轮必须先解决并审计模型一致性，
+保留spec/C冻结，再重新验收浮点，而不是沿用原始complete=true计数。
+当前尚未push或建PR。归档日志被gitignore，commit需显式force-add。

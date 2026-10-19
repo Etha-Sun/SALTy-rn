@@ -1,0 +1,347 @@
+{
+  "case": "experiments/shared-extension/integer/qs8-f32-vcvt",
+  "command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-inline-calls",
+    "test_neon,test_rvv",
+    "-inline-stmt-contracts",
+    "-remove-inlined",
+    "test_neon,test_rvv",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5,alt-ergo",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/logs/prefix01.json",
+    "-wp-model",
+    "Typed+float",
+    "-warn-special-float",
+    "none",
+    "-wp-driver",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/integer.driver",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/unit.c"
+  ],
+  "source_guard": {
+    "passed": true,
+    "frozen_sha256": "2ca86a08496bc0883410dbfbbbb52d8cc30a8792736940b177db1a6911d081db",
+    "tokens": 12252,
+    "plain": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/plain",
+    "annotated": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated",
+    "proof": {
+      "experiments/shared-extension/integer/shared/integer-qs8-f32-vcvt-proof.patch": "254b0736d2e49eb87e4039547b1643ed3cdbc4ed200f2bcf70e3dadacbc423b5",
+      "experiments/shared-extension/integer/qs8-f32-vcvt/proof.patch": "448deeb8af14953c5fe81c04d38dfc448957109ab7c001ef00648ade0e7a145b"
+    },
+    "generated": {
+      "shim.h": "bddf3b3ba967ae01211c775bbdd67777a3d86c2b7c67f3e0619b4b5ef0e372a3",
+      "integer-qs8-f32-vcvt.c": "6e1cf06411c4173895888d5d20a5adfe186012fd4fa21c015928d7a1783da7d9",
+      "neon.c": "c642797f681b25dc40007d15869fb9fc4cf09fc39dd85472d5e67e3c79bb195f",
+      "rvv.c": "dccde54824f955e0b69b03f3866c3697ed18e0be43fafb55f633283dc4756465",
+      "spec.h": "42e7123326f278d073f10a148387630d7d9eb34110b2007d26a1d561c97ec65d",
+      "harness.c": "5a18cf3ff3e2c55b833fd0bfdd94917708cf445e1291439d8a319d9cc9313512",
+      "interface.json": "24df28319c4dcff23920ec3bdeedf67494fc04c995994a4ab987a873a5272c9b",
+      "unit.c": "d20794aabad813442ba2c432d8320938be720ecc47cc2aee088e46adaf56e5a5",
+      "generate_interfaces.py": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7",
+      "integer.driver": "3cee00de573425187ccd881c1e0c4391926780b7f2418c23a9699ed117f8b8b1"
+    }
+  },
+  "checker_inputs": {
+    "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+    "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+    "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+    "experiments/shared-extension/integer/shared/integer-qs8-f32-vcvt-proof.patch": "254b0736d2e49eb87e4039547b1643ed3cdbc4ed200f2bcf70e3dadacbc423b5",
+    "experiments/shared-extension/integer/qs8-f32-vcvt/proof.patch": "448deeb8af14953c5fe81c04d38dfc448957109ab7c001ef00648ade0e7a145b"
+  },
+  "exit": 0,
+  "seconds": 373.485,
+  "unchanged": true,
+  "raw_obligations": {
+    "passed": 591,
+    "total": 600
+  },
+  "pending": [
+    {
+      "goal": "typed_integer_equivalent_assert_2",
+      "property": "equivalent_assert_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/harness.c",
+      "line": 12,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 2.2,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_5",
+      "property": "equivalent_assert_5",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 46,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.213,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_14",
+      "property": "equivalent_assert_14",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 70,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.266,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_24",
+      "property": "equivalent_assert_24",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 56,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.296,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_30",
+      "property": "equivalent_assert_30",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 71,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.419,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_33",
+      "property": "equivalent_assert_33",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 86,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.798,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_39",
+      "property": "equivalent_assert_39",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 101,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.926,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_42",
+      "property": "equivalent_assert_42",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/neon.c",
+      "line": 114,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.23,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_integer_equivalent_assert_52",
+      "property": "equivalent_assert_52",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/integer/qs8-f32-vcvt/.build/prefix01/annotated/rvv.c",
+      "line": 38,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 2.06,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ],
+  "expected_functions": [
+    "__riscv_vfcvt_f_x_v_f32m8",
+    "__riscv_vfmul_vf_f32m8",
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vse32_v_f32m8",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsext_vf2_i16m4",
+    "__riscv_vsext_vf2_i32m8",
+    "__riscv_vsub_vx_i16m4",
+    "equivalent",
+    "proof_qcvt_join",
+    "proof_tail8",
+    "vaddw_s8",
+    "vcvtq_f32_s32",
+    "vdupq_n_f32",
+    "vdupq_n_s16",
+    "vget_high_f32",
+    "vget_high_s16",
+    "vget_low_f32",
+    "vget_low_s16",
+    "vld1_s8",
+    "vmovl_s16",
+    "vmulq_f32",
+    "vst1_f32",
+    "vst1_lane_f32",
+    "vst1q_f32",
+    "wrap16"
+  ],
+  "functions": [
+    "__riscv_vfcvt_f_x_v_f32m8",
+    "__riscv_vfmul_vf_f32m8",
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vse32_v_f32m8",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsext_vf2_i16m4",
+    "__riscv_vsext_vf2_i32m8",
+    "__riscv_vsub_vx_i16m4",
+    "equivalent",
+    "proof_qcvt_join",
+    "proof_tail8",
+    "vaddw_s8",
+    "vcvtq_f32_s32",
+    "vdupq_n_f32",
+    "vdupq_n_s16",
+    "vget_high_s16",
+    "vget_low_f32",
+    "vget_low_s16",
+    "vld1_s8",
+    "vmovl_s16",
+    "vmulq_f32",
+    "vst1_f32",
+    "vst1_lane_f32",
+    "vst1q_f32",
+    "wrap16"
+  ],
+  "missing_body_ensures": [
+    "vget_high_f32"
+  ],
+  "expected_global_lemmas": [
+    "centered_mod16",
+    "fp_mul_congruence",
+    "same_float_refl",
+    "same_value_trans"
+  ],
+  "missing_global_lemmas": [],
+  "complete": false,
+  "isa_to_c_shim_proved": false
+}

@@ -1,0 +1,74 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vsqrt/logs/run01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vsqrt/.build/run01/annotated/extensions.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/float/f32-vsqrt/.build/run01/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfsqrt_v_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function bits_float
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_add
+[rte:annot] annotating function f32_sqrt
+[rte:annot] annotating function float_bits
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vsqrtq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] neon.c:13: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] representation.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] representation.c:3: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] representation.c:4: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] representation.c:4: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [300 goals...]
+[wp] 329 goals scheduled
+[wp] [Timeout] typed_extensions_float_bits_ensures (Qed 8ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_float_bits_assigns_normal (Qed 3ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_float_bits_call_memcpy_requires_valid_dest (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_float_bits_call_memcpy_requires_valid_src (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_ensures (Qed 6ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_assigns_normal (Qed 7ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_call_memcpy_requires_valid_dest (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_bits_float_call_memcpy_requires_valid_src (Qed 4ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_extensions_f32_sqrt_ensures (Qed 226ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_ensures_equal (Qed 544ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_assigns_normal_part10 (Qed 93ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_assigns_normal_part13 (Qed 199ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_assigns_exit_part10 (Qed 108ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_assigns_exit_part13 (Qed 221ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_call_vst1_f32_requires (Qed 83ms) (Alt-Ergo)
+[wp] [Timeout] typed_extensions_equivalent_call_vst1_lane_f32_requires_2 (Qed 172ms) (Alt-Ergo)
+[wp] Proved goals:  345 / 361
+  Terminating:      16
+  Unreachable:      16
+  Qed:             212 (1ms-25ms-544ms)
+  Alt-Ergo 2.6.2:   66 (33ms-124ms-304ms)
+  CVC5 1.2.1:       33 (10ms-84ms-311ms)
+  Z3 4.12.5:         2 (8.5s)
+  Timeout:          16
