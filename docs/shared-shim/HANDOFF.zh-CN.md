@@ -1,5 +1,7 @@
 # feat/shim-c 接手说明
 
+最新工作覆盖说明（2026-10-19）：先看 `experiments/codex-kernel-wave1/CHECKPOINT.zh-CN.txt` 和 `CORE-PROGRESS.zh-CN.md`。当前manifest收录15项，待证22项，缺target 3项。旧Bytes全局地址范围公理发现逻辑冲突后已隔离旧新候选，integer-v4/native-v6只删除该公理并独立资格复验；两个新整数case在新模型三轮全量通过。下面be5a536/11项是较早交接快照，环境和冻结边界仍适用，不能覆盖当前manifest及审计。
+
 此文针对用户 fork Etha-Sun/SALTy-rn 的 feat/shim-c，当前路线是普通 C shim + Frama-C WP。证明结果基线是 be5a536。后续交接提交只补文档，不产生新证明结果。以这个分支最新 HEAD 为接手点。
 
 根目录 SERVER_HANDOFF.zh-CN.md、AGENTS.md 下半部的 Sail/Coq 内容属于其他分支的历史研究。不要据此切到 feat/assembly-reduction-lean 或 proof/sum，不要将那里的 VLEN=256、Hload 或131模块结果混进本路线。本路线固定 VLEN=128。最初查看的 Arcadia-Y/SALTy-rn:verification 是参考来源；当前工作和推送目的地是用户自己的 Etha-Sun/SALTy-rn:feat/shim-c。

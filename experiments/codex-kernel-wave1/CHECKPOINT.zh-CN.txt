@@ -1,0 +1,12 @@
+当前checkpoint：feat/shim-c，Etha-Sun/SALTy-rn，同服务器worktree build/verified-output-equivalence。
+正式manifest当前15项、待证22、缺target 3。两个本轮新收录：verified/qs8-vcvt-bytes-v4（1220/1220）与qs8-vlrelu-bytes-v4（1547/1547），各候选全量/root独立/打包canonical三轮通过。
+两侧普通C、spec.h和wrapper冻结；Cvt的RVV是此前已冻结的vnclip15修复版，original及反例保留；Lrelu两侧原始C都不变。每kernel只有一个proof.patch，ghost helper在patch内。
+模型审计：旧Bytes全局pointer uint64范围公理与无限offset及逆映射矛盾，audit/pointer-range-consistency-root01有Std-only Lean4.29.1独立证明和peer核对。旧同名verified目录保留在quarantined_programs，不可凭绿色计数验收。不能据此断言历史13个Typed条目同样受影响；历史rsum额外table分离前提及alias独立重验见audit/model-hypotheses-independent01。
+新integer-v4/native-v6/FMA-v6只删上述11行公理生成，未加新公理。root独立源码/锁复核和正反控制通过：audit/integer-v4-root-independent01、audit/native-v6-root-source01、audit/native-v6-root-controls01。native合并179/184剩5个预设反例，FMA18/20剩2个预设反例。资格不是完整模型一致性证明。
+固定LP64小端、VLEN128及每kernel冻结的min-VL调度。普通C的host LLVM/token身份检查不等于ISA或二进制证明。libc memcpy/fmaf等合同、其余内存/整数/FP模型、ABI、前端/WP/Qed/策略、Why3/driver/SMT及验收脚本仍为TCB；ISA→shim未证。Float64 byte codec不支持，typed NaN store过近似payload/sign。
+当前3个worker在native/FMA-v6独立新候选推进：QC4 GEMM、exp、maxpool。它们仍是局部证明，不能收录为整核；旧v5绿色不可继承。详细scope/失败/raw/来源见CORE-PROGRESS、WAVE2-REVIEW和各worker报告。
+禁止改冻结C/spec/旧proof/旧模型/旧日志；只在新candidate补proof。所有新assert/ghost body/global/callpre/RTE/termination/assigns均须实际检查，不能以post依赖未闭cut充数，不加axiom/assume/不透明外部helper，不缩小输入域、不挑选VC冒充全量。真kernel反例允许另建修复target并重新冻结，保留原版；接口/模型问题须单列。
+继续使用Codex agents，不再使用DeepSeek。root主审，不让多个agent写同目录。当前机器4个agent slots总量，WP进程另设有限par/内存/总预算。不要按128 CPU满开。
+恢复先读docs/shared-shim/HANDOFF与native-v6-provenance.README；fresh clone不是配置好的环境。wp-share/.build/安装二进制不入Git；旧模型构建链/driver/patch/locks是来源记录，新安装必须新命名空间、重冻结、正反资格及实际复验。
+Frama/Why3 IPC与patch元数据需允许的执行环境；若sandbox报owner/IPC错误，保留失败日志，在允许环境用fresh run name重试，不能改spec绕过。不要重用canonical01或qualifier旧输出名。
+用户其他本地.gitignore改动、DeepSeek旧pilot及notes保持原样，不加入当前checkpoint。

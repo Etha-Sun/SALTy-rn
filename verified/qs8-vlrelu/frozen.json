@@ -1,0 +1,77 @@
+{
+  "name": "qs8-vlrelu",
+  "files": {
+    "shim.h": {
+      "path": "verified/qs8-vlrelu/shim.h",
+      "sha256": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163"
+    },
+    "integer-qs8-vlrelu.c": {
+      "path": "verified/qs8-vlrelu/integer-qs8-vlrelu.c",
+      "sha256": "41879f27a668b886bd5e15e92f8273b27c4d5f9c5db2532efe767a932b7ff7ac"
+    },
+    "neon.c": {
+      "path": "verified/qs8-vlrelu/neon.c",
+      "sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f"
+    },
+    "rvv.c": {
+      "path": "verified/qs8-vlrelu/rvv.c",
+      "sha256": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234"
+    },
+    "spec.h": {
+      "path": "verified/qs8-vlrelu/spec.h",
+      "sha256": "eb74c32c6804b020d2fc92fbe8e74e6c33df2218f9b36e1f43edba3bd8559c1c"
+    },
+    "harness.c": {
+      "path": "verified/qs8-vlrelu/harness.c",
+      "sha256": "afe129d8148cc52327c7487441540eed6942dc221165209074adc8a85212948d"
+    },
+    "interface.json": {
+      "path": "verified/qs8-vlrelu/interface.json",
+      "sha256": "a5a6f67fa61cbc9b309f7557e7658c5acb2473a0b5ce23ad344bc821b9db6ea8"
+    },
+    "unit.c": {
+      "path": "verified/qs8-vlrelu/unit.c",
+      "sha256": "2038bba1294197809d231a52ed67e18eeaf0afc960eb9a5010d2e326225bae33"
+    },
+    "generate_interfaces.py": {
+      "path": "experiments/shared-extension/integer/generate_interfaces.py",
+      "sha256": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7"
+    },
+    "model_runner.py": {
+      "path": "experiments/codex-kernel-wave1/checker-resource/shim_c_campaign_resource_v15.py",
+      "sha256": "4fc46f84c2397728aaff5ca51e635850a32b9d1e83eb71794b9f60f0c6459714"
+    },
+    "closure_checker.py": {
+      "path": "experiments/codex-kernel-wave1/checker-v11/shim_c_campaign_modular_v11.py",
+      "sha256": "be5298ea1196fe497787ab3ea45f71fa6862002d0d532c398c2dec780246af86"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/model_lock.json",
+      "sha256": "5750dcd3a4450cc84edf5166f9a195379f00f42c4fdf0b411fe593e9ce1f6f61"
+    },
+    "kernel_contracts.json": {
+      "path": "experiments/codex-kernel-wave1/checker-v10/kernel-contracts.json",
+      "sha256": "e363d34d8f4d3c572e846c6ac474cc8d02bdd034a4bff7844cec578e0b71f2d6"
+    }
+  },
+  "proof_patches": [
+    "verified/qs8-vlrelu/proof.patch"
+  ],
+  "model": "Bytes",
+  "VLEN_bits": 128,
+  "origin": "NEON original unchanged. RVV original preserved separately; current RVV is byte-identical to original.",
+  "revision": "Add existing rvv_bulk_old_frame label to the unchanged standard 30s tactic after v41 complete1546/1547. No formula, ordinary C, spec, model, contract or closure selection changes.",
+  "previous_version": "experiments/codex-kernel-wave1/vlrelu/qs8-vlrelu-v41",
+  "wp_share": "experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v3-bookkeeping/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 5,
+  "wp_budget": 1800,
+  "wp_model_variant": "Bytes",
+  "reason": "Checked modular kernel contracts instantiated from the frozen public spec; no C changes",
+  "candidate_source": "experiments/codex-kernel-wave1/vlrelu/qs8-vlrelu-v42"
+}

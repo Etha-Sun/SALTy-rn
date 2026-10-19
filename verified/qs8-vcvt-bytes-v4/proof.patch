@@ -1,0 +1,1231 @@
+--- a/harness.c
++++ b/harness.c
+@@ -1,7 +1,10 @@
+ #include "spec.h"
+ int equivalent(size_t n, const int8_t *input, int8_t *left, int8_t *right, const struct xnn_qs8_cvt_params* params) {
+   test_neon(n,input,left,params);
++  //@ assert \forall integer j;0<=j<n ==> left[j]==L_cvt8(input[j],params->scalar.input_zero_point,params->scalar.multiplier,params->scalar.output_zero_point);
+   test_rvv(n,input,right,params);
++  //@ assert \forall integer j;0<=j<n ==> left[j]==right[j];
++  /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
+   for(size_t i=0;i<n;i++) if(!(left[i]==right[i]))return 0;
+   return 1;
+ }
+--- a/integer-qs8-vcvt.c
++++ b/integer-qs8-vcvt.c
+@@ -1,30 +1,596 @@
+ #include "shim.h"
++/*@ ghost
++/@ requires b<=16777215; terminates \true; assigns \nothing;
++ ensures (uint8_t)((uint64_t)a+256*(uint64_t)b)==a; @/
++void low_byte_unsigned(uint8_t a,uint32_t b) {
++ /@ loop invariant 0<=k<=b;
++     loop invariant (uint8_t)((uint64_t)a+256*(uint64_t)k)==a;
++     loop assigns k; loop variant b-k; @/
++ for(uint32_t k=0;k<b;k++) {}
++}
++
++
++ /@ terminates \true; assigns \nothing;
++ ensures lane0: (int8_t)(uint8_t)((1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1])>>0)==a.lane[0];
++ ensures lane1: (int8_t)(uint8_t)((1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1])>>8)==a.lane[1];
++ @/
++void proof_unpack2(int8x8_t a) { low_byte_unsigned((uint8_t)a.lane[0],(uint8_t)a.lane[1]); }
++ /@ terminates \true; assigns \nothing;
++ ensures lane0: (int8_t)(uint8_t)((1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1]+65536*(uint8_t)a.lane[2]+16777216*(uint8_t)a.lane[3])>>0)==a.lane[0];
++ ensures lane1: (int8_t)(uint8_t)((1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1]+65536*(uint8_t)a.lane[2]+16777216*(uint8_t)a.lane[3])>>8)==a.lane[1];
++ ensures lane2: (int8_t)(uint8_t)((1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1]+65536*(uint8_t)a.lane[2]+16777216*(uint8_t)a.lane[3])>>16)==a.lane[2];
++ ensures lane3: (int8_t)(uint8_t)((1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1]+65536*(uint8_t)a.lane[2]+16777216*(uint8_t)a.lane[3])>>24)==a.lane[3];
++ @/
++void proof_unpack4(int8x8_t a) {
++ low_byte_unsigned((uint8_t)a.lane[0],(uint8_t)a.lane[1]+256*(uint8_t)a.lane[2]+65536*(uint8_t)a.lane[3]);
++ low_byte_unsigned((uint8_t)a.lane[1],(uint8_t)a.lane[2]+256*(uint8_t)a.lane[3]);
++ low_byte_unsigned((uint8_t)a.lane[2],(uint8_t)a.lane[3]);
++}
++*/
++
++/*@ ghost
++ /@ requires r.lane[0]==1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1];
++    requires r.lane[1]==1*(uint8_t)a.lane[2]+256*(uint8_t)a.lane[3];
++    requires r.lane[2]==1*(uint8_t)a.lane[4]+256*(uint8_t)a.lane[5];
++    requires r.lane[3]==1*(uint8_t)a.lane[6]+256*(uint8_t)a.lane[7];
++    terminates \true; assigns \nothing;
++    ensures \forall integer j;0<=j<4 ==> r.lane[j]==1*(uint8_t)a.lane[2*j+0]+256*(uint8_t)a.lane[2*j+1]; @/
++void pack16_prefix(uint16x4_t r,int8x8_t a) {}
++ /@ requires r.lane[0]==1*(uint8_t)a.lane[0]+256*(uint8_t)a.lane[1]+65536*(uint8_t)a.lane[2]+16777216*(uint8_t)a.lane[3];
++    requires r.lane[1]==1*(uint8_t)a.lane[4]+256*(uint8_t)a.lane[5]+65536*(uint8_t)a.lane[6]+16777216*(uint8_t)a.lane[7];
++    terminates \true; assigns \nothing;
++    ensures \forall integer j;0<=j<2 ==> r.lane[j]==1*(uint8_t)a.lane[4*j+0]+256*(uint8_t)a.lane[4*j+1]+65536*(uint8_t)a.lane[4*j+2]+16777216*(uint8_t)a.lane[4*j+3]; @/
++void pack32_prefix(uint32x2_t r,int8x8_t a) {}
++*/
++
++/*@ ghost
++/@ requires \valid_read(p); requires \valid_read((unsigned char*)p+(0..1));
++    terminates \true; assigns \nothing;
++    ensures *p == ((unsigned char*)p)[0]+256*((unsigned char*)p)[1]; @/
++void word16_bytes(const uint16_t *p) {}
++/@ requires \valid_read(p); requires \valid_read((unsigned char*)p+(0..3));
++    terminates \true; assigns \nothing;
++    ensures *p == ((unsigned char*)p)[0]+256*((unsigned char*)p)[1]+65536*((unsigned char*)p)[2]+16777216*((unsigned char*)p)[3]; @/
++void word32_bytes(const uint32_t *p) {}
++*/
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_sat16(x);
++*/
+ int16_t sat16(int64_t x) { return x>32767?32767:x< -32768?-32768:(int16_t)x; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_sat8(x);
++*/
+ int8_t sat8(int64_t x) { return x>127?127:x< -128?-128:(int8_t)x; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_wrap16(x);
++*/
+ int16_t wrap16(uint64_t x) { uint16_t u=(uint16_t)x; return u<=INT16_MAX?(int16_t)u:(int16_t)(-1-(int64_t)(UINT16_MAX-u)); }
+-int64_t asr64(int64_t x, unsigned s) { if(!s)return x; if(s>=63)return x<0?-1:0; return x>=0?x/((int64_t)1<<s):-1-((-1-x)/((int64_t)1<<s)); }
+-int64_t round_shift(int64_t x, unsigned s, int mode) { if(!s)return x; if(s>=63)return 0; int64_t q=asr64(x,s); if(mode==0 && ((uint64_t)x & ((uint64_t)1<<(s-1)))) q++; return q; }
+-int8x8_t vld1_s8(const int8_t *p) { int8x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=p[i]; return r; }
+-void vst1_s8(int8_t *p, int8x8_t a) { for(size_t i=0;i<8;i++)p[i]=a.lane[i]; }
++/*@ ghost
++/@ requires 1<=s<=62; terminates \true; assigns \nothing;
++   ensures 2 <= ((int64_t)1<<s) <= INT64_MAX; @/
++void power_bound(unsigned s) {
++ switch(s) {
++case 1:break;
++case 2:break;
++case 3:break;
++case 4:break;
++case 5:break;
++case 6:break;
++case 7:break;
++case 8:break;
++case 9:break;
++case 10:break;
++case 11:break;
++case 12:break;
++case 13:break;
++case 14:break;
++case 15:break;
++case 16:break;
++case 17:break;
++case 18:break;
++case 19:break;
++case 20:break;
++case 21:break;
++case 22:break;
++case 23:break;
++case 24:break;
++case 25:break;
++case 26:break;
++case 27:break;
++case 28:break;
++case 29:break;
++case 30:break;
++case 31:break;
++case 32:break;
++case 33:break;
++case 34:break;
++case 35:break;
++case 36:break;
++case 37:break;
++case 38:break;
++case 39:break;
++case 40:break;
++case 41:break;
++case 42:break;
++case 43:break;
++case 44:break;
++case 45:break;
++case 46:break;
++case 47:break;
++case 48:break;
++case 49:break;
++case 50:break;
++case 51:break;
++case 52:break;
++case 53:break;
++case 54:break;
++case 55:break;
++case 56:break;
++case 57:break;
++case 58:break;
++case 59:break;
++case 60:break;
++case 61:break;
++case 62:break;
++ }
++}
++*/
++/*@ ghost
++/@ requires 0<=n; requires 2<=d;
++    terminates \true; assigns \nothing;
++    ensures 0<=n/d<=INT64_MAX/2; @/
++void quotient_half(int64_t n,int64_t d) {
++  /@ assert 0<=n/d; @/
++  /@ assert (n/d)*d<=n; @/
++  /@ assert 2*(n/d)<=n; @/
++}
++*/
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures s>0 ==> INT64_MIN/2<=\result<=INT64_MAX/2;
++  ensures \result==L_asr64(x,s);
++*/
++int64_t asr64(int64_t x, unsigned s) { if(!s)return x; if(s>=63)return x<0?-1:0; 
++ //@ ghost power_bound(s);
++ //@ ghost if(x>=0) quotient_half(x,((int64_t)1<<s)); else quotient_half(-1-x,((int64_t)1<<s));
++ /*@ assert x<0 ==> 0<=(-1-x)/((int64_t)1<<s)<= -1-x; */
++ return x>=0?x/((int64_t)1<<s):-1-((-1-x)/((int64_t)1<<s)); }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==L_round_shift(x,s,mode);
++*/
++int64_t round_shift(int64_t x, unsigned s, int mode) { if(!s)return x; if(s>=63)return 0;
++ //@ ghost if(s>1) power_bound(s-1);
++ int64_t q=asr64(x,s); if(mode==0 && ((uint64_t)x & ((uint64_t)1<<(s-1)))) q++; return q; }
++/*@
++  requires \valid_read(p+(0..8-1));
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int8_t)(p[j]);
++*/
++int8x8_t vld1_s8(const int8_t *p) { int8x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(p[j]);
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=p[i]; return r; }
++/*@
++  requires \valid(p+(0..8-1));
++  terminates \true;
++  assigns p[0..8-1];
++  ensures \forall integer j; 0<=j<8 ==> p[j]==a.lane[j];
++
++  ensures s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..8-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..8-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..8-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures backward_frame: \forall integer j; j<0 && \valid_read{Pre}(p+j) ==> \valid_read(p+j) && p[j]==\at(p[j],Pre);
++  ensures prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++*/
++void vst1_s8(int8_t *p, int8x8_t a) { /*@
++  loop invariant 0<=i<=8;
++  loop invariant backward_frame: \forall integer j; j<0 && \valid_read{Pre}(p+j) ==> \valid_read(p+j) && p[j]==\at(p[j],Pre);
++  loop invariant prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++  loop invariant s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..8-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..8-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..8-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant \forall integer j; 0<=j<i ==> p[j]==a.lane[j];
++  loop assigns i,p[0..8-1];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++)p[i]=a.lane[i]; }
++/*@
++  requires \valid(p);
++  requires 0<=n<8;
++  terminates \true;
++  assigns *p;
++  ensures *p==a.lane[n];
++
++  ensures s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..1-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..1-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..1-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures backward_frame: \forall integer j; j<0 && \valid_read{Pre}(p+j) ==> \valid_read(p+j) && p[j]==\at(p[j],Pre);
++  ensures prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++*/
+ void vst1_lane_s8(int8_t *p,int8x8_t a,int n) { *p=a.lane[n]; }
+-int8x8_t vext_s8(int8x8_t a,int8x8_t b,int n) { int8x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=i+(size_t)n<8?a.lane[i+n]:b.lane[i+n-8]; return r; }
+-int16x8_t vdupq_n_s16(int16_t x) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=x; return r; }
+-void vst1_lane_u16(void *p,uint16x4_t a,int n) { unsigned char *q=p; uint16_t x=a.lane[n]; for(size_t i=0;i<2;i++)q[i]=(unsigned char)(x>>(8*i)); }
+-void vst1_lane_u32(void *p,uint32x2_t a,int n) { unsigned char *q=p; uint32_t x=a.lane[n]; for(size_t i=0;i<4;i++)q[i]=(unsigned char)(x>>(8*i)); }
+-uint16x4_t vreinterpret_u16_s8(int8x8_t a) { uint16x4_t r; memcpy(&r,&a,sizeof r); return r; }
+-uint32x2_t vreinterpret_u32_s8(int8x8_t a) { uint32x2_t r; memcpy(&r,&a,sizeof r); return r; }
+-int16x8_t vsubw_s8(int16x8_t a,int8x8_t b) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)((int64_t)a.lane[i]-b.lane[i])); return r; }
+-int8x8_t vqmovn_s16(int16x8_t a) { int8x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=sat8(a.lane[i]); return r; }
+-int16x8_t vqaddq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b.lane[i]); return r; }
+-int16x8_t vshlq_n_s16(int16x8_t a,int n) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<n); return r; }
+-int16x8_t vqrdmulhq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; for(size_t i=0;i<8;i++) r.lane[i]=sat16(round_shift((int64_t)a.lane[i]*b.lane[i],15,0)); return r; }
++/*@
++  requires 0<=n<=8;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int8_t)(j+(size_t)n<8?a.lane[j+n]:b.lane[j+n-8]);
++  ensures exact_prefix: \forall integer j; 0<=j<8-n ==> \result.lane[j]==a.lane[j+n];
++*/
++int8x8_t vext_s8(int8x8_t a,int8x8_t b,int n) { int8x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant exact_prefix: \forall integer j; 0<=j<i && j<8-n ==> r.lane[j]==a.lane[j+n];
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(j+(size_t)n<8?a.lane[j+n]:b.lane[j+n-8]);
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=i+(size_t)n<8?a.lane[i+n]:b.lane[i+n-8]; return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(x);
++*/
++int16x8_t vdupq_n_s16(int16_t x) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(x);
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=x; return r; }
++/*@ requires 0<=n<4;
++    requires \valid((unsigned char*)p+(0..1));
++    terminates \true; assigns ((unsigned char*)p)[0..1];
++    ensures \forall integer j; 0<=j<2 ==> ((unsigned char*)p)[j]==(unsigned char)(a.lane[n]>>(8*j)); 
++  ensures s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..2-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..2-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..2-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures backward_frame: \forall integer j; j<0 && \valid_read{Pre}(((int8_t*)p)+j) ==> \valid_read(((int8_t*)p)+j) && ((int8_t*)p)[j]==\at(((int8_t*)p)[j],Pre);
++  ensures prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++  ensures signed_content: \forall integer j; 0<=j<2 ==> ((int8_t*)p)[j]==(int8_t)(unsigned char)(a.lane[n]>>(8*j));
++  ensures signed_point_0: ((int8_t*)p)[0]==(int8_t)(unsigned char)(a.lane[n]>>0);
++  ensures signed_point_1: ((int8_t*)p)[1]==(int8_t)(unsigned char)(a.lane[n]>>8);
++*/
++void vst1_lane_u16(void *p,uint16x4_t a,int n) { unsigned char *q=p; uint16_t x=a.lane[n]; /*@ loop invariant 0<=i<=2;
++  loop invariant backward_frame: \forall integer j; j<0 && \valid_read{Pre}(((int8_t*)p)+j) ==> \valid_read(((int8_t*)p)+j) && ((int8_t*)p)[j]==\at(((int8_t*)p)[j],Pre);
++  loop invariant prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++  loop invariant signed_content: \forall integer j; 0<=j<i ==> ((int8_t*)p)[j]==(int8_t)(unsigned char)(x>>(8*j));
++  loop invariant s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..2-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..2-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..2-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++ loop invariant next_index: (size_t)(i+1)==i+1;
++ loop invariant shift_index: (size_t)(8*i)==8*i;
++     loop invariant byte_prefix_2_0: 0<i ==> q[0]==(unsigned char)(x>>0);
++loop invariant byte_prefix_2_1: 1<i ==> q[1]==(unsigned char)(x>>8);
++     loop assigns i,q[0..1]; loop variant 2-i; */
++ for(size_t i=0;i<2;i++)q[i]=(unsigned char)(x>>(8*i)); }
++/*@ requires 0<=n<2;
++    requires \valid((unsigned char*)p+(0..3));
++    terminates \true; assigns ((unsigned char*)p)[0..3];
++    ensures \forall integer j; 0<=j<4 ==> ((unsigned char*)p)[j]==(unsigned char)(a.lane[n]>>(8*j)); 
++  ensures s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..4-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..4-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..4-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures backward_frame: \forall integer j; j<0 && \valid_read{Pre}(((int8_t*)p)+j) ==> \valid_read(((int8_t*)p)+j) && ((int8_t*)p)[j]==\at(((int8_t*)p)[j],Pre);
++  ensures prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++  ensures signed_content: \forall integer j; 0<=j<4 ==> ((int8_t*)p)[j]==(int8_t)(unsigned char)(a.lane[n]>>(8*j));
++  ensures signed_point_0: ((int8_t*)p)[0]==(int8_t)(unsigned char)(a.lane[n]>>0);
++  ensures signed_point_1: ((int8_t*)p)[1]==(int8_t)(unsigned char)(a.lane[n]>>8);
++  ensures signed_point_2: ((int8_t*)p)[2]==(int8_t)(unsigned char)(a.lane[n]>>16);
++  ensures signed_point_3: ((int8_t*)p)[3]==(int8_t)(unsigned char)(a.lane[n]>>24);
++*/
++void vst1_lane_u32(void *p,uint32x2_t a,int n) { unsigned char *q=p; uint32_t x=a.lane[n]; /*@ loop invariant 0<=i<=4;
++  loop invariant backward_frame: \forall integer j; j<0 && \valid_read{Pre}(((int8_t*)p)+j) ==> \valid_read(((int8_t*)p)+j) && ((int8_t*)p)[j]==\at(((int8_t*)p)[j],Pre);
++  loop invariant prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++  loop invariant signed_content: \forall integer j; 0<=j<i ==> ((int8_t*)p)[j]==(int8_t)(unsigned char)(x>>(8*j));
++  loop invariant s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..4-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..4-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..4-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++ loop invariant next_index: (size_t)(i+1)==i+1;
++ loop invariant shift_index: (size_t)(8*i)==8*i;
++     loop invariant byte_prefix_4_0: 0<i ==> q[0]==(unsigned char)(x>>0);
++loop invariant byte_prefix_4_1: 1<i ==> q[1]==(unsigned char)(x>>8);
++loop invariant byte_prefix_4_2: 2<i ==> q[2]==(unsigned char)(x>>16);
++loop invariant byte_prefix_4_3: 3<i ==> q[3]==(unsigned char)(x>>24);
++     loop assigns i,q[0..3]; loop variant 4-i; */
++ for(size_t i=0;i<4;i++)q[i]=(unsigned char)(x>>(8*i)); }
++
++/*@ terminates \true; assigns \nothing;
++    ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==((uint8_t)a.lane[2*j+0]) * 1 + ((uint8_t)a.lane[2*j+1]) * 256; 
++    ensures decoded_0: (int8_t)(uint8_t)(\result.lane[0]>>0)==a.lane[0];
++    ensures decoded_1: (int8_t)(uint8_t)(\result.lane[0]>>8)==a.lane[1];
++*/
++uint16x4_t vreinterpret_u16_s8(int8x8_t a) { uint16x4_t r;
++ //@ ghost int8x8_t saved_a=a;
++ memcpy(&r,&a,sizeof r);
++ /*@ assert byte_copy_2_0: ((unsigned char*)&r)[0]==\at(((unsigned char*)&a)[0],Pre); */
++ /*@ assert byte_copy_2_1: ((unsigned char*)&r)[1]==\at(((unsigned char*)&a)[1],Pre); */
++ /*@ assert byte_copy_2_2: ((unsigned char*)&r)[2]==\at(((unsigned char*)&a)[2],Pre); */
++ /*@ assert byte_copy_2_3: ((unsigned char*)&r)[3]==\at(((unsigned char*)&a)[3],Pre); */
++ /*@ assert byte_copy_2_4: ((unsigned char*)&r)[4]==\at(((unsigned char*)&a)[4],Pre); */
++ /*@ assert byte_copy_2_5: ((unsigned char*)&r)[5]==\at(((unsigned char*)&a)[5],Pre); */
++ /*@ assert byte_copy_2_6: ((unsigned char*)&r)[6]==\at(((unsigned char*)&a)[6],Pre); */
++ /*@ assert byte_copy_2_7: ((unsigned char*)&r)[7]==\at(((unsigned char*)&a)[7],Pre); */
++ /*@ assert byte_source_2_0: ((unsigned char*)&a)[0]==(uint8_t)saved_a.lane[0]; */
++ /*@ assert byte_source_2_1: ((unsigned char*)&a)[1]==(uint8_t)saved_a.lane[1]; */
++ /*@ assert byte_source_2_2: ((unsigned char*)&a)[2]==(uint8_t)saved_a.lane[2]; */
++ /*@ assert byte_source_2_3: ((unsigned char*)&a)[3]==(uint8_t)saved_a.lane[3]; */
++ /*@ assert byte_source_2_4: ((unsigned char*)&a)[4]==(uint8_t)saved_a.lane[4]; */
++ /*@ assert byte_source_2_5: ((unsigned char*)&a)[5]==(uint8_t)saved_a.lane[5]; */
++ /*@ assert byte_source_2_6: ((unsigned char*)&a)[6]==(uint8_t)saved_a.lane[6]; */
++ /*@ assert byte_source_2_7: ((unsigned char*)&a)[7]==(uint8_t)saved_a.lane[7]; */
++ //@ ghost word16_bytes(&r.lane[0]);
++ /*@ assert word_view_2_0: r.lane[0]==1*((unsigned char*)&r)[0] + 256*((unsigned char*)&r)[1]; */
++ //@ ghost word16_bytes(&r.lane[1]);
++ /*@ assert word_view_2_1: r.lane[1]==1*((unsigned char*)&r)[2] + 256*((unsigned char*)&r)[3]; */
++ //@ ghost word16_bytes(&r.lane[2]);
++ /*@ assert word_view_2_2: r.lane[2]==1*((unsigned char*)&r)[4] + 256*((unsigned char*)&r)[5]; */
++ //@ ghost word16_bytes(&r.lane[3]);
++ /*@ assert word_view_2_3: r.lane[3]==1*((unsigned char*)&r)[6] + 256*((unsigned char*)&r)[7]; */
++ 
++/*@ assert packed_2_0: r.lane[0]==1*(uint8_t)saved_a.lane[0]+256*(uint8_t)saved_a.lane[1]; */
++/*@ assert packed_2_1: r.lane[1]==1*(uint8_t)saved_a.lane[2]+256*(uint8_t)saved_a.lane[3]; */
++/*@ assert packed_2_2: r.lane[2]==1*(uint8_t)saved_a.lane[4]+256*(uint8_t)saved_a.lane[5]; */
++/*@ assert packed_2_3: r.lane[3]==1*(uint8_t)saved_a.lane[6]+256*(uint8_t)saved_a.lane[7]; */
++//@ ghost pack16_prefix(r,saved_a);
++//@ ghost proof_unpack2(saved_a);
++return r; }
++/*@ terminates \true; assigns \nothing;
++    ensures \forall integer j; 0<=j<2 ==> \result.lane[j]==((uint8_t)a.lane[4*j+0]) * 1 + ((uint8_t)a.lane[4*j+1]) * 256 + ((uint8_t)a.lane[4*j+2]) * 65536 + ((uint8_t)a.lane[4*j+3]) * 16777216; 
++    ensures decoded_0: (int8_t)(uint8_t)(\result.lane[0]>>0)==a.lane[0];
++    ensures decoded_1: (int8_t)(uint8_t)(\result.lane[0]>>8)==a.lane[1];
++    ensures decoded_2: (int8_t)(uint8_t)(\result.lane[0]>>16)==a.lane[2];
++    ensures decoded_3: (int8_t)(uint8_t)(\result.lane[0]>>24)==a.lane[3];
++*/
++uint32x2_t vreinterpret_u32_s8(int8x8_t a) { uint32x2_t r;
++ //@ ghost int8x8_t saved_a=a;
++ memcpy(&r,&a,sizeof r);
++ /*@ assert byte_copy_4_0: ((unsigned char*)&r)[0]==\at(((unsigned char*)&a)[0],Pre); */
++ /*@ assert byte_copy_4_1: ((unsigned char*)&r)[1]==\at(((unsigned char*)&a)[1],Pre); */
++ /*@ assert byte_copy_4_2: ((unsigned char*)&r)[2]==\at(((unsigned char*)&a)[2],Pre); */
++ /*@ assert byte_copy_4_3: ((unsigned char*)&r)[3]==\at(((unsigned char*)&a)[3],Pre); */
++ /*@ assert byte_copy_4_4: ((unsigned char*)&r)[4]==\at(((unsigned char*)&a)[4],Pre); */
++ /*@ assert byte_copy_4_5: ((unsigned char*)&r)[5]==\at(((unsigned char*)&a)[5],Pre); */
++ /*@ assert byte_copy_4_6: ((unsigned char*)&r)[6]==\at(((unsigned char*)&a)[6],Pre); */
++ /*@ assert byte_copy_4_7: ((unsigned char*)&r)[7]==\at(((unsigned char*)&a)[7],Pre); */
++ /*@ assert byte_source_4_0: ((unsigned char*)&a)[0]==(uint8_t)saved_a.lane[0]; */
++ /*@ assert byte_source_4_1: ((unsigned char*)&a)[1]==(uint8_t)saved_a.lane[1]; */
++ /*@ assert byte_source_4_2: ((unsigned char*)&a)[2]==(uint8_t)saved_a.lane[2]; */
++ /*@ assert byte_source_4_3: ((unsigned char*)&a)[3]==(uint8_t)saved_a.lane[3]; */
++ /*@ assert byte_source_4_4: ((unsigned char*)&a)[4]==(uint8_t)saved_a.lane[4]; */
++ /*@ assert byte_source_4_5: ((unsigned char*)&a)[5]==(uint8_t)saved_a.lane[5]; */
++ /*@ assert byte_source_4_6: ((unsigned char*)&a)[6]==(uint8_t)saved_a.lane[6]; */
++ /*@ assert byte_source_4_7: ((unsigned char*)&a)[7]==(uint8_t)saved_a.lane[7]; */
++ //@ ghost word32_bytes(&r.lane[0]);
++ /*@ assert word_view_4_0: r.lane[0]==1*((unsigned char*)&r)[0] + 256*((unsigned char*)&r)[1] + 65536*((unsigned char*)&r)[2] + 16777216*((unsigned char*)&r)[3]; */
++ //@ ghost word32_bytes(&r.lane[1]);
++ /*@ assert word_view_4_1: r.lane[1]==1*((unsigned char*)&r)[4] + 256*((unsigned char*)&r)[5] + 65536*((unsigned char*)&r)[6] + 16777216*((unsigned char*)&r)[7]; */
++ 
++/*@ assert packed_4_0: r.lane[0]==1*(uint8_t)saved_a.lane[0]+256*(uint8_t)saved_a.lane[1]+65536*(uint8_t)saved_a.lane[2]+16777216*(uint8_t)saved_a.lane[3]; */
++/*@ assert packed_4_1: r.lane[1]==1*(uint8_t)saved_a.lane[4]+256*(uint8_t)saved_a.lane[5]+65536*(uint8_t)saved_a.lane[6]+16777216*(uint8_t)saved_a.lane[7]; */
++//@ ghost pack32_prefix(r,saved_a);
++//@ ghost proof_unpack4(saved_a);
++return r; }
++
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)a.lane[j]-b.lane[j])));
++*/
++int16x8_t vsubw_s8(int16x8_t a,int8x8_t b) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)a.lane[j]-b.lane[j])));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)((int64_t)a.lane[i]-b.lane[i])); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int8_t)(L_sat8(a.lane[j]));
++*/
++int8x8_t vqmovn_s16(int16x8_t a) { int8x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(L_sat8(a.lane[j]));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=sat8(a.lane[i]); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b.lane[j]));
++*/
++int16x8_t vqaddq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b.lane[j]));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b.lane[i]); return r; }
++/*@
++  requires 0<=n<32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)((uint64_t)(uint16_t)a.lane[j]<<n)));
++*/
++int16x8_t vshlq_n_s16(int16x8_t a,int n) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)((uint64_t)(uint16_t)a.lane[j]<<n)));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<n); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<8 ==> \result.lane[j]==(int16_t)(L_sat16(L_round_shift((int64_t)a.lane[j]*b.lane[j],15,0)));
++*/
++int16x8_t vqrdmulhq_s16(int16x8_t a,int16x8_t b) { int16x8_t r = {0}; /*@
++  loop invariant 0<=i<=8;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16(L_round_shift((int64_t)a.lane[j]*b.lane[j],15,0)));
++  loop assigns i,r.lane[0..7];
++  loop variant 8-i;
++*/
++for(size_t i=0;i<8;i++) r.lane[i]=sat16(round_shift((int64_t)a.lane[i]*b.lane[i],15,0)); return r; }
++/*@
++  terminates \true;
++  assigns \nothing;
++  ensures \result==(n<32?n:32);
++*/
+ size_t __riscv_vsetvl_e8m2(size_t n) { return n<32?n:32; }
+-vint8m2_t __riscv_vle8_v_i8m2(const int8_t *p,size_t vl) { vint8m2_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=p[i]; return r; }
+-void __riscv_vse8_v_i8m2(int8_t *p,vint8m2_t a,size_t vl) { for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
+-vint16m4_t __riscv_vsll_vx_i16m4(vint16m4_t a,unsigned s,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<(s&15)); return r; }
+-vint16m4_t __riscv_vsadd_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b); return r; }
+-vint16m4_t __riscv_vrsub_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)((int64_t)b-a.lane[i])); return r; }
+-vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=a.lane[i]; return r; }
+-vint32m8_t __riscv_vwmul_vx_i32m8(vint16m4_t a,int16_t b,size_t vl) { vint32m8_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=(int32_t)a.lane[i]*b; return r; }
+-vint8m2_t __riscv_vnclip_wx_i8m2(vint16m4_t a,unsigned s,int mode,size_t vl) { vint8m2_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=sat8(round_shift(a.lane[i],s&15,mode)); return r; }
+-vint16m4_t __riscv_vnclip_wx_i16m4(vint32m8_t a,unsigned s,int mode,size_t vl) { vint16m4_t r = {0}; for(size_t i=0;i<vl;i++) r.lane[i]=sat16(round_shift(a.lane[i],s&31,mode)); return r; }
++/*@
++  requires vl<=32;
++  requires \valid_read(p+(0..vl-1));
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int8_t)(p[j]);
++*/
++vint8m2_t __riscv_vle8_v_i8m2(const int8_t *p,size_t vl) { vint8m2_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(p[j]);
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=p[i]; return r; }
++/*@
++  requires vl<=32;
++  requires \valid(p+(0..vl-1));
++  terminates \true;
++  assigns p[0..vl-1];
++  ensures \forall integer j; 0<=j<vl ==> p[j]==a.lane[j];
++
++  ensures s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..vl-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..vl-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..vl-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  ensures backward_frame: \forall integer j; j<0 && \valid_read{Pre}(p+j) ==> \valid_read(p+j) && p[j]==\at(p[j],Pre);
++  ensures prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++*/
++void __riscv_vse8_v_i8m2(int8_t *p,vint8m2_t a,size_t vl) { /*@
++  loop invariant 0<=i<=vl;
++  loop invariant backward_frame: \forall integer j; j<0 && \valid_read{Pre}(p+j) ==> \valid_read(p+j) && p[j]==\at(p[j],Pre);
++  loop invariant prefix_frame: \forall int8_t *prefix_base; \forall integer n,j; n>=0 && ((int8_t*)p)==prefix_base+n && 0<=j<n && \valid_read{Pre}(prefix_base+j) ==> \valid_read(prefix_base+j) && prefix_base[j]==\at(prefix_base[j],Pre);
++  loop invariant s8_frame: \forall int8_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..vl-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s16_frame: \forall int16_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..vl-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant s32_frame: \forall int32_t *frame_ptr; \valid_read{Pre}(frame_ptr) && \separated(frame_ptr,(unsigned char*)p+(0..vl-1)) ==> \valid_read(frame_ptr) && *frame_ptr==\at(*frame_ptr,Pre);
++  loop invariant \forall integer j; 0<=j<i ==> p[j]==a.lane[j];
++  loop assigns i,p[0..vl-1];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)((uint64_t)(uint16_t)a.lane[j]<<(s&15))));
++*/
++vint16m4_t __riscv_vsll_vx_i16m4(vint16m4_t a,unsigned s,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)((uint64_t)(uint16_t)a.lane[j]<<(s&15))));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)(uint16_t)a.lane[i]<<(s&15)); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b));
++*/
++vint16m4_t __riscv_vsadd_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16((int64_t)a.lane[j]+b));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=sat16((int64_t)a.lane[i]+b); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)b-a.lane[j])));
++  ensures exact_lane: \forall integer j; 0<=j<vl ==> \result.lane[j]==L_wrap16((uint64_t)((int64_t)b-a.lane[j]));
++*/
++vint16m4_t __riscv_vrsub_vx_i16m4(vint16m4_t a,int16_t b,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant exact_lane: \forall integer j; 0<=j<i ==> r.lane[j]==L_wrap16((uint64_t)((int64_t)b-a.lane[j]));
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_wrap16((uint64_t)((int64_t)b-a.lane[j])));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=wrap16((uint64_t)((int64_t)b-a.lane[i])); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(a.lane[j]);
++*/
++vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(a.lane[j]);
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=a.lane[i]; return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int32_t)((int32_t)a.lane[j]*b);
++  ensures exact_lane: \forall integer j; 0<=j<vl ==> \result.lane[j]==(int64_t)a.lane[j]*b;
++*/
++vint32m8_t __riscv_vwmul_vx_i32m8(vint16m4_t a,int16_t b,size_t vl) { vint32m8_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant exact_lane: \forall integer j; 0<=j<i ==> r.lane[j]==(int64_t)a.lane[j]*b;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int32_t)((int32_t)a.lane[j]*b);
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=(int32_t)a.lane[i]*b; return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int8_t)(L_sat8(L_round_shift(a.lane[j],s&15,mode)));
++*/
++vint8m2_t __riscv_vnclip_wx_i8m2(vint16m4_t a,unsigned s,int mode,size_t vl) { vint8m2_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int8_t)(L_sat8(L_round_shift(a.lane[j],s&15,mode)));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=sat8(round_shift(a.lane[i],s&15,mode)); return r; }
++/*@
++  requires vl<=32;
++  terminates \true;
++  assigns \nothing;
++  ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(int16_t)(L_sat16(L_round_shift(a.lane[j],s&31,mode)));
++*/
++vint16m4_t __riscv_vnclip_wx_i16m4(vint32m8_t a,unsigned s,int mode,size_t vl) { vint16m4_t r = {0}; /*@
++  loop invariant 0<=i<=vl;
++  loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(int16_t)(L_sat16(L_round_shift(a.lane[j],s&31,mode)));
++  loop assigns i,r.lane[0..31];
++  loop variant vl-i;
++*/
++for(size_t i=0;i<vl;i++) r.lane[i]=sat16(round_shift(a.lane[i],s&31,mode)); return r; }
++
++/*@ \wp::strategy StoreSolve: \prover("cvc5",10), \prover("z3",10);
++    \wp::strategy StoreRange:
++      \tactic("Wp.range",\ingoal(X >> (8*J)),\select(J),\param("inf",0),\param("sup",3),\children(StoreSolve)),
++      \tactic("Wp.range",\pattern(is_uint64(I)),\select(I),\param("inf",0),\param("sup",4),\children(StoreSolve)), StoreSolve;
++    \wp::proof StoreRange: vst1_lane_u16, vst1_lane_u32; */
++
++/*@ \wp::strategy UnpackShift:
++ \tactic("Wp.shift",\ingoal(X >> K),\children(UnpackShift)), \prover("z3","cvc5",5);
++ \wp::proof UnpackShift: proof_unpack2, proof_unpack4;
++*/
+--- a/neon.c
++++ b/neon.c
+@@ -8,12 +8,32 @@
+ };
+ */
+ 
++/*@
++  requires batch>0;
++  requires batch<=SIZE_MAX-7;
++  requires \valid_read(input+(0..batch+6));
++  requires \valid(output+(0..batch-1));
++  requires \valid_read(params);
++  requires \separated(output+(0..batch-1),input+(0..batch+6));
++  requires \separated(output+(0..batch-1),params);
++  requires params->scalar.multiplier != INT32_MIN;
++  terminates \true;
++  assigns output[0..batch-1];
++  ensures kernel_output: \forall integer j; 0<=j<\at(batch,Pre) ==> \at(output,Pre)[j]==L_cvt8(\at(input[j],Pre),\at(params->scalar.input_zero_point,Pre),\at(params->scalar.multiplier,Pre),\at(params->scalar.output_zero_point,Pre));
++*/
+ void test_neon(
+     size_t batch,
+     const int8_t* input,
+     int8_t* output,
+     const struct xnn_qs8_cvt_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const int8_t *input_base=input;
++  //@ ghost int8_t *output_base=output;
++  //@ ghost size_t total=batch;
++  //@ ghost int16_t iz0=params->scalar.input_zero_point;
++  //@ ghost int32_t m0=params->scalar.multiplier;
++  //@ ghost int16_t oz0=params->scalar.output_zero_point;
++  //@ ghost KernelStart: ;
+   assert(batch != 0);
+   assert(batch % sizeof(int8_t) == 0);
+   assert(input != NULL);
+@@ -22,36 +42,279 @@
+   const int16x8_t vinput_zero_point = vdupq_n_s16(params->scalar.input_zero_point);
+   const int16x8_t vmultiplier = vdupq_n_s16(-params->scalar.multiplier);
+   const int16x8_t voutput_zero_point = vdupq_n_s16(params->scalar.output_zero_point);
++  /*@ loop invariant 0<=batch<=total;
++      loop invariant readonly_input: \forall integer j; 0<=j<total+7 ==> input_base[j]==\at(input_base[\at(j,Here)],KernelStart);
++      loop invariant input==input_base+(total-batch);
++      loop invariant output==output_base+(total-batch);
++      loop invariant \valid_read(input_base+(0..total+6));
++      loop invariant \valid(output_base+(0..total-1));
++      loop invariant \valid_read(params);
++      loop invariant m0!=INT32_MIN;
++      loop invariant params->scalar.input_zero_point==iz0;
++      loop invariant params->scalar.multiplier==m0;
++      loop invariant params->scalar.output_zero_point==oz0;
++      loop invariant \separated(output_base+(0..total-1),input_base+(0..total+6));
++      loop invariant \separated(output_base+(0..total-1),params);
++      loop invariant bulk_output_prefix: \forall integer j; 0<=j<total-batch ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++      loop assigns batch,input,output,output_base[0..total-1];
++      loop variant batch; */
+   for (; batch >= 8 * sizeof(int8_t); batch -= 8 * sizeof(int8_t)) {
+     const int8x8_t vx = vld1_s8(input); input += 8;
+     int16x8_t vacc = vsubw_s8(vinput_zero_point, vx);
++    //@ ghost int16x8_t cvt_sub=vacc;
+     vacc = vshlq_n_s16(vacc, 7);
++    //@ ghost int16x8_t cvt_shift=vacc;
+     vacc = vqrdmulhq_s16(vacc, vmultiplier);
++    //@ ghost int16x8_t cvt_mul=vacc;
+     vacc = vqaddq_s16(vacc, voutput_zero_point);
++    //@ ghost int16x8_t cvt_add=vacc;
+     const int8x8_t vy = vqmovn_s16(vacc);
++    /*@ ghost
++    /@ loop invariant 0<=proof_lane<=8;
++       loop invariant \forall integer j; 0<=j<proof_lane ==> vy.lane[j]==L_cvt8(vx.lane[j],iz0,m0,oz0);
++       loop assigns proof_lane; loop variant 8-proof_lane; @/
++    for(int proof_lane=0;proof_lane<8;proof_lane++) {
++      cvt_lane(vx.lane[proof_lane],iz0,m0,oz0,cvt_sub.lane[proof_lane],cvt_shift.lane[proof_lane],cvt_mul.lane[proof_lane],cvt_add.lane[proof_lane],vy.lane[proof_lane]);
++    }
++    */
++
++    //@ assert cvt_neon_1: \forall integer j;0<=j<8 ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+j,Here)],KernelStart),iz0,m0,oz0);
++    //@ ghost CvtBulkBefore: ;
+     vst1_s8(output, vy); output += 8;
++    /*@ ghost
++    /@ loop invariant 0<=prefix_j<=total-batch+8;
++       loop invariant \forall integer j;0<=j<prefix_j ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++       loop assigns prefix_j; loop variant total-batch+8-prefix_j; @/
++    for(size_t prefix_j=0;prefix_j<total-batch+8;prefix_j++) {
++      if(prefix_j<total-batch) {
++        /@ assert cvt_old_frame: output_base[prefix_j]==\at(output_base[\at(prefix_j,Here)],CvtBulkBefore); @/
++        /@ assert cvt_old_value: \at(output_base[\at(prefix_j,Here)],CvtBulkBefore)==L_cvt8(\at(input_base[\at(prefix_j,Here)],KernelStart),iz0,m0,oz0); @/
++      } else {
++        /@ assert cvt_new_lane: output_base[prefix_j]==vy.lane[prefix_j-(total-batch)]; @/
++        /@ assert cvt_new_value: vy.lane[prefix_j-(total-batch)]==L_cvt8(\at(input_base[\at(prefix_j,Here)],KernelStart),iz0,m0,oz0); @/
++      }
++    }
++    */
++
+   }
++  //@ assert cvt_neon_2: 0<=batch<=7;
++  //@ ghost proof_tail8(batch);
+   if XNN_UNLIKELY(batch != 0) {
+     assert(batch >= 1 * sizeof(int8_t));
+     assert(batch <= 7 * sizeof(int8_t));
+ 
+     const int8x8_t vx = vld1_s8(input);
+     int16x8_t vacc = vsubw_s8(vinput_zero_point, vx);
++    //@ ghost int16x8_t cvt_sub=vacc;
+     vacc = vshlq_n_s16(vacc, 7);
++    //@ ghost int16x8_t cvt_shift=vacc;
+     vacc = vqrdmulhq_s16(vacc, vmultiplier);
++    //@ ghost int16x8_t cvt_mul=vacc;
+     vacc = vqaddq_s16(vacc, voutput_zero_point);
++    //@ ghost int16x8_t cvt_add=vacc;
+     int8x8_t vy = vqmovn_s16(vacc);
++    /*@ ghost
++    /@ loop invariant 0<=proof_lane<=8;
++       loop invariant \forall integer j; 0<=j<proof_lane ==> vy.lane[j]==L_cvt8(vx.lane[j],iz0,m0,oz0);
++       loop assigns proof_lane; loop variant 8-proof_lane; @/
++    for(int proof_lane=0;proof_lane<8;proof_lane++) {
++      cvt_lane(vx.lane[proof_lane],iz0,m0,oz0,cvt_sub.lane[proof_lane],cvt_shift.lane[proof_lane],cvt_mul.lane[proof_lane],cvt_add.lane[proof_lane],vy.lane[proof_lane]);
++    }
++    */
++
+ 
++    //@ ghost size_t tail_done=0;
++    //@ assert cvt_neon_3: \forall integer j;0<=j<8 ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+j,Here)],KernelStart),iz0,m0,oz0);
+     if (batch & (4 * sizeof(int8_t))) {
++      //@ ghost size_t tail4_start=total-batch+tail_done;
++      //@ assert tail4_start_exact: tail4_start==total-batch+tail_done;
++      //@ assert tail4_write_range: tail4_start+4<=total;
++      //@ assert tail4_output_start: output==output_base+tail4_start;
++      //@ assert tail4_source_0: vy.lane[0]==L_cvt8(\at(input_base[\at(tail4_start+0,Here)],KernelStart),iz0,m0,oz0);
++      //@ assert tail4_source_1: vy.lane[1]==L_cvt8(\at(input_base[\at(tail4_start+1,Here)],KernelStart),iz0,m0,oz0);
++      //@ assert tail4_source_2: vy.lane[2]==L_cvt8(\at(input_base[\at(tail4_start+2,Here)],KernelStart),iz0,m0,oz0);
++      //@ assert tail4_source_3: vy.lane[3]==L_cvt8(\at(input_base[\at(tail4_start+3,Here)],KernelStart),iz0,m0,oz0);
++      //@ ghost CvtTail4Before: ;
++      //@ ghost proof_unpack4(vy);
+       vst1_lane_u32((void*) output, vreinterpret_u32_s8(vy), 0); output += 4;
++      //@ assert tail4_store_0: output[-4]==vy.lane[0];
++      //@ assert tail4_store_1: output[-3]==vy.lane[1];
++      //@ assert tail4_store_2: output[-2]==vy.lane[2];
++      //@ assert tail4_store_3: output[-1]==vy.lane[3];
++
++      //@ ghost int8x8_t tail4_before=vy;
+       vy = vext_s8(vy, vy, 4);
++      //@ assert tail4_shift_0: vy.lane[0]==tail4_before.lane[4];
++      //@ assert tail4_shift_1: vy.lane[1]==tail4_before.lane[5];
++      //@ assert tail4_shift_2: vy.lane[2]==tail4_before.lane[6];
++      //@ assert tail4_shift_3: vy.lane[3]==tail4_before.lane[7];
++
++      //@ ghost size_t tail4_shift_count=8-tail_done-4;
++      //@ assert tail4_shift_count_exact: tail4_shift_count+tail_done+4==8 && tail4_shift_count<=8;
++      /*@ ghost
++      /@ loop invariant 0<=tail_lane<=tail4_shift_count;
++         loop invariant CvtVectorPrefix{KernelStart}(vy,input_base,total-batch+tail_done+4,tail_lane,iz0,m0,oz0);
++         loop assigns tail_lane; loop variant tail4_shift_count-tail_lane; @/
++      for(size_t tail_lane=0;tail_lane<tail4_shift_count;tail_lane++) {
++        /@ assert tail4_lane_range: 0<=tail_lane<4; @/
++        /@ assert tail4_shift_value: vy.lane[tail_lane]==tail4_before.lane[tail_lane+4]; @/
++        /@ assert tail4_shift_source: tail4_before.lane[tail_lane+4]==L_cvt8(\at(input_base[\at(total-batch+tail_done+4+tail_lane,Here)],KernelStart),iz0,m0,oz0); @/
++        /@ assert tail4_semantic_point: vy.lane[tail_lane]==L_cvt8(\at(input_base[\at(total-batch+tail_done+4+tail_lane,Here)],KernelStart),iz0,m0,oz0); @/
++        /@ assert tail4_step_exact: (size_t)(tail_lane+1)==tail_lane+1; @/
++        /@ assert tail4_vector_next: CvtVectorPrefix{KernelStart}(vy,input_base,total-batch+tail_done+4,tail_lane+1,iz0,m0,oz0); @/
++      }
++      */
++      //@ assert tail4_vector_stage: \forall integer j;0<=j<tail4_shift_count ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+tail_done+4+j,Here)],KernelStart),iz0,m0,oz0);
++      //@ ghost tail_done+=4;
++      //@ ghost size_t tail4_end=tail4_start+4;
++      //@ assert tail4_end_exact: tail4_end==tail4_start+4 && tail4_end==total-batch+tail_done && tail4_end<=total;
++    /*@ ghost
++    /@ loop invariant 0<=tail_j<=tail4_end;
++       loop invariant CvtMemoryPrefix{KernelStart,Here}(input_base,output_base,tail_j,iz0,m0,oz0);
++       loop invariant CvtVectorPrefix{KernelStart}(vy,input_base,total-batch+tail_done,8-tail_done,iz0,m0,oz0);
++       loop assigns tail_j; loop variant tail4_end-tail_j; @/
++    for(size_t tail_j=0;tail_j<tail4_end;tail_j++) {
++      if(tail_j<tail4_start) {
++        /@ assert tail4_old_valid: \valid_read{CvtTail4Before}(output_base+\at(tail_j,Here)); @/
++        /@ assert tail4_old_address: output_base+tail_j==\at(output,CvtTail4Before)+(tail_j-(tail4_start)); @/
++        /@ assert tail4_old_separated: \separated(output_base+tail_j,\at(output,CvtTail4Before)+(0..4-1)); @/
++        /@ assert tail4_old_frame: output_base[tail_j]==\at(output_base[\at(tail_j,Here)],CvtTail4Before); @/
++        /@ assert tail4_old_value: \at(output_base[\at(tail_j,Here)],CvtTail4Before)==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      } else {
++        /@ assert tail4_relative_range: 0<=tail_j-(tail4_start)<4; @/
++        int relative=(int)(tail_j-(tail4_start));
++        /@ assert tail4_relative_exact: relative==tail_j-(tail4_start); @/
++        /@ assert tail4_new_lane: output_base[tail_j]==tail4_before.lane[tail_j-(tail4_start)]; @/
++        /@ assert tail4_new_index: tail_j==tail4_start+relative; @/
++        /@ assert tail4_new_value: tail4_before.lane[tail_j-(tail4_start)]==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      }
++      /@ assert tail4_memory_point: output_base[tail_j]==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      /@ assert tail4_counter_exact: (size_t)(tail_j+1)==tail_j+1; @/
++      /@ assert tail4_prefix_next: CvtMemoryPrefix{KernelStart,Here}(input_base,output_base,tail_j+1,iz0,m0,oz0); @/
+     }
++    */
++    //@ assert tail4_memory_stage: \forall integer j;0<=j<tail4_end ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++    //@ assert tail4_vector_restore: \forall integer j;0<=j<8-tail_done ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+tail_done+j,Here)],KernelStart),iz0,m0,oz0);
++
++    }
++    //@ assert cvt_neon_4: output==output_base+total-batch+tail_done;
++    //@ assert cvt_neon_5: \forall integer j;0<=j<total-batch+tail_done ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++    //@ assert cvt_neon_6: \forall integer j;0<=j<8-tail_done ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+tail_done+j,Here)],KernelStart),iz0,m0,oz0);
+     if (batch & (2 * sizeof(int8_t))) {
++      //@ ghost size_t tail2_start=total-batch+tail_done;
++      //@ assert tail2_start_exact: tail2_start==total-batch+tail_done;
++      //@ assert tail2_write_range: tail2_start+2<=total;
++      //@ assert tail2_output_start: output==output_base+tail2_start;
++      //@ assert tail2_source_0: vy.lane[0]==L_cvt8(\at(input_base[\at(tail2_start+0,Here)],KernelStart),iz0,m0,oz0);
++      //@ assert tail2_source_1: vy.lane[1]==L_cvt8(\at(input_base[\at(tail2_start+1,Here)],KernelStart),iz0,m0,oz0);
++      //@ ghost CvtTail2Before: ;
++      //@ ghost proof_unpack2(vy);
+       vst1_lane_u16((void*) output, vreinterpret_u16_s8(vy), 0); output += 2;
++      //@ assert tail2_store_0: output[-2]==vy.lane[0];
++      //@ assert tail2_store_1: output[-1]==vy.lane[1];
++
++      //@ ghost int8x8_t tail2_before=vy;
+       vy = vext_s8(vy, vy, 2);
++      //@ assert tail2_shift_0: vy.lane[0]==tail2_before.lane[2];
++      //@ assert tail2_shift_1: vy.lane[1]==tail2_before.lane[3];
++      //@ assert tail2_shift_2: vy.lane[2]==tail2_before.lane[4];
++      //@ assert tail2_shift_3: vy.lane[3]==tail2_before.lane[5];
++      //@ assert tail2_shift_4: vy.lane[4]==tail2_before.lane[6];
++      //@ assert tail2_shift_5: vy.lane[5]==tail2_before.lane[7];
++
++      //@ ghost size_t tail2_shift_count=8-tail_done-2;
++      //@ assert tail2_shift_count_exact: tail2_shift_count+tail_done+2==8 && tail2_shift_count<=8;
++      /*@ ghost
++      /@ loop invariant 0<=tail_lane<=tail2_shift_count;
++         loop invariant CvtVectorPrefix{KernelStart}(vy,input_base,total-batch+tail_done+2,tail_lane,iz0,m0,oz0);
++         loop assigns tail_lane; loop variant tail2_shift_count-tail_lane; @/
++      for(size_t tail_lane=0;tail_lane<tail2_shift_count;tail_lane++) {
++        /@ assert tail2_lane_range: 0<=tail_lane<6; @/
++        /@ assert tail2_shift_value: vy.lane[tail_lane]==tail2_before.lane[tail_lane+2]; @/
++        /@ assert tail2_shift_source: tail2_before.lane[tail_lane+2]==L_cvt8(\at(input_base[\at(total-batch+tail_done+2+tail_lane,Here)],KernelStart),iz0,m0,oz0); @/
++        /@ assert tail2_semantic_point: vy.lane[tail_lane]==L_cvt8(\at(input_base[\at(total-batch+tail_done+2+tail_lane,Here)],KernelStart),iz0,m0,oz0); @/
++        /@ assert tail2_step_exact: (size_t)(tail_lane+1)==tail_lane+1; @/
++        /@ assert tail2_vector_next: CvtVectorPrefix{KernelStart}(vy,input_base,total-batch+tail_done+2,tail_lane+1,iz0,m0,oz0); @/
++      }
++      */
++      //@ assert tail2_vector_stage: \forall integer j;0<=j<tail2_shift_count ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+tail_done+2+j,Here)],KernelStart),iz0,m0,oz0);
++      //@ ghost tail_done+=2;
++      //@ ghost size_t tail2_end=tail2_start+2;
++      //@ assert tail2_end_exact: tail2_end==tail2_start+2 && tail2_end==total-batch+tail_done && tail2_end<=total;
++    /*@ ghost
++    /@ loop invariant 0<=tail_j<=tail2_end;
++       loop invariant CvtMemoryPrefix{KernelStart,Here}(input_base,output_base,tail_j,iz0,m0,oz0);
++       loop invariant CvtVectorPrefix{KernelStart}(vy,input_base,total-batch+tail_done,8-tail_done,iz0,m0,oz0);
++       loop assigns tail_j; loop variant tail2_end-tail_j; @/
++    for(size_t tail_j=0;tail_j<tail2_end;tail_j++) {
++      if(tail_j<tail2_start) {
++        /@ assert tail2_old_valid: \valid_read{CvtTail2Before}(output_base+\at(tail_j,Here)); @/
++        /@ assert tail2_old_address: output_base+tail_j==\at(output,CvtTail2Before)+(tail_j-(tail2_start)); @/
++        /@ assert tail2_old_separated: \separated(output_base+tail_j,\at(output,CvtTail2Before)+(0..2-1)); @/
++        /@ assert tail2_old_frame: output_base[tail_j]==\at(output_base[\at(tail_j,Here)],CvtTail2Before); @/
++        /@ assert tail2_old_value: \at(output_base[\at(tail_j,Here)],CvtTail2Before)==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      } else {
++        /@ assert tail2_relative_range: 0<=tail_j-(tail2_start)<2; @/
++        int relative=(int)(tail_j-(tail2_start));
++        /@ assert tail2_relative_exact: relative==tail_j-(tail2_start); @/
++        /@ assert tail2_new_lane: output_base[tail_j]==tail2_before.lane[tail_j-(tail2_start)]; @/
++        /@ assert tail2_new_index: tail_j==tail2_start+relative; @/
++        /@ assert tail2_new_value: tail2_before.lane[tail_j-(tail2_start)]==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      }
++      /@ assert tail2_memory_point: output_base[tail_j]==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      /@ assert tail2_counter_exact: (size_t)(tail_j+1)==tail_j+1; @/
++      /@ assert tail2_prefix_next: CvtMemoryPrefix{KernelStart,Here}(input_base,output_base,tail_j+1,iz0,m0,oz0); @/
+     }
++    */
++    //@ assert tail2_memory_stage: \forall integer j;0<=j<tail2_end ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++    //@ assert tail2_vector_restore: \forall integer j;0<=j<8-tail_done ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+tail_done+j,Here)],KernelStart),iz0,m0,oz0);
++
++    }
++    //@ assert cvt_neon_7: output==output_base+total-batch+tail_done;
++    //@ assert cvt_neon_9: \forall integer j;0<=j<total-batch+tail_done ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++    //@ assert cvt_neon_10: \forall integer j;0<=j<8-tail_done ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+tail_done+j,Here)],KernelStart),iz0,m0,oz0);
++    //@ assert cvt_neon_8: tail_done==batch-batch%2;
+     if (batch & (1 * sizeof(int8_t))) {
++      //@ ghost size_t tail1_start=total-batch+tail_done;
++      //@ assert tail1_start_exact: tail1_start==total-batch+tail_done;
++      //@ assert tail1_write_range: tail1_start+1<=total;
++      //@ assert tail1_output_start: output==output_base+tail1_start;
++      //@ assert tail1_source_0: vy.lane[0]==L_cvt8(\at(input_base[\at(tail1_start+0,Here)],KernelStart),iz0,m0,oz0);
++      //@ ghost CvtTail1Before: ;
+       vst1_lane_s8(output, vy, 0);
++      //@ ghost tail_done+=1;
++      //@ ghost size_t tail1_end=tail1_start+1;
++      //@ assert tail1_end_exact: tail1_end==tail1_start+1 && tail1_end==total-batch+tail_done && tail1_end<=total;
++
++    /*@ ghost
++    /@ loop invariant 0<=tail_j<=tail1_end;
++       loop invariant CvtMemoryPrefix{KernelStart,Here}(input_base,output_base,tail_j,iz0,m0,oz0);
++       loop assigns tail_j; loop variant tail1_end-tail_j; @/
++    for(size_t tail_j=0;tail_j<tail1_end;tail_j++) {
++      if(tail_j<tail1_start) {
++        /@ assert tail1_old_valid: \valid_read{CvtTail1Before}(output_base+\at(tail_j,Here)); @/
++        /@ assert tail1_old_address: output_base+tail_j==\at(output,CvtTail1Before)+(tail_j-(tail1_start)); @/
++        /@ assert tail1_old_separated: \separated(output_base+tail_j,\at(output,CvtTail1Before)+(0..1-1)); @/
++        /@ assert tail1_old_frame: output_base[tail_j]==\at(output_base[\at(tail_j,Here)],CvtTail1Before); @/
++        /@ assert tail1_old_value: \at(output_base[\at(tail_j,Here)],CvtTail1Before)==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      } else {
++        /@ assert tail1_relative_range: 0<=tail_j-(tail1_start)<1; @/
++        int relative=(int)(tail_j-(tail1_start));
++        /@ assert tail1_relative_exact: relative==tail_j-(tail1_start); @/
++        /@ assert tail1_new_lane: output_base[tail_j]==vy.lane[tail_j-(tail1_start)]; @/
++        /@ assert tail1_new_index: tail_j==tail1_start+relative; @/
++        /@ assert tail1_new_value: vy.lane[tail_j-(tail1_start)]==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      }
++      /@ assert tail1_memory_point: output_base[tail_j]==L_cvt8(\at(input_base[\at(tail_j,Here)],KernelStart),iz0,m0,oz0); @/
++      /@ assert tail1_counter_exact: (size_t)(tail_j+1)==tail_j+1; @/
++      /@ assert tail1_prefix_next: CvtMemoryPrefix{KernelStart,Here}(input_base,output_base,tail_j+1,iz0,m0,oz0); @/
++    }
++    */
++    //@ assert tail1_memory_stage: \forall integer j;0<=j<tail1_end ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++
+     }
++    //@ assert tail_done_complete: tail_done==batch;
+   }
++  //@ assert cvt_neon_11: \forall integer j;0<=j<total ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++  
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,9 +1,29 @@
++/*@
++  requires batch>0;
++  requires batch<=SIZE_MAX-7;
++  requires \valid_read(input+(0..batch+6));
++  requires \valid(output+(0..batch-1));
++  requires \valid_read(params);
++  requires \separated(output+(0..batch-1),input+(0..batch+6));
++  requires \separated(output+(0..batch-1),params);
++  requires params->scalar.multiplier != INT32_MIN;
++  terminates \true;
++  assigns output[0..batch-1];
++  ensures kernel_output: \forall integer j; 0<=j<\at(batch,Pre) ==> \at(output,Pre)[j]==L_cvt8(\at(input[j],Pre),\at(params->scalar.input_zero_point,Pre),\at(params->scalar.multiplier,Pre),\at(params->scalar.output_zero_point,Pre));
++*/
+ void test_rvv(
+     size_t batch,
+     const int8_t* input,
+     int8_t* output,
+     const struct xnn_qs8_cvt_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const int8_t *input_base=input;
++  //@ ghost int8_t *output_base=output;
++  //@ ghost size_t total=batch;
++  //@ ghost int16_t iz0=params->scalar.input_zero_point;
++  //@ ghost int32_t m0=params->scalar.multiplier;
++  //@ ghost int16_t oz0=params->scalar.output_zero_point;
++  //@ ghost KernelStart: ;
+   assert(batch != 0);
+   assert(batch % sizeof(int8_t) == 0);
+   assert(input != NULL);
+@@ -13,6 +33,22 @@
+   const int16_t multiplier = (int16_t) -params->scalar.multiplier;
+   const int16_t output_zero_point = params->scalar.output_zero_point;
+ 
++  /*@ loop invariant 0<=batch<=total;
++      loop invariant readonly_input: \forall integer j; 0<=j<total+7 ==> input_base[j]==\at(input_base[\at(j,Here)],KernelStart);
++      loop invariant input==input_base+(total-batch);
++      loop invariant output==output_base+(total-batch);
++      loop invariant \valid_read(input_base+(0..total+6));
++      loop invariant \valid(output_base+(0..total-1));
++      loop invariant \valid_read(params);
++      loop invariant m0!=INT32_MIN;
++      loop invariant params->scalar.input_zero_point==iz0;
++      loop invariant params->scalar.multiplier==m0;
++      loop invariant params->scalar.output_zero_point==oz0;
++      loop invariant \separated(output_base+(0..total-1),input_base+(0..total+6));
++      loop invariant \separated(output_base+(0..total-1),params);
++      loop invariant \forall integer j; 0<=j<total-batch ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++      loop assigns batch,input,output,output_base[0..total-1];
++      loop variant batch; */
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m2(batch);
+ 
+@@ -21,24 +57,61 @@
+     // vsubw_s8(vinput_zero_point, vx)
+     vint16m4_t vx_w = __riscv_vsext_vf2_i16m4(vx, vl);
+     vint16m4_t vacc = __riscv_vrsub_vx_i16m4(vx_w, input_zero_point, vl);
++    //@ ghost vint16m4_t cvt_sub=vacc;
+ 
+     // vshlq_n_s16(vacc, 7)
+     vacc = __riscv_vsll_vx_i16m4(vacc, 7, vl);
++    //@ ghost vint16m4_t cvt_shift=vacc;
+ 
+     // vqrdmulhq_s16(vacc, vmultiplier)
+     vint32m8_t prod = __riscv_vwmul_vx_i32m8(vacc, multiplier, vl);
+     vacc = __riscv_vnclip_wx_i16m4(prod, 15, __RISCV_VXRM_RNU, vl);
++    //@ ghost vint16m4_t cvt_mul=vacc;
+ 
+     // vqaddq_s16(vacc, voutput_zero_point)
+     vacc = __riscv_vsadd_vx_i16m4(vacc, output_zero_point, vl);
++    //@ ghost vint16m4_t cvt_add=vacc;
+ 
+     // vqmovn_s16(vacc)
+     vint8m2_t vy = __riscv_vnclip_wx_i8m2(vacc, 0, __RISCV_VXRM_RDN, vl);
++    /*@ ghost
++    /@ loop invariant 0<=proof_lane<=vl;
++       loop invariant \forall integer j; 0<=j<proof_lane ==> vy.lane[j]==L_cvt8(vx.lane[j],iz0,m0,oz0);
++       loop assigns proof_lane; loop variant vl-proof_lane; @/
++    for(int proof_lane=0;proof_lane<vl;proof_lane++) {
++      /@ assert cvt_wide_point: vx_w.lane[proof_lane]==vx.lane[proof_lane]; @/
++      /@ assert cvt_sub_literal: cvt_sub.lane[proof_lane]==L_wrap16((uint64_t)((int64_t)input_zero_point-vx_w.lane[proof_lane])); @/
++      /@ assert cvt_sub_point: cvt_sub.lane[proof_lane]==L_wrap16((uint64_t)((int64_t)iz0-vx.lane[proof_lane])); @/
++      /@ assert cvt_product_point: prod.lane[proof_lane]==(int64_t)cvt_shift.lane[proof_lane]*(int16_t)(-m0); @/
++      /@ assert cvt_mul_point: cvt_mul.lane[proof_lane]==L_sat16(L_round_shift((int64_t)cvt_shift.lane[proof_lane]*(int16_t)(-m0),15,0)); @/
++      cvt_lane(vx.lane[proof_lane],iz0,m0,oz0,cvt_sub.lane[proof_lane],cvt_shift.lane[proof_lane],cvt_mul.lane[proof_lane],cvt_add.lane[proof_lane],vy.lane[proof_lane]);
++    }
++    */
+ 
++
++    //@ assert cvt_rvv_1: \forall integer j;0<=j<vl ==> vy.lane[j]==L_cvt8(\at(input_base[\at(total-batch+j,Here)],KernelStart),iz0,m0,oz0);
++    //@ ghost CvtBulkBefore: ;
+     __riscv_vse8_v_i8m2(output, vy, vl);
++    /*@ ghost
++    /@ loop invariant 0<=prefix_j<=total-batch+vl;
++       loop invariant \forall integer j;0<=j<prefix_j ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++       loop assigns prefix_j; loop variant total-batch+vl-prefix_j; @/
++    for(size_t prefix_j=0;prefix_j<total-batch+vl;prefix_j++) {
++      if(prefix_j<total-batch) {
++        /@ assert cvt_old_frame: output_base[prefix_j]==\at(output_base[\at(prefix_j,Here)],CvtBulkBefore); @/
++        /@ assert cvt_old_value: \at(output_base[\at(prefix_j,Here)],CvtBulkBefore)==L_cvt8(\at(input_base[\at(prefix_j,Here)],KernelStart),iz0,m0,oz0); @/
++      } else {
++        /@ assert cvt_new_lane: output_base[prefix_j]==vy.lane[prefix_j-(total-batch)]; @/
++        /@ assert cvt_new_value: vy.lane[prefix_j-(total-batch)]==L_cvt8(\at(input_base[\at(prefix_j,Here)],KernelStart),iz0,m0,oz0); @/
++      }
++    }
++    */
++
+ 
+     input += vl;
+     output += vl;
+     batch -= vl;
+   }
+-}
+\ No newline at end of file
++  //@ assert cvt_rvv_2: \forall integer j;0<=j<total ==> output_base[j]==L_cvt8(\at(input_base[\at(j,Here)],KernelStart),iz0,m0,oz0);
++  
++}
+--- a/shim.h
++++ b/shim.h
+@@ -6,6 +6,32 @@
+ #include <limits.h>
+ #include <math.h>
+ #include <string.h>
++/*@
++  logic integer L_sat16(integer x)=x>32767?32767:x< -32768?-32768:x;
++  logic integer L_sat8(integer x)=x>127?127:x< -128?-128:x;
++  logic integer L_satu8(integer x)=x>255?255:x<0?0:x;
++  logic integer L_sat32(integer x)=x>2147483647?2147483647:x< -2147483648?-2147483648:x;
++  logic integer L_wrap8(integer x)=(int8_t)(uint8_t)x;
++  logic integer L_wrap16(integer x)=(int16_t)(uint16_t)x;
++  logic integer L_wrap32(integer x)=(int32_t)(uint32_t)x;
++  logic integer L_asr64(integer x,integer s)=s==0?x:s>=63?(x<0?-1:0):(x>=0?x/(1<<s):-1-((-1-x)/(1<<s)));
++  logic integer L_round_shift(integer x,integer s,integer mode)=s==0?x:s>=63?0:L_asr64(x,s)+(mode==0 && ((uint64_t)x & ((uint64_t)1<<(s-1))) ? 1:0);
++  logic integer L_cvt8(integer x,integer iz,integer m,integer oz) =
++    L_sat8(L_sat16(L_sat16(L_round_shift(L_wrap16((uint64_t)((uint64_t)(uint16_t)L_wrap16((uint64_t)(iz-x))<<7))*(int16_t)(-m),15,0))+oz));
++  predicate same_value(float a,float b)=\eq_float(a,b)||(\is_NaN(a)&&\is_NaN(b));
++  predicate same_float(float a,float b)=same_value(a,b)&&((\is_NaN(a)&&\is_NaN(b))||\sign(a)==\sign(b));
++*/
++/*@ ghost
++/@ requires m!=INT32_MIN;
++    requires sub==L_wrap16((uint64_t)((int64_t)iz-x));
++    requires shifted==L_wrap16((uint64_t)((uint64_t)(uint16_t)sub<<7));
++    requires multiplied==L_sat16(L_round_shift((int64_t)shifted*(int16_t)(-m),15,0));
++    requires added==L_sat16((int64_t)multiplied+oz);
++    requires out==L_sat8(added);
++    terminates \true; assigns \nothing;
++    ensures out==L_cvt8(x,iz,m,oz); @/
++void cvt_lane(int8_t x,int16_t iz,int32_t m,int16_t oz,int16_t sub,int16_t shifted,int16_t multiplied,int16_t added,int8_t out) {}
++*/
+ #define XNN_OOB_READS
+ #define XNN_UNLIKELY(x) (x)
+ #define XNN_LIKELY(x) (x)
+--- a/unit.c
++++ b/unit.c
+@@ -1,5 +1,123 @@
+ #include "spec.h"
++/*@ ghost
++/@ requires b<=7; terminates \true; assigns \nothing;
++   ensures four: (b&4)!=0 ==> 4<=b;
++   ensures two: (b&2)!=0 ==> 2<=b%4;
++   ensures one: (b&1)!=0 ==> b%2==1;
++   ensures parts: b==((b&4)!=0?4:0)+((b&2)!=0?2:0)+((b&1)!=0?1:0); @/
++void proof_tail8(size_t b) {
++  switch(b) { case 0: break; case 1: break; case 2: break; case 3: break;
++              case 4: break; case 5: break; case 6: break; case 7: break; }
++}
++*/
+ #include "integer-qs8-vcvt.c"
++/*@ lemma S16ProductBound: \forall integer x,y;
++ -32768<=x<=32767 && -32768<=y<=32767 ==>
++ -1073741824<=x*y<=1073741824;
++*/
++
++/*@
++ predicate CvtMemoryPrefix{I,O}(int8_t *input,int8_t *output,integer n,integer iz,integer m,integer oz) =
++   \forall integer j;0<=j<n ==> \at(output[j],O)==L_cvt8(\at(input[j],I),iz,m,oz);
++ predicate CvtVectorPrefix{I}(int8x8_t v,int8_t *input,integer start,integer n,integer iz,integer m,integer oz) =
++   \forall integer j;0<=j<n ==> v.lane[j]==L_cvt8(\at(input[start+j],I),iz,m,oz);
++ check lemma CvtMemoryPrefixStep{I,O}: \forall int8_t *input,*output;\forall integer k,iz,m,oz;
++   k>=0 && CvtMemoryPrefix{I,O}(input,output,k,iz,m,oz) &&
++   \at(output[k],O)==L_cvt8(\at(input[k],I),iz,m,oz) ==>
++   CvtMemoryPrefix{I,O}(input,output,k+1,iz,m,oz);
++ check lemma CvtVectorPrefixStep{I}: \forall int8x8_t v;\forall int8_t *input;\forall integer start,k,iz,m,oz;
++   0<=k<8 && CvtVectorPrefix{I}(v,input,start,k,iz,m,oz) &&
++   v.lane[k]==L_cvt8(\at(input[start+k],I),iz,m,oz) ==>
++   CvtVectorPrefix{I}(v,input,start,k+1,iz,m,oz);
++*/
++/*@
++ check lemma CvtMemoryPrefixPoint{I,O}: \forall int8_t *input,*output;\forall integer n,j,iz,m,oz;
++   CvtMemoryPrefix{I,O}(input,output,n,iz,m,oz) && 0<=j<n ==>
++   \at(output[j],O)==L_cvt8(\at(input[j],I),iz,m,oz);
++ check lemma CvtVectorPrefixPoint{I}: \forall int8x8_t v;\forall int8_t *input;\forall integer start,n,j,iz,m,oz;
++   CvtVectorPrefix{I}(v,input,start,n,iz,m,oz) && 0<=j<n ==>
++   v.lane[j]==L_cvt8(\at(input[start+j],I),iz,m,oz);
++*/
+ #include "neon.c"
+ #include "rvv.c"
+ #include "harness.c"
++
++/*@ \wp::strategy TailFrameFilter: \tactic("Wp.filter",\children(TailFrameSMT)), TailFrameSMT;
++ \wp::strategy TailFrameSMT: \prover("z3","cvc5",10);
++ \wp::proof TailFrameFilter: tail4_old_frame,tail2_old_frame,tail1_old_frame;
++*/
++
++/*@ \wp::strategy PrefixStepSolve: \prover("cvc5",10),\prover("z3",10);
++ \wp::strategy PrefixVectorHyp:
++  \tactic("Wp.unfold",\when(P_CvtVectorPrefix(M,V,I,S,K,Z,N,O)),\children(PrefixStepSolve)),PrefixStepSolve;
++ \wp::strategy PrefixVectorGoal:
++  \tactic("Wp.unfold",\ingoal(P_CvtVectorPrefix(M,V,I,S,K,Z,N,O)),\children(PrefixVectorHyp)),PrefixStepSolve;
++ \wp::proof PrefixVectorGoal:CvtVectorPrefixStep;
++*/
++
++
++
++
++
++/*@ \wp::strategy PrefixMemoryNextGoal:
++ \tactic("Wp.unfold",\ingoal(Goal:P_CvtMemoryPrefix(OM,IM,I,O,K,Z,M,Y)),\select(Goal),\children(PrefixStepSolve)),PrefixStepSolve;
++ \wp::strategy PrefixVectorNextGoal:
++ \tactic("Wp.unfold",\ingoal(Goal:P_CvtVectorPrefix(IM,V,I,S,K,Z,M,Y)),\select(Goal),\children(VectorLiteralPoint)),PrefixStepSolve;
++ \wp::strategy PrefixMemoryApply:
++ \tactic("Wp.unfold",\ingoal(P_CvtMemoryPrefix(OM,IM,I,O,1+K,Z,M,Y)),\when(Fact:P_CvtMemoryPrefix(OM,IM,I,O,K,Z,M,Y)),\select(Fact),\children(PrefixMemoryNextGoal)),PrefixStepSolve;
++ \wp::strategy PrefixVectorApply:
++ \tactic("Wp.unfold",\ingoal(P_CvtVectorPrefix(IM,V,I,S,1+K,Z,M,Y)),\when(Fact:P_CvtVectorPrefix(IM,V,I,S,K,Z,M,Y)),\select(Fact),\children(PrefixVectorNextGoal)),PrefixStepSolve;
++ \wp::proof PrefixMemoryApply:tail4_prefix_next,tail2_prefix_next,tail1_prefix_next;
++ \wp::proof PrefixVectorApply:tail4_vector_next,tail2_vector_next;
++*/
++
++/*@ \wp::strategy TailSourceRange:
++ \tactic("Wp.range",\ingoal(A[R]),\select(R),\param("inf",0),\param("sup",3),\children(PrefixStepSolve)),PrefixStepSolve;
++ \wp::proof TailSourceRange:tail4_new_value;
++*/
++
++/*@ \wp::strategy MemoryPointOpen:
++ \tactic("Wp.unfold",\when(P_CvtMemoryPrefix(OM,IM,I,O,K,Z,M,Y)),\children(PrefixStepSolve)),PrefixStepSolve;
++ \wp::strategy VectorPointOpen:
++ \tactic("Wp.unfold",\when(P_CvtVectorPrefix(IM,V,I,S,K,Z,M,Y)),\children(PrefixStepSolve)),PrefixStepSolve;
++ \wp::proof MemoryPointOpen:CvtMemoryPrefixPoint;
++ \wp::proof VectorPointOpen:CvtVectorPrefixPoint;
++ \wp::strategy VectorLiteralPoint:
++ \tactic("Wp.instance",\ingoal(V.F1_lane[J]),\when(Fact:(\forall integer B; H ==> V.F1_lane[B]==L_L_cvt8(read_sint8(IM,shift_sint8(I,T)),Z,M,Y))),\select(Fact),\param("P1",J),\children(PrefixStepSolve)),
++ \tactic("Wp.instance",\ingoal(V.F1_lane[J]),\when(Fact:(\forall integer B; H ==> L_L_cvt8(read_sint8(IM,shift_sint8(I,T)),Z,M,Y)==V.F1_lane[B])),\select(Fact),\param("P1",J),\children(PrefixStepSolve)),PrefixStepSolve;
++ \wp::strategy PrefixPointApply:
++ \tactic("Wp.unfold",\ingoal(read_sint8(OM,shift_sint8(O,J))==L_L_cvt8(read_sint8(IM,shift_sint8(I,J)),Z,M,Y)),\when(Fact:P_CvtMemoryPrefix(OM,IM,I,O,K,Z,M,Y)),\select(Fact),\children(PrefixStepSolve)),
++ \tactic("Wp.unfold",\ingoal(L_L_cvt8(read_sint8(IM,shift_sint8(I,J)),Z,M,Y)==read_sint8(OM,shift_sint8(O,J))),\when(Fact:P_CvtMemoryPrefix(OM,IM,I,O,K,Z,M,Y)),\select(Fact),\children(PrefixStepSolve)),
++ \tactic("Wp.unfold",\ingoal(V.F1_lane[J]),\ingoal(V.F1_lane[J]==L_L_cvt8(read_sint8(IM,shift_sint8(I,T)),Z,M,Y)),\when(Fact:P_CvtVectorPrefix(IM,V,I,S,K,Z,M,Y)),\select(Fact),\children(VectorLiteralPoint)),
++ \tactic("Wp.unfold",\ingoal(V.F1_lane[J]),\ingoal(L_L_cvt8(read_sint8(IM,shift_sint8(I,T)),Z,M,Y)==V.F1_lane[J]),\when(Fact:P_CvtVectorPrefix(IM,V,I,S,K,Z,M,Y)),\select(Fact),\children(VectorLiteralPoint)),VectorLiteralPoint;
++ \wp::strategy PrefixZeroClear:
++ \tactic("Wp.clear",\when(P_CvtMemoryPrefix(A,B,C,D,0,E,F,G)),\children(PrefixZeroClear)),
++ \tactic("Wp.clear",\when(P_CvtVectorPrefix(A,B,C,D,0,E,F,G)),\children(PrefixZeroClear)),PrefixPointApply;
++ \wp::proof PrefixZeroClear:tail4_vector_stage,tail2_vector_stage,tail4_memory_stage,tail2_memory_stage,tail1_memory_stage,tail4_vector_restore,tail2_vector_restore,cvt_neon_5,cvt_neon_9,cvt_neon_11;
++*/
++
++/*@ \wp::strategy VectorSplitTwo:
++ \tactic("Wp.split",\when(bit_test(B,1)),\children(PrefixZeroClear)),PrefixZeroClear;
++ \wp::strategy VectorSplitFour:
++ \tactic("Wp.split",\when(bit_test(B,2)),\children(VectorSplitTwo)),VectorSplitTwo;
++ \wp::proof VectorSplitFour:cvt_neon_6,cvt_neon_10;
++*/
++
++/*@ \wp::strategy MulFilteredSolve: \prover("cvc5",10),\prover("z3",10);
++ \wp::strategy MulFiltered:
++ \tactic("Wp.filter",\children(MulFilteredSolve)),MulFilteredSolve;
++ \wp::strategy MulArray:
++ \tactic("Wp.array",\ingoal(Access:A[J]),\select(Access),\children(MulFiltered)),MulFiltered;
++ \wp::strategy MulBoundApply:
++ \tactic("Wp.lemma",\ingoal(X*Y),\param("lemma","S16ProductBound"),\param("P1",X),\param("P2",Y),\children(MulFilteredSolve)),MulArray;
++ \wp::proof MulBoundApply:vqrdmulhq_s16,__riscv_vwmul_vx_i32m8;
++*/
++
++/*@ \wp::strategy KernelSlow: \prover("z3","cvc5",30);
++ \wp::proof KernelSlow:bulk_output_prefix,readonly_input;
++ \wp::strategy PackedPointSolve: \prover("cvc5",10),\prover("z3",10);
++ \wp::strategy PackedPointInstance:
++ \tactic("Wp.instance",\ingoal(read_uint32(OM,shift_uint32(P,J))),\when(Fact:(\forall integer B; H ==> Value==read_uint32(OM,shift_uint32(P,B)))),\select(Fact),\param("P1",J),\children(PackedPointSolve)),
++ \tactic("Wp.instance",\ingoal(read_uint32(OM,shift_uint32(P,J))),\when(Fact:(\forall integer B; H ==> read_uint32(OM,shift_uint32(P,B))==Value)),\select(Fact),\param("P1",J),\children(PackedPointSolve)),KernelSlow;
++ \wp::proof PackedPointInstance:vreinterpret_u32_s8;
++*/

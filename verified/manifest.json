@@ -1105,6 +1105,208 @@
         "qu8-f32-vcvt/spec.h": "e572f64339d231f7f6c9c19c12ee535e7fb69eb073b817b4c336e18c323bcb20",
         "qu8-f32-vcvt/unit.c": "b887f8cd695bb671dc9efbcb40f4af5cd83d4cf68c1164a65c2e7b6e57a7ee55"
       }
+    },
+    {
+      "name": "qs8-vcvt",
+      "status": "proved_under_declared_c_model",
+      "proof_file": "qs8-vcvt-bytes-v4/proof.patch",
+      "proof_helper_files": [],
+      "public_functional_postcondition": "wrapper returns 1: each pair of output int8 values equal",
+      "raw_obligations": {
+        "passed": 1220,
+        "total": 1220
+      },
+      "seconds": 579.358,
+      "isa_to_c_shim_proved": false,
+      "implementation_files": [
+        "qs8-vcvt-bytes-v4/neon.c",
+        "qs8-vcvt-bytes-v4/rvv.c",
+        "qs8-vcvt-bytes-v4/shim.h",
+        "qs8-vcvt-bytes-v4/integer-qs8-vcvt.c",
+        "qs8-vcvt-bytes-v4/harness.c",
+        "qs8-vcvt-bytes-v4/unit.c"
+      ],
+      "spec_file": "qs8-vcvt-bytes-v4/spec.h",
+      "source_freeze": "qs8-vcvt-bytes-v4/frozen.json",
+      "source_guard": "../experiments/codex-kernel-wave1/checker-v11/shim_c_campaign_modular_v11.py",
+      "proof_evidence": "qs8-vcvt-bytes-v4/logs/canonical01-summary.json",
+      "llvm_identity_evidence": "qs8-vcvt-bytes-v4/llvm/result.json",
+      "body_functions": 43,
+      "global_lemmas": [
+        "CvtMemoryPrefixPoint",
+        "CvtMemoryPrefixStep",
+        "CvtVectorPrefixPoint",
+        "CvtVectorPrefixStep",
+        "S16ProductBound"
+      ],
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian",
+        "VLEN_bits": 128,
+        "schedule": "min(remaining,32)",
+        "domain": "Frozen spec.h: 0<n<=SIZE_MAX-7; n+7 readable input bytes, n valid output bytes, valid params and public separation conditions, multiplier != INT32_MIN",
+        "observation": "Final int8 output values equal; no machine flags, traces or binary equivalence",
+        "memory_model": "Qualified pure integer Bytes-v4; only remove inconsistent universal pointer-range law; no new axiom",
+        "original_NEON_unchanged": true,
+        "RVV_target": "Pre-existing frozen vnclip15 repair; original RVV and concrete mismatch witness preserved",
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Remaining memory/integer/stdlib models, ABI, WP/Qed/strategies, Why3/driver, solver and checker remain TCB",
+          "memcpy implementation not checked; standard content/termination/exit contract trusted",
+          "Unsupported alignment/valid_function RTE guards; not all strict ISO C UB covered",
+          "Positive/negative controls and deletion of one conflict are not a consistency theorem for all remaining model axioms"
+        ]
+      },
+      "implementation_unchanged_checks": {
+        "frozen_ordinary_C_and_public_spec": true,
+        "preprocessed_C_tokens": 12691,
+        "LLVM_IR_byte_identical": true
+      },
+      "negative_control_evidence": "qs8-vcvt-bytes-v4/logs/canonical01-model-control.json",
+      "negative_control_scope": "False postcondition rejected and positive control proved; not a model consistency theorem.",
+      "root_audit": "qs8-vcvt-bytes-v4/audit/final-review.json",
+      "model_lock_sha256": "9258662b56c4039e5441de4c382641bda26f42187dd7f74de4ab700737fbb6d0",
+      "source_and_evidence_sha256": {
+        "qs8-vcvt-bytes-v4/.gitignore": "0cd2735be957ff722a0c23130475e08491f04b66c7bfedc202817ec0f16971cb",
+        "qs8-vcvt-bytes-v4/README.zh-CN.txt": "d49c6508e3107b812822b4c2928e918b0d6c1c2e09dd21db541def8f03474322",
+        "qs8-vcvt-bytes-v4/audit/candidate-two-runs.json": "6cdb9ed50152cc3454253a398fd848b23c404eb6186c9fded6e7ecf5dfa7db00",
+        "qs8-vcvt-bytes-v4/audit/final-review.json": "8f907196db1bdd068d43ae332fdcef04f4be545aa064717c50fd26ce5e978b20",
+        "qs8-vcvt-bytes-v4/audit/libc-contract-review.json": "7df35bfff630087a0fabd49df7383b65e8ecf05f099dd2ec7e8273d1b35c103f",
+        "qs8-vcvt-bytes-v4/audit/model-qualification.json": "2b46d4fae0d50364a585600b61078a0da3431f33ee95a6d7cb338e475a67a919",
+        "qs8-vcvt-bytes-v4/audit/model-source-review.json": "2d2bbc23ad3be3eb158beb5e1150d3bea50f805464212b9c961621309ee3f922",
+        "qs8-vcvt-bytes-v4/audit/old-model-conflict-review.json": "52c971796a26237b5de18313872c547abff1adace3803cd473eb18b5eacbf647",
+        "qs8-vcvt-bytes-v4/canonical01-command.json": "83b8cf064ce39f8f97e6609c2a00ba2407bc3cb6740b80746dc4c88b6df2df73",
+        "qs8-vcvt-bytes-v4/frozen.json": "bf3d0d3cf54185aed024477b37dada38511b14b054db727f6da45a29468ee743",
+        "qs8-vcvt-bytes-v4/harness.c": "eac93de58787a591ebd870e9d118a98408276d84f52d4dbbb2ab76ecbd88dbc6",
+        "qs8-vcvt-bytes-v4/integer-qs8-vcvt.c": "eb36354764bc75f6202c16883bd953296ee82e1de6fee79aabefc12a2d4fbc71",
+        "qs8-vcvt-bytes-v4/interface.json": "a5a6f67fa61cbc9b309f7557e7658c5acb2473a0b5ce23ad344bc821b9db6ea8",
+        "qs8-vcvt-bytes-v4/llvm/annotated.ll": "e7d1007cf9112ad2015f9eb5aa5e4407390f8340d87012cf63cbda783ed152a0",
+        "qs8-vcvt-bytes-v4/llvm/plain.ll": "e7d1007cf9112ad2015f9eb5aa5e4407390f8340d87012cf63cbda783ed152a0",
+        "qs8-vcvt-bytes-v4/llvm/result.json": "5668cf4fc2bb01e4459c156b6b18c3cbdbd6faad8d46f4687a2730dfc9d4bcca",
+        "qs8-vcvt-bytes-v4/logs/canonical01-model-control.c": "5220c336aecb4950fa9f4814ca64c2b185edc718c1890989a94effc27aedee32",
+        "qs8-vcvt-bytes-v4/logs/canonical01-model-control.json": "80ea4000bbbbbf6a1a7e8e992ec92751c2a403905d49f59337cfb8888edefe65",
+        "qs8-vcvt-bytes-v4/logs/canonical01-model-control.log": "983f40842c68c24933b223f0d2deb6f9722dda9c1554fb6e83fcb7f7a09c89bf",
+        "qs8-vcvt-bytes-v4/logs/canonical01-summary.json": "29feec37b5139598f70d907c8f505869435c00735286b91bfbd69f8fc9ec3206",
+        "qs8-vcvt-bytes-v4/logs/canonical01.json": "c5e1273d8986d64ee667c978bf363338ff7d42617f3649aaf18748b3716014d2",
+        "qs8-vcvt-bytes-v4/logs/canonical01.log": "3c7ec56da970203d9af78caf4cc39e188666818143c32def8758bc1ddb15ba24",
+        "qs8-vcvt-bytes-v4/logs/recorded-full01-summary.json": "19265c9878795b3f297aa628eacf6c47ed061964b79f8ed84e856d0b656e0405",
+        "qs8-vcvt-bytes-v4/logs/recorded-full01.json": "576771275deafc45521eadac55019c53357e00830010dc60265974b875425d33",
+        "qs8-vcvt-bytes-v4/logs/recorded-full01.log": "0f5b4f6c8e6f4a3a7c3f9183ae66b9ccac3c93257da55ee64c337a2ee3204c97",
+        "qs8-vcvt-bytes-v4/logs/recorded-root-independent01-summary.json": "c149c07df5a2fd358fcb3e09554f68d9180f8758d4cadacb5ceb6a787329ec2e",
+        "qs8-vcvt-bytes-v4/logs/recorded-root-independent01.json": "d6dc184b4ce82c1f7e938715c7870f605dfdab38a1175792724ee553f5ff09d4",
+        "qs8-vcvt-bytes-v4/logs/recorded-root-independent01.log": "c74161826fdb88d3c765637b9b39685154a8c84c4b522010dee143ce775e6b40",
+        "qs8-vcvt-bytes-v4/neon.c": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+        "qs8-vcvt-bytes-v4/original/neon.c": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+        "qs8-vcvt-bytes-v4/original/rvv.c": "19da29a3dd0c32ac1a44ad5cec73b0e25d81ecd765a60e9a01e6a128c21f4b76",
+        "qs8-vcvt-bytes-v4/proof.patch": "8bd1d20b997cf66e08647f0ed2fd42a27e690a8f64d0f15473ddb71415695a46",
+        "qs8-vcvt-bytes-v4/provenance.json": "28ab76ad5101449cf26fb19458b7286ce49665415a33fe8c53e0c189fedc2a6d",
+        "qs8-vcvt-bytes-v4/repair-witness-results.json": "18737095b45ea591a52dcf87c7cb73acbea66ab13b02fe8aacc0ec838843e358",
+        "qs8-vcvt-bytes-v4/rvv.c": "d1335e78123b25f763ce828db0a7801868632cd25e6588c45acb56f0b2e50074",
+        "qs8-vcvt-bytes-v4/shim.h": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163",
+        "qs8-vcvt-bytes-v4/spec.h": "f2e059881b56de3fb708d2f4aabbf34ce01818e71f705e31346c8951233810ca",
+        "qs8-vcvt-bytes-v4/unit.c": "7e447af3673cb99c8db41abaa3e1662d4591715bb4cd9e62745cf44409d026f8",
+        "qs8-vcvt-bytes-v4/proof-size.json": "f2f335dadad3edc4045db5367bfca50a01cbf4971fc92adb04b698c205f9f54c"
+      }
+    },
+    {
+      "name": "qs8-vlrelu",
+      "status": "proved_under_declared_c_model",
+      "proof_file": "qs8-vlrelu-bytes-v4/proof.patch",
+      "proof_helper_files": [],
+      "public_functional_postcondition": "wrapper returns 1: each pair of output int8 values equal",
+      "raw_obligations": {
+        "passed": 1547,
+        "total": 1547
+      },
+      "seconds": 618.813,
+      "isa_to_c_shim_proved": false,
+      "implementation_files": [
+        "qs8-vlrelu-bytes-v4/neon.c",
+        "qs8-vlrelu-bytes-v4/rvv.c",
+        "qs8-vlrelu-bytes-v4/shim.h",
+        "qs8-vlrelu-bytes-v4/integer-qs8-vlrelu.c",
+        "qs8-vlrelu-bytes-v4/harness.c",
+        "qs8-vlrelu-bytes-v4/unit.c"
+      ],
+      "spec_file": "qs8-vlrelu-bytes-v4/spec.h",
+      "source_freeze": "qs8-vlrelu-bytes-v4/frozen.json",
+      "source_guard": "../experiments/codex-kernel-wave1/checker-v11/shim_c_campaign_modular_v11.py",
+      "proof_evidence": "qs8-vlrelu-bytes-v4/logs/canonical01-summary.json",
+      "llvm_identity_evidence": "qs8-vlrelu-bytes-v4/llvm/result.json",
+      "body_functions": 57,
+      "global_lemmas": [
+        "LreluMemoryPrefixPoint",
+        "LreluMemoryPrefixStep",
+        "LreluVectorPrefixPoint",
+        "LreluVectorPrefixStep",
+        "S16ProductBound"
+      ],
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian",
+        "VLEN_bits": 128,
+        "schedule": "min(remaining,32)",
+        "domain": "Frozen spec.h: 0<n<=SIZE_MAX-7; n+7 readable input bytes, n valid output bytes, valid params and public separation conditions; positive_multiplier and negative_multiplier != INT32_MIN",
+        "observation": "Final int8 output values equal; no machine flags, traces or binary equivalence",
+        "memory_model": "Qualified pure integer Bytes-v4; only remove inconsistent universal pointer-range law; no new axiom",
+        "original_NEON_unchanged": true,
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Remaining memory/integer/stdlib models, ABI, WP/Qed/strategies, Why3/driver, solver and checker remain TCB",
+          "memcpy implementation not checked; standard content/termination/exit contract trusted",
+          "Unsupported alignment/valid_function RTE guards; not all strict ISO C UB covered",
+          "Positive/negative controls and deletion of one conflict are not a consistency theorem for all remaining model axioms"
+        ],
+        "original_RVV_unchanged": true
+      },
+      "implementation_unchanged_checks": {
+        "frozen_ordinary_C_and_public_spec": true,
+        "preprocessed_C_tokens": 13170,
+        "LLVM_IR_byte_identical": true
+      },
+      "negative_control_evidence": "qs8-vlrelu-bytes-v4/logs/canonical01-model-control.json",
+      "negative_control_scope": "False postcondition rejected and positive control proved; not a model consistency theorem.",
+      "root_audit": "qs8-vlrelu-bytes-v4/audit/final-review.json",
+      "model_lock_sha256": "9258662b56c4039e5441de4c382641bda26f42187dd7f74de4ab700737fbb6d0",
+      "source_and_evidence_sha256": {
+        "qs8-vlrelu-bytes-v4/.gitignore": "0cd2735be957ff722a0c23130475e08491f04b66c7bfedc202817ec0f16971cb",
+        "qs8-vlrelu-bytes-v4/README.zh-CN.txt": "b629e1648235e4cbfdf49f42c759c7619aaa7cea909f49785bad0cb6a0e89b01",
+        "qs8-vlrelu-bytes-v4/audit/candidate-two-runs.json": "51c5e143687e7e83931432d31bfaf71ebbd17a45544d0a945318c0e6c9e1e3c9",
+        "qs8-vlrelu-bytes-v4/audit/final-review.json": "4a1eae5d6ba349e011bb2fcbf443df5cdba751711c306a8ca6bb90d3c1c032cb",
+        "qs8-vlrelu-bytes-v4/audit/libc-contract-review.json": "7df35bfff630087a0fabd49df7383b65e8ecf05f099dd2ec7e8273d1b35c103f",
+        "qs8-vlrelu-bytes-v4/audit/model-qualification.json": "2b46d4fae0d50364a585600b61078a0da3431f33ee95a6d7cb338e475a67a919",
+        "qs8-vlrelu-bytes-v4/audit/model-source-review.json": "2d2bbc23ad3be3eb158beb5e1150d3bea50f805464212b9c961621309ee3f922",
+        "qs8-vlrelu-bytes-v4/audit/old-model-conflict-review.json": "52c971796a26237b5de18313872c547abff1adace3803cd473eb18b5eacbf647",
+        "qs8-vlrelu-bytes-v4/audit/proof-delta-peer-review.json": "b27df56b2b78342645a09b7759db2930d6516e0c361f5499b5a254662b00cd03",
+        "qs8-vlrelu-bytes-v4/canonical01-command.json": "6b043cd6f5fb4e7917e9d35dd12eba9ec216fec17c7d2f703923a97d10423283",
+        "qs8-vlrelu-bytes-v4/frozen.json": "26faaf50e410617718229debbf3557d0e9dfb999de3de1142f96dd5c709f5920",
+        "qs8-vlrelu-bytes-v4/harness.c": "afe129d8148cc52327c7487441540eed6942dc221165209074adc8a85212948d",
+        "qs8-vlrelu-bytes-v4/integer-qs8-vlrelu.c": "41879f27a668b886bd5e15e92f8273b27c4d5f9c5db2532efe767a932b7ff7ac",
+        "qs8-vlrelu-bytes-v4/interface.json": "a5a6f67fa61cbc9b309f7557e7658c5acb2473a0b5ce23ad344bc821b9db6ea8",
+        "qs8-vlrelu-bytes-v4/llvm/annotated.ll": "7c95a038d26c312281f5f9bfbb49b8236262741360c41cf4ff6184878a621132",
+        "qs8-vlrelu-bytes-v4/llvm/plain.ll": "7c95a038d26c312281f5f9bfbb49b8236262741360c41cf4ff6184878a621132",
+        "qs8-vlrelu-bytes-v4/llvm/result.json": "ea0e320dfff71f140880a450886e8e39981e5bf38ca233a73dee55eafba6db15",
+        "qs8-vlrelu-bytes-v4/logs/canonical01-model-control.c": "1b726805da56d878056a2446afdaf61e7c454974bdc1b7cce2dd194ccbaf7319",
+        "qs8-vlrelu-bytes-v4/logs/canonical01-model-control.json": "9711e1308a96095de7e8c79bda1b65cebe018cd7c1264520b41f163c70ffe53a",
+        "qs8-vlrelu-bytes-v4/logs/canonical01-model-control.log": "6d983c36d9ab26decc52a6a527581c0dd96ae6d98b61d84896996a4ad9df8e37",
+        "qs8-vlrelu-bytes-v4/logs/canonical01-summary.json": "1021579927a7db114220c3cda11b9c984e8af7abe79a28ac4ef94b913c141895",
+        "qs8-vlrelu-bytes-v4/logs/canonical01.json": "95cef06730dba33a58f6ed26e784816052591a634224791806f4e5f3d0eaa43c",
+        "qs8-vlrelu-bytes-v4/logs/canonical01.log": "646ddaebdcb45f904d1f156b7b56234471f1f8174f46ff6fddd4eccd183ee5d8",
+        "qs8-vlrelu-bytes-v4/logs/recorded-full01-summary.json": "dc18b80464ed8ecd1f03b06c6cefc7818c24742d9b98d820bff4dce1cf71f49c",
+        "qs8-vlrelu-bytes-v4/logs/recorded-full01.json": "4d20981454d5c7ae02fe1015bdd96f6393bf2bfe4d9f8fa59ab7d861354fc365",
+        "qs8-vlrelu-bytes-v4/logs/recorded-full01.log": "c26a16b5682888ba6a62403755e4a10ae051fa9a0db07138676ebd68d2383569",
+        "qs8-vlrelu-bytes-v4/logs/recorded-root-independent01-summary.json": "5c2137dfc3fcddc5253f56f319940349a80048249788a533c85fb705d8144e5a",
+        "qs8-vlrelu-bytes-v4/logs/recorded-root-independent01.json": "a6743805ca9e1cd40ccab353babf6e81489e265bd1753d12ba0a29624b8ae682",
+        "qs8-vlrelu-bytes-v4/logs/recorded-root-independent01.log": "84c27f14891b26b42413e17ca3e6793c69f6f627a44ea3e03538c0e33bdc4590",
+        "qs8-vlrelu-bytes-v4/neon.c": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+        "qs8-vlrelu-bytes-v4/original/neon.c": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+        "qs8-vlrelu-bytes-v4/original/rvv.c": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+        "qs8-vlrelu-bytes-v4/proof-size.json": "6f6cdabcc6856a091ff30f5656fbd2dbf7087eab78072f9e0418ac3b3e356e50",
+        "qs8-vlrelu-bytes-v4/proof.patch": "fcd3e9e6cbae53f1c0117b56f8181d7c220ed28b33a8a9561a5b4ded258158c1",
+        "qs8-vlrelu-bytes-v4/provenance.json": "7c87300aa6af9f72c1f7f1491f34073499cfc7e5039d1fde727aaefbc086109d",
+        "qs8-vlrelu-bytes-v4/rvv.c": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+        "qs8-vlrelu-bytes-v4/shim.h": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163",
+        "qs8-vlrelu-bytes-v4/spec.h": "eb74c32c6804b020d2fc92fbe8e74e6c33df2218f9b36e1f43edba3bd8559c1c",
+        "qs8-vlrelu-bytes-v4/unit.c": "2038bba1294197809d231a52ed67e18eeaf0afc960eb9a5010d2e326225bae33"
+      }
     }
   ],
   "gemm_repair_admitted": false,
@@ -1813,6 +2015,38 @@
       "quarantine_evidence_sha256": "4a7ffd1dfc462abdcfb9f93c5fe10c7df744a6d5e3d84251751a06968563c851",
       "superseded_by": "f32-vmulc-v2",
       "historical_evidence_preserved": true
+    },
+    {
+      "name": "qs8-vcvt",
+      "status": "quarantined_model_inconsistency",
+      "historical_evidence_preserved": true,
+      "canonical_admitted": false,
+      "proof_file": "qs8-vcvt/proof.patch",
+      "source_freeze": "qs8-vcvt/frozen.json",
+      "historical_raw_obligations": {
+        "passed": 1220,
+        "total": 1220
+      },
+      "quarantine_reason": "Old Bytes-v3 universal pointer uint64 range law plus inverse and unrestricted offsets is inconsistent; checked independently in Lean. These green records are not admitted equivalence evidence.",
+      "quarantine_evidence": "../experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/review.json",
+      "superseded_by": "qs8-vcvt-bytes-v4",
+      "new_model_change": "Only delete the conflicting law; no new axiom. New package requires fresh full/independent/canonical checks."
+    },
+    {
+      "name": "qs8-vlrelu",
+      "status": "quarantined_model_inconsistency",
+      "historical_evidence_preserved": true,
+      "canonical_admitted": false,
+      "proof_file": "qs8-vlrelu/proof.patch",
+      "source_freeze": "qs8-vlrelu/frozen.json",
+      "historical_raw_obligations": {
+        "passed": 1547,
+        "total": 1547
+      },
+      "quarantine_reason": "Old Bytes-v3 universal pointer uint64 range law plus inverse and unrestricted offsets is inconsistent; checked independently in Lean. These green records are not admitted equivalence evidence.",
+      "quarantine_evidence": "../experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/review.json",
+      "superseded_by": "qs8-vlrelu-bytes-v4",
+      "new_model_change": "Only delete the conflicting law; no new axiom. New package requires fresh full/independent/canonical checks."
     }
   ],
   "current_campaign": {
@@ -1822,15 +2056,31 @@
     "requested": 33,
     "newly_proved": 7,
     "not_proved": 26,
-    "total_current_admitted": 11,
+    "total_current_admitted": 15,
     "quarantined_programs_are_preserved_history": true,
     "old_kernel_inventory_is_historical": true,
     "current_inventory_counts": {
       "total": 40,
-      "admitted": 11,
-      "not_proved": 26,
+      "admitted": 15,
+      "not_proved": 22,
       "missing_target": 3
     },
-    "scope": "Original C/public spec/wrapper frozen; independent repaired-model versions; ISO/ISA and floating observation limits remain explicit."
+    "scope": "Original C/public spec/wrapper frozen; independent repaired-model versions; ISO/ISA and floating observation limits remain explicit.",
+    "historical_campaign_counts_note": "requested/newly_proved/not_proved above describe the earlier shim-c-v2 campaign, not current wave counts.",
+    "current_wave": {
+      "results": "../experiments/codex-kernel-wave1/progress.json",
+      "review": "../experiments/codex-kernel-wave1/WAVE2-REVIEW.zh-CN.md",
+      "newly_admitted": [
+        "qs8-vcvt",
+        "qs8-vlrelu"
+      ],
+      "old_new_Bytes_green_results_blocked": "Old integer-v3/native-v5 results cannot be admitted because a universal finite pointer-range law conflicts with the inverse; new versions remove it and require fresh complete checks. Archived Typed entries require their own scope audit.",
+      "current_inventory_counts": {
+        "total": 40,
+        "admitted": 15,
+        "not_proved": 22,
+        "missing_target": 3
+      }
+    }
   }
 }

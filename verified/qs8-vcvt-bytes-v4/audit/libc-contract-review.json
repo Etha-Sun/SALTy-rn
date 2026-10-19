@@ -1,0 +1,23 @@
+{
+  "scope": "Effective full-unit Cvt analysis, no proving attempted in this export. Standard libc TCB, not kernel proof injection.",
+  "export": "experiments/codex-kernel-wave1/audit/cvt-libc-effective-root02/effective.c",
+  "source_lines": [
+    390,
+    406
+  ],
+  "contract_sha256": "aba96956ec20b6d066012a1f459bbf9a7cc718189f3472ac1743c936aec989ad",
+  "terminates_true": true,
+  "exits_false": true,
+  "function_has_no_body": true,
+  "preconditions": [
+    "valid destination",
+    "valid readable source",
+    "non-overlapping n-byte regions"
+  ],
+  "postconditions": [
+    "copied bytes from Pre",
+    "result equals original destination"
+  ],
+  "limitation": "Caller termination/content/RTE are checked against trusted libc contract; memcpy implementation is not checked. Missing-contract scoped runs are not equivalent to full analysis.",
+  "inputs_modified": false
+}

@@ -1,0 +1,40 @@
+{
+  "finding": "Old global pointer finite-range law plus inverse and unrestricted addr offsets are logically inconsistent.",
+  "status": "Confirmed mathematical conflict; source-to-premises mapping independently peer-reviewed. Not a claim that every historical model/version contains these premises.",
+  "mathematical_theorem": "range_inverse_conflict: for every finite m, a bounded encode on all base=0 integer offsets cannot have a left inverse.",
+  "lean_version": "4.29.1",
+  "lean_source_sha256": "f6ae36fefdc79696498c50f051b29bff898cca85d16e54b35e4eb4711b9d78e1",
+  "successful_compilation_log": "lean02.log",
+  "theorem_axioms": [
+    "propext",
+    "Quot.sound"
+  ],
+  "additional_unproved_user_axioms": false,
+  "smt_sha256": "978d4d26c8db5068dc1e93cb6fde71ed45b5e231e376b9c4c6f69bcc4c56f090",
+  "source_mapping": {
+    "addr_unbounded_record_line": 42,
+    "uint64_interval_lines": [
+      439,
+      444
+    ],
+    "static_base_zero_lines": [
+      2206,
+      2213
+    ],
+    "inverse_lines": [
+      2227,
+      2230
+    ],
+    "global_range_lines": [
+      11686,
+      11689
+    ]
+  },
+  "confirmed_affected_new_candidates": [
+    "qs8-vcvt-modular-v54",
+    "qs8-vlrelu-v42"
+  ],
+  "archived_13_note": "Archived profiles are Typed/Typed+float, not these new Bytes profiles; no automatic conclusion of same issue. Their other declared TCB and known rsum model hypotheses remain separately tracked.",
+  "admission_blocked": true,
+  "remediation": "Separate new model removes only global pointers_int_range injection; old C/spec/proof retained, fresh full and independent runs required. Removing one conflict does not establish consistency of all remaining model axioms."
+}

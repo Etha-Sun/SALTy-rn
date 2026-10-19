@@ -1,7 +1,18 @@
 已验证程序目录
 
-最新复验：manifest当前收录11项，包括原4个整数case与修复模型后的7个浮点-v2版本。
-浮点7项全部完成3970/3970证明义务，打包后canonical01也全部独立复验通过。
+当前正式清单为15项（manifest.json），待证明22项，缺对应target 3项。
+新增qs8-vcvt使用仅删除冲突公理的独立integer Bytes-v4，三轮完整复验均1220/1220；
+原版RVV反例与此前修复target分开保留，spec/普通C冻结，每kernel仍只有一个proof.patch。
+qs8-vlrelu在同一修正模型下三轮1547/1547全过，NEON/RVV原始C都逐字不变。
+两个新包的实际source/preprocessed token/LLVM identity、函数/global/call闭包均审计；
+旧同名目录在quarantined_programs中明确隔离，不计入当前结果。
+
+此前基线包括4个整数、7个修复IEEE浮点及2个byte-to-float转换kernel。
+旧Bytes全局pointer范围公理冲突与新模型审计见../experiments/codex-kernel-wave1/WAVE2-REVIEW.zh-CN.md；
+旧新候选绿色日志被隔离，这个发现不能直接套到13个历史Typed收录项。
+历史rsum的额外内部table分离假设及独立alias重验边界也在上述审计中保留。
+
+以下为早期shim-c-v2基线和历史说明，数字不代表当前总量：
 旧7项quarantined_programs和原目录保留，只作历史证据，superseded_by指向新目录。
 本轮其余26项已补proof并完整尝试，但尚未整核通过；不能根据局部成功将其收录。
 逐项状态见../experiments/shim-c-v2/REPORT.zh-CN.md；模型修复、禁用的Bytes+float

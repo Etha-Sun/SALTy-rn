@@ -1,0 +1,77 @@
+{
+  "name": "qs8-vcvt",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/integer/shared/shim.h",
+      "sha256": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163"
+    },
+    "integer-qs8-vcvt.c": {
+      "path": "experiments/shared-extension/integer/shared/integer-qs8-vcvt.c",
+      "sha256": "eb36354764bc75f6202c16883bd953296ee82e1de6fee79aabefc12a2d4fbc71"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/integer/qs8-vcvt/neon.c",
+      "sha256": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/integer/qs8-vcvt/rvv.c",
+      "sha256": "d1335e78123b25f763ce828db0a7801868632cd25e6588c45acb56f0b2e50074"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/integer/qs8-vcvt/spec.h",
+      "sha256": "f2e059881b56de3fb708d2f4aabbf34ce01818e71f705e31346c8951233810ca"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/integer/qs8-vcvt/harness.c",
+      "sha256": "eac93de58787a591ebd870e9d118a98408276d84f52d4dbbb2ab76ecbd88dbc6"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/integer/qs8-vcvt/interface.json",
+      "sha256": "a5a6f67fa61cbc9b309f7557e7658c5acb2473a0b5ce23ad344bc821b9db6ea8"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/integer/qs8-vcvt/unit.c",
+      "sha256": "7e447af3673cb99c8db41abaa3e1662d4591715bb4cd9e62745cf44409d026f8"
+    },
+    "generate_interfaces.py": {
+      "path": "experiments/shared-extension/integer/generate_interfaces.py",
+      "sha256": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7"
+    },
+    "model_runner.py": {
+      "path": "experiments/codex-kernel-wave1/checker-resource/shim_c_campaign_resource_v15.py",
+      "sha256": "4fc46f84c2397728aaff5ca51e635850a32b9d1e83eb71794b9f60f0c6459714"
+    },
+    "closure_checker.py": {
+      "path": "experiments/codex-kernel-wave1/checker-v11/shim_c_campaign_modular_v11.py",
+      "sha256": "be5298ea1196fe497787ab3ea45f71fa6862002d0d532c398c2dec780246af86"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v4-no-pointer-range/model_lock.json",
+      "sha256": "9258662b56c4039e5441de4c382641bda26f42187dd7f74de4ab700737fbb6d0"
+    },
+    "kernel_contracts.json": {
+      "path": "experiments/codex-kernel-wave1/checker-v10/kernel-contracts.json",
+      "sha256": "e363d34d8f4d3c572e846c6ac474cc8d02bdd034a4bff7844cec578e0b71f2d6"
+    }
+  },
+  "proof_patches": [
+    "experiments/codex-kernel-wave1/integer/qs8-vcvt-modular-v55/proof.patch"
+  ],
+  "model": "Bytes",
+  "VLEN_bits": 128,
+  "origin": "original NEON unchanged, original target preserved separately; four explicit target repairs documented in witness-results.json",
+  "revision": "Codex v4: checked fixed byte-prefix store invariants, nonwrapping size_t index equalities and checked WP Range strategies on finite lane indices. All C/spec/model/checker unchanged; Tip executor enabled.",
+  "previous_version": "experiments/codex-kernel-wave1/integer/qs8-vcvt-modular-v54",
+  "wp_share": "experiments/codex-kernel-wave1/vlrelu/model-integer-byte-v4-no-pointer-range/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 5,
+  "wp_budget": 1800,
+  "wp_model_variant": "Bytes",
+  "reason": "Config-only conservative theory revision: remove old inconsistent universal physical-pointer uint64 range law. Ordinary C, public/private spec, proof patch, checker, driver and resources byte-identical. Old successful records remain unqualified historical evidence.",
+  "model_audit": "experiments/codex-kernel-wave1/audit/pointer-range-consistency-root01/review.json"
+}

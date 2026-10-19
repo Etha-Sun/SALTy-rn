@@ -1,0 +1,57 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '8', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/model-hypotheses-independent01/qs8-rsum-aliased-full-v1/.build/independent03/annotated/unit.c', '-wp-alias-vars', 'test_neon_onemask_table', '-wp-session', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/model-hypotheses-independent01/qs8-rsum-aliased-full-v1/.build/independent03/session', '-wp-out', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/model-hypotheses-independent01/qs8-rsum-aliased-full-v1/.build/independent03/wp-out', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/audit/model-hypotheses-independent01/qs8-rsum-aliased-full-v1/logs/independent03-main.json']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vadd_vv_i32m8_tu
+[rte:annot] annotating function __riscv_vle8_v_i8m2
+[rte:annot] annotating function __riscv_vmv_v_x_i32m1
+[rte:annot] annotating function __riscv_vmv_v_x_i32m8
+[rte:annot] annotating function __riscv_vmv_x_s_i32m1_i32
+[rte:annot] annotating function __riscv_vredsum_vs_i32m8_i32m1
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function __riscv_vsext_vf4_i32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function lemma_rvv_active
+[rte:annot] annotating function lemma_rvv_cancel
+[rte:annot] annotating function lemma_rvv_tail
+[rte:annot] annotating function lemma_sum8_split
+[rte:annot] annotating function proof_load_sum
+[rte:annot] annotating function proof_prefix_widen
+[rte:annot] annotating function proof_s16_add
+[rte:annot] annotating function proof_u32_congruence
+[rte:annot] annotating function proof_widen
+[rte:annot] annotating function rvv_proof_s32_u32
+[rte:annot] annotating function rvv_proof_u32_congruence
+[rte:annot] annotating function rvv_proof_u32_cross_cancel
+[rte:annot] annotating function rvv_proof_u32_normalize
+[rte:annot] annotating function signed16
+[rte:annot] annotating function signed32
+[rte:annot] annotating function vaddvq_s32
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vmovq_n_s16
+[rte:annot] annotating function vmovq_n_s32
+[rte:annot] annotating function vmulq_s8
+[rte:annot] annotating function vpadalq_s16
+[rte:annot] annotating function vpadalq_s8
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] neon.c:13: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] 579 goals scheduled
+[wp] Proved goals:  629 / 629
+  Terminating:      25
+  Unreachable:      25
+  Qed:             338 (0.72ms-186ms-1.9s)
+  Alt-Ergo 2.6.2:  206 (8ms-49ms-361ms)
+  CVC5 1.2.1:       23 (24ms-111ms-942ms)
+  Z3 4.12.5:        12 (12ms-616ms-3.1s)

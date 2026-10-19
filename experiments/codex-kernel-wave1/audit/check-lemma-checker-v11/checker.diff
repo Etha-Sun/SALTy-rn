@@ -1,0 +1,39 @@
+--- experiments/codex-kernel-wave1/checker-v10/shim_c_campaign_modular_v10.py	2026-10-19 03:09:15.473419182 -0500
++++ experiments/codex-kernel-wave1/checker-v11/shim_c_campaign_modular_v11.py	2026-10-19 14:37:53.473448595 -0500
+@@ -122,6 +122,7 @@
+         return source
+     annotated = Path(source["annotated"])
+     expected, lemmas, ghost_functions = set(), set(), set()
++    lemma_properties = {}
+     definition = r"^\s*(?:(?:static|inline)\s+)*(?!(?:if|else|for|while|switch|return)\b)(?:\w+)(?:\s*\*)?\s+(\w+)\s*\([^;{}]*\)\s*\{"
+     for name in data["files"]:
+         if Path(name).suffix not in {".c", ".h"}:
+@@ -131,7 +132,10 @@
+         for m in guard.LEX.finditer(text):
+             if not m.group().startswith(("/*@", "//@")):
+                 continue
+-            lemmas.update(re.findall(r"\blemma\s+(\w+)\s*(?:\{[^}]*\})?\s*:", m.group()))
++            for lemma in re.finditer(r"\b(?:(check)\s+)?lemma\s+(\w+)\s*(?:\{[^}]*\})?\s*:", m.group()):
++                lemma_name = lemma.group(2)
++                lemmas.add(lemma_name)
++                lemma_properties[lemma_name] = ("check_lemma_" if lemma.group(1) else "lemma_") + lemma_name
+             if re.match(r"/\*@\s*ghost\b", m.group()):
+                 ghost_functions.update(re.findall(definition, m.group(), re.M))
+     call_closure = shim_c_call_closure.closure(annotated/"unit.c", ghost_functions)
+@@ -164,14 +168,14 @@
+     rows = json.loads(raw.read_text()) if raw.exists() else []
+     seen = {r["function"] for r in rows if "ensures" in r["goal"]}
+     missing = sorted(expected-seen)
+-    missing_lemmas = sorted(n for n in lemmas if not any(r.get("property")=="lemma_"+n for r in rows))
++    missing_lemmas = sorted(n for n in lemmas if not any(r.get("property")==lemma_properties[n] for r in rows))
+     unchanged = (all(sha(ROOT/p)==v for p,v in before.items()) and baseline(case,args.frozen_sha256)==data
+                  and all(sha(annotated/p)==v for p,v in source["generated"].items()))
+     result = dict(case=str(case.relative_to(ROOT)), command=command, source_guard=source, checker_inputs=before,
+                   exit=code, seconds=round(time.monotonic()-started,3), unchanged=unchanged,
+                   call_closure=call_closure, raw_obligations=dict(passed=sum(bool(r["passed"]) for r in rows),total=len(rows)),
+                   pending=[r for r in rows if not r["passed"]], expected_functions=sorted(expected), functions=sorted(seen),
+-                  missing_body_ensures=missing, expected_global_lemmas=sorted(lemmas), missing_global_lemmas=missing_lemmas,
++                  missing_body_ensures=missing, expected_global_lemmas=sorted(lemmas), expected_global_lemma_properties=lemma_properties, missing_global_lemmas=missing_lemmas,
+                   complete=code==0 and bool(rows) and all(r["passed"] for r in rows) and unchanged and not missing and not missing_lemmas,
+                   isa_to_c_shim_proved=False)
+     (logs/(args.name+"-summary.json")).write_text(json.dumps(result,indent=2)+"\n")

@@ -1,0 +1,17 @@
+/*@ requires valid_dest: valid_or_empty(dest, n);
+    requires valid_src: valid_read_or_empty(src, n);
+    requires
+      separation:
+        \separated((char *)dest + (0 .. n - 1), (char *)src + (0 .. n - 1));
+    terminates \true;
+    exits \false;
+    ensures
+      copied_contents:
+        memcmp{Post, Pre}((char *)\old(dest), (char *)\old(src), \old(n)) ≡ 0;
+    ensures result_ptr: \result ≡ \old(dest);
+    assigns *((char *)dest + (0 .. n - 1)), \result;
+    assigns *((char *)dest + (0 .. n - 1))
+      \from *((char *)src + (0 .. n - 1));
+    assigns \result \from dest;
+ */
+extern void *memcpy(void * restrict dest, void const * restrict src, size_t n);

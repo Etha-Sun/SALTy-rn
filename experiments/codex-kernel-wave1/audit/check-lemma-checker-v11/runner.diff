@@ -1,0 +1,22 @@
+--- experiments/codex-kernel-wave1/checker-resource/shim_c_campaign_resource_v14.py	2026-10-19 14:27:32.236971337 -0500
++++ experiments/codex-kernel-wave1/checker-resource/shim_c_campaign_resource_v15.py	2026-10-19 14:37:40.325339564 -0500
+@@ -5,8 +5,8 @@
+ import subprocess
+ import sys
+ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
+-sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "checker-v10"))
+-import shim_c_campaign_modular_v10 as campaign
++sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "checker-v11"))
++import shim_c_campaign_modular_v11 as campaign
+ import shim_c_call_closure
+ # Only these additional standard-library calls; their pinned libc contracts apply.
+ shim_c_call_closure.EXTERNAL |= {"fabsf", "floor"}
+@@ -21,7 +21,7 @@
+ args = p.parse_args()
+ data = campaign.baseline(args.case.resolve(), args.frozen_sha256)
+ if data['files']['model_runner.py']['path'] != str(Path(__file__).resolve().relative_to(campaign.ROOT)):
+-    raise RuntimeError('The resource-v14 runner must be frozen in the case')
++    raise RuntimeError('The resource-v15 runner must be frozen in the case')
+ model = data.get('wp_model_variant', data.get('model', 'Typed'))
+ if model not in {'Typed', 'Typed+raw', 'Bytes', 'Bytes+raw',
+                  'Typed+float', 'Typed+raw+float', 'Bytes+float', 'Bytes+raw+float'}:
