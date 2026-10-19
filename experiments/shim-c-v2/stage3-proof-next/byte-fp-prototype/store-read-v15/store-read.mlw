@@ -1,0 +1,16 @@
+module StoreRead32
+ use int.Int
+ use frama_c_wp.cint.Cint
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use frama_c_wp.bytefloat_checked.EncodeRange32
+ use frama_c_wp.bytefloat_checked.DecodeEncode32
+ let lemma checked_store_read32 (m:memory) (a:addr) (v:f32) (seed:int) : unit
+ ensures { decode32 (read_uint32 (write_uint32 m a (encode32 v seed)) a) = v }
+ = checked_encoderange32 v seed;
+   assert { is_uint32 (encode32 v seed) };
+   assert { read_uint32 (write_uint32 m a (encode32 v seed)) a = encode32 v seed };
+   checked_decodeencode32 v seed
+end

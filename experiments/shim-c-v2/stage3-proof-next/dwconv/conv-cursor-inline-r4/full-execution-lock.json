@@ -1,0 +1,38 @@
+{
+  "runner": "experiments/shim-c-v2/stage3-proof-next/dwconv/run30-inline-conv-full.py",
+  "runner_sha256": "8b58b284dd21c2244c739606526f264f633e435122346bce46f7085ccfc1636b",
+  "base_runner": "experiments/shim-c-v2/stage3-proof-next/dwconv/run30-inline-conv-index.py",
+  "base_runner_sha256": "bacd53de5812f7f8de5ecf72e20efdbafc958d4ea79270ab9898289d8c8da27d",
+  "proof_sha256": "eb81d3d0b9f19cd32d8e916c3604bdaa8ee1ca18725405bbe3e2410d4f1a1f77",
+  "frozen_sha256": "bace2935701c02c516086b31269ca3ba54e7af21d84d7598f58a9183a15cc5b7",
+  "model_lock_sha256": "f6756e5cf0665df060894ccf02993483bd8306f52795a3dd5f739296e110fc67",
+  "observer_sha256": "df62e27ec11d707f2dee90423f3f42e485784b0dd7182a8848f3fd53f9de6d96",
+  "inline_calls": "test_neon,test_rvv,__riscv_vreinterpret_v_u32m1_i32m1,__riscv_vadd_vx_i32m1,__riscv_vsub_vx_i32m1",
+  "remove_inlined": "test_neon,test_rvv",
+  "wp_par": 2,
+  "solver_memory_mb_each": 2048,
+  "body_budget_seconds": 3500,
+  "global_budget_seconds": 100,
+  "total_stage_budget_seconds": 3600,
+  "strict_acceptance": false,
+  "commands": [
+    [
+      "python3",
+      "experiments/shim-c-v2/stage3-proof-next/dwconv/run30-inline-conv-full.py",
+      "conv-cursor-inline-r4",
+      "full-root01",
+      "full",
+      "--budget",
+      "3500"
+    ],
+    [
+      "python3",
+      "experiments/shim-c-v2/stage3-proof-next/dwconv/run30-inline-conv-full.py",
+      "conv-cursor-inline-r4",
+      "full-globals-root01",
+      "lemmas",
+      "--budget",
+      "100"
+    ]
+  ]
+}

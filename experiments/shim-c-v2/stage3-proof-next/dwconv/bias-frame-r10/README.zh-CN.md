@@ -1,0 +1,1 @@
+从bias-r8独立分支，不继承r9的逐lane额外合同。只加调用前ghost标签与三个需证明的assert：局部vacc与权重区分离；返回lane对应调用前权重；权重区跨聚合返回复制保持。原local/normalized与address断言全部保留，新断言自身未证时不能视作可用前提。原loader/spec/实现/模型不改。none展开只用于审核实际公式，不是通过证据。

@@ -1,0 +1,69 @@
+[kernel] Parsing qualification01/memory.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function positive_store
+[rte:annot] annotating function positive_adjacent_frame
+
+Goal Post-condition ("qualification01/memory.c", line 7) in 'positive_store':
+Let m = write_uint32(mem_0, p, encode32(x, nan_seed_0)).
+Assume {
+  Type: bytes(mem_0) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, p, 4).
+}
+Prove: P_same32(decode32(read_uint32(m, p)), x).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("qualification01/memory.c", line 8):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assigns ("qualification01/memory.c", line 7) in 'positive_store':
+Effect at line 8
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Post-condition ("qualification01/memory.c", line 9) in 'positive_adjacent_frame':
+Let a = shift_float32(p, 0).
+Let m = write_uint32(mem_0, a, encode32(x, nan_seed_0)).
+Let a_1 = shift_float32(p, 1).
+Assume {
+  Type: bytes(mem_0) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 8).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a, 4).
+}
+Prove: P_same32(decode32(read_uint32(m, a_1)),
+         decode32(read_uint32(mem_0, a_1))).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("qualification01/memory.c", line 10):
+Let a = shift_float32(p, 0).
+Assume {
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ linked(alloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 8).
+}
+Prove: valid_rw(alloc_0, a, 4).
+
+------------------------------------------------------------
+
+Goal Assigns ("qualification01/memory.c", line 9) in 'positive_adjacent_frame':
+Effect at line 10
+Prove: true.
+
+------------------------------------------------------------

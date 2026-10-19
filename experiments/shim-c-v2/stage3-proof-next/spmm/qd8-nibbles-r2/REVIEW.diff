@@ -1,0 +1,27 @@
+--- nibbles-r1/rvv.c
++++ nibbles-r2/rvv.c
+@@ -1,10 +1,23 @@
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures qd8_byte_shift: (uint8_t)((unsigned)u<<4)==16*(u%16);
++    ensures qd8_byte_mask: ((unsigned)u & 240U)==16*(u/16);
++@/
++static void qd8_byte_parts(uint8_t u) {}
++*/
++/*@ \wp::strategy Qd8ByteLeaf: \prover("z3",10), \prover("cvc5",10);
++    \wp::strategy Qd8Byte8:
++      \tactic("Wp.bitwised",\ingoal(A==B),\param("Wp.bitwised.range",8),\children(Qd8ByteLeaf)),Qd8ByteLeaf;
++    \wp::proof Qd8Byte8: qd8_byte_parts;
++*/
+ /*@ ghost
+ /@ terminates \true; assigns \nothing;
+     ensures qd8_scalar_low: (int8_t)((uint8_t)x<<4)==16*stage3_signed_nibble((uint8_t)x%16);
+     ensures qd8_scalar_high: (int8_t)((uint8_t)x & (uint8_t)240)==16*stage3_signed_nibble((uint8_t)x/16);
+ @/
+ static void qd8_nibble_scalar(int8_t x) {
+-  unsigned u=(uint8_t)x;
++  uint8_t u=(uint8_t)x;
++  qd8_byte_parts(u);
+   unsigned lo=u%16;
+   unsigned hi=u/16;
+   /@ assert qd8_nibble_shift_mod: (uint8_t)(u<<4)==16*(u%16); @/

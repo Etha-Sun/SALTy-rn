@@ -1,6 +1,6 @@
 # 第三阶段九项：后续 proof 与独立审核
 
-本地分支 `feat/shim-c`，阶段检查点 `3f80a0d`，后续工作继续。只处理原第三阶段九项及其真实依赖。原 C/shim、公共 spec/wrapper、已冻结模型/锁和旧 checker 不变。用户未授权 push。**新增整核通过仍为 0/9**，没有新的 kernel 反例。
+本地分支 `feat/shim-c`，阶段检查点 `c729f55`，后续工作继续。只处理原第三阶段九项及其真实依赖。原 C/shim、公共 spec/wrapper、已冻结模型/锁和旧 checker 不变。用户未授权 push。**新增整核通过仍为 0/9**，没有新的 kernel 反例。
 
 ## 完整尝试与完整分母
 
@@ -36,7 +36,7 @@ maxpool 未证为 17 timeout + 1 unknown。dwconv r6 的另次 globals 9/9 不�
 
 ## 冻结与证据审核
 
-`root-review/audit10.json` 与 `audit10-contracts.json` 核对 67 个候选，冻结文件/模型配置及 public spec 一致，没有新增 requires，20109 个外部锁条目校验通过（含不同锁的重复文件）。后续候选还需新一轮审核。静态 guard 不等于 proof 解析或断言成立。
+`root-review/audit12.json` 与 `audit12-contracts.json` 核对 81 个候选，冻结文件/模型配置及 public spec 一致，没有新增 requires，30169 个外部锁条目校验通过（含不同锁的重复文件）。后续候选还需新一轮审核。静态 guard 不等于 proof 解析或断言成立。
 
 所有 ghost/helper 合同必须由真实 body 证明；不添加外部无 body 合同或假设。独立 inline 执行诊断保留真实函数定义，并记录执行配置和 SHA；不能直接作为旧执行器的整核验收。
 
@@ -44,7 +44,7 @@ maxpool 未证为 17 timeout + 1 unknown。dwconv r6 的另次 globals 9/9 不�
 
 旧 Typed canonical_nan 的 memcpy 字节/浮点视图连接未证。原生 IEEE FMA 的真实 helper 已 NEON22/22、RVV21/21；不能以旧短预算结果宣称FMA缺body。
 
-`byte-fp-prototype/`、`../stage3-byte-fp-front-v1/` 至 v5 是独立实验，**未用于任何kernel**。新源码以native IEEE/BV定义及每次store的新鲜NaN位选择替换旧Bytes+float三个不健全codec公理；旧Bytes+float仍禁用，旧模型/锁未改。
+`byte-fp-prototype/`、`../stage3-byte-fp-front-v1/` 至 v6 是独立实验，**未用于任何kernel**。新源码以native IEEE/BV定义及每次store的新鲜NaN位选择替换旧Bytes+float三个不健全codec公理；旧Bytes+float仍禁用，旧模型/锁未改。
 
 - 原v1 canonical切分14/14；全codec397目标900秒无最终raw；zero组31/34。
 - 位逆关系的真实body依赖已逐个闭合：BV逆32/64、int32，int64由固定CVC5原生BV实例证明；接口32/64、compose32/64各6/6。固定NaN逆关系和false的原Z3负控制实际SAT。另一个64位CVC5 native FP负控制只返回Unknown/incomplete，不冒称SAT。
@@ -65,3 +65,19 @@ GEMM27删除多余A aggregate后5/7，保留A load及两轮dup current/ref全部
 ## Typed 内存块编号审查（独立候选，尚无因果结论）
 
 只读审查发现旧 MemTyped 中 UInt128/M_f32 都使用 rank 9，SInt128/M_f64 都使用 rank 10，compare=0 与结构相等不一致。独立 `stage3-typed-rank-front-v1` 只调整后续编号为 11..15，旧锁/source/binary 不变。当前普通 struct-copy 诊断失败是否由此导致尚待正反控制，不能提前声称修好模型；也不能据此无证据宣称历史 kernel 有误。10894 个源码文件只一处文件变化的审核已记录，独立编译完成后对同一 struct-copy body 的实际复验仍 5/9，与旧版相同，故不能把此修复称为当前 float-only 复制证明的解决方案。
+
+## 后续独立复验：仍未完成整核验收
+
+- bitwised v2 在仅修大整数掩码与真实 trivial/Qed 结果记录后，高位正反控制 raw7/10，恰好两个真post和五assigns通过、三个假post未证。重新编译未改observer以匹配新Wpo ABI，保留首次ABI不匹配失败。QD8实际round_up_po2与ghost调用组正常18/18，pending空、SHA不变；这是辅助函数调用组，不是QD8整核。
+- 同一独立v2标准模型锁下：unary raw/typed各17/19，IEEE23/26，builtin/cast16/18，实际fmaf融合/非融合与特殊值62/66；逐项未证均为预定假post。唯一已通过f32-vadd整核回归在新freeze r2正常571/571、complete与全部严格guard/control/coverage通过；根逐项核验10060模型输入后另存QUALIFICATION-ROOT01.json，允许该固定独立Typed/IEEE版本继续九项工作。首次误用低层runner导致未知alt-ergo；其次发现复制checker路径不满足正式入口固定路径，两次均保留为入口/准备错误，未修改旧锁掩盖。原锁/旧元数据的pending文字保留，当前资格以独立根验收记录为准，不改旧SHA。
+- Bytes v6 新增有body的 `Read64Bytes.checked_read64_equal_bytes`，原型原body1/1且新share重放1/1。相同冻结普通C，仅补已检查unsigned字节断言后，zero42/42、numeric82/82全部通过。其余正控制247/248，仍partial-byte-frame未证；补充别名/分支/循环控制正在审查，故未资格认证，也未用于kernel。
+- GEMM29递归clear300秒缺raw；30单次匹配正常0/1，不能称解决frame。DW bias-r9真实loader16/16但kernel1/3，较r8的2/3退步，明确不采纳。
+- CONV r4完整库存正常分母2328（body2322+global6），另55CFG-only；完整控制接受，唯一full-root01已启动，尚未完成。DWCONV2D r3库存1653仍仅表示覆盖分母。
+
+正式manifest仍无变更，新增整核0/9。所有局部诊断、工具资格控制、完整尝试分别保留，不拼接为整核成功。
+
+新GEMM31标量snapshot首次真实load后frame正常1/1，尚需四lane及全部新ghost/原acc义务；30trace明确策略匹配失败，不应称clear执行后仍超时。DW frame-r10为3/6；Bytes v6内存扩展26/34（含三个预定假post和五个真义务未证），partial-frame proof切分28/30，仍两初始字节断言债务，模型资格未过。
+
+后续实际结果：GEMM33为8/11，未证seed、原acc_before_0、原acc_first；8个frame在带未证seed的上下文中，不独立算整条关系成立。31无此seed的首frame1/1仍有效。DW scalar-r11三目标0/3，原cut全部保留。QD8 nibble-r1 180秒预算缺raw；none公式揭示ghost局部类型界丢失，r2改proof变量类型并新增checked byte helper，正在完整调用组验证。
+
+Bytes v6额外IEEE控制23/26且恰三个预定假post未证；负codec五函数合跑600秒缺最终raw。独立v7尝试用已证内存read/write/frame加IEEE store/read组合（五个新share body义务重放5/5），但memory组仍26/34，未解决五个真义务。首次CVC5 driver把theory关键字写成module，原错误与锁保留，另配置02修正并重放；未宣称模型资格。对实际SMT仅改mbqi搜索选项仍超时；尝试显式触发的另body内存耗尽，均保留失败，不把这些当新公理导入。

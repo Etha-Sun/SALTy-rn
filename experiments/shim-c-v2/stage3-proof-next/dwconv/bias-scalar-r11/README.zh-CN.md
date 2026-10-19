@@ -1,0 +1,1 @@
+从bias-r8独立分支，只针对真实RVV bias load的lane0。调用前ghost float快照w[0]，调用后ghost float快照vacc.lane[0]；依次验证loaded/frame/local。原泛化义务保留，新scalar目标在泛化cut之前，不依赖r9额外ensures或r10未证disjoint/frame。所有ghost读取RTE仍是新增义务，定点通过不代表全部覆盖。未运行solver，等待根执行。

@@ -1,0 +1,1 @@
+从bias-r8只扩充实际m4 loader的四个逐lane后置条件，保留原forall、真实body、requires及assigns。先完整验证loader body及四个新增ensures，再独立复验kernel原局部load目标。bias-r8只有next_bias_local未证；地址归一已过，normalized通过依赖local切分点，不是整链闭合。新候选尚待根执行，未改公共spec、实现、模型。

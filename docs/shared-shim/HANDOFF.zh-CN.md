@@ -1,3 +1,7 @@
+## 最新续作提示
+
+截至本次续作，新增整核仍0/9，禁止push。新bitwised v2的QD8真实round helper调用组18/18与正反控制已闭合，正式单一f32-vadd工具回归已571/571、全部严格验收成立，独立QUALIFICATION-ROOT01.json允许固定新Typed/IEEE版本继续九项，原canonical模型不变。Bytes v6已证64位字节读取引理让zero42/42、numeric82/82，其他正控制247/248仍有partial-byte-frame，额外内存控制尚未全过；未资格认证，未用于kernel。CONV r4唯一完整尝试正常逻辑分母2328，等待最终raw。最新细节与失败均见stage3-proof-next/REPORT.zh-CN.md，不采用下文较旧局部计数作为最新状态。
+
 ## 2026-10-19 后续独立审核补充
 
 当前仍只推进原九项，新增整核0/9、无新kernel反例，用户禁止push。最新逐项证据见 `experiments/shim-c-v2/stage3-proof-next/REPORT.zh-CN.md`。

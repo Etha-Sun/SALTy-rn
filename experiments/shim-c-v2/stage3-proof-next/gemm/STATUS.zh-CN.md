@@ -78,3 +78,15 @@ candidate07 从05派生：增加标量 t 范围及固定4lane具体索引/读取
 26 的 `snapshot-first01` 正常2/3：入口snapshot copy/ref两项通过，跨第一次真实vld1的 `next_snapshot_first_frame` timeout；不能因前两项通过认为frame成立。26完整无solver清单1235项（body1223+globals12，另CFG32），均正常结束、SHA未变。
 
 22 的 `selected01` 正常39/49；其中 acc_before_0 依赖未证纯frame而变绿，不能独立计改善。对照普通C重现25在冻结16上下文中真正调用原vld1，17个重现函数义务+原vld1的12义务=29/29；由此只能判真实kernel上下文/求解仍需处理，不能把当前frame超时称为已证模型表达缺陷。
+
+28 `filter-first01` root实际正常0/1、SHA不变。session保存了两层真实 Wp.filter tactic及各solver timeout，故策略实际执行；session未输出前后假设清单，不能凭此断言具体删除了哪些假设。
+
+29独立从23增加 Wp.clear 策略：逐项删除整数量词假设及 next_vec4_acc 数值假设，保留目标不变；均是内置checked删除操作，只强化子目标。sourceguard与none print01通过，root负责实际run及selector匹配确认。27仍是较低辅助债务分支，29仅frame诊断而非采用其更多cut。
+
+29 `clear-first01` root300秒退出124、无raw，日志仅到1goal scheduled，尚无删除假设的证据。源码Pattern.psequence只选择第一个匹配，因此不能把本次停顿归因为匹配排列组合爆炸。30为非递归单次next_vec4_acc删除对照：none解析/sourceguard/SHA通过，待root执行。独立trace30.py启用原内置strategy与script:allgoals日志，可记录每次匹配与tactic子目标；不改变模型及策略语义。
+
+31 scalar-first01：root实际1/1、exit0、SHA不变。局部成功是第一次真实vld1前后 lane0 的标量ghost snapshot frame，不能替代原acc关系。完整库存1230（1218body+12globals，CFG32另计），逐property与19比较见INVENTORY-DIFF.json。33基于27扩为4scalar snapshot；9新增cuts全部选入，连同原acc_before_0/acc_first共11项供root实际验收。
+
+33完整无solver库存1238=1226body+12globals，另CFG32；两阶段正常exit0、final计数吻合、SHA保持。相较19精确新增9项（seed、4first、4full），删A aggregate 1项；无额外隐藏ghost初始化/assigns/RTE新增项。全部新增9项均在scalar-chain01的11项验收集合中，剩2项是原acc_before_0/acc_first。
+
+33 root实际正常8/11，未证seed、原acc_before_0、原acc_first。8个frame在含未证seed的背景下通过，不算独立链闭合。34以4项原vacc lane/gacc ground替换seed，完整库存1241（1229body+12global，CFG32）；新增12项全在14项focus中。35用4个真实body、无requires ghost投影helper替代裸ghost读取，typed predicate全部有定义，helper先验。36从33删除未证seed，独立复验8frame，避免依赖未证新假设；静态/none已通过，待root求解。
