@@ -1,0 +1,12 @@
+--- a/src/plugins/wp/wpo.ml
++++ b/src/plugins/wp/wpo.ml
+@@ -722,8 +722,7 @@
+   WpContext.on_context (get_context g) (VC_Annot.resolve ~pid) g.po_formula
+ 
+ let resolve g =
+-  is_trivial g ||
+-  let valid = reduce g in
++  let valid = is_trivial g || reduce g in
+   if valid then
+     let result = VCS.result ~solver:(qed_time g) VCS.Valid in
+     ( set_result g Prover.Qed result ; true )

@@ -1,0 +1,3 @@
+从compose32-v5增加五个显式checked assert并保留真实lemma调用，-a split_vc导出六个独立VC：decode接口、encode接口、BV逆实例、to_uint同余、32整数往返实例、最终组合。每个cut自身必须Valid；后续依赖cut通过不算整链。
+
+仍仅导入三个已经body实际Valid的module；每个SMT有5个已证/既有全称事实及ground调用/cut事实。未擅自删除假设/改变driver语义；量化context导致慢只是待检假设。精确命令见commands.json，当前导出exit0但未solver运行、未采用公共share。

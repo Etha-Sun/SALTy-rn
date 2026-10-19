@@ -1,0 +1,44 @@
+254:   walk (fun _ -> incr k) n ; !k
+255: 
+256: let locally_proved n = Wpo.is_locally_valid n.goal
+257: 
+258: let fully_proved n =
+259:   let exception HasPending in
+260:   try walk (fun _ -> raise HasPending) n ; true
+261:   with HasPending -> false
+262: 
+263: let is_prover (p,_) = not @@ Prover.is_tactical p
+264: 
+265: let prover_stats ~smoke goal =
+266:   Stats.results ~smoke @@
+267:   List.filter is_prover @@
+268:   Wpo.get_results goal
+269: 
+270: let rec consolidate ~smoke n =
+271:   match n.stats with
+272:   | Some s -> s
+273:   | None -> let s = compute ~smoke n in n.stats <- Some s ; s
+274: 
+275: and compute ~smoke n =
+276:   if Wpo.is_locally_valid n.goal then
+277:     prover_stats ~smoke n.goal
+278:   else
+279:     match n.script with
+280:     | Opened | Script _ -> prover_stats ~smoke n.goal
+281:     | Tactic(_,children) ->
+282:       Stats.tactical ~qed:(Wpo.qed_time n.goal) @@
+283:       List.map (fun (_,n) -> consolidate ~smoke n) children
+284: 
+539:       | None -> mk_root ~tree
+540: 
+541: let commit fork =
+542:   List.iter (fun (_,wp) -> ignore (Wpo.resolve wp)) fork.Fork.goals ;
+543:   let tree = fork.Fork.tree in
+544:   let parent = fork.Fork.anchor in
+545:   let subnode (child,goal) = mk_node ~main:tree.main ~parent ~child goal in
+546:   let children = map_children subnode fork.Fork.goals in
+547:   tree.saved <- false ;
+548:   parent.script <- Tactic( fork.Fork.tactic , children ) ;
+549:   dirty_node parent ;
+550:   parent , children
+551: 

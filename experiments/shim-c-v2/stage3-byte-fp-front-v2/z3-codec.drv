@@ -1,0 +1,8 @@
+import "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/z3.drv"
+
+theory frama_c_wp.bytefloat.Bytefloat
+ syntax function decode32 "((_ to_fp 8 24) ((_ int2bv 32) %1))"
+ syntax function encode32 "(bv2int (ite (fp.isNaN %1) (bvor (bvand ((_ int2bv 32) %2) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) %2) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv %1)))"
+ syntax function decode64 "((_ to_fp 11 53) ((_ int2bv 64) %1))"
+ syntax function encode64 "(bv2int (ite (fp.isNaN %1) (bvor (bvand ((_ int2bv 64) %2) #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand ((_ int2bv 64) %2) #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv %1)))"
+end

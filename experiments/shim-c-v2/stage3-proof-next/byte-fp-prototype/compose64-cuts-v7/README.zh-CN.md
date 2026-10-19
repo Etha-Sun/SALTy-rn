@@ -1,0 +1,1 @@
+64位组合仅导入现已实证的BVInverse64/IntRoundtrip64/Interface64；五个checked assert和一个post拆成6VC。FP/BV逆与接口事实由固定Z3证明，整数往返由固定CVC5在原nativebv类型/body下证明；依赖source/config/driver/log/binary SHA全部见DEPENDENCIES.json。两个后端分别用bv2int/bv2nat表示相同unsigned BV→integer，CVC5从未启用FP encoder。导出exit0，组合本身尚待root证明，不进入公共share。

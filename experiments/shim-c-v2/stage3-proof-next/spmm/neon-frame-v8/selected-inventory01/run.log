@@ -1,0 +1,111 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,xnn_prefetch_to_l1,vld2q_dup_f32", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v8/selected-inventory01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v8/selected-inventory01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v8/.build/guard01/annotated/unit.c", "-wp-no-qed", "-wp-no-clean", "-wp-prop", "spn_frame_2,spn_column_base_4,spn_out_4,spn_store4_index_bound", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v8/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m8
+[rte:annot] annotating function __riscv_vfmacc_vv_f32m8
+[rte:annot] annotating function __riscv_vfmax_vf_f32m8
+[rte:annot] annotating function __riscv_vfmax_vv_f32m8
+[rte:annot] annotating function __riscv_vfmerge_vfm_f32m8
+[rte:annot] annotating function __riscv_vfmin_vf_f32m8
+[rte:annot] annotating function __riscv_vfmin_vv_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vfmul_vv_f32m8
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m8
+[rte:annot] annotating function __riscv_vfslide1down_vf_f32m8
+[rte:annot] annotating function __riscv_vfslide1up_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmfne_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m2
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m2
+[rte:annot] annotating function __riscv_vsetvlmax_e32m4
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function canonical_nan
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function fp_nan
+[rte:annot] annotating function max_number
+[rte:annot] annotating function min_number
+[rte:annot] annotating function neon_max
+[rte:annot] annotating function neon_min
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function round_up_po2
+[rte:annot] annotating function salty_max_vf_m8
+[rte:annot] annotating function salty_min_vf_m8
+[rte:annot] annotating function spmm_prefix_zero
+[rte:annot] annotating function spmm_size_decrement
+[rte:annot] annotating function spmm_u32_decrement
+[rte:annot] annotating function spn_store4_bounds
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vaddv_f32
+[rte:annot] annotating function vaddvq_f32
+[rte:annot] annotating function vcombine_f32
+[rte:annot] annotating function vdupq_lane_f32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vextq_f32
+[rte:annot] annotating function vfma_f32
+[rte:annot] annotating function vfmaq_f32
+[rte:annot] annotating function vfmaq_lane_f32
+[rte:annot] annotating function vfmaq_laneq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_lane_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vld1_dup_f32
+[rte:annot] annotating function vld1_f32
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_lane_f32
+[rte:annot] annotating function vld2_dup_f32
+[rte:annot] annotating function vld2q_dup_f32
+[rte:annot] annotating function vmax_f32
+[rte:annot] annotating function vmaxq_f32
+[rte:annot] annotating function vmin_f32
+[rte:annot] annotating function vminq_f32
+[rte:annot] annotating function vmlaq_f32
+[rte:annot] annotating function vmovq_n_f32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_lane_f32
+[rte:annot] annotating function vsubq_f32
+[rte:annot] annotating function vzip1q_f32
+[rte:annot] annotating function vzip2q_f32
+[rte:annot] annotating function xnn_prefetch_to_l1
+[wp] neon.c:75: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:73: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_column_base_4_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_column_base_4_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_4_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_4_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part01 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part02 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part03 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part04 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part05 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part06 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part07 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part08 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part09 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part10 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part11 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part12 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_part13 : not tried
+[wp] Goal typed_raw_fma_complex_fp_spn_store4_bounds_ensures_spn_store4_index_bound : not tried

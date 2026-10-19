@@ -1,0 +1,292 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-debug", "1", "-wp-msg-key", "script:allgoals,strategy", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-fct", "qd8_clear_low", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r4/helper-tip-root01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r4/.build/helper-tip-root01/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r4/.build/helper-tip-root01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/spmm/qd8-round-r4/.build/helper-tip-root01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:247: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:248: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:249: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:252: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:258: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:264: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:270: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function qd8_clear_low
+[wp] 9 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_clear_half' in 'qd8_clear_low':
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'qd8_clear_compensation' in 'qd8_clear_low':
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Let x_2 = land(18446744073709551614, x).
+  Let x_3 = 2 * x_1.
+  Let x_4 = x % 2.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = (x_4 + x_3).
+    (* Assertion 'qd8_clear_shift_half' *)
+    Have: x_1 = lsr(x, 1).
+    (* Assertion 'qd8_clear_shift_restore' *)
+    Have: x_3 = x_2.
+    (* Assertion 'qd8_clear_restored_range' *)
+    Have: (0 <= x) /\ (x_2 <= x).
+    (* Assertion 'qd8_clear_restored_even' *)
+    Have: (x_2 % 2) = 0.
+    (* Assertion 'qd8_clear_shift_mask' *)
+    Have: lsl(x_1, 1) = x_2.
+  }
+  Prove: x = (x_4 + x_2).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_clear_split' ("utils.c", line 13):
+  Let x = Mint_0[global(P_x_6791)].
+  Assume { Type: is_uint64_chunk(Mint_0) /\ is_uint64(x). }
+  Prove: x = ((x % 2) + (2 * (x / 2))).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_clear_shift_half' ("utils.c", line 14):
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = ((x % 2) + (2 * x_1)).
+  }
+  Prove: x_1 = lsr(x, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_clear_shift_restore' ("utils.c", line 15):
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Let x_2 = 2 * x_1.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = ((x % 2) + x_2).
+    (* Assertion 'qd8_clear_shift_half' *)
+    Have: x_1 = lsr(x, 1).
+  }
+  Prove: x_2 = lsl(x_1, 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_clear_restored_range' ("utils.c", line 16):
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Let x_2 = 2 * x_1.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = ((x % 2) + x_2).
+    (* Assertion 'qd8_clear_shift_half' *)
+    Have: x_1 = lsr(x, 1).
+    (* Assertion 'qd8_clear_shift_restore' *)
+    Have: x_2 = lsl(x_1, 1).
+  }
+  Prove: (0 <= x) /\ (x_2 <= x).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_clear_restored_even' ("utils.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'qd8_clear_shift_mask' ("utils.c", line 18):
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Let x_2 = 2 * x_1.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = ((x % 2) + x_2).
+    (* Assertion 'qd8_clear_shift_half' *)
+    Have: x_1 = lsr(x, 1).
+    (* Assertion 'qd8_clear_shift_restore' *)
+    Have: x_2 = lsl(x_1, 1).
+    (* Assertion 'qd8_clear_restored_range' *)
+    Have: (0 <= x) /\ (x_2 <= x).
+  }
+  Prove: x_2 = land(18446744073709551614, x).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask] Strategy Qd8Bit64: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == (18446744073709551614 & B))),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(Qd8BitChild)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask] Strategy Qd8Bit64: proved
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-0 (generated by wp):
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Let x_2 = 2 * x_1.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = ((x % 2) + x_2).
+    (* Assertion 'qd8_clear_shift_half' *)
+    Have: x_1 = lsr(x, 1).
+    (* Assertion 'qd8_clear_shift_restore' *)
+    Have: x_2 = lsl(x_1, 1).
+    (* Assertion 'qd8_clear_restored_range' *)
+    Have: (0 <= x) /\ (x_2 <= x).
+  }
+  Prove: (0 <= land(18446744073709551614, x)) /\ ((-1) <= x) /\
+      (x <= 18446744073709551615).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask subgoal:
+  
+  Goal Wp.Tactical.typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1 (generated by wp):
+  Let x = Mint_0[global(P_x_6791)].
+  Let x_1 = x / 2.
+  Let x_2 = 2 * x_1.
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Assertion 'qd8_clear_split' *)
+    Have: x = ((x % 2) + x_2).
+    (* Assertion 'qd8_clear_shift_half' *)
+    Have: x_1 = lsr(x, 1).
+    (* Assertion 'qd8_clear_shift_restore' *)
+    Have: x_2 = lsl(x_1, 1).
+    (* Assertion 'qd8_clear_restored_range' *)
+    Have: (0 <= x) /\ (x_2 <= x).
+  }
+  Prove: (land(13835058055282163712, x_2) = land(13835058055282163712, x)) /\
+      (bit_test(x_2, 1) <-> bit_test(x, 1)) /\
+      (bit_test(x_2, 2) <-> bit_test(x, 2)) /\
+      (bit_test(x_2, 3) <-> bit_test(x, 3)) /\
+      (bit_test(x_2, 4) <-> bit_test(x, 4)) /\
+      (bit_test(x_2, 5) <-> bit_test(x, 5)) /\
+      (bit_test(x_2, 6) <-> bit_test(x, 6)) /\
+      (bit_test(x_2, 7) <-> bit_test(x, 7)) /\
+      (bit_test(x_2, 8) <-> bit_test(x, 8)) /\
+      (bit_test(x_2, 9) <-> bit_test(x, 9)) /\
+      (bit_test(x_2, 10) <-> bit_test(x, 10)) /\
+      (bit_test(x_2, 11) <-> bit_test(x, 11)) /\
+      (bit_test(x_2, 12) <-> bit_test(x, 12)) /\
+      (bit_test(x_2, 13) <-> bit_test(x, 13)) /\
+      (bit_test(x_2, 14) <-> bit_test(x, 14)) /\
+      (bit_test(x_2, 15) <-> bit_test(x, 15)) /\
+      (bit_test(x_2, 16) <-> bit_test(x, 16)) /\
+      (bit_test(x_2, 17) <-> bit_test(x, 17)) /\
+      (bit_test(x_2, 18) <-> bit_test(x, 18)) /\
+      (bit_test(x_2, 19) <-> bit_test(x, 19)) /\
+      (bit_test(x_2, 20) <-> bit_test(x, 20)) /\
+      (bit_test(x_2, 21) <-> bit_test(x, 21)) /\
+      (bit_test(x_2, 22) <-> bit_test(x, 22)) /\
+      (bit_test(x_2, 23) <-> bit_test(x, 23)) /\
+      (bit_test(x_2, 24) <-> bit_test(x, 24)) /\
+      (bit_test(x_2, 25) <-> bit_test(x, 25)) /\
+      (bit_test(x_2, 26) <-> bit_test(x, 26)) /\
+      (bit_test(x_2, 27) <-> bit_test(x, 27)) /\
+      (bit_test(x_2, 28) <-> bit_test(x, 28)) /\
+      (bit_test(x_2, 29) <-> bit_test(x, 29)) /\
+      (bit_test(x_2, 30) <-> bit_test(x, 30)) /\
+      (bit_test(x_2, 31) <-> bit_test(x, 31)) /\
+      (bit_test(x_2, 32) <-> bit_test(x, 32)) /\
+      (bit_test(x_2, 33) <-> bit_test(x, 33)) /\
+      (bit_test(x_2, 34) <-> bit_test(x, 34)) /\
+      (bit_test(x_2, 35) <-> bit_test(x, 35)) /\
+      (bit_test(x_2, 36) <-> bit_test(x, 36)) /\
+      (bit_test(x_2, 37) <-> bit_test(x, 37)) /\
+      (bit_test(x_2, 38) <-> bit_test(x, 38)) /\
+      (bit_test(x_2, 39) <-> bit_test(x, 39)) /\
+      (bit_test(x_2, 40) <-> bit_test(x, 40)) /\
+      (bit_test(x_2, 41) <-> bit_test(x, 41)) /\
+      (bit_test(x_2, 42) <-> bit_test(x, 42)) /\
+      (bit_test(x_2, 43) <-> bit_test(x, 43)) /\
+      (bit_test(x_2, 44) <-> bit_test(x, 44)) /\
+      (bit_test(x_2, 45) <-> bit_test(x, 45)) /\
+      (bit_test(x_2, 46) <-> bit_test(x, 46)) /\
+      (bit_test(x_2, 47) <-> bit_test(x, 47)) /\
+      (bit_test(x_2, 48) <-> bit_test(x, 48)) /\
+      (bit_test(x_2, 49) <-> bit_test(x, 49)) /\
+      (bit_test(x_2, 50) <-> bit_test(x, 50)) /\
+      (bit_test(x_2, 51) <-> bit_test(x, 51)) /\
+      (bit_test(x_2, 52) <-> bit_test(x, 52)) /\
+      (bit_test(x_2, 53) <-> bit_test(x, 53)) /\
+      (bit_test(x_2, 54) <-> bit_test(x, 54)) /\
+      (bit_test(x_2, 55) <-> bit_test(x, 55)) /\
+      (bit_test(x_2, 56) <-> bit_test(x, 56)) /\
+      (bit_test(x_2, 57) <-> bit_test(x, 57)) /\
+      (bit_test(x_2, 58) <-> bit_test(x, 58)) /\
+      (bit_test(x_2, 59) <-> bit_test(x, 59)) /\
+      (bit_test(x_2, 60) <-> bit_test(x, 60)) /\
+      (bit_test(x_2, 61) <-> bit_test(x, 61)) /\ (!bit_test(x_2, 0)).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Strategy Qd8BitChild: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Trying
+    \prover("z3",30.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Trying
+    \prover("cvc5",30.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Strategy Qd8BitChild: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Strategy Qd8Bit64: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == (18446744073709551614 & B))),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(Qd8BitChild)
+      )
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Trying
+    Qd8BitChild
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Strategy Qd8BitChild: enter
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Trying
+    \prover("z3",30.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Trying
+    \prover("cvc5",30.0)
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Strategy Qd8BitChild: failed
+[wp:strategy] 
+  [typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask-1] Strategy Qd8Bit64: failed
+[wp] [Unknown] typed_raw_fma_complex_fp_qd8_clear_low_assert_qd8_clear_shift_mask (Tactic) (Qed 11ms) (CVC5 1/2 548ms)
+[wp] Proved goals:   10 / 11
+  Terminating:     1
+  Unreachable:     1
+  Qed:             3 (0.75ms-0.92ms-2ms)
+  CVC5 1.2.1:      5 (248ms-463ms-623ms)
+  Unknown:         1
+[wp] Updated session
+   - 1 new script to complete
+[wp] Logging keys: strategy,script:allgoals.

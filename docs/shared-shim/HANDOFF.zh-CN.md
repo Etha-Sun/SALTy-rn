@@ -1,3 +1,11 @@
+## 2026-10-19 后续独立审核补充
+
+当前仍只推进原九项，新增整核0/9、无新kernel反例，用户禁止push。最新逐项证据见 `experiments/shim-c-v2/stage3-proof-next/REPORT.zh-CN.md`。
+
+新局部：GEMM真实广播body21/21支持两个dup调用点、独立真实load/frame重现29/29；27删多余A cut后5/7仍两acc-before。SPMM v10真实算术helper2/2、入口组3/4，剩uintptr保持。CONV r4 helper2/2与扩大cursor16/16；DWCONV2D r3 helper14/14、两侧before2/2，但完整1653义务尚未通过。DW bias-r8为2/3。
+
+所有独立 `stage3-byte-fp-front-v*`、`stage3-typed-rank-front-v1`、`stage3-bitwised-front-v*` 均未整体资格认证、未用于整核验收，禁止因局部绿色替换原canonical模型。byte v5零组33/34，仍64-bit copy-word债务。bitwised v1控制5/10：tactic true子goal缺Qed结果；独立v2修复原 `Wpo.resolve` 结果记录后正在正反复验，不能依据策略“proved”改raw。旧模型、锁、checker与manifest均保留。
+
 【2026-10-19 当前任务优先级更新】
 当前只处理第三阶段原九项及其真实依赖；用户要求继续直至解决优先三项并尽量完成九项。不得扩展 qs8/qu8 等九项之外任务。允许本地 commit，未经用户重新许可禁止 push。
 最新阶段报告：experiments/shim-c-v2/stage3-proof-next/REPORT.zh-CN.md；检查点 bdf42bf 之后还有工作，先核对 branch/status 保留所有候选与日志。新增整核通过仍 0/9，局部组通过不能称整核通过。

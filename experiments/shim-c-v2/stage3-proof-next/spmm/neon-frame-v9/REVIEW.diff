@@ -1,0 +1,11 @@
+--- v8/neon.c
++++ v9/neon.c
+@@ -53,6 +53,8 @@
+     const uint32_t* nnzmap = nidx_nnzmap;
+     size_t n = nc;
+     //@ ghost float *spn_column_4=output;
++    //@ assert spn_entry_n4: n==nc;
++    //@ assert spn_entry_zero4: (nc-n)*(spn_MC/4+4)==0;
+     /*@ loop invariant spn_n_4: 0<n<=nc;
+         loop invariant spn_map_4: nnzmap==nidx_nnzmap+(nc-n);
+         loop invariant spn_column_base_4: spn_column_4==spn_output+(spn_MC-mc)/4;

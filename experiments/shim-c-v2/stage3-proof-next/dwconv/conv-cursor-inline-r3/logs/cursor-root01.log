@@ -1,0 +1,51 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,__riscv_vreinterpret_v_u32m1_i32m1,__riscv_vadd_vx_i32m1,__riscv_vsub_vx_i32m1", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/conv-cursor-inline-r3/logs/cursor-root01.json", "-wp-fct", "equivalent", "-wp-prop", "next_store_advanced,next_width_subtracted,next_width_before,next_width_add_bound,next_width_rebased,next_store_rebased,stage3_cursor,stage3_store_cursor,next_done_range,next_signed_add_index,next_signed_sub_index", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/conv-cursor-inline-r3/.build/guard03/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/conv-cursor-inline-r3/.build/guard03/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] fp_index.c:19: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] fp_index.c:19: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] fp_index.c:19: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] fp_index.c:19: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] fp_index.c:17: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] fp_index.c:17: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] fp_index.c:17: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] fp_index.c:17: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] fp_index.c:15: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vint32m1_t_20*)
+     (target: sint8*)
+[wp] fp_index.c:15: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vuint32m1_t_19*)
+     (target: sint8*)
+[wp] 16 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_signed_add_index_preserved (Qed 16.3s) (CVC5) (Stronger, 6 warnings)
+[wp] Proved goals:   15 / 16
+  Qed:            10 (8s-5.5s-22.3s)
+  CVC5 1.2.1:      3 (165ms-4.6s-13.4s)
+  Z3 4.12.5:       2 (113ms-221ms)
+  Timeout:         1
+[wp:pedantic-assigns] utils.c:5: Warning: 
+  No 'assigns' specification for function 'round_down_po2'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] utils.c:9: Warning: 
+  No 'assigns' specification for function 'doz'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_index.c:35: Warning: 
+  No 'assigns' specification for function '__riscv_vlse32_v_f32m1_m'.
+  Callers assumptions might be imprecise.

@@ -1,0 +1,33 @@
+--- 
++++ 
+@@ -257,30 +257,6 @@
+ 
+ ;; "sqrt_1"
+ (assert (= (sqrt1 1.0) 1.0))
+-
+-;; "checked_decodeencode32"
+-(assert
+-  (forall ((v Float32) (seed Int))
+-    (= ((_ to_fp 8 24) ((_ int2bv 32) (bv2int (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 32) seed) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) seed) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv v))))) v)))
+-
+-;; "checked_encoderange32"
+-(assert
+-  (forall ((v Float32) (seed Int))
+-    (and
+-      (<= 0 (bv2int (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 32) seed) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) seed) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv v))))
+-      (< (bv2int (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 32) seed) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) seed) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv v))) 4294967296))))
+-
+-;; "checked_decodeencode64"
+-(assert
+-  (forall ((v Float64) (seed Int))
+-    (= ((_ to_fp 11 53) ((_ int2bv 64) (bv2int (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 64) seed) #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand ((_ int2bv 64) seed) #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv v))))) v)))
+-
+-;; "checked_encoderange64"
+-(assert
+-  (forall ((v Float64) (seed Int))
+-    (and
+-      (<= 0 (bv2int (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 64) seed) #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand ((_ int2bv 64) seed) #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv v))))
+-      (< (bv2int (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 64) seed) #x8000000000000000) (bvadd #x7ff0000000000000 (bvadd #x0000000000000001 (bvurem (bvand ((_ int2bv 64) seed) #x7fffffffffffffff) #x000fffffffffffff)))) (fp.to_ieee_bv v))) 18446744073709551616))))
+ 
+ ;; "addr'mk"
+ (declare-fun addrqtmk (Int

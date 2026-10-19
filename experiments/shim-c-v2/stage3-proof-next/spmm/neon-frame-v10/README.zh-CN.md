@@ -1,0 +1,1 @@
+v10新增无requires空真实body的ghost纯算术helper：a==b蕴含(a-b)*(rows/4+4)==0。入口以nc,n,spn_MC真实调用，原两cut/建立/保持全部保留。helper无内存读取写入，不声明地址或loopframe事实。须独立验收整个helper的ensures+assigns，之后检查入口切分；不将之前v9原目标绿误计为闭合。完整kernelclosure必须包含spn_zero_product。

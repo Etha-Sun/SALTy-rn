@@ -1,0 +1,62 @@
+{
+  "scope": "GEMM reachable struct-return/copy proof diagnosis, no model/source change",
+  "conclusions": [
+    "AST contains real copy=v initialization.",
+    "Default WP filter removes aggregate equality; disabling only -wp-filter retains it. Removing assumptions makes proof harder; this is not evidence of unsound kernel acceptance.",
+    "Generated Why3 contains correct Load_S5 constructor and Array_float32 access rule; projection rule trigger is array-get, while final property reads Mf32 directly.",
+    "Fully defined named struct predicate plus one proved cut closes actualcopy helper all10VC in old frozen model with default Qed settings.",
+    "Independent rank-fix binary result reported by root stays5/9; rank collision is not established as this copy failure cause."
+  ],
+  "raw_results": {
+    "candidate14/helper01": {
+      "exit": 0,
+      "raw_passed": 5,
+      "raw_total": 9,
+      "inputs_unchanged": true,
+      "normal_exit_marker": {
+        "event": "normal_exit",
+        "goal_count": 11
+      }
+    },
+    "candidate14/helper-raw01": {
+      "exit": 0,
+      "raw_passed": 5,
+      "raw_total": 9,
+      "inputs_unchanged": true,
+      "normal_exit_marker": {
+        "event": "normal_exit",
+        "goal_count": 11
+      }
+    },
+    "candidate14/helper-nofilter01": {
+      "exit": 0,
+      "raw_passed": 5,
+      "raw_total": 9,
+      "inputs_unchanged": true,
+      "normal_exit_marker": {
+        "event": "normal_exit",
+        "goal_count": 11
+      }
+    },
+    "candidate16/helper01": {
+      "exit": 0,
+      "raw_passed": 10,
+      "raw_total": 10,
+      "inputs_unchanged": true,
+      "normal_exit_marker": {
+        "event": "normal_exit",
+        "goal_count": 12
+      }
+    }
+  },
+  "evidence_sha256": {
+    "candidate14/logs/ast-copy01/ast.c": "17842c7f2d479ae6cb194bce1095739f73b1db738e62fc1bc124cdf8fd528eb6",
+    "candidate14/logs/print-copy01/run.log": "1c690761b319ac697e7e743de664d382884fc0cfe0fea0b9771597301da18f78",
+    "candidate14/logs/print-copy-raw01/run.log": "9b3c9ae37b459f2df90740f9b6c26119dd73e1588839f944d5cad24e4d80a65a",
+    "candidate14/logs/print-no-filter01/run.log": "297607f61d8cd9dc118963dc50dd8a9424dac33f32bfebdaac6d0d5f41ac28e2",
+    "candidate14/logs/generate-copy-raw02/run.log": "df9d212ec5143e64e5d1da65682f1585836ca1885cdffc3ab5ebb881f654aa2e",
+    "candidate16/logs/helper01/result.json": "799df53bbfe1c746e985a0a1d5aebd44ae243039c5367cc1c09a58ce1afe96b0",
+    "candidate16/logs/helper01/raw.json": "c55888b472a788138a0719c46bca06a4f52bd3653f1d386de9ca3a2fcb41360c"
+  },
+  "remaining_kernel_boundary": "Candidate16 proves same-map local struct copy. Kernel vdup caller formula additionally relates scalar ensures reading a4 to Load_S5 return value in a40 after temporary writes; this requires memory frame or a body-proved aggregate callee postcondition. Do not treat16 as proof of that cross-map bridge."
+}

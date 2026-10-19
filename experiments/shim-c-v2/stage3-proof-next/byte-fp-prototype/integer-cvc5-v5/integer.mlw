@@ -1,0 +1,15 @@
+module Roundtrip64
+ use int.Int
+ use purebv.PureBV
+ let lemma integer64_roundtrip (n:int) : unit
+  ensures { 0 <= n < 18446744073709551616 -> to_uint64 (of_int64 n) = n }
+ = ()
+end
+module Split64
+ use int.Int
+ use int.EuclideanDivision
+ use purebv.PureBV
+ let lemma integer64_split (n:int) : unit
+  ensures { 0 <= n < 18446744073709551616 -> of_int64 n = concat (of_int32 (div n 4294967296)) (of_int32 (mod n 4294967296)) }
+ = ()
+end

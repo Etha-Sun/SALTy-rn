@@ -1,6 +1,6 @@
 # 第三阶段九项：后续 proof 与独立审核
 
-本地分支 `feat/shim-c`，阶段检查点 `bdf42bf`，后续工作继续。只处理原第三阶段九项及其真实依赖。原 C/shim、公共 spec/wrapper、已冻结模型/锁和旧 checker 不变。用户未授权 push。**新增整核通过仍为 0/9**，没有新的 kernel 反例。
+本地分支 `feat/shim-c`，阶段检查点 `3f80a0d`，后续工作继续。只处理原第三阶段九项及其真实依赖。原 C/shim、公共 spec/wrapper、已冻结模型/锁和旧 checker 不变。用户未授权 push。**新增整核通过仍为 0/9**，没有新的 kernel 反例。
 
 ## 完整尝试与完整分母
 
@@ -24,35 +24,43 @@ maxpool 未证为 17 timeout + 1 unknown。dwconv r6 的另次 globals 9/9 不�
 
 | Kernel | 实际新增证明与现状 |
 |---|---|
-| f32-gemm-minmax | candidate09 helper 2/2、选定组 36/38，边界和两次加载关系通过，两步 acc 未证。candidate12 浮点 helper 4/4、主组 38/43，新增 ground 断言仍有债务；三个关键断言提高到 120 秒仍 0/3。candidate13 改为有完整定义的 predicate 实例化，helper 4/4，主组 40/44；FMA ground 实例化通过，剩 dup/acc 关系及原两步 acc。 |
+| f32-gemm-minmax | candidate09 helper 2/2、选定组 36/38，边界和两次加载关系通过，两步 acc 未证。candidate12 浮点 helper 4/4、主组 38/43，新增 ground 断言仍有债务；三个关键断言提高到 120 秒仍 0/3。candidate13 为 40/44。candidate16 完整 struct-copy body 10/10；candidate19 两个真实广播 body 21/21、主组 41/48，相对18确闭合两个 dup-current。candidate20 真实 load body 26/26，但主组退化38/48，未采用；22为39/49。23单步frame0/1；独立普通C真实load+copy/frame重现25为29/29，故不能称该单步关系在模型内不可表达。26入口snapshot小组2/3，frame仍未证。 |
 | f32-igemm-minmax | cursor-r2 helper 3/3、主组 15/16；仅该组选定的 k 建立未证，实际 WP 涉及局部槽更新前后的分离。其它数值/内存义务保留。 |
-| qd8-f32-qc4w-gemm-minmax | round-r2 实际 round_up_po2 body 6/7；四个后置条件依赖未证 mask_half，不能称 helper 完成。r3 新增有 body 的商余/移位 helper，正在验算全部新义务。 |
-| f32-conv-hwc2chw | cursor-r1 10/15；r2 新 helper 4/4、RVV 游标组 11/13，仍有实际 store/rebase 关系；NEON width 的旧债务保留。 |
-| f32-dwconv-minmax | r6 helper 6/6、权重组 15/15、扩大回归 37/37、global 9/9、控制接受。完整尝试仍未完成，见上表。 |
-| f32-dwconv2d-chw | height-r1 真实 doz 与 helper 3/3、主组 11/14（RVV 高度子组 7/7）。独立 inline 实际 doz body 诊断 13/14，仍一项未证；不是旧 checker 的正式验收。 |
+| qd8-f32-qc4w-gemm-minmax | round-r2 实际 round_up_po2 body 6/7；四个后置条件依赖未证 mask_half，不能称 helper 完成。r3 helper6/7；r4范围/偶数切分加受限bit策略后完整8/9，剩shift_mask。独立审计发现bit tactic机器int高位掩码退化，修复与控制见下，尚无新kernel验收。 |
+| f32-conv-hwc2chw | cursor-r1 10/15；r2 新 helper 4/4、RVV 游标组 11/13，仍有实际 store/rebase 关系；NEON width 的旧债务保留。r3展开真实signed-index相关body、补loop frame后15/16，旧两个cursor目标均闭合、剩新signed-add循环保持。r4真实successor helper2/2、相关四目标4/4、扩大cursor回归16/16；其余内联义务仍必须完整覆盖。 |
+| f32-dwconv-minmax | r6 helper 6/6、权重组 15/15、扩大回归 37/37、global 9/9、控制接受。完整尝试仍未完成，见上表。r7对RVV bias/FMA/store添加8个值切分点，实际完整0/8，不能据下游合同声称改善。 |
+| f32-dwconv2d-chw | height-r1 真实 doz 与 helper 3/3、主组 11/14（RVV 高度子组 7/7）。独立 inline 实际 doz body 诊断 13/14，仍一项未证；不是旧 checker 的正式验收。r3追加真实mask/reinterpret body内联，helper14/14；24项组600秒无最终raw。原before单组随后正常2/2（NEON/RVV各一），仍不能跳过24组的内联新债务。新完整正常分母1653（1647 body+6 globals），另44 CFG-only，均已none生成但不是证明通过。 |
 | f32-maxpool | cursor-r3 两个 helper 4/4、主组 18/18、控制接受、独立同伴审核。完整尝试见上表。 |
-| f32-argmaxpool | index-r1 helper 6/6、主组 5/8、控制接受；channel 保持和两项索引游标未证。r2 给四个真实 u32 helper 补循环范围/写入范围/前缀证明，独立 inline 实际 body，待验。固定独立 unary 修复模型，不能偷换普通 frontend。 |
-| f32-spmm-minmax | cuts-v4 helper 2/2、主组 14/14、独立复验及控制接受。column-v2 30/36、v3 map 4/5，剩局部分离等债务；inline prefetch 单独无改善。neon-frame-v5 为原先未注释的七个真实 NEON 循环补写入范围及范围/游标不变量，40 个新 invariant VC 已 28/40；272 个 equivalent assigns 尝试 900 秒后无最终 raw。v6 内联真实 vld2q_dup_f32 后入口 range 2/2，不能将窄写入范围当假设。 |
+| f32-argmaxpool | index-r1 helper 6/6、主组 5/8、控制接受；channel 保持和两项索引游标未证。r2 给四个真实 u32 helper 补循环范围/写入范围/前缀证明，独立 inline 实际 body，待验。r2选定组尝试900秒无最终raw，仍未通过。固定独立 unary 修复模型，不能偷换普通 frontend。 |
+| f32-spmm-minmax | cuts-v4 helper 2/2、主组 14/14、独立复验及控制接受。column-v2 30/36、v3 map 4/5，剩局部分离等债务；inline prefetch 单独无改善。neon-frame-v5 为原先未注释的七个真实 NEON 循环补写入范围及范围/游标不变量，40 个新 invariant VC 已 28/40；272 个 equivalent assigns 尝试 900 秒后无最终 raw。v6 内联真实 vld2q_dup_f32 后入口 range 2/2，不能将窄写入范围当假设。v6全部新invariant为29/40；v7 frame74项900秒无完整raw。v8新索引helper2/2但18项组300秒无raw。v9入口cut2/4属于债务迁移；v10新无前提算术helper2/2、入口组3/4，剩原uintptr保持，建立债务已与helper一起闭合。 |
 
 ## 冻结与证据审核
 
-`root-review/audit08.json` 与 `audit08-contracts.json` 核对 46 个候选，冻结文件/模型配置及 public spec 一致，没有新增 requires，20109 个外部锁条目校验通过（含不同锁的重复文件）。后续候选还需新一轮审核。静态 guard 不等于 proof 解析或断言成立。
+`root-review/audit10.json` 与 `audit10-contracts.json` 核对 67 个候选，冻结文件/模型配置及 public spec 一致，没有新增 requires，20109 个外部锁条目校验通过（含不同锁的重复文件）。后续候选还需新一轮审核。静态 guard 不等于 proof 解析或断言成立。
 
 所有 ghost/helper 合同必须由真实 body 证明；不添加外部无 body 合同或假设。独立 inline 执行诊断保留真实函数定义，并记录执行配置和 SHA；不能直接作为旧执行器的整核验收。
 
 ## 位表示桥的独立工具实验（未资格认证）
 
-旧 Typed 模型的 canonical_nan 有 memcpy 字节视图与浮点值视图之间的未证关系；原生 IEEE FMA 实际 helper 已 NEON 22/22、RVV 21/21，因此不能以旧 1 秒筛选结果宣称 FMA body 缺失。
+旧 Typed canonical_nan 的 memcpy 字节/浮点视图连接未证。原生 IEEE FMA 的真实 helper 已 NEON22/22、RVV21/21；不能以旧短预算结果宣称FMA缺body。
 
-`byte-fp-prototype/` 与 `../stage3-byte-fp-front-v1/` 是独立新源码/安装，不用于任何 kernel。仅新源码替换旧 Bytes+float 的三个不健全 codec 公理，使用 native IEEE/BV 定义和逐 store 新鲜 NaN 位表示选择。旧 Bytes+float 仍禁用，旧模型/锁未改。
+`byte-fp-prototype/`、`../stage3-byte-fp-front-v1/` 至 v5 是独立实验，**未用于任何kernel**。新源码以native IEEE/BV定义及每次store的新鲜NaN位选择替换旧Bytes+float三个不健全codec公理；旧Bytes+float仍禁用，旧模型/锁未改。
 
-- 新 canonical_nan 的 proof-only 字节复制切分控制 14/14；不是 kernel 通过或整个新模型已安全的结论。
-- codec-cuts02 全部控制尝试 900 秒超时，无最终 raw；零位表示/64 位 packing 等控制仍未闭合。
-- v2 独立 Why3 lemma body 为 4/6，两个非 NaN 位逆关系超时。v3 拆分后 BV 逆 32/64 和 int32 有界往返共 3/4 通过，int64 往返仍超时；两个接口 body 2/2。固定 NaN 错误逆关系 32/64 及 false 三个负控制实际得到 SAT。
-- 原型 CVC5 driver 中 `fp.to_ieee_bv` 被固定 CVC5 1.2.1 拒绝，这是后端不兼容，不能当负控制成功。后续原型只用固定 Z3 做独立实验，不修改旧 qualified 配置。
-- 新 lemma 未导入公共 share。尚须完成所有实际正反语义控制、内存/别名/分支循环与 IEEE/FMA 回归，建立独立新锁并复验，才能考虑用于新冻结候选。
+- 原v1 canonical切分14/14；全codec397目标900秒无最终raw；zero组31/34。
+- 位逆关系的真实body依赖已逐个闭合：BV逆32/64、int32，int64由固定CVC5原生BV实例证明；接口32/64、compose32/64各6/6。固定NaN逆关系和false的原Z3负控制实际SAT。另一个64位CVC5 native FP负控制只返回Unknown/incomplete，不冒称SAT。
+- root新增有body的decode单射32/64各1/1；v4新share完整依赖重放24/24。再推导负零唯一位表示32/64各1/1，v5控制组33/34：两个零ensures闭合，但64位copy-word断言未证，故整组及模型资格均未完成。
+- CVC5 1.2.1不支持fp.to_ieee_bv。v3起adapter仅在不支持的真实SMT上返回unknown，否则原文件原参数调用原CVC5；不改写表达式。v4/v5 CVC5 driver仅移除指定已证支持假设以加强目标，保留已证decode单射/负零推论；不得将unsupported当负控制成功。
+- v2 canonical退化7/14，在同源v1及恢复CVC5的v3/v4为14/14；七个pure-byte失败与移除CVC5有关，不归因全称事实。v9导出对照只删除4指定支持假设，其余goal/上下文字节一致，但原/删后Z3各5秒均timeout；删后CVC5也30秒timeout，尚无该删除带来零控制改善的结论。
 
-所有失败、未执行草稿、执行配置和日志保留。正式 `verified/manifest.json` 不变。只有 complete=true、全部 raw VC 通过、pending/缺失 body/global 为空、所有 source/model guard 与正反控制通过，才增加整核完成数。
+所有模型版本及支持引理均保留真实依赖、失败记录和SHA；尚需全部正反语义控制、内存/别名/分支循环/IEEE-FMA回归、独立锁及完整checker复验。正式manifest不变。
+
+## uintptr 与高位 tactic 的独立诊断
+
+SPMM `address-bridge01/typed-root01` 全10raw为7通过：真实typed步进及原址uintptr往返通过，uintptr加16字节再转换的关系未证，两个人为错误关系未通过。有限ground片段展示原址可逆不蕴含仿射编码；它不是完整WP模型反例，更不是kernel反例。原保持债务不能靠添加未经证明的地址公理关闭。
+
+GEMM27删除多余A aggregate后5/7，保留A load及两轮dup current/ref全部通过，仍两项acc-before。这是减少辅助债务，不改公开输出关系。DW bias-r8首加载分解2/3，仍有真实聚合复制关系未证。
+
+`bitwised-audit01` 实际OCaml4.14.2/int_size63对照：旧bit62掩码为负、bit63为0。独立 `stage3-bitwised-front-v1` 只改一行使用大整数幂，源码10894文件仅此一文件变动、旧10056锁项一致，编译安装完成。高位正反控制完整raw5/10：五个assigns通过，两个真post虽bit子goal已化true但未记录Qed而仍pending；三个假post均未过且真实高位反例义务保留。不能用策略日志“proved”替代完整raw验收，也无旧tactic不健全结论。
 
 ## Typed 内存块编号审查（独立候选，尚无因果结论）
 

@@ -1,0 +1,1 @@
+v9仅在真实 `size_t n=nc` 和ghost column初始化后增加两个须由body证明的入口切分：n==nc、(nc-n)*(spn_MC/4+4)==0。对应v8原建立公式已有Init:n=nc但solver未关闭；让等式实例化/乘零化简成为独立可审查VC。无新增helper/前提/函数frame，原保持和局部生命周期债务全部保留。必须新增两assert及原建立/保持均列入；原建立绿但任一新assert未证不能称闭合。runner保持v8的独立真实callee inline配置，并非旧checker验收。

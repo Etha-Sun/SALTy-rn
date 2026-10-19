@@ -1,0 +1,15 @@
+module Compose32
+ use int.Int
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use nativebv.NativeBV
+ use ieee_float.Float32 as FP
+ use prerequisites.BVInverse32
+ use prerequisites.IntRoundtrip32
+ use interfaces.Interface32
+ let lemma checked_integer_inverse32 (n:int) (seed:int) : unit
+  ensures { 0 <= n < 4294967296 /\ not FP.is_nan (decode32 n) -> encode32 (decode32 n) seed = n }
+ = interface32 n (decode32 n) seed;
+   bv_inverse32 (of_int32 n) (of_int32 seed);
+   int_roundtrip32 n
+end

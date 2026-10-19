@@ -1,0 +1,11 @@
+--- a/src/plugins/wp/TacBitwised.ml
++++ b/src/plugins/wp/TacBitwised.ml
+@@ -13,7 +13,7 @@
+   F.p_and (F.p_leq F.e_zero a) (F.p_lt a (F.e_zint vmax))
+ 
+ (* starts from 0 *)
+-let bit_test x k = Cint.l_and x (F.e_int (1 lsl k))
++let bit_test x k = Cint.l_and x (F.e_zint (Z.two_power_of_int k))
+ 
+ (* from n downto 0 *)
+ let rec bitwise_eqs a b n =

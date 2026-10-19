@@ -16,7 +16,7 @@ elif mode=='full':
 elif mode=='control':
  p=L/'control.c';p.write_text('#include '+json.dumps(str(A/'unit.c'))+'\n/*@ assigns \\nothing; ensures \\true; */\nvoid next_control_true(void) {}\n/*@ assigns \\nothing; ensures \\false; */\nvoid next_control_false(void) {}\n');cmd[cmd.index(str(A/'unit.c'))]=str(p);cmd+=['-wp-fct','next_control_true,next_control_false']
 else:raise SystemExit('unknown mode')
-r={'command':cmd,'cwd':str(A),'mode':mode,'budget_seconds':budget,'frozen_sha256':sha(C/'frozen.json'),'proof_sha256':sha(C/'proof.patch'),'source_guard_passed':g['passed'],'input_sha256_before':watched,'scope':'Diagnostic no-qed/no-clean counterpart for actual structcopy body; same model/driver/RTE and solver budget. Separate configuration, not canonical acceptance.'};(L/'command.json').write_text(json.dumps(r,indent=2)+'\n');t=time.monotonic()
+r={'command':cmd,'cwd':str(A),'mode':mode,'budget_seconds':budget,'frozen_sha256':sha(C/'frozen.json'),'proof_sha256':sha(C/'proof.patch'),'source_guard_passed':g['passed'],'input_sha256_before':watched,'scope':'Diagnostic no-filter-init counterpart with Qed/clean defaults for actual structcopy body; same model/driver/RTE and solver budget. Separate configuration, not canonical acceptance.'};(L/'command.json').write_text(json.dumps(r,indent=2)+'\n');t=time.monotonic()
 with (L/'run.log').open('x') as out:
  p=subprocess.Popen(cmd,cwd=A,env={**os.environ,'PATH':str(B/'handoff-solvers/.build/bin')+':'+os.environ['PATH'],'WP_OBSERVER_JSONL':str(L/'events.jsonl')},stdout=out,stderr=subprocess.STDOUT,start_new_session=True)
  try:code=p.wait(timeout=budget)

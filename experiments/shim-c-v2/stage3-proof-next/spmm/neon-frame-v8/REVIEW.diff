@@ -1,0 +1,29 @@
+--- v7/neon.c
++++ v8/neon.c
+@@ -1,3 +1,10 @@
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures spn_store4_index_bound: 4<=rows && 0<cols && col<cols && row<=rows-4 ==>
++      0<=row+col*(rows+4) && row+col*(rows+4)+3<cols*(rows+4);
++@/
++static void spn_store4_bounds(size_t rows,size_t cols,size_t row,size_t col) {}
++*/
+ /*
+ struct xnn_f32_minmax_params {
+   struct {
+@@ -48,6 +55,7 @@
+     //@ ghost float *spn_column_4=output;
+     /*@ loop invariant spn_n_4: 0<n<=nc;
+         loop invariant spn_map_4: nnzmap==nidx_nnzmap+(nc-n);
++        loop invariant spn_column_base_4: spn_column_4==spn_output+(spn_MC-mc)/4;
+         loop invariant spn_out_4: output==spn_column_4+(nc-n)*(spn_MC/4+4);
+         loop assigns (spn_frame_2: n),w,dmap,nnzmap,input,output,errno,spn_output[0..nc*(spn_MC/4+4)-1];
+         loop variant n;
+@@ -77,6 +85,7 @@
+       }
+       float32x4_t vout0123 = vminq_f32(vacc0123, vmax);
+       vout0123 = vmaxq_f32(vout0123, vmin);
++      //@ ghost spn_store4_bounds(spn_MC/4,nc,(spn_MC-mc)/4,nc-n);
+       vst1q_f32(output, vout0123);
+       output = (float*) ((uintptr_t) output + output_stride);
+     } while (--n != 0);

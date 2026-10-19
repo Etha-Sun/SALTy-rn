@@ -1,0 +1,9 @@
+theory NegativeControls
+  use int.Int
+  use frama_c_wp.bytefloat.Bytefloat
+  goal wrong_unrestricted_inverse32: forall n seed:int.
+    0 <= n < 4294967296 -> encode32 (decode32 n) seed = n
+  goal wrong_unrestricted_inverse64: forall n seed:int.
+    0 <= n < 18446744073709551616 -> encode64 (decode64 n) seed = n
+  goal wrong_false: false
+end

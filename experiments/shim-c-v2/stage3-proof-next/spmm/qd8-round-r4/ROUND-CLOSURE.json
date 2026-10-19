@@ -1,0 +1,56 @@
+{
+  "scope": "Full local dependency closure for the real round_up_po2 function. Not kernel closure.",
+  "exact_wp_fct": [
+    "qd8_clear_low",
+    "round_up_po2"
+  ],
+  "no_wp_prop_filter": true,
+  "wp_rte": true,
+  "keep_actual_body_definitions": true,
+  "ghost_functions_must_be_in_closure": [
+    "qd8_clear_low"
+  ],
+  "expected_raw": 16,
+  "expected_by_function": {
+    "qd8_clear_low": {
+      "raw_count": 9,
+      "properties": [
+        "qd8_clear_low_ensures_qd8_clear_half",
+        "qd8_clear_low_ensures_qd8_clear_compensation",
+        "qd8_clear_low_assert_qd8_clear_split",
+        "qd8_clear_low_assert_qd8_clear_shift_half",
+        "qd8_clear_low_assert_qd8_clear_shift_restore",
+        "qd8_clear_low_assert_qd8_clear_restored_range",
+        "qd8_clear_low_assert_qd8_clear_restored_even",
+        "qd8_clear_low_assert_qd8_clear_shift_mask",
+        "qd8_clear_low_assigns"
+      ]
+    },
+    "round_up_po2": {
+      "raw_count": 7,
+      "properties": [
+        "round_up_po2_ensures_qd8_round_range",
+        "round_up_po2_ensures_qd8_round_even",
+        "round_up_po2_ensures_qd8_round_count",
+        "round_up_po2_ensures_qd8_round_positive",
+        "round_up_po2_assert_qd8_round_sum_exact",
+        "round_up_po2_assert_qd8_round_mask_value",
+        "round_up_po2_assert_qd8_round_mask_half"
+      ]
+    }
+  },
+  "actual_callee_edges": [
+    [
+      "round_up_po2",
+      "qd8_clear_low"
+    ]
+  ],
+  "body": "return (n+q-1)&~(q-1);",
+  "scope_boundary": "No new requires; conditional postconditions do not restrict legal input domain. CFG termination goals separately retained. Actual inventory may add RTE/CFG obligations and is authoritative. All ghost assertions and postconditions must pass; no counting callers against an unproved callee.",
+  "source_sha256": {
+    "proof.patch": "ec274633d74c4b7bd648fc1ffdf19599da55de8786dd745ee333a3c3dd25dfc7",
+    "frozen.json": "e5270a0f0afab6de9bcd0e30da3a186688fc43801e82a2d239864c13fa49d91f",
+    "annotated/utils.c": "9aa561ed6bb5962cd0714b3e98b0b7a44855ca5b554e80b41bafd74d629b21ee"
+  },
+  "new_tool_execution": "Root uses independently locked v2 binary/share/config with original sourceguard; old manifest/model SHA is never rewritten."
+}

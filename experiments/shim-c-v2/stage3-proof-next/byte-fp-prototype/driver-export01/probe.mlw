@@ -1,0 +1,13 @@
+theory Probe
+  use int.Int
+  use frama_c_wp.cfloat.Cfloat
+  use frama_c_wp.bytefloat.Bytefloat
+  use ieee_float.Float32 as F32
+  use ieee_float.Float64 as F64
+  goal roundtrip32: forall x:f32, seed:int.
+    F32.eq (decode32 (encode32 x seed)) x \/
+    (F32.is_nan (decode32 (encode32 x seed)) /\ F32.is_nan x)
+  goal roundtrip64: forall x:f64, seed:int.
+    F64.eq (decode64 (encode64 x seed)) x \/
+    (F64.is_nan (decode64 (encode64 x seed)) /\ F64.is_nan x)
+end

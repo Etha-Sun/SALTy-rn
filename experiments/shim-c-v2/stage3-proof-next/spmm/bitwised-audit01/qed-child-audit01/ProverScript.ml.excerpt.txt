@@ -1,0 +1,56 @@
+331:     end
+332:   else
+333:     begin
+334:       Wp_parameters.debug ~dkey:dkey_strategy "[%a] Strategy %s: enter@."
+335:         pp_node node (ProofStrategy.name strategy) ;
+336:       sequence
+337:         (explore_alternative env process strategy)
+338:         (ProofStrategy.alternatives strategy) node
+339:       >>= fun ok ->
+340:       Wp_parameters.debug ~dkey:dkey_strategy "[%a] Strategy %s: %s@."
+341:         pp_node node (ProofStrategy.name strategy)
+342:         (if ok then "proved" else "failed");
+368:     pp_node node
+369:     ProofStrategy.pp_alternative alternative ;
+370:   match ProofStrategy.tactic env.tree node strategy alternative with
+371:   | None -> failed
+372:   | Some [node'] when not (progress node node') ->
+373:     Wp_parameters.debug ~dkey:dkey_strategy
+374:       "@[<hov 2>[%a] tactic has made no progress"
+375:       pp_node node ;
+376:     failed
+377:   | Some nodes ->
+378:     Wp_parameters.debug ~dkey:dkey_strategy
+379:       "@[<hov 2>[%a] success (%d children) (at depth %d/%d)"
+380:       pp_node node (List.length nodes)
+381:       (ProofEngine.depth node) env.depth;
+382:     List.iter process nodes ; success
+383: 
+384: and explore_auto env process alternative node =
+385:   match ProofStrategy.auto alternative with
+386:   | None -> failed
+387:   | Some h ->
+503:   Format.fprintf fmt "%s subgoal:@\n%a" (Wpo.get_gid main) Wpo.pp_goal_flow wpo
+504: 
+505: let schedule job =
+506:   Task.spawn (ProverTask.server ()) (Task.thread (Task.todo job))
+507: 
+508: let rec process env node =
+509:   env.Env.pending <- succ env.Env.pending ;
+510:   schedule
+511:     begin fun () ->
+512:       Wp_parameters.debug ~dkey:dkey_pp_allgoals "%a" (pp_subgoal env) node ;
+513:       if ProofEngine.locally_proved node then
+514:         begin
+515:           env.pending <- pred env.pending ;
+516:           Env.validate env ;
+517:           Task.return () ;
+518:         end
+519:       else
+520:         let script = Priority.sort (ProofEngine.bound node) in
+521:         crawl env (process env) (Some node) script >>=
+522:         begin fun _ ->
+523:           env.pending <- pred env.pending ;
+524:           Env.validate env ;
+525:           Task.return ()
+526:         end

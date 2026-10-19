@@ -1,0 +1,1 @@
+本候选沿用 conv-cursor-inline-r3 的真实 body inline 配置，只对 signed-add 循环增加一个有真实空 body 的条件 successor ghost helper。helper 自身 2/2；定点 4/4，包含两个原未证游标切分点与新增循环 index 建立/保持。没有新增函数 requires 或改变原 C/spec/model。完整内联的 memcpy、RTE 与全部循环义务尚未完整验收，不能称整核完成。

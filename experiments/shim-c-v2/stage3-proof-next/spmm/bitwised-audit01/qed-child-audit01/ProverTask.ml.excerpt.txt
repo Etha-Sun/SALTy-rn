@@ -1,0 +1,24 @@
+104: 
+105: let simplify ?start ?result ?(commit=false) wpo =
+106:   Server.Main.async
+107:     (fun wpo ->
+108:        let r = Wpo.get_result wpo Prover.Qed in
+109:        VCS.( r.verdict == Valid ) ||
+110:        begin
+111:          started ?start wpo ;
+112:          let ok = Wpo.reduce wpo in
+113:          if commit || ok then
+114:            let time = Wpo.qed_time wpo in
+115:            let verdict = if ok then VCS.Valid else VCS.Unknown in
+116:            let presult = VCS.result ~time verdict in
+117:            (update ?result wpo Prover.Qed presult ; ok)
+118:          else false
+119:        end)
+120:     wpo
+140: 
+141: let prove wpo ?config ?mode ?start ?progress ?result prover =
+142:   simplify ?start ?result wpo >>= fun succeed ->
+143:   if succeed
+144:   then Task.return true
+145:   else (run_prover wpo ?config ?mode ?progress ?result prover)
+146: 

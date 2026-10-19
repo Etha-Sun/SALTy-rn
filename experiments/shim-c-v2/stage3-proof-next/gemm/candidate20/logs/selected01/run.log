@@ -1,0 +1,96 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-par", "2", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate20/logs/selected01/.build/session", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate20/logs/selected01/raw.json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate20/.build/diagnostic01/annotated/unit.c", "-wp-prop", "next_bounds_post,next_t_range,next_bound_0_0,next_lane_0_0,next_bound_0_1,next_lane_0_1,next_bound_0_2,next_lane_0_2,next_bound_0_3,next_lane_0_3,next_bound_1_0,next_lane_1_0,next_bound_1_1,next_lane_1_1,next_bound_1_2,next_lane_1_2,next_bound_1_3,next_lane_1_3,next_packed_bound,next_gacc_substitute,next_w_frame_0,next_w_frame_1,next_w_frame_2,next_w_frame_3,next_w_frame_4,next_w_frame_5,next_a_load,next_b0_load,next_b1_load,next_acc_first,next_acc_second,next_acc_frame,next_gacc_two,stage3_gacc_seed,stage3_gacc_step,stage3_fma_congruence,stage3_acc_neon_0_0,next_acc_entry,next_a_aggregate,next_dup_current_0,next_dup_ref_0,next_dup_current_1,next_dup_ref_1,next_acc_before_0,next_acc_after_0,next_acc_before_1,next_acc_after_1", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/gemm/candidate20/.build/diagnostic01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m4
+[rte:annot] annotating function __riscv_vfadd_vv_f32m4_tu
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m4
+[rte:annot] annotating function __riscv_vfmacc_vv_f32m4
+[rte:annot] annotating function __riscv_vfmadd_vf_f32m4
+[rte:annot] annotating function __riscv_vfmax_vf_f32m4
+[rte:annot] annotating function __riscv_vfmerge_vfm_f32m4
+[rte:annot] annotating function __riscv_vfmin_vf_f32m4
+[rte:annot] annotating function __riscv_vfmul_vv_f32m4
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m4
+[rte:annot] annotating function __riscv_vfredusum_vs_f32m4_f32m1
+[rte:annot] annotating function __riscv_vfsub_vf_f32m4
+[rte:annot] annotating function __riscv_vle32_v_f32m4
+[rte:annot] annotating function __riscv_vmflt_vf_f32m4_b8
+[rte:annot] annotating function __riscv_vmfne_vv_f32m4_b8
+[rte:annot] annotating function __riscv_vse32_v_f32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m2
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m2
+[rte:annot] annotating function __riscv_vsetvlmax_e32m4
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function canonical_nan
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function fp_nan
+[rte:annot] annotating function max_number
+[rte:annot] annotating function min_number
+[rte:annot] annotating function neon_max
+[rte:annot] annotating function neon_min
+[rte:annot] annotating function next_bounds
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vaddv_f32
+[rte:annot] annotating function vaddvq_f32
+[rte:annot] annotating function vcombine_f32
+[rte:annot] annotating function vdupq_lane_f32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vextq_f32
+[rte:annot] annotating function vfma_f32
+[rte:annot] annotating function vfmaq_f32
+[rte:annot] annotating function vfmaq_lane_f32
+[rte:annot] annotating function vfmaq_laneq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_lane_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vld1_dup_f32
+[rte:annot] annotating function vld1_f32
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_lane_f32
+[rte:annot] annotating function vld2_dup_f32
+[rte:annot] annotating function vld2q_dup_f32
+[rte:annot] annotating function vmax_f32
+[rte:annot] annotating function vmaxq_f32
+[rte:annot] annotating function vmin_f32
+[rte:annot] annotating function vminq_f32
+[rte:annot] annotating function vmlaq_f32
+[rte:annot] annotating function vmovq_n_f32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_lane_f32
+[rte:annot] annotating function vsubq_f32
+[rte:annot] annotating function vzip1q_f32
+[rte:annot] annotating function vzip2q_f32
+[wp] 48 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_a_aggregate (Qed 2.5s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_w_frame_2 (Qed 2.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_w_frame_3 (Qed 2.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_w_frame_4 (Qed 3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_acc_before_0 (Qed 5.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_acc_after_0 (Qed 6.0s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_acc_first (Qed 5.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_acc_before_1 (Qed 7.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_acc_after_1 (Qed 7.0s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_next_acc_second (Qed 6.9s) (Z3)
+[wp] Proved goals:   38 / 48
+  Qed:             4 (0.61ms-3.2s-8.5s)
+  CVC5 1.2.1:     33 (97ms-4.8s-25.5s)
+  Z3 4.12.5:       1 (454ms)
+  Timeout:        10
+[wp] Updated session
+   - 10 new scripts to complete

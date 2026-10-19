@@ -1,0 +1,1 @@
+32位组合body显式调用已实际body通过的BVInverse32、IntRoundtrip32、Interface32。只import这3个已证module，不import同文件中未证IntRoundtrip64。导出exit0，SMT前提恰为上述已证事实（接口2个ensures）及既有CompatOrderMult；证据和source SHA见DEPENDENCIES.json。组合自身尚未solver验证，不进入公共share。commands.json固定Z3-only命令。

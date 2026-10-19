@@ -1,0 +1,346 @@
+[kernel] Parsing controls.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function false_bit62
+[rte:annot] annotating function false_bit63
+[rte:annot] annotating function false_ignore_high
+[rte:annot] annotating function high_reconstruct
+[rte:annot] annotating function high_shift
+[wp] 10 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition 'good_reconstruct' in 'high_reconstruct':
+  Let x_1 = land(4611686018427387903, x).
+  Let x_2 = land(4611686018427387904, x).
+  Let x_3 = land(9223372036854775808, x).
+  Assume {
+    Type: is_uint64(x) /\ is_uint64(x_1) /\ is_uint64(x_2) /\ is_uint64(x_3).
+  }
+  Prove: lor(x_1, lor(x_2, x_3)) = x.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_high_reconstruct_ensures_good_reconstruct] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_high_reconstruct_ensures_good_reconstruct] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_high_reconstruct_ensures_good_reconstruct] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_fma_high_reconstruct_ensures_good_reconstruct] Strategy HighBit64: proved
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'high_reconstruct':
+  Effect at line 15
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'good_shift' in 'high_shift':
+  Assume { Type: is_uint64(x). }
+  Prove: to_uint64(lsl(lsr(x, 1), 1)) = land(18446744073709551614, x).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_high_shift_ensures_good_shift] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_high_shift_ensures_good_shift] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_high_shift_ensures_good_shift] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_fma_high_shift_ensures_good_shift] Strategy HighBit64: proved
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'high_shift':
+  Effect at line 22
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'deliberately_false_bit62' in 'false_bit62':
+  Assume { Type: is_uint64(x). }
+  Prove: to_uint64(lxor(4611686018427387904, x)) = x.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62] Strategy HighBit64: proved
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'false_bit62':
+  Effect at line 26
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'deliberately_false_bit63' in 'false_bit63':
+  Assume { Type: is_uint64(x). }
+  Prove: to_uint64(lxor(9223372036854775808, x)) = x.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63] Strategy HighBit64: proved
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'false_bit63':
+  Effect at line 30
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'deliberately_false_ignore_high' in 'false_ignore_high':
+  Let x_1 = land(4611686018427387903, x).
+  Assume { Type: is_uint64(x) /\ is_uint64(x_1). }
+  Prove: x_1 = x.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high] success (2 children) (at depth 1/5)
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high] Strategy HighBit64: proved
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'false_ignore_high':
+  Effect at line 34
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_fma_high_reconstruct_ensures_good_reconstruct subgoal:
+  
+  Goal Wp.Tactical.typed_fma_high_reconstruct_ensures_good_reconstruct-0 (generated by wp):
+  Let x_1 = land(4611686018427387903, x).
+  Let x_2 = land(4611686018427387904, x).
+  Let x_3 = land(9223372036854775808, x).
+  Assume {
+    Type: is_uint64(x) /\ is_uint64(x_1) /\ is_uint64(x_2) /\ is_uint64(x_3).
+  }
+  Prove: (0 <= x) /\ (x <= 18446744073709551615) /\
+      (lor(x_1, lor(x_2, x_3)) <= 18446744073709551615).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_fma_high_reconstruct_ensures_good_reconstruct subgoal:
+  
+  Goal Wp.Tactical.typed_fma_high_reconstruct_ensures_good_reconstruct-1 (generated by wp):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp] [Unknown] typed_fma_high_reconstruct_ensures_good_reconstruct (Tactic) (Qed 3ms) (CVC5 1/2 58ms)
+[wp:script:allgoals] 
+  typed_fma_high_shift_ensures_good_shift subgoal:
+  
+  Goal Wp.Tactical.typed_fma_high_shift_ensures_good_shift-0 (generated by wp):
+  Assume { Type: is_uint64(x). }
+  Prove: 0 <= land(18446744073709551614, x).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_fma_high_shift_ensures_good_shift subgoal:
+  
+  Goal Wp.Tactical.typed_fma_high_shift_ensures_good_shift-1 (generated by wp):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp] [Unknown] typed_fma_high_shift_ensures_good_shift (Tactic) (Qed 2ms) (CVC5 1/2 65ms)
+[wp:script:allgoals] 
+  typed_fma_false_bit62_ensures_deliberately_false_bit62 subgoal:
+  
+  Goal Wp.Tactical.typed_fma_false_bit62_ensures_deliberately_false_bit62-0 (generated by wp):
+  Assume { Type: is_uint64(x). }
+  Prove: (0 <= x) /\ (x <= 18446744073709551615).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_fma_false_bit62_ensures_deliberately_false_bit62 subgoal:
+  
+  Goal Wp.Tactical.typed_fma_false_bit62_ensures_deliberately_false_bit62-1 (generated by wp):
+  Prove: false.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Strategy HighBitLeaf: enter
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Strategy HighBitLeaf: failed
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Trying HighBitLeaf
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Strategy HighBitLeaf: enter
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Strategy HighBitLeaf: failed
+[wp:strategy] 
+  [typed_fma_false_bit62_ensures_deliberately_false_bit62-1] Strategy HighBit64: failed
+[wp] [Timeout] typed_fma_false_bit62_ensures_deliberately_false_bit62 (Tactic) (Qed 2ms) (CVC5 1/2 28ms) (Z3)
+[wp:script:allgoals] 
+  typed_fma_false_bit63_ensures_deliberately_false_bit63 subgoal:
+  
+  Goal Wp.Tactical.typed_fma_false_bit63_ensures_deliberately_false_bit63-0 (generated by wp):
+  Assume { Type: is_uint64(x). }
+  Prove: (0 <= x) /\ (x <= 18446744073709551615).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_fma_false_bit63_ensures_deliberately_false_bit63 subgoal:
+  
+  Goal Wp.Tactical.typed_fma_false_bit63_ensures_deliberately_false_bit63-1 (generated by wp):
+  Prove: false.
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Strategy HighBitLeaf: enter
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Strategy HighBitLeaf: failed
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Trying HighBitLeaf
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Strategy HighBitLeaf: enter
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Strategy HighBitLeaf: failed
+[wp:strategy] 
+  [typed_fma_false_bit63_ensures_deliberately_false_bit63-1] Strategy HighBit64: failed
+[wp] [Timeout] typed_fma_false_bit63_ensures_deliberately_false_bit63 (Tactic) (Qed 3ms) (CVC5 1/2 27ms) (Z3)
+[wp:script:allgoals] 
+  typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high subgoal:
+  
+  Goal Wp.Tactical.typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-0 (generated by wp):
+  Let x_1 = land(4611686018427387903, x).
+  Assume { Type: is_uint64(x) /\ is_uint64(x_1). }
+  Prove: (0 <= x) /\ (0 <= x_1) /\ (x <= 18446744073709551615).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high subgoal:
+  
+  Goal Wp.Tactical.typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1 (generated by wp):
+  Assume { Type: is_uint64(x) /\ is_uint64(land(4611686018427387903, x)). }
+  Prove: (!bit_test(x, 62)) /\ (!bit_test(x, 63)).
+  
+  ------------------------------------------------------------
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Strategy HighBitLeaf: enter
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Strategy HighBitLeaf: failed
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Strategy HighBit64: enter
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Trying
+    \tactic("Wp.bitwised",
+      \ingoal(\target:(A == B)),
+      \select(\target),
+      \param("Wp.bitwised.range",64),
+      \children(HighBitLeaf)
+      )
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Trying
+    HighBitLeaf
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Strategy HighBitLeaf: enter
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Trying
+    \prover("z3",10.0)
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Trying
+    \prover("cvc5",10.0)
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Strategy HighBitLeaf: failed
+[wp:strategy] 
+  [typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high-1] Strategy HighBit64: failed
+[wp] [Timeout] typed_fma_false_ignore_high_ensures_deliberately_false_ignore_high (Tactic) (Qed 2ms) (CVC5 1/2 44ms) (Z3)
+[wp] Proved goals:   15 / 20
+  Terminating:     5
+  Unreachable:     5
+  Qed:             5 (2ms-1ms-3ms)
+  Timeout:         5
+[wp] Updated session
+   - 5 new scripts to complete
+[wp] Logging keys: strategy,script:allgoals.

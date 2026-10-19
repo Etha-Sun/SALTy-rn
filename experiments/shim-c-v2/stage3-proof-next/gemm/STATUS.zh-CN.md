@@ -33,3 +33,48 @@ candidate07 从05派生：增加标量 t 范围及固定4lane具体索引/读取
 12 focus01已结束：exit0，0/3，3个ground在direct z3/cvc5各120秒仍未证，输入不变；这是独立诊断配置，不替代原组结果。13将完整congruence条件封装为有body predicate并增加ground predicate实例化；helper01已4/4，selected由root运行中。13完整inventory为1213 body+12 globals=1225逻辑，另34 CFG，均exit0/normal/final一致/SHA不变。
 
 14从09独立派生，仅增加真实ghost structcopy诊断：by-value struct输入、真实局部copy与return、4个ground lane断言和4个return ensures、无requires；未在kernel调用。静态guard通过，等待root完整helper body检查，不声称循环frame已修复。
+
+
+13 selected01 已完整结束 exit0，40/44，输入不变。新增有完整body的 predicate实例化与 ground_eval 实际通过；剩 ground_dup、ground_acc、acc_first、acc_second。纯FMA实例化有进展，但这四项依赖未闭合，不构成整核通过。
+
+14 helper01 为5/9，四个copy lane assert未证；返回ensures依赖这些断言，不可算完整copy链。helper-raw01关闭Qed/clean仍5/9。AST确认copy=v真实存在；raw WP保留Load_S5聚合相等，正常优化后该假设消失。generate-copy-raw02实际生成Why3定义：Load_S5正确构造Array_float32，array access公理已引入，但触发器要求array-get，而结论直接读取Mf32。尚未确认具体优化/实例化根因。rank唯一性独立新binary对照由root执行仍5/9，不能把rank碰撞当作此float-only copy问题的直接修复。全部属于工具/模型/证明表达调查，非kernel反例。
+
+15保留09全称循环不变量并增加4个固定lane不变量，共8个建立/保持新债务；root执行中。16独立copy诊断加入完整body predicate next_vec_same和一个aggregate cut，保留原4lane assert及4ensures，总10项helper债务，尚无求解结果。
+
+14 helper-nofilter01关闭filter-init仍5/9，未改善；不能把初始化假设缺失简单归因此选项。09 print-unfold-acc01使用-wp-unfold-assigns -1，none诊断exit0/SHA不变，真实next_acc_first仍为多级Mf32 memcpy/undef链。源码该参数只传入check_assigns检查写区域，不控制havoc；没有新的求解通过结论。16正常print-copy01保留聚合初始化等式和新predicate假设，真实helper求解由root执行中。
+
+16 helper01在旧冻结模型和原Qed默认配置下完整10/10，inputs_unchanged=true，真实copy helper全链闭合！定义有body的聚合predicate使Load_S5初始化等式保留，并提供array projection触发；无需模型修复或新前提。此为独立copy局部证明，尚不代表kernel循环。17从09应用同方法增加聚合A-load、vdup、acc前后cuts及acc循环不变量；共新增11债务，49项组交root执行。
+
+15 selected01完整exit0，30/46；新增ground lane不变量方案发生求解退化，16项pending，不能作为09改善替代。具体raw verdict保留原样。
+
+17完整盘点已完成：1217 body+12 globals=1229 logical，另32 CFG；body/global exit0/normal/final一致，SHA不变。selected49由root运行中，新aggregate invariant建立/保持及A聚合cut已有timeout，完整成绩待run结束。18独立将predicate改固定2/4lane合取并以loop入口body cut替代新增loop invariant，保留原forall；新增10债务，48项组，静态guard及none解析通过，尚无通过结论。
+
+18完整inventory1228逻辑（1216body+12globals）与32CFG，均exit0/normal/final一致且input SHA未变。19在18基础移动完整splat定义到现有guarded header，给真实vdupq_n_f32和vdupq_lane_f32追加等价aggregate post，原合同/普通C不变。19 helper01已完整21/21，exit0/input不变，包含新post、原body义务、RTE；可作为已证callee合同采用，caller aggregate cuts与原两个acc仍待实跑，不能把callee通过当kernel通过。
+
+19完整inventory1230逻辑（1218body+12globals），另32CFG，前后所有输入SHA一致。20仅继续为实际调用的vld1_f32/vld1q_f32增加等价typed read post，明确读Pre输入，不改变任何原requires/assigns/ensures；新增完整predicate位于现有guarded header。static guard与none两新post解析通过，完整body独立验算交root。
+
+17 selected01完整exit0，36/49，inputs_unchanged=true，13pending，不能当作09的改善。20 helper01完整exit0，26/26（另4 CFG不计逻辑分母），两个load真实body的新typed Pre-read post全部通过，输入SHA不变。仍需20调用点组实跑确认新post能闭合哪个链。
+
+20完整inventory1232逻辑=1220body+12globals，另32CFG，body/global均exit0/normal/final一致、全输入SHA不变。
+
+18 selected01完整39/48，exit0/input不变；pending9项（A aggregate、两dup current、两acc before/after、原两acc）。21准备时包含两处frame cuts，后root限定只第一处，已冻结21不改且不执行，标为prepared-only；22精确实现限定：在20基础仅将A aggregate放在已有scalar forall之后，并用入口ghost label增加第一FMA前纯struct frame cut，自身VC须验证。
+
+22完整inventory1233逻辑=1221body+12globals，另32CFG；exit0/normal/final匹配、SHA不变。该版本只多第一FMA前frame一项，自身VC纳入selected49。20目前见旧w_frame_2/3/4求解退化，不能只摘新callee或新cut的绿色统计进展；最终按完整raw及依赖闭合判定。
+
+19 selected01完整41/48，相对18精确新增闭合两dup_current，支持来自已证21/21真实vdup body。20 selected01完整38/48；已证26/26 load新合同未闭合A aggregate，还出现旧w_frame_2/3/4退化，因此不作为19净改善。23回到19分支，无新增load合同，给第一FMA前8load+4dup的纯acc frame增加12步切分；原before/after与A aggregate全部保留，none60条清单完整。第一frame实际WP仅是不同局部tmp写后acc struct值保持，不含FMA参考递归。
+
+23 frame-first01实际完整0/1、输入SHA不变；未启动60项重复求解。23完整inventory1242逻辑（1230body+12globals）与32CFG，完整marker/final/SHA检查通过。
+
+24最小ghost caller复现被Frama-C ghost:bad-use拒绝：ghost函数不能调用原非ghost vld1_f32；exit1和冻结保留，这是新增proof输入形式错误，不是环境错误/target反例。未关闭该检查。为真实body复现，frame-reproducer25/probe.c使用独立普通C诊断函数include冻结16 unit，原callee合同不变，无requires，局部2float输入来自任意float4参数；不作为kernel候选/额外发布helper。manifest记录该必要性与probe SHA；runner守护原unit/model/proof和probe。none解析与AST成功，确认真实vld1返回局部和copy初始化存在。全body诊断交root，kernel未证状态不变。
+
+普通C reproducer25全body实际29/29（含真实vld1原body），exit0/input不变，pending空。说明当前声明模型能表达并证明一次局部返回写后的struct frame；23的大kernel失败不能定性为模型表达缺失，可能是嵌套heap/上下文触发负担。26按19基线仅添加loop入口ghost struct snapshot，以当前两struct的关系替代旧label跨heap frame；5新cut与原before/after均保留，none selected通过，实际focus与完整新assigns/RTE清单核对中。
+
+### candidate27/28：减少额外债务与独立 checked 过滤策略
+
+27仅从19删除新增 `next_a_aggregate`，保留原标量 Aload 与所有真实 C/合同。root `focus01` 正常结束 5/7，pending 仅 `next_acc_before_0/1`；Aload 及两轮 dup current/ref 共5项通过。未证明整核或完整循环。
+
+28从23独立冻结，只增加内置 `Wp.filter` 策略（删除无关假设，再交 z3/cvc5），原证明义务保持。`print01` none解析 exit0、SHA不变；solver由root执行。本配置与原求解配置分别记录；若策略子目标被内置结果记录短路而raw仍pending，严格保留raw状态，不据策略提示改绿。
+
+26 的 `snapshot-first01` 正常2/3：入口snapshot copy/ref两项通过，跨第一次真实vld1的 `next_snapshot_first_frame` timeout；不能因前两项通过认为frame成立。26完整无solver清单1235项（body1223+globals12，另CFG32），均正常结束、SHA未变。
+
+22 的 `selected01` 正常39/49；其中 acc_before_0 依赖未证纯frame而变绿，不能独立计改善。对照普通C重现25在冻结16上下文中真正调用原vld1，17个重现函数义务+原vld1的12义务=29/29；由此只能判真实kernel上下文/求解仍需处理，不能把当前frame超时称为已证模型表达缺陷。

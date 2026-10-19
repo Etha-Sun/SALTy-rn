@@ -1,0 +1,20 @@
+--- round-r3/utils.c
++++ round-r4/utils.c
+@@ -11,13 +11,15 @@
+ @/
+ static void qd8_clear_low(size_t x) {
+   /@ assert qd8_clear_split: x==2*(x/2)+x%2; @/
+-  /@ assert qd8_clear_shift_mask: (x & (SIZE_MAX-1))==((x>>1)<<1); @/
+   /@ assert qd8_clear_shift_half: (x>>1)==x/2; @/
+   /@ assert qd8_clear_shift_restore: ((x>>1)<<1)==2*(x>>1); @/
++  /@ assert qd8_clear_restored_range: 0<=((x>>1)<<1)<=x; @/
++  /@ assert qd8_clear_restored_even: ((x>>1)<<1)%2==0; @/
++  /@ assert qd8_clear_shift_mask: (x & (SIZE_MAX-1))==((x>>1)<<1); @/
+ }
+ */
+ /*@ \wp::strategy Qd8BitChild: \prover("z3",30), \prover("cvc5",30);
+-    \wp::strategy Qd8Bit64: \tactic("Wp.bitwised",\ingoal(A==B),\param("Wp.bitwised.range",64),\children(Qd8BitChild)), Qd8BitChild;
++    \wp::strategy Qd8Bit64: \tactic("Wp.bitwised",\ingoal(A==(18446744073709551614 & B)),\param("Wp.bitwised.range",64),\children(Qd8BitChild)), Qd8BitChild;
+     \wp::proof Qd8Bit64: qd8_clear_low;
+ */
+ /*@ ensures qd8_round_range: q==2 && n<=SIZE_MAX-2 ==> n<=\result<=n+1;

@@ -1,0 +1,27 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/argmax-index-r2/logs/selected-root01.json", "-wp-fct", "equivalent", "-wp-prop", "stage3_channel_bounds,stage3_index_cursor,next_arg_seed_checked,next_arg_vl,next_arg_advanced,next_arg_rebased,next_arg_u32_range,next_arg_u32_prefix,next_arg_u32_merge_range,next_arg_u32_merge_prefix,next_arg_u32_merge_suffix", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/argmax-index-r2/.build/guard01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/argmax-index-r2/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] neon.c:57: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:31: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:18: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:34: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:20: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] 74 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_channel_bounds_preserved (Qed 41.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_prefix_preserved (Qed 3.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_range_preserved (Qed 3.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_merge_prefix_preserved (Qed 5.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_merge_suffix_established (Qed 5.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_merge_suffix_preserved (Qed 5.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_prefix_2_preserved (Qed 4.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_range_2_preserved (Qed 3.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_merge_prefix_2_preserved (Qed 18.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_merge_range_2_preserved (Qed 17.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_next_arg_u32_merge_suffix_2_established (Qed 15.4s) (CVC5)

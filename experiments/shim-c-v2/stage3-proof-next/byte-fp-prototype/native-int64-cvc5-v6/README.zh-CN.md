@@ -1,0 +1,1 @@
+原prerequisites.mlw完全不变，只-T IntRoundtrip64，保留原nativebv.b64类型。独立CVC5 driver仅映射nativebv的整数/BV类型与of_int/to_uint，不含encoder。导出exit0、目标仅int2bv64/bv2nat；Cfloat导入仍带标准FP辅助定义及实数sqrt事实，不声称整个context纯整数，但没有不兼容fp.to_ieee_bv。待root实际运行commands.json。此前PureBV结果不替代这次原body重验。

@@ -1,0 +1,7 @@
+{
+  "actual_goal_source": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/dwconv/r7/logs/bias-print01.log",
+  "actual_goal_sha256": "acdbe97c61fb1cda16d46574d5f88487771d0ddee95c8148f21e6df69181c92e",
+  "observation": "Call has Load_S6(vacc,Mf32_0)=return and lane relation to pre-return Mf32_68. Return effect copies 16 float cells into vacc. Target uses post-return Mf32_0 at weights plus pointer arithmetic. Need instantiate aggregate load, disjoint-copy frame, and address normalization in large context. This is not evidence of missing Typed semantics; GEMM small real-load/struct-copy control passed.",
+  "change": "Separate address normalization before call and local loader relation immediately after return, prior to w increment. No downstream eight-value cut stack.",
+  "status": "prepared; root solver required"
+}

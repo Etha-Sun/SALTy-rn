@@ -1,0 +1,106 @@
+[kernel] Parsing controls-cuts02.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function positive_zero32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function negative_wrong_zero_bits
+[wp] 2 goals scheduled
+[wp] [Timeout] bytes_bytefloat_fma_positive_zero32_ensures (Qed 7ms) (CVC5)
+[wp] [Timeout] bytes_bytefloat_fma_negative_wrong_zero_bits_ensures (Qed 8ms) (CVC5)
+[wp] Proved goals:    0 / 2
+  Qed:             0 (7ms-8ms)
+  Timeout:         2
+
+Goal Post-condition ("controls-cuts02.c", line 63) in 'positive_zero32':
+Let a = global(L_out_4623).
+Let a_1 = shift_sint8(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4).
+Let a_3 = global(L_value_4622).
+Let x = read_uint32(a_2, a_3).
+Let x_1 = read_uint32(a_2, a).
+Let x_2 = read_sint8(a_2, shift_sint8(a_3, 3)).
+Let x_3 = read_sint8(a_2, shift_sint8(a, 3)).
+Let x_4 = read_sint8(a_2, shift_sint8(a_3, 2)).
+Let x_5 = read_sint8(a_2, shift_sint8(a, 2)).
+Let x_6 = read_sint8(a_2, shift_sint8(a_3, 1)).
+Let x_7 = read_sint8(a_2, shift_sint8(a, 1)).
+Let x_8 = read_sint8(a_2, shift_sint8(a_3, 0)).
+Let x_9 = read_sint8(a_2, a_1).
+Let m = alloc_0[L_value_4622 <- 4][L_out_4623 <- 4].
+Assume {
+  Type: bytes(mem_0) /\ bytes(a_2) /\ is_sint8(x_9) /\ is_sint8(x_7) /\
+      is_sint8(x_5) /\ is_sint8(x_3) /\ is_sint8(x_8) /\ is_sint8(x_6) /\
+      is_sint8(x_4) /\ is_sint8(x_2) /\ is_uint32(x_1) /\ is_uint32(x).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Initializer *)
+  Init: decode32(read_uint32(mem_0, a_3)) = neg_f32(to_f32(.0)).
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(mem_0, a_2, a, a_3, 4) = 0) /\ P_valid_or_empty(m, a, 4) /\
+      P_valid_read_or_empty(m, a_3, 4).
+  (* Assertion 'copy_6_byte_0' *)
+  Have: x_8 = x_9.
+  (* Assertion 'copy_6_byte_1' *)
+  Have: x_6 = x_7.
+  (* Assertion 'copy_6_byte_2' *)
+  Have: x_4 = x_5.
+  (* Assertion 'copy_6_byte_3' *)
+  Have: x_2 = x_3.
+  (* Assertion 'copy_6_word' *)
+  Have: x = x_1.
+}
+Prove: x_1 = 2147483648.
+Prover CVC5 1.2.1 returns Timeout (Qed:7ms) (30s)
+Prover Z3 4.12.5 returns Failed
+out of memory
+
+------------------------------------------------------------
+
+Goal Post-condition ("controls-cuts02.c", line 233) in 'negative_wrong_zero_bits':
+Let a = global(L_bits_4691).
+Let a_1 = shift_sint8(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4).
+Let a_3 = global(L_value_4690).
+Let x = read_uint32(a_2, a_3).
+Let x_1 = read_uint32(a_2, a).
+Let x_2 = read_sint8(a_2, shift_sint8(a_3, 3)).
+Let x_3 = read_sint8(a_2, shift_sint8(a, 3)).
+Let x_4 = read_sint8(a_2, shift_sint8(a_3, 2)).
+Let x_5 = read_sint8(a_2, shift_sint8(a, 2)).
+Let x_6 = read_sint8(a_2, shift_sint8(a_3, 1)).
+Let x_7 = read_sint8(a_2, shift_sint8(a, 1)).
+Let x_8 = read_sint8(a_2, shift_sint8(a_3, 0)).
+Let x_9 = read_sint8(a_2, a_1).
+Let m = alloc_0[L_value_4690 <- 4][L_bits_4691 <- 4].
+Assume {
+  Type: bytes(mem_0) /\ bytes(a_2) /\ is_sint8(x_9) /\ is_sint8(x_7) /\
+      is_sint8(x_5) /\ is_sint8(x_3) /\ is_sint8(x_8) /\ is_sint8(x_6) /\
+      is_sint8(x_4) /\ is_sint8(x_2) /\ is_uint32(x_1) /\ is_uint32(x).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Initializer *)
+  Init: decode32(read_uint32(mem_0, a_3)) = neg_f32(to_f32(.0)).
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(mem_0, a_2, a, a_3, 4) = 0) /\ P_valid_or_empty(m, a, 4) /\
+      P_valid_read_or_empty(m, a_3, 4).
+  (* Assertion 'copy_22_byte_0' *)
+  Have: x_8 = x_9.
+  (* Assertion 'copy_22_byte_1' *)
+  Have: x_6 = x_7.
+  (* Assertion 'copy_22_byte_2' *)
+  Have: x_4 = x_5.
+  (* Assertion 'copy_22_byte_3' *)
+  Have: x_2 = x_3.
+  (* Assertion 'copy_22_word' *)
+  Have: x = x_1.
+}
+Prove: x_1 = 0.
+Prover CVC5 1.2.1 returns Timeout (Qed:8ms) (30s)
+Prover Z3 4.12.5 returns Failed
+out of memory
+
+------------------------------------------------------------

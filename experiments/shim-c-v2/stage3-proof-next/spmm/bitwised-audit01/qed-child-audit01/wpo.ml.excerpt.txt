@@ -1,0 +1,39 @@
+715:   List.filter (fun (p,_) -> not @@ Prover.is_tactical p) @@ get_results g
+716: 
+717: let is_trivial g =
+718:   VC_Annot.is_trivial g.po_formula
+719: 
+720: let reduce g =
+721:   let pid = g.po_pid in
+722:   WpContext.on_context (get_context g) (VC_Annot.resolve ~pid) g.po_formula
+723: 
+724: let resolve g =
+725:   is_trivial g ||
+726:   let valid = reduce g in
+727:   if valid then
+728:     let result = VCS.result ~solver:(qed_time g) VCS.Valid in
+729:     ( set_result g Prover.Qed result ; true )
+730:   else false
+731: 
+732: let computed g =
+733:   GOAL.is_computed g.po_formula.goal
+734: 
+735: let compute g =
+736:   let ctxt = get_context g in
+737:   let pid = g.po_pid in
+738:   g.po_formula.axioms ,
+739:   let goal = g.po_formula.goal in
+740:   let qed = GOAL.is_computed goal in
+741:   let seq = WpContext.on_context ctxt (GOAL.compute_descr ~pid) goal in
+742:   if not qed then modified g ; seq
+743: 
+744: let is_fully_valid g =
+745:   is_trivial g ||
+746:   List.exists (fun (_,r) -> VCS.is_valid r) @@ get_results g
+747: 
+748: let is_locally_valid g =
+749:   is_trivial g ||
+750:   List.exists
+751:     (fun (p,r) -> not (Prover.is_tactical p) && VCS.is_valid r) @@ get_results g
+752: 
+753: let all_not_valid g =

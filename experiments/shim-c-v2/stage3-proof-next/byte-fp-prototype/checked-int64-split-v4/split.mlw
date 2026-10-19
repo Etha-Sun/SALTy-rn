@@ -1,0 +1,31 @@
+(* Independent candidates; no imported candidate lemma or BV inverse axiom. *)
+module OfIntSplit
+ use int.Int
+ use int.EuclideanDivision
+ use nativebv.NativeBV
+ use split.Split
+ let lemma of_int64_split (n:int) : unit
+  ensures { 0 <= n < 18446744073709551616 ->
+   of_int64 n = concat (of_int32 (div n 4294967296)) (of_int32 (mod n 4294967296)) }
+ = ()
+end
+
+module ConcatValue
+ use int.Int
+ use nativebv.NativeBV
+ use split.Split
+ let lemma concat_value (hi:b32) (lo:b32) : unit
+  ensures { to_uint64 (concat hi lo) = 4294967296 * to_uint32 hi + to_uint32 lo }
+ = ()
+end
+
+module IntegerSplit
+ use int.Int
+ use int.EuclideanDivision
+ let lemma integer_split (n:int) : unit
+  ensures { 0 <= n < 18446744073709551616 ->
+   0 <= div n 4294967296 < 4294967296 /\
+   0 <= mod n 4294967296 < 4294967296 /\
+   n = 4294967296 * div n 4294967296 + mod n 4294967296 }
+ = ()
+end
