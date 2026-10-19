@@ -1,0 +1,73 @@
+[
+  {
+    "label": "compile-original",
+    "command": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-O0",
+      "-g",
+      "-fno-omit-frame-pointer",
+      "-fsanitize=address,undefined",
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/original.c",
+      "-lm",
+      "-o",
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/replay"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  },
+  {
+    "label": "compile-repaired",
+    "command": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-O0",
+      "-g",
+      "-fno-omit-frame-pointer",
+      "-fsanitize=address,undefined",
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/repaired.c",
+      "-lm",
+      "-o",
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/repaired/replay"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  },
+  {
+    "label": "original-rvv-exact",
+    "command": [
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/replay",
+      "1"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  },
+  {
+    "label": "original-neon-exact",
+    "command": [
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/replay",
+      "2"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  },
+  {
+    "label": "original-equivalent-exact",
+    "command": [
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/replay"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  },
+  {
+    "label": "original-equivalent-padded",
+    "command": [
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/replay",
+      "0",
+      "pad"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  },
+  {
+    "label": "repaired-matrix",
+    "command": [
+      "/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/repaired/replay"
+    ],
+    "cwd": "/tmp/salty-shim-handoff-42b1cf13"
+  }
+]

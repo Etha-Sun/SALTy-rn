@@ -1,0 +1,1 @@
+独立普通C最小诊断，不是kernel候选，也不修改公共spec。局部weights[16]由任意float值初始化，直接调用原m4 loader，复用r11的前后scalar快照与三个关系；无新增前提。根command.json同时检验真实loader全部body、probe全部RTE/assert以及必须不通过的false控制。small-context通过也不能自动迁移到大kernel上下文；失败亦不能直接认定实现错误。尚待根solver执行。

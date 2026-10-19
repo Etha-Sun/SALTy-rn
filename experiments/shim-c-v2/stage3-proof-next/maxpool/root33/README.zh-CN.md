@@ -1,0 +1,1 @@
+root33 仅将真实 uint32 load/broadcast 的 loop assigns i,r 细化为 i,r.lane[0..vl-1]，merge 的 i,a 细化为 i,a.lane[0..vl-1]。保留 i、全部旧不变量与 caller cuts。不改变函数 requires/assigns 或普通 C。load/broadcast 的全部32lane零初始化仍在循环外；vl=0空写域，vl=32覆盖全部lane；真实caller原已证next_arg_vl给出1<=vl<=32。独立callee本身原无vl requires，vl>32的旧RTE债不能忽略，应完整记录并验证inline调用context。所有新的loop assigns是自身验证义务，不当作已证frame。

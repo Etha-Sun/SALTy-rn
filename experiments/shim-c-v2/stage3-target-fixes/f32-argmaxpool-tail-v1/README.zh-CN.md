@@ -36,6 +36,6 @@
 python3 experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/replay-runtime.py server2-runtime01
 ```
 
-需要支持 ASan/UBSan 的 gcc，不需要 Frama-C。脚本从 Git 中的冻结文件重新构造两版普通 C/shim，重新生成绝对 include，在独立 `.build` 中编译；分别复现原版越界、RVV/额外padding对照及修复版2100个case。当前机器 `runtime-replays/handoff-portable01/result.json` 已实际通过，所有被观察输入 SHA 保持。
+需要支持 ASan/UBSan 的 gcc，不需要 Frama-C。脚本从 Git 中的冻结文件重新构造两版普通 C/shim，重新生成绝对 include，在独立 `.build` 中编译；分别复现原版越界、RVV/额外padding对照及修复版2100个case。当前机器 `runtime-replays/handoff-portable01/result.json` 已实际通过，所有被观察输入 SHA 保持。另在全新不同路径工作树（无原 `.build`）实际执行 `clean-checkout01` 也通过，见 `CLEAN-CHECKOUT-REPLAY.json`；这仍是同一服务器的 gcc 运行验证。
 
 Frama-C 复验另需恢复与资格化工具环境，见 `docs/shared-shim/STAGE3-NINE-HANDOFF.zh-CN.md`。不要直接复用旧 matrix/fragment 文件中的绝对 `.build/plain` include，或把这条 native replay 当成 proof 环境恢复。

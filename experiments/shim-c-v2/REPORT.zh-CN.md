@@ -1,5 +1,7 @@
 # 修复模型后的完整验证结果
 
+第三阶段最新ROOT10交接：`docs/shared-shim/STAGE3-NINE-HANDOFF.zh-CN.md`、`stage3-proof-next/PROGRESS-ROOT10.json`。原九项新增整核0/9；Argmax在冻结C/shim合法域复现index尾部越界，独立新target修复及2100项运行验证完成，形式证明未完。正式manifest和下列33项历史结果未改，本轮无新收录。未经用户许可不push。
+
 第三阶段9个复杂kernel的新proof尝试和工具修复见 [阶段记录](../../docs/shared-shim/STAGE3.zh-CN.md)。新增整核通过0；独立新工具完成旧f32-vadd571/571复验，不能计作新增。以下历史结果及RESULTS.json保留。
 
 接手后的独立本地续作见 [RESULTS-LOCAL.json](handoff-local/RESULTS-LOCAL.json) 和 [分工计划](../../docs/shared-shim/PROOF-WORK-PLAN.zh-CN.md)。新环境完成f32-vadd571/571复验；qu8-f32-vcvt新完整报告838/845、剩7项，仍未整核通过；qs8的lane展开候选预算耗尽且无最终body报告。新增整核通过0，以下交接批次的原始记录和RESULTS.json保持为历史快照。

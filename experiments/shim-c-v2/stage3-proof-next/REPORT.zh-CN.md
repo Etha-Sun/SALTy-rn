@@ -1,5 +1,18 @@
 # 第三阶段九项：后续 proof 与独立审核
 
+## 最新阶段记录（ROOT10，已整理交接）
+
+当前入口为 `docs/shared-shim/STAGE3-NINE-HANDOFF.zh-CN.md` 与 `PROGRESS-ROOT10.json`。原九项新增整核仍 **0/9**；用户要求先整理本地提交供另一服务器续作，禁止push。
+
+- **新实际安全反例与独立修复**：原Argmax NEON在合法pixels1/k10/channel1、4字节index对象上读16字节，ASan复现。`stage3-target-fixes/f32-argmaxpool-tail-v1`仅修tail读，spec/harness/RVV字节保持；2100项ASan+UBSan/reference全过，独立审查通过，跨路径native replay实跑通过。fragment WP15/21，仍有六项，未整核证明。修复提交`42b1cf13`，原版和证据保留。
+- **DW45**：真实helper3/3、原copy frame1/1全过，但依赖未证distinct-base；46的validity/positive allocation仍未证。完整依赖与16个run在DW38-46-FINAL-HANDOFF.json，不能把局部计整核。
+- **GEMM90**：入口/旧frame组1/3，只有origin过，其他unknown。此前FMA局部结果保留，没有关闭整个依赖。
+- **旧Argmax41**：body辅助172/181，两整数helper40/40，global5/5。完整库存876非CFG body+5global=881，另36CFG；695属于主wrapper。两次1200秒全body（含no-Qed）均无最终raw；ACCOUNTING完整列明未完成项。此库存不属于新修复target，原NEON循环功能proof仍缺。
+- **模型**：Byte35完整knowncase556/571、15pending、complete=false，地址仍四个真目标未证且ground类型过滤需审计；仍UNQUALIFIED。Byte1..34因地址矛盾拒绝。全部Byte未用于九项。
+- audit32核对189候选、30169锁条目；contracts无新增requires。正式manifest11项308个源码/证据SHA重核：四整数2522、七浮点3970（总6492），这是历史记录哈希审核，不是本轮重跑全部证明。
+
+纠正：地址两个UNSAT来源是删除部分假设后的更强subset加既有forall实例，非完整原SMT；Pre控制未重现标签bug，不能凭heap数字后缀判断状态；此前“无新kernel反例”已由本次C/shim安全复现更新。以下历史阶段原样保留。
+
 ## 最新阶段记录（ROOT09）
 
 仍只处理原九项，新增整核 **0/9**，无真实 kernel 反例；不 push，冻结实现/spec/旧锁/manifest 保持。

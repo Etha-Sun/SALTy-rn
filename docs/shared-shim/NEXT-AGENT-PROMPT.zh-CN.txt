@@ -1,55 +1,35 @@
-最新 ROOT09：先读 experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT09.json 和 REPORT 顶部。原九项新增整核0/9、不push。Argmax41 两整数helper完整40/40、全部可达callee172/181，剩九个float memcpy；38/39 full各2400秒无raw，41完整body短预算汇报在跑。DW37四lane frame4/4，但distinct-base/copy-frame前件未证；GEMM88 actual最后copy的Unassigned过、Assigned freshness未过，总0/1。inline-Pre正反控制未重现工具错误。Byte34 strict556/571且因地址审计拒绝；独立35六组控制仅预设负例，地址仍四真目标未证，strict运行、UNQUALIFIED未用于九项。audit30为177候选/30169锁条目，冻结C/spec/manifest/旧锁保持。下面保留历史。
+继续 Etha-Sun/SALTy-rn 的 feat/shim-c，使用交接Git bundle中该分支最新HEAD；中文沟通。先查 branch/status/remote，保留已有工作。外层研究分支、Sail/Coq路线不属于本任务。
 
-ROOT08 新完成：Argmax38同一候选 **15/15**，已证入口/四frame和原索引关系全部闭合；仅 checked rewrite，无新前提。正在完整验证真实内联u32调用及其他可达函数体。DW33两helper **4/4**，caller与新增读取RTE仍待验。GEMM83扩大组1200秒无raw。native35仅删除两处地址位宽Admit，独立源码构建/observer构建完成，实验锁44574项，SHA 523fdb2277320314738995b9a6030f1c3ee24b0584bb27a55b1dab17d8e0056d；重新控制中、未qualified。
+必须完整阅读：
+1. AGENTS.md 顶部当前分支说明。
+2. docs/shared-shim/HANDOFF.zh-CN.md（历史段不替代最新ROOT10）。
+3. docs/shared-shim/STAGE3-NINE-HANDOFF.zh-CN.md。
+4. experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT10.json 和 REPORT.zh-CN.md 顶部。
+5. experiments/shim-c-v2/MODEL-AND-TCB.zh-CN.txt、verified/manifest.json。
+6. docs/shared-shim/LOCAL-RECOVERY.zh-CN.md，以及所用qualified模型的README/验收记录。
 
-ROOT08 地址层审计更新：`stage3-proof-next/root-review/byte-address-audit01/AUDIT.json` 确认旧Byte原型继承的全称地址位宽Admit与无界offset静态逆关系冲突。Byte1..34均不能qualified，即使strict已知例全过也不例外；这些版本从未用于九项验收。保留原模型/锁/日志，独立native35仅删除这两处非定义型位宽假设并重新构建、控制。Typed既有验证不使用这些Byte事实。
+只做原九项：GEMM3、卷积3、池化2、SPMM1；九项外的qs8/qu8转换不是你的任务。允许本地commit，未经用户重新许可不push、不force-push。最后用户要求先整理交接供另一服务器续作，本轮工作已停止新solver并保存结果。
 
-最新 ROOT08：先读 experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT08.json 与 REPORT 顶部。GEMM80 source4/4、81 after8/8，82六frame预算600秒无raw；合并83及入口/分离候选继续。Argmax36为14/15，新frame全过、原pointer子式未过；DW32 helper2/2，caller仍需验。SPMM缺旧Typed的uint64地址往返桥，未加公理。Byte34严格571复验仍运行、未qualified；整核0/9，原C/spec/manifest/旧锁不变，禁止push。下列旧阶段记录保留。
+当前：新增整核0/9。原正式11项保持，七浮点3970+四整数2522，manifest SHA为430961d6744cca9f23241806484b62deb85cac4c00009906232bfb7ddd06999d。
 
-最新ROOT07：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT07.json` 与 REPORT 顶部。仅原九项，新增整核0/9、禁止push。GEMM74真实高load lane0为7/7且helper2/2；76八lane扩大48/56，四second-source与四after1仍未证，库存1483+40 CFG；可达callee373/378，五个canonical_nan/bit-memcpy桥债保留。Argmax34 focus9/10，checked split确认仅索引指针子式未过；33完整调用闭包/35过滤策略仍运行。Byte34六组控制、observer比较均符合预期，store46/46及主程序五目标5/5；正式v7已知例3600秒独立复验已启动，仍未qualified，旧锁/manifest不改。以实际run结果为准，未完成/局部均不算整核。下面保留历史。
+重要新事实：原Argmax在pixels1/k10/channels1、index恰好原spec大小时，NEON第二轮tail读16字节越界；ASan已实际复现，RVV exact和原NEON额外padding对照正常。不要沿用旧“无反例”。这是C/shim内存安全反例，不是已证数值不等或ISA反例。
 
-最新ROOT06：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT06.json` 和 REPORT 顶部。GEMM71 bias组38/38、完整库存1453；新增6个ghost读取RTE及高四路FMA扩大组待验，72继续前移真实高weight的load关系。DW2d root30完整1655，worker240秒/root480秒均超时无raw。Byte30 codec482/488（六个预期负post）、真实store45/46；31加入已证generic memcpy body20/20+trigger1和算术2/2，store仍45/46，未qualified。Byte27正式v7已知vadd1800秒超时无raw，不算通过。所有Byte版本未用于九项验收。新增整核仍0/9，原C/spec/旧锁/manifest保持，禁止push。以下计数保留历史。
+独立修复target：experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/。只改NEON tail的index载入，原spec/harness/RVV字节相同。source_guard真；2100项ASan+UBSan和标量reference实际通过；独立审查通过；fragment WP15/21，未整核证明。旧root41完整库存881（181辅助+695wrapper+5global，另36CFG），其中callee172/181；这些结果不能移植为新target的库存或通过率。原NEON仍缺完整循环功能proof。
 
-最新ROOT05：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT05.json` 和REPORT顶部。GEMM61为85/89，64新9个source/dup/transport及旧8项定点17/17；同候选扩大组98/98，完整1339项尚未验收；本地检查点691d6876，未push。62高四lane扩展完整库存1404。DW29 helper2/2、caller0/4。Byte25 codec479/488仍3真目标+6负post；26新body6/6正在控制，所有Bytes仍未qualified、禁止kernel采用。SPMM原模型已有valid→static事实，Typed raw地址范围及affine仍未证，独立控制39/45不算kernel错误。新增整核0/9、manifest不变、不push。以下计数保留历史。
+跨服务器可先从仓库根运行（新run名）：
+python3 experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/replay-runtime.py server2-runtime01
+该脚本只需gcc+ASan/UBSan，从Git冻结文件重建native输入，不依赖旧.build include。它是有限运行验证，不是Frama-C bootstrap或proof。
 
-最新ROOT04：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT04.json` 与 REPORT 顶部。GEMM56首FMA lane0调用6/6，59四lane23/24，61实际补transport后a3定点4/4；完整库存59=1307、60=1327，扩大组仍在跑。DW27前缀/所有lane关系3/3，完整新增义务closure仍在跑。Byte23 partial-frame30/30、依赖14组30/30，但完整正反控制及严格known-case未完成，所有Bytes仍未qualified、不得用于kernel。新增整核仍0/9，manifest不变，不push。以下旧计数作为历史保留。
+DW最佳种子frame-root45：helper3/3、真实copy frame1/1，但依赖未证next_weight_distinct_base；读dwconv/DW38-46-FINAL-HANDOFF.json。root46分配组2/4的入口validity/positive allocation仍未证，不可把后续green计依赖闭合。
+GEMM候选90：origin/entry-validity/frame三项1/3，只有origin过；补入口有效性和真实tmp copy分离。较早FMA/lane绿色不等于完整kernel。
+SPMM与Argmax共享地址/位表示桥未解决。Byte1..34因已确认全称地址范围矛盾而拒绝；Byte35 strict556/571、地址仍四真目标未证、ground类型过滤需refinement审计，仍UNQUALIFIED，禁止用于九项。不要只加时间或继续堆未资格化模型。
 
-最新ROOT03：先读 stage3-proof-next/PROGRESS-ROOT03.json 和 REPORT 顶部。GEMM47局部40/48、48扩展44/52仍八个after-FMA未证；DW21真实loader18/18但caller6/9；QD8 r10真实AND闭包30/30。IGEMM完整尝试373/771流式valid、缺raw。仍0/9整核、不push。Bytes v19仍未qualified，不得用于kernel。旧记录以下保留但局部计数以ROOT03为准。
+先恢复环境、核对锁与源码SHA，再以新run名完整复验已通过case。当前合格入口分别handoff-model-plus、stage3-unary-front、stage3-bitwised-front-v2；具体SHA/源码/恢复顺序在最新handoff。二进制/opam/wp-share/observer不在Git，旧锁含绝对路径。换路径或重建必须保留旧锁、独立新版本、正反控制、重新冻结、完整knowncase复验；没有已验证的一键bootstrap。不能仅clone+安装官方Frama-C就声称恢复。原服务器/zp_vegeta环境也须核对是否包含新修复。
 
-【最新执行证据补充】
-九项最新：QD8 nibble算术helper784/784，真实三callee42/47，caller不完整；GEMM36独立frame8/8，39相关组9/23、完整分母1243；DW17 helper2/2、真实loader13/13、caller2/6；CONV r4完整尝试3500秒缺raw，2328库存中493 valid、68已尝试未证、1767无完成结果，另轮global6/6不可拼接。Bytes实验最好memory28/34，仍未资格认证且未用于kernel。继续补实际proof，不能把这些局部成绩作为整核通过。
-固定独立stage3-bitwised-front-v2已完成根资格审核QUALIFICATION-ROOT01.json：真实高位/IEEE/FMA正反控制及唯一f32-vadd-r2正式v7回归571/571、严格标志全真。旧锁不改，QD8新候选可用新锁；原九项整核仍0/9。所有stage3-byte-fp-front-v*仍未资格认证，禁止用于kernel。最新proof和失败看stage3-proof-next/REPORT.zh-CN.md，保持不push。
+禁止改当前冻结C/shim/spec/wrapper/旧模型/锁/checker；不加finite/nonNaN/地址范围前提、不弱化输出、不加axiom/assume/admit或无body合同、不跳真实callee、不改Real、不把FMA拆普通乘加。真实bug只可独立新target保留原版并重新冻结。单个proof.patch收纳ghost/helper；保持代码小、局部。
 
-【2026-10-19 当前任务优先级更新】
-当前只处理第三阶段原九项及其真实依赖；用户要求继续直至解决优先三项并尽量完成九项。不得扩展 qs8/qu8 等九项之外任务。允许本地 commit，未经用户重新许可禁止 push。
-最新阶段报告：experiments/shim-c-v2/stage3-proof-next/REPORT.zh-CN.md；检查点 bdf42bf 之后还有工作，先核对 branch/status 保留所有候选与日志。新增整核通过仍 0/9，局部组通过不能称整核通过。
-当前 qualified 模型为 handoff-model-plus；argmax 使用独立 stage3-unary-front。stage3-byte-fp-front-v1 仅未资格认证的独立实验：控制尚未全过，CVC5 原型编码不兼容，严禁用于 kernel 或声称恢复成功。完整失败与未证依赖见新报告及逐项 STATUS。以下历史交接保留，其旧下一步优先级已由本段覆盖。
+整核验收必须complete=true，所有raw通过，pending空，source_guard/unchanged/model_inputs_unchanged/model_control.accepted真，missing_body_ensures/global_lemmas空，真实helper/callee/全局完整覆盖。当前自定义runner是诊断；需审计其实际inline、ghost调用闭包和strict checker支持，不能用full名字、global全绿、timeout0/0或不同版本拼接计通过。
 
-你接手我的仓库 https://github.com/Etha-Sun/SALTy-rn ，使用 feat/shim-c 最新提交。请直接推进工作，用中文沟通。
+下一步集中闭合一条完整依赖链，优先DW45的validity/base及GEMM90入口/旧frame，随后在可靠模型下补修复Argmax全程序；SPMM先解决经审计的地址表示桥。可以多agent，但独立候选/日志且主agent独立验收。不要继续只累积局部绿色。
 
-先读 AGENTS.md 顶部当前分支说明，再完整读 docs/shared-shim/HANDOFF.zh-CN.md。这份交接文档包含目标、目录组织、环境恢复、复验命令、剩余26项卡点、修改边界和代码倾向。根目录 SERVER_HANDOFF.zh-CN.md 的 Sail/Coq 是另一条历史路线，不要切过去；Arcadia-Y:verification 是最初参考分支，不是本次推送目标。
-
-当前结果基线 be5a536：原4项整数已收录；原隔离的7项浮点在修复后的独立模型下全部完整通过、打包canonical复验通过，合计3970/3970；剩26项实际补过proof并完整尝试，新增整核通过0，GEMM尚未通过，另3项缺target。本轮无新kernel反例。先看 experiments/shim-c-v2/REPORT.zh-CN.md、RESULTS.json、MODEL-AND-TCB.zh-CN.txt、integer/STATUS.json 和 complex-v3-next/FINAL-STATUS.zh-CN.md，不要把旧绿色记录算当前结果。
-
-目标：共享普通C shim + 简单family模板生成spec.h和wrapper；先冻结原C/shim/spec/wrapper，再由agent补proof，实际验证原NEON与RVV程序输出等价。最终公开功能目标就是输出相等。文件分开neon.c、rvv.c、spec.h、harness.c，每kernel一个proof.patch；辅助ghost/helper放patch里。额外proof helper文件确有必要才解释提出。
-
-环境优先复用同服务器worktree：
-/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence
-真修复版Frama-C经 experiments/shim-c-v2/model-front/frama-c.py 调用。Frama-C33/OCaml4.14.2/Why3 1.8.2/Z3 4.12.5/CVC5 1.2.1；详情见交接和 ENVIRONMENT-HANDOFF.json。编译器、opam、wp-share、求解器不在Git；配置/锁包含绝对路径和binary SHA。新机器不能仅clone+装官方Frama-C就声称恢复。保留旧锁，独立重建/换路径后新建环境版本、跑正反语义控制、冻结新manifest再实际复验。没有从零一键bootstrap已验证的承诺。不要修改全局环境或要求我提供密钥。
-
-先检查branch/status/remote、已有文件与资源，核对冻结SHA；环境恢复后只跑一个已通过小case，使用全新run名和绝对--framac路径，保留canonical日志。先证明环境可用，再继续剩余kernel，不要直接并发重跑33项。
-
-接下来优先qs8-f32-vcvt（剩11项）、qu8-f32-vcvt（剩8项）：全部intrinsic已通过，补kernel/wrapper关系后必须完整检查；再考虑f32-vcmul（helper全过，主程序41项）和共享uintptr/float位表示/struct packing桥，之后推进GEMM。可以高并发agent，但各自独立候选目录/日志、固定模型、有限内存和时间预算，主agent独立验收。
-
-绝不能：
-1. 原地改已冻结实现、shim、公共spec/wrapper或旧模型/锁/checker；改SHA掩盖变化；覆盖旧证据。
-2. 放宽前提/加finite或非NaN限制、弱化输出关系、改普通C、加入axiom/assume/admit、无body外部ghost合同或跳过实际callee/body。
-3. 用已知不健全的Bytes+float模型或Real抽象获得绿灯；整数Byte必须保持编译器级拒绝float codec。
-4. 把局部helper/定点VC通过、仅global6/6、超时0/0或历史记录说成整核通过。
-5. 偷换FMA为普通乘加、改变浮点观察或固定VL范围；把未证直接说成kernel有bug。
-
-可以在新独立版本补共享shim/简单模板、证明注释/循环不变量/有body且检查的ghost/checked策略；真正工具缺陷可独立修复并先审计/正反控制；真kernel反例可保留原target再修新target，重新冻结再证。已有v7只允许在真实kernel定义前补需body验证的ensures，不准加新requires/assigns/terminates/wrapper合同；integer原型条件不齐，不能照搬v7偷偷加前提。
-
-验收必须同时满足complete=true、所有raw VC通过、pending空、source_guard/unchanged/model_inputs_unchanged/model_control.accepted为true、missing_body_ensures/global_lemmas空，原C/token/spec保持、proof及模型SHA核对，并保留全部日志。通过只是在声明C/shim模型、原合法域、固定VLEN128和RNE下的输出关系；ISA→shim和工具链仍在TCB。浮点是数值相等或双方NaN，不比较零符号位/payload/flags。
-
-代码保持小、简单、局部，不建复杂生成器、不夹带重构、不堆无用测试。保持旧版本；发现真kernel错误时独立保留原版和修复版。请先简短报告HEAD、环境状态、理解的范围和第一个具体任务，然后动手；完成阶段提交相关源码/证据/文档并更新逐项状态。我已授权推送本分支到自己的origin，禁止force-push或覆盖无关用户工作。
+第一份回报简短给出实际HEAD、环境可复用/待恢复状态、所选具体完整依赖；然后直接动手，不需再次请求已有授权。

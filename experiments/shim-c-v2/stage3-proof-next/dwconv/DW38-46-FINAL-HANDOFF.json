@@ -1,0 +1,700 @@
+{
+  "scope": "DWCONV original nine-kernel task; handoff only, no new solver or proof work",
+  "best_candidate": "frame-root45",
+  "whole_kernel_complete": false,
+  "dependency_closure_complete": false,
+  "best_results": {
+    "helper": "helper01: 3/3 raw; full next_dw_disjoint body, two conditional ensures plus assigns",
+    "caller": "copy01: 1/1 raw, three checked leaves; Wp.havoc -> mandatory positive separation cut -> Wp.instance -> Qed",
+    "remaining_dependency": "Caller still uses preceding unproved next_weight_distinct_base. All other inherited prefix assertions/loop invariants remain whole-kernel obligations. Helper body itself has no new requires, but post conclusion is conditional on distinct bases. This is a real local frame proof, not complete caller/callee closure.",
+    "allocation_attempt": "frame-root46 base01: 2/4 raw; direct Pre validity and positive Pre allocation timeout. Zero local allocation and distinct-base passes rely on those pending assertions and are not independent closure."
+  },
+  "fresh_replay_commands": [
+    "python3 experiments/shim-c-v2/stage3-proof-next/dwconv/run-frame-root38.py frame-root45 handoff-helper01 helpers --budget 300 --properties next_dw_disjoint",
+    "python3 experiments/shim-c-v2/stage3-proof-next/dwconv/run-frame-root38.py frame-root45 handoff-copy01 selected --budget 480 --properties next_weight_copy_frame"
+  ],
+  "resume": "Use root45 as source for a new independent candidate; do not merge root46 pending assertions as facts. Investigate initial weights allocation positivity and cursor base preservation, with all new helper/body/invariants verified. Original model has valid_rd and shift_float32 definitions; no evidence of a missing address axiom or a Pre-label bug.",
+  "environment": "Restore exact frozen model/binary/share/solver locks first on a new server; commands assume repository cwd and existing audited absolute-path environment. Do not claim fresh clone is configured. Runner uses par1, solver30s/memory2048MB and is diagnostic, not formal checker acceptance. Avoid its full mode without auditing complete ghost-function closure.",
+  "commands_without_result": [],
+  "all_recorded_commands_have_result": true,
+  "runs": [
+    {
+      "candidate": "frame-root38",
+      "run": "focus01",
+      "classification": "deliberate interruption after incorrect initial diagnosis; see preserved root38 ERRATA; not a kernel/prover counterexample",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/focus01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/focus01-result.json",
+      "exit_code": -15,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root38",
+      "run": "inspect01",
+      "classification": "none/print/export only; no solver acceptance",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/inspect01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/inspect01-result.json",
+      "exit_code": 0,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root39",
+      "run": "focus01",
+      "classification": "wall budget exhausted; no final raw; root42 inspect was startup/environment delay, root39 focus included actual unresolved solver work",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/focus01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/focus01-result.json",
+      "exit_code": 124,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root39",
+      "run": "inspect01",
+      "classification": "none/print/export only; no solver acceptance",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/inspect01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/inspect01-result.json",
+      "exit_code": 0,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root40",
+      "run": "inspect01",
+      "classification": "annotation parser error: array is not a pointer; corrected only in independent root41",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/logs/inspect01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/logs/inspect01-result.json",
+      "exit_code": 1,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root41",
+      "run": "allocation01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01-result.json",
+      "exit_code": 0,
+      "raw_passed": 1,
+      "raw_total": 2
+    },
+    {
+      "candidate": "frame-root41",
+      "run": "inspect01",
+      "classification": "none/print/export only; no solver acceptance",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/inspect01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/inspect01-result.json",
+      "exit_code": 0,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root42",
+      "run": "copy01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01-result.json",
+      "exit_code": 0,
+      "raw_passed": 0,
+      "raw_total": 1
+    },
+    {
+      "candidate": "frame-root42",
+      "run": "inspect01",
+      "classification": "wall budget exhausted; no final raw; root42 inspect was startup/environment delay, root39 focus included actual unresolved solver work",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/inspect01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/inspect01-result.json",
+      "exit_code": 124,
+      "raw_passed": null,
+      "raw_total": null
+    },
+    {
+      "candidate": "frame-root43",
+      "run": "base01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01-result.json",
+      "exit_code": 0,
+      "raw_passed": 2,
+      "raw_total": 4
+    },
+    {
+      "candidate": "frame-root43",
+      "run": "positive-smt01",
+      "classification": "none/print/export only; no solver acceptance",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01-result.json",
+      "exit_code": 0,
+      "raw_passed": 0,
+      "raw_total": 1
+    },
+    {
+      "candidate": "frame-root44",
+      "run": "copy01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01-result.json",
+      "exit_code": 0,
+      "raw_passed": 0,
+      "raw_total": 1
+    },
+    {
+      "candidate": "frame-root45",
+      "run": "copy01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01-result.json",
+      "exit_code": 0,
+      "raw_passed": 1,
+      "raw_total": 1
+    },
+    {
+      "candidate": "frame-root45",
+      "run": "helper01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01-result.json",
+      "exit_code": 0,
+      "raw_passed": 3,
+      "raw_total": 3
+    },
+    {
+      "candidate": "frame-root46",
+      "run": "base01",
+      "classification": "completed diagnostic",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01-result.json",
+      "exit_code": 0,
+      "raw_passed": 2,
+      "raw_total": 4
+    },
+    {
+      "candidate": "frame-root46",
+      "run": "inspect01",
+      "classification": "none/print/export only; no solver acceptance",
+      "command": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/inspect01-command.json",
+      "result": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/inspect01-result.json",
+      "exit_code": 0,
+      "raw_passed": null,
+      "raw_total": null
+    }
+  ],
+  "sha256_evidence": [
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/proof.patch",
+      "sha256": "fc1de6061e24474dee30025e93757edfdb2418c2e92a10f4025ff80a3edd27b9"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/frozen.json",
+      "sha256": "7f93dbb71d2777b55b91db59cb25ba2aeb15ff17e524859e3a6848712d6c9fc0"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/freeze.json",
+      "sha256": "72d6a581eb20a017a686145ba06b318fa68b7c955eadf660e92a070db2fdd75f"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/source-guard.json",
+      "sha256": "aef72a17f51a469f280be67dfce9b53ef4435db5eabe9c298cd40f0257a3e8c8"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root38.py",
+      "sha256": "f9c4f493fce925defe7af146f94a9c05f9662f4ee7b0a434816433935cc5dd9d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/focus01-command.json",
+      "sha256": "f372252589e4144824836bd619b974689581e342c50be153b7634ae1c919f8c6"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/focus01-result.json",
+      "sha256": "d872acc24a43d3e85925d7cdfab6f9280ad52ab3e9b2ff01675c0739bb70413b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/focus01.log",
+      "sha256": "179ff2f0adced7649f7b992c233971ae42b415c1cc453839ef896ba278bbb5ad"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/focus01-events.jsonl",
+      "sha256": "a1b8e06b1b173e04c67edd8682cd741392291468fbeda1bf294b7a0d959588b4"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/inspect01-command.json",
+      "sha256": "54eaefe173c6334fc0c10fe46135c3db25c89982b601d0f097f3bd527816aa7e"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/inspect01-result.json",
+      "sha256": "05b6087bd0eefc598c7ddcbb365740a52284e89e480c913ee3f5946bc7f8015c"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/inspect01.log",
+      "sha256": "4a0aac70445b469ea482f5f90db3e6865fe69c56f719f864ab4a5de0f3e633b0"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/logs/inspect01-events.jsonl",
+      "sha256": "830c741eb7fb5b19ab697cde8858dc7d76272e449b136daca62cda6b39dbb736"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/proof.patch",
+      "sha256": "a9cc93b2872d9f06dcd57b270cc3c6a88981441c0e8f436049250e63caf32ee6"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/frozen.json",
+      "sha256": "c9f1ae1d958931b19e57cb7090c5c857117a5ef61af2201631a0179b644a4251"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/freeze.json",
+      "sha256": "0196f86abb4a23f36a99f5088bb2f92baa0b7d7f9e248233c91d6b9db9ad8ebc"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/source-guard.json",
+      "sha256": "7dd8b3fedf9b75867cd2d83fc0c6e09649cda86d602a3bf5c55423b2270c53a9"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root39.py",
+      "sha256": "5af049c66f1e42f10bdf05e83e4f5bc38a169e4335d3b19f8d44a483009acc37"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/focus01-command.json",
+      "sha256": "fea5c339bdc47c1f11be63141a13111306072c43e24497f966fdacc0df20d722"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/focus01-result.json",
+      "sha256": "510ba4570e961cade0c0612541853afdaae37cbd8643e22e7f55be6ecfd34bfd"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/focus01.log",
+      "sha256": "a722fa9a34a5bafa4babbbf08a7d81c696cd91246864e53495dcb3572c2b17c8"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/focus01-events.jsonl",
+      "sha256": "b07495f8a2296fb2687be50daa7f7540a32b2bc0e272054ffb70b06862069dfd"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/inspect01-command.json",
+      "sha256": "265f8d0387a4f49c73db54f29819cee7aa6fa8bf7991ddde5aa60c4866a25069"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/inspect01-result.json",
+      "sha256": "597ff8f999e27d1dffd0f3466a6c09cf1993d7f2c4a5241961c2141b8cf36429"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/inspect01.log",
+      "sha256": "4c7e970aa534fcb7d14d6f7a950b5a3580cc9a136fbf663db6292c8c525d154d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root39/logs/inspect01-events.jsonl",
+      "sha256": "d3ba2fb1aff99c5110e1c93b1bb96be4c131ddd9d65f8ef28f6505fb0f415209"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/proof.patch",
+      "sha256": "2327f74fc5feb23dc280988ac80deb591efae3c48d0dcde4aa7038f61fd78d4a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/frozen.json",
+      "sha256": "2a349d82b5970ab9a81a30f174eb3c3ea9254c18d2f4c2bc7b07a3504dae2c99"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/freeze.json",
+      "sha256": "019b5f94c15137c6312ace152bc41292bc1adc85ae41ead8fca3aa199b173f17"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/source-guard.json",
+      "sha256": "309c273013f6850890debb4ba13179a845278a8087b1ef056c87f838b23ae463"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root40.py",
+      "sha256": "67222bef30857925f8b7d890e81ea2aac91492c4378e40e888ed1115ed32528b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/logs/inspect01-command.json",
+      "sha256": "0e76bce8589ccc354823b1ee0515414a202f2fe43bb142d6fbbe2824b396d310"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/logs/inspect01-result.json",
+      "sha256": "dd43ca85ddd9ac7f5aa0ab540ba31f89fded18269b2c240ff3357cb923af2507"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/logs/inspect01.log",
+      "sha256": "7273c577178f7bd90441588265554c4a4a5b4faf5c58569c0d0ea19569893dc0"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root40/logs/inspect01-events.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/proof.patch",
+      "sha256": "e23e96cf0bd209f88a6ca7b3351bad6a8f12eede0ceede02f70a924bc1484327"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/frozen.json",
+      "sha256": "86dd45cbcf51cf85a277efc7b4674e5513d6aa9ee8f2efa84a01bf944c19ab8a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/freeze.json",
+      "sha256": "d745f6297f35497d8e2cd339ad6973bea25a1e9fe2c0a9eeda5b45de050f93bb"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/source-guard.json",
+      "sha256": "264ca26c33cf362c47e5bdff1a6aac7f1cfda9680bbf4667152586ac3d45673d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root41.py",
+      "sha256": "eea8261030f353b1b50813b7c8b96eaa4fa7813dd6d87665d33d6ac9f9e25eab"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01-command.json",
+      "sha256": "ff18b3c3f254ad38b666875e3152dd0b364c44a83a46c4fbf98fbc5dfde45e6c"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01-result.json",
+      "sha256": "54685feb9fa6afde96f6ced1031eba705db5918b34cd141d8b20ed551b5bfc9a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01.json",
+      "sha256": "82a5794143c21eb69d5dd0ea645e3d4709e6a7fcd3cf0d9a96dcad2187daaf63"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01.log",
+      "sha256": "9432d560f48fde8a8c5a438eba190678255d00eeecc9045e8f8f013c63ed3286"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/allocation01-events.jsonl",
+      "sha256": "98324634b89fa5a3ea5ce88146e997e3704d60c7b785b426771fb8b974e0f2df"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/inspect01-command.json",
+      "sha256": "0590c05ef0765f7d12b518cbf375b4daa1810c112833b8bdf8c8089dd800894d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/inspect01-result.json",
+      "sha256": "47819bfcaf2b64e0d0ab9b3ae1e15cf52fcb40f534526f02fdf2e45a614f79c5"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/inspect01.log",
+      "sha256": "d4d6646961fe2709516c391aabe223ac3c492f6c43eb313afc3b499dc23f7d31"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/logs/inspect01-events.jsonl",
+      "sha256": "54359a0d2b0d274286e83794a5552e58937f020685eb22dbbc5b68ab5c5834f0"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/proof.patch",
+      "sha256": "d34c2e028a883401f2627f89ca098f50b0b33f4a7b18df89ff756b13661f81cf"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/frozen.json",
+      "sha256": "3f5a60fbd67d486d7d79bfa1c5b551866a3fbd3ba74719dc6d3cf5eaf8e3a418"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/freeze.json",
+      "sha256": "9f8c42ae0eeb313079a67ef98fc73d5865a5bf4c917a19247d27eaabcb9f358b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/source-guard.json",
+      "sha256": "6fb97a23570436770f3966b2e17ef305ee61c58756e842b735970fdea1707375"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root42.py",
+      "sha256": "d02e3b0348e4bec8ced79c39f28a1092b0bab598d7dac52c44c1fc1bb54b2e00"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01-command.json",
+      "sha256": "829ef185440f0573a9256848c84f4062070fa70f0fad1c4a7171c36d6777f29f"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01-result.json",
+      "sha256": "84479740bfc69603374512abac54349b5246727f7bd68edffb14b8330a99903e"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01.json",
+      "sha256": "c291fc9a4d95fe8f9edb9675837ecdfe437798d77ce2fe6d10882b580bfa1f6f"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01.log",
+      "sha256": "7e2c3eba98754d559ff1ea415b493822b6cd07fd52eec2d1c7de713b5c94bb86"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/copy01-events.jsonl",
+      "sha256": "2465aac49e7aecdaa15392a59e54f296116c04cc987d052be632a7339735a417"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/inspect01-command.json",
+      "sha256": "05fa72df7b4fde76a54ec340a211829cdedd90c99286431cc498097d582fa05d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/inspect01-result.json",
+      "sha256": "7ca601ae8baef1a6422b5af59474a69cf75f92228347b99f0abeb700b70bebfd"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/logs/inspect01.log",
+      "sha256": "0281312497d4677a2812ab18499b1438dac59ef3399e5248ef5d58cd0c7cc78b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root42/proof-script-evidence/equivalent_assert_next_weight_copy_frame.json",
+      "sha256": "63a9cc40b663d173cdd654157c88be4a5e76be36c532fb39ac22f21a7ec930d9"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/proof.patch",
+      "sha256": "27b90d9dd5e56f2ea0370f0ccb42759b4d32a21e2a288c2db5022bd7f06810be"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/frozen.json",
+      "sha256": "b90ab9541cb1cee54f29b7c5e7d994aacef1e374dae838c33f38d3f825fbb840"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/freeze.json",
+      "sha256": "585bd7cb134ce757fcd57b57af114d61471794f1b11b989f452638e302c2dace"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/source-guard.json",
+      "sha256": "959672a4abe8af3b86c3d4e0258faee735f37f669a3e054195ac33f692ae12d8"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root43.py",
+      "sha256": "77d329de4bbdc7da6443463d9dd9a917520bce0d4c95b68f0b03bef395f7a7df"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01-command.json",
+      "sha256": "2957cf131a1d9176760eb754193f44e0f6481c796119f237f08fe7b6a5eece12"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01-result.json",
+      "sha256": "77262bda48143decefe932997ec75dc01a21364f1dd1420bdaddc93103db61b2"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01.json",
+      "sha256": "faf58fde3d24dc17e174d5b9421a967d1369ee99173bcc35f55f34eabf3c237b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01.log",
+      "sha256": "cd1d908266650ddf933fd123380ab8f0b524350bbbb39074d8c8e26a226cd75a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/base01-events.jsonl",
+      "sha256": "86673fbb53a7903c84b5f0f60548a95eb34281e82a963fe986c2408ab3f6536f"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01-command.json",
+      "sha256": "cf6bc44fd7ff8f5eaa94090fca9990442e82c44bab71e249e3c780a5de5c804a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01-result.json",
+      "sha256": "b7ab496b9e5ac76888393a71ed3f518ad6a56da90466f60fa47a8eb5c240bbfb"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01.json",
+      "sha256": "0b2310f80b336341c4300eaf6d8f87f57361d5340a2a3c816ab0377539d88a99"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01.log",
+      "sha256": "d16d209eb3389d0615cc3a93d0269c6d3493dfb109d94eaf06006883a15674cf"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root43/logs/positive-smt01-events.jsonl",
+      "sha256": "fe5f1520f37bf62aca58bdac8de97d26d17ce4081e38b511800f0203e6ce07ad"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/proof.patch",
+      "sha256": "58588ddbb178de14bb1c2407327702d497a92e13ea90f4c22a9227efa60fb53e"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/frozen.json",
+      "sha256": "159e72e1cece2ff060c191c70093fa51a82dccfa8ab37415de39561dc3413eef"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/freeze.json",
+      "sha256": "c528927986032f38c7271fa14ae86c29bb954626865ab4280b873258a7f40d52"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/source-guard.json",
+      "sha256": "1caa2168528d471a48e1239143f7107db4891b98e17201495584aa897ee14cd6"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root44.py",
+      "sha256": "20b7cf4db981a05ae15103f1d66a3bbc3c7f285454256733225747ca27582411"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01-command.json",
+      "sha256": "a9bbf3f8ecb0afaf78d84fa5ee1edc7f4f60c2b75a2800469c3d97aea5ae1b1d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01-result.json",
+      "sha256": "146ecd0cb092ee46f0c32ebf92f66b58b688b502873245878f8e105a142c1e0b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01.json",
+      "sha256": "00c15209ab1a82bb3104c4859e78836a18e3020da95ced433ee815510c303e02"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01.log",
+      "sha256": "97bf05c6fb5f644aba96b83fc8d4e94531d7e19f7141bb3d7851652d3f647568"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/logs/copy01-events.jsonl",
+      "sha256": "e1e4f03549ce244f7881f39d72d85cb1310609a3b3a11324311b5bcc661e3b8a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/proof-script-evidence/copy01-index.json",
+      "sha256": "af0a469b4648feab00c24177fd8bbbe28631a9f9f48bac590366db5e8adf794e"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root44/proof-script-evidence/equivalent_assert_next_weight_copy_frame.json",
+      "sha256": "dce64bd820af9b66176a6ba5c69afdfec20b1b838e37e0062b0edade6cac0dc0"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/proof.patch",
+      "sha256": "a3791641f0a684b940fd580235b9911e5eb60d0ff3c694b4b653deaad689f321"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/frozen.json",
+      "sha256": "8921c777c4aacda33e44ba696adb0ccb5e9689ab985fab030c1a2e0a3ba43248"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/freeze.json",
+      "sha256": "d3e004c32c5454d8b2c5f1a417889ca0d28105cf9a2b949e806f5f6ce41cab42"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/source-guard.json",
+      "sha256": "395936dd5475e5cdeb499155f0d45cf2031efb2dede7297546358098ea668ad0"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root45.py",
+      "sha256": "e9122ade1ddae1d141df05ede9eb98faf05bf76fb723531f7f7609a83785179a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01-command.json",
+      "sha256": "f1211ee808f21755521b5375feb3d3de19aff99d21ad0407103fa540127a0463"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01-result.json",
+      "sha256": "e238799b415e08e352898ed8cd862c5b7c20bcf3729594c7a27580f6bba4f986"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01.json",
+      "sha256": "c23aeec24f25045525b621d77bbd2e5a824464691f229e4cdce8b8aabac0ffdb"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01.log",
+      "sha256": "d135d863f4ec3ed345d47ce6270566eeb1bb40e7d775259e7deaaf8817affb3a"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/copy01-events.jsonl",
+      "sha256": "c13d2b6369e6184a2664135cf018114fb258287cb8e2bc07b043643268b536dc"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01-command.json",
+      "sha256": "f9f842bcacd58bdc8ef86413e15964cfd9d7c8e0fd231065c141c6b799a9a876"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01-result.json",
+      "sha256": "07e6a62abba1b399e9bad6e69561e17e7e1e62a1a743d25dcea79084989309c4"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01.json",
+      "sha256": "6f68033abb5047d8b3bd7589095b28368186ef749193d860a2bc9ffb07ed2e20"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01.log",
+      "sha256": "1383841bf8ec1884c3fddb85687e3cf4837168e97c5233d984225a4d932bb1d5"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/logs/helper01-events.jsonl",
+      "sha256": "99f776c65be7092830dbe262573c7e9eee436437aa2490f1f52fca160037f0c8"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/proof-script-evidence/helper01-index.json",
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/proof-script-evidence/copy01-index.json",
+      "sha256": "7f8d0a7ddb926c39f4628b374e961de0a28abeead6c11f497c44ffd17a7f0191"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root45/proof-script-evidence/equivalent_assert_next_weight_copy_frame.json",
+      "sha256": "eef47953bcf786315af2faf484e7c37d0087f006996fd1e78edd1fe329c25aa6"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/proof.patch",
+      "sha256": "8105f85e23941223537781a89d37ce078b6b7e98fe72c5faa098bac991e3f9b7"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/frozen.json",
+      "sha256": "18ed56851e57d17d0b4c5a9ccbc4608f6dd5a75e0f6d4ad308e0ef55ea271cd9"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/freeze.json",
+      "sha256": "d1f1ec85d1dd2e573bf8f4b817f847e8b0a3a30fa32de8cdc7cfa527f977c19d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/source-guard.json",
+      "sha256": "c5ff9ec7347e40ba74e7f7337a1ca90c06e4b421306bc55fc417abf5385d7e5b"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/prepare-frame-root46.py",
+      "sha256": "2dee93732c1a801a9e7041895f58008f809c83de29d451bf5fb4ee8fffa6dccb"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01-command.json",
+      "sha256": "0e1aef97e287c405f96a5ecfbacf99b9dfe9bdb05fc7142dd00915386bf60e61"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01-result.json",
+      "sha256": "38963c8c1583b14241ab54ff9159a007ea8d5bf705a2e99c55cfce4b6433c68d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01.json",
+      "sha256": "a11afc48b40ccfa853e59a0111086617d7e617ea5caf80c977e14c15280d4430"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01.log",
+      "sha256": "5e09a6a4d21fdbc25f1ab669d76c4c90412b4f90f63b59bef4167abf78978f03"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/base01-events.jsonl",
+      "sha256": "30ee61f4b2bd4f39d488dd1bd0267372b70cbabb5990bfcc6e8a8c1430ecfdec"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/inspect01-command.json",
+      "sha256": "a5d58829b3785cebe2692c1b99ca85a19d7cbcabba1df4ebba33e5f8ab9814ff"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/inspect01-result.json",
+      "sha256": "5fa7da624ad974c95bb8907f5bff50cce6610d4d6f9d3faa3dd2863e03200856"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/inspect01.log",
+      "sha256": "6ca9bf62fee970c6fcb13064de45cda0d19702c68cefd1e39b351120a2d79e50"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/logs/inspect01-events.jsonl",
+      "sha256": "5e6d1958ea312a12197d5afaa3dbfc258f194688458cc60ca7d16a4eee56a521"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/proof-script-evidence/equivalent_assert_dw43_weight_pre_positive.json",
+      "sha256": "02ed4726dde1c6702b6449de916b510e7fa6c0a83ed0bea4d00d02bf497f93a9"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/proof-script-evidence/base01-index.json",
+      "sha256": "030b744de62199c03807497c8971fc160aa98aeb5e708b6cce163acd7b850f05"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root46/proof-script-evidence/equivalent_assert_dw39_weight_one_pre.json",
+      "sha256": "2d0c505a28d82dad680782402273279f20921126eedc60beef63b5a8d272a030"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/run-frame-root38.py",
+      "sha256": "68e29b8a72a5c97217158e26a7d432b445fa62af06f650e2545ed838a1a7c032"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/run-frame-export38.py",
+      "sha256": "6b3383f9da48dd87fa4c3f4051b62408cd56970136b5dce9e28bfaa8a4565191"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root38/ERRATA.json",
+      "sha256": "04185a2aeb6f9f7a49317736c090d0e2a37796b9a8e26ff91c27a127c6f8bc0d"
+    },
+    {
+      "path": "experiments/shim-c-v2/stage3-proof-next/dwconv/frame-root41/ALLOCATION-SOURCE-AUDIT.json",
+      "sha256": "f7ab6d1201e38cfab26cfc7d1cddb60bd27477f00739b39da495c5610b58cd4f"
+    }
+  ]
+}

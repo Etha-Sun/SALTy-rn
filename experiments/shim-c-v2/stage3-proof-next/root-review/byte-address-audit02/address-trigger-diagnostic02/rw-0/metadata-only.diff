@@ -1,0 +1,22 @@
+--- /srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/ca0eb49e5d3b34fa8655861193aacf80302f15d052a18515709d9160a4846be8-1qwlcmyd/original.smt2
++++ /srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/address-trigger-diagnostic02/rw-0/task.smt2
+@@ -351,7 +351,8 @@
+ ;; "valid_pointers_are_statically_allocated"
+ (assert
+   (forall ((a addr) (m (Array Int Int)) (n Int))
+-    (=> (< 0 n) (=> (valid_rd m a n) (statically_allocated (base a))))))
++    (! (=> (< 0 n) (=> (valid_rd m a n) (statically_allocated (base a))))
++       :pattern ((valid_rw m a n)))))
+ 
+ ;; "int_of_addr"
+ (declare-fun int_of_addr (addr) Int)
+@@ -365,7 +366,8 @@
+ ;; "addr_of_int_bijection"
+ (assert
+   (forall ((p addr))
+-    (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))))
++    (! (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))
++       :pattern ((int_of_addr p)))))
+ 
+ (declare-sort table 0)
+ 

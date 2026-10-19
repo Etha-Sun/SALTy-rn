@@ -1,0 +1,91 @@
+{
+  "status": "Bounded diagnostic ended at 540 seconds, no complete raw",
+  "candidate": "frame-root39",
+  "proof_sha256": "a9cc93b2872d9f06dcd57b270cc3c6a88981441c0e8f436049250e63caf32ee6",
+  "frozen_sha256": "c9f1ae1d958931b19e57cb7090c5c857117a5ef61af2201631a0179b644a4251",
+  "guard": true,
+  "new_obligations": [
+    "dw39_weight_range_pre",
+    "dw39_weight_one_pre"
+  ],
+  "retained_selected_obligations": [
+    "next_weight_distinct_base",
+    "next_weight_copy_frame"
+  ],
+  "other_inherited_debts": "All root37 obligations remain in full proof; not covered by this four-goal diagnostic.",
+  "inventory": "logs/inspect01-events.jsonl",
+  "inventory_exit": 0,
+  "model": "fixed handoff-model-plus Typed+raw+float; no change",
+  "allocation_reasoning": "Use prestate read-validity of current cursor plus existing linked-heap local allocation size zero. No new allocation axiom/helper.",
+  "label_audit": "Do not infer memory state from numeric suffix. Actual original pointer heap is framed(Mptr_1); Mptr_0 is linked by equality to current/load-time pointer heap. See root38 ERRATA.",
+  "initial_stall": {
+    "pid": 2517978,
+    "state": "D",
+    "wchan": "kernfs_fop_readdir",
+    "elapsed_seconds": 111,
+    "cpu_seconds": 1
+  },
+  "kernel_complete": false,
+  "result": {
+    "exit_code": 124,
+    "seconds": 540.031,
+    "raw_total": null,
+    "raw_passed": null,
+    "pending": null,
+    "inputs_unchanged": true,
+    "complete": false,
+    "mode": "selected",
+    "scope": "Diagnostic/full attempt only; no formal acceptance checker has run"
+  },
+  "stream_original_goals": {
+    "typed_raw_fma_complex_fp_equivalent_assert_dw39_weight_range_pre": [
+      {
+        "prover": "CVC5:1.2.1",
+        "verdict": "timeout"
+      },
+      {
+        "prover": "Z3:4.12.5",
+        "verdict": "timeout"
+      },
+      {
+        "prover": "script",
+        "verdict": "timeout"
+      }
+    ],
+    "typed_raw_fma_complex_fp_equivalent_assert_dw39_weight_one_pre": [
+      {
+        "prover": "CVC5:1.2.1",
+        "verdict": "valid"
+      }
+    ],
+    "typed_raw_fma_complex_fp_equivalent_assert_next_weight_distinct_base": [
+      {
+        "prover": "CVC5:1.2.1",
+        "verdict": "timeout"
+      },
+      {
+        "prover": "Z3:4.12.5",
+        "verdict": "timeout"
+      },
+      {
+        "prover": "script",
+        "verdict": "timeout"
+      }
+    ],
+    "typed_raw_fma_complex_fp_equivalent_assert_next_weight_copy_frame": [
+      {
+        "prover": "CVC5:1.2.1",
+        "verdict": "timeout"
+      },
+      {
+        "prover": "Z3:4.12.5",
+        "verdict": "timeout"
+      },
+      {
+        "prover": "script",
+        "verdict": "unknown"
+      }
+    ]
+  },
+  "stream_warning": "one_pre valid depends on unproved range_pre; no new closed original obligation group"
+}

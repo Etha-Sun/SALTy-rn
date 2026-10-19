@@ -1,0 +1,50 @@
+=================================================================
+==2624044==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x502000000050 at pc 0x55c6fbe681d9 bp 0x7fffed0af6b0 sp 0x7fffed0af6a0
+READ of size 16 at 0x502000000050 thread T0
+    #0 0x55c6fbe681d8 in vld1q_u32 /tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/integer_memory.c:3
+    #1 0x55c6fbe75edd in test_neon /tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/neon.c:151
+    #2 0x55c6fbe7bc07 in main /tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/original.c:14
+    #3 0x7feb5f8f4d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7feb5f8f4e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x55c6fbe64564 in _start (/tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/replay+0xf564)
+
+0x502000000054 is located 0 bytes to the right of 4-byte region [0x502000000050,0x502000000054)
+allocated by thread T0 here:
+    #0 0x7feb602c4887 in __interceptor_malloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:145
+    #1 0x55c6fbe7b7a9 in main /tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/original.c:10
+    #2 0x7feb5f8f4d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+
+SUMMARY: AddressSanitizer: heap-buffer-overflow /tmp/salty-shim-handoff-42b1cf13/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/clean-checkout01/.build/original/integer_memory.c:3 in vld1q_u32
+Shadow bytes around the buggy address:
+  0x0a047fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0a047fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0a047fff7fd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0a047fff7fe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0a047fff7ff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x0a047fff8000: fa fa 00 00 fa fa 00 00 fa fa[04]fa fa fa 04 fa
+  0x0a047fff8010: fa fa 00 00 fa fa 00 00 fa fa 00 00 fa fa 00 00
+  0x0a047fff8020: fa fa 00 00 fa fa 00 00 fa fa 00 00 fa fa 00 00
+  0x0a047fff8030: fa fa 00 00 fa fa 00 00 fa fa fa fa fa fa fa fa
+  0x0a047fff8040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+  0x0a047fff8050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==2624044==ABORTING

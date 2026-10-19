@@ -1,0 +1,22 @@
+--- /srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/drop-only-address02/1/subset.smt2
++++ /srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/address-trigger-diagnostic03/expanded-1/task.smt2
+@@ -199,7 +199,8 @@
+ ;; "valid_pointers_are_statically_allocated"
+ (assert
+   (forall ((a addr) (m (Array Int Int)) (n Int))
+-    (=> (< 0 n) (=> (valid_rd m a n) (statically_allocated (base a))))))
++    (! (=> (< 0 n) (=> (valid_rd m a n) (statically_allocated (base a))))
++       :pattern ((select m (base a)) (+ (offset a) n)))))
+ 
+ ;; "int_of_addr"
+ (declare-fun int_of_addr (addr) Int)
+@@ -213,7 +214,8 @@
+ ;; "addr_of_int_bijection"
+ (assert
+   (forall ((p addr))
+-    (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))))
++    (! (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))
++       :pattern ((int_of_addr p)))))
+ 
+ (declare-sort table 0)
+ 
