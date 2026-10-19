@@ -53,3 +53,9 @@ argmaxpool原始 `assert(!ab)` / `assert(!ib)` 触发了真实WP翻译错误：�
 结果和逐项状态见 [完整汇报](../../experiments/shim-c-v2/stage3-inventory/REPORT.zh-CN.md)、同目录 `RESULTS.json` 及各 kernel 的 `stream01/OBLIGATIONS.tsv`、`REPORT.json`。流式结果使后续整批超时也能保留已完成的 verdict；完整清单仍需正常退出与覆盖检查，部分事件不能当作整单。conv 两个无求解结果的事件存在属性名后缀差异，单列且不移植结果。
 
 此处“完整”只指义务盘点，不是严格证明验收。短跑使用Z3单目标1秒，整体生成/化简和求解仍有外层预算；未完成求解的目标、timeout、unknown分别保留。通过项仍可能依赖未证的 callee 合同/全局引理，不能据此计整核通过。本阶段新增整核通过仍为 **0/9**，正式 manifest 不变；没有据这些超时认定 target 有错误。后续修改 proof 后必须重新生成、核对和实际复验，不能沿用旧绿色计数。
+
+## 2026-10-19：继续补 proof，优先 GEMM/深度卷积/SPMM
+
+新增独立候选、完整清单、1200秒尝试及主agent复验见 [后续 proof 报告](../../experiments/shim-c-v2/stage3-proof-next/REPORT.zh-CN.md)。新候选的完整逻辑分母分别为 GEMM 1199、dwconv 827、SPMM 764；全量尝试仍未完成，流式状态与定点成绩分别保留。SPMM内层游标组14/14及helper body2/2、dwconv行游标组14/14与全局8/8已由主agent独立复验，均不等于整核通过。另已在九项内扩展maxpool游标证明。
+
+spec/原实现/当前模型保持冻结；没有新增requires，也未push。阶段检查点之后仍继续处理新候选。共享服务器拥塞和worker沙箱拒绝Why3 socket分别记录为资源/环境因素，不能解释成kernel反例。位表示关系仅有独立语义设计探针，未部署新内存模型；不能据此把共同的memcpy/float缺口说成已解决。正式manifest和新增整核通过0/9保持不变。

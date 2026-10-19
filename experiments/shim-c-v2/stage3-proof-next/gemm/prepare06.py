@@ -1,0 +1,19 @@
+from pathlib import Path
+import sys,json,hashlib,subprocess,tempfile,difflib
+H=Path(__file__).resolve().parent;R=H.parents[3];sys.path.insert(0,str(R/'tools'));import shim_c_campaign_closure as checker
+old=H/'candidate05';new=H/'candidate06';new.mkdir();sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();m=json.loads((old/'frozen.json').read_text());t=Path(tempfile.mkdtemp(prefix='gemm-fix-',dir='/tmp'));plain={}
+for n,v in m['files'].items():plain[n]=(R/v['path']).read_text();(t/n).write_text(plain[n])
+subprocess.run(['patch','--batch','--fuzz=0','-p1','-i',str(old/'proof.patch')],cwd=t,capture_output=True,check=True)
+p=t/'neon.c';s=p.read_text()
+for n,anchor in [(0,'      const float32x4_t vb0123c0 = vld1q_f32(w); w += 4;'),(1,'      const float32x4_t vb0123c1 = vld1q_f32(w); w += 4;')]:
+ ix=f'((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+{n})+j'
+ ann=f'      /*@ assert next_index_{n}: \\forall integer j;0<=j<4 ==> 0<={ix}<((NC+7)/8)*(8+8*(KC/4)); */\n';assert s.count(anchor)==1;s=s.replace(anchor,ann+anchor)
+for n in [0,1]:
+ anchor=f'      vacc0x0 = vfmaq_f32(vacc0x0, va0c{n}, vb0123c{n});'
+ ann=f'      /*@ assert next_dup_{n}: \\forall integer j;0<=j<4 ==> ext_same(va0c{n}.lane[j],next_read{{Stage3Block}}(A0,(KC-k)/4+{n})); */\n'+f'      /*@ assert next_acc_before_{n}: \\forall integer j;0<=j<4 ==> ext_same(vacc0x0.lane[j],stage3_gacc{{Stage3Block}}(A0,W0,0,(NC-nc)/8,j,(KC-k)/4+{n},KC/4)); */\n'
+ assert s.count(anchor)==1;s=s.replace(anchor,ann+anchor)
+p.write_text(s);
+d=[]
+for n in m['files']:
+ for x in difflib.unified_diff(plain[n].splitlines(True),(t/n).read_text().splitlines(True),fromfile='a/'+n,tofile='b/'+n):d.append(x if x.endswith('\n') else x+'\n\\ No newline at end of file\n')
+(new/'proof.patch').write_text(''.join(d));m['proof_patches']=[str((new/'proof.patch').relative_to(R))];m['stage3']['proof_sha256']=sha(new/'proof.patch');m['proof_next'].update(previous_candidate_sha256=sha(old/'frozen.json'),revision='Instantiate checked packed bounds at both actual load indices; check duplicated scalar and old-acc frames immediately before both FMA calls. All six new assertions selected with whole existing local chain.');(new/'frozen.json').write_text(json.dumps(m,indent=2)+'\n');_,g=checker.prepare(new,sha(new/'frozen.json'),'diagnostic01');(new/'source-guard.json').write_text(json.dumps(g,indent=2)+'\n')

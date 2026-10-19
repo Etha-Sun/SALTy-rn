@@ -1,0 +1,165 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "1", "-wp-timeout", "10", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/f32-gemm-minmax-r4/.build/inventory-stream01/annotated/unit.c", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/nan-formula01/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/nan-formula01/.build/session", "-wp-prover", "none", "-wp-fct", "canonical_nan", "-wp-prop", "@ensures", "-wp-print", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-gemm/f32-gemm-minmax-r4/.build/inventory-stream01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function canonical_nan
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] fp_minmax.c:9: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] fp_minmax.c:9: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+
+Goal Post-condition ("fp_minmax.c", line 6) in 'canonical_nan':
+fp_minmax.c:9: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: float32*) (target: sint8*)
+fp_minmax.c:9: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+Let a = shift_sint8(memcpy_0, 0).
+Let m = Malloc_0[L_bits_6286 <- 1][L_value_6287 <- 1].
+Assume {
+  Type: is_sint8_chunk(Mchar_0).
+  (* Heap *)
+  Type: linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string1_7051), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string2_7052), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string3_7053), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string4_7054), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string5_7055), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string6_7056), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string7_7057), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string8_7058), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 23) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string9_7059), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string10_7060), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string11_7061), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string12_7062), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string13_7063), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string14_7064), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string15_7065), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string16_7066), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string17_7184), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string18_7185), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string19_7186), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string20_7187), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string21_7188), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string22_7189), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string23_7190), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string24_7191), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 23) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string25_7192), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string26_7193), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string27_7194), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string28_7195), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string29_7196), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string30_7197), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 9) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string31_7198), i)] = 0))).
+  (* Initializer *)
+  Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+      (Mchar_0[shift_sint8(global(K___fc_lit_string32_7199), i)] = 0))).
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string33_7235), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string34_7237), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string35_7239), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string36_7241), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string37_7245), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string38_7249), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string39_7253), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string40_7257), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string41_7259), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string42_7261), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string43_7263), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string44_7265), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string45_7270), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string46_7275), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string47_7280), 0)] = 0.
+  (* Initializer *)
+  Init: Mchar_0[shift_sint8(global(K___fc_lit_string48_7285), 0)] = 0.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(Mchar_0, memcpy(Mchar_0, a, Mchar_undef_0, a, 4), memcpy_0,
+           w, 4) = 0) /\ P_valid_or_empty(m, memcpy_0, 4) /\
+      P_valid_read_or_empty(m, w, 4) /\
+      separated(a, 4, shift_sint8(w, 0), 4).
+}
+Prove: is_NaN_f32(Mf32_0[global(L_value_6287)]).
+
+------------------------------------------------------------

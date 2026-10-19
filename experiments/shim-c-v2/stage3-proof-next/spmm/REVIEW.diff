@@ -1,0 +1,27 @@
+--- frame-v3/annotated/rvv.c
++++ cuts-v4/annotated/rvv.c
+@@ -1,3 +1,8 @@
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures spmm_u32_exact: x>0 ==> (uint32_t)(x-1)==x-1; @/
++static void spmm_u32_decrement(uint32_t x) {}
++*/
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
+ /*@ requires vl<=32; assigns \nothing;
+  ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+@@ -76,6 +81,15 @@
+           const float vw = *w++;
+           // Match the original NEON VFMA: one fused rounding.
+           vacc = __riscv_vfmacc_vf_f32m8(vacc,vw,vi,vl);
++          /*@ assert spmm_before_decrement: 1<=nnz<=stage3_nnz0; */
++              /*@ assert spmm_next_count: 0<=nnz-1<stage3_nnz0; */
++              /*@ assert spmm_weight_advanced: w==stage3_w+(stage3_nnz0-nnz)+1; */
++              /*@ assert spmm_delta_advanced: dmap==stage3_dmap+(stage3_nnz0-nnz)+1;
++          */
++          //@ ghost spmm_u32_decrement(nnz);
++          /*@ assert spmm_decrement_exact: (uint32_t)(nnz-1)==nnz-1; */
++          /*@ assert spmm_weight_rebased: w==stage3_w+(stage3_nnz0-(uint32_t)(nnz-1)); */
++          /*@ assert spmm_delta_rebased: dmap==stage3_dmap+(stage3_nnz0-(uint32_t)(nnz-1)); */
+         } while (--nnz != 0);
+       }
+       vfloat32m8_t vout = salty_min_vf_m8(vacc, vmax, vl);
