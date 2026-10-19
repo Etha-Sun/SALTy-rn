@@ -1,0 +1,60 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-timeout", "1", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-spmm-frame-v3/.build/inventory-stream01/annotated/unit.c", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory/f32-spmm-minmax/stream01/quick-main/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory/f32-spmm-minmax/stream01/quick-main/.build/session", "-wp-prover", "z3", "-wp-steps", "1000", "-wp-fct", "equivalent", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-pool-spmm/f32-spmm-frame-v3/.build/inventory-stream01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] neon.c:51: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:49: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:45: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:41: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:101: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:97: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:75: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:71: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:36: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] 288 goals scheduled
+[wp] Warning: Z3 4.12.5 does not support steps limit (ignored option)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part2 (Qed 25ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part3 (Qed 35ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part4 (Qed 47ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part5 (Qed 43ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part6 (Qed 44ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part7 (Qed 471ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_terminates_part8 (Qed 539ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_ensures_equal (Qed 3.8s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_preserved (Qed 2.4s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_2_preserved (Qed 2.4s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_3_preserved (Qed 3.1s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_4_preserved (Qed 3s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access (Qed 2.4s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2 (Qed 2.6s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_7 (Qed 39ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_8 (Qed 48ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_9 (Qed 52ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_10 (Qed 75ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_11 (Qed 605ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_12 (Qed 587ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_13 (Qed 1.9s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_14 (Qed 2.2s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_strip_bounds_established (Qed 2.2s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_strip_bounds_preserved (Qed 5.4s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_column_bounds_established (Qed 3s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_column_bounds_preserved (Qed 5.7s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_delta_cursor_established (Qed 3s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_delta_cursor_preserved (Qed 5.7s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_nnz_cursor_established (Qed 3s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_nnz_cursor_preserved (Qed 5.8s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_weight_cursor_established (Qed 3.2s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_weight_cursor_preserved (Qed 5.9s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_15 (Qed 3.7s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_16 (Qed 3.8s) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_nnz_bounds_established (Qed 3.9s) (Z3)

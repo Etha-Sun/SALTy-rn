@@ -1,0 +1,214 @@
+{
+  "scope": "Independent read-only review; no solver or model/script/frozen mutation. Snapshot only while other streams may run. Not kernel acceptance.",
+  "timestamp_utc": "2026-10-19T08:51:02.459623+00:00",
+  "reviewed_paths": {
+    "experiments/shim-c-v2/stage3-inventory-research/observer.ml": "d7402c109ac22c9f2b09274d80dcb771fef7155bef8f9846890ff9a04e9936c6",
+    "experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs": "df62e27ec11d707f2dee90423f3f42e485784b0dd7182a8848f3fd53f9de6d96",
+    "experiments/shim-c-v2/stage3-inventory/stream.py": "1fd9e22e2745ac270e3d9cdd664d45f050bbf0b249b2ab551cde0309ae613840"
+  },
+  "observer_review": {
+    "classification": "metadata-only",
+    "evidence": "observer calls get_target/get_index/get_results/get_gid/is_smoke_test/is_trivial and iter_on_goals; local wpo.ml is_trivial reads Conditions.is_trivial; no reduce/resolve/compute or set_result call. It writes JSONL and registers hooks only.",
+    "normal_exit_limit": "Boot.Main.extend marker alone is insufficient: require process exit 0 and final counts/IDs consistent."
+  },
+  "gemm_stream01_snapshot": {
+    "post_read_hash_checks": {
+      "frozen_matches_run": true,
+      "source_files_match": true,
+      "annotated_matches_guard": true,
+      "proof_matches_guard": true,
+      "model_lock_matches_run": true,
+      "external_model_inputs_match_lock": true,
+      "observer_binary_matches_run": true,
+      "observer_source_matches_run": true,
+      "runner_matches_run": true
+    },
+    "phases": {
+      "control": {
+        "finished_result_present": true,
+        "exit": 0,
+        "normal_marker": {
+          "event": "normal_exit",
+          "goal_count": 8
+        },
+        "unique_final": 8,
+        "duplicate_final": 0,
+        "final_cfg_only": 4,
+        "final_logic": 4,
+        "final_trivial_flag": 7,
+        "inventory_or_phase_enumeration_complete": true,
+        "raw_total": 4,
+        "raw_passed": 3,
+        "raw_vs_non_cfg_final_ids_equal": true
+      },
+      "inventory-body": {
+        "finished_result_present": true,
+        "exit": 0,
+        "normal_marker": {
+          "event": "normal_exit",
+          "goal_count": 1205
+        },
+        "unique_final": 1205,
+        "duplicate_final": 0,
+        "final_cfg_only": 30,
+        "final_logic": 1175,
+        "final_trivial_flag": 116,
+        "inventory_or_phase_enumeration_complete": true,
+        "raw_total": null,
+        "raw_passed": null,
+        "raw_vs_non_cfg_final_ids_equal": null
+      },
+      "inventory-lemmas": {
+        "finished_result_present": true,
+        "exit": 0,
+        "normal_marker": {
+          "event": "normal_exit",
+          "goal_count": 9
+        },
+        "unique_final": 9,
+        "duplicate_final": 0,
+        "final_cfg_only": 0,
+        "final_logic": 9,
+        "final_trivial_flag": 0,
+        "inventory_or_phase_enumeration_complete": true,
+        "raw_total": null,
+        "raw_passed": null,
+        "raw_vs_non_cfg_final_ids_equal": null
+      },
+      "quick-helpers": {
+        "finished_result_present": true,
+        "exit": 0,
+        "normal_marker": {
+          "event": "normal_exit",
+          "goal_count": 378
+        },
+        "unique_final": 378,
+        "duplicate_final": 0,
+        "final_cfg_only": 30,
+        "final_logic": 348,
+        "final_trivial_flag": 193,
+        "inventory_or_phase_enumeration_complete": true,
+        "raw_total": 348,
+        "raw_passed": 296,
+        "raw_vs_non_cfg_final_ids_equal": true
+      },
+      "quick-main": {
+        "finished_result_present": true,
+        "exit": 124,
+        "normal_marker": {},
+        "unique_final": 0,
+        "duplicate_final": 0,
+        "final_cfg_only": 0,
+        "final_logic": 0,
+        "final_trivial_flag": 0,
+        "inventory_or_phase_enumeration_complete": false,
+        "raw_total": null,
+        "raw_passed": null,
+        "raw_vs_non_cfg_final_ids_equal": null
+      },
+      "quick-lemmas": {
+        "finished_result_present": true,
+        "exit": 0,
+        "normal_marker": {
+          "event": "normal_exit",
+          "goal_count": 9
+        },
+        "unique_final": 9,
+        "duplicate_final": 0,
+        "final_cfg_only": 0,
+        "final_logic": 9,
+        "final_trivial_flag": 0,
+        "inventory_or_phase_enumeration_complete": true,
+        "raw_total": 9,
+        "raw_passed": 9,
+        "raw_vs_non_cfg_final_ids_equal": true
+      }
+    },
+    "quick_main_streamed_partial": {
+      "observed_unique_goals": 827,
+      "observed_valid": 3,
+      "observed_timeout": 1,
+      "observed_with_no_results": 823,
+      "outside_complete_inventory_ids": 0,
+      "full_report_present": false,
+      "meaning": "Partial bounded diagnostic only. No-results means no recorded prover result, not proof failure. Main phase exit124 and no normal marker."
+    },
+    "partition": {
+      "inventory_body_logic": 1175,
+      "inventory_global_logic": 9,
+      "inventory_cfg_only": 30,
+      "quick_helper_logic": 348,
+      "observed_quick_main_ids": 827,
+      "body_partition_equal": true,
+      "observed_valid_lower_bound": 308,
+      "remaining_not_established": 876,
+      "complete_kernel": false
+    }
+  },
+  "findings": [
+    {
+      "id": "post-run-locks",
+      "severity": "must-check-in-aggregation",
+      "detail": "stream.py input_unchanged checks baseline files+annotated hashes but not current proof.patch, external lock members, observer binary/source, or runner post-run. Recheck recorded hashes independently after all phases. Snapshot checks here all pass; do not silently equate input_unchanged to full model_inputs_unchanged."
+    },
+    {
+      "id": "cfg-separate",
+      "severity": "counting-boundary",
+      "detail": "Classify cfg-only using explicit prover=cfg results, never trivial boolean. GEMM body final1205=1175 logic+30 cfg; trivial flag116 is not cfg count."
+    },
+    {
+      "id": "partial-quick",
+      "severity": "counting-boundary",
+      "detail": "Killed quick phase supplies only lower-bound observed successes. Use latest modified event per exact goal, restricted to inventory IDs; do not turn absent/unseen into solver failure or 0/0 success. A final event batch without marker after timeout remains incomplete."
+    },
+    {
+      "id": "inventory-complete",
+      "severity": "counting-boundary",
+      "detail": "Require inventory-body and inventory-lemmas both exit0, normal marker, unique final IDs count equal marker, source/model/proof/observer guards and accepted control. Solver-free raw.json absent is expected; final metadata is the enumeration authority."
+    },
+    {
+      "id": "not-canonical",
+      "severity": "acceptance-boundary",
+      "detail": "No-qed/no-clean inventory and z3 one-second/1000-step quick options differ from canonical full checker. Even all quick goals valid cannot replace complete/raw coverage/body/global obligations/strict controls acceptance."
+    }
+  ],
+  "recommended_aggregation": {
+    "primary_key": [
+      "kernel",
+      "frozen_sha256",
+      "model_lock_sha256",
+      "goal"
+    ],
+    "within_phase": "Deduplicate modified events by exact goal ID; for completed phases use final events only. A modified-only goal may be transient; reconcile against complete inventory. Preserve smoke separately.",
+    "property_not_unique": "An invariant property may have established and preserved WPOs; never aggregate by property alone. Source basename/line/function are classification metadata, not cross-version identity.",
+    "categories": [
+      "cfg_only",
+      "helper_body",
+      "main_neon_origin",
+      "main_rvv_origin",
+      "main_wrapper_origin",
+      "global_lemma",
+      "smoke",
+      "unmatched_quick_goal"
+    ],
+    "statuses": [
+      "valid_observed",
+      "invalid_observed",
+      "timeout",
+      "unknown",
+      "failed_or_error",
+      "never_observed_in_quick",
+      "not_attempted",
+      "incomplete_phase"
+    ],
+    "coverage_checks": [
+      "Every inventory final unique and count matches marker; body versus global disjoint/explicitly deduped.",
+      "Extract all declared ACSL lemmas from annotated inputs and compare lemma inventory properties.",
+      "Compare actual reachable body/callee definitions and ghost helper roots with expected body contracts/ensures coverage from existing checker; normal exit only covers requested selection.",
+      "Verify quick-helper/main/lemma ID unions against inventory, report missing/unmatched IDs instead of assuming equal denominators.",
+      "If quick raw exists with normal exit, verify raw IDs/results reconcile to non-CFG observer finals; preserve raw verdict verbatim.",
+      "Check public wrapper ensures and NEON/RVV inlined source-origin goals remain present; CFG-only termination/exits cannot stand in for body ensures.",
+      "Keep positive/negative control isolated from kernel totals; require accepted control plus normal exit and guard reconciliation."
+    ]
+  }
+}

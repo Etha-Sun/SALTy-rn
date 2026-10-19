@@ -1,0 +1,808 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-load-module", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory-research/.build/observer.cmxs", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-timeout", "1", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/replay/f32-argmaxpool/.build/inventory-stream01/annotated/unit.c", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory/f32-argmaxpool/stream01/inventory-body/raw.json", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-inventory/f32-argmaxpool/stream01/inventory-body/.build/session", "-wp-prover", "none", "-wp-no-qed", "-wp-no-clean", "-wp-skip-fct", "__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/replay/f32-argmaxpool/.build/inventory-stream01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmerge_vxm_u32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmv_v_x_u32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_u32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vbslq_f32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vbslq_u32
+[rte:annot] annotating function vcgtq_f32
+[rte:annot] annotating function vdupq_n_u32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_u32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_u32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_u32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_u32
+[wp] integer_memory.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] quantized.c:3: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [100 goals...]
+[wp] fp_masks.c:11: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] integer_memory.c:7: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:7: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [200 goals...]
+[wp] quantized.c:5: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:7: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] fp_masks.c:15: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:9: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:57: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:31: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:18: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:34: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:20: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_f32_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_f32_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_f32_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_f32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_f32_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_f32_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_f32_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_vget_low_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vget_low_f32_assigns : trivial
+[wp] Goal typed_raw_fma_complex_fp_vget_high_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vget_high_f32_assigns : trivial
+[wp] Goal typed_raw_fma_complex_fp_vld1q_u32_terminates : trivial
+[wp] Goal typed_raw_fma_complex_fp_vld1q_u32_exits : trivial
+[wp] Goal typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_dest : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_src : not tried
+[wp] Goal typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_separation : not tried
+[wp] Goal typed_raw_fma_complex_fp_vaddq_u32_terminates : not tried
+[wp] Goal typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound_3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound_4 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vaddq_u32_assert_rte_signed_overflow : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_4 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_5 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_6 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_7 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_index_bound_8 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assert_rte_signed_overflow : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_assigns_part3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_vcgtq_f32_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_terminates : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_4 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_5 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_6 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_7 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_8 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_9 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound_10 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_u32_assert_rte_signed_overflow : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_terminates : trivial
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_exits : trivial
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_dest : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_src : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_separation : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_dest : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_src : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_separation : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_dest : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_src : not tried
+[wp] Goal typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_separation : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_u32_terminates : trivial
+[wp] Goal typed_raw_fma_complex_fp_vst1q_u32_exits : trivial
+[wp] Goal typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_dest : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_src : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_separation : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_u32_terminates : trivial
+[wp] Goal typed_raw_fma_complex_fp_vst1_u32_exits : trivial
+[wp] Goal typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_dest : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_src : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_separation : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vsetvl_e32m8_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vsetvl_e32m8_assigns_part1 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vsetvl_e32m8_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_f32m8_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_assigns_part3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_f32m8_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_assert_rte_index_bound_3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmfgt_vv_f32m8_b4_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_ensures : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_invariant_3_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_invariant_3_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_assert_rte_index_bound_3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_assigns_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_assigns_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_assigns : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vvm_f32m8_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_terminates : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_terminates : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_terminates : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_assert_rte_index_bound_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_terminates : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_index_bound : not tried
+[wp] Goal typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_terminates_part1 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_terminates_part2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_terminates_part3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_terminates_part4 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_terminates_part5 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_ensures_equal : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_exits : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_3 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_4 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_5 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_6 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_7 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_8 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_9 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_10 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_11 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_12 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_13 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_14 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_15 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_16 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_17 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_count_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_count_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_index_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_group_index_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_18 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_19 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_20 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_21 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_22 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_23 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_24 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_25 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_26 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_channel_bounds_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_channel_bounds_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_index_cursor_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_index_cursor_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_2_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_2_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_3_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_3_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_4_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_4_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_5_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_5_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_6_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_6_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_7_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_7_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_8_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_8_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_9_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_input_cursor_9_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_output_cursor_established : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_output_cursor_preserved : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part01 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part02 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part03 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part04 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part05 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part06 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part07 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part08 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part09 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part10 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part11 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part12 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part13 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part14 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part15 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part16 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part17 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part18 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part19 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part20 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part21 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part22 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part23 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part24 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part25 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part26 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part27 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part28 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part29 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part30 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part31 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part32 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part33 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part34 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part35 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part36 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part37 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part38 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part39 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part40 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part41 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part42 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part43 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part44 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_assigns_2_part45 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part01 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part02 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part03 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part04 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part05 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part06 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part07 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part08 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part09 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part10 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part11 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part12 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part13 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part14 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part15 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part16 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part17 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part18 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part19 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part20 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part21 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_normal_part22 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part001 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part002 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part003 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part004 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part005 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part006 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part007 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part008 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part009 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part010 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part011 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part012 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part013 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part014 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part015 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part016 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part017 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part018 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part019 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part020 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part021 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part022 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part023 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part024 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part025 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part026 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part027 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part028 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part029 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part030 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part031 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part032 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part033 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part034 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part035 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part036 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part037 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part038 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part039 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part040 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part041 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part042 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part043 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part044 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part045 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part046 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part047 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part048 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part049 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part050 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part051 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part052 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part053 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part054 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part055 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part056 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part057 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part058 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part059 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part060 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part061 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part062 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part063 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part064 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part065 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part066 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part067 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part068 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part069 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part070 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part071 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part072 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part073 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part074 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part075 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part076 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part077 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part078 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part079 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part080 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part081 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part082 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part083 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part084 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part085 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part086 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part087 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part088 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part089 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part090 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part091 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part092 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part093 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part094 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part095 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part096 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part097 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part098 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part099 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part100 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part101 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part102 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part103 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part104 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part105 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part106 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part107 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part108 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part109 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part110 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part111 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part112 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part113 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part114 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part115 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part116 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part117 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part118 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part119 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part120 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part121 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part122 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part123 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part124 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part125 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part126 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part127 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part128 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part129 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part130 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part131 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part132 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part133 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part134 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part135 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part136 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part137 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part138 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part139 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part140 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part141 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part142 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part143 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part144 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part145 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part146 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part147 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part148 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part149 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part150 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part151 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part152 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part153 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part154 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part155 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part156 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part157 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part158 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part159 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part160 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part161 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part162 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part163 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part164 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part165 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part166 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part167 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part168 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part169 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part170 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part171 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part172 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part173 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part174 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part175 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part176 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part177 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part178 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part179 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part180 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part181 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part182 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part183 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part184 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part185 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part186 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part187 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part188 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part189 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part190 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part191 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part192 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part193 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part194 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part195 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part196 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part197 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part198 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part199 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part200 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part201 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part202 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part203 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part204 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part205 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part206 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part207 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part208 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part209 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part210 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part211 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part212 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part213 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part214 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part215 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part216 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part217 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part218 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part219 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part220 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part221 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part222 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part223 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part224 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part225 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part226 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part227 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part228 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part229 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part230 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part231 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part232 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part233 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part234 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part235 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part236 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part237 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part238 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part239 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part240 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part241 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part242 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part243 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part244 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part245 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part246 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part247 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part248 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part249 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part250 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part251 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part252 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part253 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part254 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part255 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part256 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part257 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part258 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part259 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part260 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part261 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part262 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part263 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part264 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part265 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part266 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part267 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part268 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part269 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part270 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part271 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part272 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part273 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part274 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part275 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part276 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part277 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part278 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_assigns_exit_part279 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_variant_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_variant_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_variant_2_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_variant_2_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_variant_3_positive : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_loop_variant_3_decrease : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_2_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_3_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_4_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_5_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_2_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_3_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_5_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_6_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_7_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_9_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_10_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vst1q_f32_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_11_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_12_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_13_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_14_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_15_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_16_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_17_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_18_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_19_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_20_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vst1_f32_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vst1_lane_f32_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call_vst1_lane_f32_requires_2 : trivial
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_6_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_7_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___FC_assert_8_FC_assert_requires_nonnull_c : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_2_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_2_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_3_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_3_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_4_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_4_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_2_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_2_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_5_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_5_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_3_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_3_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_6_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_6_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_4_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_4_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_7_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_7_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_5_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_5_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_8_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_8_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_6_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_6_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_9_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_9_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_7_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_7_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_10_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_10_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_8_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_8_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_11_riscv_vle32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m8_11_riscv_vle32_v_f32m8_requires_2 : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmfgt_vv_f32m8_b4_9_riscv_vmfgt_vv_f32m8_b4_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vmerge_vvm_f32m8_9_riscv_vmerge_vvm_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vse32_v_f32m8_riscv_vse32_v_f32m8_requires : not tried
+[wp] Goal typed_raw_fma_complex_fp_equivalent_call___riscv_vse32_v_f32m8_riscv_vse32_v_f32m8_requires_2 : not tried
+[wp:pedantic-assigns] integer_memory.c:3: Warning: 
+  No 'assigns' specification for function 'vld1q_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:5: Warning: 
+  No 'assigns' specification for function 'vdupq_n_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] quantized.c:3: Warning: 
+  No 'assigns' specification for function 'vaddq_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_masks.c:11: Warning: 
+  No 'assigns' specification for function 'vbslq_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_masks.c:13: Warning: 
+  No 'assigns' specification for function 'vbslq_f32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:7: Warning: 
+  No 'assigns' specification for function 'vst1q_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:9: Warning: 
+  No 'assigns' specification for function 'vget_low_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:11: Warning: 
+  No 'assigns' specification for function 'vget_high_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:13: Warning: 
+  No 'assigns' specification for function 'vst1_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer_memory.c:15: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] quantized.c:5: Warning: 
+  No 'assigns' specification for function '__riscv_vle32_v_u32m8'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] quantized.c:7: Warning: 
+  No 'assigns' specification for function '__riscv_vmv_v_x_u32m8'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_masks.c:15: Warning: 
+  No 'assigns' specification for function '__riscv_vmerge_vxm_u32m8'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] quantized.c:9: Warning: 
+  No 'assigns' specification for function '__riscv_vse32_v_u32m8'.
+  Callers assumptions might be imprecise.
