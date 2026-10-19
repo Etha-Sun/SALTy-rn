@@ -1,6 +1,6 @@
 已验证程序目录
 
-当前仅收录 qs8-rsum。
+当前收录旧qs8-rsum及共享shim路线qu8-rsum、s8-vclamp、f32-vadd。
 neon.c/rvv.c保留干净实现，spec.h单独放公共规格，proof.patch集中证明材料。
 build.py将标准补丁应用到临时副本，再检查实现token和公共规格不变。
 没有额外proof helper文件；普通C shim与调用wrapper单独保存。
@@ -37,3 +37,14 @@ qs8-rsum
 GEMM
   修复/测试/完整证明尝试在 experiments/gemm-repair/。
   尚未完整证明，不能根据2400次native回归或局部关系引理放入此目录。
+
+共享路线新增案例（实现/规格冻结cb36fab，checker fe69a05）
+qu8-rsum 567/567，249.602秒；s8-vclamp 688/688，320.514秒；
+f32-vadd 431/431，201.823秒。均complete=true、unchanged=true。
+三者原始C逐字保留；共享普通C库在shared/，每case一个proof.patch。
+每case的spec/harness由tools/shim_c_generate.py三模板生成，interface.json三字段。
+  python3 tools/shim_c_check.py qu8-rsum --name replay --framac /path/to/frama-c \
+    --prover-bin /path/to/provers/bin
+其他case同理。最终日志为qu8/s8的final02和f32的final01，LLVM比较证据在logs/。
+合法域/浮点观察/固定VLEN和RTE限制必须一起阅读，不把全目标通过视作ISA桥接已证。
+三case模型范围、手写行数、agent审阅和40项盘点见../docs/shared-shim/RESULTS.zh-CN.txt。

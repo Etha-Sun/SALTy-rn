@@ -1,0 +1,52 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/verified/s8-vclamp/logs/final02.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/verified/s8-vclamp/.build/final02/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle8_v_i8m8
+[rte:annot] annotating function __riscv_vmax_vx_i8m8
+[rte:annot] annotating function __riscv_vmin_vx_i8m8
+[rte:annot] annotating function __riscv_vse8_v_i8m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function s8_tail_bits
+[rte:annot] annotating function vdupq_n_s8
+[rte:annot] annotating function vext_s8
+[rte:annot] annotating function vget_low_s8
+[rte:annot] annotating function vld1_s8
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vmax_s8
+[rte:annot] annotating function vmaxq_s8
+[rte:annot] annotating function vmin_s8
+[rte:annot] annotating function vminq_s8
+[rte:annot] annotating function vreinterpret_u16_s8
+[rte:annot] annotating function vreinterpret_u32_s8
+[rte:annot] annotating function vst1_lane_s8
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_s8
+[rte:annot] annotating function vst1q_s8
+[wp] neon.c:16: Warning: Statement specifications not yet supported (skipped).
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] 688 goals scheduled
+[wp] Proved goals:  740 / 740
+  Terminating:      26
+  Unreachable:      26
+  Qed:             400 (3ms-230ms-3.5s)
+  Alt-Ergo 2.6.2:  241 (6ms-65ms-411ms)
+  CVC5 1.2.1:       45 (37ms-394ms-8.6s)
+  Z3 4.12.5:         2 (318ms-1.1s)

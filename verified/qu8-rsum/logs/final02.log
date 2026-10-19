@@ -1,0 +1,64 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/verified/qu8-rsum/logs/final02.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/verified/qu8-rsum/.build/final02/annotated/unit.c']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vadd_vv_u32m8_tu
+[rte:annot] annotating function __riscv_vle8_v_u8m2
+[rte:annot] annotating function __riscv_vmv_v_x_u32m1
+[rte:annot] annotating function __riscv_vmv_v_x_u32m8
+[rte:annot] annotating function __riscv_vmv_x_s_u32m1_u32
+[rte:annot] annotating function __riscv_vredsum_vs_u32m8_u32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function __riscv_vzext_vf4_u32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function rsum_lemma_rvv_active
+[rte:annot] annotating function rsum_lemma_rvv_cancel
+[rte:annot] annotating function rsum_lemma_rvv_tail
+[rte:annot] annotating function rsum_lemma_sum8_split
+[rte:annot] annotating function rsum_proof_load_sum
+[rte:annot] annotating function rsum_proof_prefix_widen
+[rte:annot] annotating function rsum_proof_u16_add
+[rte:annot] annotating function rsum_proof_u32_congruence
+[rte:annot] annotating function rsum_proof_widen
+[rte:annot] annotating function rsum_rvv_proof_u32_congruence
+[rte:annot] annotating function rsum_rvv_proof_u32_cross_cancel
+[rte:annot] annotating function rsum_rvv_proof_u32_normalize
+[rte:annot] annotating function vaddvq_u32
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vld1q_u8
+[rte:annot] annotating function vmovq_n_u16
+[rte:annot] annotating function vmovq_n_u32
+[rte:annot] annotating function vmulq_u8
+[rte:annot] annotating function vpadalq_u16
+[rte:annot] annotating function vpadalq_u8
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] neon.c:13: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] 567 goals scheduled
+[wp] Proved goals:  623 / 623
+  Terminating:      28
+  Unreachable:      28
+  Qed:             329 (0.72ms-189ms-2.0s)
+  Alt-Ergo 2.6.2:  194 (8ms-113ms-7.3s)
+  CVC5 1.2.1:       42 (15ms-133ms-728ms)
+  Z3 4.12.5:         2 (123ms-2.4s)
+[wp] harness.c:3: Warning: 
+  Memory model hypotheses for function 'equivalent':
+  /*@
+     behavior wp_typed:
+       requires \separated(input + (..), &(test_neon_onemask_table[0]) + (..));
+     */
+  int equivalent(size_t n, uint8_t const *input, uint32_t initial);

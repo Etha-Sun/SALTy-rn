@@ -1,0 +1,248 @@
+--- a/neon.c
++++ b/neon.c
+@@ -10,6 +10,9 @@
+     uint32_t* output,
+     const struct xnn_qs8_rsum_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const uint8_t *base = input;
++  //@ ghost size_t total = batch;
++  //@ ghost uint32_t initial_output = *output;
+   assert(batch != 0);
+   assert(input != NULL);
+   assert(output != NULL);
+@@ -25,29 +28,139 @@
+   // 256 uint8s may be summed into an uint16 before overflowing.
+   // Each register has 8 lanes and there are 1 accumulators so batch size is 2048
+ 
++  /*@ loop invariant 0 <= batch <= total;
++      loop invariant input == base+(total-batch);
++      loop invariant rsum_u32(rsum_words4(vacc0)) == rsum_u32(rsum_sum8(base,total-batch));
++      loop assigns batch,input,vacc0;
++      loop variant batch;
++  */
+   for (; batch >= 2048; batch -= 2048) {
+     uint16x8_t vacc16_0 = vmovq_n_u16(0);
++    //@ ghost size_t steps = 0;
++    /*@ loop invariant 0 <= steps <= 128;
++        loop invariant current_batch == 2048-16*steps;
++        loop invariant input == \at(input,LoopEntry)+(2048-current_batch);
++        loop invariant input == base+(total-batch)+(2048-current_batch);
++        loop invariant rsum_halves8(vacc16_0) == rsum_sum8(base+(total-batch),16*steps);
++        loop invariant \forall integer j; 0 <= j < 8 ==>
++          0 <= vacc16_0.lane[j] <= 510*steps;
++        loop assigns current_batch,input,vacc16_0,steps;
++        loop variant current_batch;
++    */
+     for (size_t current_batch = 2048; current_batch > 0; current_batch -= 16) {
++      //@ assert steps < 128;
++      //@ assert current_batch >= 16;
+       const uint8x16_t vt0 = vld1q_u8(input); input += 16;
++      //@ ghost uint16x8_t before = vacc16_0;
++      /*@ ghost
++        /@ loop invariant 0 <= lane <= 8;
++           loop invariant \forall integer j; 0 <= j < lane ==>
++             ((uint16_t)((integer)before.lane[j]+vt0.lane[2*j]+vt0.lane[2*j+1])) ==
++               before.lane[j]+vt0.lane[2*j]+vt0.lane[2*j+1];
++           loop assigns lane;
++           loop variant 8-lane;
++        @/
++        for (int lane=0; lane<8; lane++) {
++          rsum_proof_u16_add(before.lane[lane], vt0.lane[2*lane]+vt0.lane[2*lane+1]);
++        }
++      */
+       vacc16_0 = vpadalq_u8(vacc16_0, vt0);
++      /*@ assert \forall integer j; 0 <= j < 8 ==>
++        vacc16_0.lane[j] == before.lane[j]+vt0.lane[2*j]+vt0.lane[2*j+1]; */
++      //@ assert rsum_halves8(vacc16_0) == rsum_halves8(before)+rsum_bytes16(vt0);
++      //@ ghost rsum_proof_load_sum(input-16,16,vt0);
++      //@ assert (size_t)(total-batch) == total-batch;
++      //@ assert (size_t)(2048-current_batch) == 16*steps;
++      //@ ghost rsum_lemma_sum8_split(base+(total-batch),2048-current_batch,16);
++      //@ assert rsum_halves8(vacc16_0) == rsum_sum8(base+(total-batch),16*steps+16);
++      //@ ghost steps++;
+     }
++    //@ ghost rsum_lemma_sum8_split(base,total-batch,2048);
++    //@ ghost uint32x4_t wide_before = vacc0;
+     vacc0 = vpadalq_u16(vacc0, vacc16_0);
++    //@ ghost rsum_proof_prefix_widen(wide_before,vacc16_0,vacc0,base,total-batch,2048);
+   }
+ 
+   if (XNN_UNLIKELY(batch != 0)) {
+     assert(batch >= 1 && batch < 2048);
+     uint16x8_t vacc16 = vmovq_n_u16(0);
++    //@ ghost size_t tail_start = batch;
++    //@ ghost size_t tail_steps = 0;
++    //@ ghost const uint8_t *tail_base = input;
++    //@ ghost uint32x4_t tail_wide_before = vacc0;
++    //@ assert rsum_u32(rsum_words4(vacc0)) == rsum_u32(rsum_sum8(base,total-tail_start));
++    /*@ loop invariant 0 <= tail_steps <= 127;
++        loop invariant batch == tail_start-16*tail_steps;
++        loop invariant 0 <= batch < 2048;
++        loop invariant input == base+(total-batch);
++        loop invariant input == tail_base+16*tail_steps;
++        loop invariant tail_start < 2048;
++        loop invariant rsum_halves8(vacc16) == rsum_sum8(tail_base,16*tail_steps);
++        loop invariant \forall integer j; 0 <= j < 8 ==>
++          0 <= vacc16.lane[j] <= 510*tail_steps;
++        loop assigns batch,input,vacc16,tail_steps;
++        loop variant batch;
++    */
+     for (; batch >= 16; batch -= 16) {
++      //@ assert tail_steps < 127;
+       const uint8x16_t vt = vld1q_u8(input); input += 16;
++      //@ ghost uint16x8_t before_tail = vacc16;
++      /*@ ghost
++        /@ loop invariant 0 <= lane <= 8;
++           loop invariant \forall integer j; 0 <= j < lane ==>
++             ((uint16_t)((integer)before_tail.lane[j]+vt.lane[2*j]+vt.lane[2*j+1])) ==
++               before_tail.lane[j]+vt.lane[2*j]+vt.lane[2*j+1];
++           loop assigns lane;
++           loop variant 8-lane;
++        @/
++        for (int lane=0; lane<8; lane++) {
++          rsum_proof_u16_add(before_tail.lane[lane], vt.lane[2*lane]+vt.lane[2*lane+1]);
++        }
++      */
+       vacc16 = vpadalq_u8(vacc16, vt);
++      /*@ assert \forall integer j; 0 <= j < 8 ==>
++        vacc16.lane[j] == before_tail.lane[j]+vt.lane[2*j]+vt.lane[2*j+1]; */
++      //@ assert rsum_halves8(vacc16) == rsum_halves8(before_tail)+rsum_bytes16(vt);
++      //@ ghost rsum_proof_load_sum(input-16,16,vt);
++      //@ assert (size_t)(16*tail_steps) == 16*tail_steps;
++      //@ ghost rsum_lemma_sum8_split(tail_base,16*tail_steps,16);
++      //@ assert rsum_halves8(vacc16) == rsum_sum8(tail_base,16*tail_steps+16);
++      //@ ghost tail_steps++;
+     }
+     if (XNN_UNLIKELY(batch != 0)) {
+       const uint8x16_t vt = vld1q_u8(input);
+       const uint8x16_t vonemask = vld1q_u8(&onemask_table[16 - batch]);
++      /*@ assert \forall integer j; 0 <= j < 16 ==>
++        vonemask.lane[j] == (j < batch ? 1 : 0); */
+       const uint8x16_t vtm = vmulq_u8(vt, vonemask);
++      /*@ assert \forall integer j; 0 <= j < 16 ==>
++        vtm.lane[j] == (j < batch ? input[j] : 0); */
++      //@ ghost rsum_proof_load_sum(input,batch,vtm);
++      //@ ghost uint16x8_t before_mask = vacc16;
++      /*@ ghost
++        /@ loop invariant 0 <= lane <= 8;
++           loop invariant \forall integer j; 0 <= j < lane ==>
++             ((uint16_t)((integer)before_mask.lane[j]+vtm.lane[2*j]+vtm.lane[2*j+1])) ==
++               before_mask.lane[j]+vtm.lane[2*j]+vtm.lane[2*j+1];
++           loop assigns lane;
++           loop variant 8-lane;
++        @/
++        for (int lane=0; lane<8; lane++) {
++          rsum_proof_u16_add(before_mask.lane[lane], vtm.lane[2*lane]+vtm.lane[2*lane+1]);
++        }
++      */
+       vacc16 = vpadalq_u8(vacc16, vtm);
++      /*@ assert \forall integer j; 0 <= j < 8 ==>
++        vacc16.lane[j] == before_mask.lane[j]+vtm.lane[2*j]+vtm.lane[2*j+1]; */
++      //@ assert rsum_halves8(vacc16) == rsum_halves8(before_mask)+rsum_bytes16(vtm);
++      //@ assert (size_t)(16*tail_steps) == 16*tail_steps;
++      //@ ghost rsum_lemma_sum8_split(tail_base,16*tail_steps,batch);
++      //@ assert rsum_halves8(vacc16) == rsum_sum8(tail_base,tail_start);
+     }
++    //@ assert rsum_halves8(vacc16) == rsum_sum8(tail_base,tail_start);
+     vacc0 = vpadalq_u16(vacc0, vacc16);
++    //@ ghost rsum_proof_prefix_widen(tail_wide_before,vacc16,vacc0,base,total-tail_start,tail_start);
++    //@ assert rsum_u32(rsum_words4(vacc0)) == rsum_u32(rsum_sum8(base,total));
+   }
+   #if XNN_ARCH_ARM64
+     const uint32_t vacc = vaddvq_u32(vacc0);
+@@ -57,5 +170,9 @@
+     const uint32_t vacc = vget_lane_u32(vacc_lo, 0);
+   #endif
+ 
++  //@ ghost rsum_rvv_proof_u32_normalize();
++  //@ ghost rsum_proof_u32_congruence();
++  //@ assert rsum_u32(initial_output+vacc) == rsum_u32(initial_output+rsum_sum8(base,total));
+   *output += vacc;
++  //@ assert model_bridge: *output == rsum_u32(initial_output+rsum_sum8(base,total));
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -4,6 +4,9 @@
+     uint32_t* output,
+     const struct xnn_qs8_rsum_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const uint8_t *base = input;
++  //@ ghost size_t total = batch;
++  //@ ghost uint32_t initial_output = *output;
+   assert(batch != 0);
+   assert(input != NULL);
+   assert(output != NULL);
+@@ -15,7 +18,24 @@
+   // Initialize the vector accumulator to 0
+   vuint32m8_t vacc = __riscv_vmv_v_x_u32m8(0, vlmax);
+ 
++  /*@ ghost
++  /@ loop invariant 0 <= k <= RVV_CAP;
++     loop invariant rsum_words32(vacc,k) == 0;
++     loop assigns k; loop variant RVV_CAP-k; @/
++  for (int k = 0; k < RVV_CAP; k++) {
++    /@ assert rsum_words32(vacc,k+1) == rsum_words32(vacc,k)+vacc.lane[k]; @/
++  }
++  */
++
++  /*@ loop invariant 0 <= batch <= total;
++      loop invariant vlmax == RVV_CAP;
++      loop invariant input == base+(total-batch);
++      loop invariant rsum_u32(rsum_words32(vacc,RVV_CAP)) == rsum_u32(rsum_sum8(base,total-batch));
++      loop assigns batch,input,vacc;
++      loop variant batch;
++  */
+   for (; batch > 0; ) {
++    //@ ghost size_t offset = total-batch;
+     size_t vl = __riscv_vsetvl_e8m2(batch);
+     vuint8m2_t vt = __riscv_vle8_v_u8m2(input, vl);
+     input += vl;
+@@ -26,12 +46,47 @@
+     
+     // Accumulate using tail-undisturbed policy to preserve the sums in the tail
+     // elements when vl < vlmax, ensuring the final reduction is correct.
++    //@ ghost vuint32m8_t previous = vacc;
+     vacc = __riscv_vadd_vv_u32m8_tu(vacc, vacc, vt32, vl);
++    //@ assert rsum_words32(vacc,0) == 0;
++    //@ assert rsum_words32(previous,0) == 0;
++    /*@ ghost
++    /@ loop invariant 0 <= k <= vl;
++       loop invariant rsum_u32(rsum_words32(vacc,k)+rsum_sum8(base,offset)) ==
++         rsum_u32(rsum_words32(previous,k)+rsum_sum8(base,offset+k));
++       loop assigns k; loop variant vl-k; @/
++    for (size_t k=0;k<vl;k++) {
++      /@ assert rsum_words32(vacc,k+1) == rsum_words32(vacc,k)+vacc.lane[k]; @/
++      /@ assert rsum_words32(previous,k+1) == rsum_words32(previous,k)+previous.lane[k]; @/
++      /@ assert rsum_sum8(base,offset+k+1) == rsum_sum8(base,offset+k)+base[offset+k]; @/
++      /@ assert vt.lane[k] == base[offset+k]; @/
++      /@ assert vt32.lane[k] == rsum_u32(base[offset+k]); @/
++      /@ assert vacc.lane[k] == rsum_u32(previous.lane[k]+vt32.lane[k]); @/
++      /@ assert vacc.lane[k] == rsum_u32(previous.lane[k]+rsum_u32(base[offset+k])); @/
++      rsum_lemma_rvv_active(previous,vacc,base,offset,k);
++    }
++    /@ loop invariant vl <= k <= RVV_CAP;
++       loop invariant rsum_u32(rsum_words32(vacc,k)+rsum_sum8(base,offset)) ==
++         rsum_u32(rsum_words32(previous,k)+rsum_sum8(base,offset+vl));
++       loop assigns k; loop variant RVV_CAP-k; @/
++    for (size_t k=vl;k<RVV_CAP;k++) {
++      /@ assert rsum_words32(vacc,k+1) == rsum_words32(vacc,k)+vacc.lane[k]; @/
++      /@ assert rsum_words32(previous,k+1) == rsum_words32(previous,k)+previous.lane[k]; @/
++      /@ assert vacc.lane[k] == previous.lane[k]; @/
++      rsum_lemma_rvv_tail(previous,vacc,base,offset,offset+vl,k);
++    }
++    rsum_lemma_rvv_cancel(previous,vacc,base,offset,offset+vl);
++    */
++    
++
+   }
+ 
+   // Reduce the vector accumulator into a scalar
+   vuint32m1_t red = __riscv_vmv_v_x_u32m1(0, __riscv_vsetvlmax_e32m1());
+   red = __riscv_vredsum_vs_u32m8_u32m1(vacc, red, vlmax);
+   
++  //@ ghost rsum_rvv_proof_u32_normalize();
++  //@ assert reduced_bits: red.lane[0] == rsum_u32(rsum_sum8(base,total));
+   *output += __riscv_vmv_x_s_u32m1_u32(red);
++  //@ assert model_bridge: *output == rsum_u32(initial_output+rsum_sum8(base,total));
+ }
+\ No newline at end of file

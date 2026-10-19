@@ -156,3 +156,25 @@ Frama33对直接ghost修改普通变量、以及ghost alias写真实memory有拒
 这项具体审查和全部VC闭合不能宣传成对任意ghost程序的通用非干扰定理。
 官方当前实现说明（Introduction及2.13）：
 https://www.frama-c.com/download/frama-c-acsl-implementation.pdf
+
+共享shim suite补充（feat/shim-c）
+上述10类分类同样适用新qu8-rsum、s8-vclamp、f32-vadd；其实际证据入口为
+shared/frozen.json、tools/shim_c_check.py、各case最终summary与manifest。
+旧qs8目录和其历史证据完全保留，不把旧checker的保证提升为新checker保证。
+新checker拒绝ghost无体函数声明，收集全局lemma并要求实际WP报告覆盖；
+1正例+12负例以及修复前发现的逃逸完整保存在docs/shared-shim/和tests/。
+这仍是受限proof语法守卫，需要独立审阅，不能视作通用可信C安全解析器。
+
+新增91行生成器由三种接口模板确定spec/wrapper；模板决定参数角色、padding、
+输入输出分离和clamp上下界，生成并不证明这些前提就是产品完整调用域。
+同族复用模板，新族需要审查模板。impl、spec、模板生成器在proof前已冻结。
+新共享库的合同/ghosthelper均随case验证实际函数体，不另接受未经验证的库摘要。
+f32的两行driver只把fp_add32映射到已有Cfloat.add_f32（IEEE binary32 RNE），
+没有添加用户axiom；其映射正确性及既有WP/Why3浮点理论仍在可信链上。
+float输出比较为C数值相等或双方NaN，包含NaN/Inf，不比较NaNpayload、±0位、
+FP异常flags或errno。不声称覆盖任意舍入模式、VLEN或VL调度。
+VLEN固定128；e8m2/e32m8容量32、e32m1容量4、e8m8容量128；VL取min。
+qu8无signed-sum范围前提，initial任意uint32，求和按mod2^32；
+s8规定lower<=upper，f32每输入3个可读padding元素，明确见生成spec。
+qu8日志的Typed额外条件包括输入与私有static onemask_table分离，必须保留；
+全部案例仍记录alignment/valid_function等未支持guard，不能称涵盖全部C UB。

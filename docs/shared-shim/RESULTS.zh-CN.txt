@@ -1,0 +1,113 @@
+共享shim、固定spec/impl与agent proof：实验结果
+
+本轮目标
+保留旧qs8-rsum，实现共享普通C shim；用简单模板生成spec.h和harness.c；
+先冻结实现/规格，再让agent只补proof；实际验证qu8-rsum、s8-vclamp、f32-vadd。
+分支feat/shim-c；旧版检查点cabc637，冻结新输入cb36fab，最终守卫fe69a05。
+旧verified/qs8-rsum相对cabc637逐字未变。旧GEMM完整证明仍未完成。
+
+kernel | raw WP目标 | 秒 | body覆盖 | 最终记录
+qu8-rsum | 567/567 | 249.602 | 33 | verified/qu8-rsum/logs/final02-summary.json
+s8-vclamp | 688/688 | 320.514 | 27 | verified/s8-vclamp/logs/final02-summary.json
+f32-vadd | 431/431 | 201.823 | 20 | verified/f32-vadd/logs/final01-summary.json
+
+目标计数是raw JSON中的实际WP目标，不混入控制流自动判断的附加计数。
+长度为任意满足spec合法域的符号n，使用不变量和变式，无固定总长度展开界限。
+尾部ghost helper只枚举可能的余数，不枚举整个输入长度。
+所有本case共享函数/ghosthelper的body ensures及全局lemma均要求报告覆盖；
+实际两份原kernel inline进wrapper，不用数学ensures直接假设它们实现正确。
+
+生成器与文件组织
+生成器tools/shim_c_generate.py只有91物理行（82非空），三个接口模板：
+reduction-u8、clamp-s8、binary-f32。每case仅5行JSON，三个字段family/padding/
+observation。spec.h和harness.c由模板确定生成，本轮人工逐case编辑为0。
+签名取自原C，角色、内存区域、padding、长度单位、分离关系取自接口模板。
+这不是任意C程序前置条件推断器；复用同族不改模板，新族仍要补模板。
+
+每case保留neon.c、rvv.c、spec.h、harness.c、一个proof.patch。
+原C逐字复制，不做kernel体改写。证明只应用到.build副本。
+verified/shared/{base,rsum,clamp,float_ops}.{c,h}是按指令族复用的库；
+对应*-proof.patch是共享库自己的证明，一次建好后随调用者一起检查。
+每case没有额外proof helper文件；ghost引理体放在它的唯一proof.patch中。
+
+新增工作量（非空行；不是人类工时）
+kernel | 新共享C/h | 共享库证明注解 | case证明注解 | case配置 | 手改原kernel/spec/wrapper
+qu8-rsum | 83 | 217 | 169 | 3字段 | 0 / 0 / 0
+s8-vclamp | 106 | 234 | 252 | 3字段 | 0 / 0 / 0
+f32-vadd | 56（另2行driver） | 72 | 194 | 3字段 | 0 / 0 / 0
+
+注解计数包括合同、不变量、ghost代码，去掉patch上下文/头、空行和仅重新加入的
+原C闭括号。patch文件物理行数分别248、350、280，不能拿diff行数冒充proof LOC。
+共享新增代码是首次建库成本，不意味着下一个同族kernel还要重写这一套。
+公共类型/环境与base为61非空C/h行、11行证明；生成器82非空、checker191非空。
+本轮proof全部由agent补充并经工具检查；仍需要具体循环不变量、内存frame和
+尾部对应，不能把“生成spec/wrapper”说成“自动生成已验证kernel”。
+详细口径见各case effort.json，公共汇总见effort.json。
+
+实现/规格没有被proof改写的检查
+冻结manifest摘要固定在checker，26份输入（原实现、spec/wrapper、JSON、共享
+C/h、driver和生成器）在proof前固定，结束后全部哈希复查。
+同时比较原始全部C token和Clang完整展开token，再以同一clang14编译原副本与
+附注副本，llvm-diff成功且LLVM IR逐字相同（assert启用）。
+独立审查确实发现过旧checker允许无体ghost外部合同的漏洞，已修复并加入负测；
+最终1正例+12负例全通过，实际helper全部有body并检查，没有自由axiom。
+只接受checker冻结后的complete=true、unchanged=true最终运行，旧诊断不算通过。
+这些守卫属于证据链，不是任意ACSL的完整安全解析或ghost非干扰定理。
+
+额外回归与语义审查
+原始kernel+共享shim每case1578个ASan/UBSan/标量oracle测试通过，float含NaN、
+Inf、subnormal与signedzero。它们辅助发现实现错误，不替代无界证明。
+独立审查浮点driver：仅把逻辑fp_add32接到已有WP Cfloat.add_f32，即binary32
+round-to-nearest-even加法；没有新增用户axiom。五个全局lemma也实际进入证明。
+审查与负测证据在REVIEW.zh-CN.txt、tests/verification/shared_shim/。
+
+证明范围与TCB
+固定LP64、小端、ARM64分支，RVV VLEN128；e8m2/e32m8容量32、e32m1容量4、
+e8m8容量128，VL=min(AVL,容量)。任意n不等于任意VLEN或所有合法setvl策略。
+qu8允许任意uint32初值，按mod2^32求和；s8要求lower<=upper；输入padding为
+qu8 15字节、s8 7字节、f32每输入3个float，输出分离等条件见冻结spec。
+qu8 Typed模型另报告input与私有static onemask_table分离等条件，保留原日志。
+f32输出比较是C数值相等或双方NaN，允许所有float输入（含NaN/Inf）；
+忽略NaNpayload和±0位、FPflags/errno，不能称逐bit等价。
+RTE日志不支持的alignment/valid_function检查等仍是明确限制。
+除solver外，预处理器、Frama C/ACSL前端、inline转换、WP/RTE/内存/浮点模型、
+Qed、Why3/driver、标准库合同、执行环境、验收脚本/冻结证据链仍需信任。
+已检查的shim/helper合同不是自由假设；但真实ISA→C shim形式对应尚未证明。
+LLM生成证明不属于逻辑TCB，前提是独立冻结spec/impl并完整检查证明。
+详见../TCB.zh-CN.txt及本目录REVIEW。
+
+40个kernel的可扩展性结论
+逐项清单在KERNEL_COVERAGE.zh-CN.txt；带源码SHA和缺失API的inventory.json
+恰好覆盖40个source。分类为源码审查判断，只有manifest/最终完整报告算已证。
+4个已有完整案例：旧qs8-rsum（独立旧包）和本轮3个共享案例。
+额外仅2个明确“小补shim候选”：f32-vsub、f32-vmul。同binary-f32接口和循环
+形状，补对应NEON/RVV算术、IEEE driver/共享合同即可复用spec/wrapper；
+仍需登记case/module、冻结新输入，让agent补proof并实际通过；这些是简单接入，
+不需另写C前端。当前没有宣称它们已经验证。
+
+其余34个的具体障碍：
+- 3个原语/接口：f32-vdiv、f32-vsqrt、f32-vmulc。精确div/sqrt特殊值、库模型；
+  sqrt一元和mulc标量广播需要接口模板。不是从C重新设计整个内存模型。
+- 2个实际语义差异：f32-vmin、f32-vmax。原函数NaN输入下NEON返回NaN、RVV返回
+  数值1的C模型见证已重放；原实现不可能仅靠忠实shim在全NaN域证明等价。
+  要修kernel或由产品要求明确合法域，不能为了过proof默默排除NaN。
+- 2个位语义：f32-vlrelu、f32-vrndne。float/int位重解释、sign/mask及NaNquieting。
+- 4个量化：qs8-vadd-minmax、qu8-vadd-minmax、qs8-vcvt、qs8-vlrelu。
+  饱和、舍入移位、高位乘法、narrow以及参数合法域，需要逐边界核对ISA差异。
+- 4个转换：qs8-f32-vcvt、qu8-f32-vcvt、f32-f16-vcvt、qs8-vmul-minmax-fp32。
+  int/float转换、scale、FP16编码与舍入模型，目前只有IEEE加法桥，不能直接调用。
+- 4个新接口：qs8-rdsum、qu8-rdsum、x32-transposec、x32-packw-gemm-goi。
+  多维/stride/索引置换、segment/tuple原语，需要模板与更复杂的循环对应。
+- 1个复数：f32-vcmul。平面布局、uintptr_t寻址、乘加/减是否融合都需处理。
+- 2个间接接口：f32-maxpool、f32-argmaxpool。指针表/窗口/索引、tie与NaN语义。
+- 7个矩阵/卷积：f32-gemm-minmax、f32-igemm-minmax、f32-spmm-minmax、
+  f32-dwconv-minmax、f32-dwconv2d-chw、f32-conv-hwc2chw、qd8-f32-qc4w-gemm-minmax。
+  packed/indirect/sparse布局、FMA、clamp、多层循环对应；旧GEMM修复完整proof未闭合。
+- 1个浮点归约：f32-raddstoreexpminusmax。近似exp与不同归约顺序；精确输出相等
+  本身可能不成立，不能自动借用旧系统4ULP容差。
+- 4个缺完整target：u8-vclamp为空，另3个qc8w GEMM/IGEMM target缺失，详见清单。
+
+这些kernel仍在C里保存内存和索引；困难是生成正确合法域、让WP理解位/浮点
+primitive，以及证明不同循环访问相同输出。共享shim消除了重复建模，没有
+消除这些实际差异。当前证据支持同接口逐元素族的低成本复用，不支持“一次
+补全intrinsic，就自动验证所有kernel”。

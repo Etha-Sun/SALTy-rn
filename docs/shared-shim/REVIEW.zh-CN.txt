@@ -1,0 +1,163 @@
+共享 shim / 生成器独立审阅
+========================
+
+审阅对象为 feat/shim-c 中的新 suite，未修改旧 verified/qs8-rsum。
+审阅人先实现了 qu8-rsum；因此该案例的证明审核不能被描述为完全独立作者
+审计。下面生成器、守卫和候选 kernel 的检查是随后另行进行的审阅。
+
+已核对的正面证据
+----------------
+qu8-rsum 的 run04-summary.json：567/567 原始目标，247.890 秒，33 个函数体
+的 ensures 均覆盖，无 pending，验证期间输入未变。包括 14 个 unsigned
+intrinsic、6 个共用 base 函数、12 个具有完整函数体的 ghost helper，以及
+实际 inline 两份 kernel 的 equivalent。公开 kernel 合同没有求和 ensures；
+输出等价性来自实际函数体，不是信任两个 kernel 的数学后置条件。
+
+spec.h、harness.c 是生成器的确定输出，冻结清单同时保护原始实现、接口
+描述、生成器、生成结果、共享 C shim 和 float driver。证明补丁只附加
+ACSL / ghost；原始 token 守卫与完整 Clang 展开 token 守卫均检查；运行
+结束还检查生成副本及验证输入哈希。qu8 的实际 token 数为 3003。
+
+生成器的泛化范围
+----------------
+这是三个小接口模板，不是任意 C 签名/内存访问自动分析器。签名用受限
+正则从已有函数提取，参数角色、长度单位、合法内存范围、分离关系由
+family 模板决定。每个 case 只有 family、padding、observation 三字段。
+同接口族的新 kernel 不必重写完整 spec/wrapper；新接口族仍需扩充模板。
+该范围与“先做简单生成器”的目标一致，不能宣称任意 kernel 零配置。
+
+padding 与不允许输出/输入重叠是公开调用域的一部分，不能从 spec 冻结
+直接推断它已覆盖原 kernel 所有可能的合法调用。float 观察关系为数值
+相等或两者均 NaN：忽略 NaN payload，并使 +0/-0 相等，不是逐 bit 相等。
+这些条件在证明前已冻结，proof 不能临时缩域以获得成功。
+
+守卫负测与真实发现
+------------------
+tests/verification/shared_shim/check_guard.py 的原版测试在临时副本执行
+1 个正例和 6 个负例；有效检查了改 impl、spec、生成器、公共前置条件、
+普通 C、未使用宏的拒绝，且保护实际工作树冻结输入不变。这些是代码与
+规格分离测试，不是验证 Frama-C / solver 可靠性的测试。
+
+审阅另发现旧 checker SHA 4845b1bcb8f1e21ad9f3aac322f5f426bde793311fe3807197d70fc06c41ed4f
+允许 ghost 函数只有原型、没有函数体；其合同可成为未经证明的外部假设。
+临时副本中插入 ghost audit_unchecked 原型、ensures false 并调用后，
+旧 prepare 接受，Frama-C 对 equivalent 的 328 个目标全由 Qed 闭合。
+证据为 ghost-external-audit.json。没有对实际 proof 加入该内容。
+
+这个发现不表示实际 qu8 proof 使用了未证 helper：它的 12 个 helper 都有
+body，均被完整检查。它表示之前的“拒绝所有未证外部合同”守卫主张不成立，
+必须修复守卫并以新版本重跑最终证明。最终修复和重跑证据应追加在文末。
+
+第二版守卫 SHA 34e765859568c193e1b8d108eba186f26684ff46e00a97b0e10af62c80aec6f1
+已拒绝 void 原型，但返回类型白名单漏掉 double 等类型；临时将上述原型
+改为 double 后 prepare 仍接受。证据 ghost-double-audit.json。实际 suite
+所有 helper 均为 void 定义，不使用该逃逸；最终守卫仍需通用原型检测。
+
+全局 lemma 同样必须进入实际 WP 目标覆盖；不能只检查 body ensures 就
+假定任意全局数学声明都已证明。当前 qu8 数学辅助均为 logic 定义及有
+body 的 ghost lemma；没有 axiom、assume、未证 external helper。
+
+f32-vsub / f32-vmul 分类
+----------------------
+直接对照了四份原始 C：其签名、字节长度单位、NEON 4-lane 主循环与
+尾部读取/部分写回、RVV e32m8 循环与 f32-vadd 对应，主要更换减法或乘法
+intrinsic。small-shim-candidate 分类合理。需要增加两 ISA 的 primitive、
+正确的 IEEE driver 映射和函数体合同证明，再运行完整 case；不能将“只差
+少量 primitive”写成“已经证明”。浮点环境和 NaN 观察关系仍须公开。
+
+保留的 TCB / 工具边界
+--------------------
+C shim 与真实 NEON / RVV 的语义对应仍未被本次 WP 证明。Frama-C 前端、
+WP/内存及浮点模型、Why3/driver、求解器及构建/覆盖脚本仍在信任链上。
+Clang token 相同证明附加注解没有改普通 C，不单独构成 ghost 语义的完整
+noninterference 定理。当前实际 ghost helper 仅作本地 ghost 推理，assigns
+nothing，合同有 body 检查。
+
+qu8 WP Typed 另报告输入与私有 static onemask_table 的分离条件；该前提
+必须随结果公开。工具不生成指针对齐和间接函数调用有效性两类 RTE
+守卫；本案例没有间接调用。不能把“所有已生成目标通过”扩展为任意硬件
+配置、任意 alias、所有 ISA 异常或逐 bit 浮点结果都已证明。
+
+最终守卫加固复核
+----------------
+最终 checker SHA 8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03：
+先移除 ghost 中的合同和普通注释，再检查各返回类型的无体函数声明、
+无空格指针及函数指针声明；禁止本 suite 不需要的 extern / typedef /
+typeof / attributes / asm ghost 扩展。最终负测为 1 正例 + 12 负例通过，
+覆盖原有 6 项、void/double/struct 外部 ghost 原型、注释前缀及两种
+无空格返回指针原型。global lemma 名字收集兼容 {L}，并要求报告目标。
+独立 tiny lemma probe 证实报告 property 为 lemma_<name>，证据见
+ global-lemma-audit.json。
+
+该守卫明确针对当前受限 proof 语法子集；不是通用 C 安全 parser，不能
+替代实际证明材料审阅。本次实际 helper 均为 void、有完整函数体；
+qu8 的 12 个 helper 逐个出现在完整 body ensures 覆盖中，没有依赖
+上述逃逸的 external 合同。已停止将审核扩展为任意新 C 语法 fuzz。
+
+独立保留检查：git diff cabc637 -- verified/qs8-rsum 为空；qu8 的 neon.c、
+rvv.c 分别与原始 kernels/source/qu8-rsum.c、kernels/target/qu8-rsum.c
+逐字 cmp 相同；共享 frozen.json 中全部 SHA 匹配。先前 final01 虽
+567/567 全过，但 checker 在运行中由 root 硬化，unchanged=false，因此
+没有将其标为最终 complete；待 final02 的稳定 checker 结果归档。
+
+最终稳定版本完整复验已完成：qu8-rsum/logs/final02-summary.json 为
+567 / 567，249.602 秒，complete=true、unchanged=true，33 个函数体覆盖
+无缺失，所有全局 lemma 覆盖无缺失（本案例没有全局 lemma）。锁定上述
+最终 checker SHA。proof 与已成功 run04 相同，public spec 和 impl 始终冻结。
+
+另核对 root 的 native-results.json：三个案例各 1578 次 ASan/UBSan 与
+标量 oracle 回归通过，22 条输入 SHA 当前全部匹配。这些是原始 C+
+共享 shim 的有限回归，不能替代各案例的无界 WP 结果。
+
+浮点 driver / NaN 关系与 40 项 inventory 只读终审
+-----------------------------------------------
+此轮没有新跑 proof，也没有修改 checker、实现、spec、driver 或其他 case
+证明。审阅输入的哈希及本地官方工具链来源记录在 float-inventory-audit.json。
+最终 f32-vadd 完整验证状态由 root 的最终 complete summary 填入，以下
+不把已有局部/失败运行说成完整通过。
+
+shared/float.driver 仅有两行：选择 WP 的 cfloat library，并将 logic
+fp_add32(float32,float32) 映射为已有 add_f32；没有增加 axioms 或结果相等
+公理。本地官方 wp.driver 的 cfloat library 导入 frama_c_wp.cfloat.Cfloat；
+cfloat.mlw:132 定义 add_f32(x,y)=F32.(.+) x y；官方 Why3 ieee_float.mlw:85
+将 (.+) 定义为 add RNE。因此这是 WP 现有 binary32、nearest-even IEEE
+加法的名称桥接，不是给每个新 kernel 随意指定相同输出。官方浮点理论
+本身仍属于 WP/Why3 的模型 TCB；不声称此处另外证明了该理论的全部公理。
+
+共享 float_ops-proof.patch 的 same_value 是 \eq_float(a,b) 或两者均 NaN；
+使用 \eq_float 避免将 ACSL 数学相等误当 C/IEEE 比较。same_float 在非 NaN
+分支还要求 \sign 相同，用于 load/store/取半向量的复制合同，保护零的
+符号。NaN 分支不要求 payload 或符号相同。算术结果合同采用 same_value，
+最终 wrapper 也是 C 数值相等或两边均 NaN；因此 +0/-0 仍被视为最终输出
+相等，NaN payload 不在最终观察关系里，不能称逐 bit 浮点等价。
+
+same_float_refl、same_float_value、same_value_refl、same_value_trans、
+fp_add_congruence 均是 lemma 声明，并非 axioms。已有 run03/run04/run05
+及 snapshot07 的原始 WP JSON 确实包含相应五个 lemma_<name> 目标且均为
+passed=true；run05 的其余 kernel 目标当时尚未全过，不能以五个 lemma
+通过替代完整证明。最终 checker 全选 WP 目标，并明确收集全局 lemma，
+要求每个 lemma 在 raw report 中出现且所有报告目标通过；f32_add 及
+intrinsic/helper 的函数体也必须进入 body ensures 覆盖，不能只信合同。
+
+公开 f32 spec、共享 math/helper 合同及 case proof 中没有 is_finite、
+排除 NaN/Inf 的前置条件，也没有为了证明而添加有限输入值区间。checker
+使用 Typed+float 与 -warn-special-float none：该选项避免自动把特殊浮点
+结果作为待排除的 RTE；不等于加入“只考虑有限值”的假设。当前实验仍固定
+RNE/既定浮点模型；不覆盖任意运行时舍入模式、FP 异常标志或 NaN payload。
+
+inventory.json 实际含 40 个唯一 kernel，恰好覆盖当前 kernels/source
+全部 40 份 C，没有漏项或重复；逐条对照当前源码与 target 文件，所有
+source_sha256 和 target_sha256（包括空 target 状态）均匹配。f32-vsub
+与 f32-vmul 分类均为 small-shim-candidate，complete_summaries 均为空；
+理由也明确说“仍需生成并检查 proof，尚非已验证”。两者仅缺相应 NEON /
+RVV sub/mul primitive 是词法 API 清单结论，不能代替 ISA 语义和完整 proof。
+分类 implemented 仅表示已有本轮接入实现，不应单独当作证明状态，完成
+状态必须看 complete_summaries 对应的真实完整检查记录。
+
+root最终结果核对
+----------------
+最终稳定checker下qu8 final02为567/567，s8 final02为688/688，f32 final01为
+431/431；全部complete=true、unchanged=true。root逐条重读raw JSON、检查
+当前源码/证明/生成副本哈希、body/lemma覆盖，结果见final-audit.json。
+f32实际20个函数body和上述5个全局lemma全覆盖。三case LLVM IR逐字相同。
+该追加是root最终证据复核，不能冒充另一作者独立运行全部SMT。

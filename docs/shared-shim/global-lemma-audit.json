@@ -1,0 +1,60 @@
+{
+  "scope": "Independent trivial Frama-C 33.0 probe confirming global lemma report property naming, not a kernel proof.",
+  "source": "/*@ lemma simple_lemma: 1 == 1; */\n/*@ assigns \\nothing; ensures \\result == 0; */\nint demo(void) { return 0; }\n",
+  "raw_report": [
+    {
+      "goal": "typed_lemma_simple_lemma",
+      "property": "lemma_simple_lemma",
+      "file": "/tmp/shared-global-lemma.c",
+      "line": 1,
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    },
+    {
+      "goal": "typed_demo_ensures",
+      "property": "demo_ensures",
+      "file": "/tmp/shared-global-lemma.c",
+      "line": 2,
+      "function": "demo",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    },
+    {
+      "goal": "typed_demo_assigns",
+      "property": "demo_assigns",
+      "file": "/tmp/shared-global-lemma.c",
+      "line": 3,
+      "function": "demo",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    }
+  ],
+  "coverage_property_confirmed": "lemma_simple_lemma"
+}

@@ -75,7 +75,280 @@
         "public_spec_frozen": true,
         "negative_tests": "tests/verification/proof_separation/evidence"
       }
+    },
+    {
+      "name": "qu8-rsum",
+      "status": "proved_under_declared_c_model",
+      "proof_file": "qu8-rsum/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared/base-proof.patch",
+        "shared/rsum-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: two output values/arrays equal under declared observation",
+      "raw_obligations": {
+        "passed": 567,
+        "total": 567
+      },
+      "seconds": 249.602,
+      "isa_to_c_shim_proved": false,
+      "source_and_evidence_sha256": {
+        "qu8-rsum/neon.c": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+        "qu8-rsum/rvv.c": "f44a9addcab95a4f9c57e3c65818c05b332d3a6aa9a3fc59ce1fc4cc3943e494",
+        "qu8-rsum/spec.h": "b04a503b553d57684ff0d14b7db405f22d9cd63a7834259d7f01054c82d976b2",
+        "qu8-rsum/harness.c": "10748d57587654346402dfd878df42841862819a00b0c941109a56fd4f91a8b9",
+        "qu8-rsum/interface.json": "1891b67a9d1d1c9409c7ca3a011873322613f1bec28305cd0960af4155256412",
+        "qu8-rsum/proof.patch": "b5cd1aeefe31a236ad6af047c49290faec9641dbe7ca3881461860210e8ee51c",
+        "shared/shim.h": "d3fd51718f5e1d4c29ab067ba62a1a78cdaefaf276f7e9ef2feb569eb7d1f19f",
+        "shared/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared/rsum.c": "42b79d1a9e23af25577088f55873bf0ca712097e94c22599c9c25fa2c4b3b38b",
+        "shared/rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+        "shared/rsum-proof.patch": "baa4edcc205b720ad9ea3d71b756afe8d34f78f8e34c6cea3ffa96ac1dbf965b",
+        "shared/frozen.json": "ad42bb3362eeea81076dd80e2b0e4cfea8c8597eece08a25781d16368f8dbb27",
+        "qu8-rsum/logs/final02-summary.json": "5ee65e968ec6914b536e6af5d41ed593663dba11000399e66bf91ec3b402ab4b",
+        "qu8-rsum/logs/final02.json": "99ae6797f8b9931a48bd499a1d5b29d277512b4c5ded3832c187b6bff69e39fa",
+        "qu8-rsum/logs/final02.log": "38650ef5ec6b4c07ed92e1deb1fe155b30a221c54eefc8b9af12b288e43c632a",
+        "qu8-rsum/logs/llvm-identity.json": "c92ea56195f4ccdf1126772af81b3adee0dac6461445ca44036b22d78e4453a1"
+      },
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "vlmax_e8m2_e32m8": 32,
+        "vlmax_e32m1": 4,
+        "vlmax_e8m8": 128,
+        "schedule": "min(AVL,capacity)",
+        "domain": "0<n<=SIZE_MAX-15; n+15 readable uint8; arbitrary uint32 initial; modulo 2^32 output",
+        "observation": "integer output equality",
+        "floating_model": null,
+        "math_in_public_functional_postcondition": false,
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Typed additional memory hypotheses retained in logs",
+          "Unsupported alignment/valid_function RTE guards retained; not all C UB covered",
+          "Ghost noninterference reviewed for this restricted proof subset; no general theorem"
+        ]
+      },
+      "implementation_files": [
+        "qu8-rsum/neon.c",
+        "qu8-rsum/rvv.c",
+        "qu8-rsum/harness.c",
+        "shared/shim.h",
+        "shared/base.c",
+        "shared/base.h",
+        "shared/rsum.c",
+        "shared/rsum.h"
+      ],
+      "spec_file": "qu8-rsum/spec.h",
+      "interface_file": "qu8-rsum/interface.json",
+      "source_freeze": "shared/frozen.json",
+      "source_guard": "../tools/shim_c_check.py",
+      "llvm_identity_evidence": "qu8-rsum/logs/llvm-identity.json",
+      "proof_evidence": "qu8-rsum/logs/final02-summary.json",
+      "body_functions": 33,
+      "global_lemmas": [],
+      "checker_inputs_sha256": {
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "tools/shim_c_generate.py": "127022e76c06b4b9b7cda971a0429debfce86371d20a2bbc4ccd96b785356419",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared/rsum-proof.patch": "baa4edcc205b720ad9ea3d71b756afe8d34f78f8e34c6cea3ffa96ac1dbf965b",
+        "verified/qu8-rsum/proof.patch": "b5cd1aeefe31a236ad6af047c49290faec9641dbe7ca3881461860210e8ee51c"
+      },
+      "implementation_unchanged_checks": {
+        "original_kernel_bytes": true,
+        "preprocessed_C_tokens": 3003,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "negative_tests": "../tests/verification/shared_shim/guard-results.json"
+      }
+    },
+    {
+      "name": "s8-vclamp",
+      "status": "proved_under_declared_c_model",
+      "proof_file": "s8-vclamp/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared/base-proof.patch",
+        "shared/clamp-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: two output values/arrays equal under declared observation",
+      "raw_obligations": {
+        "passed": 688,
+        "total": 688
+      },
+      "seconds": 320.514,
+      "isa_to_c_shim_proved": false,
+      "source_and_evidence_sha256": {
+        "s8-vclamp/neon.c": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+        "s8-vclamp/rvv.c": "109360a580298b5e412f3808356668b6511f40b5c9441967c2f060a03fc2ea4e",
+        "s8-vclamp/spec.h": "56644d954221422ae8a5ea88f1cc373c2b19cc2604e7f4d60fdb0b08e102cb8a",
+        "s8-vclamp/harness.c": "91b9b3c82d363a05da7fa5863baf70a9b4bed3448209b5ae49765fd99f333fda",
+        "s8-vclamp/interface.json": "1295dd0ecd384964b5077a8e6cbd0876eb27117be56851be18779b10e9b63fe2",
+        "s8-vclamp/proof.patch": "518f86498c4ed4710850ced860694f7baa80a3fa2d7802296b2afff84c7a425b",
+        "shared/shim.h": "d3fd51718f5e1d4c29ab067ba62a1a78cdaefaf276f7e9ef2feb569eb7d1f19f",
+        "shared/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared/clamp.c": "bfde19aceaa7b4724fa59e95770154c69fa4e2ef9b252f96c52401a9730a84f2",
+        "shared/clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+        "shared/clamp-proof.patch": "724a9a0d214345e5fb8dd2adfd7170041ab5f5294b747d597a973e98dab26839",
+        "shared/frozen.json": "ad42bb3362eeea81076dd80e2b0e4cfea8c8597eece08a25781d16368f8dbb27",
+        "s8-vclamp/logs/final02-summary.json": "0be70450b20b1c28c4feb6eb8d9367f46438731a9ee7069edf5e7c828998cdfa",
+        "s8-vclamp/logs/final02.json": "f1ab09904138186628c0a77983adf9e6819912ecca946453f6d6fe5bec2e7552",
+        "s8-vclamp/logs/final02.log": "e8a5e8b5784ba92b02ed261e443aca02fe3c588bdab8ca0355207d0fc6f70c7f",
+        "s8-vclamp/logs/llvm-identity.json": "0ab08e066a84bfdcad049037575fcc2e078556778f1b89389096c02a0d97a3b8"
+      },
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "vlmax_e8m2_e32m8": 32,
+        "vlmax_e32m1": 4,
+        "vlmax_e8m8": 128,
+        "schedule": "min(AVL,capacity)",
+        "domain": "0<n<=SIZE_MAX-7; n+7 readable int8; disjoint outputs/inputs; -128<=lower<=upper<=127",
+        "observation": "integer output equality",
+        "floating_model": null,
+        "math_in_public_functional_postcondition": false,
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Typed additional memory hypotheses retained in logs",
+          "Unsupported alignment/valid_function RTE guards retained; not all C UB covered",
+          "Ghost noninterference reviewed for this restricted proof subset; no general theorem"
+        ]
+      },
+      "implementation_files": [
+        "s8-vclamp/neon.c",
+        "s8-vclamp/rvv.c",
+        "s8-vclamp/harness.c",
+        "shared/shim.h",
+        "shared/base.c",
+        "shared/base.h",
+        "shared/clamp.c",
+        "shared/clamp.h"
+      ],
+      "spec_file": "s8-vclamp/spec.h",
+      "interface_file": "s8-vclamp/interface.json",
+      "source_freeze": "shared/frozen.json",
+      "source_guard": "../tools/shim_c_check.py",
+      "llvm_identity_evidence": "s8-vclamp/logs/llvm-identity.json",
+      "proof_evidence": "s8-vclamp/logs/final02-summary.json",
+      "body_functions": 27,
+      "global_lemmas": [],
+      "checker_inputs_sha256": {
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "tools/shim_c_generate.py": "127022e76c06b4b9b7cda971a0429debfce86371d20a2bbc4ccd96b785356419",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared/clamp-proof.patch": "724a9a0d214345e5fb8dd2adfd7170041ab5f5294b747d597a973e98dab26839",
+        "verified/s8-vclamp/proof.patch": "518f86498c4ed4710850ced860694f7baa80a3fa2d7802296b2afff84c7a425b"
+      },
+      "implementation_unchanged_checks": {
+        "original_kernel_bytes": true,
+        "preprocessed_C_tokens": 3374,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "negative_tests": "../tests/verification/shared_shim/guard-results.json"
+      }
+    },
+    {
+      "name": "f32-vadd",
+      "status": "proved_under_declared_c_model",
+      "proof_file": "f32-vadd/proof.patch",
+      "proof_helper_files": [],
+      "shared_proof_files": [
+        "shared/base-proof.patch",
+        "shared/float_ops-proof.patch"
+      ],
+      "public_functional_postcondition": "wrapper returns 1: two output values/arrays equal under declared observation",
+      "raw_obligations": {
+        "passed": 431,
+        "total": 431
+      },
+      "seconds": 201.823,
+      "isa_to_c_shim_proved": false,
+      "source_and_evidence_sha256": {
+        "f32-vadd/neon.c": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+        "f32-vadd/rvv.c": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593",
+        "f32-vadd/spec.h": "998b84b82ca57bb6f8352d1ac4af5798b96387811f533085049e2088276c510f",
+        "f32-vadd/harness.c": "5a346e97cf20f2640917dc37cf3cc25e165b9356203f2501ddca20913b6591e4",
+        "f32-vadd/interface.json": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531",
+        "f32-vadd/proof.patch": "42f4c274480f3f7ac879440a9950a89995b2cff9e3728f2a8b91c6382a788b70",
+        "shared/shim.h": "d3fd51718f5e1d4c29ab067ba62a1a78cdaefaf276f7e9ef2feb569eb7d1f19f",
+        "shared/base.c": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a",
+        "shared/base.h": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611",
+        "shared/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "shared/float_ops.c": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14",
+        "shared/float_ops.h": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f",
+        "shared/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "shared/frozen.json": "ad42bb3362eeea81076dd80e2b0e4cfea8c8597eece08a25781d16368f8dbb27",
+        "shared/float.driver": "95a638d50dfac1d444e9996ce9e2de27898b3579728963be375503da1c68f355",
+        "f32-vadd/logs/final01-summary.json": "aba2b2b0db325e583b4b76d7f3beb3c95480a33b6cc9233118ea63795a4f7f0e",
+        "f32-vadd/logs/final01.json": "69e2761b4e7cbb76fa6d2faaf3fdf2bbf047081909f37f4388758f6aaf68aefe",
+        "f32-vadd/logs/final01.log": "5552709188842ceb1ac7aafbd17ce03e23db0d9d52ce80ad74910c952e1a22f8",
+        "f32-vadd/logs/llvm-identity.json": "f83effd0ff8628c2dd9205bc2db7679c789c0f6daee6b21ab26a65f480a6d64e"
+      },
+      "scope": {
+        "machdep": "gcc_x86_64 LP64 little endian; fixed ARM64 branch",
+        "VLEN_bits": 128,
+        "vlmax_e8m2_e32m8": 32,
+        "vlmax_e32m1": 4,
+        "vlmax_e8m8": 128,
+        "schedule": "min(AVL,capacity)",
+        "domain": "0<n<=SIZE_MAX/4-3; each input n+3 readable floats; disjoint outputs/inputs; all float classes allowed",
+        "observation": "C numeric equality or both NaN; ignores NaN payload/signed-zero bits/FP flags/errno",
+        "floating_model": "Typed+float; IEEE binary32 RNE",
+        "math_in_public_functional_postcondition": false,
+        "limitations": [
+          "ISA-to-C shim correspondence not proved",
+          "Typed additional memory hypotheses retained in logs",
+          "Unsupported alignment/valid_function RTE guards retained; not all C UB covered",
+          "Ghost noninterference reviewed for this restricted proof subset; no general theorem"
+        ]
+      },
+      "implementation_files": [
+        "f32-vadd/neon.c",
+        "f32-vadd/rvv.c",
+        "f32-vadd/harness.c",
+        "shared/shim.h",
+        "shared/base.c",
+        "shared/base.h",
+        "shared/float_ops.c",
+        "shared/float_ops.h"
+      ],
+      "spec_file": "f32-vadd/spec.h",
+      "interface_file": "f32-vadd/interface.json",
+      "source_freeze": "shared/frozen.json",
+      "source_guard": "../tools/shim_c_check.py",
+      "llvm_identity_evidence": "f32-vadd/logs/llvm-identity.json",
+      "proof_evidence": "f32-vadd/logs/final01-summary.json",
+      "body_functions": 20,
+      "global_lemmas": [
+        "fp_add_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "checker_inputs_sha256": {
+        "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+        "tools/shim_c_generate.py": "127022e76c06b4b9b7cda971a0429debfce86371d20a2bbc4ccd96b785356419",
+        "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "verified/shared/base-proof.patch": "dbd3edc0a32d971fac1128d80b613e58e2775df6d93a18d6267db137717c0cee",
+        "verified/shared/float_ops-proof.patch": "b5c8cf947c947c4f372d6b57adf93820756abc078d1a55cfb5ad100219bae123",
+        "verified/f32-vadd/proof.patch": "42f4c274480f3f7ac879440a9950a89995b2cff9e3728f2a8b91c6382a788b70"
+      },
+      "implementation_unchanged_checks": {
+        "original_kernel_bytes": true,
+        "preprocessed_C_tokens": 2760,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "negative_tests": "../tests/verification/shared_shim/guard-results.json"
+      }
     }
   ],
-  "gemm_repair_admitted": false
+  "gemm_repair_admitted": false,
+  "shared_suite_results": "../docs/shared-shim/RESULTS.zh-CN.txt",
+  "kernel_inventory": "../docs/shared-shim/inventory.json"
 }

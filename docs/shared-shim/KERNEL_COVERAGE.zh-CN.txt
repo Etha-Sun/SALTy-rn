@@ -1,0 +1,48 @@
+当前40个kernel的共享shim接入盘点
+
+分类是源码检查判断；只有complete summary/manifest才能作为已证状态。
+small-shim-candidate仍要补proof并由checker验证，不能将名字匹配等同于正确性。
+missing_shared_api是去注释后的词法API清单（固定ARM64替代分支，其他未知条件分支可能过近似），不是ISA语义审计。
+
+kernel | 分类 | 完整检查记录 | 原因
+--- | --- | --- | ---
+f32-argmaxpool | indirect-interface | 未完成 | 指针表、池化窗口/索引输出和动态步进；argmax还需tie-breaking；maxpool有NaN语义差异待核对。
+f32-conv-hwc2chw | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+f32-dwconv-minmax | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+f32-dwconv2d-chw | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+f32-f16-vcvt | conversion-semantics | 未完成 | 整数/浮点转换、scale、舍入或FP16编码/bit reinterpret；目前IEEE add共享桥仅覆盖加法，不提供这些primitive。
+f32-gemm-minmax | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+f32-igemm-minmax | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+f32-maxpool | indirect-interface | 未完成 | 指针表、池化窗口/索引输出和动态步进；argmax还需tie-breaking；maxpool有NaN语义差异待核对。
+f32-raddstoreexpminusmax | floating-reduction | 未完成 | 近似exp、多项式/FMA、float位重解释和不同浮点归约顺序；精确输出相等可能不成立，旧系统容许4ULP不能自动沿用为本次规格。
+f32-spmm-minmax | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+f32-vadd | implemented | final01-summary.json | 本轮或历史完整验证案例；最终状态以manifest和fresh summary为准。
+f32-vcmul | pointer-and-float | 未完成 | split实部/虚部平面、uintptr_t往返寻址和multiply-add/sub语义；需新接口及Typed指针/整数转换支持，核对是否融合。
+f32-vdiv | primitive-or-interface | 未完成 | 除原语外，div/sqrt需精确特殊值/除零或库语义支持；sqrt为一元、mulc有标量广播输入，需要相应接口模板。
+f32-vlrelu | bit-semantics | 未完成 | 位级符号判断/选择或NaN quieting、float/int重解释；现有共享浮点加法模型未打通这些位语义。
+f32-vmax | semantic-difference | 未完成 | 源NEON min/max传播NaN，目标RVV采用minimumNumber/maximumNumber；含NaN域下有真实行为差异，不能仅补shim让原kernel等价。
+f32-vmin | semantic-difference | 未完成 | 源NEON min/max传播NaN，目标RVV采用minimumNumber/maximumNumber；含NaN域下有真实行为差异，不能仅补shim让原kernel等价。
+f32-vmul | small-shim-candidate | 未完成 | 同binary-f32接口和分块模式；主要新增NEON/RVV减法或乘法以及对应IEEE驱动映射/已验证合同；仍需生成并检查proof，尚非已验证。
+f32-vmulc | primitive-or-interface | 未完成 | 除原语外，div/sqrt需精确特殊值/除零或库语义支持；sqrt为一元、mulc有标量广播输入，需要相应接口模板。
+f32-vrndne | bit-semantics | 未完成 | 位级符号判断/选择或NaN quieting、float/int重解释；现有共享浮点加法模型未打通这些位语义。
+f32-vsqrt | primitive-or-interface | 未完成 | 除原语外，div/sqrt需精确特殊值/除零或库语义支持；sqrt为一元、mulc有标量广播输入，需要相应接口模板。
+f32-vsub | small-shim-candidate | 未完成 | 同binary-f32接口和分块模式；主要新增NEON/RVV减法或乘法以及对应IEEE驱动映射/已验证合同；仍需生成并检查proof，尚非已验证。
+qd8-f32-qc4w-gemm-minmax | matrix-or-convolution | 未完成 | packed或indirect/sparse布局、FMA、clamp特殊值及多层循环对应；GEMM修复尚无完整WP证明，其他kernel未据此宣称正确。
+qd8-f32-qc8w-gemm-minmax | missing-target | 未完成 | target缺失或空文件；先有一对完整实现，才谈验证。
+qd8-f32-qc8w-igemm-minmax | missing-target | 未完成 | target缺失或空文件；先有一对完整实现，才谈验证。
+qs8-f32-vcvt | conversion-semantics | 未完成 | 整数/浮点转换、scale、舍入或FP16编码/bit reinterpret；目前IEEE add共享桥仅覆盖加法，不提供这些primitive。
+qs8-qc8w-gemm-minmax-fp32 | missing-target | 未完成 | target缺失或空文件；先有一对完整实现，才谈验证。
+qs8-rdsum | new-interface | 未完成 | rows/channels/stride等多维归约接口，输入输出区域和两层循环证明；还缺widen/add/load/store原语，不是当前标量rsum模板。
+qs8-rsum | implemented | separated-summary.json | 本轮或历史完整验证案例；最终状态以manifest和fresh summary为准。
+qs8-vadd-minmax | quantized-semantics | 未完成 | 新widen/narrow、饱和、舍入移位、高位乘法和参数约束；需核对ARM/RVV rounding边界，不能用普通C有符号溢出来替代。
+qs8-vcvt | quantized-semantics | 未完成 | 新widen/narrow、饱和、舍入移位、高位乘法和参数约束；需核对ARM/RVV rounding边界，不能用普通C有符号溢出来替代。
+qs8-vlrelu | quantized-semantics | 未完成 | 新widen/narrow、饱和、舍入移位、高位乘法和参数约束；需核对ARM/RVV rounding边界，不能用普通C有符号溢出来替代。
+qs8-vmul-minmax-fp32 | conversion-semantics | 未完成 | 整数/浮点转换、scale、舍入或FP16编码/bit reinterpret；目前IEEE add共享桥仅覆盖加法，不提供这些primitive。
+qu8-f32-vcvt | conversion-semantics | 未完成 | 整数/浮点转换、scale、舍入或FP16编码/bit reinterpret；目前IEEE add共享桥仅覆盖加法，不提供这些primitive。
+qu8-rdsum | new-interface | 未完成 | rows/channels/stride等多维归约接口，输入输出区域和两层循环证明；还缺widen/add/load/store原语，不是当前标量rsum模板。
+qu8-rsum | implemented | final02-summary.json | 本轮或历史完整验证案例；最终状态以manifest和fresh summary为准。
+qu8-vadd-minmax | quantized-semantics | 未完成 | 新widen/narrow、饱和、舍入移位、高位乘法和参数约束；需核对ARM/RVV rounding边界，不能用普通C有符号溢出来替代。
+s8-vclamp | implemented | final02-summary.json | 本轮或历史完整验证案例；最终状态以manifest和fresh summary为准。
+u8-vclamp | missing-target | 未完成 | target缺失或空文件；先有一对完整实现，才谈验证。
+x32-packw-gemm-goi | new-interface | 未完成 | 需strided/segment store、zip/tuple以及二维输出范围/索引置换模板和证明；C寻址仍直接验证，不另建机器memory model。
+x32-transposec | new-interface | 未完成 | 需strided/segment store、zip/tuple以及二维输出范围/索引置换模板和证明；C寻址仍直接验证，不另建机器memory model。

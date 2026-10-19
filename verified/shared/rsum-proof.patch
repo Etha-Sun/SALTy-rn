@@ -1,0 +1,319 @@
+--- a/rsum.h
++++ b/rsum.h
+@@ -1,17 +1,203 @@
+ #ifndef SHARED_RSUM_H
+ #define SHARED_RSUM_H
++/*@
++ logic integer rsum_u32(integer x) = ((x % 4294967296) + 4294967296) % 4294967296;
++ logic integer rsum_sum8{L}(uint8_t *p, integer n) = n <= 0 ? 0 : rsum_sum8(p,n-1)+p[n-1];
++ logic integer rsum_words4(uint32x4_t v) = v.lane[0]+v.lane[1]+v.lane[2]+v.lane[3];
++ logic integer rsum_halves8(uint16x8_t v) = v.lane[0]+v.lane[1]+v.lane[2]+v.lane[3]+v.lane[4]+v.lane[5]+v.lane[6]+v.lane[7];
++ logic integer rsum_words32(vuint32m8_t v, integer n) = n <= 0 ? 0 : rsum_words32(v,n-1)+v.lane[n-1];
++*/
++/*@ terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < 4 ==> \result.lane[i] == x; */
+ uint32x4_t vmovq_n_u32(uint32_t x);
++/*@ terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < 8 ==> \result.lane[i] == x; */
+ uint16x8_t vmovq_n_u16(uint16_t x);
++/*@ requires \valid_read(p+(0..15)); terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < 16 ==> \result.lane[i] == p[i]; */
+ uint8x16_t vld1q_u8(const uint8_t *p);
++/*@ terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < 8 ==> \result.lane[i] == (uint16_t)(a.lane[i]+b.lane[2*i]+b.lane[2*i+1]); */
+ uint16x8_t vpadalq_u8(uint16x8_t a, uint8x16_t b);
++/*@ terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < 4 ==> \result.lane[i] == rsum_u32(a.lane[i]+b.lane[2*i]+b.lane[2*i+1]); */
+ uint32x4_t vpadalq_u16(uint32x4_t a, uint16x8_t b);
++/*@ terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < 16 ==> \result.lane[i] == (uint8_t)(a.lane[i]*b.lane[i]); */
+ uint8x16_t vmulq_u8(uint8x16_t a, uint8x16_t b);
++/*@ terminates \true; assigns \nothing; ensures \result == rsum_u32(rsum_words4(a)); */
+ uint32_t vaddvq_u32(uint32x4_t a);
++/*@ requires vl <= RVV_CAP; terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < vl ==> \result.lane[i] == x; */
+ vuint32m8_t __riscv_vmv_v_x_u32m8(uint32_t x, size_t vl);
++/*@ requires vl <= RVV_M1_CAP; terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < vl ==> \result.lane[i] == x; */
+ vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t x, size_t vl);
++/*@ requires vl <= RVV_CAP; requires \valid_read(p+(0..vl-1)); terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < vl ==> \result.lane[i] == p[i]; */
+ vuint8m2_t __riscv_vle8_v_u8m2(const uint8_t *p, size_t vl);
++/*@ requires vl <= RVV_CAP; terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < vl ==> \result.lane[i] == a.lane[i]; */
+ vuint32m8_t __riscv_vzext_vf4_u32m8(vuint8m2_t a, size_t vl);
++/*@ requires vl <= RVV_CAP; terminates \true; assigns \nothing; ensures \forall integer i; 0 <= i < vl ==> \result.lane[i] == rsum_u32(a.lane[i]+b.lane[i]); ensures \forall integer i; vl <= i < RVV_CAP ==> \result.lane[i] == old.lane[i]; */
+ vuint32m8_t __riscv_vadd_vv_u32m8_tu(vuint32m8_t old, vuint32m8_t a, vuint32m8_t b, size_t vl);
++/*@ requires 0 < vl <= RVV_CAP; terminates \true; assigns \nothing; ensures \result.lane[0] == rsum_u32(seed.lane[0]+rsum_words32(a,vl)); */
+ vuint32m1_t __riscv_vredsum_vs_u32m8_u32m1(vuint32m8_t a, vuint32m1_t seed, size_t vl);
++/*@ terminates \true; assigns \nothing; ensures \result == a.lane[0]; */
+ uint32_t __riscv_vmv_x_s_u32m1_u32(vuint32m1_t a);
++/* This is ghost proof code, not a change to the C shim or its contracts. */
++/*@ ghost
++/@ requires 0 <= y <= 510;
++   requires (integer)x+y <= 65535;
++   terminates \true;
++   assigns \nothing;
++   ensures (uint16_t)((integer)x+y) == (integer)x+y;
++@/
++void rsum_proof_u16_add(uint16_t x, int y) { } */
++/*@ logic integer rsum_bytes16(uint8x16_t v) =
++  v.lane[0]+v.lane[1]+v.lane[2]+v.lane[3]+
++  v.lane[4]+v.lane[5]+v.lane[6]+v.lane[7]+
++  v.lane[8]+v.lane[9]+v.lane[10]+v.lane[11]+
++  v.lane[12]+v.lane[13]+v.lane[14]+v.lane[15]; */
++
++/*@ ghost
++/@ requires a <= SIZE_MAX-b;
++   requires \valid_read(p+(0..(integer)a+b-1));
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_sum8(p,(integer)a+b) == rsum_sum8(p,a)+rsum_sum8(p+a,b);
++@/
++void rsum_lemma_sum8_split(const uint8_t *p,size_t a,size_t b) {
++  /@ loop invariant 0 <= i <= b;
++     loop invariant rsum_sum8(p,(integer)a+i) == rsum_sum8(p,a)+rsum_sum8(p+a,i);
++     loop assigns i;
++     loop variant b-i;
++  @/
++  for(size_t i=0;i<b;i++) { }
++}
++*/
++
++/*@ ghost
++/@ requires \forall integer j; 0 <= j < 4 ==>
++     r.lane[j] == rsum_u32(a.lane[j]+b.lane[2*j]+b.lane[2*j+1]);
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_u32(rsum_words4(r)) == rsum_u32(rsum_words4(a)+rsum_halves8(b));
++@/
++void rsum_proof_widen(uint32x4_t a, uint16x8_t b, uint32x4_t r) { }
++*/
++/*@ logic integer rsum_bytes_prefix(uint8x16_t v, integer n) =
++  n <= 0 ? 0 : rsum_bytes_prefix(v,n-1)+v.lane[n-1]; */
++/*@ ghost
++/@ requires n <= 16;
++   requires \valid_read(p+(0..15));
++   requires \forall integer j; 0 <= j < 16 ==> v.lane[j] == (j < n ? p[j] : 0);
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_bytes16(v) == rsum_sum8(p,n);
++@/
++void rsum_proof_load_sum(const uint8_t *p, size_t n, uint8x16_t v) {
++  /@ loop invariant 0 <= i <= 16;
++     loop invariant rsum_bytes_prefix(v,i) == rsum_sum8(p,i<n ? i : n);
++     loop assigns i;
++     loop variant 16-i;
++  @/
++  for (int i=0; i<16; i++) { }
++}
++*/
++/*@ ghost
++/@ terminates \true;
++   assigns \nothing;
++   ensures \forall integer x,y,z; rsum_u32(x)==rsum_u32(y) ==> rsum_u32(x+z)==rsum_u32(y+z);
++@/
++void rsum_proof_u32_congruence(void) { }
++*/
++/*@ ghost
++/@ requires n <= SIZE_MAX-k;
++   requires \valid_read(p+(0..(integer)n+k-1));
++   requires rsum_u32(rsum_words4(a)) == rsum_u32(rsum_sum8(p,n));
++   requires rsum_halves8(b) == rsum_sum8(p+n,k);
++   requires \forall integer j; 0 <= j < 4 ==>
++     r.lane[j] == rsum_u32(a.lane[j]+b.lane[2*j]+b.lane[2*j+1]);
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_u32(rsum_words4(r)) == rsum_u32(rsum_sum8(p,(integer)n+k));
++@/
++void rsum_proof_prefix_widen(uint32x4_t a, uint16x8_t b, uint32x4_t r,
++                        const uint8_t *p, size_t n, size_t k) {
++  rsum_proof_u32_congruence();
++  rsum_lemma_sum8_split(p,n,k);
++  rsum_proof_widen(a,b,r);
++  /@ assert rsum_u32(rsum_words4(a)+rsum_halves8(b)) == rsum_u32(rsum_sum8(p,n)+rsum_halves8(b)); @/
++  /@ assert rsum_sum8(p,(integer)n+k) == rsum_sum8(p,n)+rsum_halves8(b); @/
++}
++*/
++
++/*@ ghost
++/@ terminates \true;
++   assigns \nothing;
++   ensures \forall integer x,y,z; rsum_u32(x)==rsum_u32(y) ==> rsum_u32(x+z)==rsum_u32(y+z);
++@/
++void rsum_rvv_proof_u32_congruence(void) { }
++/@ terminates \true;
++   assigns \nothing;
++   ensures \forall integer x,y; rsum_u32(x+y)==rsum_u32(rsum_u32(x)+rsum_u32(y));
++   ensures \forall integer x,y; rsum_u32(x+rsum_u32(y))==rsum_u32(x+y);
++   ensures \forall integer x,y; rsum_u32(x-y)==rsum_u32(rsum_u32(x)-rsum_u32(y));
++@/
++void rsum_rvv_proof_u32_normalize(void) { }
++/@ terminates \true;
++   assigns \nothing;
++   ensures \forall integer a,b,c,d;
++      rsum_u32(a)==rsum_u32(b) && rsum_u32(c+b)==rsum_u32(a+d) ==> rsum_u32(c)==rsum_u32(d);
++@/
++void rsum_rvv_proof_u32_cross_cancel(void) { }
++*/
++
++/*@ ghost
++/@    requires 0 <= k < RVV_CAP;
++   requires n <= SIZE_MAX-k-1;
++   requires \valid_read(p+(0..n+k));
++   requires current.lane[k] == rsum_u32(previous.lane[k]+rsum_u32(p[n+k]));
++   requires rsum_u32(rsum_words32(current,k)+rsum_sum8(p,n)) ==
++            rsum_u32(rsum_words32(previous,k)+rsum_sum8(p,n+k));
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_u32(rsum_words32(current,k+1)+rsum_sum8(p,n)) ==
++           rsum_u32(rsum_words32(previous,k+1)+rsum_sum8(p,n+k+1));
++@/
++void rsum_lemma_rvv_active(vuint32m8_t previous,vuint32m8_t current,const uint8_t *p,size_t n,size_t k) {
++  rsum_rvv_proof_u32_normalize();
++  rsum_rvv_proof_u32_congruence();
++  /@ assert rsum_words32(current,k+1) == rsum_words32(current,k)+current.lane[k]; @/
++  /@ assert rsum_words32(previous,k+1) == rsum_words32(previous,k)+previous.lane[k]; @/
++  /@ assert rsum_sum8(p,n+k+1) == rsum_sum8(p,n+k)+p[n+k]; @/
++  /@ assert rsum_u32(current.lane[k]) == rsum_u32(previous.lane[k]+p[n+k]); @/
++  /@ assert rsum_u32(rsum_words32(current,k)+rsum_sum8(p,n)+current.lane[k]) ==
++       rsum_u32(rsum_u32(rsum_words32(current,k)+rsum_sum8(p,n))+rsum_u32(current.lane[k])); @/
++  /@ assert rsum_u32(rsum_words32(previous,k)+rsum_sum8(p,n+k)+previous.lane[k]+p[n+k]) ==
++       rsum_u32(rsum_u32(rsum_words32(previous,k)+rsum_sum8(p,n+k))+rsum_u32(previous.lane[k]+p[n+k])); @/
++}
++/@    requires 0 <= k < RVV_CAP;
++   requires current.lane[k] == previous.lane[k];
++   requires rsum_u32(rsum_words32(current,k)+rsum_sum8(p,n)) ==
++            rsum_u32(rsum_words32(previous,k)+rsum_sum8(p,m));
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_u32(rsum_words32(current,k+1)+rsum_sum8(p,n)) ==
++           rsum_u32(rsum_words32(previous,k+1)+rsum_sum8(p,m));
++@/
++void rsum_lemma_rvv_tail(vuint32m8_t previous,vuint32m8_t current,const uint8_t *p,size_t n,size_t m,size_t k) {
++  rsum_rvv_proof_u32_normalize();
++  rsum_rvv_proof_u32_congruence();
++  /@ assert rsum_words32(current,k+1) == rsum_words32(current,k)+current.lane[k]; @/
++  /@ assert rsum_words32(previous,k+1) == rsum_words32(previous,k)+previous.lane[k]; @/
++  /@ assert rsum_u32(rsum_words32(current,k)+rsum_sum8(p,n)+current.lane[k]) ==
++       rsum_u32(rsum_u32(rsum_words32(current,k)+rsum_sum8(p,n))+rsum_u32(current.lane[k])); @/
++  /@ assert rsum_u32(rsum_words32(previous,k)+rsum_sum8(p,m)+previous.lane[k]) ==
++       rsum_u32(rsum_u32(rsum_words32(previous,k)+rsum_sum8(p,m))+rsum_u32(previous.lane[k])); @/
++}
++/@    requires rsum_u32(rsum_words32(previous,RVV_CAP)) == rsum_u32(rsum_sum8(p,n));
++   requires rsum_u32(rsum_words32(current,RVV_CAP)+rsum_sum8(p,n)) ==
++            rsum_u32(rsum_words32(previous,RVV_CAP)+rsum_sum8(p,m));
++   terminates \true;
++   assigns \nothing;
++   ensures rsum_u32(rsum_words32(current,RVV_CAP)) == rsum_u32(rsum_sum8(p,m));
++@/
++void rsum_lemma_rvv_cancel(vuint32m8_t previous,vuint32m8_t current,const uint8_t *p,size_t n,size_t m) {
++  rsum_rvv_proof_u32_cross_cancel();
++
++}
++*/
++
+ #endif
+--- a/rsum.c
++++ b/rsum.c
+@@ -2,30 +2,45 @@
+ uint32x4_t vmovq_n_u32(uint32_t x) {
+   uint32x4_t r;
+ 
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == x;
++      loop assigns i,r; loop variant 4-i; */
+   for (size_t i=0;i<4;i++) r.lane[i]=(uint32_t)x;
+   return r;
+ }
+ uint16x8_t vmovq_n_u16(uint16_t x) {
+   uint16x8_t r;
+ 
++  /*@ loop invariant 0 <= i <= 8;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == x;
++      loop assigns i,r; loop variant 8-i; */
+   for (size_t i=0;i<8;i++) r.lane[i]=(uint16_t)x;
+   return r;
+ }
+ uint8x16_t vld1q_u8(const uint8_t *p) {
+   uint8x16_t r;
+ 
++  /*@ loop invariant 0 <= i <= 16;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == p[j];
++      loop assigns i,r; loop variant 16-i; */
+   for (size_t i=0;i<16;i++) r.lane[i]=p[i];
+   return r;
+ }
+ uint16x8_t vpadalq_u8(uint16x8_t a,uint8x16_t b) {
+   uint16x8_t r;
+ 
++  /*@ loop invariant 0 <= i <= 8;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == (uint16_t)(a.lane[j]+b.lane[2*j]+b.lane[2*j+1]);
++      loop assigns i,r; loop variant 8-i; */
+   for (size_t i=0;i<8;i++) r.lane[i]=(uint16_t)(a.lane[i]+b.lane[2*i]+b.lane[2*i+1]);
+   return r;
+ }
+ uint32x4_t vpadalq_u16(uint32x4_t a,uint16x8_t b) {
+   uint32x4_t r;
+ 
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == rsum_u32(a.lane[j]+b.lane[2*j]+b.lane[2*j+1]);
++      loop assigns i,r; loop variant 4-i; */
+   for (size_t i=0;i<4;i++)
+     r.lane[i]=a.lane[i]+(uint32_t)b.lane[2*i]+(uint32_t)b.lane[2*i+1];
+   return r;
+@@ -33,6 +48,9 @@
+ uint8x16_t vmulq_u8(uint8x16_t a,uint8x16_t b) {
+   uint8x16_t r;
+ 
++  /*@ loop invariant 0 <= i <= 16;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == (uint8_t)(a.lane[j]*b.lane[j]);
++      loop assigns i,r; loop variant 16-i; */
+   for (size_t i=0;i<16;i++) r.lane[i]=(uint8_t)(a.lane[i]*b.lane[i]);
+   return r;
+ }
+@@ -42,35 +60,54 @@
+ vuint32m8_t __riscv_vmv_v_x_u32m8(uint32_t x,size_t vl) {
+   vuint32m8_t r={{0}};
+ 
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == x;
++      loop assigns i,r; loop variant vl-i; */
+   for (size_t i=0;i<vl;i++) r.lane[i]=(uint32_t)x;
+   return r;
+ }
+ vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t x,size_t vl) {
+   vuint32m1_t r={{0}};
+ 
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == x;
++      loop assigns i,r; loop variant vl-i; */
+   for (size_t i=0;i<vl;i++) r.lane[i]=(uint32_t)x;
+   return r;
+ }
+ vuint8m2_t __riscv_vle8_v_u8m2(const uint8_t *p,size_t vl) {
+   vuint8m2_t r={{0}};
+ 
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == p[j];
++      loop assigns i,r; loop variant vl-i; */
+   for (size_t i=0;i<vl;i++) r.lane[i]=p[i];
+   return r;
+ }
+ vuint32m8_t __riscv_vzext_vf4_u32m8(vuint8m2_t a,size_t vl) {
+   vuint32m8_t r={{0}};
+ 
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0 <= j < i ==> r.lane[j] == a.lane[j];
++      loop assigns i,r; loop variant vl-i; */
+   for (size_t i=0;i<vl;i++) r.lane[i]=(uint32_t)a.lane[i];
+   return r;
+ }
+ vuint32m8_t __riscv_vadd_vv_u32m8_tu(vuint32m8_t old,vuint32m8_t a,vuint32m8_t b,size_t vl) {
+ 
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0 <= j < i ==> old.lane[j] == rsum_u32(a.lane[j]+b.lane[j]);
++      loop invariant \forall integer j; i <= j < RVV_CAP ==> old.lane[j] == \at(old.lane[j],Pre);
++      loop assigns i,old; loop variant vl-i; */
+   for (size_t i=0;i<vl;i++) old.lane[i]=a.lane[i]+b.lane[i];
+   return old;
+ }
+ vuint32m1_t __riscv_vredsum_vs_u32m8_u32m1(vuint32m8_t a,vuint32m1_t seed,size_t vl) {
+   uint32_t sum=seed.lane[0];
+ 
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant sum == rsum_u32(seed.lane[0]+rsum_words32(a,i));
++      loop assigns i,sum; loop variant vl-i; */
+   for (size_t i=0;i<vl;i++) sum+=a.lane[i];
+   seed.lane[0]=sum;
+   return seed;

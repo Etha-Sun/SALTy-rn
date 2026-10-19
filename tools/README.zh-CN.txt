@@ -39,3 +39,13 @@ Why3需要本地进程IPC；本次沙箱禁止该IPC时会停在goals scheduled�
 模型回归测试是另外的C++测试，需要CVC5开发头/库和ABI兼容的C++编译器。
 本次CVC5是Nix构建，使用同一Nix环境的GCC14，系统GCC11不能链接该库。
 它们不参与qs8-rsum的WP逻辑证明，详见tests/verification/neon_nan/。
+
+共享shim与小接口生成器
+  python3 tools/shim_c_generate.py verified/qu8-rsum
+默认检查生成结果；--write仅用于冻结前初次生成。支持reduction-u8、clamp-s8、
+binary-f32三类；interface.json为family/padding/observation三字段。
+  python3 tools/shim_c_check.py qu8-rsum --name replay --framac /path/to/frama-c \
+    --prover-bin /path/to/provers/bin
+同样支持s8-vclamp和f32-vadd；--prepare仅生成副本并检查，不运行WP。
+checker自动内联实际kernel、检查本case使用的base/module/helper和wrapper，
+拒绝覆盖同名结果。完整证据、40项接入盘点与手写LOC在docs/shared-shim/。
