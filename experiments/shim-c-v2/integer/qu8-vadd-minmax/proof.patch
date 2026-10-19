@@ -1,0 +1,112 @@
+--- a/neon.c
++++ b/neon.c
+@@ -21,6 +21,10 @@
+     uint8_t* output,
+     const struct xnn_qu8_add_minmax_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const uint8_t *a_base=input_a;
++  //@ ghost const uint8_t *b_base=input_b;
++  //@ ghost uint8_t *o_base=output;
++  //@ ghost size_t total=batch;
+   assert(batch != 0);
+   assert(batch % sizeof(uint8_t) == 0);
+   assert(input_a != NULL);
+@@ -36,6 +40,21 @@
+   const uint8x8_t voutput_min = vdup_n_u8(params->scalar.output_min);
+   const uint8x8_t voutput_max = vdup_n_u8(params->scalar.output_max);
+ 
++  /*@ loop invariant 0<=batch<=total;
++      loop invariant input_a==a_base+(total-batch);
++      loop invariant input_b==b_base+(total-batch);
++      loop invariant output==o_base+(total-batch);
++      loop invariant \valid(o_base+(0..total-1));
++      loop invariant \valid_read(a_base+(0..total+6));
++      loop invariant \valid_read(b_base+(0..total+6));
++      loop invariant \valid_read(params);
++      loop invariant params->scalar.shift!=INT32_MIN;
++      loop invariant \separated(o_base+(0..total-1),a_base+(0..total+6));
++      loop invariant \separated(o_base+(0..total-1),b_base+(0..total+6));
++      loop invariant \separated(o_base+(0..total-1),params);
++      loop invariant \forall integer j;0<=j<total-batch ==> o_base[j]==L_qadd(a_base[j],b_base[j],params->scalar.a_zero_point,params->scalar.b_zero_point,params->scalar.a_multiplier,params->scalar.b_multiplier,params->scalar.shift,params->scalar.output_zero_point,params->scalar.output_min,params->scalar.output_max);
++      loop assigns batch,input_a,input_b,output,o_base[0..total-1];
++      loop variant batch; */
+   for (; batch >= 8 * sizeof(uint8_t); batch -= 8 * sizeof(uint8_t)) {
+     const uint8x8_t va01234567 = vld1_u8(input_a); input_a += 8;
+     const uint8x8_t vb01234567 = vld1_u8(input_b); input_b += 8;
+@@ -98,4 +117,5 @@
+       }
+     }
+   }
++  //@ assert \forall integer j;0<=j<total ==> o_base[j]==L_qadd(a_base[j],b_base[j],params->scalar.a_zero_point,params->scalar.b_zero_point,params->scalar.a_multiplier,params->scalar.b_multiplier,params->scalar.shift,params->scalar.output_zero_point,params->scalar.output_min,params->scalar.output_max);
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -5,6 +5,10 @@
+     uint8_t* output,
+     const struct xnn_qu8_add_minmax_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const uint8_t *a_base=input_a;
++  //@ ghost const uint8_t *b_base=input_b;
++  //@ ghost uint8_t *o_base=output;
++  //@ ghost size_t total=batch;
+   assert(batch != 0);
+   assert(batch % sizeof(uint8_t) == 0);
+   assert(input_a != NULL);
+@@ -20,6 +24,21 @@
+   const uint8_t output_min = params->scalar.output_min;
+   const uint8_t output_max = params->scalar.output_max;
+ 
++  /*@ loop invariant 0<=batch<=total;
++      loop invariant input_a==a_base+(total-batch);
++      loop invariant input_b==b_base+(total-batch);
++      loop invariant output==o_base+(total-batch);
++      loop invariant \valid(o_base+(0..total-1));
++      loop invariant \valid_read(a_base+(0..total+6));
++      loop invariant \valid_read(b_base+(0..total+6));
++      loop invariant \valid_read(params);
++      loop invariant params->scalar.shift!=INT32_MIN;
++      loop invariant \separated(o_base+(0..total-1),a_base+(0..total+6));
++      loop invariant \separated(o_base+(0..total-1),b_base+(0..total+6));
++      loop invariant \separated(o_base+(0..total-1),params);
++      loop invariant \forall integer j;0<=j<total-batch ==> o_base[j]==L_qadd(a_base[j],b_base[j],params->scalar.a_zero_point,params->scalar.b_zero_point,params->scalar.a_multiplier,params->scalar.b_multiplier,params->scalar.shift,params->scalar.output_zero_point,params->scalar.output_min,params->scalar.output_max);
++      loop assigns batch,input_a,input_b,output,o_base[0..total-1];
++      loop variant batch; */
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m2(batch);
+ 
+@@ -41,6 +60,7 @@
+     vacc = __riscv_vmacc_vx_i32m8(vacc, b_multiplier, vxb32, vl);
+ 
+     // Rounding shift right (or left shift if shift is negative)
++    /*@ ghost if(shift>=32)proof_round32(vacc,(unsigned)shift,vl); */
+     if (shift >= 32 || shift <= -32) {
+       vacc = __riscv_vmv_v_x_i32m8(0, vl);
+     } else if (shift >= 0) {
+@@ -64,6 +84,7 @@
+     vout = __riscv_vmaxu_vx_u8m2(vout, output_min, vl);
+     vout = __riscv_vminu_vx_u8m2(vout, output_max, vl);
+ 
++    //@ assert \forall integer j;0<=j<vl ==> vout.lane[j]==L_qadd(a_base[total-batch+j],b_base[total-batch+j],params->scalar.a_zero_point,params->scalar.b_zero_point,params->scalar.a_multiplier,params->scalar.b_multiplier,params->scalar.shift,params->scalar.output_zero_point,params->scalar.output_min,params->scalar.output_max);
+     __riscv_vse8_v_u8m2(output, vout, vl);
+ 
+     input_a += vl;
+@@ -71,4 +92,5 @@
+     output += vl;
+     batch -= vl;
+   }
++  //@ assert \forall integer j;0<=j<total ==> o_base[j]==L_qadd(a_base[j],b_base[j],params->scalar.a_zero_point,params->scalar.b_zero_point,params->scalar.a_multiplier,params->scalar.b_multiplier,params->scalar.shift,params->scalar.output_zero_point,params->scalar.output_min,params->scalar.output_max);
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -1,7 +1,10 @@
+ #include "spec.h"
+ int equivalent(size_t n, const uint8_t *input_a, const uint8_t *input_b, uint8_t *left, uint8_t *right, const struct xnn_qu8_add_minmax_params* params) {
+   test_neon(n,input_a,input_b,left,params);
++  //@ assert \forall integer j;0<=j<n ==> left[j]==L_qadd(input_a[j],input_b[j],params->scalar.a_zero_point,params->scalar.b_zero_point,params->scalar.a_multiplier,params->scalar.b_multiplier,params->scalar.shift,params->scalar.output_zero_point,params->scalar.output_min,params->scalar.output_max);
+   test_rvv(n,input_a,input_b,right,params);
++  //@ assert \forall integer j;0<=j<n ==> left[j]==right[j];
++  /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
+   for(size_t i=0;i<n;i++) if(!(left[i]==right[i]))return 0;
+   return 1;
+ }

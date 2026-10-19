@@ -1,0 +1,31 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/tmp/mulc-tail-transport-final.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/tmp/mulc-tail-transport-final/unit.c", "-wp-skip-fct", "__riscv_vfadd_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,vaddq_f32,vld1q_s8", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "test_neon,test_rvv,proof_mulc_prefix_step,proof_check_same_value_trans,proof_check_fp_mul_transport", "-wp-prop", "@ensures,@requires,tail_output_transport", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/tmp/mulc-tail-transport-final/extensions.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel] neon.c:7: Warning: 
+  found two contracts (old location: spec.h:5-15). Merging them
+[kernel] neon.c:7: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:5-15). Keeping only the first one
+[kernel] rvv.c:1: Warning: 
+  found two contracts (old location: spec.h:24-34). Merging them
+[kernel] rvv.c:1: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:24-34). Keeping only the first one
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function proof_check_same_value_trans
+[rte:annot] annotating function proof_check_fp_mul_transport
+[rte:annot] annotating function proof_mulc_prefix_step
+[rte:annot] annotating function test_neon
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function test_rvv
+[wp] 74 goals scheduled
+[wp] [Timeout] typed_fma_extensions_test_neon_assert_tail_output_transport (Qed 827ms) (CVC5)
+[wp] Proved goals:   73 / 74
+  Qed:            33 (21ms-116ms-840ms)
+  CVC5 1.2.1:     39 (15ms-750ms-14.6s)
+  Z3 4.12.5:       1 (779ms)
+  Timeout:         1
+[wp] Updated session
+   - 1 new script to complete

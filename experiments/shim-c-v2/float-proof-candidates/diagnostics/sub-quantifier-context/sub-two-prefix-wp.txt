@@ -1,0 +1,199 @@
+Goal Preservation of Invariant ("neon.c", lines 88-89):
+Let x = batch_0 / 4.
+Let x_1 = 2 + n.
+Let m = Malloc_0[L_params_4332 <- 1].
+Let a = shift_float32(a_base_0, 0).
+Let a_1 = shift_float32(b_base_0, 0).
+Let a_2 = shift_float32(o_base_0, 0).
+Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, n).
+Let x_2 = -x.
+Let x_3 = n - x.
+Let a_4 = shift_float32(o_base_0, x_3).
+Let a_5 = memcpy(a_3, a_4, Mf32_undef_1, a_4, 2).
+Let x_4 = k - 1.
+Let x_5 = to_uint64(n - to_uint64(x)).
+Let a_6 = shift_float32(b_base_0, k_3).
+Let a_7 = shift_float32(a_base_0, k_3).
+Let a_8 = vacc_lo_0.F17_lane.
+Let a_9 = vacc_0.F16_lane.
+Let a_10 = tmp_2_0.F16_lane.
+Let a_11 = tmp_3_0.F16_lane.
+Let x_6 = (batch_0 % 8) / 4.
+Let x_7 = 4 * n.
+Let a_12 = shift_float32(right_0, 0).
+Let x_8 = 3 + n.
+Assume {
+  Type: is_uint64(batch_0) /\ is_uint64(k) /\ is_uint64(k_1) /\
+      is_uint64(k_2) /\ is_uint64(k_3) /\ is_uint64(n) /\ is_uint64(x_7) /\
+      is_uint64(x_4).
+  (* Heap *)
+  Type: (region(a_base_0.base) <= 0) /\ (region(b_base_0.base) <= 0) /\
+      (region(o_base_0.base) <= 0) /\ (region(right_0.base) <= 0) /\
+      linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < k).
+  (* Pre-condition *)
+  Have: (0 < n) /\ (n <= 4611686018427387900).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a, x_8).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_1, x_8).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_2, n).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_12, n).
+  (* Pre-condition *)
+  Have: separated(a_2, n, a, x_8).
+  (* Pre-condition *)
+  Have: separated(a_2, n, a_1, x_8).
+  (* Pre-condition *)
+  Have: separated(a_12, n, a, x_8).
+  (* Pre-condition *)
+  Have: separated(a_12, n, a_1, x_8).
+  (* Pre-condition *)
+  Have: separated(a_2, n, a_12, n).
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Call '__FC_assert' *)
+  Have: a_2 != null.
+  (* Invariant *)
+  Have: valid_rw(m, a_2, n).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= x_7).
+  (* Invariant *)
+  Have: (batch_0 % 4) = 0.
+  (* Invariant *)
+  Have: valid_rw(m, a_4, x).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x) < n) ->
+      P_same_value(a_3[shift_float32(o_base_0, i_1)],
+        sub_f32(a_3[shift_float32(a_base_0, i_1)],
+          a_3[shift_float32(b_base_0, i_1)])))).
+  (* Else *)
+  Have: batch_0 <= 15.
+  (* Assertion *)
+  Have: (batch_0 = 4) \/ (batch_0 = 8) \/ (batch_0 = 12).
+  (* Call 'proof_f32_tail_bits' *)
+  Have: (((batch_0 = 4) \/ (batch_0 = 12)) <-> bit_test(batch_0, 2)) /\
+      ((if ((batch_0 = 4) | (batch_0 = 12)) then 1 else 0) = x_6) /\
+      (x = (2 + x_6)) /\
+      (x = (2 + (if ((batch_0 = 4) | (batch_0 = 12)) then 1 else 0))) /\
+      bit_test(batch_0, 3).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(m, shift_float32(a_base_0, x_3), 4) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+       P_same_float(a_10[i_1], a_3[shift_float32(a_base_0, n + i_1 - x)])))).
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(m, shift_float32(b_base_0, x_3), 4) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+       P_same_float(a_11[i_1], a_3[shift_float32(b_base_0, n + i_1 - x)])))).
+  (* Call 'vsubq_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a_9[i_1], sub_f32(a_10[i_1], a_11[i_1])))).
+  (* Assertion *)
+  Have: forall i_1 : Z. let x_9 = n + i_1 - x in ((0 <= i_1) ->
+      ((i_1 <= 3) ->
+      P_same_value(a_9[i_1],
+        sub_f32(a_3[shift_float32(a_base_0, x_9)],
+          a_3[shift_float32(b_base_0, x_9)])))).
+  (* Call 'vget_low_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+      P_same_float(a_8[i_1], a_9[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. let x_9 = n + i_1 - x in ((0 <= i_1) ->
+      ((i_1 <= 1) ->
+      P_same_value(a_8[i_1],
+        sub_f32(a_3[shift_float32(a_base_0, x_9)],
+          a_3[shift_float32(b_base_0, x_9)])))).
+  (* Then *)
+  Have: (batch_0 = 8) \/ (batch_0 = 12).
+  (* Assertion 'tail_has_two' *)
+  Have: 8 <= batch_0.
+  (* Assertion *)
+  Have: valid_rw(m, a_4, 2).
+  (* Call 'vst1_f32' *)
+  Have: (forall a_13 : addr. (valid_rd(m, a_13, 1) ->
+         (separated(a_13, 1, a_4, 2) -> P_same_float(a_5[a_13], a_3[a_13])))) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+       P_same_float(a_5[shift_float32(o_base_0, n + i_1 - x)], a_8[i_1])))).
+  (* Invariant *)
+  Have: x <= x_1.
+  (* Invariant *)
+  Have: (0 <= k_3) /\ ((k_3 + x) <= x_1).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k_3) ->
+      P_same_value(a_5[shift_float32(o_base_0, i_1)],
+        sub_f32(a_5[shift_float32(a_base_0, i_1)],
+          a_5[shift_float32(b_base_0, i_1)])))).
+  (* Then *)
+  Have: k_3 < to_uint64(2 + x_5).
+  (* Assertion *)
+  Have: valid_rd(m, a_7, 1).
+  (* Assertion *)
+  Have: valid_rd(m, a_6, 1).
+  (* Assertion *)
+  Have: separated(a_7, 1, a_4, 2).
+  (* Assertion *)
+  Have: separated(a_6, 1, a_4, 2).
+  (* Assertion *)
+  Have: P_same_float(a_5[a_7], a_3[a_7]).
+  (* Assertion *)
+  Have: P_same_float(a_5[a_6], a_3[a_6]).
+  If k_3 < x_5
+  Then {
+    Let a_13 = shift_float32(o_base_0, k_1).
+    Let a_14 = a_3[a_13].
+    Let x_9 = k_1 + x.
+    Have: k_3 = k_1.
+    (* Assertion *)
+    Have: valid_rd(m, a_13, 1).
+    (* Assertion *)
+    Have: (x_9 < n) \/ (x_1 <= x_9).
+    (* Assertion *)
+    Have: P_same_float(a_5[a_13], a_14).
+    Have: (1 + k_1) = k.
+    (* Assertion *)
+    Have: P_same_value(a_14,
+            sub_f32(a_3[shift_float32(a_base_0, k_1)],
+              a_3[shift_float32(b_base_0, k_1)])).
+  }
+  Else {
+    Let a_15 = a_8[k_2 + x - n].
+    Let x_10 = k_2 + x.
+    Have: k_3 = k_2.
+    (* Assertion *)
+    Have: (n <= x_10) /\ (x_10 <= (1 + n)).
+    (* Assertion *)
+    Have: P_same_float(a_5[shift_float32(o_base_0, k_2)], a_15).
+    Have: (1 + k_2) = k.
+    (* Assertion *)
+    Have: P_same_value(a_15,
+            sub_f32(a_3[shift_float32(a_base_0, k_2)],
+              a_3[shift_float32(b_base_0, k_2)])).
+  }
+  (* Assertion *)
+  Have: P_same_value(a_5[shift_float32(o_base_0, x_4)],
+          sub_f32(a_5[shift_float32(a_base_0, x_4)],
+            a_5[shift_float32(b_base_0, x_4)])).
+  (* Call 'proof_sub_prefix_step' *)
+  Have: (k <= 18446744073709551615) /\ valid_rd(m, a, k) /\
+      valid_rd(m, a_1, k) /\ valid_rd(m, a_2, k) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k) ->
+       P_same_value(a_5[shift_float32(o_base_0, i_1)],
+         sub_f32(a_5[shift_float32(a_base_0, i_1)],
+           a_5[shift_float32(b_base_0, i_1)]))))) /\
+      (forall i_1 : Z. ((0 <= i_1) -> (((2 + i_1) <= k) ->
+       P_same_value(a_5[shift_float32(o_base_0, i_1)],
+         sub_f32(a_5[shift_float32(a_base_0, i_1)],
+           a_5[shift_float32(b_base_0, i_1)]))))).
+  (* Invariant *)
+  Have: (0 <= k) /\ ((k + x) <= x_1).
+}
+Prove: P_same_value(a_5[shift_float32(o_base_0, i)],
+         sub_f32(a_5[shift_float32(a_base_0, i)],
+           a_5[shift_float32(b_base_0, i)])).
+

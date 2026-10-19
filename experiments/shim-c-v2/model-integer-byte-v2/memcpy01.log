@@ -1,0 +1,28 @@
+# Pure-integer Bytes invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte-v2/.build/install/bin/frama-c", "-wp", "-wp-rte", "-machdep", "gcc_x86_64", "-wp-model", "Bytes", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte-v2/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte-v2/memcpy01.json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/integer/byte-model-support/memcpy-controls.c", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte-v2/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/integer/byte-model-support/memcpy-controls.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function alias_false
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function alias_positive
+[rte:annot] annotating function frame_false
+[rte:annot] annotating function frame_positive
+[rte:annot] annotating function main
+[rte:annot] annotating function offset_false
+[rte:annot] annotating function offset_positive
+[wp] 76 goals scheduled
+[wp] [Timeout] bytes_offset_positive_ensures (Qed 26ms) (CVC5)
+[wp] [Timeout] bytes_offset_false_ensures (Qed 45ms) (CVC5)
+[wp] [Timeout] bytes_frame_false_ensures (Qed 94ms) (CVC5)
+[wp] [Timeout] bytes_alias_positive_ensures (Qed 86ms) (CVC5)
+[wp] [Timeout] bytes_alias_false_ensures (Qed 49ms) (CVC5)
+[wp] Proved goals:   71 / 76
+  Qed:            52 (2ms-7ms-101ms)
+  CVC5 1.2.1:     19 (3ms-690ms-7.3s)
+  Timeout:         5
+[wp:pedantic-assigns] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/integer/byte-model-support/memcpy-controls.c:39: Warning: 
+  No 'assigns' specification for function 'main'.
+  Callers assumptions might be imprecise.

@@ -1,0 +1,1 @@
+Runner was given a relative --framac path, resolved under annotated build cwd and not found. No proof result was produced. The canonical replay uses the absolute fixed executable path; no proof/model/source input was changed.

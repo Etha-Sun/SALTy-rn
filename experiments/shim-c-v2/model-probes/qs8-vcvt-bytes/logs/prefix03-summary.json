@@ -1,0 +1,484 @@
+{
+  "case": "experiments/shim-c-v2/model-probes/qs8-vcvt-bytes",
+  "command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-inline-calls",
+    "test_neon,test_rvv",
+    "-inline-stmt-contracts",
+    "-remove-inlined",
+    "test_neon,test_rvv",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5,alt-ergo",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/logs/prefix03.json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/unit.c"
+  ],
+  "source_guard": {
+    "passed": true,
+    "frozen_sha256": "7164f97f6ea7d2fffedcc3fed1f29b1e5c194d2353dc58c97a6a653def6190e7",
+    "tokens": 12691,
+    "plain": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/plain",
+    "annotated": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated",
+    "proof": {
+      "experiments/shim-c-v2/integer/qs8-vcvt/shared-proof.patch": "8a2dfc29f91db2544e53743a796ae79ff63e6cf3a7448a8d33dbee72c04426a3",
+      "experiments/shim-c-v2/integer/qs8-vcvt/proof.patch": "930b50463bb07152269ac4fd30966ec310effcb7fbbb26d00c4b8dcb286ecaaf"
+    },
+    "generated": {
+      "shim.h": "7511b71a0e36db694bb6e1d2eb9aeffaa3d97c224d3dd4630220cf73410fe1e7",
+      "integer-qs8-vcvt.c": "47c9f7dde2fd8132f7c884b2a7b28c48700a6c00a21403470fe5ec4f4c5cf012",
+      "neon.c": "d48e572a8268d6bb204efee748164eddac5118f4ba083f64a5baf048f5c6e7b6",
+      "rvv.c": "de7bfa7f6d412c8dabf73d5a59b235f4161c4c9daebf389ef1410314a619df1a",
+      "spec.h": "f2e059881b56de3fb708d2f4aabbf34ce01818e71f705e31346c8951233810ca",
+      "harness.c": "b02d2b9e3b07ffc656b939bcfea662b660d936b08613dc6e86daa5601accf1a2",
+      "interface.json": "a5a6f67fa61cbc9b309f7557e7658c5acb2473a0b5ce23ad344bc821b9db6ea8",
+      "unit.c": "74ebffeb8dbf09aa035f581827c11cd03f3b81ffce0349e3b2a5ad694a552e68",
+      "generate_interfaces.py": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7",
+      "model_runner.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    }
+  },
+  "checker_inputs": {
+    "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+    "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+    "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+    "experiments/shim-c-v2/integer/qs8-vcvt/shared-proof.patch": "8a2dfc29f91db2544e53743a796ae79ff63e6cf3a7448a8d33dbee72c04426a3",
+    "experiments/shim-c-v2/integer/qs8-vcvt/proof.patch": "930b50463bb07152269ac4fd30966ec310effcb7fbbb26d00c4b8dcb286ecaaf"
+  },
+  "exit": 0,
+  "seconds": 364.32,
+  "unchanged": true,
+  "raw_obligations": {
+    "passed": 657,
+    "total": 669
+  },
+  "pending": [
+    {
+      "goal": "bytes_equivalent_loop_invariant_11_preserved",
+      "property": "equivalent_loop_invariant_11",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 34,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.145,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_3",
+      "property": "equivalent_assert_3",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 44,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.131,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_5",
+      "property": "equivalent_assert_5",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 46,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.207,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_7",
+      "property": "equivalent_assert_7",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 53,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.613,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_8",
+      "property": "equivalent_assert_8",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 54,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.663,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_11",
+      "property": "equivalent_assert_11",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 62,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.8,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_12",
+      "property": "equivalent_assert_12",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 63,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.77,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_13",
+      "property": "equivalent_assert_13",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c",
+      "line": 68,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 2.92,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_loop_invariant_21_preserved",
+      "property": "equivalent_loop_invariant_21",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c",
+      "line": 25,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.48,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_equivalent_assert_14",
+      "property": "equivalent_assert_14",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c",
+      "line": 50,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.64,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_vreinterpret_u16_s8_ensures",
+      "property": "vreinterpret_u16_s8_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/integer-qs8-vcvt.c",
+      "line": 181,
+      "function": "vreinterpret_u16_s8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00451,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_vreinterpret_u32_s8_ensures",
+      "property": "vreinterpret_u32_s8_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/integer-qs8-vcvt.c",
+      "line": 184,
+      "function": "vreinterpret_u32_s8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00803,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ],
+  "expected_functions": [
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vnclip_wx_i16m4",
+    "__riscv_vnclip_wx_i8m2",
+    "__riscv_vrsub_vx_i16m4",
+    "__riscv_vsadd_vx_i16m4",
+    "__riscv_vse8_v_i8m2",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsext_vf2_i16m4",
+    "__riscv_vsll_vx_i16m4",
+    "__riscv_vwmul_vx_i32m8",
+    "asr64",
+    "equivalent",
+    "power_bound",
+    "proof_tail8",
+    "round_shift",
+    "sat16",
+    "sat8",
+    "vdupq_n_s16",
+    "vext_s8",
+    "vld1_s8",
+    "vqaddq_s16",
+    "vqmovn_s16",
+    "vqrdmulhq_s16",
+    "vreinterpret_u16_s8",
+    "vreinterpret_u32_s8",
+    "vshlq_n_s16",
+    "vst1_lane_s8",
+    "vst1_lane_u16",
+    "vst1_lane_u32",
+    "vst1_s8",
+    "vsubw_s8",
+    "wrap16"
+  ],
+  "functions": [
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vnclip_wx_i16m4",
+    "__riscv_vnclip_wx_i8m2",
+    "__riscv_vrsub_vx_i16m4",
+    "__riscv_vsadd_vx_i16m4",
+    "__riscv_vse8_v_i8m2",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsext_vf2_i16m4",
+    "__riscv_vsll_vx_i16m4",
+    "__riscv_vwmul_vx_i32m8",
+    "asr64",
+    "equivalent",
+    "power_bound",
+    "proof_tail8",
+    "round_shift",
+    "sat16",
+    "sat8",
+    "vdupq_n_s16",
+    "vext_s8",
+    "vld1_s8",
+    "vqaddq_s16",
+    "vqmovn_s16",
+    "vqrdmulhq_s16",
+    "vreinterpret_u16_s8",
+    "vreinterpret_u32_s8",
+    "vshlq_n_s16",
+    "vst1_lane_s8",
+    "vst1_lane_u16",
+    "vst1_lane_u32",
+    "vst1_s8",
+    "vsubw_s8",
+    "wrap16"
+  ],
+  "missing_body_ensures": [],
+  "expected_global_lemmas": [],
+  "missing_global_lemmas": [],
+  "complete": false,
+  "isa_to_c_shim_proved": false,
+  "actual_command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-inline-calls",
+    "test_neon,test_rvv",
+    "-inline-stmt-contracts",
+    "-remove-inlined",
+    "test_neon,test_rvv",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5,alt-ergo",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/logs/prefix03.json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/unit.c",
+    "-wp-model",
+    "Bytes"
+  ],
+  "model_inputs": {
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+  },
+  "model_inputs_unchanged": true,
+  "model_control": {
+    "command": [
+      "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+      "-machdep",
+      "gcc_x86_64",
+      "-inline-calls",
+      "test_neon,test_rvv",
+      "-inline-stmt-contracts",
+      "-remove-inlined",
+      "test_neon,test_rvv",
+      "-wp",
+      "-wp-rte",
+      "-wp-par",
+      "2",
+      "-wp-prover",
+      "z3,cvc5,alt-ergo",
+      "-wp-timeout",
+      "10",
+      "-wp-memlimit",
+      "1024",
+      "-wp-cache",
+      "none",
+      "-wp-report-json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/logs/prefix03-model-control.json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/logs/prefix03-model-control.c",
+      "-wp-model",
+      "Bytes",
+      "-wp-fct",
+      "shim_control_false,shim_control_true"
+    ],
+    "exit": 0,
+    "impossible_goal_proved": false,
+    "positive_control_proved": true,
+    "reports_present": true,
+    "scope": "Rejection test only; non-rejection is not a consistency theorem.",
+    "accepted": true
+  }
+}

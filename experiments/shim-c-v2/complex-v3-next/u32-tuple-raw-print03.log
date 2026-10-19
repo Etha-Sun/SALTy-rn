@@ -1,0 +1,25 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "/tmp/complex-u32-final-library/u32_shim.c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Typed+raw", "-wp-prover", "none", "-wp-fct", "__riscv_vcreate_v_u32m4x2", "-wp-share", "experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-print", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing /tmp/complex-u32-final-library/u32_shim.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vcreate_v_u32m4x2
+
+Goal Post-condition ("/tmp/complex-u32-final-library/u32_shim.c", line 60) in '__riscv_vcreate_v_u32m4x2':
+Let a = shiftfield_F6_val(global(L_r_2607)).
+Assume {
+  Type: is_uint32_chunk(Mint_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 15).
+}
+Prove: (Mint_0[shift_uint32(shiftfield_F4_lane(shift_S4(a, 0)), i)]
+          = Mint_0[shift_uint32(shiftfield_F4_lane(global(P_a_2600)), i)]) /\
+    (Mint_0[shift_uint32(shiftfield_F4_lane(shift_S4(a, 1)), i)]
+       = Mint_0[shift_uint32(shiftfield_F4_lane(global(P_b_2601)), i)]).
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '__riscv_vcreate_v_u32m4x2':
+Prove: true.
+
+------------------------------------------------------------

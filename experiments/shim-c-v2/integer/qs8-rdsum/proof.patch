@@ -1,0 +1,92 @@
+--- a/rvv.c
++++ b/rvv.c
+@@ -7,6 +7,10 @@
+     int32_t* output,
+     const struct xnn_qs8_rsum_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const int8_t *input_base=input;
++  //@ ghost int32_t *output_base=output;
++  //@ ghost size_t total=channels;
++  //@ ghost BeforeRvv: ;
+   assert(rows != 0);
+   assert(channels != 0);
+   assert(input != NULL);
+@@ -14,22 +18,55 @@
+ 
+   size_t input_increment = 7 * input_stride;
+ 
++  /*@ loop invariant 0<=channels<=total;
++      loop invariant input==input_base+total-channels;
++      loop invariant output==output_base+total-channels;
++      loop invariant \valid(output_base+(0..total-1));
++      loop invariant \valid_read(input_base+(0..(rows-1)*input_stride+total+14));
++      loop invariant \valid_read(zero+(0..31));
++      loop invariant \forall integer j;0<=j<32 ==> zero[j]==0;
++      loop invariant \forall integer j;0<=j<total-channels ==> output_base[j]==L_wrap32(\at(output_base[j],BeforeRvv)+L_rows(input_base,input_stride,j,rows));
++      loop invariant \forall integer j;total-channels<=j<total ==> output_base[j]==\at(output_base[j],BeforeRvv);
++      loop assigns channels,input,output,output_base[0..total-1];
++      loop variant channels; */
+   while (channels > 0) {
+     size_t vl = __riscv_vsetvl_e8m2(channels);
+ 
+     const int8_t* i0 = input;
+     const int8_t* i1 = (const int8_t*) ((uintptr_t) input + 1 * input_stride);
++    //@ assert i1==input+1*input_stride;
+     const int8_t* i2 = (const int8_t*) ((uintptr_t) input + 2 * input_stride);
++    //@ assert i2==input+2*input_stride;
+     const int8_t* i3 = (const int8_t*) ((uintptr_t) input + 3 * input_stride);
++    //@ assert i3==input+3*input_stride;
+     const int8_t* i4 = (const int8_t*) ((uintptr_t) input + 4 * input_stride);
++    //@ assert i4==input+4*input_stride;
+     const int8_t* i5 = (const int8_t*) ((uintptr_t) input + 5 * input_stride);
++    //@ assert i5==input+5*input_stride;
+     const int8_t* i6 = (const int8_t*) ((uintptr_t) input + 6 * input_stride);
++    //@ assert i6==input+6*input_stride;
+ 
+     vint32m8_t vacc = __riscv_vmv_v_x_i32m8(0, vl);
+ 
+     int r = rows;
++    /*@ loop invariant 0<=r<=rows;
++      loop invariant (rows-r)%252==0 || r==0;
++      loop invariant \forall integer j;0<=j<vl ==> vacc.lane[j]==L_wrap32(L_rows(input_base,input_stride,total-channels+j,rows-r));
++      loop invariant i0==input+(rows-r)*input_stride;
++      loop assigns r,i0,i1,i2,i3,i4,i5,i6,vacc;
++      loop variant r; */
+     while (r > 0) {
+       vint16m4_t vacc16 = __riscv_vmv_v_x_i16m4(0, vl);
++      //@ ghost int group_rows=r<252?r:252;
++      //@ ghost int group_begin=rows-r;
++      //@ ghost int group_done=0;
++      /*@ loop invariant current_batch==group_rows-group_done;
++          loop invariant 0<=group_done<=group_rows+6;
++          loop invariant group_done%7==0;
++          loop invariant i0==input+(group_begin+group_done)*input_stride;
++          loop invariant \forall integer j;0<=j<vl ==> vacc16.lane[j]==L_rows(input_base,input_stride,total-channels+j,group_begin+(group_done<group_rows?group_done:group_rows))-L_rows(input_base,input_stride,total-channels+j,group_begin);
++          loop assigns current_batch,group_done,i0,i1,i2,i3,i4,i5,i6,vacc16;
++          loop variant current_batch; */
+       for (int current_batch = r < 252 ? r : 252; current_batch > 0; current_batch -= 7) {
+         if XNN_UNPREDICTABLE(current_batch < 2) {
+           i1 = zero;
+@@ -73,6 +110,7 @@
+         i4 = (const int8_t*) ((uintptr_t) i4 + input_increment);
+         i5 = (const int8_t*) ((uintptr_t) i5 + input_increment);
+         i6 = (const int8_t*) ((uintptr_t) i6 + input_increment);
++        //@ ghost group_done+=7;
+       }
+       vacc = __riscv_vwadd_wv_i32m8(vacc, vacc16, vl);
+       r = r > 252 ? r - 252 : 0;
+--- a/harness.c
++++ b/harness.c
+@@ -1,8 +1,12 @@
+ #include "spec.h"
+ int equivalent(size_t rows,size_t channels,const int8_t *input,size_t input_stride,const int8_t *zero,const int32_t *initial,int32_t *left,int32_t *right,const struct xnn_qs8_rsum_params *params) {
++  /*@ loop invariant 0<=i<=channels;
++      loop invariant \forall integer j;0<=j<i ==> left[j]==initial[j] && right[j]==initial[j];
++      loop assigns i,left[0..channels-1],right[0..channels-1]; loop variant channels-i; */
+   for(size_t i=0;i<channels;i++)left[i]=right[i]=initial[i];
+   test_neon(rows,channels,input,input_stride,zero,left,params);
+   test_rvv(rows,channels,input,input_stride,zero,right,params);
++  /*@ loop invariant 0<=i<=channels; loop assigns i; loop variant channels-i; */
+   for(size_t i=0;i<channels;i++)if(left[i]!=right[i])return 0;
+   return 1;
+ }

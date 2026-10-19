@@ -1,0 +1,19 @@
+--- a/src/plugins/wp/MemBytes.ml
++++ b/src/plugins/wp/MemBytes.ml
+@@ -498,13 +498,9 @@
+           l_lemma = lemma
+         }
+ 
+-      let compile ft =
+-        let encode = encode ft in
+-        let decode = decode ft in
+-        add_encode_decode ft encode decode ;
+-        add_decode_encode ft encode decode ;
+-        add_encode_bounds ft encode ;
+-        encode, decode
++      let compile _ =
++        Wp_parameters.abort ~current:true
++          "Pure-integer Bytes profile forbids CODEC_FLOAT generation"
+     end)
+ 
+ let float_to_int fkind f =

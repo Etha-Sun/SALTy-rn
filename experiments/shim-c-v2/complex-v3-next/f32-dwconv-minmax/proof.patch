@@ -1,0 +1,139 @@
+--- a/neon.c
++++ b/neon.c
+@@ -1,3 +1,13 @@
++/*@
++ logic float dwv_neon32{L}(float **table,float *weights,integer pixel,integer channel,float lo,float hi) =
++   \let wb=(channel/4)*16;
++   \let lane=channel%4;
++   ext_neon_min32(ext_neon_max32(
++     complex_add32(
++       shim_fma32(table[3*pixel+2][channel],weights[wb+12+lane],
++         shim_fma32(table[3*pixel][channel],weights[wb+4+lane],weights[wb+lane])),
++       complex_mul32(table[3*pixel+1][channel],weights[wb+8+lane])),lo),hi);
++*/
+ /*
+ struct xnn_f32_minmax_params {
+   struct {
+@@ -20,11 +30,23 @@
+     const float* zero,
+     const struct xnn_f32_minmax_params* restrict params) XNN_OOB_READS
+ {
++  /*@ ghost const float **T0=input; */
++  /*@ ghost const float *W0=weights; */
++  /*@ ghost float *O0=output; */
++  /*@ ghost size_t P=output_width,CH=channels; */
+   assert(channels != 0);
+   assert(output_width != 0);
+ 
+   const float32x4_t vmax = vdupq_n_f32(params->scalar.max);
+   const float32x4_t vmin = vdupq_n_f32(params->scalar.min);
++  /*@ loop invariant 0<output_width<=P;
++      loop invariant input==T0+3*(P-output_width);
++      loop invariant output==O0+(P-output_width)*CH;
++      loop invariant input_offset==0;
++      loop invariant \forall integer t;0<=t<(P-output_width)*CH ==> ext_same(O0[t],dwv_neon32{Pre}(T0,W0,t/CH,t%CH,params->scalar.min,params->scalar.max));
++      loop assigns output_width,input,input_offset,output,O0[0..P*CH-1],errno;
++      loop variant output_width;
++  */
+   do {
+     const float* i0 = input[0];
+     assert(i0 != NULL);
+@@ -46,6 +68,17 @@
+ 
+     size_t c = channels;
+     const float* w = weights;
++    /*@ loop invariant 0<=c<=CH;
++        loop invariant (CH-c)%4==0;
++        loop invariant output==O0+(P-output_width)*CH+(CH-c);
++        loop invariant i0==T0[3*(P-output_width)]+(CH-c);
++        loop invariant i1==T0[3*(P-output_width)+1]+(CH-c);
++        loop invariant i2==T0[3*(P-output_width)+2]+(CH-c);
++        loop invariant w==W0+16*((CH-c+3)/4);
++        loop invariant \forall integer t;0<=t<(P-output_width)*CH+(CH-c) ==> ext_same(O0[t],dwv_neon32{Pre}(T0,W0,t/CH,t%CH,params->scalar.min,params->scalar.max));
++        loop assigns c,w,i0,i1,i2,output,O0[0..P*CH-1],errno;
++        loop variant c;
++    */
+     for (; c >= 4; c -= 4) {
+       float32x4_t vacc0123p0 = vld1q_f32(w); w += 4;
+ 
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,10 +1,24 @@
++/*@
++ logic float dwv_rvv32{L}(float **table,float *weights,integer pixel,integer channel,float lo,float hi) =
++   \let wb=(channel/4)*16;
++   \let lane=channel%4;
++   ext_neon_min32(ext_neon_max32(
++     complex_add32(
++       shim_fma32(table[3*pixel+2][channel],weights[wb+12+lane],
++         shim_fma32(table[3*pixel][channel],weights[wb+4+lane],weights[wb+lane])),
++       complex_mul32(table[3*pixel+1][channel],weights[wb+8+lane])),lo),hi);
++*/
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
++/*@ requires vl<=16; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+ static inline vfloat32m4_t salty_min_vf_m4(vfloat32m4_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m4(__builtin_nanf(""),vl);
+   vbool8_t nan=__riscv_vmfne_vv_f32m4_b8(a,a,vl);
+   vfloat32m4_t r=__riscv_vfmin_vf_f32m4(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m4(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=16; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+ static inline vfloat32m4_t salty_max_vf_m4(vfloat32m4_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m4(__builtin_nanf(""),vl);
+   vbool8_t nan=__riscv_vmfne_vv_f32m4_b8(a,a,vl);
+@@ -24,9 +38,21 @@
+     const float* zero,
+     const struct xnn_f32_minmax_params* restrict params) XNN_OOB_READS
+ {
++  /*@ ghost const float **T0=input; */
++  /*@ ghost const float *W0=weights; */
++  /*@ ghost float *O0=output; */
++  /*@ ghost size_t P=output_width,CH=channels; */
+   assert(channels != 0);
+   assert(output_width != 0);
+ 
++  /*@ loop invariant 0<output_width<=P;
++      loop invariant input==T0+3*(P-output_width);
++      loop invariant output==O0+(P-output_width)*CH;
++      loop invariant input_offset==0;
++      loop invariant \forall integer t;0<=t<(P-output_width)*CH ==> ext_same(O0[t],dwv_rvv32{Pre}(T0,W0,t/CH,t%CH,params->scalar.min,params->scalar.max));
++      loop assigns output_width,input,input_offset,output,O0[0..P*CH-1],errno;
++      loop variant output_width;
++  */
+   do {
+     const float* i0 = input[0];
+     assert(i0 != NULL);
+@@ -49,6 +75,17 @@
+     size_t c = channels;
+     const float* w = weights;
+ 
++    /*@ loop invariant 0<=c<=CH;
++        loop invariant c==0 || (CH-c)%4==0;
++        loop invariant output==O0+(P-output_width)*CH+(CH-c);
++        loop invariant i0==T0[3*(P-output_width)]+(CH-c);
++        loop invariant i1==T0[3*(P-output_width)+1]+(CH-c);
++        loop invariant i2==T0[3*(P-output_width)+2]+(CH-c);
++        loop invariant w==W0+16*((CH-c+3)/4);
++        loop invariant \forall integer t;0<=t<(P-output_width)*CH+(CH-c) ==> ext_same(O0[t],dwv_rvv32{Pre}(T0,W0,t/CH,t%CH,params->scalar.min,params->scalar.max));
++        loop assigns c,w,i0,i1,i2,output,O0[0..P*CH-1],errno;
++        loop variant c;
++    */
+     while (c > 0) {
+       size_t vl = __riscv_vsetvl_e32m4(c < 4 ? c : 4);
+ 
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,11 @@
+   struct xnn_f32_minmax_params params={{lower,upper}};
+   test_neon(channels,pixels,input,weights,left,3*sizeof(void*),0,0,0,NULL,&params);
+   test_rvv(channels,pixels,input,weights,right,3*sizeof(void*),0,0,0,NULL,&params);
++  /*@ loop invariant 0<=i<=pixels*channels;
++      loop invariant \forall integer j; 0<=j<i ==> (\eq_float(left[j],right[j]) || (\is_NaN(left[j]) && \is_NaN(right[j])));
++      loop assigns i;
++      loop variant pixels*channels-i;
++  */
+   for(size_t i=0;i<pixels*channels;i++)if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }

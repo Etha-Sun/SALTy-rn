@@ -1,0 +1,109 @@
+--- a/neon.c
++++ b/neon.c
+@@ -1,3 +1,7 @@
++/*@
++ logic float cx_real{L}(float *a,float *b,integer n,integer j) = complex_sub32(complex_mul32(a[j],b[j]),complex_mul32(a[n+j],b[n+j]));
++ logic float cx_imag{L}(float *a,float *b,integer n,integer j) = complex_add32(complex_mul32(a[j],b[n+j]),complex_mul32(a[n+j],b[j]));
++*/
+ /*
+ struct xnn_f32_default_params {
+   char _;  // Dummy member variable to comply with the C standard
+@@ -11,6 +15,10 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost size_t cx_total=batch/sizeof(float);
++  //@ ghost const float *cx_a=input_a;
++  //@ ghost const float *cx_b=input_b;
++  //@ ghost float *cx_o=output;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input_a != NULL);
+@@ -23,6 +31,23 @@
+   const float* bi = (const float*) ((uintptr_t) input_b + batch);
+   float* or = output;
+   float* oi = (float*) ((uintptr_t) output + batch);
++  //@ assert ai==cx_a+cx_total;
++  //@ assert bi==cx_b+cx_total;
++  //@ assert oi==cx_o+cx_total;
++  /*@ loop invariant 0<=batch<=4*cx_total && batch%4==0;
++      loop invariant ar==cx_a+(cx_total-batch/4);
++      loop invariant ai==cx_a+cx_total+(cx_total-batch/4);
++      loop invariant br==cx_b+(cx_total-batch/4);
++      loop invariant bi==cx_b+cx_total+(cx_total-batch/4);
++      loop invariant or==cx_o+(cx_total-batch/4);
++      loop invariant oi==cx_o+cx_total+(cx_total-batch/4);
++      loop invariant \valid_read(cx_a+(0..2*cx_total+2));
++      loop invariant \valid_read(cx_b+(0..2*cx_total+2));
++      loop invariant \valid(cx_o+(0..2*cx_total-1));
++      loop invariant \forall integer j;0<=j<cx_total-batch/4 ==>
++         cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j));
++      loop assigns batch,ar,ai,br,bi,or,oi,cx_o[0..2*cx_total-1];
++      loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     const float32x4_t var = vld1q_f32(ar); ar += 4;
+     const float32x4_t vai = vld1q_f32(ai); ai += 4;
+@@ -63,4 +88,6 @@
+       vst1_lane_f32(oi, vacci_lo, 0);
+     }
+   }
++  /*@ assert \forall integer j;0<=j<cx_total ==>
++      cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j)); */
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -5,6 +5,10 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost size_t cx_total=batch/sizeof(float);
++  //@ ghost const float *cx_a=input_a;
++  //@ ghost const float *cx_b=input_b;
++  //@ ghost float *cx_o=output;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input_a != NULL);
+@@ -19,6 +23,23 @@
+   float* out_i = (float*) ((uintptr_t) output + batch);
+ 
+   size_t n = batch / sizeof(float);
++  //@ assert ai==cx_a+cx_total;
++  //@ assert bi==cx_b+cx_total;
++  //@ assert out_i==cx_o+cx_total;
++  /*@ loop invariant 0<=n<=cx_total;
++      loop invariant ar==cx_a+(cx_total-n);
++      loop invariant ai==cx_a+cx_total+(cx_total-n);
++      loop invariant br==cx_b+(cx_total-n);
++      loop invariant bi==cx_b+cx_total+(cx_total-n);
++      loop invariant out_r==cx_o+(cx_total-n);
++      loop invariant out_i==cx_o+cx_total+(cx_total-n);
++      loop invariant \valid_read(cx_a+(0..2*cx_total+2));
++      loop invariant \valid_read(cx_b+(0..2*cx_total+2));
++      loop invariant \valid(cx_o+(0..2*cx_total-1));
++      loop invariant \forall integer j;0<=j<cx_total-n ==>
++         cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j));
++      loop assigns n,ar,ai,br,bi,out_r,out_i,cx_o[0..2*cx_total-1];
++      loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m4(n);
+ 
+@@ -47,4 +68,6 @@
+     out_i += vl;
+     n -= vl;
+   }
++  /*@ assert \forall integer j;0<=j<cx_total ==>
++      cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j)); */
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,9 @@
+   struct xnn_f32_default_params params={0};
+   test_neon(n*sizeof(float),a,b,left,&params);
+   test_rvv(n*sizeof(float),a,b,right,&params);
++  /*@ loop invariant 0<=i<=2*n;
++      loop assigns i;
++      loop variant 2*n-i; */
+   for(size_t i=0;i<2*n;i++) if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }

@@ -1,0 +1,205 @@
+--- a/neon.c
++++ b/neon.c
+@@ -1,3 +1,7 @@
++/*@
++ logic float cx_real{L}(float *a,float *b,integer n,integer j) = complex_sub32(complex_mul32(a[j],b[j]),complex_mul32(a[n+j],b[n+j]));
++ logic float cx_imag{L}(float *a,float *b,integer n,integer j) = complex_add32(complex_mul32(a[j],b[n+j]),complex_mul32(a[n+j],b[j]));
++*/
+ /*
+ struct xnn_f32_default_params {
+   char _;  // Dummy member variable to comply with the C standard
+@@ -11,6 +15,10 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost size_t cx_total=batch/sizeof(float);
++  //@ ghost const float *cx_a=input_a;
++  //@ ghost const float *cx_b=input_b;
++  //@ ghost float *cx_o=output;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input_a != NULL);
+@@ -23,6 +31,23 @@
+   const float* bi = (const float*) ((uintptr_t) input_b + batch);
+   float* or = output;
+   float* oi = (float*) ((uintptr_t) output + batch);
++  //@ assert ai==cx_a+cx_total;
++  //@ assert bi==cx_b+cx_total;
++  //@ assert oi==cx_o+cx_total;
++  /*@ loop invariant 0<=batch<=4*cx_total && batch%4==0;
++      loop invariant ar==cx_a+(cx_total-batch/4);
++      loop invariant ai==cx_a+cx_total+(cx_total-batch/4);
++      loop invariant br==cx_b+(cx_total-batch/4);
++      loop invariant bi==cx_b+cx_total+(cx_total-batch/4);
++      loop invariant or==cx_o+(cx_total-batch/4);
++      loop invariant oi==cx_o+cx_total+(cx_total-batch/4);
++      loop invariant \valid_read(cx_a+(0..2*cx_total+2));
++      loop invariant \valid_read(cx_b+(0..2*cx_total+2));
++      loop invariant \valid(cx_o+(0..2*cx_total-1));
++      loop invariant \forall integer j;0<=j<cx_total-batch/4 ==>
++         cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j));
++      loop assigns batch,ar,ai,br,bi,or,oi,cx_o[0..2*cx_total-1];
++      loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     const float32x4_t var = vld1q_f32(ar); ar += 4;
+     const float32x4_t vai = vld1q_f32(ai); ai += 4;
+@@ -63,4 +88,6 @@
+       vst1_lane_f32(oi, vacci_lo, 0);
+     }
+   }
++  /*@ assert \forall integer j;0<=j<cx_total ==>
++      cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j)); */
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -5,6 +5,10 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost size_t cx_total=batch/sizeof(float);
++  //@ ghost const float *cx_a=input_a;
++  //@ ghost const float *cx_b=input_b;
++  //@ ghost float *cx_o=output;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input_a != NULL);
+@@ -19,6 +23,23 @@
+   float* out_i = (float*) ((uintptr_t) output + batch);
+ 
+   size_t n = batch / sizeof(float);
++  //@ assert ai==cx_a+cx_total;
++  //@ assert bi==cx_b+cx_total;
++  //@ assert out_i==cx_o+cx_total;
++  /*@ loop invariant 0<=n<=cx_total;
++      loop invariant ar==cx_a+(cx_total-n);
++      loop invariant ai==cx_a+cx_total+(cx_total-n);
++      loop invariant br==cx_b+(cx_total-n);
++      loop invariant bi==cx_b+cx_total+(cx_total-n);
++      loop invariant out_r==cx_o+(cx_total-n);
++      loop invariant out_i==cx_o+cx_total+(cx_total-n);
++      loop invariant \valid_read(cx_a+(0..2*cx_total+2));
++      loop invariant \valid_read(cx_b+(0..2*cx_total+2));
++      loop invariant \valid(cx_o+(0..2*cx_total-1));
++      loop invariant \forall integer j;0<=j<cx_total-n ==>
++         cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j));
++      loop assigns n,ar,ai,br,bi,out_r,out_i,cx_o[0..2*cx_total-1];
++      loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m4(n);
+ 
+@@ -47,4 +68,6 @@
+     out_i += vl;
+     n -= vl;
+   }
++  /*@ assert \forall integer j;0<=j<cx_total ==>
++      cx_same_value(cx_o[j],cx_real(cx_a,cx_b,cx_total,j)) && cx_same_value(cx_o[cx_total+j],cx_imag(cx_a,cx_b,cx_total,j)); */
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,9 @@
+   struct xnn_f32_default_params params={0};
+   test_neon(n*sizeof(float),a,b,left,&params);
+   test_rvv(n*sizeof(float),a,b,right,&params);
++  /*@ loop invariant 0<=i<=2*n;
++      loop assigns i;
++      loop variant 2*n-i; */
+   for(size_t i=0;i<2*n;i++) if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }
+--- a/complex_fp.h
++++ b/complex_fp.h
+@@ -14,6 +14,16 @@
+ typedef struct { float lane[4]; } float32x4_t;
+ typedef struct { float lane[2]; } float32x2_t;
+ typedef struct { float lane[16]; } vfloat32m4_t;
++/*@
++ logic float complex_add32(float a,float b);
++ logic float complex_sub32(float a,float b);
++ logic float complex_mul32(float a,float b);
++ predicate cx_same_value(float a,float b) = \eq_float(a,b) || (\is_NaN(a) && \is_NaN(b));
++ predicate cx_same_float(float a,float b) = (\is_NaN(a) && \is_NaN(b)) || (cx_same_value(a,b) && \sign(a)==\sign(b));
++ lemma cx_same_float_refl: \forall float a; cx_same_float(a,a);
++ lemma cx_same_float_value: \forall float a,b; cx_same_float(a,b) ==> cx_same_value(a,b);
++ lemma cx_same_value_trans: \forall float a,b,c; cx_same_value(a,b) && cx_same_value(b,c) ==> cx_same_value(a,c);
++*/
+ float complex_add(float a,float b);
+ float complex_sub(float a,float b);
+ float complex_mul(float a,float b);
+--- a/complex_fp.c
++++ b/complex_fp.c
+@@ -1,36 +1,70 @@
+ #include "complex_fp.h"
++/*@ assigns \nothing; ensures cx_same_float(\result,complex_add32(a,b)); */
+ float complex_add(float a,float b) { return a+b; }
++/*@ assigns \nothing; ensures cx_same_float(\result,complex_sub32(a,b)); */
+ float complex_sub(float a,float b) { return a-b; }
++/*@ assigns \nothing; ensures cx_same_float(\result,complex_mul32(a,b)); */
+ float complex_mul(float a,float b) { return a*b; }
++/*@ requires \valid_read(p+(0..4-1)); assigns \nothing; ensures \forall integer j;0<=j<4 ==> cx_same_float(\result.lane[j],p[j]); */
+ float32x4_t vld1q_f32(const float *p) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j;0<=j<i ==> cx_same_float(r.lane[j],p[j]); loop assigns i,r; loop variant 4-i; */
++  for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<4 ==> cx_same_float(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
+ float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) {
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j;0<=j<i ==> cx_same_float(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j;i<=j<4 ==> cx_same_float(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
+   for(size_t i=0;i<4;i++)a.lane[i]=complex_mul(a.lane[i],b.lane[i]); return a;
+ }
+ /* NEON VMLA/VMLS are non-fused: round the multiply, then round add/sub. */
++/*@ assigns \nothing; ensures \forall integer j;0<=j<4 ==> cx_same_float(\result.lane[j],complex_add32(a.lane[j],complex_mul32(b.lane[j],c.lane[j]))); */
+ float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) {
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j;0<=j<i ==> cx_same_float(a.lane[j],complex_add32(\at(a.lane[j],Pre),complex_mul32(b.lane[j],c.lane[j]))); loop invariant \forall integer j;i<=j<4 ==> cx_same_float(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
+   for(size_t i=0;i<4;i++)a.lane[i]=complex_add(a.lane[i],complex_mul(b.lane[i],c.lane[i])); return a;
+ }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<4 ==> cx_same_float(\result.lane[j],complex_sub32(a.lane[j],complex_mul32(b.lane[j],c.lane[j]))); */
+ float32x4_t vmlsq_f32(float32x4_t a,float32x4_t b,float32x4_t c) {
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j;0<=j<i ==> cx_same_float(a.lane[j],complex_sub32(\at(a.lane[j],Pre),complex_mul32(b.lane[j],c.lane[j]))); loop invariant \forall integer j;i<=j<4 ==> cx_same_float(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
+   for(size_t i=0;i<4;i++)a.lane[i]=complex_sub(a.lane[i],complex_mul(b.lane[i],c.lane[i])); return a;
+ }
+-void vst1q_f32(float *p,float32x4_t a) { for(size_t i=0;i<4;i++)p[i]=a.lane[i]; }
++/*@ requires \valid(p+(0..4-1)); assigns p[0..4-1]; ensures \forall integer j;0<=j<4 ==> cx_same_float(p[j],a.lane[j]); */
++void vst1q_f32(float *p,float32x4_t a) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j;0<=j<i ==> cx_same_float(p[j],a.lane[j]); loop assigns i,p[0..4-1]; loop variant 4-i; */
++  for(size_t i=0;i<4;i++)p[i]=a.lane[i]; }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<2 ==> cx_same_float(\result.lane[j],a.lane[j+0]); */
+ float32x2_t vget_low_f32(float32x4_t a) { float32x2_t r={{a.lane[0],a.lane[1]}}; return r; }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<2 ==> cx_same_float(\result.lane[j],a.lane[j+2]); */
+ float32x2_t vget_high_f32(float32x4_t a) { float32x2_t r={{a.lane[2],a.lane[3]}}; return r; }
++/*@ requires \valid(p+(0..2-1)); assigns p[0..2-1]; ensures \forall integer j;0<=j<2 ==> cx_same_float(p[j],a.lane[j]); */
+ void vst1_f32(float *p,float32x2_t a) { p[0]=a.lane[0]; p[1]=a.lane[1]; }
++/*@ requires 0<=lane<2; requires \valid(p); assigns *p; ensures cx_same_float(*p,a.lane[lane]); */
+ void vst1_lane_f32(float *p,float32x2_t a,int lane) { *p=a.lane[lane]; }
++/*@ assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<16 ? n : 16; }
++/*@ requires vl<=16; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> cx_same_float(\result.lane[j],p[j]); */
+ vfloat32m4_t __riscv_vle32_v_f32m4(const float *p,size_t vl) {
+-  vfloat32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vfloat32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> cx_same_float(r.lane[j],p[j]); loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j;0<=j<vl ==> cx_same_float(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
+ vfloat32m4_t __riscv_vfmul_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> cx_same_float(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j;i<=j<vl ==> cx_same_float(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)a.lane[i]=complex_mul(a.lane[i],b.lane[i]); return a;
+ }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j;0<=j<vl ==> cx_same_float(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
+ vfloat32m4_t __riscv_vfadd_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> cx_same_float(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j;i<=j<vl ==> cx_same_float(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)a.lane[i]=complex_add(a.lane[i],b.lane[i]); return a;
+ }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j;0<=j<vl ==> cx_same_float(\result.lane[j],complex_sub32(a.lane[j],b.lane[j])); */
+ vfloat32m4_t __riscv_vfsub_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> cx_same_float(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j;i<=j<vl ==> cx_same_float(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)a.lane[i]=complex_sub(a.lane[i],b.lane[i]); return a;
+ }
+-void __riscv_vse32_v_f32m4(float *p,vfloat32m4_t a,size_t vl) { for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
++/*@ requires vl<=16; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j;0<=j<vl ==> cx_same_float(p[j],a.lane[j]); */
++void __riscv_vse32_v_f32m4(float *p,vfloat32m4_t a,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> cx_same_float(p[j],a.lane[j]); loop assigns i,p[0..vl-1]; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
++
++/*@ \wp::strategy CxSolve: \prover("cvc5",30), \prover("z3",30);
++    \wp::strategy CxArraySolve:
++      \tactic("Wp.array",\ingoal(A[I[V]][J]),\children(CxSolve)), CxSolve;
++    \wp::proof CxArraySolve: vmlaq_f32;
++    \wp::proof CxArraySolve: vmlsq_f32; */

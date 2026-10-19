@@ -1,0 +1,65 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/logs/proof01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/.build/proof01/annotated/float.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/.build/proof01/annotated/unit.c', '-wp-skip-fct', '__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/logs/proof01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/.build/proof01/annotated/float.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/.build/proof01/annotated/unit.c', '-wp-skip-fct', '__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/logs/proof01.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/.build/proof01/annotated/unit.c", "-wp-skip-fct", "__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-modular-v7-front/.build/proof01/annotated/float.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel] neon.c:7: Warning: 
+  found two contracts (old location: spec.h:5-15). Merging them
+[kernel] neon.c:7: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:5-15). Keeping only the first one
+[kernel] rvv.c:1: Warning: 
+  found two contracts (old location: spec.h:24-34). Merging them
+[kernel] rvv.c:1: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:24-34). Keeping only the first one
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[rte:annot] annotating function f32_add
+[rte:annot] annotating function proof_add_prefix_step
+[rte:annot] annotating function proof_add_transfer
+[rte:annot] annotating function proof_check_fp_add_congruence
+[rte:annot] annotating function proof_check_fp_add_transport
+[rte:annot] annotating function proof_check_same_float_refl
+[rte:annot] annotating function proof_check_same_float_value
+[rte:annot] annotating function proof_check_same_value_refl
+[rte:annot] annotating function proof_check_same_value_trans
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function test_neon
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function test_rvv
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] 538 goals scheduled
+[wp] [Timeout] typed_fma_float_proof_add_prefix_step_assert_predicate_done (Qed 9ms) (Z3)
+[wp] [Timeout] typed_fma_float_test_neon_assert_34 (Qed 136ms) (Z3)
+[wp] [Timeout] typed_fma_float_test_neon_assert_36 (Qed 355ms) (CVC5)
+[wp] [Timeout] typed_fma_float_test_neon_assert_50 (Qed 581ms) (CVC5)
+[wp] [Timeout] typed_fma_float_test_neon_call_proof_add_transfer_requires_2 (Qed 130ms) (CVC5)
+[wp] [Timeout] typed_fma_float_test_neon_call_proof_add_transfer_requires_3 (Qed 116ms) (CVC5)
+[wp] [Timeout] typed_fma_float_test_neon_call_proof_add_transfer_2_requires_2 (Qed 139ms) (CVC5)
+[wp] [Timeout] typed_fma_float_test_neon_call_proof_add_transfer_2_requires_3 (Qed 132ms) (CVC5)
+[wp] Proved goals:  570 / 578
+  Terminating:    20
+  Unreachable:    20
+  Qed:           282 (0.74ms-48ms-595ms)
+  CVC5 1.2.1:    143 (0.50ms-819ms-18.7s)
+  Z3 4.12.5:     105 (8ms-128ms-1.5s)
+  Timeout:         8

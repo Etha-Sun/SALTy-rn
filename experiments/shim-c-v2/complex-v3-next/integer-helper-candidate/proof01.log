@@ -1,0 +1,29 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "experiments/shim-c-v2/complex-v3-next/integer-helper-candidate/unit.c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-par", "2", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-prover", "tip,z3,cvc5", "-wp-cache", "none", "-wp-share", "experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vandq_u32,vbicq_u32,vaddq_u32,__riscv_vid_v_u32m1,__riscv_vadd_vx_u32m1,__riscv_vmul_vx_u32m1,__riscv_vmsge_vx_i32m1_b32,__riscv_vmslt_vx_i32m1_b32,__riscv_vmand_mm_b32,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8", "-wp-report-json", "experiments/shim-c-v2/complex-v3-next/integer-helper-candidate/proof01.json", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/shim-c-v2/complex-v3-next/integer-helper-candidate/unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vandq_u32
+[rte:annot] annotating function vbicq_u32
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vmv_v_x_u32m8
+[rte:annot] annotating function __riscv_vse32_v_u32m8
+[rte:annot] annotating function __riscv_vid_v_u32m1
+[rte:annot] annotating function __riscv_vadd_vx_u32m1
+[rte:annot] annotating function __riscv_vmul_vx_u32m1
+[rte:annot] annotating function __riscv_vmsge_vx_i32m1_b32
+[rte:annot] annotating function __riscv_vmslt_vx_i32m1_b32
+[rte:annot] annotating function __riscv_vmand_mm_b32
+[wp] Computing [100 goals...]
+[wp] 166 goals scheduled
+[wp] [Timeout] typed_raw_fma_vbicq_u32_loop_invariant_2_preserved (Tactic) (Qed 15ms) (CVC5 1/2 59ms) (Z3)
+[wp] Proved goals:  189 / 190
+  Terminating:    12
+  Unreachable:    12
+  Qed:           100 (2ms-5ms-53ms)
+  CVC5 1.2.1:     65 (22ms-70ms-485ms)
+  Timeout:         1
+[wp] Updated session
+   - 1 new script to complete

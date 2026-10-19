@@ -1,0 +1,13 @@
+7 个隔离浮点 kernel 的最终完整证明
+
+最终记录：final-float-seven-status.json。min 536/536；max 538/538；sub 556/556；add 571/571；mul 585/585；div 601/601；mulc 583/583。合计 3970/3970，全部 complete=true，pending=[]；实现/公共 spec 冻结检查、模型输入哈希检查和正反控制全部通过。每条记录指向实际全量 summary 并记录其 SHA256；旧版本和失败诊断均保留。
+
+证明补充只在各候选的单个 proof.patch 中。既有 C 实现和公共 spec.h 没有修改。为 modular WP 在两个真实 kernel 定义前补充的 canonical 后置条件更强，并且两个 kernel 的函数体、所有可达 C callee 和全部 ghost 函数体都实际检查；没有增加调用者前置条件，没有跳过 kernel body。已有 ghost checker 函数承担纯关系定理，每个函数体的后置条件也验证，不是额外公理，不需要独立 helper 文件。
+
+主要补证：明确 store 后读输入不变的内存分离事实；把 C size_t 索引与 ACSL 数学整数索引的对应单独证明；用前缀谓词及已检查的单步函数组织 ghost 循环；使用 WP 检查的 Wp.unfold 展开纯定义。最后的浮点关系传递拆成“当前输出对应旧运算值、旧/新输入的同值关系、运算同余、结果传递”几个局部断言。add 的两个 lane 的量化断言等价展开为两点合取，两个点分别验证。
+
+证明过程中不改浮点模型、driver、工具 checker 或公共规格以获得通过；沿用 root 已独立冻结的 model-front 和 v7。原模型修复、前端修复及语义正反回归记录在对应 model/model-front 目录。diagnostics/final-float-fixes 中的定点检查只是开发诊断；最终结论来自上面的完整运行记录，不来自定点检查。
+
+这些结果证明的是固定 C/shim 模型、原有内存前置条件与公共输出观察下的程序等价。ISA intrinsic 到 C shim 的保真性、C/WP/Why3 翻译器及求解器仍在 TCB 内；这七项的通过不等于其它 kernel、任意 VLEN、浮点异常标志或 NaN payload 的等价性。
+
+本轮七项已收口，不再启动新的 proof、模型或 checker 变体。

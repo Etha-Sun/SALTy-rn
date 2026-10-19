@@ -1,8 +1,11 @@
 已验证程序目录
 
-模型审计更正：当前manifest仅4个整数case可采纳；旧f32-vadd和新增6个浮点case
-已列quarantined_programs，不能把下方历史浮点“通过”数字当作有效证明。
-当前Frama-C33/Why3浮点模型可误证false，最小复现及40项结果见上述EXTENSION-RESULTS。
+最新复验：manifest当前收录11项，包括原4个整数case与修复模型后的7个浮点-v2版本。
+浮点7项全部完成3970/3970证明义务，打包后canonical01也全部独立复验通过。
+旧7项quarantined_programs和原目录保留，只作历史证据，superseded_by指向新目录。
+本轮其余26项已补proof并完整尝试，但尚未整核通过；不能根据局部成功将其收录。
+逐项状态见../experiments/shim-c-v2/REPORT.zh-CN.md；模型修复、禁用的Bytes+float
+配置及TCB见同目录MODEL-AND-TCB.zh-CN.txt。新版本没有修改原C、公共spec或wrapper。
 
 当前收录条目以manifest.json为准；最新共享支持扩展结果见
 ../docs/shared-shim/EXTENSION-RESULTS.zh-CN.txt，40项台账在
@@ -45,7 +48,7 @@ GEMM
   修复/测试/完整证明尝试在 experiments/gemm-repair/。
   尚未完整证明，不能根据2400次native回归或局部关系引理放入此目录。
 
-共享路线新增案例（实现/规格冻结cb36fab，checker fe69a05）
+历史共享路线记录（实现/规格冻结cb36fab，checker fe69a05；其中浮点旧数字不采纳）
 qu8-rsum 567/567，249.602秒；s8-vclamp 688/688，320.514秒；
 f32-vadd 431/431，201.823秒。均complete=true、unchanged=true。
 三者原始C逐字保留；共享普通C库在shared/，每case一个proof.patch。

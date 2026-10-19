@@ -1,0 +1,24 @@
+# FMA underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c", "experiments/shim-c-v2/complex-v3-next/f32-dwconv-minmax/.build/stage03/annotated/unit.c", "-machdep", "gcc_x86_64", "-warn-special-float", "none", "-wp", "-wp-rte", "-wp-fct", "salty_min_vf_m4,salty_max_vf_m4", "-wp-model", "Typed+raw+float", "-wp-share", "experiments/shim-c-v2/model-fma/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-par", "2", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "experiments/shim-c-v2/complex-v3-next/static-helper01.json", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/shared/complex_fp.driver"]
+[kernel] Parsing experiments/shim-c-v2/complex-v3-next/f32-dwconv-minmax/.build/stage03/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function salty_min_vf_m4
+[kernel:annot:missing-spec] <unknown location>: Warning: 
+  Neither code nor specification for function __builtin_nanf, generating
+  default exits, assigns and terminates.
+  See -generated-spec-* options for more info.
+[rte:annot] annotating function salty_max_vf_m4
+[wp] 42 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_salty_min_vf_m4_ensures (Qed 39ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_salty_max_vf_m4_ensures (Qed 76ms) (CVC5)
+[wp] Proved goals:   40 / 42
+  Qed:            16 (4ms-7ms-76ms)
+  CVC5 1.2.1:      2 (55ms)
+  Z3 4.12.5:      22 (20ms-40ms)
+  Timeout:         2

@@ -1,0 +1,143 @@
+[kernel] Parsing experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Missing RTE guards
+
+Goal Establishment of Invariant ("experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/fp_arithmetic.c", line 37):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/fp_arithmetic.c", line 37):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/fp_arithmetic.c", line 37):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/fp_arithmetic.c", line 37):
+Let a = global(P_a_6687).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let a_2 = shiftfield_F5_lane(a).
+Let a_3 = shift_float32(a_2, v).
+Let a_4 = a_1[a_3].
+Let a_5 = Mf32_0[global(L_p_6699)].
+Let a_6 = add_f32(a_4, a_5).
+Let a_7 = Mf32_0[a_3].
+Let a_8 = shiftfield_F5_lane(global(P_b_6688)).
+Let a_9 = Mf32_0[shift_float32(a_8, v)].
+Let a_10 = shiftfield_F5_lane(global(P_c_6689)).
+Let a_11 = Mf32_0[shift_float32(a_10, v)].
+Let r = mul_f32(a_9, a_11).
+Let a_12 = shift_float32(a_2, i).
+Assume {
+  Type: is_sint32(v) /\ is_sint32(1 + v).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= v).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_13 = Mf32_0[shift_float32(a_2, i_1)] in
+      ((0 <= i_1) -> ((i_1 <= 3) -> P_ext_same(a_13, a_13))).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_13 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+      ((i_1 < v) ->
+      P_ext_same(a_1[a_13],
+        add_f32(Mf32_0[a_13],
+          mul_f32(Mf32_0[shift_float32(a_8, i_1)],
+            Mf32_0[shift_float32(a_10, i_1)]))))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_13 = shift_float32(a_2, i_1) in ((v <= i_1) ->
+      ((i_1 <= 3) -> P_ext_same(a_1[a_13], Mf32_0[a_13]))).
+  (* Then *)
+  Have: v <= 3.
+  (* Initializer *)
+  Init: a_5 = mul_f32(a_9, a_11).
+  (* Assertion *)
+  Have: P_ext_same(a_5, r).
+  (* Assertion *)
+  Have: P_ext_same(a_4, a_7).
+  (* Assertion *)
+  Have: P_ext_same(a_6, add_f32(a_7, r)).
+  (* Invariant *)
+  Have: (-1) <= v.
+}
+Prove: P_ext_same(a_1[a_3 <- a_6][a_12],
+         add_f32(Mf32_0[a_12],
+           mul_f32(Mf32_0[shift_float32(a_8, i)],
+             Mf32_0[shift_float32(a_10, i)]))).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/fp_arithmetic.c", line 37):
+Let a = Mf32_0[shift_float32(shiftfield_F5_lane(global(P_a_6687)), i)].
+Assume { (* Goal *) When: (0 <= i) /\ (i <= 3). }
+Prove: P_ext_same(a, a).
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/fp_arithmetic.c", line 37):
+Let a = global(P_a_6687).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let a_2 = shiftfield_F5_lane(a).
+Let a_3 = shift_float32(a_2, v).
+Let a_4 = a_1[a_3].
+Let a_5 = Mf32_0[global(L_p_6699)].
+Let a_6 = add_f32(a_4, a_5).
+Let a_7 = a_1[a_3 <- a_6].
+Let a_8 = shiftfield_F5_lane(global(P_b_6688)).
+Let a_9 = shiftfield_F5_lane(global(P_c_6689)).
+Let a_10 = Mf32_0[a_3].
+Let a_11 = Mf32_0[shift_float32(a_8, v)].
+Let a_12 = Mf32_0[shift_float32(a_9, v)].
+Let r = mul_f32(a_11, a_12).
+Let a_13 = shift_float32(a_2, i).
+Assume {
+  Type: is_sint32(v) /\ is_sint32(1 + v).
+  (* Goal *)
+  When: (v < i) /\ (i <= 3).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_14 = Mf32_0[shift_float32(a_2, i_1)] in
+      ((0 <= i_1) -> ((i_1 <= 3) -> P_ext_same(a_14, a_14))).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_14 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+      ((i_1 < v) ->
+      P_ext_same(a_1[a_14],
+        add_f32(Mf32_0[a_14],
+          mul_f32(Mf32_0[shift_float32(a_8, i_1)],
+            Mf32_0[shift_float32(a_9, i_1)]))))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_14 = shift_float32(a_2, i_1) in ((v <= i_1) ->
+      ((i_1 <= 3) -> P_ext_same(a_1[a_14], Mf32_0[a_14]))).
+  (* Then *)
+  Have: v <= 3.
+  (* Initializer *)
+  Init: a_5 = mul_f32(a_11, a_12).
+  (* Assertion *)
+  Have: P_ext_same(a_5, r).
+  (* Assertion *)
+  Have: P_ext_same(a_4, a_10).
+  (* Assertion *)
+  Have: P_ext_same(a_6, add_f32(a_10, r)).
+  (* Invariant *)
+  Have: (-1) <= v.
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_14 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+      ((i_1 <= v) ->
+      P_ext_same(a_7[a_14],
+        add_f32(Mf32_0[a_14],
+          mul_f32(Mf32_0[shift_float32(a_8, i_1)],
+            Mf32_0[shift_float32(a_9, i_1)]))))).
+}
+Prove: P_ext_same(a_7[a_13], Mf32_0[a_13]).
+
+------------------------------------------------------------

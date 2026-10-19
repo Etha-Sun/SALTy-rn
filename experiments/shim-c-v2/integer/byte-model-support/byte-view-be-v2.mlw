@@ -1,0 +1,22 @@
+module ByteView
+ use int.Int
+ use frama_c_wp.cint.Cint
+ use frama_c_wp.membytes_be.ValueBlockRW
+ let lemma signed_unsigned8 (b:vblock) (o:int)
+   requires { is_uint8 (bread_uint8 b o) }
+   ensures { to_uint8 (bread_sint8 b o) = bread_uint8 b o }
+ = let x = bread_uint8 b o in
+   assert { bread_sint8 b o = to_sint8 x };
+   if x<128 then begin
+     assert { is_sint8 x };
+     assert { to_sint8 x=x };
+     assert { to_uint8 (to_sint8 x)=x };
+   end else begin
+     assert { is_sint8 (x-256) };
+     assert { to_sint8 x=x-256 };
+     assert { to_uint8 (x-256)=x };
+     assert { to_uint8 (to_sint8 x)=x };
+   end;
+   assert { to_uint8 (to_sint8 x)=x };
+   assert { to_uint8 (bread_sint8 b o)=x }
+end

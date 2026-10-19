@@ -1,0 +1,352 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Typed+float", "-warn-special-float", "none", "/tmp/sub-pre-print-v7/unit.c", "-wp-skip-fct", "__riscv_vfadd_vv_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,vaddq_f32,vld1q_s8", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "test_neon", "-wp-prop", "transfer_input_a,transfer_input_b", "-wp-print", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/tmp/sub-pre-print-v7/extensions.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel] neon.c:7: Warning: 
+  found two contracts (old location: spec.h:5-15). Merging them
+[kernel] neon.c:7: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:5-15). Keeping only the first one
+[kernel] rvv.c:1: Warning: 
+  found two contracts (old location: spec.h:24-34). Merging them
+[kernel] rvv.c:1: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:24-34). Keeping only the first one
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function test_neon
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+
+Goal Instance of 'Pre-condition 'transfer_input_a' in 'proof_sub_transfer'' in 'test_neon' at call 'proof_sub_transfer' ("neon.c", line 132)
+:
+Let x = batch_1 / 4.
+Let x_1 = batch_0 / 4.
+Let x_2 = to_uint64(x_1 - to_uint64(x)).
+Let x_3 = to_uint64(3 + x_2).
+Let a = shift_float32(a_base_0, x_3).
+Let a_1 = shift_float32(o_base_0, 0).
+Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x_1).
+Let x_4 = -x.
+Let x_5 = x_1 - x.
+Let a_3 = shift_float32(o_base_0, x_5).
+Let a_4 = memcpy(a_2, a_3, Mf32_undef_1, a_3, 2).
+Let x_6 = 3 + x_1 - x.
+Let a_5 = shift_float32(b_base_0, x_6).
+Let a_6 = shift_float32(a_base_0, x_6).
+Let a_7 = vacc_lo_1.F17_lane.
+Let x_7 = 2 + x_1 - x.
+Let a_8 = shift_float32(a_base_0, x_7).
+Let a_9 = a_4[a_8].
+Let a_10 = shift_float32(b_base_0, x_7).
+Let a_11 = a_4[a_10].
+Let a_12 = vacc_0.F16_lane.
+Let x_8 = 2 + x_1.
+Let a_13 = vacc_lo_0.F17_lane.
+Let a_14 = va_0.F16_lane.
+Let a_15 = tmp_3_0.F16_lane.
+Let x_9 = (batch_1 % 8) / 4.
+Let x_10 = 4 * x_1.
+Let a_16 = shift_float32(b_base_0, 0).
+Let a_17 = shift_float32(a_base_0, 0).
+Let x_11 = 3 + x_1.
+Assume {
+  Type: is_uint64(batch_1) /\ is_uint64(batch_0) /\ is_uint64(x_7).
+  (* Heap *)
+  Type: (region(a_base_0.base) <= 0) /\ (region(b_base_0.base) <= 0) /\
+      (region(o_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: (0 < batch_0) /\ (batch_0 <= 18446744073709551603).
+  (* Pre-condition *)
+  Have: (batch_0 % 4) = 0.
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_17, x_11).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_16, x_11).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Pre-condition *)
+  Have: separated(a_1, x_1, a_17, x_11).
+  (* Pre-condition *)
+  Have: separated(a_1, x_1, a_16, x_11).
+  (* Pre-condition *)
+  Have: null != params_0.
+  (* Initializer *)
+  Init: x_1 = to_uint64(x_1).
+  (* Call '__FC_assert' *)
+  Have: a_17 != null.
+  (* Call '__FC_assert' *)
+  Have: a_16 != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Invariant *)
+  Have: batch_0 <= x_10.
+  (* Invariant 'prefix_neon_1' *)
+  Have: P_sub_prefix(Mf32_0, a_base_0, b_base_0, o_base_0, 0).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= x_10).
+  (* Invariant *)
+  Have: (batch_1 % 4) = 0.
+  (* Invariant *)
+  Have: valid_rw(Malloc_0, a_3, x).
+  (* Invariant 'prefix_neon_1' *)
+  Have: P_sub_prefix(a_2, a_base_0, b_base_0, o_base_0, x_5).
+  (* Else *)
+  Have: batch_1 <= 15.
+  (* Assertion *)
+  Have: (batch_1 = 4) \/ (batch_1 = 8) \/ (batch_1 = 12).
+  (* Call 'proof_f32_tail_bits' *)
+  Have: (((batch_1 = 4) \/ (batch_1 = 12)) <-> bit_test(batch_1, 2)) /\
+      ((if ((batch_1 = 4) | (batch_1 = 12)) then 1 else 0) = x_9) /\
+      (x = (2 + x_9)) /\
+      (x = (2 + (if ((batch_1 = 4) | (batch_1 = 12)) then 1 else 0))) /\
+      bit_test(batch_1, 3).
+  (* Then *)
+  Have: batch_1 != 0.
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(Malloc_0, shift_float32(a_base_0, x_5), 4) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_same_float(a_14[i], a_2[shift_float32(a_base_0, i + x_1 - x)])))).
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(Malloc_0, shift_float32(b_base_0, x_5), 4) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_same_float(a_15[i], a_2[shift_float32(b_base_0, i + x_1 - x)])))).
+  (* Call 'vsubq_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_same_value(a_12[i], sub_f32(a_14[i], a_15[i])))).
+  (* Assertion *)
+  Have: forall i : Z. let x_12 = i + x_1 - x in ((0 <= i) -> ((i <= 3) ->
+      P_same_value(a_12[i],
+        sub_f32(a_2[shift_float32(a_base_0, x_12)],
+          a_2[shift_float32(b_base_0, x_12)])))).
+  (* Call 'vget_low_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a_13[i], a_12[i]))).
+  (* Assertion *)
+  Have: forall i : Z. let x_12 = i + x_1 - x in ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a_13[i],
+        sub_f32(a_2[shift_float32(a_base_0, x_12)],
+          a_2[shift_float32(b_base_0, x_12)])))).
+  (* Then *)
+  Have: (batch_1 = 8) \/ (batch_1 = 12).
+  (* Assertion 'tail_has_two' *)
+  Have: 8 <= batch_1.
+  (* Assertion *)
+  Have: valid_rw(Malloc_0, a_3, 2).
+  (* Call 'vst1_f32' *)
+  Have: (forall a_18 : addr. (valid_rd(Malloc_0, a_18, 1) ->
+         (separated(a_18, 1, a_3, 2) -> P_same_float(a_4[a_18], a_2[a_18])))) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+       P_same_float(a_4[shift_float32(o_base_0, i + x_1 - x)], a_13[i])))).
+  (* Invariant *)
+  Have: x <= x_8.
+  (* Invariant 'prefix_neon_3' *)
+  Have: P_sub_prefix(a_4, a_base_0, b_base_0, o_base_0, 0).
+  (* Invariant 'prefix_neon_3' *)
+  Have: P_sub_prefix(a_4, a_base_0, b_base_0, o_base_0, x_7).
+  (* Else *)
+  Have: (x + to_uint64(2 + x_2)) <= x_8.
+  (* Call 'vget_high_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a_7[i], a_12[2 + i]))).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_8, 1).
+  (* Assertion *)
+  Have: separated(a_8, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_9, a_2[a_8]).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_10, 1).
+  (* Assertion *)
+  Have: separated(a_10, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_11, a_2[a_10]).
+  (* Assertion *)
+  Have: P_same_value(a_7[0], sub_f32(a_9, a_11)).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_6, 1).
+  (* Assertion *)
+  Have: separated(a_6, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_4[a_6], a_2[a_6]).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_5, 1).
+  (* Assertion *)
+  Have: separated(a_5, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_4[a_5], a_2[a_5]).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a, 1).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, shift_float32(b_base_0, x_3), 1).
+}
+Prove: P_same_float(a_4[a], a_14[3]).
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'transfer_input_b' in 'proof_sub_transfer'' in 'test_neon' at call 'proof_sub_transfer' ("neon.c", line 132)
+:
+Let x = batch_1 / 4.
+Let x_1 = batch_0 / 4.
+Let x_2 = to_uint64(x_1 - to_uint64(x)).
+Let x_3 = to_uint64(3 + x_2).
+Let a = shift_float32(b_base_0, x_3).
+Let a_1 = shift_float32(o_base_0, 0).
+Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x_1).
+Let x_4 = -x.
+Let x_5 = x_1 - x.
+Let a_3 = shift_float32(o_base_0, x_5).
+Let a_4 = memcpy(a_2, a_3, Mf32_undef_1, a_3, 2).
+Let x_6 = 3 + x_1 - x.
+Let a_5 = shift_float32(b_base_0, x_6).
+Let a_6 = shift_float32(a_base_0, x_6).
+Let a_7 = vacc_lo_1.F17_lane.
+Let x_7 = 2 + x_1 - x.
+Let a_8 = shift_float32(a_base_0, x_7).
+Let a_9 = a_4[a_8].
+Let a_10 = shift_float32(b_base_0, x_7).
+Let a_11 = a_4[a_10].
+Let a_12 = vacc_0.F16_lane.
+Let x_8 = 2 + x_1.
+Let a_13 = vacc_lo_0.F17_lane.
+Let a_14 = tmp_2_0.F16_lane.
+Let a_15 = vb_0.F16_lane.
+Let x_9 = (batch_1 % 8) / 4.
+Let x_10 = 4 * x_1.
+Let a_16 = shift_float32(b_base_0, 0).
+Let a_17 = shift_float32(a_base_0, 0).
+Let x_11 = 3 + x_1.
+Assume {
+  Type: is_uint64(batch_1) /\ is_uint64(batch_0) /\ is_uint64(x_7).
+  (* Heap *)
+  Type: (region(a_base_0.base) <= 0) /\ (region(b_base_0.base) <= 0) /\
+      (region(o_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      linked(Malloc_0).
+  (* Pre-condition *)
+  Have: (0 < batch_0) /\ (batch_0 <= 18446744073709551603).
+  (* Pre-condition *)
+  Have: (batch_0 % 4) = 0.
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_17, x_11).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_16, x_11).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_1, x_1).
+  (* Pre-condition *)
+  Have: separated(a_1, x_1, a_17, x_11).
+  (* Pre-condition *)
+  Have: separated(a_1, x_1, a_16, x_11).
+  (* Pre-condition *)
+  Have: null != params_0.
+  (* Initializer *)
+  Init: x_1 = to_uint64(x_1).
+  (* Call '__FC_assert' *)
+  Have: a_17 != null.
+  (* Call '__FC_assert' *)
+  Have: a_16 != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Invariant *)
+  Have: batch_0 <= x_10.
+  (* Invariant 'prefix_neon_1' *)
+  Have: P_sub_prefix(Mf32_0, a_base_0, b_base_0, o_base_0, 0).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= x_10).
+  (* Invariant *)
+  Have: (batch_1 % 4) = 0.
+  (* Invariant *)
+  Have: valid_rw(Malloc_0, a_3, x).
+  (* Invariant 'prefix_neon_1' *)
+  Have: P_sub_prefix(a_2, a_base_0, b_base_0, o_base_0, x_5).
+  (* Else *)
+  Have: batch_1 <= 15.
+  (* Assertion *)
+  Have: (batch_1 = 4) \/ (batch_1 = 8) \/ (batch_1 = 12).
+  (* Call 'proof_f32_tail_bits' *)
+  Have: (((batch_1 = 4) \/ (batch_1 = 12)) <-> bit_test(batch_1, 2)) /\
+      ((if ((batch_1 = 4) | (batch_1 = 12)) then 1 else 0) = x_9) /\
+      (x = (2 + x_9)) /\
+      (x = (2 + (if ((batch_1 = 4) | (batch_1 = 12)) then 1 else 0))) /\
+      bit_test(batch_1, 3).
+  (* Then *)
+  Have: batch_1 != 0.
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(Malloc_0, shift_float32(a_base_0, x_5), 4) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_same_float(a_14[i], a_2[shift_float32(a_base_0, i + x_1 - x)])))).
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(Malloc_0, shift_float32(b_base_0, x_5), 4) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_same_float(a_15[i], a_2[shift_float32(b_base_0, i + x_1 - x)])))).
+  (* Call 'vsubq_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_same_value(a_12[i], sub_f32(a_14[i], a_15[i])))).
+  (* Assertion *)
+  Have: forall i : Z. let x_12 = i + x_1 - x in ((0 <= i) -> ((i <= 3) ->
+      P_same_value(a_12[i],
+        sub_f32(a_2[shift_float32(a_base_0, x_12)],
+          a_2[shift_float32(b_base_0, x_12)])))).
+  (* Call 'vget_low_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a_13[i], a_12[i]))).
+  (* Assertion *)
+  Have: forall i : Z. let x_12 = i + x_1 - x in ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a_13[i],
+        sub_f32(a_2[shift_float32(a_base_0, x_12)],
+          a_2[shift_float32(b_base_0, x_12)])))).
+  (* Then *)
+  Have: (batch_1 = 8) \/ (batch_1 = 12).
+  (* Assertion 'tail_has_two' *)
+  Have: 8 <= batch_1.
+  (* Assertion *)
+  Have: valid_rw(Malloc_0, a_3, 2).
+  (* Call 'vst1_f32' *)
+  Have: (forall a_18 : addr. (valid_rd(Malloc_0, a_18, 1) ->
+         (separated(a_18, 1, a_3, 2) -> P_same_float(a_4[a_18], a_2[a_18])))) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+       P_same_float(a_4[shift_float32(o_base_0, i + x_1 - x)], a_13[i])))).
+  (* Invariant *)
+  Have: x <= x_8.
+  (* Invariant 'prefix_neon_3' *)
+  Have: P_sub_prefix(a_4, a_base_0, b_base_0, o_base_0, 0).
+  (* Invariant 'prefix_neon_3' *)
+  Have: P_sub_prefix(a_4, a_base_0, b_base_0, o_base_0, x_7).
+  (* Else *)
+  Have: (x + to_uint64(2 + x_2)) <= x_8.
+  (* Call 'vget_high_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a_7[i], a_12[2 + i]))).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_8, 1).
+  (* Assertion *)
+  Have: separated(a_8, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_9, a_2[a_8]).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_10, 1).
+  (* Assertion *)
+  Have: separated(a_10, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_11, a_2[a_10]).
+  (* Assertion *)
+  Have: P_same_value(a_7[0], sub_f32(a_9, a_11)).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_6, 1).
+  (* Assertion *)
+  Have: separated(a_6, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_4[a_6], a_2[a_6]).
+  (* Assertion *)
+  Have: valid_rd(Malloc_0, a_5, 1).
+  (* Assertion *)
+  Have: separated(a_5, 1, a_3, 2).
+  (* Assertion *)
+  Have: P_same_float(a_4[a_5], a_2[a_5]).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, shift_float32(a_base_0, x_3), 1).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a, 1).
+}
+Prove: P_same_float(a_4[a], a_15[3]).
+
+------------------------------------------------------------

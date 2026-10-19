@@ -1,0 +1,41 @@
+module MemcpyDefinitionIsolated
+  use int.Int
+  use map.Map as M
+  use map.Const as MC
+  type seq = Nil | Cons int seq
+  type addr = {base:int;offset:int}
+  type block = M.map int int
+  type memory = M.map int block
+  function bwrite_seq (b:block) (o:int) (s:seq):block =
+    match s with Nil -> b | Cons h tl -> M.set (bwrite_seq b (o+1) tl) o h end
+  let rec function to_seq (a:block) (b e:int):seq
+    variant { e-b }
+  = if e<=b then Nil else Cons (M.get a b) (to_seq a (b+1) e)
+  (* Literal copies of the two official/corrected definitions, with local names. *)
+  function old_memcpy (mtgt:memory) (ptgt:addr) (msrc:memory) (psrc:addr) (size:int):memory =
+    M.set mtgt ptgt.base (bwrite_seq (M.get msrc psrc.base) ptgt.offset (to_seq (M.get msrc psrc.base) psrc.offset size))
+  function fixed_memcpy (mtgt:memory) (ptgt:addr) (msrc:memory) (psrc:addr) (size:int):memory =
+    M.set mtgt ptgt.base (bwrite_seq (M.get mtgt ptgt.base) ptgt.offset (to_seq (M.get msrc psrc.base) psrc.offset (psrc.offset+size)))
+  function src_block : block = M.set (M.set (MC.const 22) 3 44) 4 55
+  function dst_block : block = MC.const 11
+  function src_memory : memory = MC.const src_block
+  function dst_memory : memory = MC.const dst_block
+  function src_addr : addr = {base=2;offset=3}
+  function dst_addr : addr = {base=1;offset=2}
+  function old_copied : memory = old_memcpy dst_memory dst_addr src_memory src_addr 2
+  function fixed_copied : memory = fixed_memcpy dst_memory dst_addr src_memory src_addr 2
+  goal old_bad_offset_witness: M.get (M.get old_copied 1) 2=22
+  goal old_bad_frame_witness: M.get (M.get old_copied 1) 0=22
+  goal fixed_offset_correct: M.get (M.get fixed_copied 1) 2=44
+  goal fixed_frame_correct: M.get (M.get fixed_copied 1) 0=11
+  function alias_block : block = M.set (M.set (M.set (MC.const 11) 1 22) 2 33) 7 88
+  function alias_memory : memory = MC.const alias_block
+  function alias_src : addr = {base=1;offset=1}
+  function alias_dst : addr = {base=1;offset=4}
+  function alias_copied : memory = fixed_memcpy alias_memory alias_dst alias_memory alias_src 2
+  goal fixed_same_block_nonoverlap: M.get (M.get alias_copied 1) 4=22 /\ M.get (M.get alias_copied 1) 5=33 /\ M.get (M.get alias_copied 1) 0=11 /\ M.get (M.get alias_copied 1) 7=88
+  goal fixed_zero_size: fixed_memcpy dst_memory dst_addr src_memory src_addr 0=dst_memory
+  goal negative_alias: M.get (M.get alias_copied 1) 5=22
+  goal negative_fixed_offset: M.get (M.get fixed_copied 1) 2=22
+  goal negative_fixed_frame: M.get (M.get fixed_copied 1) 0=22
+end

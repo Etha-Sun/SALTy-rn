@@ -1,0 +1,36 @@
+module CintMods
+  use int.Int
+  use int.EuclideanDivision as ED
+  use frama_c_wp.cint.Cint
+
+  let rec lemma uint16_mod (x:int)
+    ensures { to_uint16 x = ED.mod x 65536 }
+    variant { if x < 0 then 65536-x else x }
+  = if x < 0 then uint16_mod (x+65536)
+    else if x >= 65536 then uint16_mod (x-65536)
+    else ()
+
+  let rec lemma sint16_mod (x:int)
+    ensures { to_sint16 x =
+      if ED.mod x 65536 < 32768 then ED.mod x 65536
+      else ED.mod x 65536-65536 }
+    variant { if x < -32768 then 32768-x else x-32768 }
+  = if x < -32768 then sint16_mod (x+65536)
+    else if x >= 32768 then sint16_mod (x-65536)
+    else ()
+
+  let rec lemma uint64_mod (x:int)
+    ensures { to_uint64 x = ED.mod x 18446744073709551616 }
+    variant { if x < 0 then 18446744073709551616-x else x }
+  = if x < 0 then uint64_mod (x+18446744073709551616)
+    else if x >= 18446744073709551616 then uint64_mod (x-18446744073709551616)
+    else ()
+
+  function wrap16 (x:int) : int =
+    if to_uint16 x <= 32767 then to_uint16 x else to_uint16 x-65536
+
+  lemma centered_mod16:
+    forall x z:int.
+      wrap16 (to_uint64 (to_sint16 (-z)+x)) =
+      wrap16 (to_uint64 (to_uint64 x-to_uint64 (to_sint16 z)))
+end

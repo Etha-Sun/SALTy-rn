@@ -1,0 +1,28 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/tmp/add-tail-point-final.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/tmp/add-tail-point-final/unit.c", "-wp-skip-fct", "__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,vld1q_s8", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "test_neon,test_rvv,proof_add_prefix_step,proof_check_same_value_trans,proof_check_fp_add_congruence", "-wp-prop", "@ensures,tail_value_old,tail_input_sym_a,tail_input_sym_b,tail_op_same,tail_output_transport,tail_index_exact,tail_input_op,tail_point_index,tail_point_lane,tail_point_old_op,tail_lane_old_op,high_output_2,high_output_3", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vadd-index-tip-v7-front/.build/proof02/annotated/float.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel] neon.c:7: Warning: 
+  found two contracts (old location: spec.h:5-15). Merging them
+[kernel] neon.c:7: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:5-15). Keeping only the first one
+[kernel] rvv.c:1: Warning: 
+  found two contracts (old location: spec.h:24-34). Merging them
+[kernel] rvv.c:1: Warning: 
+  found two different terminates clauses for function specification (old location: spec.h:24-34). Keeping only the first one
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function proof_check_same_value_trans
+[rte:annot] annotating function proof_check_fp_add_congruence
+[rte:annot] annotating function proof_add_prefix_step
+[rte:annot] annotating function test_neon
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function test_rvv
+[wp] 19 goals scheduled
+[wp] Proved goals:   19 / 19
+  Qed:             9 (0.54ms-264ms-792ms)
+  CVC5 1.2.1:     10 (20ms-485ms-2.8s)
+[wp] Updated session
+   - 1 script removed (now automated)

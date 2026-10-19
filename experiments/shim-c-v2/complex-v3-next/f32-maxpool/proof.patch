@@ -1,0 +1,39 @@
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,16 +1,22 @@
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
++/*@ requires vl<=32; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+ static inline vfloat32m8_t salty_min_vf_m8(vfloat32m8_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m8(__builtin_nanf(""),vl);
+   vbool4_t nan=__riscv_vmfne_vv_f32m8_b4(a,a,vl);
+   vfloat32m8_t r=__riscv_vfmin_vf_f32m8(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m8(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=32; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+ static inline vfloat32m8_t salty_max_vf_m8(vfloat32m8_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m8(__builtin_nanf(""),vl);
+   vbool4_t nan=__riscv_vmfne_vv_f32m8_b4(a,a,vl);
+   vfloat32m8_t r=__riscv_vfmax_vf_f32m8(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m8(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=32; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
+ static inline vfloat32m8_t salty_max_vv_m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) {
+   vbool4_t nan_a=__riscv_vmfne_vv_f32m8_b4(a,a,vl);
+   vbool4_t nan_b=__riscv_vmfne_vv_f32m8_b4(b,b,vl);
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,11 @@
+   struct xnn_f32_minmax_params params={{lower,upper}};
+   test_neon(pixels,k,channels,input,0,0,left,k*sizeof(void*),channels*sizeof(float),&params);
+   test_rvv(pixels,k,channels,input,0,0,right,k*sizeof(void*),channels*sizeof(float),&params);
++  /*@ loop invariant 0<=i<=pixels*channels;
++      loop invariant \forall integer j; 0<=j<i ==> (\eq_float(left[j],right[j]) || (\is_NaN(left[j]) && \is_NaN(right[j])));
++      loop assigns i;
++      loop variant pixels*channels-i;
++  */
+   for(size_t i=0;i<pixels*channels;i++) {
+     if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   }

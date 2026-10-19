@@ -1,0 +1,157 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "/tmp/vcmul-check-congruence/complex_fp.c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-prover", "none", "-wp-share", "experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vmlaq_f32", "-wp-prop", "@invariant", "-wp-print", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/tmp/vcmul-check-congruence/complex_fp.driver"]
+[kernel] Parsing /tmp/vcmul-check-congruence/complex_fp.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vmlaq_f32
+
+Goal Establishment of Invariant ("/tmp/vcmul-check-congruence/complex_fp.c", line 21):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("/tmp/vcmul-check-congruence/complex_fp.c", line 21):
+Let a = global(P_a_2496).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let a_2 = shiftfield_F2_lane(a).
+Let a_3 = shiftfield_F2_lane(global(P_b_2497)).
+Let a_4 = shiftfield_F2_lane(global(P_c_2498)).
+Assume {
+  Type: is_uint64(v).
+  (* Invariant *)
+  Have: forall i : Z. let a_5 = Mf32_0[shift_float32(a_2, i)] in ((0 <= i) ->
+      ((i <= 3) -> P_cx_same_float(a_5, a_5))).
+  (* Invariant *)
+  Have: (0 <= v) /\ (v <= 4).
+  (* Invariant *)
+  Have: forall i : Z. let a_5 = shift_float32(a_2, i) in ((0 <= i) ->
+      ((i < v) ->
+      P_cx_same_float(a_1[a_5],
+        add_f32(Mf32_0[a_5],
+          mul_f32(Mf32_0[shift_float32(a_3, i)],
+            Mf32_0[shift_float32(a_4, i)]))))).
+  (* Invariant *)
+  Have: forall i : Z. let a_5 = shift_float32(a_2, i) in ((v <= i) ->
+      ((i <= 3) -> P_cx_same_float(a_1[a_5], Mf32_0[a_5]))).
+  (* Then *)
+  Have: v <= 3.
+  (* Call 'complex_mul' *)
+  Have: P_cx_same_float(v_1,
+          mul_f32(Mf32_0[shift_float32(a_3, v)],
+            Mf32_0[shift_float32(a_4, v)])).
+  (* Call 'complex_add' *)
+  Have: P_cx_same_float(v_2, add_f32(a_1[shift_float32(a_2, v)], v_1)).
+}
+Prove: to_uint64(1 + v) <= 4.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("/tmp/vcmul-check-congruence/complex_fp.c", line 21):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("/tmp/vcmul-check-congruence/complex_fp.c", line 21):
+Let x = to_uint64(1 + v_1).
+Let a = global(P_a_2496).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let a_2 = shiftfield_F2_lane(a).
+Let a_3 = shift_float32(a_2, v_1).
+Let a_4 = shiftfield_F2_lane(global(P_b_2497)).
+Let a_5 = shiftfield_F2_lane(global(P_c_2498)).
+Let a_6 = shift_float32(a_2, i).
+Assume {
+  Type: is_uint64(v_1).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = Mf32_0[shift_float32(a_2, i_1)] in
+      ((0 <= i_1) -> ((i_1 <= 3) -> P_cx_same_float(a_7, a_7))).
+  (* Invariant *)
+  Have: (0 <= v_1) /\ (v_1 <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+      ((i_1 < v_1) ->
+      P_cx_same_float(a_1[a_7],
+        add_f32(Mf32_0[a_7],
+          mul_f32(Mf32_0[shift_float32(a_4, i_1)],
+            Mf32_0[shift_float32(a_5, i_1)]))))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = shift_float32(a_2, i_1) in ((v_1 <= i_1) ->
+      ((i_1 <= 3) -> P_cx_same_float(a_1[a_7], Mf32_0[a_7]))).
+  (* Then *)
+  Have: v_1 <= 3.
+  (* Call 'complex_mul' *)
+  Have: P_cx_same_float(v,
+          mul_f32(Mf32_0[shift_float32(a_4, v_1)],
+            Mf32_0[shift_float32(a_5, v_1)])).
+  (* Call 'complex_add' *)
+  Have: P_cx_same_float(v_2, add_f32(a_1[a_3], v)).
+  (* Invariant *)
+  Have: x <= 4.
+}
+Prove: P_cx_same_float(a_1[global(L_tmp_2508) <- v][a_3 <- v_2][a_6],
+         add_f32(Mf32_0[a_6],
+           mul_f32(Mf32_0[shift_float32(a_4, i)],
+             Mf32_0[shift_float32(a_5, i)]))).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("/tmp/vcmul-check-congruence/complex_fp.c", line 21):
+Let a = Mf32_0[shift_float32(shiftfield_F2_lane(global(P_a_2496)), i)].
+Assume { (* Goal *) When: (0 <= i) /\ (i <= 3). }
+Prove: P_cx_same_float(a, a).
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("/tmp/vcmul-check-congruence/complex_fp.c", line 21):
+Let x = to_uint64(1 + v_1).
+Let a = global(P_a_2496).
+Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+Let a_2 = shiftfield_F2_lane(a).
+Let a_3 = shift_float32(a_2, v_1).
+Let a_4 = a_1[global(L_tmp_2508) <- v][a_3 <- v_2].
+Let a_5 = shiftfield_F2_lane(global(P_b_2497)).
+Let a_6 = shiftfield_F2_lane(global(P_c_2498)).
+Let a_7 = shift_float32(a_2, i).
+Assume {
+  Type: is_uint64(v_1).
+  (* Goal *)
+  When: (x <= i) /\ (i <= 3).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_8 = Mf32_0[shift_float32(a_2, i_1)] in
+      ((0 <= i_1) -> ((i_1 <= 3) -> P_cx_same_float(a_8, a_8))).
+  (* Invariant *)
+  Have: (0 <= v_1) /\ (v_1 <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_8 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+      ((i_1 < v_1) ->
+      P_cx_same_float(a_1[a_8],
+        add_f32(Mf32_0[a_8],
+          mul_f32(Mf32_0[shift_float32(a_5, i_1)],
+            Mf32_0[shift_float32(a_6, i_1)]))))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_8 = shift_float32(a_2, i_1) in ((v_1 <= i_1) ->
+      ((i_1 <= 3) -> P_cx_same_float(a_1[a_8], Mf32_0[a_8]))).
+  (* Then *)
+  Have: v_1 <= 3.
+  (* Call 'complex_mul' *)
+  Have: P_cx_same_float(v,
+          mul_f32(Mf32_0[shift_float32(a_5, v_1)],
+            Mf32_0[shift_float32(a_6, v_1)])).
+  (* Call 'complex_add' *)
+  Have: P_cx_same_float(v_2, add_f32(a_1[a_3], v)).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_8 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+      ((i_1 < x) ->
+      P_cx_same_float(a_4[a_8],
+        add_f32(Mf32_0[a_8],
+          mul_f32(Mf32_0[shift_float32(a_5, i_1)],
+            Mf32_0[shift_float32(a_6, i_1)]))))).
+}
+Prove: P_cx_same_float(a_4[a_7], Mf32_0[a_7]).
+
+------------------------------------------------------------

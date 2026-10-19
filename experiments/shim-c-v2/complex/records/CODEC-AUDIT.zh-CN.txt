@@ -1,0 +1,19 @@
+Bytes 浮点 codec 审计（不作为验收）
+================================
+实际生成的solver文件 codec-smt/dfc3033...smt2:10574--10581包含：
+  ∀ i:int. float32_to_int(int_to_float32(i)) = i
+  ∀ f:Float32. is_uint32(float32_to_int(f))
+令 i=4294967296，第二条应用于int_to_float32(i)，结合第一条得到
+4294967296 <= 4294967295。因此现有两个无域限制公理不能同时成立。
+原版来源是已pin的官方33.0 tar中的MemBytes.ml:425--511，本目录保留摘录。
+codec-audit.json记录来源、文件哈希、实际发给solver的精确路径与行号。
+
+codec-axioms-ground-instances.smt2只写上述两条全称事实的两个具体实例，
+Z3和CVC5均返回unsat。没有追加C输入条件，没有把任意命题写成axiom。
+完整带量词最小SMT在本次小预算下是unknown/timeout，原样保留；不能说WP已证明false。
+真实C codec_nan/codec_one/codec_minus_zero三个值post均未闭合；
+float-memory-codec.c的raw是24/29，forced-codec控制15/16，其false post未被证明。
+空false控制可能让动态生成的codec理论完全被删除，不能据此否认以上矛盾。
+
+即便为第一条补uint32域，完整NaN payload到单个SMT NaN的可逆映射也要重新设计。
+root已拒绝Bytes*作为新frontend的验收配置；Typed/Typed+raw浮点重放不依赖该codec。

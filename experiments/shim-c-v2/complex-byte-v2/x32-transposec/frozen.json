@@ -1,0 +1,68 @@
+{
+  "name": "x32-transposec",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/neon.c",
+      "sha256": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/rvv.c",
+      "sha256": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/spec.h",
+      "sha256": "15e85c0fad7211b53cc81aab146e264e5ffd053faabd9602aa0b2f6e36296441"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/harness.c",
+      "sha256": "d97c92586a59d69f4eef50b4e461c7358ee90f8575263d24c7c48fa9d89a55fa"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/unit.c",
+      "sha256": "44ce202adf936dcb2cd4eac55ede6704ed1d21a9fb646f836c37f85840c77fe1"
+    },
+    "u32_shim.h": {
+      "path": "experiments/shared-extension/complex/shared/u32_shim.h",
+      "sha256": "08f39fad2fa1012e274e9cb81df24b601398910dc4136e2182b7f64ed4323217"
+    },
+    "u32_shim.c": {
+      "path": "experiments/shared-extension/complex/shared/u32_shim.c",
+      "sha256": "608464204358c0287f0585c697b675ce445ba9b90e4230a048371dc42e8bfa4f"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v4.py",
+      "sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-integer-byte-v2/model_lock.json",
+      "sha256": "f4066d913a22d90c4110347c76efbdc8a3695406428619c9983408b387dd4805"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/complex-byte-v2/x32-transposec/proof.patch"
+  ],
+  "model": "Bytes",
+  "wp_model_variant": "Bytes",
+  "previous_version": "experiments/shim-c-v2/complex-byte/x32-transposec",
+  "reason": "Independent probe shows Typed+raw retains aggregate-array initializer constraints; implementation and public spec byte-identical",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "proof_stage": "Same pure-integer frozen program/spec/proof candidate, independent repaired Bytes memory bridge version; floating codecs fatal.",
+  "wp_share": "experiments/shim-c-v2/model-integer-byte-v2/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "scope_qualification": "experiments/shim-c-v2/complex-byte-v2/qualification.json"
+}

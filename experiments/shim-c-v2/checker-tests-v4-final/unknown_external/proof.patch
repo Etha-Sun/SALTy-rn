@@ -1,0 +1,11 @@
+--- a/unit.c
++++ b/unit.c
+@@ -1,6 +1,8 @@
+ #include "spec.h"
+ extern int external_free(int x);
++/*@ requires -100<x<100; assigns \nothing; ensures \result==x+1; */
+ static int helper(int x) { return x+1; }
++/*@ assigns \nothing; ensures \false; */
+ static int unused_bad(int x) { return x; }
+ void test_neon(int x,int *o){*o=external_free(x);}
+ void test_rvv(int x,int *o){*o=external_free(x);}

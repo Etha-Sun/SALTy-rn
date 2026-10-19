@@ -1,0 +1,81 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-packw-gemm-goi/logs/bytes01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-packw-gemm-goi/.build/bytes01/annotated/unit.c', '-wp-skip-fct', '__riscv_vle32_v_u32m8,__riscv_vsetvl_e32m8,__riscv_vsse32_v_u32m8,doz,round_down_po2,vst1_lane_u32,vzip_u32']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'tip,z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-packw-gemm-goi/logs/bytes01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-packw-gemm-goi/.build/bytes01/annotated/unit.c', '-wp-skip-fct', '__riscv_vle32_v_u32m8,__riscv_vsetvl_e32m8,__riscv_vsse32_v_u32m8,doz,round_down_po2,vst1_lane_u32,vzip_u32', '-wp-model', 'Bytes', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Pure-integer Bytes invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-packw-gemm-goi/logs/bytes01.json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-packw-gemm-goi/.build/bytes01/annotated/unit.c", "-wp-skip-fct", "__riscv_vle32_v_u32m8,__riscv_vsetvl_e32m8,__riscv_vsse32_v_u32m8,doz,round_down_po2,vst1_lane_u32,vzip_u32", "-wp-model", "Bytes", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vcreate_v_u32m4x2
+[rte:annot] annotating function __riscv_vle32_v_u32m1
+[rte:annot] annotating function __riscv_vle32_v_u32m4
+[rte:annot] annotating function __riscv_vmv_v_x_u32m1
+[rte:annot] annotating function __riscv_vse32_v_u32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsse32_v_u32m4
+[rte:annot] annotating function __riscv_vsseg2e32_v_u32m4x2
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vdup_n_u32
+[rte:annot] annotating function vld1_lane_u32
+[rte:annot] annotating function vld1_u32
+[rte:annot] annotating function vld2_lane_u32
+[rte:annot] annotating function vmov_n_u32
+[rte:annot] annotating function vst1_u32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] 467 goals scheduled
+[wp] [Timeout] bytes_vmov_n_u32_ensures (Qed 4ms) (Z3)
+[wp] [Timeout] bytes_vst1_u32_ensures (Qed 12ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vse32_v_u32m1_ensures (Qed 18ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vse32_v_u32m1_loop_invariant_2_preserved (Qed 22ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vse32_v_u32m1_loop_assigns_part3 (Qed 17ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsseg2e32_v_u32m4x2_ensures (Qed 23ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsseg2e32_v_u32m4x2_loop_invariant_2_preserved (Qed 23ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsseg2e32_v_u32m4x2_assert_rte_mem_access_2 (Qed 25ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsseg2e32_v_u32m4x2_loop_assigns_part3 (Qed 23ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsseg2e32_v_u32m4x2_loop_assigns_part4 (Qed 23ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m4_ensures (Qed 26ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m4_ensures_2 (Qed 19ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m4_loop_invariant_2_preserved (Qed 30ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m4_loop_invariant_3_preserved (Qed 34ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m4_assert_rte_mem_access (Qed 25ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m4_loop_assigns_part3 (Qed 38ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_ensures_equal (Qed 8.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_established (Qed 7.1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_preserved (Qed 7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access (Qed 7.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_2 (Qed 7.4s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_4_preserved (Qed 2.7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_5_preserved (Qed 3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_6_preserved (Qed 3.5s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_7_preserved (Qed 2.9s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_10_preserved (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_12_preserved (Qed 995ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_13_preserved (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_19_established (Qed 914ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_19_preserved (Qed 1.1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_25_preserved (Qed 1.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_3 (Qed 501ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_4 (Qed 474ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_29_established (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_30_established (Qed 965ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_30_preserved (Qed 1.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_5 (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_6 (Qed 1.1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_33_preserved (Qed 7.2s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_34_preserved (Qed 7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_35_preserved (Qed 7.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_36_preserved (Qed 7.1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_39_preserved (Qed 5.6s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_41_preserved (Qed 5.7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_42_preserved (Qed 5.8s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_48_preserved (Qed 5.9s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_48_established (Qed 5.4s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_8 (Qed 3.2s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_7 (Qed 3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_52_established (Qed 5.2s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_53_established (Qed 5.2s) (CVC5)

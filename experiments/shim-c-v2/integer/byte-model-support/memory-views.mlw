@@ -1,0 +1,20 @@
+module MemoryViews
+ use int.Int
+ use map.Map as M
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.cint.Cint
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.membytes_le.ValueBlockRW as VB
+ let lemma memory_unsigned16_bytes(m:memory)(a:addr)
+ ensures { read_uint16 m a=read_uint8 m a+256*read_uint8 m (shift a 1) }
+ = VB.word16_bytes (M.get m a.base) a.offset
+ let lemma memory_unsigned32_bytes(m:memory)(a:addr)
+ ensures { read_uint32 m a=read_uint8 m a+256*read_uint8 m (shift a 1)+65536*read_uint8 m (shift a 2)+16777216*read_uint8 m (shift a 3) }
+ = VB.word32_bytes (M.get m a.base) a.offset
+ let lemma memory_signed_unsigned8(m:memory)(a:addr)
+ requires { bytes m }
+ ensures { to_uint8 (read_sint8 m a)=read_uint8 m a }
+ = assert { 0<=raw_get m a<=255 };
+   assert { is_uint8 (VB.bread_uint8 (M.get m a.base) a.offset) };
+   VB.signed_unsigned8 (M.get m a.base) a.offset
+end

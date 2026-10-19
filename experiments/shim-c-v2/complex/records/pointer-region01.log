@@ -1,0 +1,39 @@
+[kernel] Parsing experiments/shared-extension/complex/proof-records/pointer-offset-probe.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function one_offset
+[rte:annot] annotating function same_pointer
+[rte:annot] annotating function zero_offset
+[wp] 6 goals scheduled
+[wp] [Timeout] region_zero_offset_ensures (Qed 2ms) (Alt-Ergo)
+[wp] [Timeout] region_one_offset_ensures (Qed 3ms) (Alt-Ergo)
+[wp] Proved goals:   10 / 12
+  Terminating:     3
+  Unreachable:     3
+  Qed:             4 (2ms-0.77ms-3ms)
+  Timeout:         2
+[wp:pedantic-assigns] experiments/shared-extension/complex/proof-records/pointer-offset-probe.c:3: Warning: 
+  No 'assigns \result \from ...' specification for function 'same_pointer'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp] experiments/shared-extension/complex/proof-records/pointer-offset-probe.c:3: Warning: 
+  Memory model hypotheses for function 'same_pointer':
+  /*@ behavior wp_region:
+        ensures \separated(\result, &p); */
+  float const *same_pointer(float const *p);
+[wp:pedantic-assigns] experiments/shared-extension/complex/proof-records/pointer-offset-probe.c:5: Warning: 
+  No 'assigns \result \from ...' specification for function 'zero_offset'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp] experiments/shared-extension/complex/proof-records/pointer-offset-probe.c:5: Warning: 
+  Memory model hypotheses for function 'zero_offset':
+  /*@ behavior wp_region:
+        ensures \separated(\result, &p); */
+  float const *zero_offset(float const *p);
+[wp:pedantic-assigns] experiments/shared-extension/complex/proof-records/pointer-offset-probe.c:7: Warning: 
+  No 'assigns \result \from ...' specification for function 'one_offset'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp] experiments/shared-extension/complex/proof-records/pointer-offset-probe.c:7: Warning: 
+  Memory model hypotheses for function 'one_offset':
+  /*@ behavior wp_region:
+        ensures \separated(\result, &p); */
+  float const *one_offset(float const *p);

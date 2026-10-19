@@ -1,0 +1,71 @@
+{
+  "name": "qu8-vadd-minmax",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/integer/shared/shim.h",
+      "sha256": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163"
+    },
+    "integer-qu8-vadd-minmax.c": {
+      "path": "experiments/shared-extension/integer/shared/integer-qu8-vadd-minmax.c",
+      "sha256": "3aa5bab8325558e790f7f31981b7c932b497de881cd6e847e84150e73d516b49"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/integer/qu8-vadd-minmax/neon.c",
+      "sha256": "7f6435954cc0ac4ab31881da9ff8b16f04abdfc8da0c1a945b15b64f3bcb2294"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/integer/qu8-vadd-minmax/rvv.c",
+      "sha256": "227963c8f5436eaa8ac63d5c5cf58e53915794962e42d8f3ccb0371461d82014"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/integer/qu8-vadd-minmax/spec.h",
+      "sha256": "9df8e8eadbd2230f61be3265f5916c29532f004f04203b0e0667b9957b805e48"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/integer/qu8-vadd-minmax/harness.c",
+      "sha256": "de3279866cabd8a5263a6fb39ba92084ecf957263b755f13bb8d97afa209daa4"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/integer/qu8-vadd-minmax/interface.json",
+      "sha256": "2d63ea3f870640a4c1456d4c1e51d946ef61be87f4cb54ddd3a389793d66c563"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/integer/qu8-vadd-minmax/unit.c",
+      "sha256": "90e4e80e8c0e30d3d2b1f8472ebdd6452e222033eb4560ef448aef1a3ae684e5"
+    },
+    "generate_interfaces.py": {
+      "path": "experiments/shared-extension/integer/generate_interfaces.py",
+      "sha256": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v4.py",
+      "sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-integer-byte/model_lock.json",
+      "sha256": "3d47103facbe1cd598fd476dca7625dd5e69dbeb899729a698e28519ed25eedd"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/integer-byte/qu8-vadd-minmax/proof.patch"
+  ],
+  "model": "Bytes",
+  "VLEN_bits": 128,
+  "origin": "original NEON unchanged, original target preserved separately; four explicit target repairs documented in witness-results.json",
+  "revision": "Independent integer-only Bytes candidate: copy definitions repaired, Cint54 and ByteWord28 body checked; fatal CODEC_FLOAT guard; full memory model remains TCB; pack/control functional postconditions pending, no qualification claim.",
+  "previous_version": "experiments/shim-c-v2/v4-campaign/qu8-vadd-minmax",
+  "wp_share": "experiments/shim-c-v2/model-integer-byte/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "wp_model_variant": "Bytes"
+}

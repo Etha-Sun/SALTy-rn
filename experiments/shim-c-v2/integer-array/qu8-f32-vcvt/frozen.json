@@ -1,0 +1,76 @@
+{
+  "name": "qu8-f32-vcvt",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/integer/shared/shim.h",
+      "sha256": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163"
+    },
+    "integer-qu8-f32-vcvt.c": {
+      "path": "experiments/shared-extension/integer/shared-v2/integer-qu8-f32-vcvt.c",
+      "sha256": "c1c1a4ce2642d9959293b7d8d8b3ad1557a2b73f53cee767d92b80ebf0806fc3"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/neon.c",
+      "sha256": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/rvv.c",
+      "sha256": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/spec.h",
+      "sha256": "e572f64339d231f7f6c9c19c12ee535e7fb69eb073b817b4c336e18c323bcb20"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/harness.c",
+      "sha256": "3a576f976fe7d155240c3fa911a16e42eb0bd656b2edb8483bb62ca9156dd949"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/interface.json",
+      "sha256": "91ad3aced00ef4dd73ac658688fa28fad56dee1e9b3eb2934b029e4265e0e75b"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/integer/qu8-f32-vcvt-v2/unit.c",
+      "sha256": "b887f8cd695bb671dc9efbcb40f4af5cd83d4cf68c1164a65c2e7b6e57a7ee55"
+    },
+    "generate_interfaces.py": {
+      "path": "experiments/shared-extension/integer/generate_interfaces.py",
+      "sha256": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7"
+    },
+    "integer.driver": {
+      "path": "experiments/shared-extension/integer/shared/integer.driver",
+      "sha256": "3cee00de573425187ccd881c1e0c4391926780b7f2418c23a9699ed117f8b8b1"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v4.py",
+      "sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-plus/float_model_lock.json",
+      "sha256": "1cb886aea7292862396ec1387b2b4a3fc3c4f5c7d296f33ccec2dd2ca1fd6ca1"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/integer-array/qu8-f32-vcvt/proof.patch"
+  ],
+  "model": "Typed+float",
+  "VLEN_bits": 128,
+  "origin": "original NEON unchanged, original target preserved separately; four explicit target repairs documented in witness-results.json",
+  "driver": "integer.driver",
+  "model_revision": "Same-width integer bit reinterpret via defined lane-wise C modular conversion; avoids memcpy bridge; original kernel and public spec unchanged",
+  "previous_version": "experiments/shim-c-v2/v4-campaign/qu8-f32-vcvt",
+  "revision": "Independent proof-only continuation; all C/spec/driver source paths and hashes preserved from previous frozen manifest.",
+  "wp_share": "experiments/shim-c-v2/model-plus/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200
+}

@@ -1,0 +1,105 @@
+{
+  "name": "f32-vmulc",
+  "files": {
+    "shim.h": {
+      "path": "verified/shared-extension/float/shim.h",
+      "sha256": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de"
+    },
+    "base.h": {
+      "path": "verified/shared-extension/float/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "verified/shared-extension/float/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "clamp.h": {
+      "path": "verified/shared-extension/float/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "float_ops.h": {
+      "path": "verified/shared-extension/float/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "extensions.h": {
+      "path": "verified/shared-extension/float/extensions.h",
+      "sha256": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+    },
+    "extensions.driver": {
+      "path": "verified/shared-extension/float/extensions.driver",
+      "sha256": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6"
+    },
+    "base.c": {
+      "path": "verified/shared-extension/float/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "float_ops.c": {
+      "path": "verified/shared-extension/float/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "mul.c": {
+      "path": "verified/shared-extension/float/mul.c",
+      "sha256": "c63398341dbcb8191ad0537971f48f51c6c541fbfad383f7efe7e625a2cc43c1"
+    },
+    "mulc.c": {
+      "path": "verified/shared-extension/float/mulc.c",
+      "sha256": "ac96a49082c87d42bd4f286f040dd6f245bd7be0b4d3dbbd0c73cdcca83dfec5"
+    },
+    "neon.c": {
+      "path": "verified/f32-vmulc/neon.c",
+      "sha256": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb"
+    },
+    "rvv.c": {
+      "path": "verified/f32-vmulc/rvv.c",
+      "sha256": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a"
+    },
+    "spec.h": {
+      "path": "verified/f32-vmulc/spec.h",
+      "sha256": "28f7773cd42823f479a316362f6377f534ca3ef89499d9ca620e32c03034c532"
+    },
+    "harness.c": {
+      "path": "verified/f32-vmulc/harness.c",
+      "sha256": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c"
+    },
+    "interface.json": {
+      "path": "verified/f32-vmulc/interface.json",
+      "sha256": "656c30f7b44df505a32deb9a7c9599035edc3e23b2d3bfe72ebbd88186831528"
+    },
+    "unit.c": {
+      "path": "verified/f32-vmulc/unit.c",
+      "sha256": "7b6ecc9c632bc2918c7eeb81d9e694799fdd964b31ec850df6a36ca041268c6f"
+    },
+    "generate.py": {
+      "path": "verified/shared-extension/float/generate.py",
+      "sha256": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a"
+    },
+    "modules.json": {
+      "path": "verified/f32-vmulc/modules.json",
+      "sha256": "59da7ce76fc3a3a19bc3ff8c3541dbc2a2470dd714acbfba63311977242d92c5"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v2.py",
+      "sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/float-proof-candidates/f32-vmulc-local-checkers-front/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "extensions.driver",
+  "observation": "number-or-both-nan; signed-zero numeric equality; no FP flags",
+  "original_target": null,
+  "VLEN_bits": 128,
+  "upstream_proof_evidence": "experiments/shared-extension/float/f32-vmulc/logs/run02-summary.json",
+  "upstream_freeze_sha256": "648b0af7cb4c46c876fce3007255d99572ec857cb24febf90f967624126e2acb",
+  "previous_version": "experiments/shim-c-v2/float-proof-candidates/f32-vmulc-observation-front",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200
+}

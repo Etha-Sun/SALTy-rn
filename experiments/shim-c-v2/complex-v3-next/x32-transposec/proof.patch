@@ -1,0 +1,115 @@
+--- a/neon.c
++++ b/neon.c
+@@ -6,6 +6,10 @@
+     size_t block_width,
+     size_t block_height) XNN_OOB_READS
+ {
++  /*@ ghost const uint32_t *src0=input; */
++  /*@ ghost uint32_t *dst0=output; */
++  /*@ ghost size_t W=block_width,H=block_height,IS=input_stride/4,OS=output_stride/4; */
++  /*@ assert input_stride==4*IS && output_stride==4*OS; */
+   assert(block_width == 1 || output_stride >= block_height * sizeof(uint32_t));
+   assert(block_height == 1 || input_stride >= block_width * sizeof(uint32_t));
+ 
+@@ -21,12 +25,37 @@
+   const uint32_t* i1 = (const uint32_t*) ((uintptr_t) i0 + input_stride);
+   uint32_t* o0 = (uint32_t*) output;
+   uint32_t* o1 = (uint32_t*) ((uintptr_t) o0 + output_stride);
++  /*@ assert i1==src0+IS; */
++  /*@ assert o1==dst0+OS; */
+ 
++  /*@ loop invariant 0<block_width<=W;
++      loop invariant (W-block_width)%2==0;
++      loop invariant i0==src0+(W-block_width);
++      loop invariant i1==src0+(W-block_width)+IS;
++      loop invariant o0==dst0+(W-block_width)*OS;
++      loop invariant \forall integer c,r; 0<=c<W-block_width && 0<=r<H ==> dst0[c*OS+r]==src0[r*IS+c];
++      loop invariant \forall integer c,r; W-block_width<=c<W && 0<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++      loop invariant \forall integer c,r; 0<=c<W && H<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++      loop assigns block_width,i0,i1,o0,o1,dst0[0..W*OS-1];
++      loop variant block_width;
++  */
+   do {
+     if XNN_UNPREDICTABLE(block_width < 2) {
+       o1 = o0;
+     }
+     size_t bh = block_height;
++    /*@ loop invariant 0<=bh<=H && (H-bh)%2==0;
++        loop invariant i0==src0+(W-block_width)+(H-bh)*IS;
++        loop invariant i1==src0+(W-block_width)+(H-bh+1)*IS;
++        loop invariant o0==dst0+(W-block_width)*OS+(H-bh);
++        loop invariant o1==(block_width<2?o0:dst0+(W-block_width+1)*OS+(H-bh));
++        loop invariant \forall integer c,r; 0<=c<W-block_width && 0<=r<H ==> dst0[c*OS+r]==src0[r*IS+c];
++        loop invariant \forall integer c,r; W-block_width<=c<W && c<W-block_width+2 && 0<=r<H-bh ==> dst0[c*OS+r]==src0[r*IS+c];
++        loop invariant \forall integer c,r; W-block_width+2<=c<W && 0<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++        loop invariant \forall integer c,r; W-block_width<=c<W && c<W-block_width+2 && H-bh<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++        loop assigns bh,i0,i1,o0,o1,dst0[0..W*OS-1];
++        loop variant bh;
++    */
+     for (; bh >= 2; bh -= 2) {
+       const uint32x2_t v1_0 = vld1_u32(i0); i0 = (uint32_t*) ((uintptr_t) i0 + input_offset);
+       const uint32x2_t v1_1 = vld1_u32(i1); i1 = (uint32_t*) ((uintptr_t) i1 + input_offset);
+--- a/rvv.c
++++ b/rvv.c
+@@ -6,21 +6,47 @@
+     size_t block_width,
+     size_t block_height) XNN_OOB_READS
+ {
++  /*@ ghost const uint32_t *src0=input; */
++  /*@ ghost uint32_t *dst0=output; */
++  /*@ ghost size_t W=block_width,H=block_height,IS=input_stride/4,OS=output_stride/4; */
++  /*@ assert input_stride==4*IS && output_stride==4*OS; */
+   assert(block_width == 1 || output_stride >= block_height * sizeof(uint32_t));
+   assert(block_height == 1 || input_stride >= block_width * sizeof(uint32_t));
+ 
+   size_t bw = block_width;
++  /*@ loop invariant 0<=bw<=W;
++      loop invariant input==src0+(W-bw);
++      loop invariant output==dst0+(W-bw)*OS;
++      loop invariant \forall integer c,r; 0<=c<W-bw && 0<=r<H ==> dst0[c*OS+r]==src0[r*IS+c];
++      loop invariant \forall integer c,r; W-bw<=c<W && 0<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++      loop invariant \forall integer c,r; 0<=c<W && H<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++      loop assigns bw,input,output,dst0[0..W*OS-1];
++      loop variant bw;
++  */
+   while (bw > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(bw);
+     const uint32_t* i = input;
+     uint32_t* o = output;
+     size_t bh = block_height;
+     
++    /*@ loop invariant 0<=bh<=H;
++        loop invariant 0<vl<=bw && vl<=32;
++        loop invariant i==src0+(W-bw)+(H-bh)*IS;
++        loop invariant o==dst0+(W-bw)*OS+(H-bh);
++        loop invariant \forall integer c,r; 0<=c<W-bw && 0<=r<H ==> dst0[c*OS+r]==src0[r*IS+c];
++        loop invariant \forall integer c,r; W-bw<=c<W-bw+vl && 0<=r<H-bh ==> dst0[c*OS+r]==src0[r*IS+c];
++        loop invariant \forall integer c,r; W-bw+vl<=c<W && 0<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++        loop invariant \forall integer c,r; W-bw<=c<W-bw+vl && H-bh<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++        loop invariant \forall integer c,r; 0<=c<W && H<=r<OS ==> dst0[c*OS+r]==\at(output,Pre)[c*OS+r];
++        loop assigns bh,i,o,dst0[0..W*OS-1];
++        loop variant bh;
++    */
+     while (bh > 0) {
+       vuint32m8_t v = __riscv_vle32_v_u32m8(i, vl);
+       __riscv_vsse32_v_u32m8(o, output_stride, v, vl);
+       
+       i = (const uint32_t*) ((uintptr_t) i + input_stride);
++      /*@ assert i==src0+(W-bw)+(H-bh+1)*IS; */
+       o += 1;
+       bh -= 1;
+     }
+--- a/harness.c
++++ b/harness.c
+@@ -2,6 +2,11 @@
+ int equivalent(size_t w,size_t h,size_t is,size_t os,const uint32_t *input,uint32_t *left,uint32_t *right) {
+   test_neon(input,left,is*sizeof(uint32_t),os*sizeof(uint32_t),w,h);
+   test_rvv(input,right,is*sizeof(uint32_t),os*sizeof(uint32_t),w,h);
++  /*@ loop invariant 0<=i<=w*os;
++      loop invariant \forall integer j; 0<=j<i ==> left[j]==right[j];
++      loop assigns i;
++      loop variant w*os-i;
++  */
+   for(size_t i=0;i<w*os;i++) if(left[i]!=right[i])return 0;
+   return 1;
+ }

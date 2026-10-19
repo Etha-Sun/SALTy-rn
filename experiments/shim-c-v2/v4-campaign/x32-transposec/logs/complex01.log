@@ -1,0 +1,62 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/x32-transposec/logs/complex01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/x32-transposec/.build/complex01/annotated/unit.c', '-wp-skip-fct', '__riscv_vcreate_v_u32m4x2,__riscv_vle32_v_u32m1,__riscv_vle32_v_u32m4,__riscv_vmv_v_x_u32m1,__riscv_vse32_v_u32m1,__riscv_vsetvl_e32m4,__riscv_vsse32_v_u32m4,__riscv_vsseg2e32_v_u32m4x2,vdup_n_u32,vld1_lane_u32,vld2_lane_u32']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/x32-transposec/logs/complex01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/x32-transposec/.build/complex01/annotated/unit.c', '-wp-skip-fct', '__riscv_vcreate_v_u32m4x2,__riscv_vle32_v_u32m1,__riscv_vle32_v_u32m4,__riscv_vmv_v_x_u32m1,__riscv_vse32_v_u32m1,__riscv_vsetvl_e32m4,__riscv_vsse32_v_u32m4,__riscv_vsseg2e32_v_u32m4x2,vdup_n_u32,vld1_lane_u32,vld2_lane_u32', '-wp-model', 'Typed+raw', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/x32-transposec/logs/complex01.json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/x32-transposec/.build/complex01/annotated/unit.c", "-wp-skip-fct", "__riscv_vcreate_v_u32m4x2,__riscv_vle32_v_u32m1,__riscv_vle32_v_u32m4,__riscv_vmv_v_x_u32m1,__riscv_vse32_v_u32m1,__riscv_vsetvl_e32m4,__riscv_vsse32_v_u32m4,__riscv_vsseg2e32_v_u32m4x2,vdup_n_u32,vld1_lane_u32,vld2_lane_u32", "-wp-model", "Typed+raw", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsse32_v_u32m8
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function vld1_u32
+[rte:annot] annotating function vmov_n_u32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vzip_u32
+[wp] u32_shim.c:38: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] u32_shim.c:38: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint32*)
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] 260 goals scheduled
+[wp] [Timeout] typed_raw_fma_round_down_po2_ensures (Qed 4ms) (Z3)
+[wp] [Timeout] typed_raw_fma_riscv_vsse32_v_u32m8_loop_invariant_2_preserved (Qed 28ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_riscv_vsse32_v_u32m8_loop_invariant_3_preserved (Qed 20ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_riscv_vsse32_v_u32m8_assert_rte_mem_access (Qed 14ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_riscv_vsse32_v_u32m8_loop_assigns_part3 (Qed 19ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_equivalent_ensures_equal (Qed 18.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_preserved (Qed 17.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_2_preserved (Qed 19.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_assert_rte_mem_access (Qed 18.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_assert_rte_mem_access_2 (Qed 18.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_assert_2 (Qed 699ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_assert_3 (Qed 459ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_5_preserved (Qed 5.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_6_preserved (Qed 5.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_7_established (Qed 615ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_7_preserved (Qed 5.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_8_preserved (Qed 5.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_11_preserved (Qed 1.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_12_established (Qed 863ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_12_preserved (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_13_established (Qed 973ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_13_preserved (Qed 1.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_14_established (Qed 892ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_14_preserved (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_15_established (Qed 802ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_15_preserved (Qed 2.0s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_16_established (Qed 1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_16_preserved (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_17_preserved (Qed 1.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_21_established (Qed 14.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_21_preserved (Qed 20.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_22_established (Qed 15.0s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_22_preserved (Qed 19.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_equivalent_loop_invariant_23_preserved (Qed 19.0s) (CVC5)

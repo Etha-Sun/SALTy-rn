@@ -1,0 +1,198 @@
+{
+  "case": "experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body",
+  "command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5,alt-ergo",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/logs/test01.json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/.build/test01/annotated/unit.c"
+  ],
+  "source_guard": {
+    "passed": true,
+    "frozen_sha256": "e263a037889cfd41f0cd1a718faa5d31e303cf1dacc34872b98e33ccef555e7b",
+    "tokens": 102,
+    "plain": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/.build/test01/plain",
+    "annotated": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/.build/test01/annotated",
+    "proof": {
+      "experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/proof.patch": "0df4500073d8ec1bedcb4f6afdb262fa3b58d17ae911557fd9319d325f39dee9"
+    },
+    "generated": {
+      "spec.h": "62a4e6ae60316160e981407e1d195a3c6c0ee486635c11e44d9e119aa05e3cea",
+      "unit.c": "886dbdb1e0676549fba7b841304af2ef1cf67dffc9d2adc14d85a2302ff254c6",
+      "model_runner.py": "290fe2bec7e25377b147601928af969259726c85a00855f9e602effc9d909cd6",
+      "closure_checker.py": "b1e3ac3032a773a4f8667882472f0de7313b1ad318a3931dd464d0eaa4724917",
+      "call_closure.py": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "checker_inputs": {
+    "tools/shim_c_campaign_modular.py": "b1e3ac3032a773a4f8667882472f0de7313b1ad318a3931dd464d0eaa4724917",
+    "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+    "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+    "experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/proof.patch": "0df4500073d8ec1bedcb4f6afdb262fa3b58d17ae911557fd9319d325f39dee9",
+    "tools/shim_c_call_closure.py": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+  },
+  "exit": 0,
+  "seconds": 33.291,
+  "unchanged": true,
+  "call_closure": {
+    "roots": [
+      "equivalent"
+    ],
+    "functions": [
+      "equivalent",
+      "test_neon",
+      "test_rvv"
+    ],
+    "external_models": [],
+    "unreachable_definitions": [],
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-Xclang",
+      "-ast-dump=json",
+      "-fsyntax-only",
+      "/tmp/shim-closure-c9csihie/unit.c"
+    ],
+    "ghost_roots": [],
+    "scope": "Direct-call graph only; temporary ghost C is never used as implementation or WP input."
+  },
+  "raw_obligations": {
+    "passed": 18,
+    "total": 20
+  },
+  "pending": [
+    {
+      "goal": "typed_equivalent_ensures",
+      "property": "equivalent_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/.build/test01/annotated/spec.h",
+      "line": 5,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00386,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_test_neon_ensures",
+      "property": "test_neon_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/.build/test01/annotated/unit.c",
+      "line": 2,
+      "function": "test_neon",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00144,
+          "success": 0
+        },
+        {
+          "prover": "Alt-Ergo:2.6.2",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ],
+  "expected_functions": [
+    "equivalent",
+    "test_neon",
+    "test_rvv"
+  ],
+  "functions": [
+    "equivalent",
+    "test_neon",
+    "test_rvv"
+  ],
+  "missing_body_ensures": [],
+  "expected_global_lemmas": [],
+  "missing_global_lemmas": [],
+  "complete": false,
+  "isa_to_c_shim_proved": false,
+  "actual_command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5,alt-ergo",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/logs/test01.json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/.build/test01/annotated/unit.c",
+    "-wp-model",
+    "Typed"
+  ],
+  "model_inputs": {
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/tools/shim_c_campaign_v6.py": "290fe2bec7e25377b147601928af969259726c85a00855f9e602effc9d909cd6"
+  },
+  "model_inputs_unchanged": true,
+  "model_control": {
+    "command": [
+      "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c",
+      "-machdep",
+      "gcc_x86_64",
+      "-wp",
+      "-wp-rte",
+      "-wp-par",
+      "2",
+      "-wp-prover",
+      "z3,cvc5,alt-ergo",
+      "-wp-timeout",
+      "10",
+      "-wp-memlimit",
+      "1024",
+      "-wp-cache",
+      "none",
+      "-wp-report-json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/logs/test01-model-control.json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/checker-tests-v6-ready/wrong_kernel_body/logs/test01-model-control.c",
+      "-wp-model",
+      "Typed",
+      "-wp-fct",
+      "shim_control_false,shim_control_true"
+    ],
+    "exit": 0,
+    "impossible_goal_proved": false,
+    "positive_control_proved": true,
+    "reports_present": true,
+    "scope": "Rejection test only; non-rejection is not a consistency theorem.",
+    "accepted": true
+  },
+  "lemma_run": null
+}

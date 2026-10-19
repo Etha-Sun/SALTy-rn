@@ -1,0 +1,102 @@
+{
+  "name": "f32-vsub",
+  "files": {
+    "shim.h": {
+      "path": "verified/shared-extension/float/shim.h",
+      "sha256": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de"
+    },
+    "base.h": {
+      "path": "verified/shared-extension/float/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "verified/shared-extension/float/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "clamp.h": {
+      "path": "verified/shared-extension/float/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "float_ops.h": {
+      "path": "verified/shared-extension/float/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "extensions.h": {
+      "path": "verified/shared-extension/float/extensions.h",
+      "sha256": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+    },
+    "extensions.driver": {
+      "path": "verified/shared-extension/float/sub.driver",
+      "sha256": "d1591895fa331eaaf173857e8d9caa8b9d204c2367f6144f8631c90eb1e21cfa"
+    },
+    "base.c": {
+      "path": "verified/shared-extension/float/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "float_ops.c": {
+      "path": "verified/shared-extension/float/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "sub.c": {
+      "path": "verified/shared-extension/float/sub.c",
+      "sha256": "d5faae2660abad1f38d21805b22f41124cfe81721c80465e587a6543c791cc5c"
+    },
+    "neon.c": {
+      "path": "verified/f32-vsub/neon.c",
+      "sha256": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d"
+    },
+    "rvv.c": {
+      "path": "verified/f32-vsub/rvv.c",
+      "sha256": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c"
+    },
+    "spec.h": {
+      "path": "verified/f32-vsub/spec.h",
+      "sha256": "70247ea34a325bee87bf0b239affe5b519a091594be0682fdf96a1b7972989a3"
+    },
+    "harness.c": {
+      "path": "verified/f32-vsub/harness.c",
+      "sha256": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c"
+    },
+    "interface.json": {
+      "path": "verified/f32-vsub/interface.json",
+      "sha256": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531"
+    },
+    "unit.c": {
+      "path": "verified/f32-vsub/unit.c",
+      "sha256": "8f1085aa7d60b2ff54cbf1e372eb34ee08655ae65d1baa0f47a14db99d7d3138"
+    },
+    "generate.py": {
+      "path": "verified/shared-extension/float/generate.py",
+      "sha256": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a"
+    },
+    "modules.json": {
+      "path": "verified/f32-vsub/modules.json",
+      "sha256": "d59e9070591a1d92cbda721059c61c49f9c50e8079c79232d148df1a19ad12ff"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v2.py",
+      "sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/frontend-campaign/f32-vsub/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "extensions.driver",
+  "observation": "number-or-both-nan; signed-zero numeric equality; no FP flags",
+  "original_target": null,
+  "VLEN_bits": 128,
+  "model_revision": "Bind already existing WP Cfloat.sub_f32; implementation and public spec unchanged",
+  "upstream_proof_evidence": "experiments/shared-extension/float/f32-vsub/logs/run03-summary.json",
+  "upstream_freeze_sha256": "4dbc3e81b0d44dddc78e243b03351400476e197dbe02ad7456919089b0d93a90",
+  "previous_version": "experiments/shim-c-v2/float-proof-candidates/f32-vsub-prefix-tail",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200
+}

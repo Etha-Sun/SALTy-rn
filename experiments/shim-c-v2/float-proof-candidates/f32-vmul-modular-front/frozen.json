@@ -1,0 +1,110 @@
+{
+  "name": "f32-vmul",
+  "files": {
+    "shim.h": {
+      "path": "verified/shared-extension/float/shim.h",
+      "sha256": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de"
+    },
+    "base.h": {
+      "path": "verified/shared-extension/float/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "verified/shared-extension/float/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "clamp.h": {
+      "path": "verified/shared-extension/float/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "float_ops.h": {
+      "path": "verified/shared-extension/float/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "extensions.h": {
+      "path": "verified/shared-extension/float/extensions.h",
+      "sha256": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+    },
+    "extensions.driver": {
+      "path": "verified/shared-extension/float/extensions.driver",
+      "sha256": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6"
+    },
+    "base.c": {
+      "path": "verified/shared-extension/float/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "float_ops.c": {
+      "path": "verified/shared-extension/float/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "mul.c": {
+      "path": "verified/shared-extension/float/mul.c",
+      "sha256": "c63398341dbcb8191ad0537971f48f51c6c541fbfad383f7efe7e625a2cc43c1"
+    },
+    "neon.c": {
+      "path": "verified/f32-vmul/neon.c",
+      "sha256": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c"
+    },
+    "rvv.c": {
+      "path": "verified/f32-vmul/rvv.c",
+      "sha256": "6f2acd553de265d3b8304d47009bb725dde8118539acf948cbdf0f7de79f235c"
+    },
+    "spec.h": {
+      "path": "verified/f32-vmul/spec.h",
+      "sha256": "3c7f0c587ad5414af9933ba3ddb96fe2d1c69d34d64d7d22892b3a57caae962b"
+    },
+    "harness.c": {
+      "path": "verified/f32-vmul/harness.c",
+      "sha256": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c"
+    },
+    "interface.json": {
+      "path": "verified/f32-vmul/interface.json",
+      "sha256": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531"
+    },
+    "unit.c": {
+      "path": "verified/f32-vmul/unit.c",
+      "sha256": "50f8ce85025581d0f99a643cd783feec6197641bc4479bb4b7acc9c67ea495ac"
+    },
+    "generate.py": {
+      "path": "verified/shared-extension/float/generate.py",
+      "sha256": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a"
+    },
+    "modules.json": {
+      "path": "verified/f32-vmul/modules.json",
+      "sha256": "31367658d5e4ea8238a32ca1980eb843795c6a05b8dc00f2b67f35f17a7dcbf0"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v6.py",
+      "sha256": "290fe2bec7e25377b147601928af969259726c85a00855f9e602effc9d909cd6"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_modular.py",
+      "sha256": "b1e3ac3032a773a4f8667882472f0de7313b1ad318a3931dd464d0eaa4724917"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/float-proof-candidates/f32-vmul-modular-front/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "extensions.driver",
+  "observation": "number-or-both-nan; signed-zero numeric equality; no FP flags",
+  "original_target": null,
+  "VLEN_bits": 128,
+  "upstream_proof_evidence": "experiments/shared-extension/float/f32-vmul/logs/run02-summary.json",
+  "upstream_freeze_sha256": "7887840d731a65d878cde8bb7d263976b7fce09c3dd551cf57b1801a6a9106d0",
+  "previous_version": "experiments/shim-c-v2/float-proof-candidates/f32-vmul-prefix-predicate-front",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "proof_method": "Modular WP, extra checked kernel ensures only; frozen public spec and C unchanged"
+}

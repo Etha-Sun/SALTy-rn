@@ -1,0 +1,477 @@
+{
+  "kernel": "f32-maxpool",
+  "attempts": [
+    {
+      "case": "experiments/shim-c-v2/v4-campaign/f32-maxpool",
+      "run": "complex01",
+      "summary": "experiments/shim-c-v2/v4-campaign/f32-maxpool/logs/complex01-summary.json",
+      "log": "experiments/shim-c-v2/v4-campaign/f32-maxpool/logs/complex01.log",
+      "raw_report": "experiments/shim-c-v2/v4-campaign/f32-maxpool/logs/complex01.json",
+      "status": "total_budget_exceeded",
+      "exit": 124,
+      "seconds": 1237.86,
+      "total_budget_seconds": 1200,
+      "total_budget_exceeded": true,
+      "implementation_and_spec_unchanged": true,
+      "source_guard_passed": true,
+      "model_inputs_unchanged": true,
+      "model_control_accepted": true,
+      "actual_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/frama-c.py",
+        "-machdep",
+        "gcc_x86_64",
+        "-inline-calls",
+        "test_neon,test_rvv",
+        "-inline-stmt-contracts",
+        "-remove-inlined",
+        "test_neon,test_rvv",
+        "-wp",
+        "-wp-rte",
+        "-wp-par",
+        "2",
+        "-wp-prover",
+        "z3,cvc5",
+        "-wp-timeout",
+        "30",
+        "-wp-memlimit",
+        "1024",
+        "-wp-cache",
+        "none",
+        "-wp-report-json",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/f32-maxpool/logs/complex01.json",
+        "-wp-model",
+        "Typed+raw+float",
+        "-warn-special-float",
+        "none",
+        "-wp-driver",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/f32-maxpool/.build/complex01/annotated/complex_fp.driver",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/f32-maxpool/.build/complex01/annotated/unit.c",
+        "-wp-skip-fct",
+        "__riscv_vfmin_vv_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,vcombine_f32,vdupq_lane_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1q_dup_f32,vld1q_lane_f32,vld2_dup_f32,vld2q_dup_f32,vmax_f32,vmin_f32,vmovq_n_f32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32",
+        "-wp-share",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share",
+        "-wp-why3-config",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf",
+        "-wp-no-why3-detect"
+      ],
+      "raw_records": {
+        "passed": 5,
+        "total": 5
+      },
+      "unique_obligations": {
+        "passed": 5,
+        "total": 5
+      },
+      "body_report_complete": false,
+      "per_function_obligations": {},
+      "body_obligations": null,
+      "global_lemma_records": {
+        "passed": 5,
+        "total": 5
+      },
+      "scheduled_in_main_log": [
+        1037
+      ],
+      "pending_categories": {},
+      "pending_exact": [],
+      "unfinished_log_diagnostics": [
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_canonical_nan_ensures"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_valid_dest"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_valid_src"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_separation"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_canonical_nan_assigns_normal"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part2"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part3"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part4"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part5"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part6"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part7"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part8"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part9"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_ensures_equal"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_loop_invariant_established"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_loop_invariant_preserved"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_loop_invariant_2_preserved"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_9"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_10"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_11"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_12"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_13"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_14"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_15"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_16"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_17"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_18"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_19"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_20"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_21"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_22"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_23"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_24"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_25"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_26"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow_2"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_27"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_28"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_29"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_30"
+        }
+      ],
+      "missing_body_ensures": [
+        "__riscv_vfmax_vf_f32m8",
+        "__riscv_vfmax_vv_f32m8",
+        "__riscv_vfmerge_vfm_f32m8",
+        "__riscv_vfmin_vf_f32m8",
+        "__riscv_vfmv_v_f_f32m8",
+        "__riscv_vle32_v_f32m8",
+        "__riscv_vmfne_vv_f32m8_b4",
+        "__riscv_vse32_v_f32m8",
+        "__riscv_vsetvl_e32m8",
+        "canonical_nan",
+        "equivalent",
+        "fp_nan",
+        "max_number",
+        "min_number",
+        "neon_max",
+        "neon_min",
+        "salty_max_vf_m8",
+        "salty_max_vv_m8",
+        "salty_min_vf_m8",
+        "vdupq_n_f32",
+        "vget_high_f32",
+        "vget_low_f32",
+        "vld1q_f32",
+        "vmaxq_f32",
+        "vminq_f32",
+        "vst1_f32",
+        "vst1_lane_f32",
+        "vst1q_f32"
+      ],
+      "missing_global_lemmas": [],
+      "call_closure": {
+        "roots": [
+          "equivalent"
+        ],
+        "functions": [
+          "__riscv_vfmax_vf_f32m8",
+          "__riscv_vfmax_vv_f32m8",
+          "__riscv_vfmerge_vfm_f32m8",
+          "__riscv_vfmin_vf_f32m8",
+          "__riscv_vfmv_v_f_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vmfne_vv_f32m8_b4",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8",
+          "canonical_nan",
+          "equivalent",
+          "fp_nan",
+          "max_number",
+          "min_number",
+          "neon_max",
+          "neon_min",
+          "salty_max_vf_m8",
+          "salty_max_vv_m8",
+          "salty_min_vf_m8",
+          "test_neon",
+          "test_rvv",
+          "vdupq_n_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "external_models": [
+          "__assert_fail",
+          "__builtin_nanf",
+          "__builtin_signbit",
+          "memcpy"
+        ],
+        "unreachable_definitions": [
+          "__riscv_vfmin_vv_f32m8",
+          "__riscv_vfslide1down_vf_f32m8",
+          "__riscv_vfslide1up_vf_f32m8",
+          "__riscv_vmerge_vvm_f32m8",
+          "__riscv_vmfgt_vv_f32m8_b4",
+          "__riscv_vsetvl_e32m1",
+          "__riscv_vsetvl_e32m2",
+          "__riscv_vsetvl_e32m4",
+          "__riscv_vsetvlmax_e32m1",
+          "__riscv_vsetvlmax_e32m2",
+          "__riscv_vsetvlmax_e32m4",
+          "__riscv_vsetvlmax_e32m8",
+          "vcombine_f32",
+          "vdupq_lane_f32",
+          "vextq_f32",
+          "vget_high_s16",
+          "vget_lane_f32",
+          "vget_low_s16",
+          "vld1_dup_f32",
+          "vld1_f32",
+          "vld1q_dup_f32",
+          "vld1q_lane_f32",
+          "vld2_dup_f32",
+          "vld2q_dup_f32",
+          "vmax_f32",
+          "vmin_f32",
+          "vmovq_n_f32",
+          "vst1q_lane_f32",
+          "vzip1q_f32",
+          "vzip2q_f32"
+        ],
+        "command": [
+          "clang-14",
+          "-std=c11",
+          "-Xclang",
+          "-ast-dump=json",
+          "-fsyntax-only",
+          "/tmp/shim-closure-2vxqvu59/unit.c"
+        ],
+        "ghost_roots": [],
+        "scope": "Direct-call graph only; temporary ghost C is never used as implementation or WP input."
+      },
+      "notes": "Raw may contain duplicate lemma checks. A merged lemma-only JSON after main timeout is not a body report. Solver non-proof is not a C counterexample."
+    }
+  ],
+  "full_equivalence_established": false,
+  "c_counterexample_found_this_round": false,
+  "source_model_gap_audit": {
+    "functions": [
+      "__riscv_vfmax_vf_f32m8",
+      "__riscv_vfmax_vv_f32m8",
+      "__riscv_vfmerge_vfm_f32m8",
+      "__riscv_vfmin_vf_f32m8",
+      "__riscv_vfmv_v_f_f32m8",
+      "__riscv_vle32_v_f32m8",
+      "__riscv_vmfne_vv_f32m8_b4",
+      "__riscv_vse32_v_f32m8",
+      "__riscv_vsetvl_e32m8",
+      "canonical_nan",
+      "equivalent",
+      "fp_nan",
+      "max_number",
+      "min_number",
+      "neon_max",
+      "neon_min",
+      "salty_max_vf_m8",
+      "salty_max_vv_m8",
+      "salty_min_vf_m8",
+      "test_neon",
+      "test_rvv",
+      "vdupq_n_f32",
+      "vget_high_f32",
+      "vget_low_f32",
+      "vld1q_f32",
+      "vmaxq_f32",
+      "vminq_f32",
+      "vst1_f32",
+      "vst1_lane_f32",
+      "vst1q_f32"
+    ],
+    "external_models": [
+      "__assert_fail",
+      "__builtin_nanf",
+      "__builtin_signbit",
+      "memcpy"
+    ],
+    "canonical_nan_reachable": true,
+    "functions_count": 30,
+    "pointer_integer_casts": {
+      "neon.c": {
+        "file": "experiments/shared-extension/complex/cases/f32-maxpool/neon.c",
+        "lines": [
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          197,
+          199
+        ],
+        "count": 20
+      },
+      "rvv.c": {
+        "file": "experiments/shared-extension/complex/cases/f32-maxpool/rvv.c",
+        "lines": [
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          128,
+          130
+        ],
+        "count": 20
+      }
+    },
+    "ordinary_closure_only": true,
+    "notes": "Direct actual C calls from equivalent. Full admission also checks ghost roots and all global lemma via runner v4."
+  },
+  "proof_work": {
+    "main_kernel": "shared actual callee/helper contracts and body proofs; final comparison invariants",
+    "remaining": "main kernel nested-loop/reduction relation is not yet complete, in addition to model gaps"
+  },
+  "scope": "Original frozen public preconditions and wrapper layout; no strengthened input domain. Ordinary source audit does not replace full ghost/global-lemma closure check.",
+  "specific_root_cause_zh": "canonical_nan\u4f4d\u6784\u9020\u4e0eTyped memcpy\u6709\u6548\u6027\u672a\u8bc1\u660e\uff1b40\u884cuintptr\u6362\u7b97\uff1b9\u8f93\u5165\u5206\u7ec4\u3001\u591apass\u628a\u65b0\u8f93\u5165\u5f52\u5e76\u5230output\u3001\u6700\u7ec8clamp\u548cprefix\u5173\u7cfb\u5c1a\u672a\u5b8c\u6574\u8bc1\u660e\u3002",
+  "counterexample_interpretation": "\u672c\u8f6e\u6ca1\u6709\u65b0\u589e\u5177\u4f53C\u8f93\u5165\u53cd\u4f8b\uff1bsolver\u672a\u8bc1\u660e/\u6a21\u578b\u4fe1\u606f\u4e22\u5931\u4e0d\u7b49\u4e8ekernel\u9519\u8bef\uff0c\u4e5f\u4e0d\u7b49\u4e8ekernel\u5df2\u6b63\u786e\u3002"
+}

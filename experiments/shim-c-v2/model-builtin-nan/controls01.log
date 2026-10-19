@@ -1,0 +1,23 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "experiments/shim-c-v2/model-builtin-nan/controls.c", "-machdep", "gcc_x86_64", "-warn-special-float", "none", "-cpp-extra-args=-include /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-builtin-nan/compiler-builtin.h", "-wp", "-wp-rte", "-wp-model", "Typed+float", "-wp-share", "experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-par", "2", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "experiments/shim-c-v2/model-builtin-nan/controls01.json", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/shim-c-v2/model-builtin-nan/controls.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function builtin_false_control
+[rte:annot] annotating function builtin_nan_positive
+[kernel:annot:missing-spec] experiments/shim-c-v2/model-builtin-nan/compiler-builtin.h:10: Warning: 
+  Neither code nor explicit exits and terminates for function __builtin_nanf,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function builtin_nan_wrong
+[rte:annot] annotating function builtin_true_control
+[wp] 18 goals scheduled
+[wp] [Timeout] typed_fma_builtin_nan_wrong_ensures (Qed 2ms) (CVC5)
+[wp] [Timeout] typed_fma_builtin_false_control_ensures (Z3)
+[wp] Proved goals:   20 / 22
+  Terminating:     2
+  Unreachable:     2
+  Qed:            14 (2ms-0.36ms-3ms)
+  CVC5 1.2.1:      1 (45ms)
+  Z3 4.12.5:       1 (50ms)
+  Timeout:         2

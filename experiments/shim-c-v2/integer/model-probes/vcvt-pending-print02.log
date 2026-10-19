@@ -1,0 +1,4130 @@
+[kernel] Parsing experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vreinterpret_u16_s8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+
+Goal Post-condition ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/integer-qs8-vcvt.c", line 181) in 'vreinterpret_u16_s8':
+Let a = global(L_r_6222).
+Let a_1 = shift_sint8(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 8).
+Let a_3 = global(P_a_6216).
+Let m = alloc_0[P_a_6216 <- 8][L_r_6222 <- 8].
+Let a_4 = shiftfield_F1_lane(a_3).
+Let x = 2 * i.
+Assume {
+  Type: bytes(mem_0) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 3).
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(mem_0, a_2, a, a_3, 8) = 0) /\ P_valid_or_empty(m, a, 8) /\
+      P_valid_read_or_empty(m, a_3, 8).
+}
+Prove: (to_uint8(read_sint8(mem_0, shift_sint8(a_4, x)))
+        + (256 * to_uint8(read_sint8(mem_0, shift_sint8(a_4, 1 + x)))))
+         = read_uint16(a_2, shift_uint16(shiftfield_F7_lane(a), i)).
+
+------------------------------------------------------------
+
+Goal Post-condition 'equal' in 'equivalent':
+Let a = shift_sint8(output_base_0, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, total_0).
+Let a_2 = shift_sint8(output_base_1, i).
+Let x = read_sint8(a_1, a_2).
+Let a_3 = shift_sint8(output_base_0, i).
+Let x_1 = read_sint8(a_1, a_3).
+Let a_4 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_5 = shiftfield_F28_input_zero_point(a_4).
+Let x_2 = read_sint16(a_1, a_5).
+Let a_6 = shiftfield_F28_multiplier(a_4).
+Let x_3 = read_sint32(a_1, a_6).
+Let a_7 = shiftfield_F28_output_zero_point(a_4).
+Let x_4 = read_sint16(a_1, a_7).
+Let x_5 = read_sint32(mem_0, a_6).
+Let a_8 = shift_sint8(input_base_1, 0).
+Let x_6 = read_sint16(mem_0, a_5).
+Let x_7 = read_sint16(mem_0, a_7).
+Let a_9 = shift_sint8(output_base_1, 0).
+Let a_10 = memcpy(mem_6, a_9, mem_undef_1, a_9, total_0).
+Let x_8 = read_sint32(a_10, a_6).
+Let x_9 = read_sint16(mem_6, a_7).
+Let x_10 = read_sint32(mem_6, a_6).
+Let x_11 = read_sint16(mem_6, a_5).
+Let x_12 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(i) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint8(read_sint8(mem_0, output_0)) /\
+      is_sint16(x_6) /\ is_sint16(x_7) /\ is_sint16(x_11) /\
+      is_sint16(x_9) /\ is_sint32(x_5) /\ is_sint32(x_10) /\ bytes(a_1) /\
+      bytes(a_10) /\ is_sint8(x_1) /\ is_sint8(x) /\ is_sint32(x_3) /\
+      is_sint32(x_8).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Residual *)
+  When: i < total_0.
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_8, x_12).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_9, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, a, total_0).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, a_8, x_12).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a, total_0, a_8, x_12).
+  (* Pre-condition *)
+  Have: separated(a, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_10 != (-2147483648).
+  (* Initializer *)
+  Init: a_8 = shift_sint8(input_base_0, 0).
+  (* Call '__FC_assert' *)
+  Have: a_9 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_11))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_6, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_10.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_10)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_7, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_9))).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: x_8 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_10, shift_sint8(input_base_1, i_1)),
+         read_sint16(a_10, a_5), x_8, read_sint16(a_10, a_7))
+         = read_sint8(a_10, shift_sint8(output_base_1, i_1))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_13 = batch_1 % 2.
+    Let x_14 = -x_13.
+    Let x_15 = read_sint16(mem_1, a_5).
+    Let x_16 = read_sint32(mem_1, a_6).
+    Let x_17 = read_sint16(mem_1, a_7).
+    Let x_18 = -batch_1.
+    Let x_19 = read_sint16(mem_3, a_5).
+    Let x_20 = read_sint32(mem_3, a_6).
+    Let x_21 = read_sint16(mem_3, a_7).
+    Let a_11 = vqmovn_s16_0.F1_lane.
+    Let a_12 = vacc_0.F6_lane.
+    Let a_13 = vacc_1.F6_lane.
+    Let a_14 = vacc_2.F6_lane.
+    Let a_15 = vacc_3.F6_lane.
+    Let a_16 = tmp_5_0.F1_lane.
+    Have: a_10 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_1, total_0 - batch_1), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_16[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_1, total_0 + i_1 - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_15[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_16[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_14[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_15[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_13[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_14[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_sat16(a_13[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] = to_sint8(L_L_sat8(a_12[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_1, total_0 + i_1 - batch_1)),
+           read_sint16(mem_4, a_5), read_sint32(mem_4, a_6),
+           read_sint16(mem_4, a_7))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_17 = shift_sint8(output_base_1, total_0 - batch_1).
+      Let a_18 = shift_uint8(a_17, 0).
+      Let a_19 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_22 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_19[i_1] =
+           (to_uint8(a_11[x_22]) + (256 * to_uint8(a_11[1 + x_22]))
+            + (65536 * to_uint8(a_11[2 + x_22]))
+            + (16777216 * to_uint8(a_11[3 + x_22])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_18, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_17, i_1))
+              = to_uint8(lsr(a_19[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_18, mem_undef_2, a_18, 4) = mem_3.
+      Have: (ta_input_0=true) /\ (ta_left_0=true) /\ (ta_n_0=true) /\
+          (ta_params_0=true) /\ (ta_right_0=true).
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_11[4 + i_1] else a_11[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (ta_input_0=true) /\ (ta_left_0=true) /\ (ta_n_0=true) /\
+          (ta_params_0=true) /\ (ta_right_0=true) /\ (mem_4 = mem_3) /\
+          (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_1 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_1, i_1)), x_19,
+           x_20, x_21) = read_sint8(mem_3, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_1, tail_done_2 + total_0 + i_1
+                      - batch_1)), x_19, x_20, x_21)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_20 = vy_1.F1_lane.
+      Let a_21 = shift_sint8(output_base_1, total_0 - 2 - x_13).
+      Let a_22 = shift_uint8(a_21, 0).
+      Let a_23 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_13) = batch_1) /\
+          ((2 + tail_done_2 + x_13) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_22 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_23[i_1] =
+           (to_uint8(a_20[x_22]) + (256 * to_uint8(a_20[1 + x_22])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_22, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_21, i_1))
+              = to_uint8(lsr(a_23[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_22, mem_undef_3, a_22, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_20[2 + i_1] else a_20[i_1 - 6])))).
+      Have: (x_13 + to_uint64(batch_1 - x_13)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_13) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_1, total_0 - x_13) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_13) = batch_1.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_13) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_1, i_1)), x_15,
+           x_16, x_17) = read_sint8(mem_1, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) <= (7 + x_13)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_1, total_0 + i_1 - x_13)), x_15,
+           x_16, x_17)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: (ta_input_0=true) /\ (ta_left_0=true) /\ (ta_n_0=true) /\
+          (ta_params_0=true) /\ (ta_right_0=true) /\ (mem_1 = mem_8).
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else {
+      Have: (ta_input_0=true) /\ (ta_left_0=true) /\ (ta_n_0=true) /\
+          (ta_params_0=true) /\ (ta_right_0=true) /\ (mem_1 = mem_0).
+    }
+  }
+  Else { Have: a_10 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_1, i_1)), x_6, x_5,
+         x_7) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_6, x_5,
+         x_7) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Call '__FC_assert' *)
+  Have: a_8 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_5.
+  (* Invariant *)
+  Have: x_5 != (-2147483648).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x_2, x_3,
+         x_4) = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 0.
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x_2, x_3,
+         x_4) = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (read_sint8(a_1, shift_sint8(output_base_1, i_1))
+         = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+  (* Invariant *)
+  Have: 0 <= i.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 1).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 1).
+  (* Then *)
+  Have: x != x_1.
+}
+Prove: false.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/harness.c", line 4):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x = read_sint16(mem_0, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_1 = read_sint32(mem_0, a_2).
+Let a_3 = shiftfield_F28_output_zero_point(a).
+Let x_2 = read_sint16(mem_0, a_3).
+Let a_4 = shift_sint8(output_base_0, 0).
+Let a_5 = memcpy(mem_6, a_4, mem_undef_0, a_4, total_0).
+Let x_3 = read_sint32(a_5, a_2).
+Let x_4 = read_sint16(mem_6, a_3).
+Let x_5 = read_sint32(mem_6, a_2).
+Let x_6 = read_sint16(mem_6, a_1).
+Let a_6 = shift_sint8(input_base_0, 0).
+Let a_7 = shift_sint8(right_0, 0).
+Let x_7 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(tail_done_0) /\ is_uint64(tail_done_1) /\
+      is_uint64(tail_done_2) /\ is_uint64(total_0) /\
+      is_sint8(read_sint8(mem_0, output_0)) /\ is_sint16(x_6) /\
+      is_sint16(x_4) /\ is_sint32(x_5) /\ bytes(a_5) /\ is_sint32(x_3).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_6) /\ linked(alloc_0) /\
+      sconst(mem_6).
+  (* Goal *)
+  When: (0 <= i) /\ (i < total_0).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_6, x_7).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_4, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_4, total_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: separated(a_4, total_0, a_6, x_7).
+  (* Pre-condition *)
+  Have: separated(a_4, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a_6, x_7).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_5 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a_4 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_6))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_5.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_5)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_4))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_5, shift_sint8(input_base_0, i_1)),
+         read_sint16(a_5, a_1), x_3, read_sint16(a_5, a_3))
+         = read_sint8(a_5, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> ((batch_0 % 2) = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  If batch_0 != 0
+  Then {
+    Let x_8 = batch_0 % 2.
+    Let x_9 = -x_8.
+    Let x_10 = read_sint16(mem_1, a_1).
+    Let x_11 = read_sint32(mem_1, a_2).
+    Let x_12 = read_sint16(mem_1, a_3).
+    Let x_13 = -batch_0.
+    Let x_14 = read_sint16(mem_3, a_1).
+    Let x_15 = read_sint32(mem_3, a_2).
+    Let x_16 = read_sint16(mem_3, a_3).
+    Let a_8 = vqmovn_s16_0.F1_lane.
+    Let a_9 = vacc_0.F6_lane.
+    Let a_10 = vacc_1.F6_lane.
+    Let a_11 = vacc_2.F6_lane.
+    Let a_12 = vacc_3.F6_lane.
+    Let a_13 = tmp_5_0.F1_lane.
+    Have: a_5 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_0.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_13[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_13[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_10[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_11[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_9[i_1] =
+         to_sint16(L_L_sat16(a_10[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_8[i_1] = to_sint8(L_L_sat8(a_9[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_8[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_0, total_0 + i_1 - batch_0)),
+           read_sint16(mem_4, a_1), read_sint32(mem_4, a_2),
+           read_sint16(mem_4, a_3))))).
+    If bit_test(batch_0, 2)
+    Then {
+      Let a_14 = shift_sint8(output_base_0, total_0 - batch_0).
+      Let a_15 = shift_uint8(a_14, 0).
+      Let a_16 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_17 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_16[i_1] =
+           (to_uint8(a_8[x_17]) + (256 * to_uint8(a_8[1 + x_17]))
+            + (65536 * to_uint8(a_8[2 + x_17]))
+            + (16777216 * to_uint8(a_8[3 + x_17])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_15, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_14, i_1))
+              = to_uint8(lsr(a_16[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_15, mem_undef_1, a_15, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_8[4 + i_1] else a_8[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_0 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_0, i_1)), x_14,
+           x_15, x_16) = read_sint8(mem_3, shift_sint8(output_base_0, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_0, tail_done_2 + total_0 + i_1
+                      - batch_0)), x_14, x_15, x_16)))).
+    If bit_test(batch_0, 1)
+    Then {
+      Let a_17 = vy_1.F1_lane.
+      Let a_18 = shift_sint8(output_base_0, total_0 - 2 - x_8).
+      Let a_19 = shift_uint8(a_18, 0).
+      Let a_20 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_8) = batch_0) /\
+          ((2 + tail_done_2 + x_8) = batch_0).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_17 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_20[i_1] =
+           (to_uint8(a_17[x_17]) + (256 * to_uint8(a_17[1 + x_17])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_19, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_18, i_1))
+              = to_uint8(lsr(a_20[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_19, mem_undef_2, a_19, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_17[2 + i_1] else a_17[i_1 - 6])))).
+      Have: (x_8 + to_uint64(batch_0 - x_8)) = batch_0.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_8) = batch_0).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_0, total_0 - x_8) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_8) = batch_0.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_8) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_0, i_1)), x_10,
+           x_11, x_12) = read_sint8(mem_1, shift_sint8(output_base_0, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) <= (7 + x_8)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_0, total_0 + i_1 - x_8)), x_10,
+           x_11, x_12)))).
+    If bit_test(batch_0, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_5 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x, x_1,
+         x_2) = read_sint8(mem_0, shift_sint8(output_base_0, i_1))))).
+}
+Prove: L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i)), x, x_1, x_2)
+         = read_sint8(mem_0, shift_sint8(output_base_0, i)).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/harness.c", line 6):
+Let a = shift_sint8(output_base_0, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, total_0).
+Let a_2 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F28_input_zero_point(a_2).
+Let x = read_sint16(a_1, a_3).
+Let a_4 = shiftfield_F28_multiplier(a_2).
+Let x_1 = read_sint32(a_1, a_4).
+Let a_5 = shiftfield_F28_output_zero_point(a_2).
+Let x_2 = read_sint16(a_1, a_5).
+Let x_3 = read_sint32(mem_0, a_4).
+Let a_6 = shift_sint8(input_base_1, 0).
+Let x_4 = read_sint16(mem_0, a_3).
+Let x_5 = read_sint16(mem_0, a_5).
+Let a_7 = shift_sint8(output_base_1, 0).
+Let a_8 = memcpy(mem_6, a_7, mem_undef_1, a_7, total_0).
+Let x_6 = read_sint32(a_8, a_4).
+Let x_7 = read_sint16(mem_6, a_5).
+Let x_8 = read_sint32(mem_6, a_4).
+Let x_9 = read_sint16(mem_6, a_3).
+Let x_10 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint8(read_sint8(mem_0, output_0)) /\
+      is_sint16(x_4) /\ is_sint16(x_5) /\ is_sint16(x_9) /\ is_sint16(x_7) /\
+      is_sint32(x_3) /\ is_sint32(x_8) /\ bytes(a_1) /\ bytes(a_8) /\
+      is_sint32(x_1) /\ is_sint32(x_6).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Goal *)
+  When: (0 <= i) /\ (i < total_0).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a, total_0).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a, total_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: separated(a, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_8 != (-2147483648).
+  (* Initializer *)
+  Init: a_6 = shift_sint8(input_base_0, 0).
+  (* Call '__FC_assert' *)
+  Have: a_7 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_9))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_4, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_8.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_8)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_7))).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: x_6 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_8, shift_sint8(input_base_1, i_1)),
+         read_sint16(a_8, a_3), x_6, read_sint16(a_8, a_5))
+         = read_sint8(a_8, shift_sint8(output_base_1, i_1))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_11 = batch_1 % 2.
+    Let x_12 = -x_11.
+    Let x_13 = read_sint16(mem_1, a_3).
+    Let x_14 = read_sint32(mem_1, a_4).
+    Let x_15 = read_sint16(mem_1, a_5).
+    Let x_16 = -batch_1.
+    Let x_17 = read_sint16(mem_3, a_3).
+    Let x_18 = read_sint32(mem_3, a_4).
+    Let x_19 = read_sint16(mem_3, a_5).
+    Let a_9 = vqmovn_s16_0.F1_lane.
+    Let a_10 = vacc_0.F6_lane.
+    Let a_11 = vacc_1.F6_lane.
+    Let a_12 = vacc_2.F6_lane.
+    Let a_13 = vacc_3.F6_lane.
+    Let a_14 = tmp_5_0.F1_lane.
+    Have: a_8 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_1, total_0 - batch_1), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_14[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_1, total_0 + i_1 - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_13[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_14[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_13[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_12[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_10[i_1] =
+         to_sint16(L_L_sat16(a_11[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_9[i_1] = to_sint8(L_L_sat8(a_10[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_9[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_1, total_0 + i_1 - batch_1)),
+           read_sint16(mem_4, a_3), read_sint32(mem_4, a_4),
+           read_sint16(mem_4, a_5))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_15 = shift_sint8(output_base_1, total_0 - batch_1).
+      Let a_16 = shift_uint8(a_15, 0).
+      Let a_17 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_20 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_17[i_1] =
+           (to_uint8(a_9[x_20]) + (256 * to_uint8(a_9[1 + x_20]))
+            + (65536 * to_uint8(a_9[2 + x_20]))
+            + (16777216 * to_uint8(a_9[3 + x_20])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_16, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_15, i_1))
+              = to_uint8(lsr(a_17[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_16, mem_undef_2, a_16, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_9[4 + i_1] else a_9[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_1 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_1, i_1)), x_17,
+           x_18, x_19) = read_sint8(mem_3, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_1, tail_done_2 + total_0 + i_1
+                      - batch_1)), x_17, x_18, x_19)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_18 = vy_1.F1_lane.
+      Let a_19 = shift_sint8(output_base_1, total_0 - 2 - x_11).
+      Let a_20 = shift_uint8(a_19, 0).
+      Let a_21 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_11) = batch_1) /\
+          ((2 + tail_done_2 + x_11) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_20 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_21[i_1] =
+           (to_uint8(a_18[x_20]) + (256 * to_uint8(a_18[1 + x_20])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_20, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_19, i_1))
+              = to_uint8(lsr(a_21[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_20, mem_undef_3, a_20, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_18[2 + i_1] else a_18[i_1 - 6])))).
+      Have: (x_11 + to_uint64(batch_1 - x_11)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_11) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_1, total_0 - x_11) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_11) = batch_1.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_11) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_1, i_1)), x_13,
+           x_14, x_15) = read_sint8(mem_1, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) <= (7 + x_11)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_1, total_0 + i_1 - x_11)), x_13,
+           x_14, x_15)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_8 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_1, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_3.
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_1 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 0.
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+}
+Prove: read_sint8(a_1, shift_sint8(output_base_1, i))
+         = read_sint8(a_1, shift_sint8(output_base_0, i)).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/harness.c", line 8):
+Let a = shift_sint8(output_base_1, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, total_0).
+Let a_2 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F28_input_zero_point(a_2).
+Let x = read_sint16(a_1, a_3).
+Let a_4 = shiftfield_F28_multiplier(a_2).
+Let x_1 = read_sint32(a_1, a_4).
+Let a_5 = shiftfield_F28_output_zero_point(a_2).
+Let x_2 = read_sint16(a_1, a_5).
+Let x_3 = read_sint32(mem_0, a_4).
+Let a_6 = shift_sint8(input_base_1, 0).
+Let x_4 = read_sint16(mem_0, a_3).
+Let x_5 = read_sint16(mem_0, a_5).
+Let a_7 = shift_sint8(output_base_0, 0).
+Let a_8 = memcpy(mem_6, a_7, mem_undef_1, a_7, total_0).
+Let x_6 = read_sint32(a_8, a_4).
+Let x_7 = read_sint16(mem_6, a_5).
+Let x_8 = read_sint32(mem_6, a_4).
+Let x_9 = read_sint16(mem_6, a_3).
+Let x_10 = 7 + total_0.
+Let a_9 = shift_sint8(output_base_0, i).
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(i) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint8(read_sint8(mem_0, output_0)) /\
+      is_sint16(x_4) /\ is_sint16(x_5) /\ is_sint16(x_9) /\ is_sint16(x_7) /\
+      is_sint32(x_3) /\ is_sint32(x_8) /\ bytes(a_1) /\ bytes(a_8) /\
+      is_sint8(read_sint8(a_1, shift_sint8(output_base_1, i))) /\
+      is_sint8(read_sint8(a_1, a_9)) /\ is_sint32(x_1) /\ is_sint32(x_6).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a, total_0).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a, total_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: separated(a, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_8 != (-2147483648).
+  (* Initializer *)
+  Init: a_6 = shift_sint8(input_base_0, 0).
+  (* Call '__FC_assert' *)
+  Have: a_7 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_9))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_4, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_8.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_8)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_7))).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: x_6 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_8, shift_sint8(input_base_1, i_1)),
+         read_sint16(a_8, a_3), x_6, read_sint16(a_8, a_5))
+         = read_sint8(a_8, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_11 = batch_1 % 2.
+    Let x_12 = -x_11.
+    Let x_13 = read_sint16(mem_1, a_3).
+    Let x_14 = read_sint32(mem_1, a_4).
+    Let x_15 = read_sint16(mem_1, a_5).
+    Let x_16 = -batch_1.
+    Let x_17 = read_sint16(mem_3, a_3).
+    Let x_18 = read_sint32(mem_3, a_4).
+    Let x_19 = read_sint16(mem_3, a_5).
+    Let a_10 = vqmovn_s16_0.F1_lane.
+    Let a_11 = vacc_0.F6_lane.
+    Let a_12 = vacc_1.F6_lane.
+    Let a_13 = vacc_2.F6_lane.
+    Let a_14 = vacc_3.F6_lane.
+    Let a_15 = tmp_5_0.F1_lane.
+    Have: a_8 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_1, total_0 - batch_1), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_15[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_1, total_0 + i_1 - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_14[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_15[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_13[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_14[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_13[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         to_sint16(L_L_sat16(a_12[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_10[i_1] = to_sint8(L_L_sat8(a_11[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_10[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_1, total_0 + i_1 - batch_1)),
+           read_sint16(mem_4, a_3), read_sint32(mem_4, a_4),
+           read_sint16(mem_4, a_5))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_16 = shift_sint8(output_base_0, total_0 - batch_1).
+      Let a_17 = shift_uint8(a_16, 0).
+      Let a_18 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_20 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_18[i_1] =
+           (to_uint8(a_10[x_20]) + (256 * to_uint8(a_10[1 + x_20]))
+            + (65536 * to_uint8(a_10[2 + x_20]))
+            + (16777216 * to_uint8(a_10[3 + x_20])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_17, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_16, i_1))
+              = to_uint8(lsr(a_18[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_17, mem_undef_2, a_17, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_10[4 + i_1] else a_10[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_1 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_1, i_1)), x_17,
+           x_18, x_19) = read_sint8(mem_3, shift_sint8(output_base_0, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_1, tail_done_2 + total_0 + i_1
+                      - batch_1)), x_17, x_18, x_19)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_19 = vy_1.F1_lane.
+      Let a_20 = shift_sint8(output_base_0, total_0 - 2 - x_11).
+      Let a_21 = shift_uint8(a_20, 0).
+      Let a_22 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_11) = batch_1) /\
+          ((2 + tail_done_2 + x_11) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_20 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_22[i_1] =
+           (to_uint8(a_19[x_20]) + (256 * to_uint8(a_19[1 + x_20])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_21, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_20, i_1))
+              = to_uint8(lsr(a_22[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_21, mem_undef_3, a_21, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_19[2 + i_1] else a_19[i_1 - 6])))).
+      Have: (x_11 + to_uint64(batch_1 - x_11)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_11) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_0, total_0 - x_11) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_11) = batch_1.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_11) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_1, i_1)), x_13,
+           x_14, x_15) = read_sint8(mem_1, shift_sint8(output_base_0, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) <= (7 + x_11)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_1, total_0 + i_1 - x_11)), x_13,
+           x_14, x_15)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_8 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_1, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_0, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_0, i_1))))).
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_3.
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_1 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_1, shift_sint8(output_base_1, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 0.
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_1, shift_sint8(output_base_1, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (read_sint8(a_1, shift_sint8(output_base_0, i_1))
+         = read_sint8(a_1, shift_sint8(output_base_1, i_1))))).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= total_0).
+  (* Then *)
+  Have: i < total_0.
+}
+Prove: valid_rd(alloc_0, a_9, 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/harness.c", line 8):
+Let a = shift_sint8(output_base_1, i).
+Let a_1 = shift_sint8(output_base_0, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, total_0).
+Let a_3 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_4 = shiftfield_F28_input_zero_point(a_3).
+Let x = read_sint16(a_2, a_4).
+Let a_5 = shiftfield_F28_multiplier(a_3).
+Let x_1 = read_sint32(a_2, a_5).
+Let a_6 = shiftfield_F28_output_zero_point(a_3).
+Let x_2 = read_sint16(a_2, a_6).
+Let x_3 = read_sint32(mem_0, a_5).
+Let a_7 = shift_sint8(input_base_1, 0).
+Let x_4 = read_sint16(mem_0, a_4).
+Let x_5 = read_sint16(mem_0, a_6).
+Let a_8 = shift_sint8(output_base_1, 0).
+Let a_9 = memcpy(mem_6, a_8, mem_undef_1, a_8, total_0).
+Let x_6 = read_sint32(a_9, a_5).
+Let x_7 = read_sint16(mem_6, a_6).
+Let x_8 = read_sint32(mem_6, a_5).
+Let x_9 = read_sint16(mem_6, a_4).
+Let x_10 = 7 + total_0.
+Let a_10 = shift_sint8(output_base_0, i).
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(i) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint8(read_sint8(mem_0, output_0)) /\
+      is_sint16(x_4) /\ is_sint16(x_5) /\ is_sint16(x_9) /\ is_sint16(x_7) /\
+      is_sint32(x_3) /\ is_sint32(x_8) /\ bytes(a_2) /\ bytes(a_9) /\
+      is_sint8(read_sint8(a_2, a_10)) /\ is_sint8(read_sint8(a_2, a)) /\
+      is_sint32(x_1) /\ is_sint32(x_6).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_7, x_10).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_8, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_8, total_0, a_1, total_0).
+  (* Pre-condition *)
+  Have: separated(a_8, total_0, a_7, x_10).
+  (* Pre-condition *)
+  Have: separated(a_8, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_1, total_0, a_7, x_10).
+  (* Pre-condition *)
+  Have: separated(a_1, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_8 != (-2147483648).
+  (* Initializer *)
+  Init: a_7 = shift_sint8(input_base_0, 0).
+  (* Call '__FC_assert' *)
+  Have: a_8 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_4, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_9))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_8.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_8)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_6, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_7))).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: x_6 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_9, shift_sint8(input_base_1, i_1)),
+         read_sint16(a_9, a_4), x_6, read_sint16(a_9, a_6))
+         = read_sint8(a_9, shift_sint8(output_base_1, i_1))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_11 = batch_1 % 2.
+    Let x_12 = -x_11.
+    Let x_13 = read_sint16(mem_1, a_4).
+    Let x_14 = read_sint32(mem_1, a_5).
+    Let x_15 = read_sint16(mem_1, a_6).
+    Let x_16 = -batch_1.
+    Let x_17 = read_sint16(mem_3, a_4).
+    Let x_18 = read_sint32(mem_3, a_5).
+    Let x_19 = read_sint16(mem_3, a_6).
+    Let a_11 = vqmovn_s16_0.F1_lane.
+    Let a_12 = vacc_0.F6_lane.
+    Let a_13 = vacc_1.F6_lane.
+    Let a_14 = vacc_2.F6_lane.
+    Let a_15 = vacc_3.F6_lane.
+    Let a_16 = tmp_5_0.F1_lane.
+    Have: a_9 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_1, total_0 - batch_1), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_16[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_1, total_0 + i_1 - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_15[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_16[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_14[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_15[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_13[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_14[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_sat16(a_13[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] = to_sint8(L_L_sat8(a_12[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_1, total_0 + i_1 - batch_1)),
+           read_sint16(mem_4, a_4), read_sint32(mem_4, a_5),
+           read_sint16(mem_4, a_6))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_17 = shift_sint8(output_base_1, total_0 - batch_1).
+      Let a_18 = shift_uint8(a_17, 0).
+      Let a_19 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_20 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_19[i_1] =
+           (to_uint8(a_11[x_20]) + (256 * to_uint8(a_11[1 + x_20]))
+            + (65536 * to_uint8(a_11[2 + x_20]))
+            + (16777216 * to_uint8(a_11[3 + x_20])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_18, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_17, i_1))
+              = to_uint8(lsr(a_19[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_18, mem_undef_2, a_18, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_11[4 + i_1] else a_11[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_1 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_1, i_1)), x_17,
+           x_18, x_19) = read_sint8(mem_3, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_1, tail_done_2 + total_0 + i_1
+                      - batch_1)), x_17, x_18, x_19)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_20 = vy_1.F1_lane.
+      Let a_21 = shift_sint8(output_base_1, total_0 - 2 - x_11).
+      Let a_22 = shift_uint8(a_21, 0).
+      Let a_23 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_11) = batch_1) /\
+          ((2 + tail_done_2 + x_11) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_20 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_23[i_1] =
+           (to_uint8(a_20[x_20]) + (256 * to_uint8(a_20[1 + x_20])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_22, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_21, i_1))
+              = to_uint8(lsr(a_23[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_22, mem_undef_3, a_22, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_20[2 + i_1] else a_20[i_1 - 6])))).
+      Have: (x_11 + to_uint64(batch_1 - x_11)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_11) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_1, total_0 - x_11) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_11) = batch_1.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_11) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_1, i_1)), x_13,
+           x_14, x_15) = read_sint8(mem_1, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) <= (7 + x_11)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_1, total_0 + i_1 - x_11)), x_13,
+           x_14, x_15)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_9 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_1, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Call '__FC_assert' *)
+  Have: a_7 != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_3.
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_1 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_2, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_2, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 0.
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(a_2, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_2, shift_sint8(output_base_0, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (read_sint8(a_2, shift_sint8(output_base_1, i_1))
+         = read_sint8(a_2, shift_sint8(output_base_0, i_1))))).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= total_0).
+  (* Then *)
+  Have: i < total_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a, 1).
+}
+Prove: valid_rd(alloc_0, a_10, 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 29):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let x = read_sint32(mem_0, shiftfield_F28_multiplier(a)).
+Let a_1 = shift_sint8(right_0, 0).
+Let a_2 = shift_sint8(input_0, 0).
+Let x_1 = 7 + batch_0.
+Let a_3 = shift_sint8(left_0, 0).
+Let a_4 = shiftfield_F28_input_zero_point(a).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(batch_0) /\
+      is_sint16(read_sint16(mem_0, a_4)) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(input_0.base) <= 0) /\ (region(left_0.base) <= 0) /\
+      (region(params_0.base) <= 0) /\ (region(right_0.base) <= 0) /\
+      framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: 0 < batch_0.
+  (* Pre-condition *)
+  Have: batch_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_2, x_1).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, batch_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, a_1, batch_0).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, a_2, x_1).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_1, batch_0, a_2, x_1).
+  (* Pre-condition *)
+  Have: separated(a_1, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: null != input_0.
+  (* Call '__FC_assert' *)
+  Have: null != left_0.
+}
+Prove: valid_rd(alloc_0, a_4, 2).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 30):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x = read_sint16(mem_0, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_1 = read_sint32(mem_0, a_2).
+Let a_3 = shift_sint8(right_0, 0).
+Let a_4 = shift_sint8(input_0, 0).
+Let x_2 = 7 + batch_0.
+Let a_5 = shift_sint8(left_0, 0).
+Assume {
+  Type: IsS6(tmp_0) /\ bytes(mem_0) /\ is_uint64(batch_0) /\ is_sint16(x) /\
+      is_sint32(x_1).
+  (* Heap *)
+  Type: (region(input_0.base) <= 0) /\ (region(left_0.base) <= 0) /\
+      (region(params_0.base) <= 0) /\ (region(right_0.base) <= 0) /\
+      framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: 0 < batch_0.
+  (* Pre-condition *)
+  Have: batch_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, batch_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_1 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: null != input_0.
+  (* Call '__FC_assert' *)
+  Have: null != left_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) -> ((tmp_0.F6_lane)[i] = x))).
+}
+Prove: valid_rd(alloc_0, a_2, 4).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,signed_overflow' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 30):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_multiplier(a).
+Let a_2 = shiftfield_F28_input_zero_point(a).
+Let x = read_sint16(mem_0, a_2).
+Let x_1 = read_sint32(mem_0, a_1).
+Let a_3 = shift_sint8(right_0, 0).
+Let a_4 = shift_sint8(input_0, 0).
+Let x_2 = 7 + batch_0.
+Let a_5 = shift_sint8(left_0, 0).
+Assume {
+  Type: IsS6(tmp_0) /\ bytes(mem_0) /\ is_uint64(batch_0) /\ is_sint16(x) /\
+      is_sint32(x_1).
+  (* Heap *)
+  Type: (region(input_0.base) <= 0) /\ (region(left_0.base) <= 0) /\
+      (region(params_0.base) <= 0) /\ (region(right_0.base) <= 0) /\
+      framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: 0 < batch_0.
+  (* Pre-condition *)
+  Have: batch_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, batch_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_1 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: null != input_0.
+  (* Call '__FC_assert' *)
+  Have: null != left_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) -> ((tmp_0.F6_lane)[i] = x))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 4).
+}
+Prove: (-2147483647) <= x_1.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 31):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_multiplier(a).
+Let x = read_sint32(mem_0, a_1).
+Let a_2 = shiftfield_F28_input_zero_point(a).
+Let x_1 = read_sint16(mem_0, a_2).
+Let a_3 = shift_sint8(right_0, 0).
+Let a_4 = shift_sint8(input_0, 0).
+Let x_2 = 7 + batch_0.
+Let a_5 = shift_sint8(left_0, 0).
+Let a_6 = shiftfield_F28_output_zero_point(a).
+Assume {
+  Type: IsS6(tmp_0) /\ IsS6(tmp_0_0) /\ bytes(mem_0) /\ is_uint64(batch_0) /\
+      is_sint16(x_1) /\ is_sint16(read_sint16(mem_0, a_6)) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(input_0.base) <= 0) /\ (region(left_0.base) <= 0) /\
+      (region(params_0.base) <= 0) /\ (region(right_0.base) <= 0) /\
+      framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: 0 < batch_0.
+  (* Pre-condition *)
+  Have: batch_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, batch_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, a_3, batch_0).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: separated(a_5, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, a_4, x_2).
+  (* Pre-condition *)
+  Have: separated(a_3, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: null != input_0.
+  (* Call '__FC_assert' *)
+  Have: null != left_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) -> ((tmp_0.F6_lane)[i] = x_1))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      ((tmp_0_0.F6_lane)[i] = to_sint16(-x)))).
+}
+Prove: valid_rd(alloc_0, a_6, 2).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 51):
+Let a = vy_0.F1_lane.
+Let a_1 = vacc_0.F6_lane.
+Let a_2 = vacc_1.F6_lane.
+Let a_3 = voutput_zero_point_0.F6_lane.
+Let a_4 = vacc_2.F6_lane.
+Let a_5 = vmultiplier_0.F6_lane.
+Let a_6 = vacc_3.F6_lane.
+Let a_7 = tmp_2_0.F1_lane.
+Let a_8 = vinput_zero_point_0.F6_lane.
+Let x = -batch_0.
+Let a_9 = shift_sint8(output_base_0, 0).
+Let a_10 = memcpy(mem_0, a_9, mem_undef_0, a_9, total_0).
+Let a_11 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_12 = shiftfield_F28_input_zero_point(a_11).
+Let x_1 = read_sint16(a_10, a_12).
+Let a_13 = shiftfield_F28_multiplier(a_11).
+Let x_2 = read_sint32(a_10, a_13).
+Let a_14 = shiftfield_F28_output_zero_point(a_11).
+Let x_3 = read_sint16(a_10, a_14).
+Let x_4 = read_sint16(mem_0, a_14).
+Let x_5 = read_sint32(mem_0, a_13).
+Let x_6 = read_sint16(mem_0, a_12).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_7 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_2_0) /\ IsS1(vy_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\
+      IsS6(vacc_2) /\ IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\
+      IsS6(vmultiplier_0) /\ IsS6(voutput_zero_point_0) /\ bytes(mem_0) /\
+      is_uint64(batch_0) /\ is_uint64(total_0) /\ is_sint16(x_6) /\
+      is_sint16(x_4) /\ is_sint32(x_5) /\ bytes(a_10) /\ is_sint32(x_2).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 7).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_9, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_5 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_9 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_12, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_8[i_1] = x_6))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_13, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_5.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_5[i_1] = to_sint16(-x_5)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_14, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_3[i_1] = x_4))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_2 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_10, shift_sint8(input_base_0, i_1)), x_1, x_2,
+         x_3) = read_sint8(a_10, shift_sint8(output_base_0, i_1))))).
+  (* Then *)
+  Have: 8 <= batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (a_7[i_1] =
+        read_sint8(a_10, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_6[i_1] = to_sint16(L_L_wrap16(to_uint64(a_8[i_1] - a_7[i_1])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_6[i_1]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_2[i_1] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_4[i_1] * a_5[i_1], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_1[i_1] = to_sint16(L_L_sat16(a_2[i_1] + a_3[i_1]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a[i_1] = to_sint8(L_L_sat8(a_1[i_1]))))).
+}
+Prove: a[i] =
+    L_L_cvt8(read_sint8(a_10,
+               shift_sint8(input_base_0, i + total_0 - batch_0)), x_1, x_2,
+      x_3).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 54):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 70):
+Let a = vy_0.F1_lane.
+Let a_1 = vacc_0.F6_lane.
+Let a_2 = vacc_1.F6_lane.
+Let a_3 = voutput_zero_point_0.F6_lane.
+Let a_4 = vacc_2.F6_lane.
+Let a_5 = vmultiplier_0.F6_lane.
+Let a_6 = vacc_3.F6_lane.
+Let a_7 = tmp_5_0.F1_lane.
+Let a_8 = vinput_zero_point_0.F6_lane.
+Let x = -batch_0.
+Let a_9 = shift_sint8(output_base_0, 0).
+Let a_10 = memcpy(mem_0, a_9, mem_undef_0, a_9, total_0).
+Let a_11 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_12 = shiftfield_F28_input_zero_point(a_11).
+Let x_1 = read_sint16(a_10, a_12).
+Let a_13 = shiftfield_F28_multiplier(a_11).
+Let x_2 = read_sint32(a_10, a_13).
+Let a_14 = shiftfield_F28_output_zero_point(a_11).
+Let x_3 = read_sint16(a_10, a_14).
+Let x_4 = read_sint16(mem_0, a_14).
+Let x_5 = read_sint32(mem_0, a_13).
+Let x_6 = read_sint16(mem_0, a_12).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_7 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\
+      IsS6(vacc_2) /\ IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\
+      IsS6(vmultiplier_0) /\ IsS6(voutput_zero_point_0) /\ bytes(mem_0) /\
+      is_uint64(batch_0) /\ is_uint64(total_0) /\ is_sint16(x_6) /\
+      is_sint16(x_4) /\ is_sint32(x_5) /\ bytes(a_10) /\ is_sint32(x_2).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 7).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_9, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: separated(a_9, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_5 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_9 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_12, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_8[i_1] = x_6))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_13, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_5.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_5[i_1] = to_sint16(-x_5)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_14, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_3[i_1] = x_4))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_2 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_10, shift_sint8(input_base_0, i_1)), x_1, x_2,
+         x_3) = read_sint8(a_10, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> ((batch_0 % 2) = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (a_7[i_1] =
+        read_sint8(a_10, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_6[i_1] = to_sint16(L_L_wrap16(to_uint64(a_8[i_1] - a_7[i_1])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_6[i_1]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_2[i_1] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_4[i_1] * a_5[i_1], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_1[i_1] = to_sint16(L_L_sat16(a_2[i_1] + a_3[i_1]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a[i_1] = to_sint8(L_L_sat8(a_1[i_1]))))).
+}
+Prove: a[i] =
+    L_L_cvt8(read_sint8(a_10,
+               shift_sint8(input_base_0, i + total_0 - batch_0)), x_1, x_2,
+      x_3).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 76):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 77):
+Let a = vqmovn_s16_0.F1_lane.
+Let a_1 = shift_sint8(output_base_0, 0).
+Let a_2 = memcpy(mem_2, a_1, mem_undef_0, a_1, total_0).
+Let x = -batch_0.
+Let a_3 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_4 = shiftfield_F28_input_zero_point(a_3).
+Let x_1 = read_sint16(a_2, a_4).
+Let a_5 = shiftfield_F28_multiplier(a_3).
+Let x_2 = read_sint32(a_2, a_5).
+Let a_6 = shiftfield_F28_output_zero_point(a_3).
+Let x_3 = read_sint16(a_2, a_6).
+Let a_7 = vacc_0.F6_lane.
+Let a_8 = vacc_1.F6_lane.
+Let a_9 = voutput_zero_point_0.F6_lane.
+Let a_10 = vacc_2.F6_lane.
+Let a_11 = vmultiplier_0.F6_lane.
+Let a_12 = vacc_3.F6_lane.
+Let a_13 = tmp_5_0.F1_lane.
+Let a_14 = vinput_zero_point_0.F6_lane.
+Let x_4 = read_sint16(mem_2, a_6).
+Let x_5 = read_sint32(mem_2, a_5).
+Let x_6 = read_sint16(mem_2, a_4).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_7 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vqmovn_s16_0) /\ IsS11(tmp_8_0) /\
+      IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\ IsS6(vacc_3) /\
+      IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ bytes(mem_0) /\ bytes(mem_1) /\
+      bytes(mem_2) /\ is_uint64(batch_0) /\ is_uint64(tail_done_0) /\
+      is_uint64(total_0) /\ is_sint16(x_6) /\ is_sint16(x_4) /\
+      is_sint32(x_5) /\ bytes(a_2) /\ is_sint32(x_2).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_2) /\ linked(alloc_0) /\
+      sconst(mem_2).
+  (* Goal *)
+  When: (0 <= i) /\ ((batch_0 + i) < (tail_done_0 + total_0)).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_1, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_1, total_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: separated(a_1, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_7).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_5 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_1 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_4, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_14[i_1] = x_6))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_5.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_11[i_1] = to_sint16(-x_5)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_6, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_9[i_1] = x_4))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_2 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_2, shift_sint8(input_base_0, i_1)), x_1, x_2,
+         x_3) = read_sint8(a_2, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> ((batch_0 % 2) = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (a_13[i_1] =
+        read_sint8(a_2, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_12[i_1] = to_sint16(L_L_wrap16(to_uint64(a_14[i_1] - a_13[i_1])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_10[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i_1]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_8[i_1] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_10[i_1] * a_11[i_1], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_7[i_1] = to_sint16(L_L_sat16(a_8[i_1] + a_9[i_1]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a[i_1] = to_sint8(L_L_sat8(a_7[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a[i_1] =
+       L_L_cvt8(read_sint8(a_2,
+                  shift_sint8(input_base_0, total_0 + i_1 - batch_0)), x_1,
+         x_2, x_3)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_17 = shift_sint8(output_base_0, total_0 - batch_0).
+    Let a_18 = shift_uint8(a_17, 0).
+    Let a_19 = tmp_8_0.F11_lane.
+    Have: a_2 = mem_1.
+    (* Call 'vreinterpret_u32_s8' *)
+    Have: forall i_1 : Z. let x_8 = 4 * i_1 in ((0 <= i_1) -> ((i_1 <= 1) ->
+        (a_19[i_1] =
+         (to_uint8(a[x_8]) + (256 * to_uint8(a[1 + x_8]))
+          + (65536 * to_uint8(a[2 + x_8]))
+          + (16777216 * to_uint8(a[3 + x_8])))))).
+    (* Call 'vst1_lane_u32' *)
+    Have: valid_rw(alloc_0, a_18, 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         (read_uint8(mem_0, shift_uint8(a_17, i_1))
+            = to_uint8(lsr(a_19[0], 8 * i_1)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_1, a_18, mem_undef_1, a_18, 4) = mem_0.
+    (* Call 'vext_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        ((vext_s8_0.F1_lane)[i_1] =
+         (if (i_1 <= 3) then a[4 + i_1] else a[i_1 - 4])))).
+    Have: tail_done_0 = 4.
+  }
+  Else { Have: (tail_done_0 = 0) /\ (a_2 = mem_0). }
+}
+Prove: L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i)),
+         read_sint16(mem_0, a_4), read_sint32(mem_0, a_5),
+         read_sint16(mem_0, a_6))
+         = read_sint8(mem_0, shift_sint8(output_base_0, i)).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 78):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x = read_sint16(mem_0, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_1 = read_sint32(mem_0, a_2).
+Let a_3 = shiftfield_F28_output_zero_point(a).
+Let x_2 = read_sint16(mem_0, a_3).
+Let a_4 = vqmovn_s16_0.F1_lane.
+Let a_5 = shift_sint8(output_base_0, 0).
+Let a_6 = memcpy(mem_2, a_5, mem_undef_0, a_5, total_0).
+Let x_3 = -batch_0.
+Let x_4 = read_sint16(a_6, a_1).
+Let x_5 = read_sint32(a_6, a_2).
+Let x_6 = read_sint16(a_6, a_3).
+Let a_7 = vacc_0.F6_lane.
+Let a_8 = vacc_1.F6_lane.
+Let a_9 = voutput_zero_point_0.F6_lane.
+Let a_10 = vacc_2.F6_lane.
+Let a_11 = vmultiplier_0.F6_lane.
+Let a_12 = vacc_3.F6_lane.
+Let a_13 = tmp_5_0.F1_lane.
+Let a_14 = vinput_zero_point_0.F6_lane.
+Let x_7 = read_sint16(mem_2, a_3).
+Let x_8 = read_sint32(mem_2, a_2).
+Let x_9 = read_sint16(mem_2, a_1).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_10 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vqmovn_s16_0) /\ IsS1(vy_0) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ bytes(mem_0) /\ bytes(mem_1) /\
+      bytes(mem_2) /\ is_uint64(batch_0) /\ is_uint64(tail_done_0) /\
+      is_uint64(total_0) /\ is_sint16(x_9) /\ is_sint16(x_7) /\
+      is_sint32(x_8) /\ bytes(a_6) /\ is_sint32(x_5).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_2) /\ linked(alloc_0) /\
+      sconst(mem_2).
+  (* Goal *)
+  When: (0 <= i) /\ ((i + tail_done_0) <= 7).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_10).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_15, x_10).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_10).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_8 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_14[i_1] = x_9))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_8.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_11[i_1] = to_sint16(-x_8)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_9[i_1] = x_7))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_5 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_6, shift_sint8(input_base_0, i_1)), x_4, x_5,
+         x_6) = read_sint8(a_6, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> ((batch_0 % 2) = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (a_13[i_1] =
+        read_sint8(a_6, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_12[i_1] = to_sint16(L_L_wrap16(to_uint64(a_14[i_1] - a_13[i_1])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_10[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i_1]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_8[i_1] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_10[i_1] * a_11[i_1], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_7[i_1] = to_sint16(L_L_sat16(a_8[i_1] + a_9[i_1]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] = to_sint8(L_L_sat8(a_7[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] =
+       L_L_cvt8(read_sint8(a_6,
+                  shift_sint8(input_base_0, total_0 + i_1 - batch_0)), x_4,
+         x_5, x_6)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_17 = shift_sint8(output_base_0, total_0 - batch_0).
+    Let a_18 = shift_uint8(a_17, 0).
+    Let a_19 = tmp_8_0.F11_lane.
+    Have: a_6 = mem_1.
+    (* Call 'vreinterpret_u32_s8' *)
+    Have: forall i_1 : Z. let x_11 = 4 * i_1 in ((0 <= i_1) -> ((i_1 <= 1) ->
+        (a_19[i_1] =
+         (to_uint8(a_4[x_11]) + (256 * to_uint8(a_4[1 + x_11]))
+          + (65536 * to_uint8(a_4[2 + x_11]))
+          + (16777216 * to_uint8(a_4[3 + x_11])))))).
+    (* Call 'vst1_lane_u32' *)
+    Have: valid_rw(alloc_0, a_18, 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         (read_uint8(mem_0, shift_uint8(a_17, i_1))
+            = to_uint8(lsr(a_19[0], 8 * i_1)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_1, a_18, mem_undef_1, a_18, 4) = mem_0.
+    (* Call 'vext_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        ((vy_0.F1_lane)[i_1] =
+         (if (i_1 <= 3) then a_4[4 + i_1] else a_4[i_1 - 4])))).
+    Have: tail_done_0 = 4.
+  }
+  Else { Have: (tail_done_0 = 0) /\ (vy_0 = vqmovn_s16_0) /\ (a_6 = mem_0). }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      (((batch_0 + i_1) < (tail_done_0 + total_0)) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x, x_1,
+         x_2) = read_sint8(mem_0, shift_sint8(output_base_0, i_1))))).
+}
+Prove: (vy_0.F1_lane)[i] =
+    L_L_cvt8(read_sint8(mem_0,
+               shift_sint8(input_base_0, i + tail_done_0 + total_0 - batch_0)),
+      x, x_1, x_2).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 84):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 85):
+Let x = -batch_0.
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x_1 = read_sint16(mem_2, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_2 = read_sint32(mem_2, a_2).
+Let a_3 = shiftfield_F28_output_zero_point(a).
+Let x_3 = read_sint16(mem_2, a_3).
+Let a_4 = vqmovn_s16_0.F1_lane.
+Let a_5 = shift_sint8(output_base_0, 0).
+Let a_6 = memcpy(mem_4, a_5, mem_undef_0, a_5, total_0).
+Let x_4 = read_sint16(a_6, a_1).
+Let x_5 = read_sint32(a_6, a_2).
+Let x_6 = read_sint16(a_6, a_3).
+Let a_7 = vacc_0.F6_lane.
+Let a_8 = vacc_1.F6_lane.
+Let a_9 = voutput_zero_point_0.F6_lane.
+Let a_10 = vacc_2.F6_lane.
+Let a_11 = vmultiplier_0.F6_lane.
+Let a_12 = vacc_3.F6_lane.
+Let a_13 = tmp_5_0.F1_lane.
+Let a_14 = vinput_zero_point_0.F6_lane.
+Let x_7 = batch_0 % 2.
+Let x_8 = read_sint16(mem_4, a_3).
+Let x_9 = read_sint32(mem_4, a_2).
+Let x_10 = read_sint16(mem_4, a_1).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_11 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vqmovn_s16_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      is_uint64(batch_0) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint16(x_10) /\ is_sint16(x_8) /\
+      is_sint32(x_9) /\ bytes(a_6) /\ is_sint32(x_5).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_4) /\ linked(alloc_0) /\
+      sconst(mem_4).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_11).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_15, x_11).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_11).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_9 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) -> (a_14[i] = x_10))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_9.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_11[i] = to_sint16(-x_9)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) -> (a_9[i] = x_8))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_5 != (-2147483648).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((batch_0 + i) < total_0) ->
+      (L_L_cvt8(read_sint8(a_6, shift_sint8(input_base_0, i)), x_4, x_5, x_6)
+         = read_sint8(a_6, shift_sint8(output_base_0, i))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> (x_7 = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 7) ->
+       (a_13[i] =
+        read_sint8(a_6, shift_sint8(input_base_0, total_0 + i - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_12[i] = to_sint16(L_L_wrap16(to_uint64(a_14[i] - a_13[i])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_10[i] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_8[i] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_10[i] * a_11[i], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_7[i] = to_sint16(L_L_sat16(a_8[i] + a_9[i]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_4[i] = to_sint8(L_L_sat8(a_7[i]))))).
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      (a_4[i] =
+       L_L_cvt8(read_sint8(a_6,
+                  shift_sint8(input_base_0, total_0 + i - batch_0)), x_4,
+         x_5, x_6)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_17 = shift_sint8(output_base_0, total_0 - batch_0).
+    Let a_18 = shift_uint8(a_17, 0).
+    Let a_19 = tmp_8_0.F11_lane.
+    Have: a_6 = mem_3.
+    (* Call 'vreinterpret_u32_s8' *)
+    Have: forall i : Z. let x_12 = 4 * i in ((0 <= i) -> ((i <= 1) ->
+        (a_19[i] =
+         (to_uint8(a_4[x_12]) + (256 * to_uint8(a_4[1 + x_12]))
+          + (65536 * to_uint8(a_4[2 + x_12]))
+          + (16777216 * to_uint8(a_4[3 + x_12])))))).
+    (* Call 'vst1_lane_u32' *)
+    Have: valid_rw(alloc_0, a_18, 4) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+         (read_uint8(mem_2, shift_uint8(a_17, i))
+            = to_uint8(lsr(a_19[0], 8 * i)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_3, a_18, mem_undef_1, a_18, 4) = mem_2.
+    (* Call 'vext_s8' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        ((vy_1.F1_lane)[i] = (if (i <= 3) then a_4[4 + i] else a_4[i - 4])))).
+    Have: tail_done_2 = 4.
+  }
+  Else { Have: (tail_done_2 = 0) /\ (vy_1 = vqmovn_s16_0) /\ (a_6 = mem_2). }
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) ->
+      (((batch_0 + i) < (tail_done_2 + total_0)) ->
+      (L_L_cvt8(read_sint8(mem_2, shift_sint8(input_base_0, i)), x_1, x_2,
+         x_3) = read_sint8(mem_2, shift_sint8(output_base_0, i))))).
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) -> (((tail_done_2 + i) <= 7) ->
+      ((vy_1.F1_lane)[i] =
+       L_L_cvt8(read_sint8(mem_2,
+                  shift_sint8(input_base_0, tail_done_2 + total_0 + i
+                    - batch_0)), x_1, x_2, x_3)))).
+  If bit_test(batch_0, 1)
+  Then {
+    Let x_12 = 2 + tail_done_1.
+    Let a_20 = vy_0.F1_lane.
+    Let a_21 = shift_sint8(output_base_0, tail_done_1 + total_0 - batch_0).
+    Let a_22 = shift_uint8(a_21, 0).
+    Let a_23 = tmp_9_0.F7_lane.
+    Have: (mem_2 = mem_5) /\ (tail_done_2 = tail_done_1) /\ (vy_1 = vy_0).
+    Have: mem_1 = mem_5.
+    (* Call 'vreinterpret_u16_s8' *)
+    Have: forall i : Z. let x_13 = 2 * i in ((0 <= i) -> ((i <= 3) ->
+        (a_23[i] = (to_uint8(a_20[x_13]) + (256 * to_uint8(a_20[1 + x_13])))))).
+    (* Call 'vst1_lane_u16' *)
+    Have: valid_rw(alloc_0, a_22, 2) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+         (read_uint8(mem_0, shift_uint8(a_21, i))
+            = to_uint8(lsr(a_23[0], 8 * i)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_5, a_22, mem_undef_2, a_22, 2) = mem_0.
+    Have: x_12 = to_uint64(x_12).
+    (* Call 'vext_s8' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        ((vext_s8_0.F1_lane)[i] =
+         (if (i <= 5) then a_20[2 + i] else a_20[i - 6])))).
+    Have: x_12 = tail_done_0.
+  }
+  Else { Have: (mem_2 = mem_0) /\ (tail_done_2 = tail_done_0). }
+}
+Prove: (tail_done_0 + x_7) = batch_0.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 86):
+Let x = -batch_0.
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x_1 = read_sint16(mem_2, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_2 = read_sint32(mem_2, a_2).
+Let a_3 = shiftfield_F28_output_zero_point(a).
+Let x_3 = read_sint16(mem_2, a_3).
+Let a_4 = vqmovn_s16_0.F1_lane.
+Let a_5 = shift_sint8(output_base_0, 0).
+Let a_6 = memcpy(mem_4, a_5, mem_undef_0, a_5, total_0).
+Let x_4 = read_sint16(a_6, a_1).
+Let x_5 = read_sint32(a_6, a_2).
+Let x_6 = read_sint16(a_6, a_3).
+Let a_7 = vacc_0.F6_lane.
+Let a_8 = vacc_1.F6_lane.
+Let a_9 = voutput_zero_point_0.F6_lane.
+Let a_10 = vacc_2.F6_lane.
+Let a_11 = vmultiplier_0.F6_lane.
+Let a_12 = vacc_3.F6_lane.
+Let a_13 = tmp_5_0.F1_lane.
+Let a_14 = vinput_zero_point_0.F6_lane.
+Let x_7 = batch_0 % 2.
+Let x_8 = read_sint16(mem_4, a_3).
+Let x_9 = read_sint32(mem_4, a_2).
+Let x_10 = read_sint16(mem_4, a_1).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_11 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vqmovn_s16_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      is_uint64(batch_0) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(total_0) /\
+      is_uint64(batch_0 - x_7) /\ is_sint16(x_10) /\ is_sint16(x_8) /\
+      is_sint32(x_9) /\ bytes(a_6) /\ is_sint32(x_5).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_4) /\ linked(alloc_0) /\
+      sconst(mem_4).
+  (* Goal *)
+  When: (0 <= i) /\ ((i + x_7) < total_0).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_11).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_15, x_11).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_11).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_9 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_14[i_1] = x_10))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_9.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_11[i_1] = to_sint16(-x_9)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_9[i_1] = x_8))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_5 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_6, shift_sint8(input_base_0, i_1)), x_4, x_5,
+         x_6) = read_sint8(a_6, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> (x_7 = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (a_13[i_1] =
+        read_sint8(a_6, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_12[i_1] = to_sint16(L_L_wrap16(to_uint64(a_14[i_1] - a_13[i_1])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_10[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i_1]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_8[i_1] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_10[i_1] * a_11[i_1], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_7[i_1] = to_sint16(L_L_sat16(a_8[i_1] + a_9[i_1]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] = to_sint8(L_L_sat8(a_7[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] =
+       L_L_cvt8(read_sint8(a_6,
+                  shift_sint8(input_base_0, total_0 + i_1 - batch_0)), x_4,
+         x_5, x_6)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_17 = shift_sint8(output_base_0, total_0 - batch_0).
+    Let a_18 = shift_uint8(a_17, 0).
+    Let a_19 = tmp_8_0.F11_lane.
+    Have: a_6 = mem_3.
+    (* Call 'vreinterpret_u32_s8' *)
+    Have: forall i_1 : Z. let x_12 = 4 * i_1 in ((0 <= i_1) -> ((i_1 <= 1) ->
+        (a_19[i_1] =
+         (to_uint8(a_4[x_12]) + (256 * to_uint8(a_4[1 + x_12]))
+          + (65536 * to_uint8(a_4[2 + x_12]))
+          + (16777216 * to_uint8(a_4[3 + x_12])))))).
+    (* Call 'vst1_lane_u32' *)
+    Have: valid_rw(alloc_0, a_18, 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         (read_uint8(mem_2, shift_uint8(a_17, i_1))
+            = to_uint8(lsr(a_19[0], 8 * i_1)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_3, a_18, mem_undef_1, a_18, 4) = mem_2.
+    (* Call 'vext_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        ((vy_1.F1_lane)[i_1] =
+         (if (i_1 <= 3) then a_4[4 + i_1] else a_4[i_1 - 4])))).
+    Have: tail_done_1 = 4.
+  }
+  Else { Have: (tail_done_1 = 0) /\ (vy_1 = vqmovn_s16_0) /\ (a_6 = mem_2). }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      (((batch_0 + i_1) < (tail_done_1 + total_0)) ->
+      (L_L_cvt8(read_sint8(mem_2, shift_sint8(input_base_0, i_1)), x_1, x_2,
+         x_3) = read_sint8(mem_2, shift_sint8(output_base_0, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_1 + i_1) <= 7) ->
+      ((vy_1.F1_lane)[i_1] =
+       L_L_cvt8(read_sint8(mem_2,
+                  shift_sint8(input_base_0, tail_done_1 + total_0 + i_1
+                    - batch_0)), x_1, x_2, x_3)))).
+  If bit_test(batch_0, 1)
+  Then {
+    Let a_20 = vy_0.F1_lane.
+    Let a_21 = shift_sint8(output_base_0, total_0 - 2 - x_7).
+    Let a_22 = shift_uint8(a_21, 0).
+    Let a_23 = tmp_9_0.F7_lane.
+    Have: (mem_2 = mem_5) /\ (vy_1 = vy_0) /\
+        ((2 + tail_done_0 + x_7) = batch_0) /\
+        ((2 + tail_done_1 + x_7) = batch_0).
+    Have: mem_1 = mem_5.
+    (* Call 'vreinterpret_u16_s8' *)
+    Have: forall i_1 : Z. let x_12 = 2 * i_1 in ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_23[i_1] =
+         (to_uint8(a_20[x_12]) + (256 * to_uint8(a_20[1 + x_12])))))).
+    (* Call 'vst1_lane_u16' *)
+    Have: valid_rw(alloc_0, a_22, 2) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+         (read_uint8(mem_0, shift_uint8(a_21, i_1))
+            = to_uint8(lsr(a_23[0], 8 * i_1)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_5, a_22, mem_undef_2, a_22, 2) = mem_0.
+    (* Call 'vext_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        ((vext_s8_0.F1_lane)[i_1] =
+         (if (i_1 <= 5) then a_20[2 + i_1] else a_20[i_1 - 6])))).
+  }
+  Else { Have: (mem_2 = mem_0) /\ ((tail_done_1 + x_7) = batch_0). }
+}
+Prove: L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i)),
+         read_sint16(mem_0, a_1), read_sint32(mem_0, a_2),
+         read_sint16(mem_0, a_3))
+         = read_sint8(mem_0, shift_sint8(output_base_0, i)).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 87):
+Let x = batch_0 % 2.
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x_1 = read_sint16(mem_0, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_2 = read_sint32(mem_0, a_2).
+Let a_3 = shiftfield_F28_output_zero_point(a).
+Let x_3 = read_sint16(mem_0, a_3).
+Let x_4 = -batch_0.
+Let x_5 = read_sint16(mem_2, a_1).
+Let x_6 = read_sint32(mem_2, a_2).
+Let x_7 = read_sint16(mem_2, a_3).
+Let a_4 = vqmovn_s16_0.F1_lane.
+Let a_5 = shift_sint8(output_base_0, 0).
+Let a_6 = memcpy(mem_4, a_5, mem_undef_0, a_5, total_0).
+Let x_8 = read_sint16(a_6, a_1).
+Let x_9 = read_sint32(a_6, a_2).
+Let x_10 = read_sint16(a_6, a_3).
+Let a_7 = vacc_0.F6_lane.
+Let a_8 = vacc_1.F6_lane.
+Let a_9 = voutput_zero_point_0.F6_lane.
+Let a_10 = vacc_2.F6_lane.
+Let a_11 = vmultiplier_0.F6_lane.
+Let a_12 = vacc_3.F6_lane.
+Let a_13 = tmp_5_0.F1_lane.
+Let a_14 = vinput_zero_point_0.F6_lane.
+Let x_11 = read_sint16(mem_4, a_3).
+Let x_12 = read_sint32(mem_4, a_2).
+Let x_13 = read_sint16(mem_4, a_1).
+Let a_15 = shift_sint8(input_base_0, 0).
+Let a_16 = shift_sint8(right_0, 0).
+Let x_14 = 7 + total_0.
+Let x_15 = -x.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vqmovn_s16_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\
+      IsS1(vy_2) /\ IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\
+      IsS6(vacc_2) /\ IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\
+      IsS6(vmultiplier_0) /\ IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\
+      bytes(mem_0) /\ bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\
+      bytes(mem_4) /\ is_uint64(batch_0) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(total_0) /\
+      is_uint64(batch_0 - x) /\ is_sint16(x_13) /\ is_sint16(x_11) /\
+      is_sint32(x_12) /\ bytes(a_6) /\ is_sint32(x_9).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_4) /\ linked(alloc_0) /\
+      sconst(mem_4).
+  (* Goal *)
+  When: (0 <= i) /\ ((batch_0 + i) <= (7 + x)).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_15, x_14).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_5, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_16, total_0).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_15, x_14).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, a_15, x_14).
+  (* Pre-condition *)
+  Have: separated(a_16, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_12 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_14[i_1] = x_13))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_12.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_11[i_1] = to_sint16(-x_12)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) -> (a_9[i_1] = x_11))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_9 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_6, shift_sint8(input_base_0, i_1)), x_8, x_9,
+         x_10) = read_sint8(a_6, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> (x = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (a_13[i_1] =
+        read_sint8(a_6, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call 'vsubw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_12[i_1] = to_sint16(L_L_wrap16(to_uint64(a_14[i_1] - a_13[i_1])))))).
+  (* Call 'vshlq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_10[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i_1]), 7))))))).
+  (* Call 'vqrdmulhq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_8[i_1] =
+       to_sint16(L_L_sat16(L_L_round_shift(a_10[i_1] * a_11[i_1], 15, 0)))))).
+  (* Call 'vqaddq_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_7[i_1] = to_sint16(L_L_sat16(a_8[i_1] + a_9[i_1]))))).
+  (* Call 'vqmovn_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] = to_sint8(L_L_sat8(a_7[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_4[i_1] =
+       L_L_cvt8(read_sint8(a_6,
+                  shift_sint8(input_base_0, total_0 + i_1 - batch_0)), x_8,
+         x_9, x_10)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_17 = shift_sint8(output_base_0, total_0 - batch_0).
+    Let a_18 = shift_uint8(a_17, 0).
+    Let a_19 = tmp_8_0.F11_lane.
+    Have: a_6 = mem_3.
+    (* Call 'vreinterpret_u32_s8' *)
+    Have: forall i_1 : Z. let x_16 = 4 * i_1 in ((0 <= i_1) -> ((i_1 <= 1) ->
+        (a_19[i_1] =
+         (to_uint8(a_4[x_16]) + (256 * to_uint8(a_4[1 + x_16]))
+          + (65536 * to_uint8(a_4[2 + x_16]))
+          + (16777216 * to_uint8(a_4[3 + x_16])))))).
+    (* Call 'vst1_lane_u32' *)
+    Have: valid_rw(alloc_0, a_18, 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         (read_uint8(mem_2, shift_uint8(a_17, i_1))
+            = to_uint8(lsr(a_19[0], 8 * i_1)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_3, a_18, mem_undef_1, a_18, 4) = mem_2.
+    (* Call 'vext_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         (if (i_1 <= 3) then a_4[4 + i_1] else a_4[i_1 - 4])))).
+    Have: tail_done_1 = 4.
+  }
+  Else { Have: (tail_done_1 = 0) /\ (vy_2 = vqmovn_s16_0) /\ (a_6 = mem_2). }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      (((batch_0 + i_1) < (tail_done_1 + total_0)) ->
+      (L_L_cvt8(read_sint8(mem_2, shift_sint8(input_base_0, i_1)), x_5, x_6,
+         x_7) = read_sint8(mem_2, shift_sint8(output_base_0, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_1 + i_1) <= 7) ->
+      ((vy_2.F1_lane)[i_1] =
+       L_L_cvt8(read_sint8(mem_2,
+                  shift_sint8(input_base_0, tail_done_1 + total_0 + i_1
+                    - batch_0)), x_5, x_6, x_7)))).
+  If bit_test(batch_0, 1)
+  Then {
+    Let a_20 = vy_1.F1_lane.
+    Let a_21 = shift_sint8(output_base_0, total_0 - 2 - x).
+    Let a_22 = shift_uint8(a_21, 0).
+    Let a_23 = tmp_9_0.F7_lane.
+    Have: (mem_2 = mem_5) /\ (vy_2 = vy_1) /\
+        ((2 + tail_done_0 + x) = batch_0) /\
+        ((2 + tail_done_1 + x) = batch_0).
+    Have: mem_1 = mem_5.
+    (* Call 'vreinterpret_u16_s8' *)
+    Have: forall i_1 : Z. let x_16 = 2 * i_1 in ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_23[i_1] =
+         (to_uint8(a_20[x_16]) + (256 * to_uint8(a_20[1 + x_16])))))).
+    (* Call 'vst1_lane_u16' *)
+    Have: valid_rw(alloc_0, a_22, 2) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+         (read_uint8(mem_0, shift_uint8(a_21, i_1))
+            = to_uint8(lsr(a_23[0], 8 * i_1)))))).
+    (* Call Effects *)
+    Have: memcpy(mem_5, a_22, mem_undef_2, a_22, 2) = mem_0.
+    (* Call 'vext_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        ((vy_0.F1_lane)[i_1] =
+         (if (i_1 <= 5) then a_20[2 + i_1] else a_20[i_1 - 6])))).
+  }
+  Else {
+    Have: (mem_2 = mem_0) /\ (vy_2 = vy_0) /\ ((tail_done_1 + x) = batch_0).
+  }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x) < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_1, x_2,
+         x_3) = read_sint8(mem_0, shift_sint8(output_base_0, i_1))))).
+}
+Prove: (vy_0.F1_lane)[i] =
+    L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i + total_0 - x)),
+      x_1, x_2, x_3).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/neon.c", line 92):
+Let a = shift_sint8(output_base_0, 0).
+Let a_1 = memcpy(mem_6, a, mem_undef_0, a, total_0).
+Let a_2 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F28_input_zero_point(a_2).
+Let a_4 = shiftfield_F28_multiplier(a_2).
+Let x = read_sint32(a_1, a_4).
+Let a_5 = shiftfield_F28_output_zero_point(a_2).
+Let x_1 = read_sint16(mem_6, a_5).
+Let x_2 = read_sint32(mem_6, a_4).
+Let x_3 = read_sint16(mem_6, a_3).
+Let a_6 = shift_sint8(input_base_0, 0).
+Let a_7 = shift_sint8(right_0, 0).
+Let x_4 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(tail_done_0) /\ is_uint64(tail_done_1) /\
+      is_uint64(tail_done_2) /\ is_uint64(total_0) /\
+      is_sint8(read_sint8(mem_0, output_0)) /\ is_sint16(x_3) /\
+      is_sint16(x_1) /\ is_sint32(x_2) /\ bytes(a_1) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_6) /\ linked(alloc_0) /\
+      sconst(mem_6).
+  (* Goal *)
+  When: (0 <= i) /\ (i < total_0).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_6, x_4).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a, total_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: separated(a, total_0, a_6, x_4).
+  (* Pre-condition *)
+  Have: separated(a, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a_6, x_4).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_2 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_3))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_4, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_2.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_2)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_1))).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)),
+         read_sint16(a_1, a_3), x, read_sint16(a_1, a_5))
+         = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 1) then 2 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 0) -> ((batch_0 % 2) = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  If batch_0 != 0
+  Then {
+    Let x_5 = batch_0 % 2.
+    Let x_6 = -x_5.
+    Let x_7 = read_sint16(mem_1, a_3).
+    Let x_8 = read_sint32(mem_1, a_4).
+    Let x_9 = read_sint16(mem_1, a_5).
+    Let x_10 = -batch_0.
+    Let x_11 = read_sint16(mem_3, a_3).
+    Let x_12 = read_sint32(mem_3, a_4).
+    Let x_13 = read_sint16(mem_3, a_5).
+    Let a_8 = vqmovn_s16_0.F1_lane.
+    Let a_9 = vacc_0.F6_lane.
+    Let a_10 = vacc_1.F6_lane.
+    Let a_11 = vacc_2.F6_lane.
+    Let a_12 = vacc_3.F6_lane.
+    Let a_13 = tmp_5_0.F1_lane.
+    Have: a_1 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_0.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_13[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_13[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_10[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_11[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_9[i_1] =
+         to_sint16(L_L_sat16(a_10[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_8[i_1] = to_sint8(L_L_sat8(a_9[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_8[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_0, total_0 + i_1 - batch_0)),
+           read_sint16(mem_4, a_3), read_sint32(mem_4, a_4),
+           read_sint16(mem_4, a_5))))).
+    If bit_test(batch_0, 2)
+    Then {
+      Let a_14 = shift_sint8(output_base_0, total_0 - batch_0).
+      Let a_15 = shift_uint8(a_14, 0).
+      Let a_16 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_14 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_16[i_1] =
+           (to_uint8(a_8[x_14]) + (256 * to_uint8(a_8[1 + x_14]))
+            + (65536 * to_uint8(a_8[2 + x_14]))
+            + (16777216 * to_uint8(a_8[3 + x_14])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_15, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_14, i_1))
+              = to_uint8(lsr(a_16[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_15, mem_undef_1, a_15, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_8[4 + i_1] else a_8[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_0 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_0, i_1)), x_11,
+           x_12, x_13) = read_sint8(mem_3, shift_sint8(output_base_0, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_0, tail_done_2 + total_0 + i_1
+                      - batch_0)), x_11, x_12, x_13)))).
+    If bit_test(batch_0, 1)
+    Then {
+      Let a_17 = vy_1.F1_lane.
+      Let a_18 = shift_sint8(output_base_0, total_0 - 2 - x_5).
+      Let a_19 = shift_uint8(a_18, 0).
+      Let a_20 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_5) = batch_0) /\
+          ((2 + tail_done_2 + x_5) = batch_0).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_14 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_20[i_1] =
+           (to_uint8(a_17[x_14]) + (256 * to_uint8(a_17[1 + x_14])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_19, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_18, i_1))
+              = to_uint8(lsr(a_20[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_19, mem_undef_2, a_19, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_17[2 + i_1] else a_17[i_1 - 6])))).
+      Have: (x_5 + to_uint64(batch_0 - x_5)) = batch_0.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_5) = batch_0).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_0, total_0 - x_5) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_5) = batch_0.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_5) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_0, i_1)), x_7,
+           x_8, x_9) = read_sint8(mem_1, shift_sint8(output_base_0, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) <= (7 + x_5)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_0, total_0 + i_1 - x_5)), x_7,
+           x_8, x_9)))).
+    If bit_test(batch_0, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_1 = mem_0. }
+}
+Prove: L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i)),
+         read_sint16(mem_0, a_3), read_sint32(mem_0, a_4),
+         read_sint16(mem_0, a_5))
+         = read_sint8(mem_0, shift_sint8(output_base_0, i)).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c", line 19):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c", line 20):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,signed_overflow' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c", line 20):
+Let a = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_1 = shiftfield_F28_input_zero_point(a).
+Let x = read_sint16(mem_0, a_1).
+Let a_2 = shiftfield_F28_multiplier(a).
+Let x_1 = read_sint32(mem_0, a_2).
+Let a_3 = shiftfield_F28_output_zero_point(a).
+Let x_2 = read_sint16(mem_0, a_3).
+Let a_4 = shift_sint8(output_base_0, 0).
+Let a_5 = memcpy(mem_6, a_4, mem_undef_0, a_4, batch_0).
+Let x_3 = read_sint32(a_5, a_2).
+Let x_4 = read_sint16(mem_6, a_3).
+Let x_5 = read_sint32(mem_6, a_2).
+Let x_6 = read_sint16(mem_6, a_1).
+Let a_6 = shift_sint8(input_base_0, 0).
+Let a_7 = shift_sint8(output_1, 0).
+Let x_7 = 7 + batch_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_sint8(read_sint8(mem_0, output_0)) /\ is_sint16(x) /\
+      is_sint16(x_2) /\ is_sint16(x_6) /\ is_sint16(x_4) /\ is_sint32(x_1) /\
+      is_sint32(x_5) /\ bytes(a_5) /\ is_sint32(x_3).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\ (region(output_1.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Pre-condition *)
+  Have: 0 < batch_0.
+  (* Pre-condition *)
+  Have: batch_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_6, x_7).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_4, batch_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_7, batch_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_4, batch_0, a_7, batch_0).
+  (* Pre-condition *)
+  Have: separated(a_4, batch_0, a_6, x_7).
+  (* Pre-condition *)
+  Have: separated(a_4, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_7, batch_0, a_6, x_7).
+  (* Pre-condition *)
+  Have: separated(a_7, batch_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_5 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a_4 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_1, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i] = x_6))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_2, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_5.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      ((vmultiplier_0.F6_lane)[i] = to_sint16(-x_5)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i] = x_4))).
+  (* Invariant *)
+  Have: (batch_1 <= batch_0) /\ (0 <= batch_1).
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((batch_1 + i) < batch_0) ->
+      (L_L_cvt8(read_sint8(a_5, shift_sint8(input_base_0, i)),
+         read_sint16(a_5, a_1), x_3, read_sint16(a_5, a_3))
+         = read_sint8(a_5, shift_sint8(output_base_0, i))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_8 = batch_1 % 2.
+    Let x_9 = -x_8.
+    Let x_10 = read_sint16(mem_1, a_1).
+    Let x_11 = read_sint32(mem_1, a_2).
+    Let x_12 = read_sint16(mem_1, a_3).
+    Let x_13 = -batch_1.
+    Let x_14 = read_sint16(mem_3, a_1).
+    Let x_15 = read_sint32(mem_3, a_2).
+    Let x_16 = read_sint16(mem_3, a_3).
+    Let a_8 = vqmovn_s16_0.F1_lane.
+    Let a_9 = vacc_0.F6_lane.
+    Let a_10 = vacc_1.F6_lane.
+    Let a_11 = vacc_2.F6_lane.
+    Let a_12 = vacc_3.F6_lane.
+    Let a_13 = tmp_5_0.F1_lane.
+    Have: a_5 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_0, batch_0 - batch_1), 8) /\
+        (forall i : Z. ((0 <= i) -> ((i <= 7) ->
+         (a_13[i] =
+          read_sint8(mem_4, shift_sint8(input_base_0, batch_0 + i - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (a_12[i] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i]
+                                - a_13[i])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (a_11[i] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_12[i]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (a_10[i] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_11[i] *
+                               (vmultiplier_0.F6_lane)[i], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (a_9[i] =
+         to_sint16(L_L_sat16(a_10[i] + (voutput_zero_point_0.F6_lane)[i]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (a_8[i] = to_sint8(L_L_sat8(a_9[i]))))).
+    (* Assertion *)
+    Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+        (a_8[i] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_0, batch_0 + i - batch_1)),
+           read_sint16(mem_4, a_1), read_sint32(mem_4, a_2),
+           read_sint16(mem_4, a_3))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_14 = shift_sint8(output_base_0, batch_0 - batch_1).
+      Let a_15 = shift_uint8(a_14, 0).
+      Let a_16 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i : Z. let x_17 = 4 * i in ((0 <= i) -> ((i <= 1) ->
+          (a_16[i] =
+           (to_uint8(a_8[x_17]) + (256 * to_uint8(a_8[1 + x_17]))
+            + (65536 * to_uint8(a_8[2 + x_17]))
+            + (16777216 * to_uint8(a_8[3 + x_17])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_15, 4) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_14, i))
+              = to_uint8(lsr(a_16[0], 8 * i)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_15, mem_undef_1, a_15, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+          ((vy_2.F1_lane)[i] = (if (i <= 3) then a_8[4 + i] else a_8[i - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i : Z. ((0 <= i) ->
+        (((batch_1 + i) < (batch_0 + tail_done_2)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_0, i)), x_14,
+           x_15, x_16) = read_sint8(mem_3, shift_sint8(output_base_0, i))))).
+    (* Assertion *)
+    Have: forall i : Z. ((0 <= i) -> (((tail_done_2 + i) <= 7) ->
+        ((vy_2.F1_lane)[i] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_0, batch_0 + tail_done_2 + i
+                      - batch_1)), x_14, x_15, x_16)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_17 = vy_1.F1_lane.
+      Let a_18 = shift_sint8(output_base_0, batch_0 - 2 - x_8).
+      Let a_19 = shift_uint8(a_18, 0).
+      Let a_20 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_8) = batch_1) /\
+          ((2 + tail_done_2 + x_8) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i : Z. let x_17 = 2 * i in ((0 <= i) -> ((i <= 3) ->
+          (a_20[i] =
+           (to_uint8(a_17[x_17]) + (256 * to_uint8(a_17[1 + x_17])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_19, 2) /\
+          (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_18, i))
+              = to_uint8(lsr(a_20[0], 8 * i)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_19, mem_undef_2, a_19, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i : Z. ((0 <= i) -> ((i <= 7) ->
+          ((vy_0.F1_lane)[i] =
+           (if (i <= 5) then a_17[2 + i] else a_17[i - 6])))).
+      Have: (x_8 + to_uint64(batch_1 - x_8)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_8) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_0, batch_0 - x_8) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_8) = batch_1.
+    (* Assertion *)
+    Have: forall i : Z. ((0 <= i) -> (((i + x_8) < batch_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_0, i)), x_10,
+           x_11, x_12) = read_sint8(mem_1, shift_sint8(output_base_0, i))))).
+    (* Assertion *)
+    Have: forall i : Z. ((0 <= i) -> (((batch_1 + i) <= (7 + x_8)) ->
+        ((vy_0.F1_lane)[i] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_0, batch_0 + i - x_8)), x_10,
+           x_11, x_12)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_5 = mem_0. }
+  (* Assertion *)
+  Have: forall i : Z. ((0 <= i) -> ((i < batch_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i)), x, x_1, x_2)
+         = read_sint8(mem_0, shift_sint8(output_base_0, i))))).
+  (* Call '__FC_assert' *)
+  Have: null != output_1.
+}
+Prove: (-2147483647) <= x_1.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c", line 21):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c", line 57):
+Let a = vy_0.F15_lane.
+Let a_1 = __riscv_vsadd_vx_i16m4_0.F17_lane.
+Let a_2 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F28_output_zero_point(a_2).
+Let x = read_sint16(mem_0, a_3).
+Let a_4 = __riscv_vnclip_wx_i16m4_0.F17_lane.
+Let a_5 = __riscv_vwmul_vx_i32m8_0.F19_lane.
+Let a_6 = shiftfield_F28_multiplier(a_2).
+Let x_1 = read_sint32(mem_0, a_6).
+Let a_7 = __riscv_vsll_vx_i16m4_0.F17_lane.
+Let a_8 = __riscv_vrsub_vx_i16m4_0.F17_lane.
+Let a_9 = shiftfield_F28_input_zero_point(a_2).
+Let x_2 = read_sint16(mem_0, a_9).
+Let a_10 = __riscv_vsext_vf2_i16m4_0.F17_lane.
+Let a_11 = __riscv_vle8_v_i8m2_0.F15_lane.
+Let x_3 = -batch_0.
+Let a_12 = shift_sint8(output_base_0, 0).
+Let a_13 = memcpy(mem_0, a_12, mem_undef_0, a_12, total_0).
+Let x_4 = read_sint16(a_13, a_9).
+Let x_5 = read_sint32(a_13, a_6).
+Let x_6 = read_sint16(a_13, a_3).
+Let a_14 = shift_sint8(input_base_1, 0).
+Let a_15 = shift_sint8(output_base_1, 0).
+Let a_16 = memcpy(mem_6, a_15, mem_undef_1, a_15, total_0).
+Let x_7 = read_sint32(a_16, a_6).
+Let x_8 = read_sint16(mem_6, a_3).
+Let x_9 = read_sint32(mem_6, a_6).
+Let x_10 = read_sint16(mem_6, a_9).
+Let x_11 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\ IsS1(vy_3) /\
+      IsS11(tmp_8_0) /\ IsS15(__riscv_vle8_v_i8m2_0) /\ IsS15(vy_0) /\
+      IsS17(__riscv_vnclip_wx_i16m4_0) /\ IsS17(__riscv_vrsub_vx_i16m4_0) /\
+      IsS17(__riscv_vsadd_vx_i16m4_0) /\ IsS17(__riscv_vsext_vf2_i16m4_0) /\
+      IsS17(__riscv_vsll_vx_i16m4_0) /\ IsS19(__riscv_vwmul_vx_i32m8_0) /\
+      IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\ IsS6(vacc_3) /\
+      IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint8(read_sint8(mem_0, output_0)) /\
+      is_sint16(x_2) /\ is_sint16(x) /\ is_sint16(x_10) /\ is_sint16(x_8) /\
+      is_sint32(x_1) /\ is_sint32(x_9) /\ bytes(a_13) /\ bytes(a_16) /\
+      is_sint32(x_5) /\ is_sint32(x_7).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Goal *)
+  When: (0 <= i) /\ (if (batch_0 <= 31) then (i < batch_0) else (i <= 31)).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_14, x_11).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_15, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_12, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_15, total_0, a_12, total_0).
+  (* Pre-condition *)
+  Have: separated(a_15, total_0, a_14, x_11).
+  (* Pre-condition *)
+  Have: separated(a_15, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_12, total_0, a_14, x_11).
+  (* Pre-condition *)
+  Have: separated(a_12, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_9 != (-2147483648).
+  (* Initializer *)
+  Init: a_14 = shift_sint8(input_base_0, 0).
+  (* Call '__FC_assert' *)
+  Have: a_15 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_9, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_10))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_6, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_9.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_9)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_8))).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: x_7 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_16, shift_sint8(input_base_1, i_1)),
+         read_sint16(a_16, a_9), x_7, read_sint16(a_16, a_3))
+         = read_sint8(a_16, shift_sint8(output_base_1, i_1))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_12 = batch_1 % 2.
+    Let x_13 = -x_12.
+    Let x_14 = read_sint16(mem_1, a_9).
+    Let x_15 = read_sint32(mem_1, a_6).
+    Let x_16 = read_sint16(mem_1, a_3).
+    Let x_17 = -batch_1.
+    Let x_18 = read_sint16(mem_3, a_9).
+    Let x_19 = read_sint32(mem_3, a_6).
+    Let x_20 = read_sint16(mem_3, a_3).
+    Let a_17 = vqmovn_s16_0.F1_lane.
+    Let a_18 = vacc_0.F6_lane.
+    Let a_19 = vacc_1.F6_lane.
+    Let a_20 = vacc_2.F6_lane.
+    Let a_21 = vacc_3.F6_lane.
+    Let a_22 = tmp_5_0.F1_lane.
+    Have: a_16 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_1, total_0 - batch_1), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_22[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_1, total_0 + i_1 - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_21[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_22[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_20[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_21[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_19[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_20[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_18[i_1] =
+         to_sint16(L_L_sat16(a_19[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_17[i_1] = to_sint8(L_L_sat8(a_18[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_17[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_1, total_0 + i_1 - batch_1)),
+           read_sint16(mem_4, a_9), read_sint32(mem_4, a_6),
+           read_sint16(mem_4, a_3))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_23 = shift_sint8(output_base_1, total_0 - batch_1).
+      Let a_24 = shift_uint8(a_23, 0).
+      Let a_25 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_21 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_25[i_1] =
+           (to_uint8(a_17[x_21]) + (256 * to_uint8(a_17[1 + x_21]))
+            + (65536 * to_uint8(a_17[2 + x_21]))
+            + (16777216 * to_uint8(a_17[3 + x_21])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_24, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_23, i_1))
+              = to_uint8(lsr(a_25[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_24, mem_undef_2, a_24, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_3.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_17[4 + i_1] else a_17[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_3 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_1 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_1, i_1)), x_18,
+           x_19, x_20) = read_sint8(mem_3, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_3.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_1, tail_done_2 + total_0 + i_1
+                      - batch_1)), x_18, x_19, x_20)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_26 = vy_2.F1_lane.
+      Let a_27 = shift_sint8(output_base_1, total_0 - 2 - x_12).
+      Let a_28 = shift_uint8(a_27, 0).
+      Let a_29 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_3 = vy_2) /\
+          ((2 + tail_done_1 + x_12) = batch_1) /\
+          ((2 + tail_done_2 + x_12) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_21 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_29[i_1] =
+           (to_uint8(a_26[x_21]) + (256 * to_uint8(a_26[1 + x_21])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_28, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_27, i_1))
+              = to_uint8(lsr(a_29[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_28, mem_undef_3, a_28, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_1.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_26[2 + i_1] else a_26[i_1 - 6])))).
+      Have: (x_12 + to_uint64(batch_1 - x_12)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_3 = vy_1) /\
+          ((tail_done_2 + x_12) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_1, total_0 - x_12) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_12) = batch_1.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_12) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_1, i_1)), x_14,
+           x_15, x_16) = read_sint8(mem_1, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) <= (7 + x_12)) ->
+        ((vy_1.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_1, total_0 + i_1 - x_12)), x_14,
+           x_15, x_16)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_1.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_16 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_1, i_1)), x_2, x_1,
+         x) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_2, x_1,
+         x) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Call '__FC_assert' *)
+  Have: a_14 != null.
+  (* Call '__FC_assert' *)
+  Have: a_12 != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_1.
+  (* Invariant *)
+  Have: x_1 != (-2147483648).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_5 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_13, shift_sint8(input_base_0, i_1)), x_4, x_5,
+         x_6) = read_sint8(a_13, shift_sint8(output_base_0, i_1))))).
+  (* Then *)
+  Have: 0 < batch_0.
+  (* Call '__riscv_vle8_v_i8m2' *)
+  Have: valid_rd(alloc_0, shift_sint8(input_base_0, total_0 - batch_0),
+          if (batch_0 <= 31) then batch_0 else 32) /\
+      ((32 <= batch_0) \/ (batch_0 <= 32)) /\
+      (forall i_1 : Z. ((0 <= i_1) ->
+       ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+       (a_11[i_1] =
+        read_sint8(a_13, shift_sint8(input_base_0, total_0 + i_1 - batch_0)))))).
+  (* Call '__riscv_vsext_vf2_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_10[i_1] = a_11[i_1]))).
+  (* Call '__riscv_vrsub_vx_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_8[i_1] = to_sint16(L_L_wrap16(to_uint64(x_2 - a_10[i_1])))))).
+  (* Call '__riscv_vsll_vx_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_7[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_8[i_1]), 7))))))).
+  (* Call '__riscv_vwmul_vx_i32m8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_5[i_1] = to_sint32(to_sint16(-x_1) * a_7[i_1])))).
+  (* Call '__riscv_vnclip_wx_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_4[i_1] = to_sint16(L_L_sat16(L_L_round_shift(a_5[i_1], 15, 0)))))).
+  (* Call '__riscv_vsadd_vx_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_1[i_1] = to_sint16(L_L_sat16(a_4[i_1] + x))))).
+  (* Call '__riscv_vnclip_wx_i8m2' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a[i_1] = to_sint8(L_L_sat8(L_L_round_shift(a_1[i_1], 0, 2)))))).
+}
+Prove: a[i] =
+    L_L_cvt8(read_sint8(a_13,
+               shift_sint8(input_base_0, i + total_0 - batch_0)), x_4, x_5,
+      x_6).
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/model-probes/qs8-vcvt-bytes/.build/prefix03/annotated/rvv.c", line 64):
+Let a = shift_sint8(output_base_0, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, total_0).
+Let a_2 = shiftfield_F27_xnn_qs8_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F28_input_zero_point(a_2).
+Let x = read_sint16(a_1, a_3).
+Let a_4 = shiftfield_F28_multiplier(a_2).
+Let x_1 = read_sint32(a_1, a_4).
+Let a_5 = shiftfield_F28_output_zero_point(a_2).
+Let x_2 = read_sint16(a_1, a_5).
+Let x_3 = read_sint32(mem_0, a_4).
+Let a_6 = shift_sint8(input_base_1, 0).
+Let x_4 = read_sint16(mem_0, a_3).
+Let x_5 = read_sint16(mem_0, a_5).
+Let a_7 = shift_sint8(output_base_1, 0).
+Let a_8 = memcpy(mem_6, a_7, mem_undef_1, a_7, total_0).
+Let x_6 = read_sint32(a_8, a_4).
+Let x_7 = read_sint16(mem_6, a_5).
+Let x_8 = read_sint32(mem_6, a_4).
+Let x_9 = read_sint16(mem_6, a_3).
+Let x_10 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_5_0) /\ IsS1(vy_0) /\ IsS1(vy_1) /\ IsS1(vy_2) /\
+      IsS11(tmp_8_0) /\ IsS6(vacc_0) /\ IsS6(vacc_1) /\ IsS6(vacc_2) /\
+      IsS6(vacc_3) /\ IsS6(vinput_zero_point_0) /\ IsS6(vmultiplier_0) /\
+      IsS6(voutput_zero_point_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      bytes(mem_1) /\ bytes(mem_2) /\ bytes(mem_3) /\ bytes(mem_4) /\
+      bytes(mem_5) /\ bytes(mem_6) /\ is_uint64(batch_0) /\
+      is_uint64(batch_1) /\ is_uint64(tail_done_0) /\
+      is_uint64(tail_done_1) /\ is_uint64(tail_done_2) /\
+      is_uint64(total_0) /\ is_sint8(read_sint8(mem_0, output_0)) /\
+      is_sint16(x_4) /\ is_sint16(x_5) /\ is_sint16(x_9) /\ is_sint16(x_7) /\
+      is_sint32(x_3) /\ is_sint32(x_8) /\ bytes(a_1) /\ bytes(a_8) /\
+      is_sint32(x_1) /\ is_sint32(x_6).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      framed(mem_6) /\ linked(alloc_0) /\ sconst(mem_6).
+  (* Goal *)
+  When: (0 <= i) /\ (i < total_0).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 18446744073709551608.
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_7, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a, total_0).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: separated(a_7, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: separated(a, total_0, a_6, x_10).
+  (* Pre-condition *)
+  Have: separated(a, total_0, params_0, 12).
+  (* Pre-condition *)
+  Have: x_8 != (-2147483648).
+  (* Initializer *)
+  Init: a_6 = shift_sint8(input_base_0, 0).
+  (* Call '__FC_assert' *)
+  Have: a_7 != null.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_3, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vinput_zero_point_0.F6_lane)[i_1] = x_9))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_4, 4).
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_8.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vmultiplier_0.F6_lane)[i_1] = to_sint16(-x_8)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(alloc_0, a_5, 2).
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((voutput_zero_point_0.F6_lane)[i_1] = x_7))).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: x_6 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_8, shift_sint8(input_base_1, i_1)),
+         read_sint16(a_8, a_3), x_6, read_sint16(a_8, a_5))
+         = read_sint8(a_8, shift_sint8(output_base_1, i_1))))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let x_11 = batch_1 % 2.
+    Let x_12 = -x_11.
+    Let x_13 = read_sint16(mem_1, a_3).
+    Let x_14 = read_sint32(mem_1, a_4).
+    Let x_15 = read_sint16(mem_1, a_5).
+    Let x_16 = -batch_1.
+    Let x_17 = read_sint16(mem_3, a_3).
+    Let x_18 = read_sint32(mem_3, a_4).
+    Let x_19 = read_sint16(mem_3, a_5).
+    Let a_9 = vqmovn_s16_0.F1_lane.
+    Let a_10 = vacc_0.F6_lane.
+    Let a_11 = vacc_1.F6_lane.
+    Let a_12 = vacc_2.F6_lane.
+    Let a_13 = vacc_3.F6_lane.
+    Let a_14 = tmp_5_0.F1_lane.
+    Have: a_8 = mem_4.
+    Have: mem_5 = mem_4.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(alloc_0, shift_sint8(input_base_1, total_0 - batch_1), 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (a_14[i_1] =
+          read_sint8(mem_4,
+            shift_sint8(input_base_1, total_0 + i_1 - batch_1)))))).
+    (* Call 'vsubw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_13[i_1] =
+         to_sint16(L_L_wrap16(to_uint64((vinput_zero_point_0.F6_lane)[i_1]
+                                - a_14[i_1])))))).
+    (* Call 'vshlq_n_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_12[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(lsl(to_uint16(a_13[i_1]), 7))))))).
+    (* Call 'vqrdmulhq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_11[i_1] =
+         to_sint16(L_L_sat16(L_L_round_shift(a_12[i_1] *
+                               (vmultiplier_0.F6_lane)[i_1], 15, 0)))))).
+    (* Call 'vqaddq_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_10[i_1] =
+         to_sint16(L_L_sat16(a_11[i_1] + (voutput_zero_point_0.F6_lane)[i_1]))))).
+    (* Call 'vqmovn_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_9[i_1] = to_sint8(L_L_sat8(a_10[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_9[i_1] =
+         L_L_cvt8(read_sint8(mem_4,
+                    shift_sint8(input_base_1, total_0 + i_1 - batch_1)),
+           read_sint16(mem_4, a_3), read_sint32(mem_4, a_4),
+           read_sint16(mem_4, a_5))))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_15 = shift_sint8(output_base_1, total_0 - batch_1).
+      Let a_16 = shift_uint8(a_15, 0).
+      Let a_17 = tmp_8_0.F11_lane.
+      (* Call 'vreinterpret_u32_s8' *)
+      Have: forall i_1 : Z. let x_20 = 4 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 1) ->
+          (a_17[i_1] =
+           (to_uint8(a_9[x_20]) + (256 * to_uint8(a_9[1 + x_20]))
+            + (65536 * to_uint8(a_9[2 + x_20]))
+            + (16777216 * to_uint8(a_9[3 + x_20])))))).
+      (* Call 'vst1_lane_u32' *)
+      Have: valid_rw(alloc_0, a_16, 4) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           (read_uint8(mem_3, shift_uint8(a_15, i_1))
+              = to_uint8(lsr(a_17[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_4, a_16, mem_undef_2, a_16, 4) = mem_3.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_2.F1_lane)[i_1] =
+           (if (i_1 <= 3) then a_9[4 + i_1] else a_9[i_1 - 4])))).
+      Have: tail_done_2 = 4.
+    }
+    Else {
+      Have: (mem_4 = mem_3) /\ (tail_done_2 = 0) /\ (vy_2 = vqmovn_s16_0).
+    }
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) ->
+        (((batch_1 + i_1) < (tail_done_2 + total_0)) ->
+        (L_L_cvt8(read_sint8(mem_3, shift_sint8(input_base_1, i_1)), x_17,
+           x_18, x_19) = read_sint8(mem_3, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((tail_done_2 + i_1) <= 7) ->
+        ((vy_2.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_3,
+                    shift_sint8(input_base_1, tail_done_2 + total_0 + i_1
+                      - batch_1)), x_17, x_18, x_19)))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let a_18 = vy_1.F1_lane.
+      Let a_19 = shift_sint8(output_base_1, total_0 - 2 - x_11).
+      Let a_20 = shift_uint8(a_19, 0).
+      Let a_21 = tmp_9_0.F7_lane.
+      Have: (mem_3 = mem_7) /\ (vy_2 = vy_1) /\
+          ((2 + tail_done_1 + x_11) = batch_1) /\
+          ((2 + tail_done_2 + x_11) = batch_1).
+      Have: mem_2 = mem_7.
+      (* Call 'vreinterpret_u16_s8' *)
+      Have: forall i_1 : Z. let x_20 = 2 * i_1 in ((0 <= i_1) ->
+          ((i_1 <= 3) ->
+          (a_21[i_1] =
+           (to_uint8(a_18[x_20]) + (256 * to_uint8(a_18[1 + x_20])))))).
+      (* Call 'vst1_lane_u16' *)
+      Have: valid_rw(alloc_0, a_20, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           (read_uint8(mem_1, shift_uint8(a_19, i_1))
+              = to_uint8(lsr(a_21[0], 8 * i_1)))))).
+      (* Call Effects *)
+      Have: memcpy(mem_7, a_20, mem_undef_3, a_20, 2) = mem_1.
+      (* Call 'vext_s8' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+          ((vy_0.F1_lane)[i_1] =
+           (if (i_1 <= 5) then a_18[2 + i_1] else a_18[i_1 - 6])))).
+      Have: (x_11 + to_uint64(batch_1 - x_11)) = batch_1.
+    }
+    Else {
+      Have: (mem_3 = mem_1) /\ (vy_2 = vy_0) /\
+          ((tail_done_2 + x_11) = batch_1).
+    }
+    (* Assertion *)
+    Have: shift_sint8(output_base_1, total_0 - x_11) = output_0.
+    (* Assertion *)
+    Have: (tail_done_0 + x_11) = batch_1.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((i_1 + x_11) < total_0) ->
+        (L_L_cvt8(read_sint8(mem_1, shift_sint8(input_base_1, i_1)), x_13,
+           x_14, x_15) = read_sint8(mem_1, shift_sint8(output_base_1, i_1))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) <= (7 + x_11)) ->
+        ((vy_0.F1_lane)[i_1] =
+         L_L_cvt8(read_sint8(mem_1,
+                    shift_sint8(input_base_1, total_0 + i_1 - x_11)), x_13,
+           x_14, x_15)))).
+    If bit_test(batch_1, 0)
+    Then {
+      Have: mem_1 = mem_8.
+      (* Call 'vst1_lane_s8' *)
+      Have: ((vy_0.F1_lane)[0] = read_sint8(mem_0, output_0)) /\
+          valid_rw(alloc_0, output_0, 1).
+      (* Call Effects *)
+      Have: write_sint8(mem_8, output_0, v) = mem_0.
+    }
+    Else { Have: mem_1 = mem_0. }
+  }
+  Else { Have: a_8 = mem_0. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_1, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      (L_L_cvt8(read_sint8(mem_0, shift_sint8(input_base_0, i_1)), x_4, x_3,
+         x_5) = read_sint8(mem_0, shift_sint8(output_base_1, i_1))))).
+  (* Call '__FC_assert' *)
+  Have: a_6 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_3.
+  (* Invariant *)
+  Have: x_3 != (-2147483648).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: x_1 != (-2147483648).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      (L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i_1)), x, x_1, x_2)
+         = read_sint8(a_1, shift_sint8(output_base_0, i_1))))).
+  (* Else *)
+  Have: batch_0 <= 0.
+}
+Prove: L_L_cvt8(read_sint8(a_1, shift_sint8(input_base_0, i)), x, x_1, x_2)
+         = read_sint8(a_1, shift_sint8(output_base_0, i)).
+
+------------------------------------------------------------

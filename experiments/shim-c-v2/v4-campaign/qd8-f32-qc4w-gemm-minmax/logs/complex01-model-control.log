@@ -1,0 +1,31 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01-model-control.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01-model-control.c", "-wp-skip-fct", "__riscv_vfadd_vv_f32m8,__riscv_vfmacc_vf_f32m8,__riscv_vfmax_vv_f32m8,__riscv_vfmin_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_u32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,doz,round_down_po2,vaddq_f32,vaddq_u32,vaddv_f32,vaddvq_f32,vcombine_f32,vdupq_lane_f32,vdupq_n_u32,vextq_f32,vfma_f32,vfmaq_lane_f32,vfmaq_laneq_f32,vget_high_u32,vget_lane_f32,vget_low_u32,vld1_dup_f32,vld1_f32,vld1q_lane_f32,vld1q_u32,vld2_dup_f32,vld2q_dup_f32,vmax_f32,vmin_f32,vmlaq_f32,vmovq_n_f32,vst1_lane_u32,vst1_u32,vst1q_lane_f32,vst1q_u32,vsubq_f32,vzip1q_f32,vzip2q_f32,xnn_prefetch_to_l1", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "shim_control_false,shim_control_true", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/complex_fp.driver"]
+[kernel] Parsing /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01-model-control.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:233: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:234: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:235: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:236: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:238: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:244: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:256: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function shim_control_false
+[rte:annot] annotating function shim_control_true
+[wp] 4 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_shim_control_false_ensures (Z3)
+[wp] Proved goals:    7 / 8
+  Terminating:     2
+  Unreachable:     2
+  Qed:             3
+  Timeout:         1

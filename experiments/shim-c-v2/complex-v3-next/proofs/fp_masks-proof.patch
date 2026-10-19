@@ -1,0 +1,17 @@
+--- a/fp_masks.c
++++ b/fp_masks.c
+@@ -1,8 +1,12 @@
+ #include "fp_primitives.h"
+ 
+-uint32x4_t vcgtq_f32(float32x4_t a,float32x4_t b) { uint32x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i]>b.lane[i]?UINT32_MAX:0;return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(\lt_float(b.lane[j],a.lane[j])?UINT32_MAX:0); */
++uint32x4_t vcgtq_f32(float32x4_t a,float32x4_t b) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(b.lane[j],a.lane[j])?UINT32_MAX:0); loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i]>b.lane[i]?UINT32_MAX:0;return r; }
+ 
+-uint32x4_t vcltq_f32(float32x4_t a,float32x4_t b) { uint32x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i]<b.lane[i]?UINT32_MAX:0;return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(\lt_float(a.lane[j],b.lane[j])?UINT32_MAX:0); */
++uint32x4_t vcltq_f32(float32x4_t a,float32x4_t b) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(a.lane[j],b.lane[j])?UINT32_MAX:0); loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i]<b.lane[i]?UINT32_MAX:0;return r; }
+ 
+ uint32x4_t vbslq_u32(uint32x4_t m,uint32x4_t a,uint32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=(m.lane[i]&a.lane[i])|(~m.lane[i]&b.lane[i]);return a; }
+ 

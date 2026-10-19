@@ -1,0 +1,21 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "experiments/shim-c-v2/complex-v3-next/f32-gemm-minmax/.build/memory05/annotated/unit.c", "-machdep", "gcc_x86_64", "-warn-special-float", "none", "-wp", "-wp-rte", "-wp-fct", "vextq_f32,vzip1q_f32,vzip2q_f32,vld1q_lane_f32", "-wp-model", "Typed+raw+float", "-wp-share", "experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "z3,cvc5", "-wp-par", "2", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "experiments/shim-c-v2/complex-v3-next/memory05.json", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,experiments/shared-extension/complex/shared/complex_fp.driver"]
+[kernel] Parsing experiments/shim-c-v2/complex-v3-next/f32-gemm-minmax/.build/memory05/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vextq_f32
+[rte:annot] annotating function vld1q_lane_f32
+[rte:annot] annotating function vzip1q_f32
+[rte:annot] annotating function vzip2q_f32
+[wp] 36 goals scheduled
+[wp] Proved goals:   44 / 44
+  Terminating:     4
+  Unreachable:     4
+  Qed:            21 (5ms-6ms-43ms)
+  CVC5 1.2.1:      8 (27ms-401ms-2.5s)
+  Z3 4.12.5:       7 (16ms-29ms-37ms)

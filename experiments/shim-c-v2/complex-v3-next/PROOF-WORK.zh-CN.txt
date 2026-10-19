@@ -1,0 +1,39 @@
+本轮复杂内核 proof 工作记录（中间状态，不是整核成功声明）
+
+边界
+- 原始 C、public spec.h、wrapper、shim、driver 均由 root SHA 冻结；只在新版本 proof.patch 中加入合同、循环不变量和 ghost。
+- 不使用新的 axiom/assume/外部 ghost 合同，也没有用修改 canonical_nan C 实现绕过位表示问题。
+- root 的修复浮点模型、FMA 标准库模型、前端修复及 builtin 模型均是独立冻结的 TCB 扩展。旧版源和证据保留。
+
+实质 proof 扩展
+- transpose：NEON tile 与 RVV 双层遍历，已处理列/行前缀、原指针位置、未处理区与 padding 保留、循环终止量。
+- pack：完整布局逻辑（含 bias 空指针、奇数 channel、padding 原值）、group/channel/reduction 前缀、位置与 frame。
+- dwconv：按实际 NEON 非融合 / RVV FMA 顺序展开三行、四 lane 的逻辑参考值，加入像素/通道结果前缀和 frame。
+- GEMM：NC/KC 双层循环游标、packed weight 前进位置和终止量；完整累加器关系尚未闭合。
+- 11 个浮点 wrapper：最终逐元素 NaN-aware 比较前缀；GEMM/SPMM 加双层行列比较。
+- 共享实际函数体：load/store/shuffle、四种 LMUL 算术、mask、min/max；17 个 existing private static helper 添加需随 body 检查的功能合同。
+
+已检查的局部证据（不能替代完整 callee closure）
+- complex/records/shared-lemmas02：6/6 全局 ext_same / IEEE add,mul,sub,FMA congruence lemma。
+- complex/records/library06：两个 FMA helper 实际 body 43/43 raw。
+- complex/records/vmla-typed01：NEON 非融合 VMLA helper 在 Typed+float 23/23 raw；Raw 还有一个前缀目标。
+- memory05：4 个 NEON load/lane/shuffle helper 实际 body 36/36 raw；修正了本轮 proof 的 ==> ternary 结合顺序，plus-memory-merge.json 保留合并前后 SHA。
+- static-helper-plus01：两个 dwconv 私有 min/max helper，修复 frontend+builtin 模型后46/46 raw。
+- complex/records/tuple-ref-print01：无指针 by-value tuple 构造器 Typed+ref 2/2 raw，WP-print 均为 Prove:true，无额外内存 hypothesis。仅此独立 helper，不用作整核验收。
+
+剩余框架问题的最小证据
+- pointer↔integer：原 C 的 uintptr_t 算术需要地址/offset 关系；普通 Typed/Bytes/Region 的 p→integer→p identity 成功，而 +0/+sizeof(float) probe 不闭合。指针转换后的访问条件与 frame 因此仍未解。
+- float↔bits：Typed 没有从 memcpy(uint32 bit-pattern) 到 float 数值/NaN 的 codec，影响 canonical_nan、argmax 的位选择、exp 的 bit approximation。
+- Bytes+float 不是安全替代：官方 CODEC_FLOAT 两个公理的无范围 encode(decode(i))=i 与 encode 范围矛盾。CODEC-AUDIT.zh-CN.txt、codec-axioms-ground-instances.smt2 有实际生成理论与两个 solver 的 unsat 反例；新模型明确拒绝 Bytes*。这不是 claim 整个 C WP 已证 false。
+- Ref 不是 +raw 的叠加选择，而是覆盖；整库会新增 valid(read pointer) 等更强假设，不能对原 public spec 默默使用。tuple 独立成功不能证明此配置可全核替换。
+- u32 round_down_po2(n,2) 的 land(2^64-2,n)+n%2=n 仍需真正 bitand/mod2 引理；已有 Cint cast/mod 定理不能冒充。
+
+逐项状态以各轮 *-summary.json 的 raw_obligations、pending、unchanged 和 control 为准。超时而没有最终 raw JSON 的轮次不得当成0目标或通过。vcmul 旧195/195已被隔离，不算当前成功。
+
+后续有效改进：checked array tactic
+- vcmul-vmla-array-min11 / array-default12：保留原3个全局lemma，只在proof里追加Wp.array策略，VMLA/VMLS两实际body44/44；默认script+tip,z3,cvc5亦44/44，无需修改checker。
+- complex-array/f32-vcmul 是root单独冻结的新variant，只增加6行策略、配置tip,z3,cvc5，全部实现/spec/模型源哈希沿用v4。完整array01另跑，不能用helper44/44声称整核成功。
+- 额外nativeFP左右congruence共9/9虽已证，对原memory select目标无帮助；逐lane不变量、ghost入口快照、标量inline和部分unroll均没有解决它们，已保留诊断，未放入正式proof。
+- u32 tuple 同一array策略仍剩constructor功能post，不能将其独立Typed+ref 2/2混入统一Raw证明。
+- u32-stride-print02 精确说明Typed的两次uint32*↔char* cast触发Hide sub-term definition，目标用无定义的新地址w。这是与uintptr算术不同的typed cast精度损失，不应都写成缺少不变量。
+- root提供新的纯整数Bytes模型，编译器遇到任何CODEC_FLOAT直接拒绝，字节/整数辅助定理有独立28/28证明。这里只开始u32 helper诊断，没有绕过wrapper做kernel验收；新增scope仍需root审核冻结。

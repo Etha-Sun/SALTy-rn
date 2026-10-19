@@ -1,0 +1,10 @@
+module WordViews
+ use int.Int
+ use frama_c_wp.membytes_be.ValueBlockRW
+ let lemma word16_bytes(b:vblock)(o:int)
+ ensures { bread_uint16 b o=256*bread_uint8 b o+bread_uint8 b (o+1) }
+ = ()
+ let lemma word32_bytes(b:vblock)(o:int)
+ ensures { bread_uint32 b o=16777216*bread_uint8 b o+65536*bread_uint8 b (o+1)+256*bread_uint8 b (o+2)+bread_uint8 b (o+3) }
+ = ()
+end

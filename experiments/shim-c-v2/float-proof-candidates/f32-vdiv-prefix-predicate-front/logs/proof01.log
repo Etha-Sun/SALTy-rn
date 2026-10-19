@@ -1,0 +1,81 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/logs/proof01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/.build/proof01/annotated/extensions.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/.build/proof01/annotated/unit.c']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/logs/proof01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/.build/proof01/annotated/extensions.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/.build/proof01/annotated/unit.c', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/logs/proof01.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/.build/proof01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/float-proof-candidates/f32-vdiv-prefix-predicate-front/.build/proof01/annotated/extensions.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfdiv_vv_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_add
+[rte:annot] annotating function f32_div
+[rte:annot] annotating function proof_check_fp_add_congruence
+[rte:annot] annotating function proof_check_fp_div_congruence
+[rte:annot] annotating function proof_check_fp_div_transport
+[rte:annot] annotating function proof_check_same_float_refl
+[rte:annot] annotating function proof_check_same_float_trans
+[rte:annot] annotating function proof_check_same_float_value
+[rte:annot] annotating function proof_check_same_value_refl
+[rte:annot] annotating function proof_check_same_value_trans
+[rte:annot] annotating function proof_div_join
+[rte:annot] annotating function proof_div_prefix_step
+[rte:annot] annotating function proof_div_transfer
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function proof_input_point
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vdivq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_s8
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] rvv.c:8: Warning: Statement specifications not yet supported (skipped).
+[wp] neon.c:14: Warning: Statement specifications not yet supported (skipped).
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] 601 goals scheduled
+[wp] [Timeout] typed_fma_extensions_proof_div_prefix_step_assert_predicate_done (Qed 6ms) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_4 (Qed 3.4s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_6 (Qed 3.5s) (Z3)
+[wp] [Failure] typed_fma_extensions_equivalent_assert_13 (Qed 3.3s) (CVC5)
+[wp] [Failure] typed_fma_extensions_equivalent_assert_observation_all (Qed 3.6s) (CVC5)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_rte_mem_access_5 (Qed 3.4s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_62 (Qed 391ms) (Z3)
+[wp] [Failure] typed_fma_extensions_equivalent_assert_64 (Qed 1.1s) (CVC5)
+[wp] [Failure] typed_fma_extensions_equivalent_assert_65 (Qed 1.4s) (CVC5)
+[wp] [Timeout] typed_fma_extensions_equivalent_loop_invariant_19_preserved (Qed 3.3s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_80 (Qed 3.1s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_83 (Qed 3.1s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_q_range_complete (Qed 3.2s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_assert_84 (Qed 3s) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_call_proof_div_transfer_2_requires_2 (Qed 365ms) (Z3)
+[wp] [Timeout] typed_fma_extensions_equivalent_call_proof_div_transfer_2_requires_3 (Qed 384ms) (Z3)
+[wp] [Failure] typed_fma_extensions_equivalent_call_proof_div_transfer_5_requires_2 (Qed 3.7s) (CVC5)
+[wp] [Failure] typed_fma_extensions_equivalent_call_proof_div_transfer_5_requires_3 (Qed 3.5s) (CVC5)
+[wp] Proved goals:  643 / 661
+  Terminating:    30
+  Unreachable:    30
+  Qed:           318 (0.59ms-562ms-4.9s)
+  CVC5 1.2.1:    170 (0.50ms-1.8s-14.5s)
+  Z3 4.12.5:      95 (4ms-525ms-14.0s)
+  Failed:          6
+  Timeout:        12

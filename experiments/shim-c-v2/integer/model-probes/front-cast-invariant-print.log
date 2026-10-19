@@ -1,0 +1,59 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Typed+float", "-wp-share", "experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vcvtq_f32_s32", "-wp-prop", "@invariant", "-wp-prover", "none", "-wp-print", "experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/integer.driver"]
+[kernel] Parsing experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vcvtq_f32_s32
+
+Goal Establishment of Invariant ("experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/integer-qs8-f32-vcvt.c", line 172):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/integer-qs8-f32-vcvt.c", line 172):
+Let a_1 = a.F10_lane.
+Assume {
+  Type: IsS10(a) /\ is_uint64(i) /\ is_sint32(a_1[i]).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(v[i_1], to_f32(real_of_int(a_1[i_1]))))).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: to_uint64(1 + i) <= 4.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/integer-qs8-f32-vcvt.c", line 173):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("experiments/shim-c-v2/plus-campaign/qs8-f32-vcvt/.build/direct01/annotated/integer-qs8-f32-vcvt.c", line 173):
+Let x = to_uint64(1 + i).
+Let a_1 = a.F10_lane.
+Let a_2 = a_1[i].
+Assume {
+  Type: IsS10(a) /\ is_uint64(i) /\ is_sint32(a_2).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i) ->
+      P_same_float(v[i_2], to_f32(real_of_int(a_1[i_2]))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Invariant *)
+  Have: x <= 4.
+}
+Prove: P_same_float(v[i <- to_f32(real_of_int(a_2))][i_1],
+         to_f32(real_of_int(a_1[i_1]))).
+
+------------------------------------------------------------

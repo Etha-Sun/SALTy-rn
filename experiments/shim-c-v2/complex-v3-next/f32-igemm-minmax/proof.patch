@@ -1,0 +1,31 @@
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,10 +1,14 @@
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
++/*@ requires vl<=16; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+ static inline vfloat32m4_t salty_min_vf_m4(vfloat32m4_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m4(__builtin_nanf(""),vl);
+   vbool8_t nan=__riscv_vmfne_vv_f32m4_b8(a,a,vl);
+   vfloat32m4_t r=__riscv_vfmin_vf_f32m4(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m4(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=16; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+ static inline vfloat32m4_t salty_max_vf_m4(vfloat32m4_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m4(__builtin_nanf(""),vl);
+   vbool8_t nan=__riscv_vmfne_vv_f32m4_b8(a,a,vl);
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,11 @@
+   struct xnn_f32_minmax_params params={{lower,upper}};
+   test_neon(1,nc,k*4,positions*sizeof(void*),a,w,left,nc*4,32,0,NULL,&params);
+   test_rvv(1,nc,k*4,positions*sizeof(void*),a,w,right,nc*4,32,0,NULL,&params);
++  /*@ loop invariant 0<=i<=nc;
++      loop invariant \forall integer j; 0<=j<i ==> (\eq_float(left[j],right[j]) || (\is_NaN(left[j]) && \is_NaN(right[j])));
++      loop assigns i;
++      loop variant nc-i;
++  */
+   for(size_t i=0;i<nc;i++)if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }

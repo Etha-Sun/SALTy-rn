@@ -1,0 +1,60 @@
+本轮 integer10 完整证明续作状态
+生成时间：2026-10-19T05:17:43.322648+00:00
+C/spec/model 保持冻结，旧版本保留。complete=false、超时或未输出raw均不计为验证成功。
+
+1. qs8-vcvt: 尚未整核通过
+   698/719，pending=21；exit=0；耗时=856.77秒；预算耗尽=False
+   报告：experiments/shim-c-v2/integer-byte-v2/qs8-vcvt/logs/memory01-summary.json
+   原因：新整数Byte模型的任意指针pack16/32独立控制通过，但实际struct按值传参/局部对象memcpy再reinterpret的功能post仍超时；另有ASR/RNU全域合同、tail store逐字节前缀及kernel归纳未闭合。独立控制不代表该kernel已证明。
+
+2. qs8-vlrelu: 尚未整核通过
+   846/866，pending=20；exit=0；耗时=764.413秒；预算耗尽=False
+   报告：experiments/shim-c-v2/integer-byte-v2/qs8-vlrelu/logs/memory01-summary.json
+   原因：实际reinterpret/字节tail store、ASR/RNU及vbsl选择的功能前缀未闭合；kernel量化/饱和循环归纳尚有真实pending。
+
+3. qs8-vadd-minmax: 尚未整核通过
+   最终raw未写出；scheduled=1325，当前日志已报pending=26（非全部）；exit=124；耗时=1235.16秒；预算耗尽=True
+   报告：experiments/shim-c-v2/integer-byte-v2/qs8-vadd-minmax/logs/memory01-summary.json
+   原因：实际Byte模型下的有符号乘法/rounding/shift合同、tail packing/store及整kernel累加和饱和归纳仍未闭合。
+
+4. qu8-vadd-minmax: 尚未整核通过
+   最终raw未写出；scheduled=1153，当前日志已报pending=29（非全部）；exit=124；耗时=1235.207秒；预算耗尽=True
+   报告：experiments/shim-c-v2/integer-byte-v2/qu8-vadd-minmax/logs/memory01-summary.json
+   原因：实际Byte模型下的有符号乘法/rounding/shift合同、tail packing/store及整kernel累加和饱和归纳仍未闭合。
+
+5. qs8-f32-vcvt: 尚未整核通过
+   794/805，pending=11；exit=0；耗时=1047.509秒；预算耗尽=False
+   报告：experiments/shim-c-v2/integer-array-v3/qs8-f32-vcvt/logs/local01-summary.json
+   原因：全部intrinsic本体及其float conversion/multiply前缀已闭合；剩11个kernel/wrapper VC，涉及中心化输入与scale快照重绑定后的lane prefix、tail rebase与最终输出比较量词实例化。没有发现kernel反例。
+
+6. qu8-f32-vcvt: 尚未整核通过
+   835/843，pending=8；exit=0；耗时=967.268秒；预算耗尽=False
+   报告：experiments/shim-c-v2/integer-array-v3/qu8-f32-vcvt/logs/local01-summary.json
+   原因：全部intrinsic本体及其float conversion/multiply前缀已闭合；剩8个kernel/wrapper VC，涉及NEON高4lane prefix、两处tail rebase、RVV中心化/转换后桥与prefix、最终输出比较量词实例化。使用旧版v2修复target，非修改本轮冻结C。
+
+7. f32-f16-vcvt: 尚未整核通过
+   最终raw未写出；scheduled=941，当前日志已报pending=52（非全部）；exit=124；耗时=1233.277秒；预算耗尽=True
+   报告：experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/logs/standard02-summary.json
+   原因：Typed memory仍不能闭合float↔uint32 memcpy位表示桥；还有tail memory/frame及kernel循环证明未完成。fabsf已允许使用pinned标准库保守合同，不再误报不支持调用；未加入位表示公理。完整运行触及预算，最终raw缺失，不能给总通过率。
+
+8. qs8-vmul-minmax-fp32: 尚未整核通过
+   最终raw未写出；scheduled=839，当前日志已报pending=47（非全部）；exit=124；耗时=1233.241秒；预算耗尽=True
+   报告：experiments/shim-c-v2/v4-campaign/qs8-vmul-minmax-fp32/logs/repr01-summary.json
+   原因：float↔int位表示memcpy桥未闭合，另有实际transitive ASR/RNU及内存/循环归纳待证。完整运行触及预算，最终raw缺失，不能给总通过率。
+
+9. qs8-rdsum: 尚未整核通过
+   420/702，pending=282；exit=0；耗时=983.303秒；预算耗尽=False
+   报告：experiments/shim-c-v2/v5-campaign/qs8-rdsum/logs/sum01-summary.json
+   原因：冻结public requires含memory-capturing sum/lambda；WP/Why3明确报Lambda-functions not yet implemented及unbound variable in of_term。此为前端/模型缺口，不能删前提过关；另有NEON多row不变量与uintptr行指针桥待证。
+
+10. qu8-rdsum: 尚未整核通过
+   最终raw未写出；scheduled=808，当前日志已报pending=31（非全部）；exit=124；耗时=1233.176秒；预算耗尽=True
+   报告：experiments/shim-c-v2/v5-campaign/qu8-rdsum/logs/standard02-summary.json
+   原因：内部sum已改成按行数递减的递归逻辑定义，前端可处理；但NEON多row归纳、uintptr行指针算术与floor/float→int范围及termination仍待证。floor已允许pinned保守stdlib合同，非未知external阻止运行。完整运行触及预算，最终raw缺失。
+
+公共改进：Cint54/54、ByteWord28/28、memory-view12原始bodyVC（8 checked计算+4 solver Valid）；根agent独立重放。Byte v2 pack控制23/24，仅故意false不证。
+同一Byte v2下最小struct按值memcpy控制14/16，两个功能post超时：表明普通pointer控制通过尚未闭合struct表示桥。
+独立局部final03真实qu8 wrapper3/3不与v3整核计数混算；未补充任意assume/axiom。
+integer10没有kernel级requires/assigns/terminates合同，public equivalent域被冻结；不能照搬已有独立kernel合同的v7模式而偷偷添加前提。本轮保持原检查路径。
+Byte+float被硬拒绝；原Bytes+float/有缺陷memcpy旧结果隔离，不用作成功证据。
+未把proof未完成当作kernel错误；本轮没有获得新的功能反例。

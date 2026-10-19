@@ -1,0 +1,101 @@
+{
+  "name": "f32-vdiv",
+  "files": {
+    "shim.h": {
+      "path": "verified/shared-extension/float/shim.h",
+      "sha256": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de"
+    },
+    "base.h": {
+      "path": "verified/shared-extension/float/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "verified/shared-extension/float/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "clamp.h": {
+      "path": "verified/shared-extension/float/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "float_ops.h": {
+      "path": "verified/shared-extension/float/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "extensions.h": {
+      "path": "verified/shared-extension/float/extensions.h",
+      "sha256": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+    },
+    "extensions.driver": {
+      "path": "verified/shared-extension/float/extensions.driver",
+      "sha256": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6"
+    },
+    "base.c": {
+      "path": "verified/shared-extension/float/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "float_ops.c": {
+      "path": "verified/shared-extension/float/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "div.c": {
+      "path": "verified/shared-extension/float/div.c",
+      "sha256": "242cf5697b67ddaae5af716876c3032dafe734ac33e7d4e6adb360c896d3c012"
+    },
+    "neon.c": {
+      "path": "verified/f32-vdiv/neon.c",
+      "sha256": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0"
+    },
+    "rvv.c": {
+      "path": "verified/f32-vdiv/rvv.c",
+      "sha256": "5637c46cc781ada609567f65a010b3d698a010e090834e36c587873ede1e1f3d"
+    },
+    "spec.h": {
+      "path": "verified/f32-vdiv/spec.h",
+      "sha256": "3c7f0c587ad5414af9933ba3ddb96fe2d1c69d34d64d7d22892b3a57caae962b"
+    },
+    "harness.c": {
+      "path": "verified/f32-vdiv/harness.c",
+      "sha256": "a8fc7d418548103ef4f7438b32126e6bb5ae68dda32f1f47bc64607a93ff161c"
+    },
+    "interface.json": {
+      "path": "verified/f32-vdiv/interface.json",
+      "sha256": "d3b867609d01f0e2939b7fc731006af9983fc6cefea1c38b8c28312e8127e531"
+    },
+    "unit.c": {
+      "path": "verified/f32-vdiv/unit.c",
+      "sha256": "108bac801f6a47fb37bed46da1c8e403e5ffd74247f4fa25cd3c3f4b16fd27b4"
+    },
+    "generate.py": {
+      "path": "verified/shared-extension/float/generate.py",
+      "sha256": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a"
+    },
+    "modules.json": {
+      "path": "verified/f32-vdiv/modules.json",
+      "sha256": "e709c0b5abd16b65a2b086ae1e828b55dc00047e7750c2e3dc368046361a0e38"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v2.py",
+      "sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/float-proof-candidates/f32-vdiv-explicit-close-front/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "extensions.driver",
+  "observation": "number-or-both-nan; signed-zero numeric equality; no FP flags",
+  "original_target": null,
+  "VLEN_bits": 128,
+  "upstream_proof_evidence": "experiments/shared-extension/float/f32-vdiv/logs/run02-summary.json",
+  "upstream_freeze_sha256": "3e36c05890508a91fcdcdc1b7cd4704dc12d03620812dc6910c153ebc28f1bab",
+  "previous_version": "experiments/shim-c-v2/frontend-campaign/f32-vdiv",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200
+}

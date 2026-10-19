@@ -1,0 +1,35 @@
+[kernel] Parsing experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library07/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vfmaq_f32
+[kernel:annot:missing-spec] experiments/shim-c-v2/model-fma/libc/math.h:2142: Warning: 
+  Neither code nor explicit exits and terminates for function fmaf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function __riscv_vle32_v_f32m4
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m4
+[rte:annot] annotating function __riscv_vse32_v_f32m4
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m4
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vmlaq_f32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] 183 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_vmlaq_f32_loop_invariant_2_preserved (Qed 37ms) (CVC5)
+[wp] Proved goals:  200 / 201
+  Terminating:     9
+  Unreachable:     9
+  Qed:           107 (5ms-7ms-37ms)
+  CVC5 1.2.1:     38 (23ms-212ms-1s)
+  Z3 4.12.5:      37 (15ms-47ms-130ms)
+  Timeout:         1

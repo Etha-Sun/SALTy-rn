@@ -1,0 +1,1321 @@
+{
+  "kernel": "f32-argmaxpool",
+  "attempts": [
+    {
+      "case": "experiments/shim-c-v2/v4-campaign/f32-argmaxpool",
+      "run": "complex01",
+      "summary": "experiments/shim-c-v2/v4-campaign/f32-argmaxpool/logs/complex01-summary.json",
+      "log": "experiments/shim-c-v2/v4-campaign/f32-argmaxpool/logs/complex01.log",
+      "raw_report": "experiments/shim-c-v2/v4-campaign/f32-argmaxpool/logs/complex01.json",
+      "status": "total_budget_exceeded",
+      "exit": 124,
+      "seconds": 1237.786,
+      "total_budget_seconds": 1200,
+      "total_budget_exceeded": true,
+      "implementation_and_spec_unchanged": true,
+      "source_guard_passed": true,
+      "model_inputs_unchanged": true,
+      "model_control_accepted": true,
+      "actual_command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/frama-c.py",
+        "-machdep",
+        "gcc_x86_64",
+        "-inline-calls",
+        "test_neon,test_rvv",
+        "-inline-stmt-contracts",
+        "-remove-inlined",
+        "test_neon,test_rvv",
+        "-wp",
+        "-wp-rte",
+        "-wp-par",
+        "2",
+        "-wp-prover",
+        "z3,cvc5",
+        "-wp-timeout",
+        "30",
+        "-wp-memlimit",
+        "1024",
+        "-wp-cache",
+        "none",
+        "-wp-report-json",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/f32-argmaxpool/logs/complex01.json",
+        "-wp-model",
+        "Typed+raw+float",
+        "-warn-special-float",
+        "none",
+        "-wp-driver",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/f32-argmaxpool/.build/complex01/annotated/complex_fp.driver",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v4-campaign/f32-argmaxpool/.build/complex01/annotated/unit.c",
+        "-wp-skip-fct",
+        "__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32",
+        "-wp-share",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share",
+        "-wp-why3-config",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf",
+        "-wp-no-why3-detect"
+      ],
+      "raw_records": {
+        "passed": 5,
+        "total": 5
+      },
+      "unique_obligations": {
+        "passed": 5,
+        "total": 5
+      },
+      "body_report_complete": false,
+      "per_function_obligations": {},
+      "body_obligations": null,
+      "global_lemma_records": {
+        "passed": 5,
+        "total": 5
+      },
+      "scheduled_in_main_log": [
+        598
+      ],
+      "pending_categories": {},
+      "pending_exact": [],
+      "unfinished_log_diagnostics": [
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_dest"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_src"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_separation"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vaddq_u32_terminates"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_u32_terminates"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_dest"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_src"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_separation"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_dest"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_src"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_separation"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_dest"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_src"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_dest"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_separation"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_separation"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_dest"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_src"
+        },
+        {
+          "verdict": "Unknown",
+          "goal": "typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_separation"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_src"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound_2"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_mem_access"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_terminates"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_mem_access"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_terminates"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_terminates"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vmerge_vxm_u32m8_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_terminates"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_index_bound"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_mem_access"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part3"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part4"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part5"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part6"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part7"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_ensures_equal"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_loop_invariant_established"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_terminates_part2"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_loop_invariant_preserved"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_loop_invariant_2_preserved"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_7"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_8"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_9"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_10"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_11"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_12"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_13"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_14"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_15"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_16"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_17"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_18"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_19"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_20"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_21"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_22"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_23"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_24"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_25"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_26"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assert_rte_signed_overflow_2"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part02"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part03"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part04"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part05"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part06"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part07"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part08"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part09"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part10"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part11"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part12"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part13"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part14"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part15"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part16"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part17"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part18"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part19"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part20"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part21"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_normal_part22"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part002"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part003"
+        },
+        {
+          "verdict": "Timeout",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part004"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part005"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part006"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part007"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part008"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part009"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part010"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part011"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part012"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part013"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part014"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part015"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part016"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part017"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part018"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part019"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part020"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part021"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part022"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part023"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part024"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part025"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part026"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part027"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part028"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part029"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part030"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part031"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part032"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part033"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part034"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part035"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part036"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part037"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part038"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part039"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part040"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part041"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part042"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part043"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part044"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part045"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part046"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part047"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part048"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part049"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part050"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part051"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part052"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part053"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part054"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part055"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part056"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part057"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part058"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part059"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part060"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part061"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part062"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part063"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part064"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part065"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part066"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part067"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part068"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part069"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part070"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part071"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part072"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part073"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part074"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part075"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part076"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part077"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part078"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part079"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part080"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part081"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part082"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part083"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part084"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part085"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part086"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part087"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part088"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part089"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part090"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part091"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part092"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part093"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part094"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part095"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part096"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part097"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part098"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part099"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part100"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part101"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part102"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part103"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part104"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part105"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part106"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part107"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part108"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part109"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part110"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part112"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part113"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part114"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part115"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part116"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part117"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part118"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part119"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part120"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part121"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part122"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part123"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part124"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part125"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part126"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part127"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part128"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part129"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part130"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part131"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part132"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part133"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part134"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part135"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part136"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part137"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part138"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part139"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part140"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part141"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part142"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part143"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part144"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part145"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part146"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part147"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part148"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part149"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part150"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part151"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part152"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part153"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part154"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part155"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part156"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part157"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part158"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part159"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part160"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part161"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part162"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part163"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part164"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part165"
+        },
+        {
+          "verdict": "Failure",
+          "goal": "typed_raw_fma_complex_fp_equivalent_assigns_exit_part166"
+        }
+      ],
+      "missing_body_ensures": [
+        "__riscv_vle32_v_f32m8",
+        "__riscv_vle32_v_u32m8",
+        "__riscv_vmerge_vvm_f32m8",
+        "__riscv_vmerge_vxm_u32m8",
+        "__riscv_vmfgt_vv_f32m8_b4",
+        "__riscv_vmv_v_x_u32m8",
+        "__riscv_vse32_v_f32m8",
+        "__riscv_vse32_v_u32m8",
+        "__riscv_vsetvl_e32m8",
+        "equivalent",
+        "vaddq_u32",
+        "vbslq_f32",
+        "vbslq_u32",
+        "vcgtq_f32",
+        "vdupq_n_u32",
+        "vget_high_f32",
+        "vget_high_u32",
+        "vget_low_f32",
+        "vget_low_u32",
+        "vld1q_f32",
+        "vld1q_u32",
+        "vst1_f32",
+        "vst1_lane_f32",
+        "vst1_lane_u32",
+        "vst1_u32",
+        "vst1q_f32",
+        "vst1q_u32"
+      ],
+      "missing_global_lemmas": [],
+      "call_closure": {
+        "roots": [
+          "equivalent"
+        ],
+        "functions": [
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vle32_v_u32m8",
+          "__riscv_vmerge_vvm_f32m8",
+          "__riscv_vmerge_vxm_u32m8",
+          "__riscv_vmfgt_vv_f32m8_b4",
+          "__riscv_vmv_v_x_u32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vse32_v_u32m8",
+          "__riscv_vsetvl_e32m8",
+          "equivalent",
+          "test_neon",
+          "test_rvv",
+          "vaddq_u32",
+          "vbslq_f32",
+          "vbslq_u32",
+          "vcgtq_f32",
+          "vdupq_n_u32",
+          "vget_high_f32",
+          "vget_high_u32",
+          "vget_low_f32",
+          "vget_low_u32",
+          "vld1q_f32",
+          "vld1q_u32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1_lane_u32",
+          "vst1_u32",
+          "vst1q_f32",
+          "vst1q_u32"
+        ],
+        "external_models": [
+          "__assert_fail",
+          "memcpy"
+        ],
+        "unreachable_definitions": [
+          "__riscv_vand_vx_i8m2",
+          "__riscv_vfcvt_f_x_v_f32m8",
+          "__riscv_vfmerge_vfm_f32m8",
+          "__riscv_vfmv_v_f_f32m8",
+          "__riscv_vfslide1down_vf_f32m8",
+          "__riscv_vfslide1up_vf_f32m8",
+          "__riscv_vle32_v_i32m8",
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmfne_vv_f32m8_b4",
+          "__riscv_vmul_vx_i32m8",
+          "__riscv_vsetvl_e32m1",
+          "__riscv_vsetvl_e32m2",
+          "__riscv_vsetvl_e32m4",
+          "__riscv_vsetvlmax_e32m1",
+          "__riscv_vsetvlmax_e32m2",
+          "__riscv_vsetvlmax_e32m4",
+          "__riscv_vsetvlmax_e32m8",
+          "__riscv_vsext_vf2_i16m4",
+          "__riscv_vsll_vx_i8m2",
+          "__riscv_vsra_vx_i32m8",
+          "__riscv_vwmacc_vx_i32m8",
+          "arithmetic_shift32",
+          "bits_i32",
+          "bits_i8",
+          "vand_s8",
+          "vcltq_f32",
+          "vcombine_f32",
+          "vcvtq_f32_s32",
+          "vdupq_lane_f32",
+          "vdupq_n_f32",
+          "vextq_f32",
+          "vget_high_s16",
+          "vget_lane_f32",
+          "vget_low_s16",
+          "vld1_dup_f32",
+          "vld1_f32",
+          "vld1_s8",
+          "vld1q_dup_f32",
+          "vld1q_dup_s32",
+          "vld1q_lane_f32",
+          "vld1q_s32",
+          "vld2_dup_f32",
+          "vld2q_dup_f32",
+          "vmlal_lane_s16",
+          "vmov_n_s8",
+          "vmovl_s8",
+          "vmovq_n_f32",
+          "vmulq_s32",
+          "vshl_n_s8",
+          "vshrq_n_s32",
+          "vst1q_lane_f32",
+          "vzip1q_f32",
+          "vzip2q_f32"
+        ],
+        "command": [
+          "clang-14",
+          "-std=c11",
+          "-Xclang",
+          "-ast-dump=json",
+          "-fsyntax-only",
+          "/tmp/shim-closure-fdtofyu4/unit.c"
+        ],
+        "ghost_roots": [],
+        "scope": "Direct-call graph only; temporary ghost C is never used as implementation or WP input."
+      },
+      "notes": "Raw may contain duplicate lemma checks. A merged lemma-only JSON after main timeout is not a body report. Solver non-proof is not a C counterexample."
+    }
+  ],
+  "full_equivalence_established": false,
+  "c_counterexample_found_this_round": false,
+  "source_model_gap_audit": {
+    "functions": [
+      "__riscv_vle32_v_f32m8",
+      "__riscv_vle32_v_u32m8",
+      "__riscv_vmerge_vvm_f32m8",
+      "__riscv_vmerge_vxm_u32m8",
+      "__riscv_vmfgt_vv_f32m8_b4",
+      "__riscv_vmv_v_x_u32m8",
+      "__riscv_vse32_v_f32m8",
+      "__riscv_vse32_v_u32m8",
+      "__riscv_vsetvl_e32m8",
+      "equivalent",
+      "test_neon",
+      "test_rvv",
+      "vaddq_u32",
+      "vbslq_f32",
+      "vbslq_u32",
+      "vcgtq_f32",
+      "vdupq_n_u32",
+      "vget_high_f32",
+      "vget_high_u32",
+      "vget_low_f32",
+      "vget_low_u32",
+      "vld1q_f32",
+      "vld1q_u32",
+      "vst1_f32",
+      "vst1_lane_f32",
+      "vst1_lane_u32",
+      "vst1_u32",
+      "vst1q_f32",
+      "vst1q_u32"
+    ],
+    "external_models": [
+      "__assert_fail",
+      "memcpy"
+    ],
+    "canonical_nan_reachable": false,
+    "functions_count": 29,
+    "pointer_integer_casts": {
+      "neon.c": {
+        "file": "experiments/shared-extension/complex/cases/f32-argmaxpool/neon.c",
+        "lines": [
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          219,
+          221,
+          222
+        ],
+        "count": 12
+      },
+      "rvv.c": {
+        "file": "experiments/shared-extension/complex/cases/f32-argmaxpool/rvv.c",
+        "lines": [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          123,
+          125,
+          126
+        ],
+        "count": 12
+      }
+    },
+    "ordinary_closure_only": true,
+    "notes": "Direct actual C calls from equivalent. Full admission also checks ghost roots and all global lemma via runner v4."
+  },
+  "proof_work": {
+    "main_kernel": "shared actual callee/helper contracts and body proofs; final comparison invariants",
+    "remaining": "main kernel nested-loop/reduction relation is not yet complete, in addition to model gaps"
+  },
+  "scope": "Original frozen public preconditions and wrapper layout; no strengthened input domain. Ordinary source audit does not replace full ghost/global-lemma closure check.",
+  "specific_root_cause_zh": "Typed\u4e0bfloat/uint32\u4f4d\u9009\u62e9\u548cmemcpy\u7f3a\u5c11\u7cbe\u786e\u6865\uff08vbslq_f32\u7b49\uff09\uff1b24\u884cuintptr\u6362\u7b97\u3002\u539f\u5168\u91cf\u8fd8\u51fa\u73b0vaddq_u32\u7b49\u666e\u901ainteger helper\u7684\u5faa\u73af\u8bc1\u660e\u7f3a\u53e3\uff0c\u5df2\u72ec\u7acb\u886512\u4e2acandidate\u4e1411\u4e2a\u5168\u95ed\u5408\uff0c\u4f46\u672a\u6539\u5386\u53f2\u5168\u91cfproof\uff1b\u83b7\u80dcvalue/index\u53catie\u7684\u4e3b\u5faa\u73af\u5173\u7cfb\u4ecd\u672a\u5b8c\u6210\u3002",
+  "counterexample_interpretation": "\u672c\u8f6e\u6ca1\u6709\u65b0\u589e\u5177\u4f53C\u8f93\u5165\u53cd\u4f8b\uff1bsolver\u672a\u8bc1\u660e/\u6a21\u578b\u4fe1\u606f\u4e22\u5931\u4e0d\u7b49\u4e8ekernel\u9519\u8bef\uff0c\u4e5f\u4e0d\u7b49\u4e8ekernel\u5df2\u6b63\u786e\u3002"
+}

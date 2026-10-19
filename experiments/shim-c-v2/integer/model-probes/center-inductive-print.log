@@ -1,0 +1,47 @@
+[kernel] Parsing experiments/shim-c-v2/integer/model-probes/center-inductive.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function proof_center
+
+Goal Assertion 'rte,signed_overflow' ("experiments/shim-c-v2/integer/model-probes/center-inductive.c", line 17):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,signed_overflow' ("experiments/shim-c-v2/integer/model-probes/center-inductive.c", line 22):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion ("experiments/shim-c-v2/integer/model-probes/center-inductive.c", line 24):
+Let x_1 = L_target(x, z).
+Let x_2 = L_target(x, t).
+Let x_3 = L_centered(x, z).
+Let x_4 = L_centered(x, t).
+Assume {
+  Type: is_sint8(x) /\ is_sint32(t) /\ is_sint32(t_1) /\ is_sint32(z).
+  (* Pre-condition *)
+  Have: z != (-2147483648).
+  (* Invariant *)
+  Have: ((-2147483647) <= z) /\ (z <= 2147483647).
+  (* Invariant *)
+  Have: ((-2147483647) <= t_1) /\ (t_1 <= 2147483647).
+  (* Invariant *)
+  Have: x_3 = L_centered(x, t_1).
+  (* Invariant *)
+  Have: x_1 = L_target(x, t_1).
+  (* Else *)
+  Have: t_1 <= 32767.
+  (* Invariant *)
+  Have: ((-2147483647) <= t) /\ (t <= 32767).
+  (* Invariant *)
+  Have: x_3 = x_4.
+  (* Invariant *)
+  Have: x_1 = x_2.
+  (* Else *)
+  Have: (-32768) <= t.
+}
+Prove: x_2 = x_4.
+
+------------------------------------------------------------

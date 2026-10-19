@@ -1,0 +1,97 @@
+{
+  "name": "f32-dwconv2d-chw",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/neon.c",
+      "sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/rvv.c",
+      "sha256": "b7655578e41d4a8c28c07668bc0989c139de3e76497e3af87fab2b9d1f7a470c"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/spec.h",
+      "sha256": "614862058c55d38c64f7d2a96fad259797a002ca40aa79d5fdd78f5a72502d15"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/harness.c",
+      "sha256": "adc879b7f67b114377793dc539aefdcdf139d80615be4be5f641b07912bdde38"
+    },
+    "native_types.h": {
+      "path": "experiments/shared-extension/complex/shared/native_types.h",
+      "sha256": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1"
+    },
+    "fp_primitives.h": {
+      "path": "experiments/shared-extension/complex/shared/fp_primitives.h",
+      "sha256": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "fp_minmax.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax.c",
+      "sha256": "92ea301e85f8ce7cf917bf21104087d7619cb8c5c674f4e7c32b879565a05381"
+    },
+    "fp_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory.c",
+      "sha256": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b"
+    },
+    "fp_arithmetic.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic.c",
+      "sha256": "ce46742c5a7717cc8e4ecdaf2820e03b0139f220dd034aaac8633307aad3c9a3"
+    },
+    "utils.c": {
+      "path": "experiments/shared-extension/complex/shared/utils.c",
+      "sha256": "ac34e138b6afeb89d909d1a350a74229763c1c9b53665b34dc925daadd441555"
+    },
+    "integer_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/integer_memory.c",
+      "sha256": "739525e9fbef533fffd62a28c109ee7fc6c9c303836f52c859c39b920b7cee62"
+    },
+    "fp_repr.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_repr.c",
+      "sha256": "628cd51d21d39387136a6efd2a9de17eaa3f86501bc16259f357f6d4b2617a44"
+    },
+    "fp_memory_m2.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory_m2.c",
+      "sha256": "8c0c53cf4616a4aa89810861e3a26dafcb6ee4b5153ac777ff3e390b18e24ae5"
+    },
+    "fp_minmax_m2.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_minmax_m2.c",
+      "sha256": "b0c2ee9c5cca3c3e9f8579e7540c51a1f9a80e0794318c948fa2af874f9bae56"
+    },
+    "fp_arithmetic_m2.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic_m2.c",
+      "sha256": "80a6bc4526a2a410b48ce69b6df0815bb1e707d5db936f4868a74f869daec136"
+    },
+    "fp_masks_m2.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks_m2.c",
+      "sha256": "66b04f5cfe95f1b04e6089b1eb8656080bc803ebed45e9eb770a51e43e64d3b1"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/unit.c",
+      "sha256": "8b16b6ea2af416bf3087b016fb69b8bc14a76a3b47160cff6268bde9f844e5f1"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/complex/proofs/fp-headers-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_minmax-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_memory-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_arithmetic-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/utils-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/integer_memory-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_repr-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_memory_m2-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_minmax_m2-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_arithmetic_m2-proof.patch",
+    "experiments/shim-c-v2/complex/proofs/fp_masks_m2-proof.patch",
+    "experiments/shim-c-v2/complex/f32-dwconv2d-chw/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "VLEN_bits": 128,
+  "scope": "Actual NEON and preserved/repaired RVV, all output memory under declared wrapper; FMA/libc and representation bridges not assumed proved",
+  "previous_version": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1."
+}

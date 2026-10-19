@@ -1,0 +1,39 @@
+[kernel] Parsing experiments/shim-c-v2/complex/f32-gemm-minmax/.build/library02/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vfmaq_f32
+[kernel:annot:missing-spec] experiments/shim-c-v2/model-fma/libc/math.h:2142: Warning: 
+  Neither code nor explicit exits and terminates for function fmaf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function __riscv_vle32_v_f32m4
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m4
+[rte:annot] annotating function __riscv_vse32_v_f32m4
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m4
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vmlaq_f32
+[wp] Computing [100 goals...]
+[wp] 180 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_vfmaq_f32_loop_invariant_2_preserved (Qed 22ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vfmacc_vf_f32m4_loop_invariant_2_preserved (Qed 23ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vmulq_f32_assert_rte_is_nan_or_infinite (Qed 23ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vaddq_f32_assert_rte_is_nan_or_infinite (Qed 25ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vmlaq_f32_loop_invariant_2_preserved (Qed 33ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vmlaq_f32_assert_rte_is_nan_or_infinite (Qed 26ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vmlaq_f32_assert_rte_is_nan_or_infinite_2 (Qed 30ms) (Z3)
+[wp] Proved goals:  191 / 198
+  Terminating:     9
+  Unreachable:     9
+  Qed:           107 (6ms-7ms-33ms)
+  CVC5 1.2.1:     32 (31ms-172ms-724ms)
+  Z3 4.12.5:      34 (12ms-39ms-91ms)
+  Timeout:         7

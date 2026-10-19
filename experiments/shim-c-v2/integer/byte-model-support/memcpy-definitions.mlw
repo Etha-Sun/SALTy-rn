@@ -1,0 +1,20 @@
+module MemcpyDefinitions
+  use int.Int
+  use map.Map as M
+  use map.Const as MC
+  use frama_c_wp.memaddr.MemAddr
+  use frama_c_wp.membytes_le.MemBytes
+
+  function src_block : M.map int int = M.set (M.set (MC.const 22) 3 44) 4 55
+  function dst_block : M.map int int = MC.const 11
+  function src_memory : memory = MC.const src_block
+  function dst_memory : memory = MC.const dst_block
+  function src_addr : addr = {base=2;offset=3}
+  function dst_addr : addr = {base=1;offset=2}
+  function copied : memory = memcpy dst_memory dst_addr src_memory src_addr 2
+
+  goal copied_offset_required: raw_get copied {base=1;offset=2}=44
+  goal copied_frame_required: raw_get copied {base=1;offset=0}=11
+  goal old_offset_witness: raw_get copied {base=1;offset=2}=22
+  goal old_frame_witness: raw_get copied {base=1;offset=0}=22
+end

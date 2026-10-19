@@ -1,0 +1,174 @@
+本轮33项结果（7项旧浮点隔离 + 26项原未完成）
+{'requested': 33, 'proved': 7, 'not_proved': 26}
+旧版保留；本轮未改kernel/shim/public spec/wrapper。只在新proof和独立模型版本工作。
+没有把超时、缺最终raw或仅global lemma通过算整核成功；尚未证明不等于发现反例。
+
+f32-vadd: 通过; body 571/571
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vadd-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-vsub: 通过; body 556/556
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vsub-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-vmul: 通过; body 585/585
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vmul-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-vdiv: 通过; body 601/601
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vdiv-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-vmulc: 通过; body 583/583
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vmulc-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-vmin: 通过; body 528/528
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vmin-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-vmax: 通过; body 530/530
+完整函体/lemma 和模型/源码冻结检查通过；仍限于声明 C/shim 模型。
+结果: verified/f32-vmax-v2/logs/canonical01-summary.json
+退出码: 0; 完整检查: True
+
+f32-argmaxpool: 未通过; 无最终body报告
+Typed下float/uint32位选择和memcpy缺少精确桥（vbslq_f32等）；24行uintptr换算。原全量还出现vaddq_u32等普通integer helper的循环证明缺口，已独立补12个candidate且11个全闭合，但未改历史全量proof；获胜value/index及tie的主循环关系仍未完成。
+结果: experiments/shim-c-v2/v4-campaign/f32-argmaxpool/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-conv-hwc2chw: 未通过; 无最终body报告
+canonical_nan的uint32→float memcpy分类与Typed char-pointer有效性未证明；有69行uintptr换算；卷积多层行/列/通道、输入halo和边界output布局的主循环关系仍未完成。
+结果: experiments/shim-c-v2/v4-campaign/f32-conv-hwc2chw/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-dwconv-minmax: 未通过; 无最终body报告
+已补按实际FMA/非融合顺序的参考表达式和pixel/channel prefix/frame；canonical_nan/Typed memcpy桥、10行uintptr换算和这些候选的实际body义务仍未闭合。
+结果: experiments/shim-c-v2/v4-campaign/f32-dwconv-minmax/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-dwconv2d-chw: 未通过; 无最终body报告
+canonical_nan及mask的整数/float bit representation、Typed memcpy有效性未闭合；22行uintptr换算；滚动5行缓冲、halo/尾块、三输出行关系和frame尚未完成。
+结果: experiments/shim-c-v2/v4-campaign/f32-dwconv2d-chw/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-f16-vcvt: 未通过; 无最终body报告
+Typed memory仍不能闭合float↔uint32 memcpy位表示桥；还有tail memory/frame及kernel循环证明未完成。fabsf已允许使用pinned标准库保守合同，不再误报不支持调用；未加入位表示公理。完整运行触及预算，最终raw缺失，不能给总通过率。
+结果: experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/logs/standard02-summary.json
+退出码: 124; 完整检查: False
+
+f32-gemm-minmax: 未通过; 无最终body报告
+canonical_nan/Typed memcpy桥及28行uintptr换算未闭合。已补NC/KC游标、packed权重位置与variant，但尚未完成4行、NR8分块、K累加器和active mr*nc输出关系；FMA已用真实RNE模型，未当作普通乘加。
+结果: experiments/shim-c-v2/v4-campaign/f32-gemm-minmax/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-igemm-minmax: 未通过; 无最终body报告
+canonical_nan/Typed memcpy桥及6行uintptr换算未闭合；indirection表、positions/K双层累加和NR8输出前缀关系尚未完成。冻结wrapper本来就是mr=1、offset=0、zero=NULL的既定scope，未偷偷扩大或缩小。
+结果: experiments/shim-c-v2/v4-campaign/f32-igemm-minmax/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-maxpool: 未通过; 无最终body报告
+canonical_nan位构造与Typed memcpy有效性未证明；40行uintptr换算；9输入分组、多pass把新输入归并到output、最终clamp和prefix关系尚未完整证明。
+结果: experiments/shim-c-v2/v4-campaign/f32-maxpool/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-raddstoreexpminusmax: 未通过; 无最终body报告
+这是13项中唯一没有uintptr转换的一项，仍被float↔integer bit reinterpret/memcpy挡住；vbicq_u32等integer helper原缺注释（新candidate仅vbic还有1个prefix未过），指数构造、多项式和sum reduction关系尚未完整证明。
+结果: experiments/shim-c-v2/v4-campaign/f32-raddstoreexpminusmax/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-spmm-minmax: 未通过; 无最终body报告
+canonical_nan/Typed memcpy桥及11行uintptr换算未闭合。还缺prefix_nnz/prefix_diff与实际稀疏cursor、行strip、权重/bias/FMA累加的多层归纳关系。
+结果: experiments/shim-c-v2/v4-campaign/f32-spmm-minmax/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+f32-vcmul: 未通过; body 374/415
+最新策略版18个实际helper 192/192、全局lemma3/3，全部覆盖；只剩equivalent主程序182/223，41项为最终关系、6处uintptr后load/store有效性、循环及frame。不能算整核通过。
+结果: experiments/shim-c-v2/complex-array/f32-vcmul/logs/array01-summary.json
+退出码: 0; 完整检查: False
+
+f32-vlrelu: 未通过; body 484/513
+float 符号位提取/重构的 memcpy bridge 及向量前缀；原始浮点 Byte codec 不可用。
+结果: experiments/shim-c-v2/v4-campaign/f32-vlrelu/logs/closure01-summary.json
+退出码: 0; 完整检查: False
+
+f32-vrndne: 未通过; body 656/673
+取位、magic-number 舍入和符号重构所需 float↔bits bridge；另有前缀/frame。
+结果: experiments/shim-c-v2/v4-campaign/f32-vrndne/logs/closure01-summary.json
+退出码: 0; 完整检查: False
+
+f32-vsqrt: 未通过; body 378/397
+float/uint32 memcpy 位表示桥；标量 bit-search sqrt 还需与 IEEE 正确舍入建立关系；另有前缀/frame。
+结果: experiments/shim-c-v2/v4-campaign/f32-vsqrt/logs/closure01-summary.json
+退出码: 0; 完整检查: False
+
+qd8-f32-qc4w-gemm-minmax: 未通过; 无最终body报告
+canonical_nan/Typed memcpy桥与5行uintptr换算未闭合；还需packed 4-bit符号扩展、整数重解释、block尺度/补偿和FMA累加的关系及完整多层循环不变量，不能把这些都只归为float模型。
+结果: experiments/shim-c-v2/v4-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01-summary.json
+退出码: 124; 完整检查: False
+
+qs8-f32-vcvt: 未通过; body 793/804
+全部intrinsic本体及其float conversion/multiply前缀已闭合；剩11个kernel/wrapper VC，涉及中心化输入与scale快照重绑定后的lane prefix、tail rebase与最终输出比较量词实例化。没有发现kernel反例。
+结果: experiments/shim-c-v2/integer-array-v3/qs8-f32-vcvt/logs/local01-summary.json
+退出码: 0; 完整检查: False
+
+qs8-rdsum: 未通过; body 420/702
+冻结public requires含memory-capturing sum/lambda；WP/Why3明确报Lambda-functions not yet implemented及unbound variable in of_term。此为前端/模型缺口，不能删前提过关；另有NEON多row不变量与uintptr行指针桥待证。
+结果: experiments/shim-c-v2/v5-campaign/qs8-rdsum/logs/sum01-summary.json
+退出码: 0; 完整检查: False
+
+qs8-vadd-minmax: 未通过; 无最终body报告
+实际Byte模型下的有符号乘法/rounding/shift合同、tail packing/store及整kernel累加和饱和归纳仍未闭合。
+结果: experiments/shim-c-v2/integer-byte-v2/qs8-vadd-minmax/logs/memory01-summary.json
+退出码: 124; 完整检查: False
+
+qs8-vcvt: 未通过; body 698/719
+新整数Byte模型的任意指针pack16/32独立控制通过，但实际struct按值传参/局部对象memcpy再reinterpret的功能post仍超时；另有ASR/RNU全域合同、tail store逐字节前缀及kernel归纳未闭合。独立控制不代表该kernel已证明。
+结果: experiments/shim-c-v2/integer-byte-v2/qs8-vcvt/logs/memory01-summary.json
+退出码: 0; 完整检查: False
+
+qs8-vlrelu: 未通过; body 846/866
+实际reinterpret/字节tail store、ASR/RNU及vbsl选择的功能前缀未闭合；kernel量化/饱和循环归纳尚有真实pending。
+结果: experiments/shim-c-v2/integer-byte-v2/qs8-vlrelu/logs/memory01-summary.json
+退出码: 0; 完整检查: False
+
+qs8-vmul-minmax-fp32: 未通过; 无最终body报告
+float↔int位表示memcpy桥未闭合，另有实际transitive ASR/RNU及内存/循环归纳待证。完整运行触及预算，最终raw缺失，不能给总通过率。
+结果: experiments/shim-c-v2/v4-campaign/qs8-vmul-minmax-fp32/logs/repr01-summary.json
+退出码: 124; 完整检查: False
+
+qu8-f32-vcvt: 未通过; body 834/842
+全部intrinsic本体及其float conversion/multiply前缀已闭合；剩8个kernel/wrapper VC，涉及NEON高4lane prefix、两处tail rebase、RVV中心化/转换后桥与prefix、最终输出比较量词实例化。使用旧版v2修复target，非修改本轮冻结C。
+结果: experiments/shim-c-v2/integer-array-v3/qu8-f32-vcvt/logs/local01-summary.json
+退出码: 0; 完整检查: False
+
+qu8-rdsum: 未通过; 无最终body报告
+内部sum已改成按行数递减的递归逻辑定义，前端可处理；但NEON多row归纳、uintptr行指针算术与floor/float→int范围及termination仍待证。floor已允许pinned保守stdlib合同，非未知external阻止运行。完整运行触及预算，最终raw缺失。
+结果: experiments/shim-c-v2/v5-campaign/qu8-rdsum/logs/standard02-summary.json
+退出码: 124; 完整检查: False
+
+qu8-vadd-minmax: 未通过; 无最终body报告
+实际Byte模型下的有符号乘法/rounding/shift合同、tail packing/store及整kernel累加和饱和归纳仍未闭合。
+结果: experiments/shim-c-v2/integer-byte-v2/qu8-vadd-minmax/logs/memory01-summary.json
+退出码: 124; 完整检查: False
+
+x32-packw-gemm-goi: 未通过; 无最终body报告
+原 Typed 下 tuple 初始化及 char-strided store 不闭合；Bytes v1/v2虽能证明独立tuple，整核仍有 vmov/store/segment-store/strided-store 的word内容与frame目标，且4处uintptr地址换算没有可用桥。group/channel/K前缀与padding候选已补，尚未闭合。
+结果: experiments/shim-c-v2/complex-byte-v2/x32-packw-gemm-goi/logs/bytes01-summary.json
+退出码: 124; 完整检查: False
+
+x32-transposec: 未通过; 无最终body报告
+Typed将 uint32*→char*→uint32* 地址隐藏，Bytes版保留地址后仍有store内容/stride有效性/frame证明；round_down_po2另剩bitand/mod2算术目标；12处uintptr地址换算、tile/prefix/frame候选尚未闭合。
+结果: experiments/shim-c-v2/complex-byte-v2/x32-transposec/logs/bytes01-summary.json
+退出码: 124; 完整检查: False
+
+逐条未解VC、文件行号、所有历史/当前full尝试、冻结SHA见RESULTS.json。
+复杂13项精细模型/源码审计: complex-v3-next/results.json；整数10项: integer/STATUS.json。
+浮点观察为既有数值相等或双方NaN，未证明ISA→C shim；硬件VLEN和VL调度保持原固定配置。
+模型修复、禁用配置和TCB: MODEL-AND-TCB.zh-CN.txt。

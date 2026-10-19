@@ -1,0 +1,467 @@
+--- a/base.h
++++ b/base.h
+@@ -1,9 +1,17 @@
+ #ifndef SHARED_BASE_H
+ #define SHARED_BASE_H
++/*@ terminates \true; assigns \nothing; ensures \result == RVV_CAP; */
+ size_t __riscv_vsetvlmax_e32m8(void);
++/*@ terminates \true; assigns \nothing; ensures \result == RVV_M1_CAP; */
+ size_t __riscv_vsetvlmax_e32m1(void);
++/*@ terminates \true; assigns \nothing; ensures \result == (n<RVV_CAP ? n : RVV_CAP); */
+ size_t __riscv_vsetvl_e8m2(size_t n);
++/*@ terminates \true; assigns \nothing; ensures \result == (n<RVV_CAP ? n : RVV_CAP); */
+ size_t __riscv_vsetvl_e32m8(size_t n);
++/*@ terminates \true; assigns \nothing; ensures \result == (n<RVV_I8M8_CAP ? n : RVV_I8M8_CAP); */
+ size_t __riscv_vsetvl_e8m8(size_t n);
++/*@ requires \valid_read(p+(0..15));
++    terminates \true; assigns \nothing;
++    ensures \forall integer j; 0<=j<16 ==> \result.lane[j]==p[j]; */
+ int8x16_t vld1q_s8(const int8_t *p);
+ #endif
+--- a/base.c
++++ b/base.c
+@@ -6,6 +6,9 @@
+ size_t __riscv_vsetvl_e8m8(size_t n) { return n<RVV_I8M8_CAP ? n : RVV_I8M8_CAP; }
+ int8x16_t vld1q_s8(const int8_t *p) {
+   int8x16_t r;
++  /*@ loop invariant 0<=i<=16;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==p[j];
++      loop assigns i,r; loop variant 16-i; */
+   for (size_t i=0;i<16;i++) r.lane[i]=p[i];
+   return r;
+ }
+
+--- a/float_ops.h
++++ b/float_ops.h
+@@ -1,14 +1,50 @@
+ #ifndef SHARED_FLOAT_H
+ #define SHARED_FLOAT_H
++/*@
++  logic float fp_add32(float a, float b);
++  logic float f32_read{L}(float *p, integer k) = p[k];
++  predicate same_value(float a, float b) =
++    \eq_float(a,b) || (\is_NaN(a) && \is_NaN(b));
++  predicate same_float(float a, float b) =
++    (\is_NaN(a) && \is_NaN(b)) ||
++    (same_value(a,b) && \sign(a) == \sign(b));
++  lemma same_float_refl: \forall float a; same_float(a,a);
++  lemma same_float_value: \forall float a,b; same_float(a,b) ==> same_value(a,b);
++  lemma same_value_refl: \forall float a; same_value(a,a);
++  lemma same_value_trans: \forall float a,b,c;
++    same_value(a,b) && same_value(b,c) ==> same_value(a,c);
++  lemma fp_add_congruence: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    same_value(fp_add32(a,b),fp_add32(c,d));
++*/
++/*@ ghost
++/@ requires same_value(a,fp_add32(x,y));
++    requires same_value(b,fp_add32(x,y));
++    terminates \true;
++    assigns \nothing;
++    ensures same_value(a,b); @/
++void proof_float_join(float a,float b,float x,float y) {}
++*/
++/*@ assigns \nothing; ensures same_value(\result, fp_add32(a,b)); */
+ float f32_add(float a, float b);
++/*@ requires \valid_read(p+(0..3)); assigns \nothing; ensures \forall integer i; 0<=i<4 ==> same_float(\result.lane[i],p[i]); */
+ float32x4_t vld1q_f32(const float *p);
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<4 ==> same_value(\result.lane[i],fp_add32(a.lane[i],b.lane[i])); */
+ float32x4_t vaddq_f32(float32x4_t a, float32x4_t b);
++/*@ requires \valid(p+(0..3)); assigns p[0..3]; ensures \forall integer i; 0<=i<4 ==> same_float(p[i],a.lane[i]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..4-1)) ==> same_float(*q,\old(*q)); */
+ void vst1q_f32(float *p, float32x4_t a);
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<2 ==> same_float(\result.lane[i],a.lane[i]); */
+ float32x2_t vget_low_f32(float32x4_t a);
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<2 ==> same_float(\result.lane[i],a.lane[i+2]); */
+ float32x2_t vget_high_f32(float32x4_t a);
++/*@ requires \valid(p+(0..1)); assigns p[0..1]; ensures \forall integer i; 0<=i<2 ==> same_float(p[i],a.lane[i]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..2-1)) ==> same_float(*q,\old(*q)); */
+ void vst1_f32(float *p, float32x2_t a);
++/*@ requires 0<=lane<2; requires \valid(p); assigns *p; ensures same_float(*p,a.lane[lane]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..1-1)) ==> same_float(*q,\old(*q)); */
+ void vst1_lane_f32(float *p, float32x2_t a, int lane);
++/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],p[i]); */
+ vfloat32m8_t __riscv_vle32_v_f32m8(const float *p, size_t vl);
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_value(\result.lane[i],fp_add32(a.lane[i],b.lane[i])); */
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
++/*@ requires vl<=32; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer i; 0<=i<vl ==> same_float(p[i],a.lane[i]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..vl-1)) ==> same_float(*q,\old(*q)); */
+ void __riscv_vse32_v_f32m8(float *p, vfloat32m8_t a, size_t vl);
+ #endif
+--- a/float_ops.c
++++ b/float_ops.c
+@@ -4,33 +4,57 @@
+ 
+ float32x4_t vld1q_f32(const float *p) {
+   float32x4_t r;
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],p[j]);
++      loop assigns i, r.lane[0..3];
++      loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) r.lane[i] = p[i];
+   return r;
+ }
+ 
+ float32x4_t vaddq_f32(float32x4_t a, float32x4_t b) {
+   float32x4_t r;
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0<=j<i ==> same_value(r.lane[j],fp_add32(a.lane[j],b.lane[j]));
++      loop assigns i, r.lane[0..3];
++      loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) r.lane[i] = f32_add(a.lane[i], b.lane[i]);
+   return r;
+ }
+ 
+ void vst1q_f32(float *p, float32x4_t a) {
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(p[j],a.lane[j]);
++      loop assigns i, p[0..3];
++      loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) p[i] = a.lane[i];
+ }
+ 
+ float32x2_t vget_low_f32(float32x4_t a) {
+   float32x2_t r;
++  /*@ loop invariant 0 <= i <= 2;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],a.lane[j]);
++      loop assigns i, r.lane[0..1];
++      loop variant 2-i; */
+   for (size_t i = 0; i < 2; ++i) r.lane[i] = a.lane[i];
+   return r;
+ }
+ 
+ float32x2_t vget_high_f32(float32x4_t a) {
+   float32x2_t r;
++  /*@ loop invariant 0 <= i <= 2;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],a.lane[j+2]);
++      loop assigns i, r.lane[0..1];
++      loop variant 2-i; */
+   for (size_t i = 0; i < 2; ++i) r.lane[i] = a.lane[i+2];
+   return r;
+ }
+ 
+ void vst1_f32(float *p, float32x2_t a) {
++  /*@ loop invariant 0 <= i <= 2;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(p[j],a.lane[j]);
++      loop assigns i, p[0..1];
++      loop variant 2-i; */
+   for (size_t i = 0; i < 2; ++i) p[i] = a.lane[i];
+ }
+ 
+@@ -38,16 +62,28 @@
+ 
+ vfloat32m8_t __riscv_vle32_v_f32m8(const float *p, size_t vl) {
+   vfloat32m8_t r = {{0}};
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],p[j]);
++      loop assigns i, r.lane[0..32-1];
++      loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) r.lane[i] = p[i];
+   return r;
+ }
+ 
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl) {
+   vfloat32m8_t r = {{0}};
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_value(r.lane[j],fp_add32(a.lane[j],b.lane[j]));
++      loop assigns i, r.lane[0..32-1];
++      loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) r.lane[i] = f32_add(a.lane[i], b.lane[i]);
+   return r;
+ }
+ 
+ void __riscv_vse32_v_f32m8(float *p, vfloat32m8_t a, size_t vl) {
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(p[j],a.lane[j]);
++      loop assigns i, p[0..vl-1];
++      loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) p[i] = a.lane[i];
+ }
+
+--- a/neon.c
++++ b/neon.c
+@@ -11,33 +11,147 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const float *a_base=input_a;
++  //@ ghost const float *b_base=input_b;
++  //@ ghost float *o_base=output;
++  //@ ghost size_t total=batch/sizeof(float);
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input_a != NULL);
+   assert(input_b != NULL);
+   assert(output != NULL);
+ 
++  /*@ loop invariant 0<=batch<=4*total;
++      loop invariant batch % 4 == 0;
++      loop invariant input_a == a_base+(total-batch/4);
++      loop invariant input_b == b_base+(total-batch/4);
++      loop invariant output == o_base+(total-batch/4);
++      loop invariant \valid(output+(0..batch/4-1));
++      loop invariant \forall integer j; 0<=j<total-batch/4 ==>
++        same_value(o_base[j],fp_add32(a_base[j],b_base[j]));
++      loop assigns batch,input_a,input_b,output,o_base[0..total-1];
++      loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     const float32x4_t va = vld1q_f32(input_a); input_a += 4;
+     const float32x4_t vb = vld1q_f32(input_b); input_b += 4;
+ 
+     float32x4_t vacc = vaddq_f32(va, vb);
+ 
+-    vst1q_f32(output, vacc); output += 4;
++    /*@ assert \forall integer j; 0<=j<4 ==>
++        same_value(vacc.lane[j],fp_add32(a_base[total-batch/4+j],b_base[total-batch/4+j])); */
++    //@ ghost Before4: ;
++    vst1q_f32(output, vacc);
++    /*@ ghost
++    /@ loop invariant 0<=k<=(total-batch/4)+(4);
++       loop invariant \forall integer j; 0<=j<k ==>
++         same_value(o_base[j],fp_add32(a_base[j],b_base[j]));
++       loop assigns k; loop variant (total-batch/4)+(4)-k; @/
++    for (size_t k=0;k<(total-batch/4)+(4);k++) {
++      /@ assert \valid_read(a_base+k); @/
++      /@ assert \valid_read(b_base+k); @/
++      /@ assert \separated(a_base+k,o_base+((total-batch/4)..(total-batch/4)+(4)-1)); @/
++      /@ assert \separated(b_base+k,o_base+((total-batch/4)..(total-batch/4)+(4)-1)); @/
++      /@ assert same_float(a_base[k],f32_read{Before4}(a_base,k)); @/
++      /@ assert same_float(b_base[k],f32_read{Before4}(b_base,k)); @/
++      if (k<(total-batch/4)) {
++        /@ assert \valid_read(o_base+k); @/
++        /@ assert \separated(o_base+k,o_base+((total-batch/4)..(total-batch/4)+(4)-1)); @/
++        /@ assert same_float(o_base[k],f32_read{Before4}(o_base,k)); @/
++        /@ assert same_value(f32_read{Before4}(o_base,k),fp_add32(f32_read{Before4}(a_base,k),f32_read{Before4}(b_base,k))); @/
++      } else {
++        /@ assert 0<=k-(total-batch/4)<(4); @/
++        /@ assert same_float(o_base[k],vacc.lane[k-(total-batch/4)]); @/
++        /@ assert same_value(vacc.lane[k-(total-batch/4)],fp_add32(f32_read{Before4}(a_base,k),f32_read{Before4}(b_base,k))); @/
++      }
++      /@ assert same_value(o_base[k],fp_add32(a_base[k],b_base[k])); @/
++    }
++    */
++    output += 4;
+   }
++  //@ assert batch == 0 || batch == 4 || batch == 8 || batch == 12;
++  //@ ghost proof_f32_tail_bits(batch);
+   if XNN_UNLIKELY(batch != 0) {
+     const float32x4_t va = vld1q_f32(input_a);
+     const float32x4_t vb = vld1q_f32(input_b);
+ 
+     float32x4_t vacc = vaddq_f32(va, vb);
+ 
++    /*@ assert \forall integer j; 0<=j<4 ==>
++        same_value(vacc.lane[j],fp_add32(a_base[total-batch/4+j],b_base[total-batch/4+j])); */
+     float32x2_t vacc_lo = vget_low_f32(vacc);
++    /*@ assert \forall integer j; 0<=j<2 ==>
++        same_value(vacc_lo.lane[j],fp_add32(a_base[total-batch/4+j],b_base[total-batch/4+j])); */
+     if (batch & (2 * sizeof(float))) {
+-      vst1_f32(output, vacc_lo); output += 2;
++      //@ assert tail_has_two: 2<=batch/4;
++      //@ assert \valid(output+(0..1));
++      //@ ghost Before2: ;
++      vst1_f32(output, vacc_lo);
++    /*@ ghost
++    /@ loop invariant 0<=k<=(total-batch/4)+(2);
++       loop invariant \forall integer j; 0<=j<k ==>
++         same_value(o_base[j],fp_add32(a_base[j],b_base[j]));
++       loop assigns k; loop variant (total-batch/4)+(2)-k; @/
++    for (size_t k=0;k<(total-batch/4)+(2);k++) {
++      /@ assert \valid_read(a_base+k); @/
++      /@ assert \valid_read(b_base+k); @/
++      /@ assert \separated(a_base+k,o_base+((total-batch/4)..(total-batch/4)+(2)-1)); @/
++      /@ assert \separated(b_base+k,o_base+((total-batch/4)..(total-batch/4)+(2)-1)); @/
++      /@ assert same_float(a_base[k],f32_read{Before2}(a_base,k)); @/
++      /@ assert same_float(b_base[k],f32_read{Before2}(b_base,k)); @/
++      if (k<(total-batch/4)) {
++        /@ assert \valid_read(o_base+k); @/
++        /@ assert \separated(o_base+k,o_base+((total-batch/4)..(total-batch/4)+(2)-1)); @/
++        /@ assert same_float(o_base[k],f32_read{Before2}(o_base,k)); @/
++        /@ assert same_value(f32_read{Before2}(o_base,k),fp_add32(f32_read{Before2}(a_base,k),f32_read{Before2}(b_base,k))); @/
++      } else {
++        /@ assert 0<=k-(total-batch/4)<(2); @/
++        /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
++        /@ assert same_value(vacc_lo.lane[k-(total-batch/4)],fp_add32(f32_read{Before2}(a_base,k),f32_read{Before2}(b_base,k))); @/
++      }
++      /@ assert same_value(o_base[k],fp_add32(a_base[k],b_base[k])); @/
++    }
++    */
++      output += 2;
+       vacc_lo = vget_high_f32(vacc);
++      /*@ assert \forall integer j; 0<=j<2 ==>
++        same_value(vacc_lo.lane[j],fp_add32(a_base[total-batch/4+j+2],b_base[total-batch/4+j+2])); */
+     }
++    /*@ assert tail_prefix: \forall integer j; 0<=j<total-(batch%8)/4 ==>
++          same_value(o_base[j],fp_add32(a_base[j],b_base[j])); */
+     if (batch & (1 * sizeof(float))) {
+-      vst1_lane_f32(output, vacc_lo, 0);
++      //@ assert tail_odd_case: batch == 4 || batch == 12;
++      //@ assert tail_last_pointer: output == o_base+(total-1);
++      //@ assert \valid(output);
++      //@ assert same_value(vacc_lo.lane[0],fp_add32(a_base[total-1],b_base[total-1]));
++      //@ ghost Before1: ;
++      vst1_lane_f32(output, vacc_lo, 0);    /*@ ghost
++    /@ loop invariant 0<=k<=(total-1)+(1);
++       loop invariant \forall integer j; 0<=j<k ==>
++         same_value(o_base[j],fp_add32(a_base[j],b_base[j]));
++       loop assigns k; loop variant (total-1)+(1)-k; @/
++    for (size_t k=0;k<(total-1)+(1);k++) {
++      /@ assert \valid_read(a_base+k); @/
++      /@ assert \valid_read(b_base+k); @/
++      /@ assert \separated(a_base+k,o_base+((total-1)..(total-1)+(1)-1)); @/
++      /@ assert \separated(b_base+k,o_base+((total-1)..(total-1)+(1)-1)); @/
++      /@ assert same_float(a_base[k],f32_read{Before1}(a_base,k)); @/
++      /@ assert same_float(b_base[k],f32_read{Before1}(b_base,k)); @/
++      if (k<(total-1)) {
++        /@ assert \valid_read(o_base+k); @/
++        /@ assert \separated(o_base+k,o_base+((total-1)..(total-1)+(1)-1)); @/
++        /@ assert same_float(o_base[k],f32_read{Before1}(o_base,k)); @/
++        /@ assert same_value(f32_read{Before1}(o_base,k),fp_add32(f32_read{Before1}(a_base,k),f32_read{Before1}(b_base,k))); @/
++      } else {
++        /@ assert 0<=k-(total-1)<(1); @/
++        /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-1)]); @/
++        /@ assert same_value(vacc_lo.lane[k-(total-1)],fp_add32(f32_read{Before1}(a_base,k),f32_read{Before1}(b_base,k))); @/
++      }
++      /@ assert same_value(o_base[k],fp_add32(a_base[k],b_base[k])); @/
++    }
++    */
++
+     }
+   }
++  /*@ assert \forall integer j; 0<=j<total ==>
++        same_value(o_base[j],fp_add32(a_base[j],b_base[j])); */
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -5,6 +5,10 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params)
+ {
++  //@ ghost const float *a_base=input_a;
++  //@ ghost const float *b_base=input_b;
++  //@ ghost float *o_base=output;
++  //@ ghost size_t total=batch/sizeof(float);
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input_a != NULL);
+@@ -12,6 +16,15 @@
+   assert(output != NULL);
+ 
+   size_t n = batch / sizeof(float);
++  /*@ loop invariant 0<=n<=total;
++      loop invariant input_a == a_base+(total-n);
++      loop invariant input_b == b_base+(total-n);
++      loop invariant output == o_base+(total-n);
++      loop invariant \valid(output+(0..n-1));
++      loop invariant \forall integer j; 0<=j<total-n ==>
++        same_value(o_base[j],fp_add32(a_base[j],b_base[j]));
++      loop assigns n,input_a,input_b,output,o_base[0..total-1];
++      loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(n);
+     vfloat32m8_t va = __riscv_vle32_v_f32m8(input_a, vl);
+@@ -19,11 +32,42 @@
+     
+     vfloat32m8_t vacc = __riscv_vfadd_vv_f32m8(va, vb, vl);
+     
++    /*@ assert \forall integer j; 0<=j<vl ==>
++        same_value(vacc.lane[j],fp_add32(a_base[total-n+j],b_base[total-n+j])); */
++    //@ ghost BeforeVL: ;
+     __riscv_vse32_v_f32m8(output, vacc, vl);
++    /*@ ghost
++    /@ loop invariant 0<=k<=(total-n)+(vl);
++       loop invariant \forall integer j; 0<=j<k ==>
++         same_value(o_base[j],fp_add32(a_base[j],b_base[j]));
++       loop assigns k; loop variant (total-n)+(vl)-k; @/
++    for (size_t k=0;k<(total-n)+(vl);k++) {
++      /@ assert \valid_read(a_base+k); @/
++      /@ assert \valid_read(b_base+k); @/
++      /@ assert \separated(a_base+k,o_base+((total-n)..(total-n)+(vl)-1)); @/
++      /@ assert \separated(b_base+k,o_base+((total-n)..(total-n)+(vl)-1)); @/
++      /@ assert same_float(a_base[k],f32_read{BeforeVL}(a_base,k)); @/
++      /@ assert same_float(b_base[k],f32_read{BeforeVL}(b_base,k)); @/
++      if (k<(total-n)) {
++        /@ assert \valid_read(o_base+k); @/
++        /@ assert \separated(o_base+k,o_base+((total-n)..(total-n)+(vl)-1)); @/
++        /@ assert same_float(o_base[k],f32_read{BeforeVL}(o_base,k)); @/
++        /@ assert same_value(f32_read{BeforeVL}(o_base,k),fp_add32(f32_read{BeforeVL}(a_base,k),f32_read{BeforeVL}(b_base,k))); @/
++      } else {
++        /@ assert 0<=k-(total-n)<(vl); @/
++        /@ assert same_float(o_base[k],vacc.lane[k-(total-n)]); @/
++        /@ assert same_value(vacc.lane[k-(total-n)],fp_add32(f32_read{BeforeVL}(a_base,k),f32_read{BeforeVL}(b_base,k))); @/
++      }
++      /@ assert same_value(o_base[k],fp_add32(a_base[k],b_base[k])); @/
++    }
++    */
++
+     
+     input_a += vl;
+     input_b += vl;
+     output += vl;
+     n -= vl;
+   }
++  /*@ assert \forall integer j; 0<=j<total ==>
++        same_value(o_base[j],fp_add32(a_base[j],b_base[j])); */
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -1,9 +1,31 @@
+ #include "spec.h"
+ 
+ int equivalent(size_t n,const float *input_a,const float *input_b,float *left,float *right) {
++  //@ assert (size_t)(4*n) == 4*n;
++  //@ assert (size_t)(4*n)/4 == n;
+   struct xnn_f32_default_params params={0};
+   test_neon(n*sizeof(float),input_a,input_b,left,&params);
++  /*@ assert \forall integer j; 0<=j<n ==> same_value(left[j],fp_add32(input_a[j],input_b[j])); */
++  //@ ghost BeforeSecond: ;
+   test_rvv(n*sizeof(float),input_a,input_b,right,&params);
++  /*@ ghost
++    /@ loop invariant 0<=k<=n;
++       loop invariant \forall integer j; 0<=j<k ==> same_value(left[j],right[j]);
++       loop assigns k; loop variant n-k; @/
++    for (size_t k=0;k<n;k++) {
++      /@ assert same_float(left[k],f32_read{BeforeSecond}(left,k)); @/
++      /@ assert same_float(input_a[k],f32_read{BeforeSecond}(input_a,k)); @/
++      /@ assert same_float(input_b[k],f32_read{BeforeSecond}(input_b,k)); @/
++      /@ assert same_value(f32_read{BeforeSecond}(left,k),fp_add32(f32_read{BeforeSecond}(input_a,k),f32_read{BeforeSecond}(input_b,k))); @/
++      /@ assert same_value(left[k],fp_add32(input_a[k],input_b[k])); @/
++      /@ assert same_value(right[k],fp_add32(input_a[k],input_b[k])); @/
++      proof_float_join(left[k],right[k],input_a[k],input_b[k]);
++    }
++  */
++  /*@ assert \forall integer j; 0<=j<n ==> same_value(left[j],right[j]); */
++  /*@ loop invariant 0<=i<=n;
++      loop assigns i;
++      loop variant n-i; */
+   for (size_t i=0;i<n;i++) {
+     if (!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i]))) return 0;
+   }
+--- a/unit.c
++++ b/unit.c
+@@ -1,4 +1,17 @@
+ #include "spec.h"
++/*@ ghost
++/@ requires b==0 || b==4 || b==8 || b==12;
++    terminates \true;
++    assigns \nothing;
++    ensures tail_eight: ((b & 8) != 0) <==> (b==8 || b==12);
++    ensures tail_four: ((b & 4) != 0) <==> (b==4 || b==12);
++    ensures tail_parts: b/4 == ((b & 8) != 0 ? 2 : 0) + ((b & 4) != 0 ? 1 : 0);
++    ensures tail_remaining: (b%8)/4 == ((b & 4) != 0 ? 1 : 0);
++    ensures tail_after_two: b/4 - ((b & 8) != 0 ? 2 : 0) == (b%8)/4; @/
++void proof_f32_tail_bits(size_t b) {
++  switch (b) { case 0: break; case 4: break; case 8: break; case 12: break; }
++}
++*/
+ #include "base.c"
+ #include "float_ops.c"
+ #include "neon.c"
+
+--- a/float_ops.h
++++ b/float_ops.h
+@@ -47,4 +47,7 @@
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+ /*@ requires vl<=32; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer i; 0<=i<vl ==> same_float(p[i],a.lane[i]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..vl-1)) ==> same_float(*q,\old(*q)); */
+ void __riscv_vse32_v_f32m8(float *p, vfloat32m8_t a, size_t vl);
++/*@ lemma fp_add_transport: \forall float o,o0,a,a0,b,b0;
++      same_float(o,o0) && same_float(a,a0) && same_float(b,b0) &&
++      same_value(o0,fp_add32(a0,b0)) ==> same_value(o,fp_add32(a,b)); */
+ #endif

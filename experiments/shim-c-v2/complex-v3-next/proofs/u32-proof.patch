@@ -1,0 +1,80 @@
+--- a/u32_shim.c
++++ b/u32_shim.c
+@@ -1,44 +1,73 @@
+ #include "u32_shim.h"
++/*@ requires q==2; assigns \nothing; ensures \result == n-n%2; */
+ size_t round_down_po2(size_t n,size_t q) { return n & ~(q-1); }
++/*@ assigns \nothing; ensures \result == (n>d?n-d:0); */
+ size_t doz(size_t n,size_t d) { return n>d ? n-d : 0; }
++/*@ requires \valid_read(p+(0..1)); assigns \nothing; ensures \result.lane[0]==p[0] && \result.lane[1]==p[1]; */
+ uint32x2_t vld1_u32(const uint32_t *p) { uint32x2_t r={{p[0],p[1]}}; return r; }
++/*@ assigns \nothing; ensures \result.lane[0]==x && \result.lane[1]==x; */
+ uint32x2_t vmov_n_u32(uint32_t x) { uint32x2_t r={{x,x}}; return r; }
++/*@ assigns \nothing; ensures \result.lane[0]==x && \result.lane[1]==x; */
+ uint32x2_t vdup_n_u32(uint32_t x) { return vmov_n_u32(x); }
++/*@ assigns \nothing; ensures \result.val[0].lane[0]==a.lane[0] && \result.val[0].lane[1]==b.lane[0]; ensures \result.val[1].lane[0]==a.lane[1] && \result.val[1].lane[1]==b.lane[1]; */
+ uint32x2x2_t vzip_u32(uint32x2_t a,uint32x2_t b) {
+   uint32x2x2_t r={{{{a.lane[0],b.lane[0]}},{{a.lane[1],b.lane[1]}}}}; return r;
+ }
++/*@ requires \valid_read(p+(0..1)); requires 0<=lane<2; assigns \nothing; ensures \result.val[0].lane[lane]==p[0] && \result.val[1].lane[lane]==p[1]; ensures \forall integer j;0<=j<2 && j!=lane ==> \result.val[0].lane[j]==a.val[0].lane[j] && \result.val[1].lane[j]==a.val[1].lane[j]; */
+ uint32x2x2_t vld2_lane_u32(const uint32_t *p,uint32x2x2_t a,int lane) {
+   a.val[0].lane[lane]=p[0]; a.val[1].lane[lane]=p[1]; return a;
+ }
++/*@ requires \valid_read(p); requires 0<=lane<2; assigns \nothing; ensures \result.lane[lane]==*p; ensures \forall integer j;0<=j<2 && j!=lane ==> \result.lane[j]==a.lane[j]; */
+ uint32x2_t vld1_lane_u32(const uint32_t *p,uint32x2_t a,int lane) { a.lane[lane]=*p; return a; }
++/*@ requires \valid(p+(0..1)); assigns p[0..1]; ensures p[0]==a.lane[0] && p[1]==a.lane[1]; */
+ void vst1_u32(uint32_t *p,uint32x2_t a) { p[0]=a.lane[0]; p[1]=a.lane[1]; }
++/*@ requires \valid(p); requires 0<=lane<2; assigns *p; ensures *p==a.lane[lane]; */
+ void vst1_lane_u32(uint32_t *p,uint32x2_t a,int lane) { *p=a.lane[lane]; }
++/*@ assigns \nothing; ensures \result==(n<32?n:32); */
+ size_t __riscv_vsetvl_e32m8(size_t n) { return n<32 ? n : 32; }
++/*@ assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<16 ? n : 16; }
++/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
+ vuint32m8_t __riscv_vle32_v_u32m8(const uint32_t *p,size_t vl) {
+-  vuint32m8_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vuint32m8_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ requires vl<=32; requires 0<stride<=PTRDIFF_MAX && vl*stride<=PTRDIFF_MAX && stride%4==0; requires \valid(p+(0..(vl-1)*(stride/4))); assigns p[0..(vl-1)*(stride/4)]; ensures \forall integer j;0<=j<vl ==> p[j*(stride/4)]==a.lane[j]; ensures \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\old(p[j]); */
+ void __riscv_vsse32_v_u32m8(uint32_t *p,ptrdiff_t stride,vuint32m8_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[j*(stride/4)]==a.lane[j]; loop invariant \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\at(p[j],Pre); loop assigns i,p[0..(vl-1)*(stride/4)]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)*(uint32_t*)((char*)p+i*stride)=a.lane[i];
+ }
++/*@ requires vl<=4; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
+ vuint32m1_t __riscv_vle32_v_u32m1(const uint32_t *p,size_t vl) {
+-  vuint32m1_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vuint32m1_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==x; */
+ vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t x,size_t vl) {
+-  vuint32m1_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=x; return r;
++  vuint32m1_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==x; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=x; return r;
+ }
++/*@ requires vl<=4; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j;0<=j<vl ==> p[j]==a.lane[j]; */
+ void __riscv_vse32_v_u32m1(uint32_t *p,vuint32m1_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[j]==a.lane[j]; loop assigns i,p[0..vl-1]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)p[i]=a.lane[i];
+ }
++/*@ requires vl<=16; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
+ vuint32m4_t __riscv_vle32_v_u32m4(const uint32_t *p,size_t vl) {
+-  vuint32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vuint32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<16 ==> \result.val[0].lane[j]==a.lane[j] && \result.val[1].lane[j]==b.lane[j]; */
+ vuint32m4x2_t __riscv_vcreate_v_u32m4x2(vuint32m4_t a,vuint32m4_t b) {
+   vuint32m4x2_t r={{a,b}}; return r;
+ }
++/*@ requires vl<=16; requires \valid(p+(0..2*vl-1)); assigns p[0..2*vl-1]; ensures \forall integer j;0<=j<vl ==> p[2*j]==a.val[0].lane[j] && p[2*j+1]==a.val[1].lane[j]; */
+ void __riscv_vsseg2e32_v_u32m4x2(uint32_t *p,vuint32m4x2_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[2*j]==a.val[0].lane[j] && p[2*j+1]==a.val[1].lane[j]; loop assigns i,p[0..2*vl-1]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++) { p[2*i]=a.val[0].lane[i]; p[2*i+1]=a.val[1].lane[i]; }
+ }
++/*@ requires vl<=16; requires 0<stride<=PTRDIFF_MAX && vl*stride<=PTRDIFF_MAX && stride%4==0; requires \valid(p+(0..(vl-1)*(stride/4))); assigns p[0..(vl-1)*(stride/4)]; ensures \forall integer j;0<=j<vl ==> p[j*(stride/4)]==a.lane[j]; ensures \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\old(p[j]); */
+ void __riscv_vsse32_v_u32m4(uint32_t *p,ptrdiff_t stride,vuint32m4_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[j*(stride/4)]==a.lane[j]; loop invariant \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\at(p[j],Pre); loop assigns i,p[0..(vl-1)*(stride/4)]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)*(uint32_t*)((char*)p+i*stride)=a.lane[i];
+ }

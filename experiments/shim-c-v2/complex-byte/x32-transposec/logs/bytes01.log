@@ -1,0 +1,77 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-transposec/logs/bytes01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-transposec/.build/bytes01/annotated/unit.c', '-wp-skip-fct', '__riscv_vcreate_v_u32m4x2,__riscv_vle32_v_u32m1,__riscv_vle32_v_u32m4,__riscv_vmv_v_x_u32m1,__riscv_vse32_v_u32m1,__riscv_vsetvl_e32m4,__riscv_vsse32_v_u32m4,__riscv_vsseg2e32_v_u32m4x2,vdup_n_u32,vld1_lane_u32,vld2_lane_u32']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'tip,z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-transposec/logs/bytes01.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-transposec/.build/bytes01/annotated/unit.c', '-wp-skip-fct', '__riscv_vcreate_v_u32m4x2,__riscv_vle32_v_u32m1,__riscv_vle32_v_u32m4,__riscv_vmv_v_x_u32m1,__riscv_vse32_v_u32m1,__riscv_vsetvl_e32m4,__riscv_vsse32_v_u32m4,__riscv_vsseg2e32_v_u32m4x2,vdup_n_u32,vld1_lane_u32,vld2_lane_u32', '-wp-model', 'Bytes', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Pure-integer Bytes invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-transposec/logs/bytes01.json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex-byte/x32-transposec/.build/bytes01/annotated/unit.c", "-wp-skip-fct", "__riscv_vcreate_v_u32m4x2,__riscv_vle32_v_u32m1,__riscv_vle32_v_u32m4,__riscv_vmv_v_x_u32m1,__riscv_vse32_v_u32m1,__riscv_vsetvl_e32m4,__riscv_vsse32_v_u32m4,__riscv_vsseg2e32_v_u32m4x2,vdup_n_u32,vld1_lane_u32,vld2_lane_u32", "-wp-model", "Bytes", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-integer-byte/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsse32_v_u32m8
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function vld1_u32
+[rte:annot] annotating function vmov_n_u32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vzip_u32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] 259 goals scheduled
+[wp] [Timeout] bytes_round_down_po2_ensures (Qed 3ms) (Z3)
+[wp] [Timeout] bytes_vmov_n_u32_ensures (Qed 3ms) (Z3)
+[wp] [Timeout] bytes_vst1_u32_ensures (Qed 6ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m8_ensures (Qed 25ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m8_ensures_2 (Qed 15ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m8_loop_invariant_2_preserved (Qed 18ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m8_loop_invariant_3_preserved (Qed 18ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m8_assert_rte_mem_access (Qed 21ms) (CVC5)
+[wp] [Timeout] bytes_riscv_vsse32_v_u32m8_loop_assigns_part3 (Qed 24ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_ensures_equal (Qed 4.5s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access (Qed 4.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_rte_mem_access_2 (Qed 4.2s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert (Qed 117ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_2 (Qed 506ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_3 (Qed 647ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_5_preserved (Qed 3.7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_6_preserved (Qed 3.7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_7_preserved (Qed 3.8s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_8_preserved (Qed 3.9s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_12_preserved (Qed 759ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_13_preserved (Qed 831ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_14_preserved (Qed 816ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_15_established (Qed 801ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_15_preserved (Qed 786ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_16_preserved (Qed 901ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_17_preserved (Qed 837ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_22_preserved (Qed 4.3s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_23_preserved (Qed 4.4s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_28_preserved (Qed 4.4s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_30_preserved (Qed 4.9s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_invariant_31_preserved (Qed 4.6s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assert_5 (Qed 4.4s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_assigns_2_part7 (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_assigns_3_part6 (Qed 960ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_assigns_2_part8 (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_assigns_3_part7 (Qed 883ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_loop_assigns_5_part4 (Qed 4.7s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_normal_part15 (Qed 784ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_normal_part13 (Qed 591ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_normal_part19 (Qed 1.2s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_normal_part20 (Qed 1.2s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_normal_part32 (Qed 4.6s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part10 (Qed 586ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part12 (Qed 727ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part18 (Qed 829ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part24 (Qed 960ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part25 (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part37 (Qed 4.4s) (CVC5)
+[wp] [Timeout] bytes_equivalent_assigns_exit_part39 (Qed 4.6s) (CVC5)
+[wp] [Timeout] bytes_equivalent_call_vld1_u32_2_requires (Qed 750ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_call_vld1_u32_requires (Qed 624ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_call_vst1_u32_requires (Qed 718ms) (CVC5)
+[wp] [Timeout] bytes_equivalent_call_vst1_u32_2_requires (Qed 761ms) (CVC5)

@@ -1,0 +1,94 @@
+{
+  "name": "f32-raddstoreexpminusmax",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/neon.c",
+      "sha256": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/rvv.c",
+      "sha256": "b5230b7b984aad0f560dafac3544023440a841176853c1e374741864a4be1301"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/spec.h",
+      "sha256": "a982534309329e378ab18d5ab7f636c8da894d94920b41ff200a2e793ee1b66e"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/harness.c",
+      "sha256": "c6684e293c1645cf837a683b2e8b78c9dcc4306c88655d3c44363423377d95fd"
+    },
+    "native_types.h": {
+      "path": "experiments/shared-extension/complex/shared/native_types.h",
+      "sha256": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1"
+    },
+    "fp_primitives.h": {
+      "path": "experiments/shared-extension/complex/shared/fp_primitives.h",
+      "sha256": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "fp_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory.c",
+      "sha256": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b"
+    },
+    "fp_arithmetic.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic.c",
+      "sha256": "ce46742c5a7717cc8e4ecdaf2820e03b0139f220dd034aaac8633307aad3c9a3"
+    },
+    "fp_memory_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory_m4.c",
+      "sha256": "70a9fb8d6ef08a7dc600c0759e6f06450ecf605ff855d0c22beb97e80b7cb2dd"
+    },
+    "fp_arithmetic_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_arithmetic_m4.c",
+      "sha256": "ee1555baaa35553f9faa0c78faeed7fe9d33fe2bd6e0422f6dfb60640bf1cd7a"
+    },
+    "fp_masks_m4.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks_m4.c",
+      "sha256": "e07e40fd80d9b5fa7caa44aa57c0d88f7e1ec3e5e716f1f210db500387395d83"
+    },
+    "fp_repr.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_repr.c",
+      "sha256": "628cd51d21d39387136a6efd2a9de17eaa3f86501bc16259f357f6d4b2617a44"
+    },
+    "fp_masks.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks.c",
+      "sha256": "d4a5edf743bac30a80e468df6cf849ce48a98e3fae20bfce72714a8803555923"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/unit.c",
+      "sha256": "c84b8e4772f75cea8112fd1fb89ec9dc9f1af9e9fd99687cffb26f60fca84921"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v3.py",
+      "sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    }
+  },
+  "proof_patches": [
+    "experiments/shim-c-v2/frontend-campaign/f32-raddstoreexpminusmax/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "VLEN_bits": 128,
+  "scope": "Actual NEON and preserved/repaired RVV, all output memory under declared wrapper; FMA/libc and representation bridges not assumed proved",
+  "previous_version": "experiments/shim-c-v2/complex-v3-next/f32-raddstoreexpminusmax",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "wp_model_variant": "Typed+raw+float",
+  "model_variant_reason": "Safe Raw model retains aggregate initializer relationships; ordinary C and public spec unchanged.",
+  "proof_stage": "Independent proof copy allows private static-helper proof while preceding frozen replay runs unchanged."
+}

@@ -1,0 +1,44 @@
+[kernel] Parsing /tmp/complex-u32-final-library/u32_shim.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function vmov_n_u32
+[wp] 4 goals scheduled
+[wp] [Timeout] typed_ref_round_down_po2_ensures (Qed 1ms) (Z3)
+[wp] [Timeout] typed_ref_vmov_n_u32_ensures (Qed 2ms) (Z3)
+[wp] Proved goals:    6 / 8
+  Terminating:     2
+  Unreachable:     2
+  Qed:             2 (1ms-0.66ms-2ms)
+  Timeout:         2
+
+Goal Post-condition ("/tmp/complex-u32-final-library/u32_shim.c", line 2) in 'round_down_po2':
+Let x = land(18446744073709551614, n).
+Assume { Type: is_uint64(n) /\ is_uint64(x). }
+Prove: ((n % 2) + x) = n.
+Prover CVC5 1.2.1 returns Unknown (Qed:1ms)
+Prover Z3 4.12.5 returns Timeout (Qed:1ms) (10s)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'round_down_po2':
+Effect at line 3
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Post-condition ("/tmp/complex-u32-final-library/u32_shim.c", line 8) in 'vmov_n_u32':
+Let a = vmov_n_u32_0.F1_lane. Assume { Type: IsS1(vmov_n_u32_0). }
+Prove: a[1] = a[0].
+Prover CVC5 1.2.1 returns Unknown (Qed:2ms)
+Prover Z3 4.12.5 returns Timeout (Qed:2ms) (10s)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vmov_n_u32':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

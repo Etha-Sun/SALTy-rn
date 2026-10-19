@@ -1,0 +1,172 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/logs/standard02.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/.build/standard02/annotated/unit.c']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/logs/standard02.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/.build/standard02/annotated/unit.c', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/logs/standard02.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/v5-campaign/f32-f16-vcvt/.build/standard02/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vadd_vv_u16m4
+[rte:annot] annotating function __riscv_vadd_vx_u32m8
+[rte:annot] annotating function __riscv_vand_vx_u16m4
+[rte:annot] annotating function __riscv_vand_vx_u32m8
+[rte:annot] annotating function __riscv_vfabs_v_f32m8
+[kernel:annot:missing-spec] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-plus/libc/math.h:1432: Warning: 
+  Neither code nor explicit exits and terminates for function fabsf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmaxu_vx_u32m8
+[rte:annot] annotating function __riscv_vmerge_vxm_u16m4
+[rte:annot] annotating function __riscv_vmsgtu_vx_u32m8_b4
+[rte:annot] annotating function __riscv_vnsrl_wx_u16m4
+[rte:annot] annotating function __riscv_vor_vv_u16m4
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_u32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vreinterpret_v_u32m8_f32m8
+[rte:annot] annotating function __riscv_vse16_v_u16m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function proof_tail_f16
+[rte:annot] annotating function vabsq_f32
+[rte:annot] annotating function vadd_u16
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vaddq_u16
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vand_u16
+[rte:annot] annotating function vandq_u16
+[rte:annot] annotating function vandq_u32
+[rte:annot] annotating function vbsl_u16
+[rte:annot] annotating function vbslq_u16
+[rte:annot] annotating function vcgtq_u32
+[rte:annot] annotating function vcombine_u16
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vdupq_n_u16
+[rte:annot] annotating function vdupq_n_u32
+[rte:annot] annotating function vext_u16
+[rte:annot] annotating function vget_low_u16
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vmaxq_u32
+[rte:annot] annotating function vmovn_u32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vorr_u16
+[rte:annot] annotating function vorrq_u16
+[rte:annot] annotating function vreinterpret_u32_u16
+[rte:annot] annotating function vreinterpretq_f32_u32
+[rte:annot] annotating function vreinterpretq_u32_f32
+[rte:annot] annotating function vshrn_n_u32
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u16
+[rte:annot] annotating function vst1q_u16
+[wp] Computing [100 goals...]
+[wp] integer-f32-f16-vcvt.c:27: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer-f32-f16-vcvt.c:27: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] Computing [200 goals...]
+[wp] integer-f32-f16-vcvt.c:150: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer-f32-f16-vcvt.c:150: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] Computing [300 goals...]
+[wp] integer-f32-f16-vcvt.c:244: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x2_t_11*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:244: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint16x4_t_7*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:245: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_12*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:245: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_14*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:246: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_14*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:246: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_12*)
+     (target: sint8*)
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] integer-f32-f16-vcvt.c:502: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vuint32m8_t_20*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:502: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vfloat32m8_t_21*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:503: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vfloat32m8_t_21*)
+     (target: sint8*)
+[wp] integer-f32-f16-vcvt.c:503: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vuint32m8_t_20*)
+     (target: sint8*)
+[wp] neon.c:144: Warning: 
+  Cast with incompatible pointers types (source: uint16*) (target: sint8*)
+[wp] neon.c:140: Warning: 
+  Cast with incompatible pointers types (source: uint16*) (target: sint8*)
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] Computing [900 goals...]
+[wp] Computing [1000 goals...]
+[wp] 941 goals scheduled
+[wp] [Timeout] typed_fma_vst1_lane_u16_terminates (Qed 6ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assert_rte_index_bound (Qed 4ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assert_rte_index_bound_2 (Qed 4ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assert_rte_mem_access (Qed 6ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_terminates (Qed 6ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_index_bound (Qed 4ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_index_bound_2 (Qed 5ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_mem_access (Qed 7ms) (Z3)
+[wp] [Timeout] typed_fma_vreinterpret_u32_u16_call_memcpy_requires_valid_dest (Qed 4ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vreinterpret_u32_u16_call_memcpy_requires_valid_src (Qed 4ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vreinterpret_u32_u16_call_memcpy_requires_separation (Qed 4ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vreinterpretq_u32_f32_call_memcpy_requires_valid_dest (Qed 4ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vreinterpretq_u32_f32_call_memcpy_requires_valid_src (Qed 3ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma_vreinterpretq_f32_u32_call_memcpy_requires_valid_dest (Qed 3ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vreinterpretq_u32_f32_call_memcpy_requires_separation (Qed 4ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma_vreinterpretq_f32_u32_call_memcpy_requires_valid_src (Qed 4ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma_vreinterpretq_f32_u32_call_memcpy_requires_separation (Qed 4ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma___riscv_vreinterpret_v_f32m8_u32m8_call_memcpy_requires_valid_dest (Qed 5ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma___riscv_vreinterpret_v_f32m8_u32m8_call_memcpy_requires_valid_src (Qed 5ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma___riscv_vreinterpret_v_u32m8_f32m8_call_memcpy_requires_valid_dest (Qed 5ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma___riscv_vreinterpret_v_u32m8_f32m8_call_memcpy_requires_valid_src (Qed 4ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma___riscv_vreinterpret_v_u32m8_f32m8_call_memcpy_requires_separation (Qed 4ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma___riscv_vreinterpret_v_f32m8_u32m8_call_memcpy_requires_separation (Qed 5ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_ensures_equal (Qed 4.5s) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access (Qed 4.5s) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_6_preserved (Qed 1.3s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_7_preserved (Qed 1.3s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_13_preserved (Qed 969ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_14_preserved (Qed 940ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_19_established (Qed 3.4s) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_19_preserved (Qed 4.0s) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_20_established (Qed 4s) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_20_preserved (Qed 4.0s) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part07 (Qed 746ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part09 (Qed 831ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part13 (Qed 962ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part15 (Qed 845ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part26 (Qed 1s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part28 (Qed 1s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part30 (Qed 1.2s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part32 (Qed 1.1s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part35 (Qed 1.1s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part37 (Qed 1s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part40 (Qed 1.3s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part42 (Qed 1.2s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part04 (Qed 712ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part07 (Qed 872ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part13 (Qed 918ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part15 (Qed 981ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part17 (Qed 845ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part19 (Qed 877ms) (Z3)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_4_part05 (Qed 3.6s) (CVC5) (Stronger, 2 warnings)

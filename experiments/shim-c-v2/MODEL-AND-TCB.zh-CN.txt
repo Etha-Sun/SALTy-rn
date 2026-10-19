@@ -1,0 +1,45 @@
+本轮模型修复和验收边界
+
+旧版、冻结
+- 起点为 feat/shim-c；本轮前的 progress 已提交。旧 verified 程序、旧7项浮点隔离证据和 shared 目录保留。
+- 新版本先固定 kernel/shim/driver/spec.h/wrapper 的 SHA，再独立补 proof.patch。普通 C token 和完整预处理后 token 都须与冻结版相同，公共 spec 必须逐字节相同。
+- proof 可含需实际检查 body 的 ghost helper、辅助函数合同、循环不变量、assert 和 WP 自带策略。不得含新 axiom/assume、无 body 的 ghost 合同，v2-v5 不允许给 test_neon/test_rvv/equivalent 增加合同；v6/v7 独立模块化版本仅允许在两个真实 kernel 定义前添加需由 body 检查的 ensures 加强结论，禁止新增 requires/assigns/terminates 或 wrapper 合同，spec.h 字节不变。
+
+实际修复
+1. model/：删除原 WP Cfloat 理论中与 IEEE 特殊值冲突的20条无条件公理，改用 Why3 原生 IEEE 操作和有方向的舍入。负控制只是回归拒绝测试，不构成一致性定理。
+2. model-fma/：native IEEE FMA，加标准 fmaf 语义模型；融合和非融合见证分开。
+3. model-front/ + toolchain-build/：真正重编译的独立 Frama-C WP 前端。修复负零字面量、IEEE 运算的有理数常量折叠、float/double 转换经 real 丢失 NaN/负零的问题。semantic03 检查10项正确 post 全通过；3项错误 post（含 ensures false）均未获证明。旧工具链未覆盖。
+4. model-plus/：保留以上修复，加入有 body 且全部54项已独立重验的 Cint cast/mod 辅助定理，以及编译器 builtin_nanf 的标准库模型。
+5. 整数 Byte 支持为独立实验：原 memcpy 定义错误使用 size 作为区间终点、使用源块作为目标写入的旧内容。整数 signed/unsigned byte 和 LE/BE 16/32 word 分解28项 Why3辅助证明已独立重验。整套内存模型仍在 TCB 中；这不等于已形式化验证整个内存模型。
+
+
+6. model-integer-byte-v2/：在完全相同 memcpy 定义和禁浮点前端上增加内存层 byte/word 视图（有 body）。LE/BE 各6个 VC：各4个经 Why3 检查化简关闭、2个交给 Z3 Valid；root 已独立重放12项。不是先前口头误计的“5+5 SMT VC”。
+   任意 int8 数组的 pack16/pack32 实际 C 控制中，raw19/20；唯一未证是故意 integer_false_ensures。终止/不可达也计入时 WP stdout23/24。这仍不等于所有 vector/struct memcpy 后置条件自动已证。
+
+明确禁用
+- 官方 Bytes+float CODEC_FLOAT 的 encode(decode(i))=i 无 uint32 范围限制，同时 encode 值被限制为uint32；取 i=2^32 可导出矛盾。实际导出的理论、ground 实例及 solver 结果保留在 complex/records/。即使补范围，原生 SMT FP 的单一 NaN 与所有 NaN bit-pattern 双向互逆仍不相容。
+- 不把旧 Bytes+float 绿色结果计入通过；model-front/model-plus wrapper 明确拒绝 Bytes。整数新模型须从前端禁用任何浮点 codec 后才可使用。
+- +ref 会改变内存有效性/分离假设，不是 +raw 的追加选项，不用它悄悄收窄公共输入域。
+
+完整证明与局部证明
+- v2 对所有定义和全局 lemma 检查；v4/v5 对 equivalent 的完整直接调用闭包、所有 ghost helper 及其依赖检查，未知外部/间接调用拒绝；未调用的普通共享 helper 无需为该 kernel 单独证明。
+- v4/v5 的全局 lemma 独立运行（WP 的函数筛选会排除全局 lemma），原始命令/报告分别保留。不能只看文件中出现 lemma，必须有对应已检查 VC。
+- 标准 memcpy/fmaf 等无源码的库函数仍是固定模型 TCB。v5 只进一步允许已固定 libc 模型中的 fabsf/floor，不擅自加强它们的契约。
+- v6/v7 不内联两个 kernel，必须检查这两个真实 body、全部实际依赖和 wrapper，强制覆盖核对不会再排除 kernel 名。它只改变证明分解，不新增公理或修改程序。
+- 完整验收要求所有实际 VC通过、所需函数 body/post 和全局 lemma 覆盖、C/spec/model/proof/checker hash不变、同上下文 false 控制未获证明且 true 控制通过。
+- 如果全核预算耗尽，没有最终 body report，必须报告“完整证明未完成”，不能报告0/0。部分运行只留下独立 lemma 报告，即便6/6也不是整核6/6通过。
+- Wp.array 是生成并检查子目标的 WP 内置策略，不是受信任的新用户公理。局部 helper 通过不能替代整核检查。
+
+仍属于 TCB
+- 原 intrinsic/ISA 到普通 C shim 的手工语义对应；固定 RVV VLEN/VL、浮点环境及 ABI 的选择。
+- Clang/GCC 预处理、Frama-C C/ACSL 解析及 WP 生成器、QED/策略实现、内存模型和标准库契约。
+- Why3 翻译/driver 和 SMT solver；SMT 结果没有在 Lean/Coq 中重新检查 proof certificate。
+- 冻结/调用闭包/结果覆盖检查脚本、编译器和执行环境。LLVM 字节相同是该 host 编译产物的额外身份检查，不是 ISA 等价证明。
+- 以上局部模型回归和 Why3 辅助证明没有消除整个模型 TCB。
+
+范围
+- 已核对当前 Factory.default：Cint.Machine、Cfloat.Float；不写 +float 的 Typed 仍使用该默认浮点模型。没有改为 Real 抽象来消除舍入/特殊值。
+- 固定 VLEN=128；各 intrinsic 的 LMUL/SEW 决定 capacity，不统一都是8。例 e32m8=32，e32m1=4；VL=min(remaining,capacity)。
+- 数组长度在既有 requires 范围内为符号值，无固定数组长度展开上限；不等于任意硬件 VLEN或任意VL调度。
+- 浮点观察仍为既有 spec/wrapper 的数值相等或双方 NaN；不比较 NaN payload、正负零位、FP flags 或 errno。
+- WP 日志仍列出 Typed 的内存假设以及未支持的 alignment/valid_function RTE；不得宣称已覆盖全部 C 未定义行为。

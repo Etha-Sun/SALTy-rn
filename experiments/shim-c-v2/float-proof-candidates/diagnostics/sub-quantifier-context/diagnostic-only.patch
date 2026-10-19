@@ -1,0 +1,58 @@
+--- frozen/float_ops.h
++++ diagnostic/float_ops.h
+@@ -8,12 +8,12 @@
+   predicate same_float(float a, float b) =
+     (\is_NaN(a) && \is_NaN(b)) ||
+     (same_value(a,b) && \sign(a) == \sign(b));
+-  lemma same_float_refl: \forall float a; same_float(a,a);
+-  lemma same_float_value: \forall float a,b; same_float(a,b) ==> same_value(a,b);
+-  lemma same_value_refl: \forall float a; same_value(a,a);
+-  lemma same_value_trans: \forall float a,b,c;
++  check lemma same_float_refl: \forall float a; same_float(a,a);
++  check lemma same_float_value: \forall float a,b; same_float(a,b) ==> same_value(a,b);
++  check lemma same_value_refl: \forall float a; same_value(a,a);
++  check lemma same_value_trans: \forall float a,b,c;
+     same_value(a,b) && same_value(b,c) ==> same_value(a,c);
+-  lemma fp_add_congruence: \forall float a,b,c,d;
++  check lemma fp_add_congruence: \forall float a,b,c,d;
+     same_float(a,c) && same_float(b,d) ==>
+     same_value(fp_add32(a,b),fp_add32(c,d));
+ */
+@@ -47,5 +47,5 @@
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+ /*@ requires vl<=32; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer i; 0<=i<vl ==> same_float(p[i],a.lane[i]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..vl-1)) ==> same_float(*q,\old(*q)); */
+ void __riscv_vse32_v_f32m8(float *p, vfloat32m8_t a, size_t vl);
+-/*@ lemma same_float_trans: \forall float a,b,c; same_float(a,b) && same_float(b,c) ==> same_float(a,c); */
++/*@ check lemma same_float_trans: \forall float a,b,c; same_float(a,b) && same_float(b,c) ==> same_float(a,c); */
+ #endif
+--- frozen/extensions.h
++++ diagnostic/extensions.h
+@@ -9,7 +9,7 @@
+ vfloat32m8_t __riscv_vfsub_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+ /*@
+   logic float fp_sub32(float a,float b);
+-  lemma fp_sub_congruence: \forall float a,b,c,d;
++  check lemma fp_sub_congruence: \forall float a,b,c,d;
+     same_float(a,c) && same_float(b,d) ==>
+     same_value(fp_sub32(a,b),fp_sub32(c,d));
+ */
+@@ -61,7 +61,7 @@
+ vfloat32m8_t __riscv_vfsgnj_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl);
+ vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl);
+ float f32_sqrt(float x);
+-/*@ lemma fp_sub_transport: \forall float o,o0,a,a0,b,b0;
++/*@ check lemma fp_sub_transport: \forall float o,o0,a,a0,b,b0;
+       same_float(o,o0) && same_float(a,a0) && same_float(b,b0) &&
+       same_value(o0,fp_sub32(a0,b0)) ==> same_value(o,fp_sub32(a,b)); */
+ /*@ ghost
+--- frozen/neon.c
++++ diagnostic/neon.c
+@@ -94,7 +94,7 @@
+       vst1_f32(output, vacc_lo);
+     /*@ ghost
+     /@ loop invariant 0<=k<=(total-batch/4)+(2);
+-       loop invariant \forall integer j; 0<=j<k ==>
++       loop invariant sub_two_prefix: \forall integer j; 0<=j<k ==>
+          same_value(o_base[j],fp_sub32(a_base[j],b_base[j]));
+        loop assigns k; loop variant (total-batch/4)+(2)-k; @/
+     for (size_t k=0;k<(total-batch/4)+(2);) {

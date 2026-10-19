@@ -1,0 +1,553 @@
+{
+  "auditor": "independent integer-proof agent /root/complete_integer_v2",
+  "generated_utc": "2026-10-19T05:29:40.407680+00:00",
+  "method": "Read-only independent source/report/hash inspection. No proof rerun, compiler invocation or modification of prior/frozen files. Only this new audit JSON was written.",
+  "verdict": "No blocking discrepancy found for all 7 audited completed kernel results within stated C/shim observation and fixed hardware domain.",
+  "blocking_cases": [],
+  "cases": [
+    {
+      "name": "f32-vsub",
+      "frozen_manifest_sha256": "b3f005b1ae73839a6e33f030621a29a9d8a22399d73f66fcc59964f860ab61c1",
+      "summary": "verified/f32-vsub-v2/logs/canonical01-summary.json",
+      "summary_sha256": "2728dae03713cd29dc8bd925af471e30524db1a1765a181097c57b60264cedac",
+      "raw_sha256": "28365cb38ff166fb5780b3a686c3223af5e82652d6d340c1bf244681a7d8b94a",
+      "verified_vcs": 556,
+      "total_vcs": 556,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_version_common_c_header_bytes_equal": true,
+      "old_version_comparison_files": [
+        "base.c",
+        "base.h",
+        "clamp.h",
+        "extensions.h",
+        "float_ops.c",
+        "float_ops.h",
+        "harness.c",
+        "neon.c",
+        "rsum.h",
+        "rvv.c",
+        "shim.h",
+        "spec.h",
+        "sub.c",
+        "unit.c"
+      ],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 28,
+      "missing_function_body_ensures": [],
+      "global_lemmas_required": [],
+      "missing_or_unproved_global_lemmas": [],
+      "ghost_blocks_read": 36,
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "ghost_manual_review": "Only ghost-local declarations/counters/snapshots/labels, read-only accesses and empty/scalar-return checked helpers. Prefix-step takes const pointers, assigns nothing, returns local k+1. No writes to ordinary program storage found. This is source inspection, not a general ghost noninterference theorem.",
+      "kernel_proof_mode": "Both actual kernel bodies independently checked with canonical ensures, plus wrapper; no inline.",
+      "negative_control": {
+        "same_model_driver_background": true,
+        "false_post_unproved": true,
+        "true_post_proved": true,
+        "raw_sha256": "05a8eb66b328cbbf690e13f1d3ba0a7337521a8dd1771e0bd99d9b6b951e6d2c",
+        "scope": "Sanity rejection test, not a model consistency proof."
+      },
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "llvm": {
+        "byte_identical": true,
+        "plain_sha256": "35f7c8fac62c80f7f9b96d821149a49403ed0bc6a2bf287d06b8e42ca495be47",
+        "annotated_sha256": "35f7c8fac62c80f7f9b96d821149a49403ed0bc6a2bf287d06b8e42ca495be47",
+        "clang_compiles_succeeded": true,
+        "raw_llvm_diff_exit": 0,
+        "scope": "Same implementation host compilation identity only; not ISA binary equivalence."
+      },
+      "isa_to_c_shim_proved": false
+    },
+    {
+      "name": "f32-vmin",
+      "frozen_manifest_sha256": "edd91ec7ac875ee5ebb2bab04881f869ba5edea2590fc2d74a3030354c8e0069",
+      "summary": "verified/f32-vmin-v2/logs/canonical01-summary.json",
+      "summary_sha256": "5e44f604396779c7298b57f0ea5879f146875468fc377c560f8dc9f292a45914",
+      "raw_sha256": "93c903a3c81036e983619d805cd0579aecd705a1e07e09104503a94979c3d3f6",
+      "verified_vcs": 536,
+      "total_vcs": 536,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_version_common_c_header_bytes_equal": true,
+      "old_version_comparison_files": [
+        "base.c",
+        "base.h",
+        "clamp.h",
+        "extensions.h",
+        "float_ops.c",
+        "float_ops.h",
+        "harness.c",
+        "mask.c",
+        "min.c",
+        "neon.c",
+        "rsum.h",
+        "rvv.c",
+        "shim.h",
+        "spec.h",
+        "unit.c"
+      ],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 25,
+      "missing_function_body_ensures": [],
+      "global_lemmas_required": [
+        "fp_add_congruence",
+        "fp_min_congruence",
+        "fp_min_transport",
+        "same_float_refl",
+        "same_float_trans",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "missing_or_unproved_global_lemmas": [],
+      "ghost_blocks_read": 23,
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "ghost_manual_review": "Only ghost-local declarations/counters/snapshots/labels, read-only accesses and empty/scalar-return checked helpers. Prefix-step takes const pointers, assigns nothing, returns local k+1. No writes to ordinary program storage found. This is source inspection, not a general ghost noninterference theorem.",
+      "kernel_proof_mode": "Both actual kernel bodies inlined into equivalent; all non-kernel C/ghost helpers and global lemmas independently checked. Separate test_neon/test_rvv VC names intentionally absent.",
+      "negative_control": {
+        "same_model_driver_background": true,
+        "false_post_unproved": true,
+        "true_post_proved": true,
+        "raw_sha256": "2ccc572bdfff40ba3e6f3557cb7cd76e4c4755d0377204c00089a62b37bf106f",
+        "scope": "Sanity rejection test, not a model consistency proof."
+      },
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "llvm": {
+        "byte_identical": true,
+        "plain_sha256": "f5027e33a2d7b51c5a7621d18b9cac502216fa96e63298fc6da6e4ad5de54a67",
+        "annotated_sha256": "f5027e33a2d7b51c5a7621d18b9cac502216fa96e63298fc6da6e4ad5de54a67",
+        "clang_compiles_succeeded": true,
+        "raw_llvm_diff_exit": 1,
+        "scope": "Same implementation host compilation identity only; not ISA binary equivalence."
+      },
+      "isa_to_c_shim_proved": false
+    },
+    {
+      "name": "f32-vmax",
+      "frozen_manifest_sha256": "0f6b253a60e337d84772053826e4d1552e1a9f81878f6c318675bb002eab71f9",
+      "summary": "verified/f32-vmax-v2/logs/canonical01-summary.json",
+      "summary_sha256": "449b293c940023d15b0b4e53b11174f0eaf6148436abc1791e4d1815361a2ea0",
+      "raw_sha256": "ae60dad56ca51edafb1b9f6e9e46deed869ae986a6f7f161014b84a1577583e7",
+      "verified_vcs": 538,
+      "total_vcs": 538,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_version_common_c_header_bytes_equal": true,
+      "old_version_comparison_files": [
+        "base.c",
+        "base.h",
+        "clamp.h",
+        "extensions.h",
+        "float_ops.c",
+        "float_ops.h",
+        "harness.c",
+        "mask.c",
+        "max.c",
+        "neon.c",
+        "rsum.h",
+        "rvv.c",
+        "shim.h",
+        "spec.h",
+        "unit.c"
+      ],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 25,
+      "missing_function_body_ensures": [],
+      "global_lemmas_required": [
+        "fp_add_congruence",
+        "fp_max_congruence",
+        "fp_max_transport",
+        "same_float_refl",
+        "same_float_trans",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "missing_or_unproved_global_lemmas": [],
+      "ghost_blocks_read": 23,
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "ghost_manual_review": "Only ghost-local declarations/counters/snapshots/labels, read-only accesses and empty/scalar-return checked helpers. Prefix-step takes const pointers, assigns nothing, returns local k+1. No writes to ordinary program storage found. This is source inspection, not a general ghost noninterference theorem.",
+      "kernel_proof_mode": "Both actual kernel bodies inlined into equivalent; all non-kernel C/ghost helpers and global lemmas independently checked. Separate test_neon/test_rvv VC names intentionally absent.",
+      "negative_control": {
+        "same_model_driver_background": true,
+        "false_post_unproved": true,
+        "true_post_proved": true,
+        "raw_sha256": "430001e36a9edd5c19c560ef19feddd3880585a65244fb9f37eaa5e16825c63a",
+        "scope": "Sanity rejection test, not a model consistency proof."
+      },
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "llvm": {
+        "byte_identical": true,
+        "plain_sha256": "ec2a6aad4bd92b36064b76f3c1c46cd6c1e3ed0093e1207def4ca890e9a36f65",
+        "annotated_sha256": "ec2a6aad4bd92b36064b76f3c1c46cd6c1e3ed0093e1207def4ca890e9a36f65",
+        "clang_compiles_succeeded": true,
+        "raw_llvm_diff_exit": 1,
+        "scope": "Same implementation host compilation identity only; not ISA binary equivalence."
+      },
+      "isa_to_c_shim_proved": false
+    },
+    {
+      "name": "f32-vdiv",
+      "frozen_manifest_sha256": "ae40c6ec2a2bb661618a5bfeb45eeb34bdb61068f66c46f80cb4ad2a5b1ed0f1",
+      "summary": "experiments/shim-c-v2/float-proof-candidates/f32-vdiv-tail-frame-v7-front/logs/proof01-summary.json",
+      "summary_sha256": "6656a43309900b0bc10936e2a0c3dd44247da2da26be02f1a2d5f164fe98a8c7",
+      "raw_sha256": "38ed8603e45066d2b5706bf7e900f0e5ec2621f563e5aaccf86246781324c479",
+      "verified_vcs": 601,
+      "total_vcs": 601,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_version_common_c_header_bytes_equal": true,
+      "old_version_comparison_files": [
+        "base.c",
+        "base.h",
+        "clamp.h",
+        "div.c",
+        "extensions.h",
+        "float_ops.c",
+        "float_ops.h",
+        "harness.c",
+        "neon.c",
+        "rsum.h",
+        "rvv.c",
+        "shim.h",
+        "spec.h",
+        "unit.c"
+      ],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 29,
+      "missing_function_body_ensures": [],
+      "global_lemmas_required": [],
+      "missing_or_unproved_global_lemmas": [],
+      "checked_kernel_body_canonical_postconditions": [
+        "typed_fma_extensions_test_neon_ensures_canonical",
+        "typed_fma_extensions_test_rvv_ensures_canonical"
+      ],
+      "all_kernel_body_canonical_postconditions_valid": true,
+      "kernel_proof_mode": "V7 modular; both actual kernel bodies plus wrapper and transitive C/ghost callees checked; no inlining. Header-local ghost helper requires checked at each actual call.",
+      "call_closure_external_models": [
+        "__assert_fail"
+      ],
+      "ghost_blocks_read": 39,
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "ghost_manual_review": "Only new ghost-local snapshots/counters/indices, labels and read accesses; transfer/join/checker helpers are empty scalar-only bodies; prefix helper takes const pointers, assigns nothing and returns a local successor. Div proof_input_point is an empty checked valid-read inference helper. No ordinary memory writes found.",
+      "negative_control": {
+        "false_post_unproved": true,
+        "true_post_proved": true,
+        "raw_sha256": "d02882915ab87781445ac5bcaa15e38045c5f1e3dd1d7a559e3c2dae9459e79f",
+        "same_model_driver_background": true,
+        "scope": "Rejection sanity only, not a model consistency theorem."
+      },
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "model_input_hash_mismatches": [],
+      "isa_to_c_shim_proved": false,
+      "packaged_candidate": {
+        "directory": "verified/f32-vdiv-v2",
+        "current_frozen_file_mismatches": [],
+        "c_header_bytes_equal_to_audited_upstream": true,
+        "proof_patch_byte_identical": true,
+        "canonical_summary": "verified/f32-vdiv-v2/logs/canonical01-summary.json",
+        "canonical_complete": true,
+        "canonical_vcs": {
+          "passed": 601,
+          "total": 601
+        },
+        "canonical_guards": {
+          "source": true,
+          "unchanged": true,
+          "model_unchanged": true,
+          "control": true
+        }
+      }
+    },
+    {
+      "name": "f32-vmul",
+      "frozen_manifest_sha256": "8bbe9809057ee7185bcdd64c151958ea66ac597ce27202a1c0aca6623504e3f8",
+      "summary": "experiments/shim-c-v2/float-proof-candidates/f32-vmul-tail-point-v7-front/logs/proof01-summary.json",
+      "summary_sha256": "c69d843fcd7e03bd2d707b1b5cfdffd5820d0ed12e86163cdec633d466f0ed9c",
+      "raw_sha256": "5c539752fe416d9e8017ba343744e5d5fa31187d27c073e8e9359f67628cefae",
+      "verified_vcs": 585,
+      "total_vcs": 585,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_version_common_c_header_bytes_equal": true,
+      "old_version_comparison_files": [
+        "base.c",
+        "base.h",
+        "clamp.h",
+        "extensions.h",
+        "float_ops.c",
+        "float_ops.h",
+        "harness.c",
+        "mul.c",
+        "neon.c",
+        "rsum.h",
+        "rvv.c",
+        "shim.h",
+        "spec.h",
+        "unit.c"
+      ],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 27,
+      "missing_function_body_ensures": [],
+      "global_lemmas_required": [],
+      "missing_or_unproved_global_lemmas": [],
+      "checked_kernel_body_canonical_postconditions": [
+        "typed_fma_extensions_test_neon_ensures_canonical",
+        "typed_fma_extensions_test_rvv_ensures_canonical"
+      ],
+      "all_kernel_body_canonical_postconditions_valid": true,
+      "kernel_proof_mode": "V7 modular; both actual kernel bodies plus wrapper and transitive C/ghost callees checked; no inlining. Header-local ghost helper requires checked at each actual call.",
+      "call_closure_external_models": [
+        "__assert_fail"
+      ],
+      "ghost_blocks_read": 36,
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "ghost_manual_review": "Only new ghost-local snapshots/counters/indices, labels and read accesses; transfer/join/checker helpers are empty scalar-only bodies; prefix helper takes const pointers, assigns nothing and returns a local successor. Div proof_input_point is an empty checked valid-read inference helper. No ordinary memory writes found.",
+      "negative_control": {
+        "false_post_unproved": true,
+        "true_post_proved": true,
+        "raw_sha256": "0218898ef51f11f5147939ad4309f406e30f37e0ecc9e325c05ba1234c4f8ee2",
+        "same_model_driver_background": true,
+        "scope": "Rejection sanity only, not a model consistency theorem."
+      },
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "model_input_hash_mismatches": [],
+      "isa_to_c_shim_proved": false,
+      "packaged_candidate": {
+        "directory": "verified/f32-vmul-v2",
+        "current_frozen_file_mismatches": [],
+        "c_header_bytes_equal_to_audited_upstream": true,
+        "proof_patch_byte_identical": true,
+        "canonical_status": "Not complete at audit time; no waiting and no proof started by auditor."
+      }
+    },
+    {
+      "name": "f32-vmulc",
+      "frozen_manifest_sha256": "7e7786f16aa9dda857d3dab609f52570988d3bf3f3e9cbbd09acc32c053ae4f4",
+      "summary": "experiments/shim-c-v2/float-proof-candidates/f32-vmulc-tail-point-v7-front/logs/proof01-summary.json",
+      "summary_sha256": "810863c7f10b3ebb06c0ade204196503fe747540b45ccb2ebb8ec547ad022b83",
+      "raw_sha256": "2623d98994fabd989b113acef89fa888b92d438ff584dbfd699848bfebfc94a1",
+      "verified_vcs": 583,
+      "total_vcs": 583,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_version_common_c_header_bytes_equal": true,
+      "old_version_comparison_files": [
+        "base.c",
+        "base.h",
+        "clamp.h",
+        "extensions.h",
+        "float_ops.c",
+        "float_ops.h",
+        "harness.c",
+        "mul.c",
+        "mulc.c",
+        "neon.c",
+        "rsum.h",
+        "rvv.c",
+        "shim.h",
+        "spec.h",
+        "unit.c"
+      ],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 29,
+      "missing_function_body_ensures": [],
+      "global_lemmas_required": [],
+      "missing_or_unproved_global_lemmas": [],
+      "checked_kernel_body_canonical_postconditions": [
+        "typed_fma_extensions_test_neon_ensures_canonical",
+        "typed_fma_extensions_test_rvv_ensures_canonical"
+      ],
+      "all_kernel_body_canonical_postconditions_valid": true,
+      "kernel_proof_mode": "V7 modular; both actual kernel bodies plus wrapper and transitive C/ghost callees checked; no inlining. Header-local ghost helper requires checked at each actual call.",
+      "call_closure_external_models": [
+        "__assert_fail"
+      ],
+      "ghost_blocks_read": 37,
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "ghost_manual_review": "Only new ghost-local snapshots/counters/indices, labels and read accesses; transfer/join/checker helpers are empty scalar-only bodies; prefix helper takes const pointers, assigns nothing and returns a local successor. Div proof_input_point is an empty checked valid-read inference helper. No ordinary memory writes found.",
+      "negative_control": {
+        "false_post_unproved": true,
+        "true_post_proved": true,
+        "raw_sha256": "68f735440acb913ac353f31a6611be15a2c25440426971cb02e9a3233d53d587",
+        "same_model_driver_background": true,
+        "scope": "Rejection sanity only, not a model consistency theorem."
+      },
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "model_input_hash_mismatches": [],
+      "isa_to_c_shim_proved": false,
+      "packaged_candidate": {
+        "directory": "verified/f32-vmulc-v2",
+        "current_frozen_file_mismatches": [],
+        "c_header_bytes_equal_to_audited_upstream": true,
+        "proof_patch_byte_identical": true,
+        "canonical_status": "Not complete at audit time; no waiting and no proof started by auditor."
+      }
+    },
+    {
+      "name": "f32-vadd",
+      "frozen_manifest_sha256": "1860dec25fb71a95130523e008942f0b5dc455bd9ab42d04b239bf722d4d6b99",
+      "summary": "experiments/shim-c-v2/float-proof-candidates/f32-vadd-two-points-v7-front/logs/proof01-summary.json",
+      "summary_sha256": "f18138b94a38870e7fe07565e241f44c1855dc29409431fdda7a6b7dbeac0f64",
+      "raw_sha256": "d37b6e2970bb0c8e1da843a8a215920d648fc3193cccff29aa560b4bfbbf650d",
+      "verified_vcs": 571,
+      "total_vcs": 571,
+      "all_vcs_valid": true,
+      "complete_recorded": true,
+      "current_frozen_file_mismatches": [],
+      "old_common_c_header_mismatches": [],
+      "proof_hash_mismatches": [],
+      "annotated_generated_hash_mismatches": [],
+      "checker_hash_mismatches": [],
+      "model_input_hash_mismatches": [],
+      "raw_c_token_mismatches": [],
+      "missing_function_body_ensures": [],
+      "missing_or_unproved_global_lemmas": [],
+      "original_shared_baseline_hash_mismatches": [],
+      "ghost_indexed_or_pointer_store_candidates": [],
+      "unchecked_assumption_candidates": [],
+      "old_version_comparison_manifest": "experiments/shim-c-v2/float/f32-vadd/frozen.json",
+      "old_original_shared_baseline": "verified/shared/frozen.json",
+      "old_version_common_c_header_bytes_equal": true,
+      "public_spec_bytes_unchanged": true,
+      "functions_required": 25,
+      "global_lemmas_required": [],
+      "checked_kernel_body_canonical_postconditions": [
+        "typed_fma_float_test_neon_ensures_canonical",
+        "typed_fma_float_test_rvv_ensures_canonical"
+      ],
+      "all_kernel_body_canonical_postconditions_valid": true,
+      "kernel_proof_mode": "V7 modular; both actual kernel bodies plus wrapper and all transitive C/ghost callees checked. No kernel inlining or public requires modification.",
+      "call_closure_external_models": [
+        "__assert_fail"
+      ],
+      "ghost_blocks_read": 35,
+      "ghost_manual_review": "Only ghost-local counters/indices, read-only snapshots/labels and scalar empty check/transfer/join bodies. Prefix helper takes const pointers, assigns nothing and returns local k+1. No ordinary program memory writes found.",
+      "same_float_definition": "predicate same_float(float a, float b) =\n    (\\is_NaN(a) && \\is_NaN(b)) ||\n    (same_value(a,b) && \\sign(a) == \\sign(b));",
+      "negative_control": {
+        "true_post_proved": true,
+        "false_post_unproved": true,
+        "raw_sha256": "2dd1552db7b5ef0e8072cc77dc60317dc8df6142094076bad215cfa66d787834",
+        "same_model_driver_background": true,
+        "scope": "Sanity rejection, not a full model consistency theorem."
+      },
+      "isa_to_c_shim_proved": false,
+      "packaged_candidate": {
+        "directory": "verified/f32-vadd-v2",
+        "current_frozen_file_mismatches": [],
+        "c_header_bytes_equal_to_audited_upstream": true,
+        "proof_patch_byte_identical": true,
+        "canonical_status": "No completed summary at audit time; no waiting or proof initiated by auditor."
+      }
+    }
+  ],
+  "native_ieee_model": {
+    "unique_pinned_inputs_rehashed": 10239,
+    "input_hash_mismatches": [],
+    "cfloat_source_sha256": "3114deed572a82447f1f63da8c3baa610014c19919528d3b66a21ddfb10b606d",
+    "binding": "Cfloat f32/f64 are Why3 ieee_float.Float32/64; arithmetic operators are native IEEE RNE; sign uses is_negative, not numeric x<0. FloatConverter casts preserve NaN/infinity/signed zero. Drivers import native standard SMT floating-point support.",
+    "semantic_control_hashes_match": true,
+    "positive_postconditions_valid": 10,
+    "negative_postconditions_unproved": 3,
+    "control_scope": "10 correct plus 3 deliberately wrong/impossible postconditions behave as recorded; not a universal frontend correctness theorem.",
+    "bytes_float_used": false
+  },
+  "qualifications": [
+    {
+      "kind": "observation",
+      "detail": "same_value is numerical FP equality or both NaN: final outputs may differ in zero sign/NaN payload/FP flags. This must not be described as bitwise equality or arbitrary-context equivalence."
+    },
+    {
+      "kind": "signed_zero_for_reuse",
+      "detail": "same_float DOES preserve sign for every non-NaN, including +/-0, while identifying NaNs. Keep it for loads/stores/transport and congruence premises. same_value alone is insufficient for substitution into division: 1/+0 and 1/-0 yield infinities of different sign. Intermediate arithmetic contracts returning only same_value may need stronger proved postconditions before reuse in sign-sensitive compositions."
+    },
+    {
+      "kind": "llvm_diff",
+      "detail": "min/max raw llvm-diff exited1 and remains preserved. Byte-identical IR independently verifies the narrower same-host compilation identity; do not claim llvm-diff itself passed."
+    },
+    {
+      "kind": "target_repair",
+      "detail": "min/max RVV target is the earlier repaired NaN-propagating version, equal byte-for-byte to the old frozen target; original pre-repair target remains separately preserved. The claim is not original buggy-target equivalence."
+    },
+    {
+      "kind": "body_coverage",
+      "detail": "v7 sub explicitly checks test_neon/test_rvv bodies; v2 min/max checks their inlined bodies inside equivalent. Do not apply the v7 coverage expectation mechanically to v2 reports."
+    }
+  ],
+  "remaining_tcb": [
+    "Original ISA intrinsic/assembly semantics -> ordinary C shim correspondence, compiler/ABI and alignment correspondence.",
+    "C parser/preprocessor and patched C->WP frontend, WP calculus/transformations/ghost treatment, memory model and its extra hypotheses.",
+    "Model/driver/native floating-point encoding and fixed RNE environment, solver implementations, checker and hash/provenance tools.",
+    "Skipped alignment/valid_function RTE checks: logs explicitly report these; no exhaustive C UB or hardware-alignment theorem.",
+    "Fixed VLEN=128 and each modeled VL=min(remaining,capacity); arbitrary symbolic length within spec is not arbitrary hardware VLEN/VL schedule."
+  ],
+  "reuse_for_other_float_kernels": [
+    "Retain same_float/same_value distinction and native IEEE+negative controls; audit any float/int bitcast separately.",
+    "Use checked scalar ghost helpers to avoid broad global FP quantifier pollution, preserving body/call-precondition coverage.",
+    "For modular proof, only freeze/add permitted intermediate ensures and prove both actual kernel bodies and every callee; no added public requires or free axioms."
+  ],
+  "revisions": [
+    {
+      "previous_audit_sha256": "591af14f3118da4629a55b97ed0bfe7068314e677fa8c90f6d173a45c34a988a",
+      "added_cases": [
+        "f32-vdiv",
+        "f32-vmul",
+        "f32-vmulc"
+      ],
+      "method": "Read source/reports/hash only; no proof or compiler rerun, no waiting for active canonical. Original three audit records preserved unchanged."
+    },
+    {
+      "previous_audit_sha256": "1079f059edd23371e940982b5f2d02780c5ac0ae78c815ca26e1dd74c081a2eb",
+      "added_cases": [
+        "f32-vadd"
+      ],
+      "method": "Read-only source/report/hash inspection; no proof/compiler rerun. Previous six case records preserved unchanged.",
+      "model_input_files_rehashed": 10238,
+      "model_input_hash_mismatches": []
+    }
+  ],
+  "model_recheck_this_revision": {
+    "unique_input_files": 10238,
+    "mismatches": []
+  },
+  "other_pending_at_audit": {
+    "f32-vadd-two-points-v7-front": "Completed571/571 and audited as seventh result; packaged canonical recorded separately."
+  }
+}

@@ -1,0 +1,31 @@
+[kernel] Parsing experiments/shim-c-v2/integer/model-probes/sum-capture.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function probe_logic_rec
+[rte:annot] annotating function probe_logic_sum
+[rte:annot] annotating function probe_public_sum
+[wp] experiments/shim-c-v2/integer/model-probes/sum-capture.c:5: Warning: 
+  Lambda-functions not yet implemented
+[wp] experiments/shim-c-v2/integer/model-probes/sum-capture.c:5: Warning: 
+  Builtin \sum(int,int,_) not defined
+[wp] experiments/shim-c-v2/integer/model-probes/sum-capture.c:9: Warning: 
+  Lambda-functions not yet implemented
+[wp] experiments/shim-c-v2/integer/model-probes/sum-capture.c:9: Warning: 
+  Builtin \sum(int,int,_) not defined
+[wp] 6 goals scheduled
+[wp] Warning: Goal Property:
+    running prover Alt-Ergo:2.6.2 failed ([Why3 Error] anomaly: Invalid_argument("unbound variable in of_term"))
+[wp] [Timeout] typed_probe_public_sum_ensures (Qed 1ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] anomaly: Invalid_argument("unbound variable in of_term"))
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] anomaly: Invalid_argument("unbound variable in of_term"))
+[wp] [Failure] typed_probe_logic_sum_ensures (Qed 2ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_probe_logic_rec_ensures (Qed 2ms) (Alt-Ergo)
+[wp] Proved goals:    9 / 12
+  Terminating:     3
+  Unreachable:     3
+  Qed:             3 (1ms-0.96ms-2ms)
+  Failed:          1
+  Timeout:         2

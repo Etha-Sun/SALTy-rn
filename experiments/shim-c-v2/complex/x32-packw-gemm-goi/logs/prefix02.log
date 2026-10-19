@@ -1,0 +1,77 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex/x32-packw-gemm-goi/logs/prefix02.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex/x32-packw-gemm-goi/.build/prefix02/annotated/unit.c']
+# Actual frozen model variant: ['/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex/x32-packw-gemm-goi/logs/prefix02.json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/complex/x32-packw-gemm-goi/.build/prefix02/annotated/unit.c', '-wp-model', 'Typed+raw']
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vcreate_v_u32m4x2
+[rte:annot] annotating function __riscv_vle32_v_u32m1
+[rte:annot] annotating function __riscv_vle32_v_u32m4
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vmv_v_x_u32m1
+[rte:annot] annotating function __riscv_vse32_v_u32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsse32_v_u32m4
+[rte:annot] annotating function __riscv_vsse32_v_u32m8
+[rte:annot] annotating function __riscv_vsseg2e32_v_u32m4x2
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function vdup_n_u32
+[rte:annot] annotating function vld1_lane_u32
+[rte:annot] annotating function vld1_u32
+[rte:annot] annotating function vld2_lane_u32
+[rte:annot] annotating function vmov_n_u32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vzip_u32
+[wp] Computing [100 goals...]
+[wp] u32_shim.c:38: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] u32_shim.c:38: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint32*)
+[wp] u32_shim.c:72: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] u32_shim.c:72: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint32*)
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] 514 goals scheduled
+[wp] [Timeout] typed_raw_round_down_po2_ensures (Qed 5ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_loop_invariant_2_preserved (Qed 24ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_loop_invariant_3_preserved (Qed 17ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_assert_rte_mem_access (Qed 27ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m8_loop_assigns_part3 (Qed 39ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vcreate_v_u32m4x2_ensures (Qed 5ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_loop_invariant_2_preserved (Qed 24ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_loop_invariant_3_preserved (Qed 16ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_assert_rte_mem_access (Qed 26ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_riscv_vsse32_v_u32m4_loop_assigns_part3 (Qed 36ms) (Alt-Ergo) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_equivalent_ensures_equal (Qed 5s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_established (Qed 3.9s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_preserved (Qed 4s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_2_preserved (Qed 4s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assert_rte_mem_access (Qed 4.3s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assert_rte_mem_access_2 (Qed 4.1s) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_4_preserved (Qed 866ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_5_preserved (Qed 972ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_6_preserved (Qed 919ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_7_preserved (Qed 872ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_8_preserved (Qed 893ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_10_preserved (Qed 509ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_11_preserved (Qed 525ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_12_preserved (Qed 470ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_13_preserved (Qed 504ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_16_established (Qed 417ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_17_established (Qed 415ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_19_established (Qed 361ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_19_preserved (Qed 510ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_loop_invariant_25_preserved (Qed 611ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assert_rte_mem_access_3 (Qed 190ms) (Alt-Ergo)
+[wp] [Timeout] typed_raw_equivalent_assert_rte_mem_access_4 (Qed 162ms) (Alt-Ergo)

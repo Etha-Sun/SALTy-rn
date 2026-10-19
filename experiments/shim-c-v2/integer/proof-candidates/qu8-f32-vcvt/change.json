@@ -1,0 +1,28 @@
+{
+  "previous": "experiments/shim-c-v2/plus-campaign/qu8-f32-vcvt",
+  "previous_proof_sha256": "d5fd10608cf3e25b1b3152967c86c1bb5e77455ae9b04dfb2a41df8c1a33aa69",
+  "change": "Replace only global FP lemma declarations by empty ghost function bodies with full quantified ensures, so they must be checked but cannot pollute every VC; integer centered_mod16 retained",
+  "converted": [
+    {
+      "name": "qcvt_scale_congruence",
+      "proposition": "\\forall uint8_t x; \\forall int32_t z; \\forall float s,t;\n    same_float(s,t) ==> same_value(qcvt(x,z,s),qcvt(x,z,t))"
+    },
+    {
+      "name": "same_float_refl",
+      "proposition": "\\forall float a; same_float(a,a)"
+    },
+    {
+      "name": "same_float_trans",
+      "proposition": "\\forall float a,b,c; same_float(a,b)&&same_float(b,c) ==> same_float(a,c)"
+    },
+    {
+      "name": "same_value_trans",
+      "proposition": "\\forall float a,b,c; same_value(a,b) && same_value(b,c) ==> same_value(a,c)"
+    },
+    {
+      "name": "fp_mul_congruence",
+      "proposition": "\\forall float a,b,c,d; same_float(a,c) && same_float(b,d) ==> same_value(fp_mul32(a,b),fp_mul32(c,d))"
+    }
+  ],
+  "proof_sha256": "52decb42abb11ba278a6e8e483d4661c4e8385e60c61fa26829bebc3d6cd832b"
+}

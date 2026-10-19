@@ -1,0 +1,9 @@
+{
+  "source": "experiments/shim-c-v2/v4-campaign/qu8-f32-vcvt",
+  "proof_sha256": "cf59bc5dbbbe7f5c25f8530f3381283bda0957d65907b2f36c8b25142e186887",
+  "change": "check-only FP lemmas plus checked WP array update tactic on function proofs; no C/spec/token edits",
+  "requires_wp_provers": "tip,z3,cvc5",
+  "strategies": "\n/*@ \\wp::strategy SolveArrayChild: \\prover(\"cvc5\",30), \\prover(\"z3\",30);\n    \\wp::strategy SolveArray:\n      \\tactic(\"Wp.array\",\\ingoal(A[I[V]][J]),\\children(SolveArrayChild)),\n      SolveArrayChild;\n    \\wp::proof SolveArray: __riscv_vadd_vx_u16m4,\n      __riscv_vfcvt_f_x_v_f32m8,\n      __riscv_vfmul_vf_f32m8,\n      __riscv_vle8_v_u8m2,\n      __riscv_vreinterpret_v_u16m4_i16m4,\n      __riscv_vse32_v_f32m8,\n      __riscv_vsetvl_e8m2,\n      __riscv_vsext_vf2_i32m8,\n      __riscv_vzext_vf2_u16m4,\n      centered_mod16,\n      check_fp_mul_congruence,\n      check_qcvt_scale_congruence,\n      check_same_float_refl,\n      check_same_float_trans,\n      check_same_value_trans,\n      equivalent,\n      proof_mul_join,\n      proof_qcvt_join,\n      proof_qcvt_rebase,\n      proof_tail8,\n      shim_control_false,\n      shim_control_true,\n      vaddw_u8,\n      vcvtq_f32_s32,\n      vdupq_n_f32,\n      vdupq_n_s16,\n      vget_high_f32,\n      vget_high_s16,\n      vget_low_f32,\n      vget_low_s16,\n      vld1_u8,\n      vmovl_s16,\n      vmulq_f32,\n      vreinterpretq_s16_u16,\n      vreinterpretq_u16_s16,\n      vst1_f32,\n      vst1_lane_f32,\n      vst1q_f32; */\n",
+  "positive_control": "float-vector-strategy-v3.c:28/28 genuine positive VCs incl RTE; control_false remains timeout; same goal-only strategy v4 positive27/28 with only uncovered loop variant",
+  "note": "explicit function hints include loop variants and all current body postconditions, unlike property-category-only v4 diagnostic"
+}

@@ -1,0 +1,424 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/unit.c']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01.json', '-wp-model', 'Typed+raw+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/unit.c', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/logs/complex01.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/frontend-campaign/qd8-f32-qc4w-gemm-minmax/.build/complex01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[kernel:typing:implicit-conv-void-ptr] neon.c:233: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:234: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:235: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:236: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:238: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:244: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:250: Warning: 
+  implicit conversion from void * to float const *
+[kernel:typing:implicit-conv-void-ptr] neon.c:256: Warning: 
+  implicit conversion from void * to float const *
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vand_vx_i8m2
+[rte:annot] annotating function __riscv_vfadd_vv_f32m8
+[rte:annot] annotating function __riscv_vfcvt_f_x_v_f32m8
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m8
+[kernel:annot:missing-spec] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc/math.h:2142: Warning: 
+  Neither code nor explicit exits and terminates for function fmaf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vfmacc_vv_f32m8
+[rte:annot] annotating function __riscv_vfmax_vf_f32m8
+[rte:annot] annotating function __riscv_vfmax_vv_f32m8
+[rte:annot] annotating function __riscv_vfmerge_vfm_f32m8
+[rte:annot] annotating function __riscv_vfmin_vf_f32m8
+[rte:annot] annotating function __riscv_vfmin_vv_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vfmul_vv_f32m8
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m8
+[rte:annot] annotating function __riscv_vfslide1down_vf_f32m8
+[rte:annot] annotating function __riscv_vfslide1up_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vle32_v_i32m8
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vle8_v_i8m2
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmfne_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmul_vx_i32m8
+[rte:annot] annotating function __riscv_vmv_v_x_u32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_u32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m1
+[rte:annot] annotating function __riscv_vsetvl_e32m2
+[rte:annot] annotating function __riscv_vsetvl_e32m4
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vsetvlmax_e32m1
+[rte:annot] annotating function __riscv_vsetvlmax_e32m2
+[rte:annot] annotating function __riscv_vsetvlmax_e32m4
+[rte:annot] annotating function __riscv_vsetvlmax_e32m8
+[rte:annot] annotating function __riscv_vsext_vf2_i16m4
+[rte:annot] annotating function __riscv_vsll_vx_i8m2
+[rte:annot] annotating function __riscv_vsra_vx_i32m8
+[rte:annot] annotating function __riscv_vwmacc_vx_i32m8
+[rte:annot] annotating function arithmetic_shift32
+[rte:annot] annotating function bits_i32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function bits_i8
+[rte:annot] annotating function canonical_nan
+[rte:annot] annotating function doz
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function fp_nan
+[rte:annot] annotating function max_number
+[kernel:annot:missing-spec] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc/math.h:203: Warning: 
+  Neither code nor explicit exits and terminates for function __fc_signbitf,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function min_number
+[rte:annot] annotating function neon_max
+[rte:annot] annotating function neon_min
+[rte:annot] annotating function round_down_po2
+[rte:annot] annotating function round_up_po2
+[rte:annot] annotating function salty_max_vf_m8
+[kernel:annot:missing-spec] <unknown location>: Warning: 
+  Neither code nor specification for function __builtin_nanf, generating
+  default exits, assigns and terminates.
+  See -generated-spec-* options for more info.
+[rte:annot] annotating function salty_min_vf_m8
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vaddv_f32
+[rte:annot] annotating function vaddvq_f32
+[rte:annot] annotating function vand_s8
+[rte:annot] annotating function vcombine_f32
+[rte:annot] annotating function vcvtq_f32_s32
+[rte:annot] annotating function vdupq_lane_f32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vdupq_n_u32
+[rte:annot] annotating function vextq_f32
+[rte:annot] annotating function vfma_f32
+[rte:annot] annotating function vfmaq_f32
+[rte:annot] annotating function vfmaq_lane_f32
+[rte:annot] annotating function vfmaq_laneq_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_high_u32
+[rte:annot] annotating function vget_lane_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vget_low_u32
+[rte:annot] annotating function vld1_dup_f32
+[rte:annot] annotating function vld1_f32
+[rte:annot] annotating function vld1_s8
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vld1q_dup_s32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_lane_f32
+[rte:annot] annotating function vld1q_s32
+[rte:annot] annotating function vld1q_u32
+[rte:annot] annotating function vld2_dup_f32
+[rte:annot] annotating function vld2q_dup_f32
+[rte:annot] annotating function vmax_f32
+[rte:annot] annotating function vmaxq_f32
+[rte:annot] annotating function vmin_f32
+[rte:annot] annotating function vminq_f32
+[rte:annot] annotating function vmlal_lane_s16
+[rte:annot] annotating function vmlaq_f32
+[rte:annot] annotating function vmov_n_s8
+[rte:annot] annotating function vmovl_s8
+[rte:annot] annotating function vmovq_n_f32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vmulq_s32
+[rte:annot] annotating function vshl_n_s8
+[rte:annot] annotating function vshrq_n_s32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_lane_f32
+[rte:annot] annotating function vst1q_u32
+[rte:annot] annotating function vsubq_f32
+[rte:annot] annotating function vzip1q_f32
+[rte:annot] annotating function vzip2q_f32
+[rte:annot] annotating function xnn_prefetch_to_l1
+[wp] Computing [100 goals...]
+[wp] fp_minmax.c:9: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] fp_minmax.c:9: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] integer_memory.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:3: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] quantized.c:3: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer_memory.c:7: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:7: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] integer_memory.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] Computing [900 goals...]
+[wp] quantized.c:5: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:7: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:9: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:11: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] quantized.c:11: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] quantized.c:13: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] quantized.c:17: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:19: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:21: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:23: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [1000 goals...]
+[wp] integer_memory.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_int32x4_t_10*)
+     (target: sint8*)
+[wp] integer_memory.c:21: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:25: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:27: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:29: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:31: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:33: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:35: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:37: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:39: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [1100 goals...]
+[wp] quantized.c:41: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:43: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:45: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:47: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] quantized.c:49: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:61: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:61: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:60: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:60: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:59: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:59: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:58: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:58: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:57: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:57: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:56: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:56: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:55: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:55: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] neon.c:54: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] neon.c:54: Warning: 
+  Cast with incompatible pointers types (source: uint8*) (target: sint8*)
+[wp] rvv.c:92: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] rvv.c:92: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] rvv.c:91: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] rvv.c:89: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] rvv.c:89: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] rvv.c:88: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] rvv.c:55: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:49: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: sint32*)
+[wp] rvv.c:49: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] rvv.c:48: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: sint32*)
+[wp] rvv.c:41: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:256: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:256: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:256: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:250: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:250: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:250: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:244: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:244: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:244: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:238: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:238: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:238: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:236: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:236: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:236: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:235: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:235: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:235: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:234: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:234: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:234: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:233: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:233: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:233: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: float32*)
+[wp] neon.c:50: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:42: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: sint32*)
+[wp] neon.c:42: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] neon.c:41: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: sint32*)
+[wp] neon.c:41: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] neon.c:40: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: sint32*)
+[wp] neon.c:40: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] neon.c:39: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: sint32*)
+[wp] neon.c:39: Warning: 
+  Cast with incompatible pointers types (source: sint32*) (target: sint8*)
+[wp] neon.c:38: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] spec.h:40: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] spec.h:37: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] Computing [1200 goals...]
+[wp] Computing [1300 goals...]
+[wp] Computing [1400 goals...]
+[wp] Computing [1500 goals...]
+[wp] Computing [1600 goals...]
+[wp] Computing [1700 goals...]
+[wp] Computing [1800 goals...]
+[wp] 1711 goals scheduled
+[wp] [Failure] typed_raw_fma_complex_fp_canonical_nan_ensures (Qed 51ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_raw_fma_complex_fp_canonical_nan_assigns_normal (Qed 59ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_valid_dest (Qed 40ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_valid_src (Qed 52ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_separation (Qed 59ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld2q_dup_f32_assert_rte_mem_access (Qed 6ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld2q_dup_f32_assert_rte_mem_access_2 (Qed 13ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld2_dup_f32_call_vld1_dup_f32_requires (Qed 6ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld2_dup_f32_call_vld1_dup_f32_2_requires (Qed 10ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vextq_f32_loop_invariant_2_established (Qed 10ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vfmaq_lane_f32_loop_invariant_2_preserved (Qed 24ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vfmaq_laneq_f32_loop_invariant_2_preserved (Qed 25ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vfma_f32_loop_invariant_2_preserved (Qed 27ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vmlaq_f32_loop_invariant_2_preserved (Qed 24ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_dest (Qed 29ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_valid_src (Qed 40ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_u32_call_memcpy_requires_separation (Qed 44ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound (Qed 9ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vaddq_u32_terminates (Qed 6ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_dest (Qed 37ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_valid_src (Qed 41ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1q_u32_call_memcpy_requires_separation (Qed 30ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_dest (Qed 37ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_valid_src (Qed 50ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_u32_call_memcpy_requires_separation (Qed 35ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound (Qed 6ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_index_bound_2 (Qed 4ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vst1_lane_u32_assert_rte_mem_access (Qed 7ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1q_lane_f32_ensures (Qed 8ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vzip1q_f32_ensures (Qed 8ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vzip2q_f32_ensures (Qed 9ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vfmacc_vf_f32m8_loop_invariant_2_preserved (Qed 24ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vfmacc_vv_f32m8_loop_invariant_2_preserved (Qed 21ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vfslide1up_vf_f32m8_loop_invariant_2_established (Qed 5ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vfslide1down_vf_f32m8_loop_invariant_2_established (Qed 8ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_terminates (Qed 11ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_index_bound (Qed 8ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vle32_v_u32m8_assert_rte_mem_access (Qed 11ms) (Z3)
+[wp] [Unknown] typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_assert_rte_index_bound (Qed 13ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vmv_v_x_u32m8_terminates (Qed 7ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_terminates (Qed 9ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_index_bound (Qed 12ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vse32_v_u32m8_assert_rte_mem_access (Qed 9ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i32_call_memcpy_requires_valid_dest (Qed 57ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i32_call_memcpy_requires_valid_src (Qed 60ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i32_call_memcpy_requires_separation (Qed 55ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i8_call_memcpy_requires_valid_src (Qed 35ms) (Z3) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_bits_i8_call_memcpy_requires_separation (Qed 26ms) (Z3) (Stronger)
+[wp] [Unknown] typed_raw_fma_complex_fp_arithmetic_shift32_assert_rte_shift (Qed 7ms) (CVC5)
+[wp] [Unknown] typed_raw_fma_complex_fp_arithmetic_shift32_assert_rte_signed_overflow (Qed 8ms) (CVC5)
+[wp] [Unknown] typed_raw_fma_complex_fp_arithmetic_shift32_assert_rte_signed_overflow_5 (Qed 10ms) (CVC5)
+[wp] [Unknown] typed_raw_fma_complex_fp_vmov_n_s8_assert_rte_index_bound (Qed 64ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vmov_n_s8_terminates (Qed 68ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1_s8_call_memcpy_requires_valid_src (Qed 29ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld1_s8_call_memcpy_requires_separation (Qed 58ms) (Z3)
+[wp] [Unknown] typed_raw_fma_complex_fp_vshl_n_s8_assert_rte_index_bound (Qed 45ms) (CVC5)
+[wp] [Unknown] typed_raw_fma_complex_fp_vshl_n_s8_assert_rte_shift (Qed 45ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vshl_n_s8_terminates_part2 (Qed 45ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vshl_n_s8_assert_rte_signed_overflow (Qed 64ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vshl_n_s8_assert_rte_signed_overflow_2 (Qed 46ms) (Z3)
+[wp] [Unknown] typed_raw_fma_complex_fp_vand_s8_assert_rte_index_bound (Qed 50ms) (CVC5)
+[wp] [Unknown] typed_raw_fma_complex_fp_vand_s8_assert_rte_signed_overflow (Qed 65ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vand_s8_terminates_part2 (Qed 47ms) (Z3)
+[wp] [Unknown] typed_raw_fma_complex_fp_vmovl_s8_assert_rte_index_bound (Qed 51ms) (CVC5)
