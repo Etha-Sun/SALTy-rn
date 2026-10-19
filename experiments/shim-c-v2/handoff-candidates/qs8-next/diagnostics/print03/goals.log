@@ -1,0 +1,1309 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-fct", "equivalent", "-wp-prop", "diag_tail2,diag_tail1,diag_centered", "-wp-prover", "none", "-wp-no-strategy-engine", "-wp-par", "1", "-wp-cache", "none", "-wp-print", "-wp-model", "Typed+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qs8-next/diagnostics/print03/session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qs8-next/diagnostics/print03/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qs8-next/diagnostics/print03/annotated/integer.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+
+Goal Assertion 'diag_tail2' ("neon.c", line 146):
+Let a = vy_lo_0.F13_lane.
+Let a_1 = vmulq_f32_0.F14_lane.
+Let x = -batch_0.
+Let a_2 = shiftfield_F31_xnn_qs8_f32_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F32_zero_point(a_2).
+Let x_1 = Mint_0[a_3].
+Let a_4 = shiftfield_F32_scale(a_2).
+Let a_5 = Mf32_0[a_4].
+Let a_6 = a_1[3].
+Let x_2 = Mchar_0[shift_sint8(input_base_0, 3 + total_0 - batch_0)].
+Let x_3 = total_0 - batch_0.
+Let x_4 = to_uint64(x_3).
+Let a_7 = shift_sint8(input_base_0, to_uint64(3 + x_4)).
+Let x_5 = Mchar_0[a_7].
+Let a_8 = before_mul3_0.F14_lane.
+Let a_9 = a_8[3].
+Let a_10 = vscale_0.F14_lane.
+Let a_11 = a_10[3].
+Let a_12 = a_1[2].
+Let x_6 = Mchar_0[shift_sint8(input_base_0, 2 + total_0 - batch_0)].
+Let a_13 = shift_sint8(input_base_0, to_uint64(2 + x_4)).
+Let x_7 = Mchar_0[a_13].
+Let a_14 = a_8[2].
+Let a_15 = a_10[2].
+Let a_16 = a_1[1].
+Let x_8 = Mchar_0[shift_sint8(input_base_0, 1 + total_0 - batch_0)].
+Let a_17 = shift_sint8(input_base_0, to_uint64(1 + x_4)).
+Let x_9 = Mchar_0[a_17].
+Let a_18 = a_8[1].
+Let a_19 = a_10[1].
+Let a_20 = a_1[0].
+Let a_21 = shift_sint8(input_base_0, x_3).
+Let x_10 = Mchar_0[a_21].
+Let a_22 = shift_sint8(input_base_0, x_4).
+Let x_11 = Mchar_0[a_22].
+Let a_23 = a_8[0].
+Let a_24 = a_10[0].
+Let a_25 = tmp_12_0.F10_lane.
+Let a_26 = tmp_14_0.F10_lane.
+Let a_27 = tmp_13_0.F5_lane.
+Let a_28 = tmp_10_0.F6_lane.
+Let a_29 = tmp_11_0.F5_lane.
+Let a_30 = tmp_9_0.F1_lane.
+Let a_31 = vminus_zero_point_0.F6_lane.
+Let a_32 = shift_float32(output_base_0, 0).
+Let a_33 = memcpy(Mf32_0, a_32, Mf32_undef_0, a_32, total_0).
+Let a_34 = shift_sint8(input_base_0, 0).
+Let a_35 = shift_float32(right_0, 0).
+Let x_12 = 7 + total_0.
+Let x_13 = to_uint64(4 + x_4).
+Assume {
+  Type: IsS1(tmp_9_0) /\ IsS10(tmp_12_0) /\ IsS10(tmp_14_0) /\
+      IsS5(tmp_11_0) /\ IsS5(tmp_13_0) /\ IsS6(tmp_10_0) /\
+      IsS6(vminus_zero_point_0) /\ is_sint32_chunk(Mint_0) /\
+      is_sint8_chunk(Mchar_0) /\ is_uint64(batch_0) /\ is_uint64(done_0) /\
+      is_uint64(done_1) /\ is_uint64(k) /\ is_uint64(total_0) /\
+      is_sint32(x_1) /\ is_sint8(x_10) /\ is_sint8(x_8) /\ is_sint8(x_6) /\
+      is_sint8(x_2) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 4 + total_0 - batch_0)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 5 + total_0 - batch_0)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 6 + total_0 - batch_0)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 7 + total_0 - batch_0)]) /\
+      is_sint8(x_11) /\ is_sint8(x_9) /\ is_sint8(x_7) /\ is_sint8(x_5) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, x_13)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, to_uint64(1 + x_13))]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, to_uint64(2 + x_13))]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, to_uint64(3 + x_13))]).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 1).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 4611686018427387896.
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_34, x_12).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_32, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_35, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_32, total_0, a_35, total_0).
+  (* Pre-condition *)
+  Have: separated(a_32, total_0, a_34, x_12).
+  (* Pre-condition *)
+  Have: separated(a_32, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_35, total_0, a_34, x_12).
+  (* Pre-condition *)
+  Have: separated(a_35, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: x_1 != (-2147483648).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_3, 1).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_4, 1).
+  (* Call '__FC_assert' *)
+  Have: a_34 != null.
+  (* Call '__FC_assert' *)
+  Have: a_32 != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_1.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_31[i_1] = to_sint16(-x_1)))).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_10[i_1], a_5))).
+  (* Invariant *)
+  Have: P_same_float(a_5, a_5).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: P_same_float(a_33[a_4], a_5).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      P_same_value(a_33[shift_float32(output_base_0, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x_1, a_5)))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: ((2 + (if bit_testb(batch_0, 0) then 1 else 0)
+          + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      (2 <= (batch_0 % 4)) /\
+      ((bit_test(batch_0, 0) -> ((batch_0 % 2) = 1))) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(Malloc_0, a_21, 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)] =
+        a_30[i_1])))).
+  (* Call 'vaddw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_28[i_1] = to_sint16(L_L_wrap16(to_uint64(a_30[i_1] + a_31[i_1])))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_28[i_1] =
+       L_centered(Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)],
+         x_1)))).
+  (* Call 'vget_low_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_29[i_1] = a_28[i_1]))).
+  (* Call 'vmovl_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_25[i_1] = a_29[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_25[i_1] =
+       L_centered(Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)],
+         x_1)))).
+  (* Call 'vget_high_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_28[4 + i_1] = a_27[i_1]))).
+  (* Call 'vmovl_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_26[i_1] = a_27[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_26[i_1] =
+       L_centered(Mchar_0
+                    [shift_sint8(input_base_0, 4 + total_0 + i_1 - batch_0)],
+         x_1)))).
+  (* Call 'vcvtq_f32_s32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_8[i_1], to_f32(real_of_int(a_25[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_8[i_1],
+        to_f32(real_of_int(L_centered(Mchar_0
+                                        [shift_sint8(input_base_0, total_0
+                                           + i_1 - batch_0)], x_1)))))).
+  (* Call 'vmulq_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a_1[i_1], mul_f32(a_8[i_1], a_10[i_1])))).
+  (* Assertion *)
+  Have: P_same_float(a_23, to_f32(real_of_int(L_centered(x_10, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_24, a_5).
+  (* Assertion *)
+  Have: P_same_value(a_20, mul_f32(a_23, a_24)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_22, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_20, L_qcvt(x_11, x_1, a_5)) /\
+      P_same_float(a_23, to_f32(real_of_int(L_centered(x_11, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_20, L_qcvt(x_10, x_1, a_5)).
+  (* Assertion *)
+  Have: P_same_float(a_18, to_f32(real_of_int(L_centered(x_8, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_19, a_5).
+  (* Assertion *)
+  Have: P_same_value(a_16, mul_f32(a_18, a_19)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_17, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_16, L_qcvt(x_9, x_1, a_5)) /\
+      P_same_float(a_18, to_f32(real_of_int(L_centered(x_9, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_16, L_qcvt(x_8, x_1, a_5)).
+  (* Assertion *)
+  Have: P_same_float(a_14, to_f32(real_of_int(L_centered(x_6, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_15, a_5).
+  (* Assertion *)
+  Have: P_same_value(a_12, mul_f32(a_14, a_15)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_13, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_12, L_qcvt(x_7, x_1, a_5)) /\
+      P_same_float(a_14, to_f32(real_of_int(L_centered(x_7, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_12, L_qcvt(x_6, x_1, a_5)).
+  (* Assertion *)
+  Have: P_same_float(a_9, to_f32(real_of_int(L_centered(x_2, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_11, a_5).
+  (* Assertion *)
+  Have: P_same_value(a_6, mul_f32(a_9, a_11)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_7, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_6, L_qcvt(x_5, x_1, a_5)) /\
+      P_same_float(a_9, to_f32(real_of_int(L_centered(x_5, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_6, L_qcvt(x_2, x_1, a_5)).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a_1[i_1],
+        L_qcvt(Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)],
+          x_1, a_5)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_36 = vy_0.F14_lane.
+    Let a_37 = a_36[3].
+    Let x_14 = Mchar_0[shift_sint8(input_base_0, 7 + total_0 - batch_0)].
+    Let a_38 = shift_sint8(input_base_0, to_uint64(3 + done_0)).
+    Let x_15 = Mchar_0[a_38].
+    Let a_39 = before_mul4_0.F14_lane.
+    Let a_40 = a_39[3].
+    Let a_41 = a_36[2].
+    Let x_16 = Mchar_0[shift_sint8(input_base_0, 6 + total_0 - batch_0)].
+    Let a_42 = shift_sint8(input_base_0, to_uint64(2 + done_0)).
+    Let x_17 = Mchar_0[a_42].
+    Let a_43 = a_39[2].
+    Let a_44 = a_36[1].
+    Let x_18 = Mchar_0[shift_sint8(input_base_0, 5 + total_0 - batch_0)].
+    Let a_45 = shift_sint8(input_base_0, to_uint64(1 + done_0)).
+    Let x_19 = Mchar_0[a_45].
+    Let a_46 = a_39[1].
+    Let a_47 = a_36[0].
+    Let x_20 = Mchar_0[shift_sint8(input_base_0, 4 + total_0 - batch_0)].
+    Let a_48 = shift_sint8(input_base_0, done_0).
+    Let x_21 = Mchar_0[a_48].
+    Let a_49 = a_39[0].
+    Let x_22 = 4 + done_1.
+    Let a_50 = shift_float32(output_base_0, x_3).
+    Let a_51 = memcpy(a_33, a_50, Mf32_undef_1, a_50, 4).
+    Have: (Malloc_0 = Malloc_1) /\ (x_4 = done_1).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_1[i_1],
+          L_qcvt(Mchar_0[shift_sint8(input_base_0, done_1 + i_1)], x_1, a_5)))).
+    (* Assertion *)
+    Have: valid_rd(Malloc_1, a_4, 1).
+    (* Assertion *)
+    Have: separated(a_4, 1, a_32, total_0).
+    (* Call 'vst1q_f32' *)
+    Have: valid_rw(Malloc_1, a_50, 4) /\
+        (forall a_52 : addr. (valid_rd(Malloc_1, a_52, 1) ->
+         (separated(a_52, 1, a_50, 4) ->
+         P_same_float(a_51[a_52], a_33[a_52])))) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_same_float(a_51
+                        [shift_float32(output_base_0, total_0 + i_1
+                           - batch_0)], a_1[i_1])))).
+    (* Assertion *)
+    Have: P_same_float(a_51[a_4], a_5).
+    (* Invariant *)
+    Have: (0 <= k) /\ (k <= x_22).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k) ->
+        P_same_value(a_51[shift_float32(output_base_0, i_1)],
+          L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x_1, a_5)))).
+    (* Else *)
+    Have: done_0 <= k.
+    Have: to_uint64(x_22) = done_0.
+    (* Call 'vcvtq_f32_s32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_float(a_39[i_1], to_f32(real_of_int(a_26[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_float(a_39[i_1],
+          to_f32(real_of_int(L_centered(Mchar_0
+                                          [shift_sint8(input_base_0, 4
+                                             + total_0 + i_1 - batch_0)],
+                               x_1)))))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_36[i_1], mul_f32(a_39[i_1], a_10[i_1])))).
+    (* Assertion *)
+    Have: P_same_float(a_49, to_f32(real_of_int(L_centered(x_20, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_47, mul_f32(a_49, a_24)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_1, a_48, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_47, L_qcvt(x_21, x_1, a_5)) /\
+        P_same_float(a_49, to_f32(real_of_int(L_centered(x_21, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_47, L_qcvt(x_20, x_1, a_5)).
+    (* Assertion *)
+    Have: P_same_float(a_46, to_f32(real_of_int(L_centered(x_18, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_44, mul_f32(a_46, a_19)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_1, a_45, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_44, L_qcvt(x_19, x_1, a_5)) /\
+        P_same_float(a_46, to_f32(real_of_int(L_centered(x_19, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_44, L_qcvt(x_18, x_1, a_5)).
+    (* Assertion *)
+    Have: P_same_float(a_43, to_f32(real_of_int(L_centered(x_16, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_41, mul_f32(a_43, a_15)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_1, a_42, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_41, L_qcvt(x_17, x_1, a_5)) /\
+        P_same_float(a_43, to_f32(real_of_int(L_centered(x_17, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_41, L_qcvt(x_16, x_1, a_5)).
+    (* Assertion *)
+    Have: P_same_float(a_40, to_f32(real_of_int(L_centered(x_14, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_37, mul_f32(a_40, a_11)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_1, a_38, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_37, L_qcvt(x_15, x_1, a_5)) /\
+        P_same_float(a_40, to_f32(real_of_int(L_centered(x_15, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_37, L_qcvt(x_14, x_1, a_5)).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_36[i_1],
+          L_qcvt(Mchar_0
+                   [shift_sint8(input_base_0, 4 + total_0 + i_1 - batch_0)],
+            x_1, a_5)))).
+  }
+  Else { Have: (vy_0 = vmulq_f32_0) /\ (x_4 = done_0). }
+  (* Call 'vget_low_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+      P_same_float(a[i_1], a_36[i_1]))).
+  (* Then *)
+  Have: bit_test(batch_0, 1).
+}
+Prove: P_same_value(a[i],
+         L_qcvt(Mchar_0[shift_sint8(input_base_0, done_0 + i)], x_1, a_5)).
+
+------------------------------------------------------------
+
+Goal Assertion 'diag_tail1' ("neon.c", line 177):
+Let a = vmulq_f32_0.F14_lane.
+Let x = -batch_0.
+Let a_1 = shiftfield_F31_xnn_qs8_f32_cvt_params_scalar(params_0).
+Let a_2 = shiftfield_F32_zero_point(a_1).
+Let x_1 = Mint_0[a_2].
+Let a_3 = shiftfield_F32_scale(a_1).
+Let a_4 = Mf32_0[a_3].
+Let a_5 = a[3].
+Let x_2 = Mchar_0[shift_sint8(input_base_0, 3 + total_0 - batch_0)].
+Let x_3 = total_0 - batch_0.
+Let x_4 = to_uint64(x_3).
+Let a_6 = shift_sint8(input_base_0, to_uint64(3 + x_4)).
+Let x_5 = Mchar_0[a_6].
+Let a_7 = before_mul3_0.F14_lane.
+Let a_8 = a_7[3].
+Let a_9 = vscale_0.F14_lane.
+Let a_10 = a_9[3].
+Let a_11 = a[2].
+Let x_6 = Mchar_0[shift_sint8(input_base_0, 2 + total_0 - batch_0)].
+Let a_12 = shift_sint8(input_base_0, to_uint64(2 + x_4)).
+Let x_7 = Mchar_0[a_12].
+Let a_13 = a_7[2].
+Let a_14 = a_9[2].
+Let a_15 = a[1].
+Let x_8 = Mchar_0[shift_sint8(input_base_0, 1 + total_0 - batch_0)].
+Let a_16 = shift_sint8(input_base_0, to_uint64(1 + x_4)).
+Let x_9 = Mchar_0[a_16].
+Let a_17 = a_7[1].
+Let a_18 = a_9[1].
+Let a_19 = a[0].
+Let a_20 = shift_sint8(input_base_0, x_3).
+Let x_10 = Mchar_0[a_20].
+Let a_21 = shift_sint8(input_base_0, x_4).
+Let x_11 = Mchar_0[a_21].
+Let a_22 = a_7[0].
+Let a_23 = a_9[0].
+Let a_24 = tmp_12_0.F10_lane.
+Let a_25 = tmp_14_0.F10_lane.
+Let a_26 = tmp_13_0.F5_lane.
+Let a_27 = tmp_10_0.F6_lane.
+Let a_28 = tmp_11_0.F5_lane.
+Let a_29 = tmp_9_0.F1_lane.
+Let a_30 = vminus_zero_point_0.F6_lane.
+Let a_31 = shift_float32(output_base_0, 0).
+Let a_32 = memcpy(Mf32_0, a_31, Mf32_undef_0, a_31, total_0).
+Let a_33 = shift_sint8(input_base_0, 0).
+Let a_34 = shift_float32(right_0, 0).
+Let x_12 = 7 + total_0.
+Let x_13 = to_uint64(4 + x_4).
+Assume {
+  Type: IsS1(tmp_9_0) /\ IsS10(tmp_12_0) /\ IsS10(tmp_14_0) /\
+      IsS5(tmp_11_0) /\ IsS5(tmp_13_0) /\ IsS6(tmp_10_0) /\
+      IsS6(vminus_zero_point_0) /\ is_sint32_chunk(Mint_0) /\
+      is_sint8_chunk(Mchar_0) /\ is_uint64(batch_0) /\ is_uint64(done_0) /\
+      is_uint64(done_1) /\ is_uint64(done_2) /\ is_uint64(done_3) /\
+      is_uint64(k) /\ is_uint64(k_1) /\ is_uint64(total_0) /\
+      is_sint32(x_1) /\ is_sint8(x_10) /\ is_sint8(x_8) /\ is_sint8(x_6) /\
+      is_sint8(x_2) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 4 + total_0 - batch_0)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 5 + total_0 - batch_0)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 6 + total_0 - batch_0)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, 7 + total_0 - batch_0)]) /\
+      is_sint8(x_11) /\ is_sint8(x_9) /\ is_sint8(x_7) /\ is_sint8(x_5) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, x_13)]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, to_uint64(1 + x_13))]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, to_uint64(2 + x_13))]) /\
+      is_sint8(Mchar_0[shift_sint8(input_base_0, to_uint64(3 + x_13))]).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Goal *)
+  When: (i <= 0) /\ (0 <= i).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 4611686018427387896.
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_33, x_12).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_31, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_34, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_31, total_0, a_34, total_0).
+  (* Pre-condition *)
+  Have: separated(a_31, total_0, a_33, x_12).
+  (* Pre-condition *)
+  Have: separated(a_31, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_34, total_0, a_33, x_12).
+  (* Pre-condition *)
+  Have: separated(a_34, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: x_1 != (-2147483648).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_2, 1).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_3, 1).
+  (* Call '__FC_assert' *)
+  Have: a_33 != null.
+  (* Call '__FC_assert' *)
+  Have: a_31 != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x_1.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_30[i_1] = to_sint16(-x_1)))).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_9[i_1], a_4))).
+  (* Invariant *)
+  Have: P_same_float(a_4, a_4).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: P_same_float(a_32[a_3], a_4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      P_same_value(a_32[shift_float32(output_base_0, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x_1, a_4)))).
+  (* Else *)
+  Have: batch_0 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: ((batch_0 % 2) = 1) /\
+      ((1 + (if bit_testb(batch_0, 1) then 2 else 0)
+        + (if bit_testb(batch_0, 2) then 4 else 0)) = batch_0) /\
+      ((bit_test(batch_0, 2) -> (4 <= batch_0))) /\
+      ((bit_test(batch_0, 1) -> (2 <= (batch_0 % 4)))).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call '__FC_assert' *)
+  Have: 0 < batch_0.
+  (* Call 'vld1_s8' *)
+  Have: valid_rd(Malloc_0, a_20, 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)] =
+        a_29[i_1])))).
+  (* Call 'vaddw_s8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_27[i_1] = to_sint16(L_L_wrap16(to_uint64(a_29[i_1] + a_30[i_1])))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_27[i_1] =
+       L_centered(Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)],
+         x_1)))).
+  (* Call 'vget_low_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_28[i_1] = a_27[i_1]))).
+  (* Call 'vmovl_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_24[i_1] = a_28[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_24[i_1] =
+       L_centered(Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)],
+         x_1)))).
+  (* Call 'vget_high_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_27[4 + i_1] = a_26[i_1]))).
+  (* Call 'vmovl_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_25[i_1] = a_26[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_25[i_1] =
+       L_centered(Mchar_0
+                    [shift_sint8(input_base_0, 4 + total_0 + i_1 - batch_0)],
+         x_1)))).
+  (* Call 'vcvtq_f32_s32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_7[i_1], to_f32(real_of_int(a_24[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_7[i_1],
+        to_f32(real_of_int(L_centered(Mchar_0
+                                        [shift_sint8(input_base_0, total_0
+                                           + i_1 - batch_0)], x_1)))))).
+  (* Call 'vmulq_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a[i_1], mul_f32(a_7[i_1], a_9[i_1])))).
+  (* Assertion *)
+  Have: P_same_float(a_22, to_f32(real_of_int(L_centered(x_10, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_23, a_4).
+  (* Assertion *)
+  Have: P_same_value(a_19, mul_f32(a_22, a_23)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_21, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_19, L_qcvt(x_11, x_1, a_4)) /\
+      P_same_float(a_22, to_f32(real_of_int(L_centered(x_11, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_19, L_qcvt(x_10, x_1, a_4)).
+  (* Assertion *)
+  Have: P_same_float(a_17, to_f32(real_of_int(L_centered(x_8, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_18, a_4).
+  (* Assertion *)
+  Have: P_same_value(a_15, mul_f32(a_17, a_18)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_16, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_15, L_qcvt(x_9, x_1, a_4)) /\
+      P_same_float(a_17, to_f32(real_of_int(L_centered(x_9, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_15, L_qcvt(x_8, x_1, a_4)).
+  (* Assertion *)
+  Have: P_same_float(a_13, to_f32(real_of_int(L_centered(x_6, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_14, a_4).
+  (* Assertion *)
+  Have: P_same_value(a_11, mul_f32(a_13, a_14)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_12, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_11, L_qcvt(x_7, x_1, a_4)) /\
+      P_same_float(a_13, to_f32(real_of_int(L_centered(x_7, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_11, L_qcvt(x_6, x_1, a_4)).
+  (* Assertion *)
+  Have: P_same_float(a_8, to_f32(real_of_int(L_centered(x_2, x_1)))).
+  (* Assertion *)
+  Have: P_same_float(a_10, a_4).
+  (* Assertion *)
+  Have: P_same_value(a_5, mul_f32(a_8, a_10)).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_6, 1).
+  (* Call 'proof_qcvt_eval' *)
+  Have: P_same_value(a_5, L_qcvt(x_5, x_1, a_4)) /\
+      P_same_float(a_8, to_f32(real_of_int(L_centered(x_5, x_1)))).
+  (* Assertion *)
+  Have: P_same_value(a_5, L_qcvt(x_2, x_1, a_4)).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a[i_1],
+        L_qcvt(Mchar_0[shift_sint8(input_base_0, total_0 + i_1 - batch_0)],
+          x_1, a_4)))).
+  If bit_test(batch_0, 2)
+  Then {
+    Let a_35 = vy_0.F14_lane.
+    Let a_36 = a_35[3].
+    Let x_14 = Mchar_0[shift_sint8(input_base_0, 7 + total_0 - batch_0)].
+    Let a_37 = shift_sint8(input_base_0, to_uint64(3 + done_2)).
+    Let x_15 = Mchar_0[a_37].
+    Let a_38 = before_mul4_0.F14_lane.
+    Let a_39 = a_38[3].
+    Let a_40 = a_35[2].
+    Let x_16 = Mchar_0[shift_sint8(input_base_0, 6 + total_0 - batch_0)].
+    Let a_41 = shift_sint8(input_base_0, to_uint64(2 + done_2)).
+    Let x_17 = Mchar_0[a_41].
+    Let a_42 = a_38[2].
+    Let a_43 = a_35[1].
+    Let x_18 = Mchar_0[shift_sint8(input_base_0, 5 + total_0 - batch_0)].
+    Let a_44 = shift_sint8(input_base_0, to_uint64(1 + done_2)).
+    Let x_19 = Mchar_0[a_44].
+    Let a_45 = a_38[1].
+    Let a_46 = a_35[0].
+    Let x_20 = 4 + total_0 - batch_0.
+    Let x_21 = Mchar_0[shift_sint8(input_base_0, x_20)].
+    Let a_47 = shift_sint8(input_base_0, done_2).
+    Let x_22 = Mchar_0[a_47].
+    Let a_48 = a_38[0].
+    Let x_23 = 4 + done_3.
+    Let a_49 = shift_float32(output_base_0, x_3).
+    Have: x_4 = done_3.
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a[i_1],
+          L_qcvt(Mchar_0[shift_sint8(input_base_0, done_3 + i_1)], x_1, a_4)))).
+    (* Assertion *)
+    Have: separated(a_3, 1, a_31, total_0).
+    (* Call 'vst1q_f32' *)
+    Have: valid_rw(Malloc_0, a_49, 4) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+         P_same_float(Mf32_1
+                        [shift_float32(output_base_0, total_0 + i_1
+                           - batch_0)], a[i_1])))) /\
+        (forall a_50 : addr. (valid_rd(Malloc_0, a_50, 1) ->
+         (separated(a_50, 1, a_49, 4) ->
+         P_same_float(Mf32_1[a_50], a_32[a_50])))).
+    (* Call Effects *)
+    Have: memcpy(a_32, a_49, Mf32_undef_1, a_49, 4) = Mf32_1.
+    (* Assertion *)
+    Have: P_same_float(Mf32_1[a_3], a_4).
+    (* Invariant *)
+    Have: (0 <= k) /\ (k <= x_23).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k) ->
+        P_same_value(Mf32_1[shift_float32(output_base_0, i_1)],
+          L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x_1, a_4)))).
+    (* Else *)
+    Have: done_2 <= k.
+    Have: shift_float32(output_base_0, x_20) = output_0.
+    Have: to_uint64(x_23) = done_2.
+    (* Call 'vcvtq_f32_s32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_float(a_38[i_1], to_f32(real_of_int(a_25[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_float(a_38[i_1],
+          to_f32(real_of_int(L_centered(Mchar_0
+                                          [shift_sint8(input_base_0, 4
+                                             + total_0 + i_1 - batch_0)],
+                               x_1)))))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_35[i_1], mul_f32(a_38[i_1], a_9[i_1])))).
+    (* Assertion *)
+    Have: P_same_float(a_48, to_f32(real_of_int(L_centered(x_21, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_46, mul_f32(a_48, a_23)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_47, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_46, L_qcvt(x_22, x_1, a_4)) /\
+        P_same_float(a_48, to_f32(real_of_int(L_centered(x_22, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_46, L_qcvt(x_21, x_1, a_4)).
+    (* Assertion *)
+    Have: P_same_float(a_45, to_f32(real_of_int(L_centered(x_18, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_43, mul_f32(a_45, a_18)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_44, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_43, L_qcvt(x_19, x_1, a_4)) /\
+        P_same_float(a_45, to_f32(real_of_int(L_centered(x_19, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_43, L_qcvt(x_18, x_1, a_4)).
+    (* Assertion *)
+    Have: P_same_float(a_42, to_f32(real_of_int(L_centered(x_16, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_40, mul_f32(a_42, a_14)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_41, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_40, L_qcvt(x_17, x_1, a_4)) /\
+        P_same_float(a_42, to_f32(real_of_int(L_centered(x_17, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_40, L_qcvt(x_16, x_1, a_4)).
+    (* Assertion *)
+    Have: P_same_float(a_39, to_f32(real_of_int(L_centered(x_14, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_36, mul_f32(a_39, a_10)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_37, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_36, L_qcvt(x_15, x_1, a_4)) /\
+        P_same_float(a_39, to_f32(real_of_int(L_centered(x_15, x_1)))).
+    (* Assertion *)
+    Have: P_same_value(a_36, L_qcvt(x_14, x_1, a_4)).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_35[i_1],
+          L_qcvt(Mchar_0
+                   [shift_sint8(input_base_0, 4 + total_0 + i_1 - batch_0)],
+            x_1, a_4)))).
+  }
+  Else {
+    Have: (vy_0 = vmulq_f32_0) /\ (x_4 = done_2) /\ (a_49 = output_0) /\
+        (a_32 = Mf32_1).
+  }
+  (* Call 'vget_low_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+      P_same_float((vget_low_f32_0.F13_lane)[i_1], a_35[i_1]))).
+  If bit_test(batch_0, 1)
+  Then {
+    Let x_24 = 2 + done_1.
+    Let a_50 = shift_float32(output_1, 0).
+    Let a_51 = memcpy(Mf32_2, a_50, Mf32_undef_2, a_50, 2).
+    Let a_52 = vget_low_f32_0.F13_lane.
+    Have: (Malloc_0 = Malloc_1) /\ (Mf32_1 = Mf32_2) /\ (done_2 = done_1) /\
+        (output_0 = output_1) /\ (output_base_0 = output_base_1).
+    (* Assertion 'diag_tail2' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_same_value(a_52[i_1],
+          L_qcvt(Mchar_0[shift_sint8(input_base_0, done_1 + i_1)], x_1, a_4)))).
+    (* Assertion *)
+    Have: valid_rd(Malloc_1, a_3, 1).
+    (* Assertion *)
+    Have: separated(a_3, 1, shift_float32(output_base_1, 0), total_0).
+    (* Call 'vst1_f32' *)
+    Have: valid_rw(Malloc_1, a_50, 2) /\
+        (forall a_53 : addr. (valid_rd(Malloc_1, a_53, 1) ->
+         (separated(a_53, 1, a_50, 2) ->
+         P_same_float(a_51[a_53], Mf32_2[a_53])))) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+         P_same_float(a_51[shift_float32(output_1, i_1)], a_52[i_1])))).
+    (* Assertion *)
+    Have: P_same_float(a_51[a_3], a_4).
+    (* Invariant *)
+    Have: (-2) <= done_1.
+    (* Invariant *)
+    Have: (0 <= k_1) /\ (k_1 <= x_24).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k_1) ->
+        P_same_value(a_51[shift_float32(output_base_1, i_1)],
+          L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x_1, a_4)))).
+    (* Else *)
+    Have: done_0 <= k_1.
+    Have: to_uint64(x_24) = done_0.
+    (* Call 'vget_high_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_same_float((vy_lo_0.F13_lane)[i_1], a_35[2 + i_1]))).
+  }
+  Else { Have: (done_2 = done_0) /\ (vy_lo_0 = vget_low_f32_0). }
+  (* Then *)
+  Have: bit_test(batch_0, 0).
+}
+Prove: P_same_value((vy_lo_0.F13_lane)[0],
+         L_qcvt(Mchar_0[shift_sint8(input_base_0, done_0)], x_1, a_4)).
+
+------------------------------------------------------------
+
+Goal Assertion 'diag_centered' ("rvv.c", line 33):
+Let a = vhx_0.F17_lane.
+Let a_1 = __riscv_vsext_vf2_i16m4_0.F17_lane.
+Let a_2 = shiftfield_F31_xnn_qs8_f32_cvt_params_scalar(params_0).
+Let a_3 = shiftfield_F32_zero_point(a_2).
+Let x = Mint_0[a_3].
+Let a_4 = __riscv_vle8_v_i8m2_0.F15_lane.
+Let x_1 = -batch_0.
+Let a_5 = shift_float32(output_base_0, 0).
+Let a_6 = memcpy(Mf32_6, a_5, Mf32_undef_3, a_5, k).
+Let a_7 = shiftfield_F32_scale(a_2).
+Let a_8 = Mf32_6[a_7].
+Let a_9 = shift_sint8(input_base_1, 0).
+Let a_10 = Mf32_0[a_7].
+Let a_11 = shift_float32(output_base_1, 0).
+Let a_12 = memcpy(Mf32_0, a_11, Mf32_undef_0, a_11, total_0).
+Let x_2 = 7 + total_0.
+Assume {
+  Type: IsS1(tmp_9_0) /\ IsS10(tmp_12_0) /\ IsS10(tmp_14_0) /\
+      IsS15(__riscv_vle8_v_i8m2_0) /\ IsS17(__riscv_vsext_vf2_i16m4_0) /\
+      IsS17(vhx_0) /\ IsS5(tmp_11_0) /\ IsS5(tmp_13_0) /\ IsS6(tmp_10_0) /\
+      IsS6(vminus_zero_point_0) /\ is_sint32_chunk(Mint_0) /\
+      is_sint8_chunk(Mchar_0) /\ is_uint64(batch_0) /\ is_uint64(batch_1) /\
+      is_uint64(done_0) /\ is_uint64(done_1) /\ is_uint64(done_2) /\
+      is_uint64(done_3) /\ is_uint64(done_4) /\ is_uint64(k_1) /\
+      is_uint64(k_2) /\ is_uint64(k_3) /\ is_uint64(k) /\
+      is_uint64(total_0) /\ is_sint32(x).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\
+      (region(output_base_1.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      linked(Malloc_0) /\ sconst(Mchar_0).
+  (* Goal *)
+  When: (0 <= i) /\ (if (batch_0 <= 31) then (i < batch_0) else (i <= 31)).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 4611686018427387896.
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_9, x_2).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_11, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_5, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_11, total_0, a_5, total_0).
+  (* Pre-condition *)
+  Have: separated(a_11, total_0, a_9, x_2).
+  (* Pre-condition *)
+  Have: separated(a_11, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, a_9, x_2).
+  (* Pre-condition *)
+  Have: separated(a_5, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: x != (-2147483648).
+  (* Initializer *)
+  Init: a_9 = shift_sint8(input_base_0, 0).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_3, 1).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(Malloc_0, a_7, 1).
+  (* Call '__FC_assert' *)
+  Have: a_11 != null.
+  (* Assertion 'rte,signed_overflow' *)
+  Have: (-2147483647) <= x.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      ((vminus_zero_point_0.F6_lane)[i_1] = to_sint16(-x)))).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float((vscale_0.F14_lane)[i_1], a_10))).
+  (* Invariant *)
+  Have: P_same_float(a_10, a_10).
+  (* Invariant *)
+  Have: (0 <= batch_1) /\ (batch_1 <= total_0).
+  (* Invariant *)
+  Have: P_same_float(a_12[a_7], a_10).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_1 + i_1) < total_0) ->
+      P_same_value(a_12[shift_float32(output_base_1, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_1, i_1)], x, a_10)))).
+  (* Else *)
+  Have: batch_1 <= 7.
+  (* Call 'proof_tail8' *)
+  Have: (((if bit_testb(batch_1, 0) then 1 else 0)
+          + (if bit_testb(batch_1, 1) then 2 else 0)
+          + (if bit_testb(batch_1, 2) then 4 else 0)) = batch_1) /\
+      ((bit_test(batch_1, 0) -> ((batch_1 % 2) = 1))) /\
+      ((bit_test(batch_1, 2) -> (4 <= batch_1))) /\
+      ((bit_test(batch_1, 1) -> (2 <= (batch_1 % 4)))).
+  If batch_1 != 0
+  Then {
+    Let a_13 = vmulq_f32_0.F14_lane.
+    Let x_3 = -batch_1.
+    Let a_14 = a_13[3].
+    Let x_4 = Mchar_0[shift_sint8(input_base_1, 3 + total_0 - batch_1)].
+    Let x_5 = total_0 - batch_1.
+    Let x_6 = to_uint64(x_5).
+    Let a_15 = shift_sint8(input_base_1, to_uint64(3 + x_6)).
+    Let x_7 = Mchar_0[a_15].
+    Let a_16 = before_mul3_0.F14_lane.
+    Let a_17 = a_16[3].
+    Let a_18 = vscale_0.F14_lane.
+    Let a_19 = a_18[3].
+    Let a_20 = a_13[2].
+    Let x_8 = Mchar_0[shift_sint8(input_base_1, 2 + total_0 - batch_1)].
+    Let a_21 = shift_sint8(input_base_1, to_uint64(2 + x_6)).
+    Let x_9 = Mchar_0[a_21].
+    Let a_22 = a_16[2].
+    Let a_23 = a_18[2].
+    Let a_24 = a_13[1].
+    Let x_10 = Mchar_0[shift_sint8(input_base_1, 1 + total_0 - batch_1)].
+    Let a_25 = shift_sint8(input_base_1, to_uint64(1 + x_6)).
+    Let x_11 = Mchar_0[a_25].
+    Let a_26 = a_16[1].
+    Let a_27 = a_18[1].
+    Let a_28 = a_13[0].
+    Let a_29 = shift_sint8(input_base_1, x_5).
+    Let x_12 = Mchar_0[a_29].
+    Let a_30 = shift_sint8(input_base_1, x_6).
+    Let x_13 = Mchar_0[a_30].
+    Let a_31 = a_16[0].
+    Let a_32 = a_18[0].
+    Let a_33 = tmp_12_0.F10_lane.
+    Let a_34 = tmp_14_0.F10_lane.
+    Let a_35 = tmp_13_0.F5_lane.
+    Let a_36 = tmp_10_0.F6_lane.
+    Let a_37 = tmp_11_0.F5_lane.
+    Let a_38 = tmp_9_0.F1_lane.
+    (* Call '__FC_assert' *)
+    Have: 0 < batch_1.
+    (* Call 'vld1_s8' *)
+    Have: valid_rd(Malloc_0, a_29, 8) /\
+        (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+         (Mchar_0[shift_sint8(input_base_1, total_0 + i_1 - batch_1)] =
+          a_38[i_1])))).
+    (* Call 'vaddw_s8' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_36[i_1] =
+         to_sint16(L_L_wrap16(to_uint64(a_38[i_1]
+                                + (vminus_zero_point_0.F6_lane)[i_1])))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+        (a_36[i_1] =
+         L_centered(Mchar_0
+                      [shift_sint8(input_base_1, total_0 + i_1 - batch_1)],
+           x)))).
+    (* Call 'vget_low_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_37[i_1] = a_36[i_1]))).
+    (* Call 'vmovl_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_33[i_1] = a_37[i_1]))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_33[i_1] =
+         L_centered(Mchar_0
+                      [shift_sint8(input_base_1, total_0 + i_1 - batch_1)],
+           x)))).
+    (* Call 'vget_high_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_36[4 + i_1] = a_35[i_1]))).
+    (* Call 'vmovl_s16' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_34[i_1] = a_35[i_1]))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        (a_34[i_1] =
+         L_centered(Mchar_0
+                      [shift_sint8(input_base_1, 4 + total_0 + i_1 - batch_1)],
+           x)))).
+    (* Call 'vcvtq_f32_s32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_float(a_16[i_1], to_f32(real_of_int(a_33[i_1]))))).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_float(a_16[i_1],
+          to_f32(real_of_int(L_centered(Mchar_0
+                                          [shift_sint8(input_base_1, total_0
+                                             + i_1 - batch_1)], x)))))).
+    (* Call 'vmulq_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_13[i_1], mul_f32(a_16[i_1], a_18[i_1])))).
+    (* Assertion *)
+    Have: P_same_float(a_31, to_f32(real_of_int(L_centered(x_12, x)))).
+    (* Assertion *)
+    Have: P_same_float(a_32, a_10).
+    (* Assertion *)
+    Have: P_same_value(a_28, mul_f32(a_31, a_32)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_30, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_28, L_qcvt(x_13, x, a_10)) /\
+        P_same_float(a_31, to_f32(real_of_int(L_centered(x_13, x)))).
+    (* Assertion *)
+    Have: P_same_value(a_28, L_qcvt(x_12, x, a_10)).
+    (* Assertion *)
+    Have: P_same_float(a_26, to_f32(real_of_int(L_centered(x_10, x)))).
+    (* Assertion *)
+    Have: P_same_float(a_27, a_10).
+    (* Assertion *)
+    Have: P_same_value(a_24, mul_f32(a_26, a_27)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_25, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_24, L_qcvt(x_11, x, a_10)) /\
+        P_same_float(a_26, to_f32(real_of_int(L_centered(x_11, x)))).
+    (* Assertion *)
+    Have: P_same_value(a_24, L_qcvt(x_10, x, a_10)).
+    (* Assertion *)
+    Have: P_same_float(a_22, to_f32(real_of_int(L_centered(x_8, x)))).
+    (* Assertion *)
+    Have: P_same_float(a_23, a_10).
+    (* Assertion *)
+    Have: P_same_value(a_20, mul_f32(a_22, a_23)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_21, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_20, L_qcvt(x_9, x, a_10)) /\
+        P_same_float(a_22, to_f32(real_of_int(L_centered(x_9, x)))).
+    (* Assertion *)
+    Have: P_same_value(a_20, L_qcvt(x_8, x, a_10)).
+    (* Assertion *)
+    Have: P_same_float(a_17, to_f32(real_of_int(L_centered(x_4, x)))).
+    (* Assertion *)
+    Have: P_same_float(a_19, a_10).
+    (* Assertion *)
+    Have: P_same_value(a_14, mul_f32(a_17, a_19)).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0, a_15, 1).
+    (* Call 'proof_qcvt_eval' *)
+    Have: P_same_value(a_14, L_qcvt(x_7, x, a_10)) /\
+        P_same_float(a_17, to_f32(real_of_int(L_centered(x_7, x)))).
+    (* Assertion *)
+    Have: P_same_value(a_14, L_qcvt(x_4, x, a_10)).
+    (* Assertion *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+        P_same_value(a_13[i_1],
+          L_qcvt(Mchar_0[shift_sint8(input_base_1, total_0 + i_1 - batch_1)],
+            x, a_10)))).
+    If bit_test(batch_1, 2)
+    Then {
+      Let a_39 = vy_0.F14_lane.
+      Let a_40 = a_39[3].
+      Let x_14 = Mchar_0[shift_sint8(input_base_1, 7 + total_0 - batch_1)].
+      Let a_41 = shift_sint8(input_base_1, to_uint64(3 + done_3)).
+      Let x_15 = Mchar_0[a_41].
+      Let a_42 = before_mul4_0.F14_lane.
+      Let a_43 = a_42[3].
+      Let a_44 = a_39[2].
+      Let x_16 = Mchar_0[shift_sint8(input_base_1, 6 + total_0 - batch_1)].
+      Let a_45 = shift_sint8(input_base_1, to_uint64(2 + done_3)).
+      Let x_17 = Mchar_0[a_45].
+      Let a_46 = a_42[2].
+      Let a_47 = a_39[1].
+      Let x_18 = Mchar_0[shift_sint8(input_base_1, 5 + total_0 - batch_1)].
+      Let a_48 = shift_sint8(input_base_1, to_uint64(1 + done_3)).
+      Let x_19 = Mchar_0[a_48].
+      Let a_49 = a_42[1].
+      Let a_50 = a_39[0].
+      Let x_20 = 4 + total_0 - batch_1.
+      Let x_21 = Mchar_0[shift_sint8(input_base_1, x_20)].
+      Let a_51 = shift_sint8(input_base_1, done_3).
+      Let x_22 = Mchar_0[a_51].
+      Let a_52 = a_42[0].
+      Let x_23 = 4 + done_4.
+      Have: (x_6 = done_4) /\
+          (shift_float32(output_base_1, x_5) = output_0) /\ (a_12 = Mf32_1).
+      (* Assertion *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+          P_same_value(a_13[i_1],
+            L_qcvt(Mchar_0[shift_sint8(input_base_1, done_4 + i_1)], x, a_10)))).
+      (* Assertion *)
+      Have: separated(a_7, 1, a_11, total_0).
+      (* Call 'vst1q_f32' *)
+      Have: valid_rw(Malloc_0, output_0, 4) /\
+          (forall a_53 : addr. (valid_rd(Malloc_0, a_53, 1) ->
+           (separated(a_53, 1, output_0, 4) ->
+           P_same_float(Mf32_2[a_53], Mf32_1[a_53])))) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+           P_same_float(Mf32_2
+                          [shift_float32(output_base_1, total_0 + i_1
+                             - batch_1)], a_13[i_1])))).
+      (* Call Effects *)
+      Have: memcpy(Mf32_1, output_0, Mf32_undef_1, output_0, 4) = Mf32_2.
+      (* Assertion *)
+      Have: P_same_float(Mf32_2[a_7], a_10).
+      (* Invariant *)
+      Have: (0 <= k_1) /\ (k_1 <= x_23).
+      (* Invariant *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k_1) ->
+          P_same_value(Mf32_2[shift_float32(output_base_1, i_1)],
+            L_qcvt(Mchar_0[shift_sint8(input_base_1, i_1)], x, a_10)))).
+      (* Else *)
+      Have: done_3 <= k_1.
+      Have: shift_float32(output_base_1, x_20) = output_1.
+      Have: to_uint64(x_23) = done_3.
+      (* Call 'vcvtq_f32_s32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+          P_same_float(a_42[i_1], to_f32(real_of_int(a_34[i_1]))))).
+      (* Assertion *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+          P_same_float(a_42[i_1],
+            to_f32(real_of_int(L_centered(Mchar_0
+                                            [shift_sint8(input_base_1, 4
+                                               + total_0 + i_1 - batch_1)],
+                                 x)))))).
+      (* Call 'vmulq_f32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+          P_same_value(a_39[i_1], mul_f32(a_42[i_1], a_18[i_1])))).
+      (* Assertion *)
+      Have: P_same_float(a_52, to_f32(real_of_int(L_centered(x_21, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_50, mul_f32(a_52, a_32)).
+      (* Assertion 'rte,mem_access' *)
+      Have: valid_rd(Malloc_0, a_51, 1).
+      (* Call 'proof_qcvt_eval' *)
+      Have: P_same_value(a_50, L_qcvt(x_22, x, a_10)) /\
+          P_same_float(a_52, to_f32(real_of_int(L_centered(x_22, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_50, L_qcvt(x_21, x, a_10)).
+      (* Assertion *)
+      Have: P_same_float(a_49, to_f32(real_of_int(L_centered(x_18, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_47, mul_f32(a_49, a_27)).
+      (* Assertion 'rte,mem_access' *)
+      Have: valid_rd(Malloc_0, a_48, 1).
+      (* Call 'proof_qcvt_eval' *)
+      Have: P_same_value(a_47, L_qcvt(x_19, x, a_10)) /\
+          P_same_float(a_49, to_f32(real_of_int(L_centered(x_19, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_47, L_qcvt(x_18, x, a_10)).
+      (* Assertion *)
+      Have: P_same_float(a_46, to_f32(real_of_int(L_centered(x_16, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_44, mul_f32(a_46, a_23)).
+      (* Assertion 'rte,mem_access' *)
+      Have: valid_rd(Malloc_0, a_45, 1).
+      (* Call 'proof_qcvt_eval' *)
+      Have: P_same_value(a_44, L_qcvt(x_17, x, a_10)) /\
+          P_same_float(a_46, to_f32(real_of_int(L_centered(x_17, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_44, L_qcvt(x_16, x, a_10)).
+      (* Assertion *)
+      Have: P_same_float(a_43, to_f32(real_of_int(L_centered(x_14, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_40, mul_f32(a_43, a_19)).
+      (* Assertion 'rte,mem_access' *)
+      Have: valid_rd(Malloc_0, a_41, 1).
+      (* Call 'proof_qcvt_eval' *)
+      Have: P_same_value(a_40, L_qcvt(x_15, x, a_10)) /\
+          P_same_float(a_43, to_f32(real_of_int(L_centered(x_15, x)))).
+      (* Assertion *)
+      Have: P_same_value(a_40, L_qcvt(x_14, x, a_10)).
+      (* Assertion *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+          P_same_value(a_39[i_1],
+            L_qcvt(Mchar_0
+                     [shift_sint8(input_base_1, 4 + total_0 + i_1 - batch_1)],
+              x, a_10)))).
+    }
+    Else {
+      Have: (vy_0 = vmulq_f32_0) /\ (x_6 = done_3) /\
+          (shift_float32(output_base_1, x_5) = output_1) /\ (a_12 = Mf32_2).
+    }
+    (* Call 'vget_low_f32' *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+        P_same_float((vget_low_f32_0.F13_lane)[i_1], a_39[i_1]))).
+    If bit_test(batch_1, 1)
+    Then {
+      Let x_24 = 2 + done_2.
+      Let a_53 = shift_float32(output_2, 0).
+      Let a_54 = vget_low_f32_0.F13_lane.
+      Have: (Mf32_2 = Mf32_3) /\ (done_3 = done_2) /\ (output_1 = output_2).
+      (* Assertion 'diag_tail2' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+          P_same_value(a_54[i_1],
+            L_qcvt(Mchar_0[shift_sint8(input_base_1, done_2 + i_1)], x, a_10)))).
+      (* Assertion *)
+      Have: separated(a_7, 1, a_11, total_0).
+      (* Call 'vst1_f32' *)
+      Have: valid_rw(Malloc_0, a_53, 2) /\
+          (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+           P_same_float(Mf32_4[shift_float32(output_2, i_1)], a_54[i_1])))) /\
+          (forall a_55 : addr. (valid_rd(Malloc_0, a_55, 1) ->
+           (separated(a_55, 1, a_53, 2) ->
+           P_same_float(Mf32_4[a_55], Mf32_3[a_55])))).
+      (* Call Effects *)
+      Have: memcpy(Mf32_3, a_53, Mf32_undef_2, a_53, 2) = Mf32_4.
+      (* Assertion *)
+      Have: P_same_float(Mf32_4[a_7], a_10).
+      (* Invariant *)
+      Have: (-2) <= done_2.
+      (* Invariant *)
+      Have: (0 <= k_2) /\ (k_2 <= x_24).
+      (* Invariant *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k_2) ->
+          P_same_value(Mf32_4[shift_float32(output_base_1, i_1)],
+            L_qcvt(Mchar_0[shift_sint8(input_base_1, i_1)], x, a_10)))).
+      (* Else *)
+      Have: done_1 <= k_2.
+      Have: shift_float32(output_2, 2) = output_3.
+      Have: to_uint64(x_24) = done_1.
+      (* Call 'vget_high_f32' *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 1) ->
+          P_same_float((vy_lo_0.F13_lane)[i_1], a_39[2 + i_1]))).
+    }
+    Else {
+      Have: (Mf32_2 = Mf32_4) /\ (done_3 = done_1) /\
+          (output_1 = output_3) /\ (vy_lo_0 = vget_low_f32_0).
+    }
+    If bit_test(batch_1, 0)
+    Then {
+      Let x_25 = 1 + done_0.
+      Let m = Mf32_5[output_3 <- v].
+      Let a_55 = vy_lo_0.F13_lane.
+      Have: (Mf32_4 = Mf32_5) /\ (done_1 = done_0).
+      (* Assertion 'diag_tail1' *)
+      Have: forall i_1 : Z. ((i_1 <= 0) -> ((0 <= i_1) ->
+          P_same_value(a_55[i_1],
+            L_qcvt(Mchar_0[shift_sint8(input_base_1, done_0 + i_1)], x, a_10)))).
+      (* Assertion *)
+      Have: separated(a_7, 1, a_11, total_0).
+      (* Call 'vst1_lane_f32' *)
+      Have: valid_rw(Malloc_0, output_3, 1) /\ P_same_float(v, a_55[0]) /\
+          (forall a_56 : addr. ((a_56 != output_3) ->
+           (valid_rd(Malloc_0, a_56, 1) ->
+           P_same_float(m[a_56], Mf32_5[a_56])))).
+      (* Call Effects *)
+      Have: m = Mf32_6.
+      (* Invariant *)
+      Have: (-1) <= done_0.
+      (* Invariant *)
+      Have: (0 <= k_3) /\ (k_3 <= x_25).
+      (* Invariant *)
+      Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k_3) ->
+          P_same_value(m[shift_float32(output_base_1, i_1)],
+            L_qcvt(Mchar_0[shift_sint8(input_base_1, i_1)], x, a_10)))).
+      (* Else *)
+      Have: to_uint64(x_25) <= k_3.
+    }
+    Else { Have: Mf32_4 = Mf32_6. }
+  }
+  Else { Have: a_12 = Mf32_6. }
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < total_0) ->
+      P_same_value(Mf32_6[shift_float32(output_base_1, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_1, i_1)], x, a_10)))).
+  (* Assertion *)
+  Have: P_same_float(a_8, a_10).
+  (* Invariant *)
+  Have: (0 <= k) /\ (k <= total_0).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k) ->
+      P_same_value(Mf32_6[shift_float32(output_base_1, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_1, i_1)], x, a_8)))).
+  (* Else *)
+  Have: total_0 <= k.
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k) ->
+      P_same_value(Mf32_6[shift_float32(output_base_1, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x, a_8)))).
+  (* Call '__FC_assert' *)
+  Have: a_9 != null.
+  (* Call '__FC_assert' *)
+  Have: a_5 != null.
+  (* Invariant *)
+  Have: P_same_float(a_8, a_8).
+  (* Invariant *)
+  Have: valid_rd(Malloc_0, a_9, 7 + k).
+  (* Invariant *)
+  Have: valid_rw(Malloc_0, a_5, k).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= k).
+  (* Invariant *)
+  Have: P_same_float(a_6[a_7], a_8).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < k) ->
+      P_same_value(a_6[shift_float32(output_base_0, i_1)],
+        L_qcvt(Mchar_0[shift_sint8(input_base_0, i_1)], x, a_8)))).
+  (* Then *)
+  Have: 0 < batch_0.
+  (* Call '__riscv_vle8_v_i8m2' *)
+  Have: valid_rd(Malloc_0, shift_sint8(input_base_0, k - batch_0),
+          if (batch_0 <= 31) then batch_0 else 32) /\
+      ((32 <= batch_0) \/ (batch_0 <= 32)) /\
+      (forall i_1 : Z. ((0 <= i_1) ->
+       ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+       (Mchar_0[shift_sint8(input_base_0, k + i_1 - batch_0)] = a_4[i_1])))).
+  (* Call '__riscv_vsext_vf2_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a_1[i_1] = a_4[i_1]))).
+  (* Call '__riscv_vsub_vx_i16m4' *)
+  Have: forall i_1 : Z. ((0 <= i_1) ->
+      ((if (batch_0 <= 31) then (i_1 < batch_0) else (i_1 <= 31)) ->
+      (a[i_1] =
+       to_sint16(L_L_wrap16(to_uint64(to_uint64(a_1[i_1])
+                              - to_uint64(to_sint16(x)))))))).
+}
+Prove: a[i] =
+    L_centered(Mchar_0[shift_sint8(input_base_0, i + k - batch_0)], x).
+
+------------------------------------------------------------

@@ -1,0 +1,74 @@
+['/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/logs/local-proof-01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/.build/local-proof-01/annotated/integer.driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/.build/local-proof-01/annotated/unit.c']
+# Actual pinned execution: ['/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'tip,z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/logs/local-proof-01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/.build/local-proof-01/annotated/integer.driver', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/.build/local-proof-01/annotated/unit.c', '-wp-share', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share', '-wp-why3-config', '/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/logs/local-proof-01.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/.build/local-proof-01/annotated/unit.c", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-replay/qu8-f32-vcvt/.build/local-proof-01/annotated/integer.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vadd_vx_u16m4
+[rte:annot] annotating function __riscv_vfcvt_f_x_v_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle8_v_u8m2
+[rte:annot] annotating function __riscv_vreinterpret_v_u16m4_i16m4
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsext_vf2_i32m8
+[rte:annot] annotating function __riscv_vzext_vf2_u16m4
+[rte:annot] annotating function check_fp_mul_congruence
+[rte:annot] annotating function check_qcvt_scale_congruence
+[rte:annot] annotating function check_same_float_refl
+[rte:annot] annotating function check_same_float_trans
+[rte:annot] annotating function check_same_value_trans
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function proof_mul_join
+[rte:annot] annotating function proof_mul_scale_replace
+[rte:annot] annotating function proof_qcvt_join
+[rte:annot] annotating function proof_qcvt_rebase
+[rte:annot] annotating function proof_tail8
+[rte:annot] annotating function vaddw_u8
+[rte:annot] annotating function vcvtq_f32_s32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vdupq_n_s16
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vld1_u8
+[rte:annot] annotating function vmovl_s16
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vreinterpretq_s16_u16
+[rte:annot] annotating function vreinterpretq_u16_s16
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] Computing [900 goals...]
+[wp] 845 goals scheduled
+[wp] [Timeout] typed_fma_integer_equivalent_loop_invariant_15_preserved (Qed 380ms) (CVC5)
+[wp] [Timeout] typed_fma_integer_equivalent_assert_77 (Qed 1.4s) (CVC5)
+[wp] [Timeout] typed_fma_integer_equivalent_assert_89 (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_fma_integer_equivalent_assert_104 (Qed 3.9s) (CVC5)
+[wp] [Timeout] typed_fma_integer_equivalent_assert_106 (Qed 4.1s) (CVC5)
+[wp] [Timeout] typed_fma_integer_equivalent_loop_invariant_41_preserved (Qed 4s) (Z3)
+[wp] [Timeout] typed_fma_integer_equivalent_assert_111 (Qed 4.3s) (CVC5)
+[wp] Proved goals:  906 / 913
+  Terminating:    34
+  Unreachable:    34
+  Qed:           516 (0.56ms-499ms-4.9s)
+  CVC5 1.2.1:    320 (19ms-999ms-25s)
+  Script:          2 (Tactics 2) (Qed 20.4s) (CVC5 4/11 128ms) (Z3)
+  Timeout:         7
+[wp] Updated session
+   - 2 new valid scripts
+   - 7 new scripts to complete

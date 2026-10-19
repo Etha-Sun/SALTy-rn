@@ -2,6 +2,8 @@
 
 当前机器从 `f2f8d2c` 接手后的独立环境恢复与571/571小复验，见 [LOCAL-RECOVERY.zh-CN.md](LOCAL-RECOVERY.zh-CN.md)。下文原服务器路径与历史锁保留，不代表已在当前机器原路径恢复。
 
+接手后的26项分工和最新独立尝试见 [PROOF-WORK-PLAN.zh-CN.md](PROOF-WORK-PLAN.zh-CN.md)：qu8-f32-vcvt新完整报告剩7项；qs8新候选预算耗尽无完整body报告。新增整核通过0，暂不push。
+
 此文针对用户 fork Etha-Sun/SALTy-rn 的 feat/shim-c，当前路线是普通 C shim + Frama-C WP。证明结果基线是 be5a536。后续交接提交只补文档，不产生新证明结果。以这个分支最新 HEAD 为接手点。
 
 根目录 SERVER_HANDOFF.zh-CN.md、AGENTS.md 下半部的 Sail/Coq 内容属于其他分支的历史研究。不要据此切到 feat/assembly-reduction-lean 或 proof/sum，不要将那里的 VLEN=256、Hload 或131模块结果混进本路线。本路线固定 VLEN=128。最初查看的 Arcadia-Y/SALTy-rn:verification 是参考来源；当前工作和推送目的地是用户自己的 Etha-Sun/SALTy-rn:feat/shim-c。

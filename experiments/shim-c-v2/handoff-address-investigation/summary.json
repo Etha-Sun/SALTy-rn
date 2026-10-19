@@ -1,0 +1,139 @@
+{
+  "scope": "finite diagnostic only, no complete address bridge or kernel proof",
+  "exit_code": 0,
+  "functions": {
+    "one_offset": [
+      {
+        "goal": "typed_fma_one_offset_ensures",
+        "passed": false,
+        "verdict": "timeout"
+      },
+      {
+        "goal": "typed_fma_one_offset_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ],
+    "pointer_arithmetic_control": [
+      {
+        "goal": "typed_fma_pointer_arithmetic_control_ensures",
+        "passed": true,
+        "verdict": "valid"
+      },
+      {
+        "goal": "typed_fma_pointer_arithmetic_control_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ],
+    "pointer_probe_false": [
+      {
+        "goal": "typed_fma_pointer_probe_false_ensures",
+        "passed": false,
+        "verdict": "timeout"
+      },
+      {
+        "goal": "typed_fma_pointer_probe_false_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ],
+    "same_pointer": [
+      {
+        "goal": "typed_fma_same_pointer_ensures",
+        "passed": true,
+        "verdict": "valid"
+      },
+      {
+        "goal": "typed_fma_same_pointer_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ],
+    "saved_roundtrip": [
+      {
+        "goal": "typed_fma_saved_roundtrip_ensures",
+        "passed": false,
+        "verdict": "timeout"
+      },
+      {
+        "goal": "typed_fma_saved_roundtrip_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ],
+    "zero_offset": [
+      {
+        "goal": "typed_fma_zero_offset_ensures",
+        "passed": false,
+        "verdict": "timeout"
+      },
+      {
+        "goal": "typed_fma_zero_offset_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ],
+    "zero_with_local_equalities": [
+      {
+        "goal": "typed_fma_zero_with_local_equalities_ensures",
+        "passed": true,
+        "verdict": "valid"
+      },
+      {
+        "goal": "typed_fma_zero_with_local_equalities_assert_integer_zero",
+        "passed": true,
+        "verdict": "valid"
+      },
+      {
+        "goal": "typed_fma_zero_with_local_equalities_assert_pointer_roundtrip",
+        "passed": false,
+        "verdict": "timeout"
+      },
+      {
+        "goal": "typed_fma_zero_with_local_equalities_assigns",
+        "passed": true,
+        "verdict": "valid"
+      }
+    ]
+  },
+  "raw_total": 16,
+  "raw_passed": 11,
+  "negative_control_unproved": true,
+  "model_inputs_unchanged": true,
+  "model_lock_sha256": "a04db83a4cb7bf0b5832a119c558e101dd433dfcd80309bc64920ce6c01baf8b",
+  "source_evidence": {
+    "src/kernel_services/ast_queries/cil.ml": {
+      "sha256": "2b09f3dd4ac67c90815bac1b7c8df160b88a636b9e44ed76fc5a8e21288750da",
+      "first_line": 5717,
+      "last_line": 5755,
+      "excerpt": "let rec castReduce ?(check=true) fromsource force =\n  let dkey = Kernel.dkey_typing_cast in\n  let origin = if fromsource then \"explicit cast:\" else \" implicit cast:\" in\n  let error msg = Errorloc.abort_context (\"%s \" ^^ msg) origin in\n  let rec rec_default oldt newt e =\n    let loc = e.eloc in\n    let normalized_newt =\n      Ast_types.(remove_attributes_for_c_cast (unroll newt))\n    in\n    let res e = new_exp ~loc (CastE (Ast_types.remove_qualifiers newt, e)) in\n    let check_res nullptr_cast e =\n      if check then checkCast ~nullptr_cast ~fromsource (typeOf e) newt;\n      res e\n    in\n    let oldt' = Ast_types.unroll oldt in\n    let can_hold_ptr () =\n      match oldt'.tnode with\n      | TPtr _ -> Ast_types.is_fun_ptr oldt' = Ast_types.is_fun_ptr newt\n      | TInt k -> intTypeIncluded (Machine.uintptr_kind()) k\n      | _ -> false\n    in\n    match oldt'.tnode, normalized_newt.tnode, e.enode with\n    (* In the case were we have a representation for the literal,\n         explicitly add the cast. *)\n    | _, TInt newik, Const (CInt64 (i, _, None)) ->\n      (* ISO 6.3.1.3.2 *) kinteger64 ~loc ~kind:newik i\n\n    | _, TPtr _, CastE (_, e') when is_nullptr e || can_hold_ptr () ->\n      begin\n        match Ast_types.unroll (typeOf e'), e'.enode with\n        | { tnode = TPtr _ } as typ'', _ ->\n          (* Old cast can be removed...*)\n          if need_cast ~force newt typ'' then check_res false e'\n          else (* In fact, both casts can be removed. *) e'\n        | _, Const (CInt64 (i, _, _)) when Z.is_zero i -> check_res true e'\n        | _ -> res e\n      end\n\n    | TInt ik, TEnum ei, Const (CEnum { eihost = ei'}) when"
+    },
+    "src/plugins/wp/MemTyped.ml": {
+      "sha256": "ad0d3c4e8e568a09d47bb658767e5ba476cc9e957f16b14981370642c5e235b5",
+      "first_line": 927,
+      "last_line": 928,
+      "excerpt": "let loc_of_int _ v = MemAddr.addr_of_int v\nlet int_of_loc iota l = Cint.of_integer iota @@ MemAddr.int_of_addr l"
+    },
+    "src/plugins/wp/MemAddr.ml": {
+      "sha256": "49ea01babc875c9a35f6c42506551bde0e8094f3e40e21325813986da81975e3",
+      "first_line": 99,
+      "last_line": 110,
+      "excerpt": "let addr_of_int i = e_fun f_addr_of_int [ i ]\nlet int_of_addr addr = e_fun f_int_of_addr [ addr ]\n\nlet static_alloc addr = p_call p_statically_allocated [ addr ]\n(* This last function is not exposed, it does not have a particular meaning in\n   ACSL, and is used only for int/addr conversions.\n*)\n\nlet in_uintptr_range addr =\n  p_hyps [ static_alloc @@ base addr ] @@\n  Cint.range (Ctypes.c_ptr ()) @@ int_of_addr addr\n"
+    },
+    "frozen-share/memaddr.mlw": {
+      "sha256": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f",
+      "first_line": 137,
+      "last_line": 145,
+      "excerpt": "  function int_of_addr addr: int\n  function addr_of_int int: addr\n\n  axiom addr_of_null :\n    int_of_addr null = 0\n\n  axiom addr_of_int_bijection :\n    forall p:addr.\n      statically_allocated p.base -> addr_of_int (int_of_addr p) = p"
+    }
+  },
+  "files_sha256": {
+    "probe01-exit.json": "e89df0eae5ec7db81135aed16463968955c578bcc4f2ec43172eff351f080c17",
+    "probe01.log": "e0494d7a1acbd07ec74cc954b3c411e87e1ab701da17b7f0a0b917ab09e40253",
+    "probe01.json": "bb25358236f2364dc6ec7ef83a1489645d6a49a9e407f246c402e0577e912b64",
+    "probe01-command.json": "318f5b3d6a253434bfd4b19aa5442326b1df128d1d4f49638122b4010d63db4a",
+    "controls.c": "5fa2bb4134d8bf435bd5c372251fce0848db360579e7a0b2619373d76293170c",
+    "run.py": "fde57f37577308806a2e5f36fbe477e334dc3239cdcaffdb033978bc97ff74e3"
+  }
+}

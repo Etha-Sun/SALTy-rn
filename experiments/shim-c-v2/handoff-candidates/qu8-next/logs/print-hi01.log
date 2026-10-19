@@ -1,0 +1,217 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/environment-recovery-local/.build/install/bin/frama-c", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-machdep", "gcc_x86_64", "-wp", "-wp-par", "1", "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-no-strategy-engine", "-wp-cache", "none", "-wp-model", "Typed+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "none", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qu8-next/.build/print-hi01-session", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qu8-next/logs/print-hi01.json", "-wp-prop", "hi_prefix", "-wp-print", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qu8-next/.build/selected-diagnostic/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-candidates/qu8-next/.build/selected-diagnostic/integer.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Missing RTE guards
+------------------------------------------------------------
+  Function equivalent
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'hi_prefix' ("neon.c", line 72):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'hi_prefix' ("neon.c", line 72):
+Let x = to_uint64(1 + k_1).
+Let a = tmp_8_0.F10_lane.
+Let a_1 = a[k_1].
+Let x_1 = -batch_0.
+Let x_2 = total_0 - batch_0.
+Let x_3 = Mint_0
+            [shift_uint8(input_base_0,
+               to_uint64(k_1 + to_uint64(4 + to_uint64(x_2))))].
+Let a_2 = shiftfield_F33_xnn_qu8_f32_cvt_params_scalar(params_0).
+Let x_4 = Mint_1[shiftfield_F34_zero_point(a_2)].
+Let a_3 = vy_hi_0.F14_lane.
+Let a_4 = a_3[k_1].
+Let a_5 = shiftfield_F34_scale(a_2).
+Let a_6 = Mf32_0[a_5].
+Let a_7 = to_f32(real_of_int(a_1)).
+Let x_5 = Mint_0[shift_uint8(input_base_0, 4 + k_1 + total_0 - batch_0)].
+Let a_8 = before_mul2_0.F14_lane.
+Let a_9 = a_8[k_1].
+Let a_10 = vscale_0.F14_lane.
+Let a_11 = a_10[k_1].
+Let a_12 = vmulq_f32_0.F14_lane.
+Let a_13 = before_mul1_0.F14_lane.
+Let a_14 = tmp_6_0.F10_lane.
+Let a_15 = tmp_7_0.F5_lane.
+Let a_16 = tmp_4_0.F6_lane.
+Let a_17 = tmp_5_0.F5_lane.
+Let a_18 = tmp_3_0.F8_lane.
+Let a_19 = tmp_1_0.F3_lane.
+Let a_20 = tmp_2_0.F8_lane.
+Let a_21 = vminus_zero_point_0.F6_lane.
+Let a_22 = shift_float32(output_base_0, 0).
+Let a_23 = memcpy(Mf32_0, a_22, Mf32_undef_0, a_22, total_0).
+Let a_24 = shift_uint8(input_base_0, 0).
+Let a_25 = shift_float32(right_0, 0).
+Let x_6 = 7 + total_0.
+Assume {
+  Type: IsS10(tmp_6_0) /\ IsS10(tmp_8_0) /\ IsS3(tmp_1_0) /\ IsS5(tmp_5_0) /\
+      IsS5(tmp_7_0) /\ IsS6(tmp_4_0) /\ IsS6(vminus_zero_point_0) /\
+      IsS8(tmp_2_0) /\ IsS8(tmp_3_0) /\ is_uint64(batch_0) /\ is_uint64(k) /\
+      is_uint64(k_1) /\ is_uint64(total_0) /\ is_sint32(a_14[k]) /\
+      is_sint32(a_1) /\ is_sint32(x_4) /\ is_uint8(x_5) /\ is_uint8(x_3).
+  (* Heap *)
+  Type: (region(input_base_0.base) <= 0) /\
+      (region(output_base_0.base) <= 0) /\ (region(params_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ linked(Malloc_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x).
+  (* Pre-condition *)
+  Have: 0 < total_0.
+  (* Pre-condition *)
+  Have: total_0 <= 4611686018427387896.
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, a_24, x_6).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_22, total_0).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, a_25, total_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_22, total_0, a_25, total_0).
+  (* Pre-condition *)
+  Have: separated(a_22, total_0, a_24, x_6).
+  (* Pre-condition *)
+  Have: separated(a_22, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: separated(a_25, total_0, a_24, x_6).
+  (* Pre-condition *)
+  Have: separated(a_25, total_0, params_0, 2).
+  (* Pre-condition *)
+  Have: x_4 != (-2147483648).
+  (* Call '__FC_assert' *)
+  Have: a_24 != null.
+  (* Call '__FC_assert' *)
+  Have: a_22 != null.
+  (* Call 'vdupq_n_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_21[i_1] = to_sint16(-x_4)))).
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_10[i_1], a_6))).
+  (* Invariant *)
+  Have: P_same_float(a_6, a_6).
+  (* Invariant *)
+  Have: (0 <= batch_0) /\ (batch_0 <= total_0).
+  (* Invariant *)
+  Have: P_same_float(a_23[a_5], a_6).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> (((batch_0 + i_1) < total_0) ->
+      P_same_value(a_23[shift_float32(output_base_0, i_1)],
+        L_qcvt(Mint_0[shift_uint8(input_base_0, i_1)], x_4, a_6)))).
+  (* Then *)
+  Have: 8 <= batch_0.
+  (* Call 'vld1_u8' *)
+  Have: valid_rd(Malloc_0, shift_uint8(input_base_0, x_2), 8) /\
+      (forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+       (Mint_0[shift_uint8(input_base_0, total_0 + i_1 - batch_0)] =
+        a_19[i_1])))).
+  (* Call 'vreinterpretq_u16_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_20[i_1] = to_uint16(a_21[i_1])))).
+  (* Call 'vaddw_u8' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_18[i_1] = to_uint16(a_19[i_1] + a_20[i_1])))).
+  (* Call 'vreinterpretq_s16_u16' *)
+  Have: forall i_1 : Z. let a_26 = a_18[i_1] in ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_16[i_1] =
+       (if (a_26 <= 32767) then to_sint16(a_26)
+        else to_sint16(-1 - to_sint32(65535 - a_26)))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 7) ->
+      (a_16[i_1] =
+       L_centered(Mint_0[shift_uint8(input_base_0, total_0 + i_1 - batch_0)],
+         x_4)))).
+  (* Call 'vget_low_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_17[i_1] = a_16[i_1]))).
+  (* Call 'vmovl_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_14[i_1] = a_17[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_14[i_1] =
+       L_centered(Mint_0[shift_uint8(input_base_0, total_0 + i_1 - batch_0)],
+         x_4)))).
+  (* Call 'vget_high_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a_16[4 + i_1] = a_15[i_1]))).
+  (* Call 'vmovl_s16' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) -> (a[i_1] = a_15[i_1]))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      (a[i_1] =
+       L_centered(Mint_0
+                    [shift_uint8(input_base_0, 4 + total_0 + i_1 - batch_0)],
+         x_4)))).
+  (* Call 'vcvtq_f32_s32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_13[i_1], to_f32(real_of_int(a_14[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_13[i_1],
+        to_f32(real_of_int(L_centered(Mint_0
+                                        [shift_uint8(input_base_0, total_0
+                                           + i_1 - batch_0)], x_4)))))).
+  (* Call 'vcvtq_f32_s32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_8[i_1], to_f32(real_of_int(a[i_1]))))).
+  (* Assertion *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_float(a_8[i_1],
+        to_f32(real_of_int(L_centered(Mint_0
+                                        [shift_uint8(input_base_0, 4
+                                           + total_0 + i_1 - batch_0)], x_4)))))).
+  (* Call 'vmulq_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a_12[i_1], mul_f32(a_13[i_1], a_10[i_1])))).
+  (* Invariant *)
+  Have: (0 <= k) /\ (k <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k) ->
+      P_same_value(a_12[i_1],
+        L_qcvt(Mint_0[shift_uint8(input_base_0, total_0 + i_1 - batch_0)],
+          x_4, a_6)))).
+  (* Else *)
+  Have: 4 <= k.
+  (* Call 'vmulq_f32' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 <= 3) ->
+      P_same_value(a_3[i_1], mul_f32(a_8[i_1], a_10[i_1])))).
+  (* Invariant *)
+  Have: (0 <= k_1) /\ (k_1 <= 4).
+  (* Invariant 'hi_prefix' *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < k_1) ->
+      P_same_value(a_3[i_1],
+        L_qcvt(Mint_0[shift_uint8(input_base_0, 4 + total_0 + i_1 - batch_0)],
+          x_4, a_6)))).
+  (* Then *)
+  Have: k_1 <= 3.
+  (* Assertion *)
+  Have: P_same_float(a_9, a_7).
+  (* Assertion *)
+  Have: P_same_float(a_11, a_6).
+  (* Assertion *)
+  Have: P_same_value(a_4, mul_f32(a_9, a_11)).
+  (* Assertion *)
+  Have: a_1 = L_centered(x_5, x_4).
+  (* Call 'proof_mul_join' *)
+  Have: P_same_value(a_4, mul_f32(a_7, a_6)).
+  (* Call 'proof_qcvt_result' *)
+  Have: (a_1 = L_centered(x_3, x_4)) /\
+      P_same_value(a_4, L_qcvt(x_3, x_4, a_6)).
+  (* Invariant *)
+  Have: x <= 4.
+}
+Prove: P_same_value(a_3[i],
+         L_qcvt(Mint_0[shift_uint8(input_base_0, 4 + i + total_0 - batch_0)],
+           x_4, a_6)).
+
+------------------------------------------------------------

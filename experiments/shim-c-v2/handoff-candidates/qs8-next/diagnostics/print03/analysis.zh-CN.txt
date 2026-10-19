@@ -1,0 +1,9 @@
+无solver定点目标打印成功，12.34秒，exit=0；不构成VC通过。
+
+diag_tail2：目标 P_same_value(vy_lo.lane[i], qcvt(input_base[done+i], zp, scale))。上下文合并 batch&4 两分支，分支分别将 vy 关联低半或高半乘法结果，并给出 done 的 uint64 更新；vget_low_f32 仅给出 same_float 复制。因此需要显式 vy-to-done 重绑定与逐点 same_float/same_value 传递。
+
+diag_tail1：目标等价但索引为0。上下文再合并 batch&2 两分支，存在 done=to_uint64(done_old+2) 与 vget_high 的 vy.lane[2+i]。低半分支此前 tail2 量词可用；高半需要明确原 vy lane2 与新 done 关联。
+
+diag_centered：上下文已给出 zero_point != INT32_MIN；load 的 lane 与输入相等、sign-extend 与lane相等、sub 的 wrap16/to_uint64/to_sint16 链。目标是当前 lane == centered(input[index], zero_point)。本质是量词实例化和16位模运算组合，没有证据说明缺少输入合法域。
+
+qs8-next候选分解前两组关系；当前并未修改RVV。下一步对候选10个具名新assert和原tail2/tail1定点solver诊断，再决定完整运行。
