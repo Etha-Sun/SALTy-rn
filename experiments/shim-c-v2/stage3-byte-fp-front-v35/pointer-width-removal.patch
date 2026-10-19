@@ -1,0 +1,43 @@
+--- a/src/plugins/wp/MemBytes.ml
++++ b/src/plugins/wp/MemBytes.ml
+@@ -646,19 +646,8 @@
+             l_cluster = cluster_globals () ;
+           }
+ 
+-      (* Specializes the lemma in Pointers below for globals *)
+-      let pointer_type prefix base =
+-        let name = prefix ^ "_is_pointer" in
+-        let typed =
+-          MemAddr.in_uintptr_range (MemAddr.global base)
+-        in
+-        Definitions.define_lemma {
+-          l_kind = Admit ;
+-          l_name = name ;
+-          l_triggers = [] ; l_forall = [] ;
+-          l_lemma = typed ;
+-          l_cluster = cluster_globals () ;
+-        }
++      (* No non-definitional pointer-width assumption is generated. *)
++      let pointer_type _prefix _base = ()
+ 
+       let compile vi =
+         let result = Logic.Int in
+@@ -886,15 +875,9 @@
+       type key = unit
+       type data = Lang.lfun
+ 
+-      let ranges () =
+-        let a = Lang.freshvar ~basename:"a" MemAddr.t_addr in
+-        let prop = MemAddr.in_uintptr_range (e_var a) in
+-        Definitions.define_lemma {
+-          l_kind = Admit ; l_name = "pointers_int_range" ;
+-          l_triggers = [] ; l_forall = [a] ;
+-          l_cluster = pointer_cluster () ;
+-          l_lemma = prop ;
+-        }
++      (* An unbounded static-base offset space cannot inject into uint64.
++         Removing this admitted range strengthens all affected VCs. *)
++      let ranges () = ()
+ 
+       let compile () =
+         let lfun = Lang.generated_p "framed" in

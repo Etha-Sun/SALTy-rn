@@ -1,0 +1,107 @@
+[
+  {
+    "assertion": "(assert (= (int_of_addr null) 0))",
+    "occurrences": 401,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/08cca95a3ed53843a0fec8b912056174bde837fc864676148c322b621fbd94f5-3n6lqvhh/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (forall ((p addr))\n    (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))))",
+    "occurrences": 401,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/08cca95a3ed53843a0fec8b912056174bde837fc864676148c322b621fbd94f5-3n6lqvhh/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (forall ((m (Array Int (Array Int Int))))\n    (=\n      (framed m)\n      (forall ((a addr))\n        (=>\n          (<= (region (base a)) 0)\n          (<= (region (base (addr_of_int (read_uint64 m a)))) 0))))))",
+    "occurrences": 355,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/08cca95a3ed53843a0fec8b912056174bde837fc864676148c322b621fbd94f5-3n6lqvhh/original.smt2"
+  },
+  {
+    "assertion": "(assert (= (addr_of_int (int_of_addr a)) a))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/660e9abb84db50d4a8434d64998efe393d21db85f146ab44dfb4a89bd7884cf2-054lii27/original.smt2"
+  },
+  {
+    "assertion": "(assert (is_uint64 (mod1 (+ (int_of_addr a) (* 4 i1)) 18446744073709551616)))",
+    "occurrences": 4,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/660e9abb84db50d4a8434d64998efe393d21db85f146ab44dfb4a89bd7884cf2-054lii27/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= (+ (int_of_addr a) (* 4 i1)) 18446744073709551615)\n    (= (mod1 (+ (int_of_addr a) (* 4 i1)) 18446744073709551616) (+ (int_of_addr\n                                                                    a) (* 4 \n    i1)))))",
+    "occurrences": 4,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/660e9abb84db50d4a8434d64998efe393d21db85f146ab44dfb4a89bd7884cf2-054lii27/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= 18446744073709551616 (+ (int_of_addr a) (* 4 i1)))\n    (= (+ 18446744073709551616 (mod1\n                                 (+ (int_of_addr a) (* 4 i1))\n                                 18446744073709551616)) (+ (int_of_addr a) (* 4 \n    i1)))))",
+    "occurrences": 4,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/660e9abb84db50d4a8434d64998efe393d21db85f146ab44dfb4a89bd7884cf2-054lii27/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (not\n  (= (addr_of_int (mod1 (+ (int_of_addr a) (* 4 i1)) 18446744073709551616)) \n  (shift_float32\n    a\n    i1))))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/660e9abb84db50d4a8434d64998efe393d21db85f146ab44dfb4a89bd7884cf2-054lii27/original.smt2"
+  },
+  {
+    "assertion": "(assert (is_uint64 (int_of_addr a)))",
+    "occurrences": 4,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/ca0eb49e5d3b34fa8655861193aacf80302f15d052a18515709d9160a4846be8-1qwlcmyd/original.smt2"
+  },
+  {
+    "assertion": "(assert (is_uint64 (mod1 (int_of_addr a) 18446744073709551616)))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/ca0eb49e5d3b34fa8655861193aacf80302f15d052a18515709d9160a4846be8-1qwlcmyd/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= (int_of_addr a) 18446744073709551615)\n    (= (mod1 (int_of_addr a) 18446744073709551616) (int_of_addr a))))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/ca0eb49e5d3b34fa8655861193aacf80302f15d052a18515709d9160a4846be8-1qwlcmyd/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= 18446744073709551616 (int_of_addr a))\n    (= (+ 18446744073709551616 (mod1 (int_of_addr a) 18446744073709551616)) \n    (int_of_addr\n      a))))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/ca0eb49e5d3b34fa8655861193aacf80302f15d052a18515709d9160a4846be8-1qwlcmyd/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (not (= (addr_of_int (mod1 (int_of_addr a) 18446744073709551616)) a)))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/ca0eb49e5d3b34fa8655861193aacf80302f15d052a18515709d9160a4846be8-1qwlcmyd/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (not (= (addr_of_int (int_of_addr a)) a)))",
+    "occurrences": 4,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/dda4191da7164632b3fcf196beb7542cbf489c263d0cc2158132a4409f85d431-lxocm_vq/original.smt2"
+  },
+  {
+    "assertion": "(assert (is_uint64 (mod1 (+ 4 (int_of_addr a)) 18446744073709551616)))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/efae57bd03290db05796ef79484656dbe9d23efd0ce8092c11ac0a6f0b43f1ae-77hsrmvl/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= (int_of_addr a) 18446744073709551611)\n    (= (mod1 (+ 4 (int_of_addr a)) 18446744073709551616) (+ 4 (int_of_addr a)))))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/efae57bd03290db05796ef79484656dbe9d23efd0ce8092c11ac0a6f0b43f1ae-77hsrmvl/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= 18446744073709551612 (int_of_addr a))\n    (= (+ 18446744073709551612 (mod1\n                                 (+ 4 (int_of_addr a))\n                                 18446744073709551616)) (int_of_addr a))))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/efae57bd03290db05796ef79484656dbe9d23efd0ce8092c11ac0a6f0b43f1ae-77hsrmvl/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (not\n  (= (addr_of_int (mod1 (+ 4 (int_of_addr a)) 18446744073709551616)) \n  (shift_float32\n    a\n    2))))",
+    "occurrences": 2,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/z3-adapter-evidence/efae57bd03290db05796ef79484656dbe9d23efd0ce8092c11ac0a6f0b43f1ae-77hsrmvl/original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (is_uint64\n    (mod1 (+ (int_of_addr a) (to_uint64 (* 4 i1))) 18446744073709551616)))",
+    "occurrences": 1,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/adapter-evidence/b9bee6c151ce97d9f6681a42f243acab8e7a4a3afe4da7e49c57b1a19a388b7e-0ow0o9xk/b9bee6c151ce97d9f6681a42f243acab8e7a4a3afe4da7e49c57b1a19a388b7e.original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= (+ (int_of_addr a) (to_uint64 (* 4 i1))) 18446744073709551615)\n    (= (mod1 (+ (int_of_addr a) (to_uint64 (* 4 i1))) 18446744073709551616) (+ \n    (int_of_addr\n      a) (to_uint64 (* 4 i1))))))",
+    "occurrences": 1,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/adapter-evidence/b9bee6c151ce97d9f6681a42f243acab8e7a4a3afe4da7e49c57b1a19a388b7e-0ow0o9xk/b9bee6c151ce97d9f6681a42f243acab8e7a4a3afe4da7e49c57b1a19a388b7e.original.smt2"
+  },
+  {
+    "assertion": "(assert\n  (=>\n    (<= 18446744073709551616 (+ (int_of_addr a) (to_uint64 (* 4 i1))))\n    (= (+ 18446744073709551616 (mod1\n                                 (+ (int_of_addr a) (to_uint64 (* 4 i1)))\n                                 18446744073709551616)) (+ (int_of_addr a) \n    (to_uint64\n      (* 4 i1))))))",
+    "occurrences": 1,
+    "example": "experiments/shim-c-v2/stage3-byte-fp-front-v35/qualification01/adapter-evidence/b9bee6c151ce97d9f6681a42f243acab8e7a4a3afe4da7e49c57b1a19a388b7e-0ow0o9xk/b9bee6c151ce97d9f6681a42f243acab8e7a4a3afe4da7e49c57b1a19a388b7e.original.smt2"
+  }
+]

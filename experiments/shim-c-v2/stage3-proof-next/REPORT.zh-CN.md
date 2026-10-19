@@ -1,5 +1,33 @@
 # 第三阶段九项：后续 proof 与独立审核
 
+## 最新阶段记录（ROOT09）
+
+仍只处理原九项，新增整核 **0/9**，无真实 kernel 反例；不 push，冻结实现/spec/旧锁/manifest 保持。
+
+- Argmax41 新补两个实际 uint32 helper 的合同、前后缀不变量与精确32位取反，完整 body **40/40**；同候选全部可达辅助函数 **172/181**，剩九项均为 vbslq_f32 三次 memcpy 的有效性/分离。38、39 两次完整尝试均2400秒超时且无最终 raw。39库存855项非CFG body、另5个global和34项CFG；41短预算全body汇报仍在跑，不能拼接局部验收。
+- DW34 caller **14/20**；35四个显式 ghost 读取有效性全部通过（含frame组为4/8）。36通过 checked forall 实例化到3/4，37修正inclusive边界匹配后四lane frame **4/4**。早先 distinct-base/copy-frame 仍未证，不能把有未证前件的lane结果算依赖闭合。
+- GEMM88展开next_read并对真实最后一次临时copy做checked havoc：Unassigned子支通过，Assigned freshness未证，总目标仍 **0/1**。纠正早先只看首个不变量的判断：VC中第二个read_w不变量已位于八次accumulator havoc之后。87的auto-depth1未执行子策略，不是发现反例。
+- 独立inline-Pre最小正反控制：Pre及显式entry-label都通过，false未过；没有重现疑似标签工具错误，不据此改kernel。
+- Byte34严格已知例 **556/571**、complete=false；且因地址层审计拒绝其资格。独立native35已删两处旧全称位宽Admit，六组语义控制均只剩预设负post；地址 **39/45**仍含四个真目标未证，严格已知例复验在跑，仍 **UNQUALIFIED**，没有用于九项。
+- 地址审计扫描472个原SMT，无被删除range名称。两个真实指针正目标在补入两条既有全称假设的准确实例后SMT为UNSAT，仅为量词诊断，未算Frama-C验收；非零步进桥和ground uint64类型事实来源仍需审计。
+- audit30检查 **177候选、30169锁条目**，无新增requires/公共spec变化。逐项run/SHA见 `PROGRESS-ROOT09.json`。下列记录保留历史，不能当最新状态。
+
+ROOT08 地址层审计更新：`stage3-proof-next/root-review/byte-address-audit01/AUDIT.json` 确认旧Byte原型继承的全称地址位宽Admit与无界offset静态逆关系冲突。Byte1..34均不能qualified，即使strict已知例全过也不例外；这些版本从未用于九项验收。保留原模型/锁/日志，独立native35仅删除这两处非定义型位宽假设并重新构建、控制。Typed既有验证不使用这些Byte事实。
+
+## 最新阶段记录（ROOT08）
+
+仅原九项，新增整核仍 **0/9**；不 push，冻结实现/spec/旧锁和 manifest 不变。
+
+- GEMM80 第二轮 source **4/4**；81 将匹配顺序改为先绑定目标端点、再 checked unfold 已有 FMA 关系，四 lane 结果组 **8/8**。82 六条旧内存保持目标 600 秒超时、无 raw。83 合并策略后整组复验，84另查两侧原 read_w 不变量；85/86分别尝试实际局部对象分离和入口有效性，全部新断言都是待证义务。
+- Argmax36 新入口关系和四条变量保持断言全过，组 **14/15**；仍未证 root32_before_merges 的 pointer 子式。37对已有等式做 checked rewrite。33完整 equivalent 尝试1200秒无raw，保留失败，不能按局部成绩验收。
+- DW31 四旧 caller 仍 **0/4**；32新无参数 ghost helper 的共同右端 ext 关系真实 body **2/2**，无新 requires/内存读取；四旧 caller 与 checked lane split 继续验证。
+- SPMM 定位到旧 Typed 地址编码缺少 uint64 归一化往返桥，单纯增加求解时间不能补齐理论；未加公理、未改 target，也未宣称 kernel 错误。
+- Byte34完整 v7 已知例复验还在运行，仍未qualified，未用于九项。audit26检查164候选和30169锁条目，未增公共合同前提；后续候选另审。精确结果/SHA见 PROGRESS-ROOT08.json，局部结果不得拼接为整核通过。
+
+ROOT08 后续：84 read_w不变量720秒无raw；85实际局部对象分离 **0/6**，不能推出隐藏临时对象分离。DW32 caller720秒无raw；33实际新增有body的单lane helper、4次有guard的ghost读取和8个cut，新增读取RTE仍须检查。Argmax37仍14/15；38继续仅重写已证的base/channel等式。原失败全部保留，不计整核通过。
+
+ROOT08 新完成：Argmax38同一候选 **15/15**，已证入口/四frame和原索引关系全部闭合；仅 checked rewrite，无新前提。正在完整验证真实内联u32调用及其他可达函数体。DW33两helper **4/4**，caller与新增读取RTE仍待验。GEMM83扩大组1200秒无raw。native35仅删除两处地址位宽Admit，独立源码构建/observer构建完成，实验锁44574项，SHA 523fdb2277320314738995b9a6030f1c3ee24b0584bb27a55b1dab17d8e0056d；重新控制中、未qualified。
+
 ## 最新阶段记录（ROOT07）
 
 原九项新增整核仍 **0/9**，未 push；冻结原 C/token/spec 和旧模型/锁保持，manifest 不变。

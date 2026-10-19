@@ -1,3 +1,11 @@
+最新 ROOT09：先读 experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT09.json 和 REPORT 顶部。原九项新增整核0/9、不push。Argmax41 两整数helper完整40/40、全部可达callee172/181，剩九个float memcpy；38/39 full各2400秒无raw，41完整body短预算汇报在跑。DW37四lane frame4/4，但distinct-base/copy-frame前件未证；GEMM88 actual最后copy的Unassigned过、Assigned freshness未过，总0/1。inline-Pre正反控制未重现工具错误。Byte34 strict556/571且因地址审计拒绝；独立35六组控制仅预设负例，地址仍四真目标未证，strict运行、UNQUALIFIED未用于九项。audit30为177候选/30169锁条目，冻结C/spec/manifest/旧锁保持。下面保留历史。
+
+ROOT08 新完成：Argmax38同一候选 **15/15**，已证入口/四frame和原索引关系全部闭合；仅 checked rewrite，无新前提。正在完整验证真实内联u32调用及其他可达函数体。DW33两helper **4/4**，caller与新增读取RTE仍待验。GEMM83扩大组1200秒无raw。native35仅删除两处地址位宽Admit，独立源码构建/observer构建完成，实验锁44574项，SHA 523fdb2277320314738995b9a6030f1c3ee24b0584bb27a55b1dab17d8e0056d；重新控制中、未qualified。
+
+ROOT08 地址层审计更新：`stage3-proof-next/root-review/byte-address-audit01/AUDIT.json` 确认旧Byte原型继承的全称地址位宽Admit与无界offset静态逆关系冲突。Byte1..34均不能qualified，即使strict已知例全过也不例外；这些版本从未用于九项验收。保留原模型/锁/日志，独立native35仅删除这两处非定义型位宽假设并重新构建、控制。Typed既有验证不使用这些Byte事实。
+
+最新 ROOT08：先读 experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT08.json 与 REPORT 顶部。GEMM80 source4/4、81 after8/8，82六frame预算600秒无raw；合并83及入口/分离候选继续。Argmax36为14/15，新frame全过、原pointer子式未过；DW32 helper2/2，caller仍需验。SPMM缺旧Typed的uint64地址往返桥，未加公理。Byte34严格571复验仍运行、未qualified；整核0/9，原C/spec/manifest/旧锁不变，禁止push。下列旧阶段记录保留。
+
 最新ROOT07：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT07.json` 与 REPORT 顶部。仅原九项，新增整核0/9、禁止push。GEMM74真实高load lane0为7/7且helper2/2；76八lane扩大48/56，四second-source与四after1仍未证，库存1483+40 CFG；可达callee373/378，五个canonical_nan/bit-memcpy桥债保留。Argmax34 focus9/10，checked split确认仅索引指针子式未过；33完整调用闭包/35过滤策略仍运行。Byte34六组控制、observer比较均符合预期，store46/46及主程序五目标5/5；正式v7已知例3600秒独立复验已启动，仍未qualified，旧锁/manifest不改。以实际run结果为准，未完成/局部均不算整核。下面保留历史。
 
 最新ROOT06：先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT06.json` 和 REPORT 顶部。GEMM71 bias组38/38、完整库存1453；新增6个ghost读取RTE及高四路FMA扩大组待验，72继续前移真实高weight的load关系。DW2d root30完整1655，worker240秒/root480秒均超时无raw。Byte30 codec482/488（六个预期负post）、真实store45/46；31加入已证generic memcpy body20/20+trigger1和算术2/2，store仍45/46，未qualified。Byte27正式v7已知vadd1800秒超时无raw，不算通过。所有Byte版本未用于九项验收。新增整核仍0/9，原C/spec/旧锁/manifest保持，禁止push。以下计数保留历史。

@@ -1,0 +1,15 @@
+{
+  "time_utc": "2026-10-19T17:59:54.413423+00:00",
+  "qualified": false,
+  "blocks_all_byte_versions_through": 34,
+  "source_sha256": {
+    "experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/source/src/plugins/wp/MemBytes.ml": "fac0db714e92cd55a70e3c6215e9e482eb1a6357695dac50cb97b8709eea9693",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/source/src/plugins/wp/MemAddr.ml": "49ea01babc875c9a35f6c42506551bde0e8094f3e40e21325813986da81975e3",
+    "experiments/shim-c-v2/stage3-byte-fp-front-v34/wp-share/why3/frama_c_wp/memaddr.mlw": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f"
+  },
+  "finding": "MemBytes.PointersProperties.ranges injects via l_kind=Admit the forall-address implication static_alloc(base(a)) => uint64_range(int_of_addr(a)). Existing addr_of_int_bijection applies to all integer offsets of a static base. Together they require an injection from infinitely many addresses into a finite 2^64 set.",
+  "not_kernel_counterexample": true,
+  "strict_known_case_cannot_override_this_audit": true,
+  "required_fix": "Independent source version removes non-definitional pointer-width injections, preserves all old sources/locks/logs, exports actual VCs, reruns controls and strict known case; pointer byte roundtrip debts may remain.",
+  "old_known_results": "Byte results are experimental under this inconsistent pointer theory; no Byte model adopted by any of original nine kernels. Existing qualified Typed models have not received the range assumption."
+}

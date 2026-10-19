@@ -1,0 +1,2794 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8,vld1q_u32,vdupq_n_u32,vst1q_u32,vget_low_u32,vget_high_u32,vst1_u32,vst1_lane_u32", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8,vld1q_u32,vdupq_n_u32,vst1q_u32,vget_low_u32,vget_high_u32,vst1_u32,vst1_lane_u32", "-wp", "-wp-rte", "-wp-par", "2", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-debug", "1", "-wp-msg-key", "strategy,script:allgoals", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root39/logs/callees-root01-session", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root39/logs/callees-root01.json", "-wp-fct", "__riscv_vle32_v_f32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vse32_v_f32m8,__riscv_vsetvl_e32m8,next_arg_seed,next_arg_step,next_arg_sub,root32_index_step,vaddq_u32,vbslq_f32,vbslq_u32,vcgtq_f32,vget_high_f32,vget_low_f32,vld1q_f32,vst1_f32,vst1_lane_f32,vst1q_f32", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root39/.build/guard01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root39/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vcgtq_f32
+[rte:annot] annotating function vbslq_u32
+[rte:annot] annotating function vbslq_f32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function root32_index_step
+[rte:annot] annotating function next_arg_seed
+[rte:annot] annotating function next_arg_step
+[rte:annot] annotating function next_arg_sub
+[wp] quantized.c:3: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [100 goals...]
+[wp] fp_masks.c:11: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:13: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] 159 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 3) in 'vld1q_f32':
+  Let a = global(L_r_6266).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+  Let a_2 = shiftfield_F5_lane(a).
+  Let a_3 = Mptr_0[global(P_p_6262)].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 3).
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a_3, 0), 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_1[shift_float32(a_2, i_1)], a_1[shift_float32(a_3, i_1)]))).
+    (* Else *)
+    Have: 4 <= v.
+  }
+  Prove: P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory.c", line 5):
+  Let a = Mptr_0[global(P_p_6262)].
+  Let a_1 = global(L_r_6266).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 4).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a, 0), 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(shiftfield_F5_lane(a_1), i)],
+          a_2[shift_float32(a, i)]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0[P_p_6262 <- 1][L_r_6266 <- 4][L_i_6267 <- 1],
+            shift_float32(a, v), 1).
+  }
+  Prove: to_uint64(1 + v) <= 4.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory.c", line 5):
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6262)].
+  Let a_1 = shift_float32(a, v).
+  Let a_2 = global(L_r_6266).
+  Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, 4).
+  Let a_4 = shiftfield_F5_lane(a_2).
+  Let a_5 = a_3[shift_float32(a_4, v) <- a_3[a_1]].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a, 0), 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_3[shift_float32(a_4, i_1)], a_3[shift_float32(a, i_1)]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0[P_p_6262 <- 1][L_r_6266 <- 4][L_i_6267 <- 1], a_1,
+            1).
+    (* Invariant *)
+    Have: x <= 4.
+  }
+  Prove: P_ext_same(a_5[shift_float32(a_4, i)], a_5[shift_float32(a, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory.c", line 6):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,mem_access' ("fp_memory.c", line 6):
+  Let a = global(L_r_6266).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+  Let a_2 = Mptr_0[global(P_p_6262)].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a_2, 0), 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_1[shift_float32(shiftfield_F5_lane(a), i)],
+          a_1[shift_float32(a_2, i)]))).
+    (* Then *)
+    Have: v <= 3.
+  }
+  Prove: valid_rd(Malloc_0[P_p_6262 <- 1][L_r_6266 <- 4][L_i_6267 <- 1],
+           shift_float32(a_2, v), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_memory.c", line 5) (2/2):
+  Effect at line 6
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'vld1q_f32':
+  Effect at line 6
+  Assume {
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(Mptr_0[global(P_p_6262)], 0), 4).
+  }
+  Prove: invalid(Malloc_0, global(L_i_6267), 1) /\
+      invalid(Malloc_0, global(L_r_6266), 4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_memory.c", line 6):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_memory.c", line 6):
+  Let x = to_uint64(1 + v).
+  Let a = global(L_r_6266).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 4).
+  Let a_2 = shiftfield_F5_lane(a).
+  Let a_3 = Mptr_0[global(P_p_6262)].
+  Let a_4 = shift_float32(a_3, v).
+  Let a_5 = a_1[shift_float32(a_2, v) <- a_1[a_4]].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a_3, 0), 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0[P_p_6262 <- 1][L_r_6266 <- 4][L_i_6267 <- 1], a_4,
+            1).
+    (* Invariant *)
+    Have: x <= 4.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        P_ext_same(a_5[shift_float32(a_2, i)], a_5[shift_float32(a_3, i)]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 27) in 'vst1q_f32':
+  Let a = Mptr_0[global(P_p_6307)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 4).
+  Let a_3 = shiftfield_F5_lane(global(P_v_6308)).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 3).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_2[shift_float32(a, i_1)], a_2[shift_float32(a_3, i_1)]))).
+    (* Else *)
+    Have: 4 <= v.
+  }
+  Prove: P_ext_same(a_2[shift_float32(a, i)], Mf32_0[shift_float32(a_3, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory.c", line 28):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory.c", line 28):
+  Let a = Mptr_0[global(P_p_6307)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 4).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)],
+          a_2[shift_float32(shiftfield_F5_lane(global(P_v_6308)), i)]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6307 <- 1][P_v_6308 <- 4][L_i_6314 <- 1],
+            shift_float32(a, v), 1).
+  }
+  Prove: to_uint64(1 + v) <= 4.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory.c", line 28):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory.c", line 28):
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6307)].
+  Let a_1 = shift_float32(a, v).
+  Let a_2 = shift_float32(a, 0).
+  Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, 4).
+  Let a_4 = shiftfield_F5_lane(global(P_v_6308)).
+  Let a_5 = a_3[a_1 <- a_3[shift_float32(a_4, v)]].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_2, 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_3[shift_float32(a, i_1)], a_3[shift_float32(a_4, i_1)]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6307 <- 1][P_v_6308 <- 4][L_i_6314 <- 1], a_1,
+            1).
+    (* Invariant *)
+    Have: x <= 4.
+  }
+  Prove: P_ext_same(a_5[shift_float32(a, i)], a_5[shift_float32(a_4, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory.c", line 29):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,mem_access' ("fp_memory.c", line 29):
+  Let a = Mptr_0[global(P_p_6307)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 4).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)],
+          a_2[shift_float32(shiftfield_F5_lane(global(P_v_6308)), i)]))).
+    (* Then *)
+    Have: v <= 3.
+  }
+  Prove: valid_rw(Malloc_0[P_p_6307 <- 1][P_v_6308 <- 4][L_i_6314 <- 1],
+           shift_float32(a, v), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_memory.c", line 28) (2/2):
+  Effect at line 29
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns ("fp_memory.c", line 27) in 'vst1q_f32':
+  Effect at line 29
+  Let a = shift_float32(Mptr_0[global(P_p_6307)], 0).
+  Let a_1 = global(L_i_6314).
+  Assume {
+    Have: !invalid(Malloc_0, a_1, 1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a, 4).
+  }
+  Prove: included(a_1, 1, a, 4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_memory.c", line 29):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_memory.c", line 29):
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6307)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 4).
+  Let a_3 = shift_float32(a, v).
+  Let a_4 = shiftfield_F5_lane(global(P_v_6308)).
+  Let a_5 = a_2[a_3 <- a_2[shift_float32(a_4, v)]].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 4).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)], a_2[shift_float32(a_4, i)]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6307 <- 1][P_v_6308 <- 4][L_i_6314 <- 1], a_3,
+            1).
+    (* Invariant *)
+    Have: x <= 4.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        P_ext_same(a_5[shift_float32(a, i)], a_5[shift_float32(a_4, i)]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 31) in 'vst1_f32':
+  Let a = Mptr_0[global(P_p_6321)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 2).
+  Let a_3 = shiftfield_F4_lane(global(P_v_6322)).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 1).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 2).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 2).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_2[shift_float32(a, i_1)], a_2[shift_float32(a_3, i_1)]))).
+    (* Else *)
+    Have: 2 <= v.
+  }
+  Prove: P_ext_same(a_2[shift_float32(a, i)], Mf32_0[shift_float32(a_3, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory.c", line 32):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory.c", line 32):
+  Let a = Mptr_0[global(P_p_6321)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 2).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 2).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 2).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)],
+          a_2[shift_float32(shiftfield_F4_lane(global(P_v_6322)), i)]))).
+    (* Then *)
+    Have: v <= 1.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6321 <- 1][P_v_6322 <- 2][L_i_6328 <- 1],
+            shift_float32(a, v), 1).
+  }
+  Prove: to_uint64(1 + v) <= 2.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory.c", line 32):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory.c", line 32):
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6321)].
+  Let a_1 = shift_float32(a, v).
+  Let a_2 = shift_float32(a, 0).
+  Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, 2).
+  Let a_4 = shiftfield_F4_lane(global(P_v_6322)).
+  Let a_5 = a_3[a_1 <- a_3[shift_float32(a_4, v)]].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_2, 2).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 2).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_3[shift_float32(a, i_1)], a_3[shift_float32(a_4, i_1)]))).
+    (* Then *)
+    Have: v <= 1.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6321 <- 1][P_v_6322 <- 2][L_i_6328 <- 1], a_1,
+            1).
+    (* Invariant *)
+    Have: x <= 2.
+  }
+  Prove: P_ext_same(a_5[shift_float32(a, i)], a_5[shift_float32(a_4, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory.c", line 33):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,mem_access' ("fp_memory.c", line 33):
+  Let a = Mptr_0[global(P_p_6321)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 2).
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 2).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 2).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)],
+          a_2[shift_float32(shiftfield_F4_lane(global(P_v_6322)), i)]))).
+    (* Then *)
+    Have: v <= 1.
+  }
+  Prove: valid_rw(Malloc_0[P_p_6321 <- 1][P_v_6322 <- 2][L_i_6328 <- 1],
+           shift_float32(a, v), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_memory.c", line 32) (2/2):
+  Effect at line 33
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns ("fp_memory.c", line 31) in 'vst1_f32':
+  Effect at line 33
+  Let a = shift_float32(Mptr_0[global(P_p_6321)], 0).
+  Let a_1 = global(L_i_6328).
+  Assume {
+    Have: !invalid(Malloc_0, a_1, 1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a, 2).
+  }
+  Prove: included(a_1, 1, a, 2).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_memory.c", line 33):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_memory.c", line 33):
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6321)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 2).
+  Let a_3 = shift_float32(a, v).
+  Let a_4 = shiftfield_F4_lane(global(P_v_6322)).
+  Let a_5 = a_2[a_3 <- a_2[shift_float32(a_4, v)]].
+  Assume {
+    Type: is_uint64(v).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, 2).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 2).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)], a_2[shift_float32(a_4, i)]))).
+    (* Then *)
+    Have: v <= 1.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6321 <- 1][P_v_6322 <- 2][L_i_6328 <- 1], a_3,
+            1).
+    (* Invariant *)
+    Have: x <= 2.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        P_ext_same(a_5[shift_float32(a, i)], a_5[shift_float32(a_4, i)]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 35) in 'vst1_lane_f32':
+  Let a = Mptr_0[global(P_p_6336)].
+  Let x = Mint_0[global(P_lane_6338)].
+  Let a_1 = Mf32_0[shift_float32(shiftfield_F4_lane(global(P_v_6337)), x)].
+  Assume {
+    Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a, 1).
+    (* Pre-condition *)
+    Have: (0 <= x) /\ (x <= 1).
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6336 <- 1][P_v_6337 <- 2][P_lane_6338 <- 1], a,
+            1).
+  }
+  Prove: P_ext_same(a_1, a_1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory.c", line 36):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory.c", line 36):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,mem_access' ("fp_memory.c", line 36):
+  Let x = Mint_0[global(P_lane_6338)].
+  Let a = Mptr_0[global(P_p_6336)].
+  Assume {
+    Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a, 1).
+    (* Pre-condition *)
+    Have: (0 <= x) /\ (x <= 1).
+  }
+  Prove: valid_rw(Malloc_0[P_p_6336 <- 1][P_v_6337 <- 2][P_lane_6338 <- 1], a,
+           1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns ("fp_memory.c", line 35) in 'vst1_lane_f32':
+  Effect at line 36
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 38) in 'vget_low_f32':
+  Let a = shiftfield_F5_lane(global(P_v_6345)).
+  Let a_1 = shiftfield_F4_lane(global(L_r_6350)).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 1).
+    (* Initializer *)
+    Init: Mf32_0[shift_float32(a, 0)] = Mf32_0[shift_float32(a_1, 0)].
+    (* Initializer *)
+    Init: Mf32_0[shift_float32(a, 1)] = Mf32_0[shift_float32(a_1, 1)].
+  }
+  Prove: P_ext_same(Mf32_0[shift_float32(a_1, i)], Mf32_0[shift_float32(a, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 41) in 'vget_high_f32':
+  Let a = shiftfield_F5_lane(global(P_v_6353)).
+  Let a_1 = shiftfield_F4_lane(global(L_r_6358)).
+  Assume {
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 1).
+    (* Initializer *)
+    Init: Mf32_0[shift_float32(a, 2)] = Mf32_0[shift_float32(a_1, 0)].
+    (* Initializer *)
+    Init: Mf32_0[shift_float32(a, 3)] = Mf32_0[shift_float32(a_1, 1)].
+  }
+  Prove: P_ext_same(Mf32_0[shift_float32(a_1, i)],
+           Mf32_0[shift_float32(a, 2 + i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Termination-condition (generated by kernel from "quantized.c", line 3) in 'vaddq_u32':
+  Loop termination at line 3
+  Prove: false.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 3):
+  Let x = Mint_0[global(L_i_6574)].
+  Assume {
+    Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+    (* Then *)
+    Have: x <= 3.
+  }
+  Prove: 0 <= x.
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vaddq_u32_terminates (Qed 3ms) (Z3)
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 3):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 3):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 3):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("quantized.c", line 3):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_masks.c", line 3) in 'vcgtq_f32':
+  Let a = global(L_r_6749).
+  Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, 4).
+  Let a_2 = shiftfield_F9_lane(a).
+  Let a_3 = shiftfield_F5_lane(global(P_b_6743)).
+  Let a_4 = shiftfield_F5_lane(global(P_a_6742)).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_uint32_chunk(a_1).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 3).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        (a_1[shift_uint32(a_2, i_1)] =
+         (if lt_f32b(Mf32_0[shift_float32(a_3, i_1)],
+               Mf32_0[shift_float32(a_4, i_1)]) then 4294967295 else 0)))).
+    (* Else *)
+    Have: 4 <= v.
+  }
+  Prove: a_1[shift_uint32(a_2, i)] =
+      (if lt_f32b(Mf32_0[shift_float32(a_3, i)], Mf32_0[shift_float32(a_4, i)])
+       then 4294967295 else 0).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vaddq_u32_assert_rte_index_bound (Qed 4ms) (Z3)
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks.c", line 4):
+  Let a = shiftfield_F5_lane(global(P_b_6743)).
+  Let a_1 = shiftfield_F5_lane(global(P_a_6742)).
+  Let a_2 = global(L_r_6749).
+  Let a_3 = memcpy(Mint_3, a_2, Mint_undef_0, a_2, 4).
+  Let a_4 = shiftfield_F9_lane(a_2).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_uint32_chunk(Mint_1) /\
+        is_uint32_chunk(Mint_2) /\ is_uint32_chunk(Mint_3) /\ is_sint32(v) /\
+        is_sint32(1 + v) /\ is_uint32_chunk(a_3).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= v).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        (a_3[shift_uint32(a_4, i_1)] =
+         (if lt_f32b(Mf32_0[shift_float32(a, i_1)],
+               Mf32_0[shift_float32(a_1, i_1)]) then 4294967295 else 0)))).
+    (* Then *)
+    Have: v <= 3.
+    If lt_f32(Mf32_0[shift_float32(a, v)], Mf32_0[shift_float32(a_1, v)])
+    Then {
+      Have: a_3 = Mint_1.
+      Have: Mint_1[shift_uint32(a_4, v) <- 4294967295] = Mint_0.
+    }
+    Else {
+      Have: a_3 = Mint_2.
+      Have: Mint_2[shift_uint32(a_4, v) <- 0] = Mint_0.
+    }
+    (* Assertion 'rte,signed_overflow' *)
+    Have: v <= 2147483646.
+    (* Invariant *)
+    Have: (-1) <= v.
+  }
+  Prove: Mint_0[shift_uint32(a_4, i)]
+           = (if lt_f32b(Mf32_0[shift_float32(a, i)],
+                   Mf32_0[shift_float32(a_1, i)]) then 4294967295 else 0).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_masks.c", line 4) (2/3):
+  Effect at line 5
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_masks.c", line 4) (3/3):
+  Effect at line 5
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'vcgtq_f32':
+  Effect at line 5
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: invalid(Malloc_0, global(L_i_6750), 1) /\
+      invalid(Malloc_0, global(L_r_6749), 4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_masks.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Termination-condition (generated by kernel from "fp_masks.c", line 11) in 'vbslq_u32':
+  Loop termination at line 11
+  Prove: false.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Let x = Mint_0[global(L_i_6772)].
+  Assume {
+    Type: is_sint32_chunk(Mint_0) /\ is_sint32(x).
+    (* Then *)
+    Have: x <= 3.
+  }
+  Prove: 0 <= x.
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_u32_assert_rte_index_bound (Qed 4ms) (Z3)
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_u32_terminates (Qed 2ms) (Z3)
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("fp_masks.c", line 11):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: P_valid_or_empty(Malloc_0[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4]
+                            [L_ua_6780 <- 4][L_ub_6781 <- 4], w, 16).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: P_valid_read_or_empty(Malloc_0[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779
+                                 <- 4][L_ua_6780 <- 4][L_ub_6781 <- 4], w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_src (Qed 8ms) (Z3) (Stronger, 2 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Prove: separated(shift_sint8(w, 0), 16, shift_sint8(w_1, 0), 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_dest (Qed 9ms) (Z3) (Stronger, 2 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let m = Malloc_0[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4][L_ua_6780 <- 4]
+            [L_ub_6781 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_6989), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_6990), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_6991), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_6992), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_6993), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_6994), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7003), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7004), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7195), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7196), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7197), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7198), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7199), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7200), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_1, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+  }
+  Prove: P_valid_or_empty(m, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_separation (Qed 18ms) (Z3) (Stronger, 2 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let m = Malloc_0[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4][L_ua_6780 <- 4]
+            [L_ub_6781 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_6989), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_6990), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_6991), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_6992), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_6993), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_6994), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7003), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7004), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7195), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7196), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7197), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7198), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7199), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7200), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_1, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+  }
+  Prove: P_valid_read_or_empty(m, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_dest (Qed 15ms) (Z3) (Stronger, 4 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let m = Malloc_0[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4][L_ua_6780 <- 4]
+            [L_ub_6781 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_6989), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_6990), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_6991), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_6992), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_6993), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_6994), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7003), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7004), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7195), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7196), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7197), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7198), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7199), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7200), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_2, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+  }
+  Prove: separated(shift_sint8(w, 0), 16, shift_sint8(w_1, 0), 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_src (Qed 24ms) (Z3) (Stronger, 4 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let a_2 = shift_sint8(memcpy_1, 0).
+  Let a_3 = memcpy(a_1, a_2, Mchar_undef_1, a_2, 16).
+  Let m = Malloc_1[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4][L_ua_6780 <- 4]
+            [L_ub_6781 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1) /\
+        is_sint8_chunk(a_3).
+    (* Heap *)
+    Type: linked(Malloc_1) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_6989), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_6990), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_6991), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_6992), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_6993), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_6994), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7003), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7004), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7195), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7196), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7197), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7198), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7199), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7200), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_1, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(a_1, a_3, memcpy_1, w_2, 16) = 0) /\
+        separated(a_2, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_1, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+  }
+  Prove: P_valid_or_empty(Malloc_0, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_separation (Qed 23ms) (Z3) (Stronger, 4 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let a_2 = shift_sint8(memcpy_1, 0).
+  Let a_3 = memcpy(a_1, a_2, Mchar_undef_1, a_2, 16).
+  Let m = Malloc_1[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4][L_ua_6780 <- 4]
+            [L_ub_6781 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1) /\
+        is_sint8_chunk(a_3).
+    (* Heap *)
+    Type: linked(Malloc_1) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_6989), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_6990), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_6991), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_6992), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_6993), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_6994), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7003), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7004), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7195), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7196), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7197), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7198), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7199), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7200), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_1, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(a_1, a_3, memcpy_1, w_2, 16) = 0) /\
+        separated(a_2, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_1, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+  }
+  Prove: P_valid_read_or_empty(Malloc_0, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_dest (Qed 14ms) (Z3) (Stronger, 6 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 13)
+  :
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:13: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let a_2 = shift_sint8(memcpy_1, 0).
+  Let a_3 = memcpy(a_1, a_2, Mchar_undef_1, a_2, 16).
+  Let m = Malloc_0[P_m_6777 <- 4][P_a_6778 <- 4][P_b_6779 <- 4][L_ua_6780 <- 4]
+            [L_ub_6781 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1) /\
+        is_sint8_chunk(a_3).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_6989), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_6990), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_6991), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_6992), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_6993), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_6994), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7003), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7004), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7195), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7196), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7197), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7198), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7199), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7200), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_2, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(a_1, a_3, memcpy_1, w_3, 16) = 0) /\
+        separated(a_2, 16, shift_sint8(w_3, 0), 16) /\
+        P_valid_or_empty(m, memcpy_1, 16) /\ P_valid_read_or_empty(m, w_3, 16).
+  }
+  Prove: separated(shift_sint8(w, 0), 16, shift_sint8(w_1, 0), 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_src (Qed 14ms) (Z3) (Stronger, 6 warnings)
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory.c", line 94) in '__riscv_vsetvl_e32m8':
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vsetvl_e32m8' (1/2):
+  Effect at line 95
+  Let x = Mint_0[global(P_n_6495)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Then *)
+    Have: x <= 31.
+  }
+  Prove: invalid(Malloc_0, global(L_tmp_6498), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vsetvl_e32m8' (2/2):
+  Effect at line 95
+  Let x = Mint_0[global(P_n_6495)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Else *)
+    Have: 32 <= x.
+  }
+  Prove: invalid(Malloc_0, global(L_tmp_6498), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory_m8.c", line 3) in '__riscv_vle32_v_f32m8':
+  Let x = Mint_0[global(P_vl_6799)].
+  Let a = global(L_r_6803).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 32).
+  Let a_2 = shiftfield_F17_lane(a).
+  Let a_3 = Mptr_0[global(P_p_6798)].
+  Let a_4 = global(L_i_6804).
+  Let a_5 = Mf32_0[shift_float32(a_2, 0)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_4 <- v]) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a_3, 0), x).
+    (* Initializer *)
+    Init: a_5 = to_f32(.0).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 < i_1) -> ((i_1 <= 31) ->
+        (Mf32_0[shift_float32(a_2, i_1)] = a_5))).
+    (* Initializer *)
+    Init: Mint_0[a_4] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_1[shift_float32(a_2, i_1)], a_1[shift_float32(a_3, i_1)]))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory_m8.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory_m8.c", line 4):
+  Let a = Mptr_0[global(P_p_6798)].
+  Let x = Mint_0[global(P_vl_6799)].
+  Let a_1 = global(L_r_6803).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, 32).
+  Let a_3 = shiftfield_F17_lane(a_1).
+  Let a_4 = global(L_i_6804).
+  Let a_5 = Mf32_0[shift_float32(a_3, 0)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_4 <- v]) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a, 0), x).
+    (* Initializer *)
+    Init: a_5 = to_f32(.0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 < i) -> ((i <= 31) ->
+        (Mf32_0[shift_float32(a_3, i)] = a_5))).
+    (* Initializer *)
+    Init: Mint_0[a_4] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a_3, i)], a_2[shift_float32(a, i)]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0[P_p_6798 <- 1][P_vl_6799 <- 1][L_r_6803 <- 32]
+                     [L_i_6804 <- 1], shift_float32(a, v), 1).
+  }
+  Prove: to_uint64(1 + v) <= x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory_m8.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory_m8.c", line 4):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_0[global(P_vl_6799)].
+  Let a = Mptr_0[global(P_p_6798)].
+  Let a_1 = shift_float32(a, v).
+  Let a_2 = global(L_r_6803).
+  Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, 32).
+  Let a_4 = shiftfield_F17_lane(a_2).
+  Let a_5 = global(L_i_6804).
+  Let a_6 = Mf32_0[shift_float32(a_4, 0)].
+  Let a_7 = a_3[shift_float32(a_4, v) <- a_3[a_1]].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint64(x_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a, 0), x_1).
+    (* Initializer *)
+    Init: a_6 = to_f32(.0).
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 < i_1) -> ((i_1 <= 31) ->
+        (Mf32_0[shift_float32(a_4, i_1)] = a_6))).
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_3[shift_float32(a_4, i_1)], a_3[shift_float32(a, i_1)]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0[P_p_6798 <- 1][P_vl_6799 <- 1][L_r_6803 <- 32]
+                     [L_i_6804 <- 1], a_1, 1).
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: P_ext_same(a_7[shift_float32(a_4, i)], a_7[shift_float32(a, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory_m8.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,mem_access' ("fp_memory_m8.c", line 5):
+  Let x = Mint_0[global(P_vl_6799)].
+  Let a = global(L_r_6803).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 32).
+  Let a_2 = shiftfield_F17_lane(a).
+  Let a_3 = Mptr_0[global(P_p_6798)].
+  Let a_4 = global(L_i_6804).
+  Let a_5 = Mf32_0[shift_float32(a_2, 0)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_4 <- v]) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a_3, 0), x).
+    (* Initializer *)
+    Init: a_5 = to_f32(.0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 < i) -> ((i <= 31) ->
+        (Mf32_0[shift_float32(a_2, i)] = a_5))).
+    (* Initializer *)
+    Init: Mint_0[a_4] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: valid_rd(Malloc_0[P_p_6798 <- 1][P_vl_6799 <- 1][L_r_6803 <- 32]
+                    [L_i_6804 <- 1], shift_float32(a_3, v), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_memory_m8.c", line 4) (2/2):
+  Effect at line 5
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vle32_v_f32m8':
+  Effect at line 5
+  Let x = Mint_0[global(P_vl_6799)].
+  Let a = global(L_i_6804).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(Mptr_0[global(P_p_6798)], 0), x).
+    (* Initializer *)
+    Init: Mint_0[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(L_r_6803), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_memory_m8.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_memory_m8.c", line 5):
+  Let x = to_uint64(1 + v).
+  Let a = global(L_r_6803).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 32).
+  Let a_2 = shiftfield_F17_lane(a).
+  Let a_3 = Mptr_0[global(P_p_6798)].
+  Let a_4 = shift_float32(a_3, v).
+  Let a_5 = a_1[shift_float32(a_2, v) <- a_1[a_4]].
+  Let x_1 = Mint_0[global(P_vl_6799)].
+  Let a_6 = global(L_i_6804).
+  Let a_7 = Mf32_0[shift_float32(a_2, 0)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_6 <- v]) /\ is_uint64(x_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: valid_rd(Malloc_0, shift_float32(a_3, 0), x_1).
+    (* Initializer *)
+    Init: a_7 = to_f32(.0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 < i) -> ((i <= 31) ->
+        (Mf32_0[shift_float32(a_2, i)] = a_7))).
+    (* Initializer *)
+    Init: Mint_0[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_1[shift_float32(a_2, i)], a_1[shift_float32(a_3, i)]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rd(Malloc_0[P_p_6798 <- 1][P_vl_6799 <- 1][L_r_6803 <- 32]
+                     [L_i_6804 <- 1], a_4, 1).
+    (* Invariant *)
+    Have: x <= x_1.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        P_ext_same(a_5[shift_float32(a_2, i)], a_5[shift_float32(a_3, i)]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_memory_m8.c", line 7) in '__riscv_vse32_v_f32m8':
+  Let x = Mint_0[global(P_vl_6812)].
+  Let a = Mptr_0[global(P_p_6810)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x).
+  Let a_3 = shiftfield_F17_lane(global(P_a_6811)).
+  Let a_4 = global(L_i_6818).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_4 <- v]) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, x).
+    (* Initializer *)
+    Init: Mint_0[a_4] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_2[shift_float32(a, i_1)], a_2[shift_float32(a_3, i_1)]))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: P_ext_same(a_2[shift_float32(a, i)], Mf32_0[shift_float32(a_3, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory_m8.c", line 8):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory_m8.c", line 8):
+  Let a = Mptr_0[global(P_p_6810)].
+  Let x = Mint_0[global(P_vl_6812)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x).
+  Let a_3 = global(L_i_6818).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_3 <- v]) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, x).
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)],
+          a_2[shift_float32(shiftfield_F17_lane(global(P_a_6811)), i)]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6810 <- 1][P_a_6811 <- 32][P_vl_6812 <- 1]
+                     [L_i_6818 <- 1], shift_float32(a, v), 1).
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: to_uint64(1 + v) <= x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_memory_m8.c", line 8):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_memory_m8.c", line 8):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_0[global(P_vl_6812)].
+  Let a = Mptr_0[global(P_p_6810)].
+  Let a_1 = shift_float32(a, v).
+  Let a_2 = shift_float32(a, 0).
+  Let a_3 = memcpy(Mf32_0, a_2, Mf32_undef_0, a_2, x_1).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6811)).
+  Let a_5 = global(L_i_6818).
+  Let a_6 = a_3[a_1 <- a_3[shift_float32(a_4, v)]].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint64(x_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_2, x_1).
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        P_ext_same(a_3[shift_float32(a, i_1)], a_3[shift_float32(a_4, i_1)]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6810 <- 1][P_a_6811 <- 32][P_vl_6812 <- 1]
+                     [L_i_6818 <- 1], a_1, 1).
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: P_ext_same(a_6[shift_float32(a, i)], a_6[shift_float32(a_4, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_memory_m8.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,mem_access' ("fp_memory_m8.c", line 9):
+  Let x = Mint_0[global(P_vl_6812)].
+  Let a = Mptr_0[global(P_p_6810)].
+  Let a_1 = shift_float32(a, 0).
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x).
+  Let a_3 = global(L_i_6818).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_3 <- v]) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, x).
+    (* Initializer *)
+    Init: Mint_0[a_3] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)],
+          a_2[shift_float32(shiftfield_F17_lane(global(P_a_6811)), i)]))).
+    (* Then *)
+    Have: v < x.
+  }
+  Prove: valid_rw(Malloc_0[P_p_6810 <- 1][P_a_6811 <- 32][P_vl_6812 <- 1]
+                    [L_i_6818 <- 1], shift_float32(a, v), 1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_memory_m8.c", line 8) (2/3):
+  Effect at line 9
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_memory_m8.c", line 8) (3/3):
+  Effect at line 9
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6810)].
+  Let a_1 = shift_float32(a, 0).
+  Let x_1 = Mint_0[global(P_vl_6812)].
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x_1).
+  Let a_3 = shift_float32(a, v).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6811)).
+  Let a_5 = a_2[a_3 <- a_2[shift_float32(a_4, v)]].
+  Let m = Malloc_0[P_p_6810 <- 1][P_a_6811 <- 32][P_vl_6812 <- 1][L_i_6818
+            <- 1].
+  Let a_6 = global(L_i_6818).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_6 <- v]) /\ is_uint64(x_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Goal *)
+    When: !invalid(m, a_3, 1).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, x_1).
+    (* Initializer *)
+    Init: Mint_0[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)], a_2[shift_float32(a_4, i)]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(m, a_3, 1).
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        P_ext_same(a_5[shift_float32(a, i)], a_5[shift_float32(a_4, i)]))).
+  }
+  Prove: (a_3 = a_6) \/ included(a_3, 1, a_1, x_1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns ("fp_memory_m8.c", line 7) in '__riscv_vse32_v_f32m8':
+  Effect at line 9
+  Let x = Mint_0[global(P_vl_6812)].
+  Let a = global(L_i_6818).
+  Let a_1 = shift_float32(Mptr_0[global(P_p_6810)], 0).
+  Assume {
+    Have: !invalid(Malloc_0, a, 1).
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, x).
+    (* Initializer *)
+    Init: Mint_0[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: included(a, 1, a_1, x).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_memory_m8.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_memory_m8.c", line 9):
+  Let x = to_uint64(1 + v).
+  Let a = Mptr_0[global(P_p_6810)].
+  Let a_1 = shift_float32(a, 0).
+  Let x_1 = Mint_0[global(P_vl_6812)].
+  Let a_2 = memcpy(Mf32_0, a_1, Mf32_undef_0, a_1, x_1).
+  Let a_3 = shift_float32(a, v).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6811)).
+  Let a_5 = a_2[a_3 <- a_2[shift_float32(a_4, v)]].
+  Let a_6 = global(L_i_6818).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_6 <- v]) /\ is_uint64(x_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ framed(Mptr_0).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Pre-condition *)
+    Have: valid_rw(Malloc_0, a_1, x_1).
+    (* Initializer *)
+    Init: Mint_0[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        P_ext_same(a_2[shift_float32(a, i)], a_2[shift_float32(a_4, i)]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,mem_access' *)
+    Have: valid_rw(Malloc_0[P_p_6810 <- 1][P_a_6811 <- 32][P_vl_6812 <- 1]
+                     [L_i_6818 <- 1], a_3, 1).
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        P_ext_same(a_5[shift_float32(a, i)], a_5[shift_float32(a_4, i)]))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_masks_m8.c", line 3) in '__riscv_vmfgt_vv_f32m8_b4':
+  Let x = Mint_1[global(P_vl_6867)].
+  Let a = global(L_r_6873).
+  Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, 32).
+  Let a_2 = shiftfield_F18_lane(a).
+  Let a_3 = shiftfield_F17_lane(global(P_c_6866)).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6865)).
+  Let a_5 = global(L_i_6874).
+  Assume {
+    Type: is_uint64_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint64(x) /\
+        is_uint8_chunk(a_1).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[shift_uint8(a_2, 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 < i_1) -> ((i_1 <= 31) ->
+        (Mint_0[shift_uint8(a_2, i_1)] = 0))).
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        (a_1[shift_uint8(a_2, i_1)] =
+         (if lt_f32b(Mf32_0[shift_float32(a_3, i_1)],
+               Mf32_0[shift_float32(a_4, i_1)]) then 1 else 0)))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: a_1[shift_uint8(a_2, i)] =
+      (if lt_f32b(Mf32_0[shift_float32(a_3, i)], Mf32_0[shift_float32(a_4, i)])
+       then 1 else 0).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks_m8.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks_m8.c", line 4):
+  Let x = Mint_0[global(P_vl_6867)].
+  Let a = global(L_r_6873).
+  Let a_1 = memcpy(Mint_1, a, Mint_undef_0, a, 32).
+  Let a_2 = shiftfield_F18_lane(a).
+  Let a_3 = shiftfield_F17_lane(global(P_c_6866)).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6865)).
+  Let a_5 = global(L_i_6874).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint64(x) /\
+        is_uint8_chunk(a_1) /\
+        is_uint8_chunk(a_1[shift_uint8(a_2, v)
+                         <- if lt_f32b(Mf32_0[shift_float32(a_3, v)],
+                                 Mf32_0[shift_float32(a_4, v)]) then 1 else 0]).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_1[shift_uint8(a_2, 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 < i) -> ((i <= 31) ->
+        (Mint_1[shift_uint8(a_2, i)] = 0))).
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        (a_1[shift_uint8(a_2, i)] =
+         (if lt_f32b(Mf32_0[shift_float32(a_3, i)],
+               Mf32_0[shift_float32(a_4, i)]) then 1 else 0)))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: to_uint64(1 + v) <= x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks_m8.c", line 4):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks_m8.c", line 4):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_1[global(P_vl_6867)].
+  Let a = global(L_r_6873).
+  Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, 32).
+  Let a_2 = shiftfield_F18_lane(a).
+  Let a_3 = shiftfield_F17_lane(global(P_c_6866)).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6865)).
+  Let a_5 = global(L_i_6874).
+  Let a_6 = a_1[shift_uint8(a_2, v)
+              <- if lt_f32b(Mf32_0[shift_float32(a_3, v)],
+                      Mf32_0[shift_float32(a_4, v)]) then 1 else 0].
+  Assume {
+    Type: is_uint64_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint64(x_1) /\
+        is_uint8_chunk(a_1) /\ is_uint8_chunk(a_6).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_0[shift_uint8(a_2, 0)] = 0.
+    (* Initializer *)
+    Init: forall i_1 : Z. ((0 < i_1) -> ((i_1 <= 31) ->
+        (Mint_0[shift_uint8(a_2, i_1)] = 0))).
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < v) ->
+        (a_1[shift_uint8(a_2, i_1)] =
+         (if lt_f32b(Mf32_0[shift_float32(a_3, i_1)],
+               Mf32_0[shift_float32(a_4, i_1)]) then 1 else 0)))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: a_6[shift_uint8(a_2, i)] =
+      (if lt_f32b(Mf32_0[shift_float32(a_3, i)], Mf32_0[shift_float32(a_4, i)])
+       then 1 else 0).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks_m8.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks_m8.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks_m8.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_masks_m8.c", line 4) (2/2):
+  Effect at line 5
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vmfgt_vv_f32m8_b4':
+  Effect at line 5
+  Let x = Mint_0[global(P_vl_6867)].
+  Let a = global(L_i_6874).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: invalid(Malloc_0, a, 1) /\ invalid(Malloc_0, global(L_r_6873), 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_masks_m8.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_masks_m8.c", line 5):
+  Let x = to_uint64(1 + v).
+  Let a = global(L_r_6873).
+  Let a_1 = memcpy(Mint_1, a, Mint_undef_0, a, 32).
+  Let a_2 = shiftfield_F18_lane(a).
+  Let a_3 = shiftfield_F17_lane(global(P_c_6866)).
+  Let a_4 = shiftfield_F17_lane(global(P_a_6865)).
+  Let a_5 = a_1[shift_uint8(a_2, v)
+              <- if lt_f32b(Mf32_0[shift_float32(a_3, v)],
+                      Mf32_0[shift_float32(a_4, v)]) then 1 else 0].
+  Let x_1 = Mint_0[global(P_vl_6867)].
+  Let a_6 = global(L_i_6874).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_6 <- v]) /\ is_uint64(x_1) /\
+        is_uint8_chunk(a_1) /\ is_uint8_chunk(a_5).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_1[shift_uint8(a_2, 0)] = 0.
+    (* Initializer *)
+    Init: forall i : Z. ((0 < i) -> ((i <= 31) ->
+        (Mint_1[shift_uint8(a_2, i)] = 0))).
+    (* Initializer *)
+    Init: Mint_0[a_6] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < v) ->
+        (a_1[shift_uint8(a_2, i)] =
+         (if lt_f32b(Mf32_0[shift_float32(a_3, i)],
+               Mf32_0[shift_float32(a_4, i)]) then 1 else 0)))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    (* Invariant *)
+    Have: x <= x_1.
+    (* Invariant *)
+    Have: forall i : Z. ((0 <= i) -> ((i < x) ->
+        (a_5[shift_uint8(a_2, i)] =
+         (if lt_f32b(Mf32_0[shift_float32(a_3, i)],
+               Mf32_0[shift_float32(a_4, i)]) then 1 else 0)))).
+  }
+  Prove: v < x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition ("fp_masks_m8.c", line 11) in '__riscv_vmerge_vvm_f32m8':
+  Let x = Mint_1[global(P_vl_6899)].
+  Let a = global(P_a_6896).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 32).
+  Let a_2 = shiftfield_F17_lane(a).
+  Let a_3 = shiftfield_F18_lane(global(P_mask_6898)).
+  Let a_4 = shiftfield_F17_lane(global(P_c_6897)).
+  Let a_5 = global(L_i_6906).
+  Let a_6 = shift_float32(a_2, i).
+  Assume {
+    Type: is_uint64_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint64(x) /\
+        is_uint8(Mint_0[shift_uint8(a_3, v)]).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = Mf32_0[shift_float32(a_2, i_1)] in
+        ((0 <= i_1) -> ((i_1 < x) -> P_ext_same(a_7, a_7))).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_2, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        P_ext_same(a_1[a_7],
+          if (Mint_0[shift_uint8(a_3, i_1)] = 0) then Mf32_0[a_7]
+          else Mf32_0[shift_float32(a_4, i_1)]))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_2, i_1) in ((v <= i_1) ->
+        ((i_1 < x) -> P_ext_same(a_1[a_7], Mf32_0[a_7]))).
+    (* Else *)
+    Have: x <= v.
+  }
+  Prove: P_ext_same(a_1[a_6],
+           if (Mint_0[shift_uint8(a_3, i)] = 0) then Mf32_0[a_6]
+           else Mf32_0[shift_float32(a_4, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks_m8.c", line 12):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks_m8.c", line 12):
+  Let x = Mint_0[global(P_vl_6899)].
+  Let a = global(P_a_6896).
+  Let a_1 = memcpy(Mf32_0, a, Mf32_undef_0, a, 32).
+  Let a_2 = shiftfield_F17_lane(a).
+  Let a_3 = shiftfield_F18_lane(global(P_mask_6898)).
+  Let a_4 = global(L_i_6906).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_4 <- v]) /\ is_uint64(x) /\
+        is_uint8(Mint_1[shift_uint8(a_3, v)]).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_4] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = Mf32_0[shift_float32(a_2, i)] in ((0 <= i) ->
+        ((i < x) -> P_ext_same(a_5, a_5))).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = shift_float32(a_2, i) in ((0 <= i) ->
+        ((i < v) ->
+        P_ext_same(a_1[a_5],
+          if (Mint_1[shift_uint8(a_3, i)] = 0) then Mf32_0[a_5]
+          else Mf32_0[shift_float32(shiftfield_F17_lane(global(P_c_6897)), i)]))).
+    (* Invariant *)
+    Have: forall i : Z. let a_5 = shift_float32(a_2, i) in ((v <= i) ->
+        ((i < x) -> P_ext_same(a_1[a_5], Mf32_0[a_5]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+  }
+  Prove: to_uint64(1 + v) <= x.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks_m8.c", line 12):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks_m8.c", line 12):
+  Let x = to_uint64(1 + v).
+  Let x_1 = Mint_1[global(P_vl_6899)].
+  Let a = shiftfield_F18_lane(global(P_mask_6898)).
+  Let x_2 = Mint_0[shift_uint8(a, v)].
+  Let a_1 = global(P_a_6896).
+  Let a_2 = memcpy(Mf32_1, a_1, Mf32_undef_0, a_1, 32).
+  Let a_3 = shiftfield_F17_lane(a_1).
+  Let a_4 = shiftfield_F17_lane(global(P_c_6897)).
+  Let a_5 = global(L_i_6906).
+  Let a_6 = shift_float32(a_3, i).
+  Assume {
+    Type: is_uint64_chunk(Mint_1) /\ is_uint8_chunk(Mint_0) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_1[a_5 <- v]) /\ is_uint64(x_1) /\ is_uint8(x_2).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_1[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = Mf32_1[shift_float32(a_3, i_1)] in
+        ((0 <= i_1) -> ((i_1 < x_1) -> P_ext_same(a_7, a_7))).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_3, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        P_ext_same(a_2[a_7],
+          if (Mint_0[shift_uint8(a, i_1)] = 0) then Mf32_1[a_7]
+          else Mf32_1[shift_float32(a_4, i_1)]))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_3, i_1) in ((v <= i_1) ->
+        ((i_1 < x_1) -> P_ext_same(a_2[a_7], Mf32_1[a_7]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    If x_2 != 0
+    Then {
+      Have: a_2[shift_float32(a_3, v) <- Mf32_1[shift_float32(a_4, v)]] =
+          Mf32_0.
+    }
+    Else { Have: a_2 = Mf32_0. }
+    (* Invariant *)
+    Have: x <= x_1.
+  }
+  Prove: P_ext_same(Mf32_0[a_6],
+           if (Mint_0[shift_uint8(a, i)] = 0) then Mf32_1[a_6]
+           else Mf32_0[shift_float32(a_4, i)]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant ("fp_masks_m8.c", line 12):
+  Let x = Mint_0[global(P_vl_6899)].
+  Let a = Mf32_0[shift_float32(shiftfield_F17_lane(global(P_a_6896)), i)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Goal *)
+    When: (0 <= i) /\ (i < x).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[global(L_i_6906)] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+  }
+  Prove: P_ext_same(a, a).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant ("fp_masks_m8.c", line 12):
+  Let x = to_uint64(1 + v).
+  Let a = global(P_a_6896).
+  Let a_1 = shiftfield_F17_lane(a).
+  Let a_2 = shiftfield_F18_lane(global(P_mask_6898)).
+  Let a_3 = shiftfield_F17_lane(global(P_c_6897)).
+  Let x_1 = Mint_0[global(P_vl_6899)].
+  Let x_2 = Mint_1[shift_uint8(a_2, v)].
+  Let a_4 = memcpy(Mf32_1, a, Mf32_undef_0, a, 32).
+  Let a_5 = global(L_i_6906).
+  Let a_6 = shift_float32(a_1, i).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint64(x_1) /\ is_uint8(x_2).
+    (* Goal *)
+    When: (i < x_1) /\ (x <= i).
+    (* Pre-condition *)
+    Have: x_1 <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x_1.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = Mf32_1[shift_float32(a_1, i_1)] in
+        ((0 <= i_1) -> ((i_1 < x_1) -> P_ext_same(a_7, a_7))).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x_1).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_1, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        P_ext_same(a_4[a_7],
+          if (Mint_1[shift_uint8(a_2, i_1)] = 0) then Mf32_1[a_7]
+          else Mf32_1[shift_float32(a_3, i_1)]))).
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_1, i_1) in ((v <= i_1) ->
+        ((i_1 < x_1) -> P_ext_same(a_4[a_7], Mf32_1[a_7]))).
+    (* Then *)
+    Have: v < x_1.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    If x_2 != 0
+    Then {
+      Have: a_4[shift_float32(a_1, v) <- Mf32_1[shift_float32(a_3, v)]] =
+          Mf32_0.
+    }
+    Else { Have: a_4 = Mf32_0. }
+    (* Invariant *)
+    Have: x <= x_1.
+    (* Invariant *)
+    Have: forall i_1 : Z. let a_7 = shift_float32(a_1, i_1) in ((0 <= i_1) ->
+        ((i_1 < x) ->
+        P_ext_same(Mf32_0[a_7],
+          if (Mint_1[shift_uint8(a_2, i_1)] = 0) then Mf32_1[a_7]
+          else Mf32_0[shift_float32(a_3, i_1)]))).
+  }
+  Prove: P_ext_same(Mf32_0[a_6], Mf32_1[a_6]).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks_m8.c", line 13):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks_m8.c", line 13):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks_m8.c", line 13):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_masks_m8.c", line 12) (2/2):
+  Effect at line 13
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in '__riscv_vmerge_vvm_f32m8':
+  Effect at line 13
+  Let x = Mint_0[global(P_vl_6899)].
+  Let a = global(P_a_6896).
+  Let a_1 = shiftfield_F17_lane(a).
+  Let a_2 = global(L_i_6906).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x).
+    (* Heap *)
+    Type: linked(Malloc_0).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_2] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: forall i : Z. let a_3 = Mf32_0[shift_float32(a_1, i)] in ((0 <= i) ->
+        ((i < x) -> P_ext_same(a_3, a_3))).
+  }
+  Prove: invalid(Malloc_0, a_2, 1) /\ invalid(Malloc_0, a, 32).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_masks_m8.c", line 13):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_masks_m8.c", line 13):
+  Let x = Mint_0[global(P_vl_6899)].
+  Let x_1 = to_uint64(1 + v).
+  Let a = global(P_a_6896).
+  Let a_1 = shiftfield_F17_lane(a).
+  Let a_2 = shiftfield_F18_lane(global(P_mask_6898)).
+  Let a_3 = shiftfield_F17_lane(global(P_c_6897)).
+  Let x_2 = Mint_1[shift_uint8(a_2, v)].
+  Let a_4 = memcpy(Mf32_0, a, Mf32_undef_0, a, 32).
+  Let a_5 = global(L_i_6906).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint8_chunk(Mint_1) /\ is_uint64(v) /\
+        is_uint64_chunk(Mint_0[a_5 <- v]) /\ is_uint64(x) /\ is_uint8(x_2).
+    (* Pre-condition *)
+    Have: x <= 32.
+    (* Initializer *)
+    Init: Mint_0[a_5] = 0.
+    (* Invariant *)
+    Have: 0 <= x.
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = Mf32_0[shift_float32(a_1, i)] in ((0 <= i) ->
+        ((i < x) -> P_ext_same(a_6, a_6))).
+    (* Invariant *)
+    Have: (0 <= v) /\ (v <= x).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_float32(a_1, i) in ((0 <= i) ->
+        ((i < v) ->
+        P_ext_same(a_4[a_6],
+          if (Mint_1[shift_uint8(a_2, i)] = 0) then Mf32_0[a_6]
+          else Mf32_0[shift_float32(a_3, i)]))).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_float32(a_1, i) in ((v <= i) ->
+        ((i < x) -> P_ext_same(a_4[a_6], Mf32_0[a_6]))).
+    (* Then *)
+    Have: v < x.
+    (* Assertion 'rte,index_bound' *)
+    Have: v <= 31.
+    If x_2 != 0
+    Then {
+      Have: a_4[shift_float32(a_1, v) <- Mf32_0[shift_float32(a_3, v)]] =
+          Mf32_1.
+    }
+    Else { Have: a_4 = Mf32_1. }
+    (* Invariant *)
+    Have: x_1 <= x.
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_float32(a_1, i) in ((0 <= i) ->
+        ((i < x_1) ->
+        P_ext_same(Mf32_1[a_6],
+          if (Mint_1[shift_uint8(a_2, i)] = 0) then Mf32_0[a_6]
+          else Mf32_1[shift_float32(a_3, i)]))).
+    (* Invariant *)
+    Have: forall i : Z. let a_6 = shift_float32(a_1, i) in ((i < x) ->
+        ((x_1 <= i) -> P_ext_same(Mf32_1[a_6], Mf32_0[a_6]))).
+  }
+  Prove: v < x_1.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'root32_shift' in 'root32_index_step':
+  Let a = Mptr_0[global(P_p_6932)].
+  Let a_1 = Mptr_0[global(P_base_6933)].
+  Let x = Mint_0[global(P_c_6935)].
+  Let x_1 = -x.
+  Let x_2 = Mint_0[global(P_n_6934)].
+  Let x_3 = Mint_0[global(P_v_6936)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x) /\ is_uint64(x_2) /\
+        is_uint64(x_3).
+    (* Heap *)
+    Type: framed(Mptr_0).
+    (* Goal *)
+    When: (a = shift_uint32(a_1, x_2 - x)) /\ (x_3 <= x) /\ (x <= x_2).
+  }
+  Prove: shift_uint32(a_1, x_2 + x_3 - x) = shift_uint32(a, x_3).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'root32_sub' in 'root32_index_step':
+  Let x = Mint_0[global(P_v_6936)].
+  Let x_1 = Mint_0[global(P_c_6935)].
+  Let x_2 = Mint_0[global(P_n_6934)].
+  Let x_3 = to_uint64(x_1 - x).
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x_1) /\ is_uint64(x_2) /\
+        is_uint64(x).
+    (* Goal *)
+    When: (x <= x_1) /\ (x_1 <= x_2).
+  }
+  Prove: (x_1 = (x + x_3)) /\ (x_3 <= x_2).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'next_arg_seed_relation' in 'next_arg_seed':
+  Let x = Mint_0[global(P_n_6945)].
+  Let x_1 = Mint_0[global(P_c_6946)].
+  Let a = Mptr_0[global(P_p_6943)].
+  Let a_1 = Mptr_0[global(P_base_6944)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x_1) /\ is_uint64(x).
+    (* Heap *)
+    Type: framed(Mptr_0).
+    (* Goal *)
+    When: (x = x_1) /\ (a = a_1).
+  }
+  Prove: a = shift_uint32(a_1, x - x_1).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'next_arg_sub_exact' in 'next_arg_sub':
+  Let x = Mint_0[global(P_y_6964)].
+  Let x_1 = Mint_0[global(P_x_6963)].
+  Assume {
+    Type: is_uint64_chunk(Mint_0) /\ is_uint64(x_1) /\ is_uint64(x).
+    (* Goal *)
+    When: x <= x_1.
+  }
+  Prove: x_1 = (x + to_uint64(x_1 - x)).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_separation (Qed 27ms) (Z3) (Stronger, 6 warnings)
+[wp] Proved goals:  180 / 193
+  Terminating:    16
+  Unreachable:    18
+  Qed:            90 (1ms-4ms-29ms)
+  CVC5 1.2.1:     56 (39ms-166ms-3s)
+  Timeout:        13
+[wp] Updated session
+   - 13 new scripts to complete
+[wp:pedantic-assigns] quantized.c:3: Warning: 
+  No 'assigns' specification for function 'vaddq_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_masks.c:11: Warning: 
+  No 'assigns' specification for function 'vbslq_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] fp_masks.c:13: Warning: 
+  No 'assigns' specification for function 'vbslq_f32'.
+  Callers assumptions might be imprecise.
+[wp] Logging keys: strategy,script:allgoals.

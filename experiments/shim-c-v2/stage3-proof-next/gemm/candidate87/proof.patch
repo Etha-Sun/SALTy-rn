@@ -1,0 +1,1027 @@
+--- a/neon.c
++++ b/neon.c
+@@ -1,3 +1,33 @@
++/*@ \wp::strategy NextFrame87Leaf: \prover("z3",5), \prover("cvc5",5);
++ \wp::strategy NextFrame87H1: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87Leaf));
++ \wp::strategy NextFrame87H2: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H1));
++ \wp::strategy NextFrame87H3: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H2));
++ \wp::strategy NextFrame87H4: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H3));
++ \wp::strategy NextFrame87H5: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H4));
++ \wp::strategy NextFrame87H6: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H5));
++ \wp::strategy NextFrame87H7: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H6));
++ \wp::strategy NextFrame87H8: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H7));
++ \wp::strategy NextFrame87H9: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H8));
++ \wp::strategy NextFrame87H10: NextFrame87Leaf, \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextFrame87H9));
++ \wp::strategy NextFrame87ReadFirst: \tactic("Wp.unfold",\ingoal(L_next_read(M,A,Q)),\children(NextFrame87H10)), NextFrame87H10;
++ \wp::proof NextFrame87ReadFirst: next_w_frame_0; */
++/*@ \wp::strategy NextFmaGroundLeaf: \prover("z3",10), \prover("cvc5",15);
++ \wp::strategy NextFmaGroundUnfold:
++ \tactic("Wp.unfold",\goal(P_ext_same(R,P)),\incontext(T:P_next_fma_result_relation(R,X,Y,Z,U,V,W,P)),\select(T),\children(NextFmaGroundLeaf)), NextFmaGroundLeaf;
++ \wp::proof NextFmaGroundUnfold: next_high_after1_0,next_high_after1_1,next_high_after1_2,next_high_after1_3;
++*/
++/*@ \wp::strategy NextWeightFrameSolve: \prover("z3",15), \prover("cvc5",15);
++    \wp::strategy NextWeightFrameHavoc: \tactic("Wp.havoc",\ingoal(memcpy(M,A,U,A,N)[P]),\children(NextWeightFrameSolve)), NextWeightFrameSolve;
++    \wp::proof NextWeightFrameHavoc: next_high_source1_0,next_high_source1_1,next_high_source1_2,next_high_source1_3,next_w_frame_1,next_w_frame_2,next_w_frame_3,next_w_frame_4,next_w_frame_5,stage3_read_w;
++*/
++/*@ \wp::strategy NextStepLeaf: \prover("z3",10), \prover("cvc5",10);
++    \wp::strategy NextStepUnfold: \tactic("Wp.unfold",\ingoal(L_stage3_gacc(M,A,W,R,B,J,1+T,K)),\children(NextStepLeaf)), NextStepLeaf;
++    \wp::proof NextStepUnfold: next_fma_pre_r0,next_fma_pre_r1,next_fma_pre_r2,next_fma_pre_r3,next_high_pre_r0_0,next_high_pre_r0_1,next_high_pre_r0_2,next_high_pre_r0_3;
++    \wp::strategy NextSecondUnfold: \tactic("Wp.unfold",\ingoal(L_stage3_gacc(M,A,W,R,B,J,2+T,K)),\children(NextStepLeaf)), NextStepLeaf;
++    \wp::proof NextSecondUnfold: next_fma_second_pre_r0,next_fma_second_pre_r1,next_fma_second_pre_r2,next_fma_second_pre_r3,next_high_pre_r1_0,next_high_pre_r1_1,next_high_pre_r1_2,next_high_pre_r1_3;
++    \wp::strategy NextBiasZeroUnfold: \tactic("Wp.unfold",\ingoal(L_stage3_gacc(M,A,W,R,B,J,0,K)),\children(NextStepLeaf)), NextStepLeaf;
++    \wp::proof NextBiasZeroUnfold: next_high_bias_seed_0,next_high_bias_seed_1,next_high_bias_seed_2,next_high_bias_seed_3;
++*/
+ /*
+ struct xnn_f32_minmax_params {
+   struct {
+@@ -5,6 +35,12 @@
+     float max;
+   } scalar;
+ };
++*/
++
++/*@ predicate next_vec2_read{L}(float32x2_t v,float *a,integer t) =
++  ext_same(v.lane[0],a[t+0]) && ext_same(v.lane[1],a[t+1]);
++ predicate next_vec4_acc{L}(float32x4_t v,float *a,float *w,integer b,integer t,integer K) =
++  ext_same(v.lane[0],stage3_gacc{L}(a,w,0,b,0,t,K)) && ext_same(v.lane[1],stage3_gacc{L}(a,w,0,b,1,t,K)) && ext_same(v.lane[2],stage3_gacc{L}(a,w,0,b,2,t,K)) && ext_same(v.lane[3],stage3_gacc{L}(a,w,0,b,3,t,K));
+ */
+ 
+ void test_neon(
+@@ -19,6 +55,9 @@
+     size_t cn_stride,
+     const struct xnn_f32_minmax_params* restrict params)
+ {
++  /*@ ghost size_t NC=nc,KC=kc; */
++  /*@ ghost const float *A0=a,*W0=w; */
++  /*@ ghost float *C0=c; */
+   assert(mr != 0);
+   assert(mr <= 4);
+   assert(nc != 0);
+@@ -49,9 +88,53 @@
+     c3 = c2;
+   }
+ 
++  /*@ loop invariant 0<nc<=NC;
++      loop invariant (NC-nc)%8==0;
++      loop invariant a0==A0;
++      loop invariant a1==A0+(mr<2?0:KC/4);
++      loop invariant a2==A0+(mr<=2?mr-1:2)*(KC/4);
++      loop invariant a3==A0+(mr==4?3:mr-1)*(KC/4);
++      loop invariant c0==C0+(NC-nc);
++      loop invariant c1==C0+(mr<2?0:NC)+(NC-nc);
++      loop invariant c2==C0+(mr<=2?mr-1:2)*NC+(NC-nc);
++      loop invariant c3==C0+(mr==4?3:mr-1)*NC+(NC-nc);
++      loop invariant w==W0+((NC-nc)/8)*(8+8*(KC/4));
++      loop assigns nc,a0,a1,a2,a3,c0,c1,c2,c3,w,C0[0..mr*NC-1],errno;
++      loop variant nc;
++  */
+   do {
++    //@ ghost Stage3Block: ;
++    /*@ ghost float next_high_bias_word0=w[4]; */
++    /*@ assert next_high_bias_seed_0: ext_same(next_high_bias_word0,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,0,KC/4)); */
++    /*@ ghost float next_high_bias_word1=w[5]; */
++    /*@ assert next_high_bias_seed_1: ext_same(next_high_bias_word1,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,0,KC/4)); */
++    /*@ ghost float next_high_bias_word2=w[6]; */
++    /*@ assert next_high_bias_seed_2: ext_same(next_high_bias_word2,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,0,KC/4)); */
++    /*@ ghost float next_high_bias_word3=w[7]; */
++    /*@ assert next_high_bias_seed_3: ext_same(next_high_bias_word3,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,0,KC/4)); */
+     float32x4_t vacc0x0 = vld1q_f32(w); w += 4;
+-    float32x4_t vacc0x1 = vld1q_f32(w); w += 4;
++    /*@ assert next_high_bias_weight_0: ext_same(w[0],next_high_bias_word0); */
++    /*@ assert next_high_bias_weight_1: ext_same(w[1],next_high_bias_word1); */
++    /*@ assert next_high_bias_weight_2: ext_same(w[2],next_high_bias_word2); */
++    /*@ assert next_high_bias_weight_3: ext_same(w[3],next_high_bias_word3); */
++    float32x4_t vacc0x1 = vld1q_f32(w);
++    /*@ assert next_high_bias_load_0: ext_same(vacc0x1.lane[0],(w)[0]); */
++    /*@ assert next_high_bias_load_1: ext_same(vacc0x1.lane[1],(w)[1]); */
++    /*@ assert next_high_bias_load_2: ext_same(vacc0x1.lane[2],(w)[2]); */
++    /*@ assert next_high_bias_load_3: ext_same(vacc0x1.lane[3],(w)[3]); */
++    /*@ assert next_high_bias_postweight_1: ext_same(w[1],next_high_bias_word1); */
++    /*@ ghost next_bias_transitive(vacc0x1.lane[1],next_high_bias_word1); */
++    /*@ assert next_high_bias_loadjoin_1: (ext_same(vacc0x1.lane[1],w[1]) && ext_same(w[1],next_high_bias_word1)) ==> ext_same(vacc0x1.lane[1],next_high_bias_word1); */
++    /*@ assert next_high_bias_frame_1: ext_same(vacc0x1.lane[1],next_high_bias_word1); */
++    /*@ assert next_high_bias_postweight_2: ext_same(w[2],next_high_bias_word2); */
++    /*@ ghost next_bias_transitive(vacc0x1.lane[2],next_high_bias_word2); */
++    /*@ assert next_high_bias_loadjoin_2: (ext_same(vacc0x1.lane[2],w[2]) && ext_same(w[2],next_high_bias_word2)) ==> ext_same(vacc0x1.lane[2],next_high_bias_word2); */
++    /*@ assert next_high_bias_frame_2: ext_same(vacc0x1.lane[2],next_high_bias_word2); */
++    /*@ assert next_high_bias_postweight_3: ext_same(w[3],next_high_bias_word3); */
++    /*@ ghost next_bias_transitive(vacc0x1.lane[3],next_high_bias_word3); */
++    /*@ assert next_high_bias_loadjoin_3: (ext_same(vacc0x1.lane[3],w[3]) && ext_same(w[3],next_high_bias_word3)) ==> ext_same(vacc0x1.lane[3],next_high_bias_word3); */
++    /*@ assert next_high_bias_frame_3: ext_same(vacc0x1.lane[3],next_high_bias_word3); */
++     w += 4;
+     float32x4_t vacc1x0 = vacc0x0;
+     float32x4_t vacc1x1 = vacc0x1;
+     float32x4_t vacc2x0 = vacc0x0;
+@@ -60,41 +143,375 @@
+     float32x4_t vacc3x1 = vacc0x1;
+ 
+     size_t k = kc;
++    /*@ assert next_high_bias_frame_0: ext_same(vacc0x1.lane[0],next_high_bias_word0); */
++      
++      /*@ ghost next_splat_transport(vacc0x1.lane[0],next_high_bias_word0,next_high_bias_word0); */
++      /*@ assert next_high_bias_join_0: next_splat_join(vacc0x1.lane[0],next_high_bias_word0,next_high_bias_word0,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,0,KC/4)); */
++      /*@ assert next_high_bias_ref_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,0,KC/4)); */
++      
++      
++      /*@ ghost next_splat_transport(vacc0x1.lane[1],next_high_bias_word1,next_high_bias_word1); */
++      /*@ assert next_high_bias_join_1: next_splat_join(vacc0x1.lane[1],next_high_bias_word1,next_high_bias_word1,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,0,KC/4)); */
++      /*@ assert next_high_bias_ref_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,0,KC/4)); */
++      
++      
++      /*@ ghost next_splat_transport(vacc0x1.lane[2],next_high_bias_word2,next_high_bias_word2); */
++      /*@ assert next_high_bias_join_2: next_splat_join(vacc0x1.lane[2],next_high_bias_word2,next_high_bias_word2,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,0,KC/4)); */
++      /*@ assert next_high_bias_ref_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,0,KC/4)); */
++      
++      
++      /*@ ghost next_splat_transport(vacc0x1.lane[3],next_high_bias_word3,next_high_bias_word3); */
++      /*@ assert next_high_bias_join_3: next_splat_join(vacc0x1.lane[3],next_high_bias_word3,next_high_bias_word3,stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,0,KC/4)); */
++      /*@ assert next_high_bias_ref_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,0,KC/4)); */
++      /*@ loop invariant 0<=k<=KC && k%4==0;
++        loop invariant a0==A0+(KC-k)/4;
++        loop invariant a1==A0+(mr<2?0:KC/4)+(KC-k)/4;
++        loop invariant a2==A0+(mr<=2?mr-1:2)*(KC/4)+(KC-k)/4;
++        loop invariant a3==A0+(mr==4?3:mr-1)*(KC/4)+(KC-k)/4;
++        loop invariant w==W0+((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4);
++        loop invariant next_acc_scalar_inv_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0+0,(KC-k)/4,KC/4));
++        loop invariant next_acc_scalar_inv_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0+1,(KC-k)/4,KC/4));
++        loop invariant next_acc_scalar_inv_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0+2,(KC-k)/4,KC/4));
++        loop invariant next_acc_scalar_inv_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0+3,(KC-k)/4,KC/4));
++        loop invariant next_high_inv_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4+0,(KC-k)/4,KC/4));
++        loop invariant next_high_inv_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4+1,(KC-k)/4,KC/4));
++        loop invariant next_high_inv_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4+2,(KC-k)/4,KC/4));
++        loop invariant next_high_inv_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4+3,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_neon_1_0: \forall integer j; 0<=j<4 ==> ext_same(vacc1x0.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr<2?0:1),(NC-nc)/8,0+j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_neon_1_1: \forall integer j; 0<=j<4 ==> ext_same(vacc1x1.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr<2?0:1),(NC-nc)/8,4+j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_neon_2_0: \forall integer j; 0<=j<4 ==> ext_same(vacc2x0.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr<=2?mr-1:2),(NC-nc)/8,0+j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_neon_2_1: \forall integer j; 0<=j<4 ==> ext_same(vacc2x1.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr<=2?mr-1:2),(NC-nc)/8,4+j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_neon_3_0: \forall integer j; 0<=j<4 ==> ext_same(vacc3x0.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr==4?3:mr-1),(NC-nc)/8,0+j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_neon_3_1: \forall integer j; 0<=j<4 ==> ext_same(vacc3x1.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr==4?3:mr-1),(NC-nc)/8,4+j,(KC-k)/4,KC/4));
++        loop invariant stage3_read_a: \forall integer q;0<=q<4*(KC/4) ==> ext_same(A0[q],\at(A0[q],Stage3Block));
++        loop invariant stage3_read_w: \forall integer q;0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],\at(W0[q],Stage3Block));
++        loop assigns k,a0,a1,a2,a3,w,vacc0x0,vacc0x1,vacc1x0,vacc1x1,vacc2x0,vacc2x1,vacc3x0,vacc3x1,errno;
++        loop variant k;
++    */
+     for (; k >= 2 * sizeof(float); k -= 2 * sizeof(float)) {
++      /*@ assert next_t_range: 0<=(KC-k)/4 && (KC-k)/4+1<KC/4; */
++      /*@ assert next_acc_entry_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4,KC/4)); */
++      /*@ assert next_acc_entry_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4,KC/4)); */
++      /*@ assert next_acc_entry_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4,KC/4)); */
++      /*@ assert next_acc_entry_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4,KC/4)); */
++      //@ ghost float next_acc_scalar0 = vacc0x0.lane[0];
++      //@ ghost float next_acc_scalar1 = vacc0x0.lane[1];
++      //@ ghost float next_acc_scalar2 = vacc0x0.lane[2];
++      //@ ghost float next_acc_scalar3 = vacc0x0.lane[3];
++      /*@ ghost float next_high_old0_0 = vacc0x1.lane[0]; */
++      /*@ ghost float next_high_old0_1 = vacc0x1.lane[1]; */
++      /*@ ghost float next_high_old0_2 = vacc0x1.lane[2]; */
++      /*@ ghost float next_high_old0_3 = vacc0x1.lane[3]; */
+       const float32x2_t va0 = vld1_f32(a0); a0 += 2;
++      /*@ assert next_high_first_frame_0: ext_same(vacc0x1.lane[0],next_high_old0_0); */
++      /*@ assert next_high_first_frame_1: ext_same(vacc0x1.lane[1],next_high_old0_1); */
++      /*@ assert next_high_first_frame_2: ext_same(vacc0x1.lane[2],next_high_old0_2); */
++      /*@ assert next_high_first_frame_3: ext_same(vacc0x1.lane[3],next_high_old0_3); */
++      /*@ assert next_scalar_first_frame_0: ext_same(vacc0x0.lane[0], next_acc_scalar0); */
++      /*@ assert next_scalar_first_frame_1: ext_same(vacc0x0.lane[1], next_acc_scalar1); */
++      /*@ assert next_scalar_first_frame_2: ext_same(vacc0x0.lane[2], next_acc_scalar2); */
++      /*@ assert next_scalar_first_frame_3: ext_same(vacc0x0.lane[3], next_acc_scalar3); */
++      /*@ assert root86_weight_origin: W0 == \at(w,Pre); */
++      /*@ assert root86_weight_entry_valid: \valid_read{Pre}(\at(w,Pre)+(0..((\at(nc,Pre)+7)/8)*(8+8*(\at(kc,Pre)/4))-1)); */
++      /*@ assert next_w_frame_0: \forall integer q; 0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],next_read{Stage3Block}(W0,q)); */
++      /*@ assert next_a_load: \forall integer j;0<=j<2 ==> ext_same(va0.lane[j],next_read{Stage3Block}(A0,(KC-k)/4+j)); */
+       const float32x2_t va1 = vld1_f32(a1); a1 += 2;
++      /*@ assert next_w_frame_1: \forall integer q; 0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],next_read{Stage3Block}(W0,q)); */
+       const float32x2_t va2 = vld1_f32(a2); a2 += 2;
++      /*@ assert next_w_frame_2: \forall integer q; 0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],next_read{Stage3Block}(W0,q)); */
+       const float32x2_t va3 = vld1_f32(a3); a3 += 2;
+-
++      /*@ assert next_w_frame_3: \forall integer q; 0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],next_read{Stage3Block}(W0,q)); */
++
++      //@ ghost next_bounds(NC,nc,KC,k,0);
+       const float32x4_t vb0123c0 = vld1q_f32(w); w += 4;
+-      const float32x4_t vb4567c0 = vld1q_f32(w); w += 4;
++      /*@ assert next_w_frame_4: \forall integer q; 0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],next_read{Stage3Block}(W0,q)); */
++      /*@ assert next_bound_0_0: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+0<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_0_0: ext_same(vb0123c0.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+0)); */
++      /*@ assert next_bound_0_1: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+1<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_0_1: ext_same(vb0123c0.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+1)); */
++      /*@ assert next_bound_0_2: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+2<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_0_2: ext_same(vb0123c0.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+2)); */
++      /*@ assert next_bound_0_3: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+3<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_0_3: ext_same(vb0123c0.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+3)); */
++      /*@ assert next_b0_load: \forall integer j;0<=j<4 ==> ext_same(vb0123c0.lane[j],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+j)); */
++      /*@ assert next_high_bound0_0: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4<((NC+7)/8)*(8+8*(KC/4)); */
++      //@ ghost NextHighWeight0: ;
++      /*@ assert next_high_source0_0: ext_same(w[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4)); */
++      /*@ assert next_high_bound0_1: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source0_1: ext_same(w[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5)); */
++      /*@ assert next_high_bound0_2: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source0_2: ext_same(w[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6)); */
++      /*@ assert next_high_bound0_3: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source0_3: ext_same(w[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7)); */
++      const float32x4_t vb4567c0 = vld1q_f32(w);
++      /*@ assert next_high_actual0_1: ext_same(vb4567c0.lane[1],\at(w[1],NextHighWeight0)); */
++      /*@ ghost next_weight_transitive(vb4567c0.lane[1]); */
++      /*@ assert next_high_weightjoin0_1: (ext_same(vb4567c0.lane[1],\at(w[1],NextHighWeight0)) && ext_same(\at(w[1],NextHighWeight0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5))) ==> ext_same(vb4567c0.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5)); */
++      /*@ assert next_high_load0_1: ext_same(vb4567c0.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5)); */
++
++      /*@ assert next_high_actual0_2: ext_same(vb4567c0.lane[2],\at(w[2],NextHighWeight0)); */
++      /*@ ghost next_weight_transitive(vb4567c0.lane[2]); */
++      /*@ assert next_high_weightjoin0_2: (ext_same(vb4567c0.lane[2],\at(w[2],NextHighWeight0)) && ext_same(\at(w[2],NextHighWeight0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6))) ==> ext_same(vb4567c0.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6)); */
++      /*@ assert next_high_load0_2: ext_same(vb4567c0.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6)); */
++
++      /*@ assert next_high_actual0_3: ext_same(vb4567c0.lane[3],\at(w[3],NextHighWeight0)); */
++      /*@ ghost next_weight_transitive(vb4567c0.lane[3]); */
++      /*@ assert next_high_weightjoin0_3: (ext_same(vb4567c0.lane[3],\at(w[3],NextHighWeight0)) && ext_same(\at(w[3],NextHighWeight0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7))) ==> ext_same(vb4567c0.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7)); */
++      /*@ assert next_high_load0_3: ext_same(vb4567c0.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7)); */
++      
++      /*@ assert next_high_actual0_0: ext_same(vb4567c0.lane[0],\at(w[0],NextHighWeight0)); */
++      /*@ ghost next_weight_transitive(vb4567c0.lane[0]); */
++      /*@ assert next_high_weightjoin0_0: (ext_same(vb4567c0.lane[0],\at(w[0],NextHighWeight0)) && ext_same(\at(w[0],NextHighWeight0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4))) ==> ext_same(vb4567c0.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4)); */
++      /*@ assert next_high_load0_0: ext_same(vb4567c0.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4)); */
++       w += 4;
++      /*@ assert next_w_frame_5: \forall integer q; 0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],next_read{Stage3Block}(W0,q)); */
+       const float32x4_t vb0123c1 = vld1q_f32(w); w += 4;
+-      const float32x4_t vb4567c1 = vld1q_f32(w); w += 4;
++      /*@ assert next_bound_1_0: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+0<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_1_0: ext_same(vb0123c1.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+0)); */
++      /*@ assert next_bound_1_1: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+1<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_1_1: ext_same(vb0123c1.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+1)); */
++      /*@ assert next_bound_1_2: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+2<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_1_2: ext_same(vb0123c1.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+2)); */
++      /*@ assert next_bound_1_3: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+3<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_lane_1_3: ext_same(vb0123c1.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+3)); */
++      /*@ assert next_b1_load: \forall integer j;0<=j<4 ==> ext_same(vb0123c1.lane[j],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+j)); */
++      //@ ghost NextHighWeight1: ;
++      /*@ assert next_high_bound1_0: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source1_0: ext_same(w[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4)); */
++      /*@ assert next_high_bound1_1: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source1_1: ext_same(w[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5)); */
++      /*@ assert next_high_bound1_2: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source1_2: ext_same(w[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6)); */
++      /*@ assert next_high_bound1_3: 0<=((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7<((NC+7)/8)*(8+8*(KC/4)); */
++      /*@ assert next_high_source1_3: ext_same(w[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7)); */
++      const float32x4_t vb4567c1 = vld1q_f32(w);
++      /*@ assert next_high_actual1_0: ext_same(vb4567c1.lane[0],\at(w[0],NextHighWeight1)); */
++      /*@ ghost next_weight_transitive(vb4567c1.lane[0]); */
++      /*@ assert next_high_weightjoin1_0: (ext_same(vb4567c1.lane[0],\at(w[0],NextHighWeight1)) && ext_same(\at(w[0],NextHighWeight1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4))) ==> ext_same(vb4567c1.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4)); */
++      /*@ assert next_high_load1_0: ext_same(vb4567c1.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4)); */
++
++      /*@ assert next_high_actual1_1: ext_same(vb4567c1.lane[1],\at(w[1],NextHighWeight1)); */
++      /*@ ghost next_weight_transitive(vb4567c1.lane[1]); */
++      /*@ assert next_high_weightjoin1_1: (ext_same(vb4567c1.lane[1],\at(w[1],NextHighWeight1)) && ext_same(\at(w[1],NextHighWeight1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5))) ==> ext_same(vb4567c1.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5)); */
++      /*@ assert next_high_load1_1: ext_same(vb4567c1.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5)); */
++
++      /*@ assert next_high_actual1_2: ext_same(vb4567c1.lane[2],\at(w[2],NextHighWeight1)); */
++      /*@ ghost next_weight_transitive(vb4567c1.lane[2]); */
++      /*@ assert next_high_weightjoin1_2: (ext_same(vb4567c1.lane[2],\at(w[2],NextHighWeight1)) && ext_same(\at(w[2],NextHighWeight1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6))) ==> ext_same(vb4567c1.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6)); */
++      /*@ assert next_high_load1_2: ext_same(vb4567c1.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6)); */
++
++      /*@ assert next_high_actual1_3: ext_same(vb4567c1.lane[3],\at(w[3],NextHighWeight1)); */
++      /*@ ghost next_weight_transitive(vb4567c1.lane[3]); */
++      /*@ assert next_high_weightjoin1_3: (ext_same(vb4567c1.lane[3],\at(w[3],NextHighWeight1)) && ext_same(\at(w[3],NextHighWeight1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7))) ==> ext_same(vb4567c1.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7)); */
++      /*@ assert next_high_load1_3: ext_same(vb4567c1.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7)); */
++       w += 4;
++
++
++
+ 
+       const float32x4_t va0c0 = vdupq_lane_f32(va0, 0);
++      /*@ assert next_dup_current_0: next_vec4_splat(va0c0,va0.lane[0]); */
++      /*@ assert next_dup_ref_0: next_vec4_splat(va0c0,next_read{Stage3Block}(A0,(KC-k)/4+0)); */
+       const float32x4_t va1c0 = vdupq_lane_f32(va1, 0);
+       const float32x4_t va2c0 = vdupq_lane_f32(va2, 0);
+       const float32x4_t va3c0 = vdupq_lane_f32(va3, 0);
++      /*@ assert next_scalar_full_frame_0: ext_same(vacc0x0.lane[0], next_acc_scalar0); */
++      /*@ assert next_scalar_full_frame_1: ext_same(vacc0x0.lane[1], next_acc_scalar1); */
++      /*@ assert next_scalar_full_frame_2: ext_same(vacc0x0.lane[2], next_acc_scalar2); */
++      /*@ assert next_scalar_full_frame_3: ext_same(vacc0x0.lane[3], next_acc_scalar3); */
++      /*@ assert next_acc_before_0_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_acc_before_0_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_acc_before_0_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_acc_before_0_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_fma_pre_a0: ext_same(va0c0.lane[0],next_read{Stage3Block}(A0,(KC-k)/4)); */
++      /*@ assert next_fma_pre_w0: ext_same(vb0123c0.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+0)); */
++      /*@ assert next_fma_pre_c0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4,KC/4)); */
++      /*@ assert next_fma_pre_r0: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+0),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4,KC/4))); */
++      /*@ assert next_fma_pre_a1: ext_same(va0c0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4)); */
++      /*@ assert next_fma_pre_w1: ext_same(vb0123c0.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+1)); */
++      /*@ assert next_fma_pre_c1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4,KC/4)); */
++      /*@ assert next_fma_pre_r1: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+1),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4,KC/4))); */
++      /*@ assert next_fma_pre_a2: ext_same(va0c0.lane[2],next_read{Stage3Block}(A0,(KC-k)/4)); */
++      /*@ assert next_fma_pre_w2: ext_same(vb0123c0.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+2)); */
++      /*@ assert next_fma_pre_c2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4,KC/4)); */
++      /*@ assert next_fma_pre_r2: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+2),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4,KC/4))); */
++      /*@ ghost next_splat_transport(va0c0.lane[3],va0c0.lane[0],va0.lane[0]); */
++      /*@ assert next_splat_join_ground: next_splat_join(va0c0.lane[3],va0c0.lane[0],va0.lane[0],next_read{Stage3Block}(A0,(KC-k)/4)); */
++      /*@ assert next_fma_pre_a3: ext_same(va0c0.lane[3],next_read{Stage3Block}(A0,(KC-k)/4)); */
++      /*@ assert next_fma_pre_w3: ext_same(vb0123c0.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+3)); */
++      /*@ assert next_fma_pre_c3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4,KC/4)); */
++      /*@ assert next_fma_pre_r3: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+3),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4,KC/4))); */
+       vacc0x0 = vfmaq_f32(vacc0x0, va0c0, vb0123c0);
++      /*@ ghost next_fma_result(vacc0x0.lane[0],va0c0.lane[0],vb0123c0.lane[0],next_acc_scalar0); */
++      /*@ assert next_fma_result_ground: next_fma_result_relation(vacc0x0.lane[0],va0c0.lane[0],vb0123c0.lane[0],next_acc_scalar0,next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+0),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x0.lane[1],va0c0.lane[1],vb0123c0.lane[1],next_acc_scalar1); */
++      /*@ assert next_fma_result_ground_1: next_fma_result_relation(vacc0x0.lane[1],va0c0.lane[1],vb0123c0.lane[1],next_acc_scalar1,next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+1),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x0.lane[2],va0c0.lane[2],vb0123c0.lane[2],next_acc_scalar2); */
++      /*@ assert next_fma_result_ground_2: next_fma_result_relation(vacc0x0.lane[2],va0c0.lane[2],vb0123c0.lane[2],next_acc_scalar2,next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+2),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x0.lane[3],va0c0.lane[3],vb0123c0.lane[3],next_acc_scalar3); */
++      /*@ assert next_fma_result_ground_3: next_fma_result_relation(vacc0x0.lane[3],va0c0.lane[3],vb0123c0.lane[3],next_acc_scalar3,next_read{Stage3Block}(A0,(KC-k)/4),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+3),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_after_0_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_after_0_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_after_0_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_after_0_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_first_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_first_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_first_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_first_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4)); */
+       vacc1x0 = vfmaq_f32(vacc1x0, va1c0, vb0123c0);
+       vacc2x0 = vfmaq_f32(vacc2x0, va2c0, vb0123c0);
+       vacc3x0 = vfmaq_f32(vacc3x0, va3c0, vb0123c0);
++      /*@ assert next_high_full_frame_0: ext_same(vacc0x1.lane[0],next_high_old0_0); */
++      /*@ assert next_high_full_frame_1: ext_same(vacc0x1.lane[1],next_high_old0_1); */
++      /*@ assert next_high_full_frame_2: ext_same(vacc0x1.lane[2],next_high_old0_2); */
++      /*@ assert next_high_full_frame_3: ext_same(vacc0x1.lane[3],next_high_old0_3); */
++      
++      /*@ assert next_high_pre_a0_0: ext_same(va0c0.lane[0],next_read{Stage3Block}(A0,(KC-k)/4+0)); */
++      /*@ assert next_high_pre_w0_0: ext_same(vb4567c0.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4)); */
++      /*@ assert next_high_pre_c0_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_high_pre_r0_0: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+0,KC/4))); */
++      
++      /*@ assert next_high_pre_a0_1: ext_same(va0c0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+0)); */
++      /*@ assert next_high_pre_w0_1: ext_same(vb4567c0.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5)); */
++      /*@ assert next_high_pre_c0_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_high_pre_r0_1: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+0,KC/4))); */
++      
++      /*@ assert next_high_pre_a0_2: ext_same(va0c0.lane[2],next_read{Stage3Block}(A0,(KC-k)/4+0)); */
++      /*@ assert next_high_pre_w0_2: ext_same(vb4567c0.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6)); */
++      /*@ assert next_high_pre_c0_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_high_pre_r0_2: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+0,KC/4))); */
++      
++      /*@ assert next_high_pre_a0_3: ext_same(va0c0.lane[3],next_read{Stage3Block}(A0,(KC-k)/4+0)); */
++      /*@ assert next_high_pre_w0_3: ext_same(vb4567c0.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7)); */
++      /*@ assert next_high_pre_c0_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+0,KC/4)); */
++      /*@ assert next_high_pre_r0_3: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+1,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+0,KC/4))); */
+       vacc0x1 = vfmaq_f32(vacc0x1, va0c0, vb4567c0);
++      /*@ ghost next_fma_result(vacc0x1.lane[0],va0c0.lane[0],vb4567c0.lane[0],next_high_old0_0); */
++      /*@ assert next_high_result0_0: next_fma_result_relation(vacc0x1.lane[0],va0c0.lane[0],vb4567c0.lane[0],next_high_old0_0,next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+0,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_after0_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+1,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x1.lane[1],va0c0.lane[1],vb4567c0.lane[1],next_high_old0_1); */
++      /*@ assert next_high_result0_1: next_fma_result_relation(vacc0x1.lane[1],va0c0.lane[1],vb4567c0.lane[1],next_high_old0_1,next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+5),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+0,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_after0_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+1,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x1.lane[2],va0c0.lane[2],vb4567c0.lane[2],next_high_old0_2); */
++      /*@ assert next_high_result0_2: next_fma_result_relation(vacc0x1.lane[2],va0c0.lane[2],vb4567c0.lane[2],next_high_old0_2,next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+6),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+0,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_after0_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+1,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x1.lane[3],va0c0.lane[3],vb4567c0.lane[3],next_high_old0_3); */
++      /*@ assert next_high_result0_3: next_fma_result_relation(vacc0x1.lane[3],va0c0.lane[3],vb4567c0.lane[3],next_high_old0_3,next_read{Stage3Block}(A0,(KC-k)/4+0),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+0)+7),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+0,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_after0_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+1,KC/4)); */
+       vacc1x1 = vfmaq_f32(vacc1x1, va1c0, vb4567c0);
+       vacc2x1 = vfmaq_f32(vacc2x1, va2c0, vb4567c0);
+       vacc3x1 = vfmaq_f32(vacc3x1, va3c0, vb4567c0);
+       const float32x4_t va0c1 = vdupq_lane_f32(va0, 1);
++      /*@ assert next_dup_current_1: next_vec4_splat(va0c1,va0.lane[1]); */
++      /*@ assert next_dup_ref_1: next_vec4_splat(va0c1,next_read{Stage3Block}(A0,(KC-k)/4+1)); */
+       const float32x4_t va1c1 = vdupq_lane_f32(va1, 1);
+       const float32x4_t va2c1 = vdupq_lane_f32(va2, 1);
+       const float32x4_t va3c1 = vdupq_lane_f32(va3, 1);
++      /*@ assert next_acc_before_1_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_before_1_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_before_1_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_acc_before_1_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4)); */
++      /*@ ghost float next_second_acc0 = vacc0x0.lane[0]; */
++      /*@ assert next_second_source: ext_same(va0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_second_dup0: ext_same(va0c1.lane[0],va0.lane[1]); */
++      /*@ ghost next_splat_transport(va0c1.lane[0],va0.lane[1],va0.lane[1]); */
++      /*@ assert next_second_join0: next_splat_join(va0c1.lane[0],va0.lane[1],va0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_a0: ext_same(va0c1.lane[0],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_w0: ext_same(vb0123c1.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+0)); */
++      /*@ assert next_fma_second_pre_c0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_fma_second_pre_r0: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+0),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4))); */
++      /*@ ghost float next_second_acc1 = vacc0x0.lane[1]; */
++      /*@ assert next_second_dup1: ext_same(va0c1.lane[1],va0.lane[1]); */
++      /*@ ghost next_splat_transport(va0c1.lane[1],va0.lane[1],va0.lane[1]); */
++      /*@ assert next_second_join1: next_splat_join(va0c1.lane[1],va0.lane[1],va0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_a1: ext_same(va0c1.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_w1: ext_same(vb0123c1.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+1)); */
++      /*@ assert next_fma_second_pre_c1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_fma_second_pre_r1: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+1),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4))); */
++      /*@ ghost float next_second_acc2 = vacc0x0.lane[2]; */
++      /*@ assert next_second_dup2: ext_same(va0c1.lane[2],va0.lane[1]); */
++      /*@ ghost next_splat_transport(va0c1.lane[2],va0.lane[1],va0.lane[1]); */
++      /*@ assert next_second_join2: next_splat_join(va0c1.lane[2],va0.lane[1],va0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_a2: ext_same(va0c1.lane[2],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_w2: ext_same(vb0123c1.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+2)); */
++      /*@ assert next_fma_second_pre_c2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_fma_second_pre_r2: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+2),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4))); */
++      /*@ ghost float next_second_acc3 = vacc0x0.lane[3]; */
++      /*@ assert next_second_dup3: ext_same(va0c1.lane[3],va0.lane[1]); */
++      /*@ ghost next_splat_transport(va0c1.lane[3],va0.lane[1],va0.lane[1]); */
++      /*@ assert next_second_join3: next_splat_join(va0c1.lane[3],va0.lane[1],va0.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_a3: ext_same(va0c1.lane[3],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_fma_second_pre_w3: ext_same(vb0123c1.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+3)); */
++      /*@ assert next_fma_second_pre_c3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_fma_second_pre_r3: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+3),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4))); */
+       vacc0x0 = vfmaq_f32(vacc0x0, va0c1, vb0123c1);
++      /*@ ghost next_fma_result(vacc0x0.lane[0],va0c1.lane[0],vb0123c1.lane[0],next_second_acc0); */
++      /*@ assert next_fma_second_ground_0: next_fma_result_relation(vacc0x0.lane[0],va0c1.lane[0],vb0123c1.lane[0],next_second_acc0,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+0),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+2,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x0.lane[1],va0c1.lane[1],vb0123c1.lane[1],next_second_acc1); */
++      /*@ assert next_fma_second_ground_1: next_fma_result_relation(vacc0x0.lane[1],va0c1.lane[1],vb0123c1.lane[1],next_second_acc1,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+1),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+2,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x0.lane[2],va0c1.lane[2],vb0123c1.lane[2],next_second_acc2); */
++      /*@ assert next_fma_second_ground_2: next_fma_result_relation(vacc0x0.lane[2],va0c1.lane[2],vb0123c1.lane[2],next_second_acc2,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+2),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+2,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x0.lane[3],va0c1.lane[3],vb0123c1.lane[3],next_second_acc3); */
++      /*@ assert next_fma_second_ground_3: next_fma_result_relation(vacc0x0.lane[3],va0c1.lane[3],vb0123c1.lane[3],next_second_acc3,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+3),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_after_1_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_after_1_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_after_1_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_after_1_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_second_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_second_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_second_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_second_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+2,KC/4)); */
+       vacc1x0 = vfmaq_f32(vacc1x0, va1c1, vb0123c1);
+       vacc2x0 = vfmaq_f32(vacc2x0, va2c1, vb0123c1);
+       vacc3x0 = vfmaq_f32(vacc3x0, va3c1, vb0123c1);
++      /*@ ghost float next_high_old1_0 = vacc0x1.lane[0]; */
++      /*@ ghost float next_high_old1_1 = vacc0x1.lane[1]; */
++      /*@ ghost float next_high_old1_2 = vacc0x1.lane[2]; */
++      /*@ ghost float next_high_old1_3 = vacc0x1.lane[3]; */
++      
++      /*@ assert next_high_pre_a1_0: ext_same(va0c1.lane[0],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_high_pre_w1_0: ext_same(vb4567c1.lane[0],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4)); */
++      /*@ assert next_high_pre_c1_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_pre_r1_0: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+1,KC/4))); */
++      
++      /*@ assert next_high_pre_a1_1: ext_same(va0c1.lane[1],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_high_pre_w1_1: ext_same(vb4567c1.lane[1],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5)); */
++      /*@ assert next_high_pre_c1_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_pre_r1_1: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+1,KC/4))); */
++      
++      /*@ assert next_high_pre_a1_2: ext_same(va0c1.lane[2],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_high_pre_w1_2: ext_same(vb4567c1.lane[2],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6)); */
++      /*@ assert next_high_pre_c1_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_pre_r1_2: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+1,KC/4))); */
++      
++      /*@ assert next_high_pre_a1_3: ext_same(va0c1.lane[3],next_read{Stage3Block}(A0,(KC-k)/4+1)); */
++      /*@ assert next_high_pre_w1_3: ext_same(vb4567c1.lane[3],next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7)); */
++      /*@ assert next_high_pre_c1_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+1,KC/4)); */
++      /*@ assert next_high_pre_r1_3: ext_same(stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+2,KC/4),shim_fma32(next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+1,KC/4))); */
+       vacc0x1 = vfmaq_f32(vacc0x1, va0c1, vb4567c1);
++      /*@ ghost next_fma_result(vacc0x1.lane[0],va0c1.lane[0],vb4567c1.lane[0],next_high_old1_0); */
++      /*@ assert next_high_result1_0: next_fma_result_relation(vacc0x1.lane[0],va0c1.lane[0],vb4567c1.lane[0],next_high_old1_0,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_after1_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+2,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x1.lane[1],va0c1.lane[1],vb4567c1.lane[1],next_high_old1_1); */
++      /*@ assert next_high_result1_1: next_fma_result_relation(vacc0x1.lane[1],va0c1.lane[1],vb4567c1.lane[1],next_high_old1_1,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+5),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_after1_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+2,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x1.lane[2],va0c1.lane[2],vb4567c1.lane[2],next_high_old1_2); */
++      /*@ assert next_high_result1_2: next_fma_result_relation(vacc0x1.lane[2],va0c1.lane[2],vb4567c1.lane[2],next_high_old1_2,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+6),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_after1_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+2,KC/4)); */
++      /*@ ghost next_fma_result(vacc0x1.lane[3],va0c1.lane[3],vb4567c1.lane[3],next_high_old1_3); */
++      /*@ assert next_high_result1_3: next_fma_result_relation(vacc0x1.lane[3],va0c1.lane[3],vb4567c1.lane[3],next_high_old1_3,next_read{Stage3Block}(A0,(KC-k)/4+1),next_read{Stage3Block}(W0,((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+7),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+1,KC/4),stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_after1_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+2,KC/4)); */
+       vacc1x1 = vfmaq_f32(vacc1x1, va1c1, vb4567c1);
+       vacc2x1 = vfmaq_f32(vacc2x1, va2c1, vb4567c1);
+       vacc3x1 = vfmaq_f32(vacc3x1, va3c1, vb4567c1);
++      /*@ assert next_acc_frame_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_frame_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_frame_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_acc_frame_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_final_frame_0: ext_same(vacc0x1.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,4,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_final_frame_1: ext_same(vacc0x1.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,5,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_final_frame_2: ext_same(vacc0x1.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,6,(KC-k)/4+2,KC/4)); */
++      /*@ assert next_high_final_frame_3: ext_same(vacc0x1.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,7,(KC-k)/4+2,KC/4)); */
+     }
+     if XNN_UNLIKELY(k != 0) {
+       const float32x4_t va0 = vld1q_dup_f32(a0); a0 += 1;
+--- a/rvv.c
++++ b/rvv.c
+@@ -10,6 +10,9 @@
+     size_t cn_stride,
+     const struct xnn_f32_minmax_params* restrict params)
+ {
++  /*@ ghost size_t NC=nc,KC=kc; */
++  /*@ ghost const float *A0=a,*W0=w; */
++  /*@ ghost float *C0=c; */
+   assert(mr != 0);
+   assert(mr <= 4);
+   assert(nc != 0);
+@@ -40,7 +43,22 @@
+     c3 = c2;
+   }
+ 
++  /*@ loop invariant 0<nc<=NC;
++      loop invariant (NC-nc)%8==0;
++      loop invariant a0==A0;
++      loop invariant a1==A0+(mr<2?0:KC/4);
++      loop invariant a2==A0+(mr<=2?mr-1:2)*(KC/4);
++      loop invariant a3==A0+(mr==4?3:mr-1)*(KC/4);
++      loop invariant c0==C0+(NC-nc);
++      loop invariant c1==C0+(mr<2?0:NC)+(NC-nc);
++      loop invariant c2==C0+(mr<=2?mr-1:2)*NC+(NC-nc);
++      loop invariant c3==C0+(mr==4?3:mr-1)*NC+(NC-nc);
++      loop invariant w==W0+((NC-nc)/8)*(8+8*(KC/4));
++      loop assigns nc,a0,a1,a2,a3,c0,c1,c2,c3,w,C0[0..mr*NC-1],errno;
++      loop variant nc;
++  */
+   do {
++    //@ ghost Stage3Block: ;
+     size_t vl = __riscv_vsetvl_e32m4(nc > 8 ? 8 : nc);
+ 
+     vfloat32m4_t vacc0 = __riscv_vle32_v_f32m4(w, vl); w += 8;
+@@ -49,6 +67,21 @@
+     vfloat32m4_t vacc3 = vacc0;
+ 
+     size_t k = kc;
++    /*@ loop invariant 0<=k<=KC && k%4==0;
++        loop invariant a0==A0+(KC-k)/4;
++        loop invariant a1==A0+(mr<2?0:KC/4)+(KC-k)/4;
++        loop invariant a2==A0+(mr<=2?mr-1:2)*(KC/4)+(KC-k)/4;
++        loop invariant a3==A0+(mr==4?3:mr-1)*(KC/4)+(KC-k)/4;
++        loop invariant w==W0+((NC-nc)/8)*(8+8*(KC/4))+8+8*((KC-k)/4);
++        loop invariant stage3_acc_rvv_0_0: \forall integer j; 0<=j<vl ==> ext_same(vacc0.lane[j],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_rvv_1_0: \forall integer j; 0<=j<vl ==> ext_same(vacc1.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr<2?0:1),(NC-nc)/8,j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_rvv_2_0: \forall integer j; 0<=j<vl ==> ext_same(vacc2.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr<=2?mr-1:2),(NC-nc)/8,j,(KC-k)/4,KC/4));
++        loop invariant stage3_acc_rvv_3_0: \forall integer j; 0<=j<vl ==> ext_same(vacc3.lane[j],stage3_gacc{Stage3Block}(A0,W0,(mr==4?3:mr-1),(NC-nc)/8,j,(KC-k)/4,KC/4));
++        loop invariant stage3_read_a: \forall integer q;0<=q<4*(KC/4) ==> ext_same(A0[q],\at(A0[q],Stage3Block));
++        loop invariant stage3_read_w: \forall integer q;0<=q<((NC+7)/8)*(8+8*(KC/4)) ==> ext_same(W0[q],\at(W0[q],Stage3Block));
++        loop assigns k,a0,a1,a2,a3,w,vacc0,vacc1,vacc2,vacc3,errno;
++        loop variant k;
++    */
+     while (k > 0) {
+       float a0_val = *a0++;
+       float a1_val = *a1++;
+--- a/harness.c
++++ b/harness.c
+@@ -3,7 +3,17 @@
+   struct xnn_f32_minmax_params params={{lower,upper}};
+   test_neon(mr,nc,k*4,a,k*4,w,left,nc*4,32,&params);
+   test_rvv(mr,nc,k*4,a,k*4,w,right,nc*4,32,&params);
+-  for(size_t row=0;row<mr;row++)for(size_t col=0;col<nc;col++) { size_t i=row*nc+col;
++  /*@ loop invariant 0<=row<=mr;
++      loop invariant \forall integer s,t; 0<=s<row && 0<=t<nc ==> (\eq_float(left[s*(nc)+t],right[s*(nc)+t]) || (\is_NaN(left[s*(nc)+t]) && \is_NaN(right[s*(nc)+t])));
++      loop assigns row;
++      loop variant mr-row;
++  */
++  for(size_t row=0;row<mr;row++)/*@ loop invariant 0<=col<=nc;
++      loop invariant \forall integer t; 0<=t<col ==> (\eq_float(left[row*(nc)+t],right[row*(nc)+t]) || (\is_NaN(left[row*(nc)+t]) && \is_NaN(right[row*(nc)+t])));
++      loop assigns col;
++      loop variant nc-col;
++  */
++  for(size_t col=0;col<nc;col++) { size_t i=row*nc+col;
+     if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   }
+   return 1;
+--- a/fp_primitives.h
++++ b/fp_primitives.h
+@@ -1,6 +1,23 @@
+ #ifndef COMPLEX_FP_PRIMITIVES_H
+ #define COMPLEX_FP_PRIMITIVES_H
+ #include "native_types.h"
++/*@
++ predicate ext_same(float x,float y) = (\is_NaN(x) && \is_NaN(y)) || (\eq_float(x,y) && \sign(x)==\sign(y));
++ predicate next_vec4_splat(float32x4_t v,float x) =
++  ext_same(v.lane[0],x) && ext_same(v.lane[1],x) && ext_same(v.lane[2],x) && ext_same(v.lane[3],x);
++ logic float complex_add32(float x,float y);
++ logic float complex_sub32(float x,float y);
++ logic float complex_mul32(float x,float y);
++ logic float ext_num_min32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(a,b)?a:(\lt_float(b,a)?b:(\sign(a)==\Negative?a:b))));
++ logic float ext_num_max32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(b,a)?a:(\lt_float(a,b)?b:(\sign(a)==\Positive?a:b))));
++ logic float ext_neon_min32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_min32(a,b));
++ logic float ext_neon_max32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_max32(a,b));
++ lemma ext_same_refl: \forall float a; ext_same(a,a);
++ lemma ext_same_trans: \forall float a,b,c; ext_same(a,b) && ext_same(b,c) ==> ext_same(a,c);
++ lemma ext_add_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_add32(a,c),complex_add32(b,c));
++ lemma ext_mul_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_mul32(a,c),complex_mul32(b,c));
++ lemma ext_sub_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_sub32(a,c),complex_sub32(b,c));
++*/
+ int fp_nan(float x);
+ float canonical_nan(void);
+ float min_number(float a,float b);
+@@ -187,4 +204,76 @@
+ vint32m8_t __riscv_vsra_vx_i32m8(vint32m8_t a,unsigned n,size_t vl);
+ vfloat32m8_t __riscv_vfcvt_f_x_v_f32m8(vint32m8_t a,size_t vl);
+ vfloat32m1_t __riscv_vlse32_v_f32m1_m(vbool32_t mask,const float *p,ptrdiff_t stride,size_t vl);
++
++/*@ logic float stage3_gacc{L}(float *a,float *w,integer row,integer block,integer lane,integer t,integer K) =
++ t<=0 ? w[block*(8+8*K)+lane] : shim_fma32(a[row*K+t-1],w[block*(8+8*K)+8+8*(t-1)+lane],stage3_gacc(a,w,row,block,lane,t-1,K)); */
++
++
++/*@ lemma stage3_gacc_seed{L}: \forall float *a,*w; \forall integer row,block,lane,K;
++ ext_same(stage3_gacc(a,w,row,block,lane,0,K),w[block*(8+8*K)+lane]);
++ lemma stage3_gacc_step{L}: \forall float *a,*w; \forall integer row,block,lane,t,K;
++ 0<=t ==> ext_same(stage3_gacc(a,w,row,block,lane,t+1,K),shim_fma32(a[row*K+t],w[block*(8+8*K)+8+8*t+lane],stage3_gacc(a,w,row,block,lane,t,K))); */
++
++/*@ \wp::strategy Stage3Child: \prover("cvc5",10), \prover("z3",10);
++    \wp::strategy Stage3Array: \tactic("Wp.array",\ingoal(A[I[V]][J]),\children(Stage3Child)), Stage3Child;
++    \wp::proof Stage3Array: equivalent ,stage3_gacc_seed,stage3_gacc_step; */
++/*@ lemma stage3_fma_congruence: \forall float a,b,c,x,y,z;
++ ext_same(a,x) && ext_same(b,y) && ext_same(c,z) ==> ext_same(shim_fma32(a,b,c),shim_fma32(x,y,z)); */
++/*@ lemma next_gacc_two{L}: \forall float *a,*w; \forall integer row,block,lane,t,K;
++ 0<=t ==> ext_same(stage3_gacc(a,w,row,block,lane,t+2,K),
++ shim_fma32(a[row*K+t+1],w[block*(8+8*K)+8+8*(t+1)+lane],
++ shim_fma32(a[row*K+t],w[block*(8+8*K)+8+8*t+lane],stage3_gacc(a,w,row,block,lane,t,K)))); */
++/*@ logic float next_read{L}(float *p,integer i)=p[i]; */
++/*@ lemma next_packed_bound: \forall integer N,n,K,t,j;
++ 0<n<=N && 0<=t<K && 0<=j<8 ==>
++ 0<=((N-n)/8)*(8+8*K)+8+8*t+j<((N+7)/8)*(8+8*K);
++ lemma next_gacc_substitute{L}: \forall float *a,*w; \forall integer row,block,lane,t,K; \forall float x,y,z;
++ 0<=t && ext_same(x,a[row*K+t]) && ext_same(y,w[block*(8+8*K)+8+8*t+lane]) && ext_same(z,stage3_gacc(a,w,row,block,lane,t,K)) ==>
++ ext_same(shim_fma32(x,y,z),stage3_gacc(a,w,row,block,lane,t+1,K)); */
++/*@ ghost
++ /@ assigns \nothing;
++    ensures next_bounds_post: 0<n<=N && 8<=k<=KC && 0<=j<4 ==>
++      (
++       0<=((N-n)/8)*(8+8*(KC/4))+8+8*((KC-k)/4)+j<((N+7)/8)*(8+8*(KC/4)) &&
++       0<=((N-n)/8)*(8+8*(KC/4))+8+8*((KC-k)/4+1)+j<((N+7)/8)*(8+8*(KC/4)));
++ @/
++ static void next_bounds(unsigned long N,unsigned long n,unsigned long KC,unsigned long k,unsigned long j) { }
++*/
++/*@ predicate next_fma_result_relation(float r,float x,float y,float z,float u,float v,float w,float p) =
++ (ext_same(x,u) && ext_same(y,v) && ext_same(z,w) &&
++  ext_same(p,shim_fma32(u,v,w)) && ext_same(r,shim_fma32(x,y,z))) ==>
++  ext_same(r,p);
++*/
++/*@ ghost
++ /@ assigns \nothing;
++    ensures next_fma_result_post: \forall float u,v,w,p;
++      next_fma_result_relation(r,x,y,z,u,v,w,p);
++ @/
++ static void next_fma_result(float r,float x,float y,float z) {}
++*/
++/*@ ghost
++ /@ assigns \nothing;
++    ensures next_bias_transitive_post: \forall float y;
++      (ext_same(x,y) && ext_same(y,z)) ==> ext_same(x,z);
++ @/
++ static void next_bias_transitive(float x,float z) {}
++*/
++
++/*@ ghost
++ /@ assigns \nothing;
++    ensures next_weight_transitive_post: \forall float y,z;
++      (ext_same(x,y) && ext_same(y,z)) ==> ext_same(x,z);
++ @/
++ static void next_weight_transitive(float x) {}
++*/
++
++/*@ predicate next_splat_join(float x,float y,float z,float r) =
++ (ext_same(x,z) && ext_same(y,z) && ext_same(y,r)) ==> ext_same(x,r);
++*/
++/*@ ghost
++ /@ assigns \nothing;
++    ensures next_splat_join_post: \forall float r; next_splat_join(x,y,z,r);
++ @/
++ static void next_splat_transport(float x,float y,float z) {}
++*/
+ #endif
+--- a/fp_minmax.c
++++ b/fp_minmax.c
+@@ -1,12 +1,15 @@
+ #include "fp_primitives.h"
+ 
++/*@ assigns \nothing; ensures \result==(\is_NaN(x)?1:0); */
+ int fp_nan(float x) { return x != x; }
+ 
++/*@ assigns \nothing; ensures \is_NaN(\result); */
+ float canonical_nan(void) {
+   uint32_t bits=UINT32_C(0x7fc00000); float value;
+   memcpy(&value,&bits,sizeof(value)); return value;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_min32(a,b)); */
+ float min_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -14,6 +17,7 @@
+   return a < b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_max32(a,b)); */
+ float max_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -21,6 +25,7 @@
+   return a > b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_min32(a,b)); */
+ float neon_min(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return min_number(a,b);
+@@ -29,6 +34,7 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_max32(a,b)); */
+ float neon_max(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return max_number(a,b);
+@@ -37,16 +43,24 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
+ float32x4_t vminq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
+ float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
+-float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
++float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
+ 
+-float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
++float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
+--- a/fp_memory.c
++++ b/fp_memory.c
+@@ -1,69 +1,106 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires \valid_read(p+(0..4-1)); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],p[j]));  ensures next_load_fixed_0: ext_same(\result.lane[0],p[0]); ensures next_load_fixed_1: ext_same(\result.lane[1],p[1]); ensures next_load_fixed_2: ext_same(\result.lane[2],p[2]); ensures next_load_fixed_3: ext_same(\result.lane[3],p[3]); */
+ float32x4_t vld1q_f32(const float *p) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@ requires \valid_read(p+(0..2-1)); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],p[j]));  ensures next_vld1_f32_fixed_0: ext_same(\result.lane[0],p[0]); ensures next_vld1_f32_fixed_1: ext_same(\result.lane[1],p[1]); */
+ float32x2_t vld1_f32(const float *p) {
+-  float32x2_t r; for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
++  float32x2_t r; /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 2-i; */
++for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x));  ensures next_dup_n_aggregate: next_vec4_splat(\result,x);  ensures next_vdupq_n_f32_fixed_0: ext_same(\result.lane[0],x); ensures next_vdupq_n_f32_fixed_1: ext_same(\result.lane[1],x); ensures next_vdupq_n_f32_fixed_2: ext_same(\result.lane[2],x); ensures next_vdupq_n_f32_fixed_3: ext_same(\result.lane[3],x); */
+ float32x4_t vdupq_n_f32(float x) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
+ }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],*p)); */
+ float32x4_t vld1q_dup_f32(const float *p) { return vdupq_n_f32(*p); }
+ 
++/*@ requires 0<=lane<2; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],v.lane[lane]));  ensures next_dup_lane_aggregate: next_vec4_splat(\result,v.lane[lane]);  ensures next_vdupq_lane_f32_fixed_0: ext_same(\result.lane[0],v.lane[lane]); ensures next_vdupq_lane_f32_fixed_1: ext_same(\result.lane[1],v.lane[lane]); ensures next_vdupq_lane_f32_fixed_2: ext_same(\result.lane[2],v.lane[lane]); ensures next_vdupq_lane_f32_fixed_3: ext_same(\result.lane[3],v.lane[lane]); */
+ float32x4_t vdupq_lane_f32(float32x2_t v,int lane) { return vdupq_n_f32(v.lane[lane]); }
+ 
+-void vst1q_f32(float *p,float32x4_t v) { for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..4-1)); assigns p[0..4-1]; ensures \forall integer j; 0<=j<4 ==> (ext_same(p[j],v.lane[j])); */
++void vst1q_f32(float *p,float32x4_t v) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..4-1]; loop variant 4-i; */
++for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
+ 
+-void vst1_f32(float *p,float32x2_t v) { for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..2-1)); assigns p[0..2-1]; ensures \forall integer j; 0<=j<2 ==> (ext_same(p[j],v.lane[j])); */
++void vst1_f32(float *p,float32x2_t v) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..2-1]; loop variant 2-i; */
++for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
+ 
++/*@ requires \valid(p); requires 0<=lane<2; assigns p[0..1-1]; ensures ext_same(*p,v.lane[lane]); */
+ void vst1_lane_f32(float *p,float32x2_t v,int lane) { *p=v.lane[lane]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j])); */
+ float32x2_t vget_low_f32(float32x4_t v) { float32x2_t r={{v.lane[0],v.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j+2])); */
+ float32x2_t vget_high_f32(float32x4_t v) { float32x2_t r={{v.lane[2],v.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<RVV_CAP ? n : RVV_CAP; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vmovq_n_f32(float x) { return vdupq_n_f32(x); }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],*p)); */
+ float32x2_t vld1_dup_f32(const float *p) { float32x2_t r={{*p,*p}};return r; }
+ 
+ float32x4x2_t vld2q_dup_f32(const float *p) { float32x4x2_t r={{vdupq_n_f32(p[0]),vdupq_n_f32(p[1])}};return r; }
+ 
+ float32x2x2_t vld2_dup_f32(const float *p) { float32x2x2_t r={{vld1_dup_f32(p),vld1_dup_f32(p+1)}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ((j<2 ? ext_same(\result.lane[j],a.lane[j]) : ext_same(\result.lane[j],b.lane[j-2]))); */
+ float32x4_t vcombine_f32(float32x2_t a,float32x2_t b) { float32x4_t r={{a.lane[0],a.lane[1],b.lane[0],b.lane[1]}};return r; }
+ 
+-float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
++/*@ requires 0<=n<=4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j+n<4 ? ext_same(\result.lane[j],a.lane[j+n]) : ext_same(\result.lane[j],b.lane[j+n-4])); */
++float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (j+n<4 ? ext_same(r.lane[j],a.lane[j+n]) : ext_same(r.lane[j],b.lane[j+n-4]));  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
+ 
++/*@ requires 0<=n<2; assigns \nothing; ensures ext_same(\result,a.lane[n]); */
+ float vget_lane_f32(float32x2_t a,int n) { return a.lane[n]; }
+ 
++/*@ requires \valid_read(p); requires 0<=n<4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j==n ? ext_same(\result.lane[j],*p) : ext_same(\result.lane[j],a.lane[j])); */
+ float32x4_t vld1q_lane_f32(const float *p,float32x4_t a,int n) { a.lane[n]=*p;return a; }
+ 
++/*@ requires \valid(p); requires 0<=n<4; assigns p[0..1-1]; ensures ext_same(*p,a.lane[n]); */
+ void vst1q_lane_f32(float *p,float32x4_t a,int n) { *p=a.lane[n]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2]) : ext_same(\result.lane[j],b.lane[j/2])); */
+ float32x4_t vzip1q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[0],b.lane[0],a.lane[1],b.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2+2]) : ext_same(\result.lane[j],b.lane[j/2+2])); */
+ float32x4_t vzip2q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[2],b.lane[2],a.lane[3],b.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==16; */
+ size_t __riscv_vsetvlmax_e32m4(void) { return 16; }
+ 
++/*@  assigns \nothing; ensures \result==(n<4?n:4); */
+ size_t __riscv_vsetvl_e32m1(size_t n) { return n<4?n:4; }
+ 
++/*@  assigns \nothing; ensures \result==4; */
+ size_t __riscv_vsetvlmax_e32m1(void) { return 4; }
+ 
++/*@  assigns \nothing; ensures \result==(n<8?n:8); */
+ size_t __riscv_vsetvl_e32m2(size_t n) { return n<8?n:8; }
+ 
++/*@  assigns \nothing; ensures \result==8; */
+ size_t __riscv_vsetvlmax_e32m2(void) { return 8; }
+ 
++/*@  assigns \nothing; ensures \result==(n<32?n:32); */
+ size_t __riscv_vsetvl_e32m8(size_t n) { return n<32?n:32; }
+ 
++/*@  assigns \nothing; ensures \result==32; */
+ size_t __riscv_vsetvlmax_e32m8(void) { return 32; }
+ 
+-int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j]); */
++int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
+ 
+-int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j+4]); */
++int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j+4]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
+--- a/fp_arithmetic.c
++++ b/fp_arithmetic.c
+@@ -1,23 +1,45 @@
+ #include "fp_primitives.h"
++/*@ lemma ext_fma_congruence: \forall float a,b,x,y;
++ ext_same(a,b) ==> ext_same(shim_fma32(x,y,a),shim_fma32(x,y,b)); */
+ 
++/*@ assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); ensures next_fma_lane0: ext_same(\result.lane[0],shim_fma32(b.lane[0],c.lane[0],a.lane[0])); ensures next_fma_lane1: ext_same(\result.lane[1],shim_fma32(b.lane[1],c.lane[1],a.lane[1])); ensures next_fma_lane2: ext_same(\result.lane[2],shim_fma32(b.lane[2],c.lane[2],a.lane[2])); ensures next_fma_lane3: ext_same(\result.lane[3],shim_fma32(b.lane[3],c.lane[3],a.lane[3])); */
+ float32x4_t vfmaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */ a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); /*@ assert ext_same(a.lane[i],shim_fma32(b.lane[i],c.lane[i],\at(a,Pre).lane[i])); */ }
+   return a;
+ }
+ 
+-float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<2; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<4; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { for(int i=0;i<2;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ assigns errno; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 2-i; */
++for(int i=0;i<2;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+ 
+-float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
+ 
+-float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
+ 
+-float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_sub32(a.lane[j],b.lane[j])); */
++float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
+ 
+-float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];a.lane[i]=a.lane[i]+p;}return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],complex_mul32(b.lane[j],c.lane[j]))); */
++float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),complex_mul32(b.lane[j],c.lane[j]))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];
++ /*@ assert ext_same(p,complex_mul32(b.lane[i],c.lane[i])); */
++ /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */
++ a.lane[i]=a.lane[i]+p;
++ /*@ assert ext_same(a.lane[i],complex_add32(\at(a,Pre).lane[i],complex_mul32(b.lane[i],c.lane[i]))); */}return a; }
+ 
+ float vaddv_f32(float32x2_t a) { return a.lane[0]+a.lane[1]; }
+ 
+--- a/fp_memory_m4.c
++++ b/fp_memory_m4.c
+@@ -1,15 +1,21 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],p[j])); */
+ vfloat32m4_t __riscv_vle32_v_f32m4(const float *p,size_t vl) {
+-  vfloat32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r;
++  vfloat32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r;
+ }
+ 
++/*@ requires vl<=16; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j; 0<=j<vl ==> (ext_same(p[j],v.lane[j])); */
+ void __riscv_vse32_v_f32m4(float *p,vfloat32m4_t v,size_t vl) {
+-  for(size_t i=0;i<vl;i++)p[i]=v.lane[i];
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..vl-1]; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)p[i]=v.lane[i];
+ }
+ 
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],value)); */
+ vfloat32m4_t __riscv_vfmv_v_f_f32m4(float value,size_t vl) {
+-  vfloat32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=value; return r;
++  vfloat32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],value));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=value; return r;
+ }
+ 
+ vfloat32m1_t __riscv_vfredusum_vs_f32m4_f32m1(vfloat32m4_t a,vfloat32m1_t z,size_t vl) { for(size_t i=0;i<vl;i++)z.lane[0]+=a.lane[i];return z; }
+--- a/fp_arithmetic_m4.c
++++ b/fp_arithmetic_m4.c
+@@ -1,18 +1,30 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b,c.lane[j],a.lane[j])); */
+ vfloat32m4_t __riscv_vfmacc_vf_f32m4(vfloat32m4_t a,float b,vfloat32m4_t c,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { a.lane[i]=fmaf(b,c.lane[i],a.lane[i]); }
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b,c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */ a.lane[i]=fmaf(b,c.lane[i],a.lane[i]); /*@ assert ext_same(a.lane[i],shim_fma32(b,c.lane[i],\at(a,Pre).lane[i])); */ }
+   return a;
+ }
+ 
+-vfloat32m4_t __riscv_vfmul_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]*=b.lane[i];return a; }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++vfloat32m4_t __riscv_vfmul_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]*=b.lane[i];return a; }
+ 
+-vfloat32m4_t __riscv_vfadd_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]+=b.lane[i];return a; }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++vfloat32m4_t __riscv_vfadd_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]+=b.lane[i];return a; }
+ 
+-vfloat32m4_t __riscv_vfsub_vf_f32m4(vfloat32m4_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]-=b;return a; }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_sub32(a.lane[j],b)); */
++vfloat32m4_t __riscv_vfsub_vf_f32m4(vfloat32m4_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]-=b;return a; }
+ 
+-vfloat32m4_t __riscv_vfmacc_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,vfloat32m4_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ requires vl<=16; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++vfloat32m4_t __riscv_vfmacc_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,vfloat32m4_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+ 
+-vfloat32m4_t __riscv_vfmadd_vf_f32m4(vfloat32m4_t a,float b,vfloat32m4_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b,a.lane[i],c.lane[i]);return a; }
++/*@ requires vl<=16; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b,a.lane[j],c.lane[j])); */
++vfloat32m4_t __riscv_vfmadd_vf_f32m4(vfloat32m4_t a,float b,vfloat32m4_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b,\at(a.lane[j],Pre),c.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b,a.lane[i],c.lane[i]); return a; }
+ 
+ vfloat32m4_t __riscv_vfadd_vv_f32m4_tu(vfloat32m4_t dest,vfloat32m4_t a,vfloat32m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)dest.lane[i]=a.lane[i]+b.lane[i];return dest; }
+--- a/fp_minmax_m4.c
++++ b/fp_minmax_m4.c
+@@ -1,11 +1,15 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_min32(a.lane[j],b)); */
+ vfloat32m4_t __riscv_vfmin_vf_f32m4(vfloat32m4_t a,float b,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { a.lane[i]=min_number(a.lane[i],b); }
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_min32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { a.lane[i]=min_number(a.lane[i],b); }
+   return a;
+ }
+ 
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_max32(a.lane[j],b)); */
+ vfloat32m4_t __riscv_vfmax_vf_f32m4(vfloat32m4_t a,float b,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { a.lane[i]=max_number(a.lane[i],b); }
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_max32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { a.lane[i]=max_number(a.lane[i],b); }
+   return a;
+ }
+--- a/fp_masks_m4.c
++++ b/fp_masks_m4.c
+@@ -1,11 +1,17 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(!\eq_float(a.lane[j],b.lane[j])?1:0); */
+ vbool8_t __riscv_vmfne_vv_f32m4_b8(vfloat32m4_t a,vfloat32m4_t b,size_t vl) {
+-  vbool8_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=b.lane[i]; return r;
++  vbool8_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(!\eq_float(a.lane[j],b.lane[j])?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=b.lane[i]; return r;
+ }
+ 
++/*@ requires vl<=16;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],mask.lane[j]?value:a.lane[j]); */
+ vfloat32m4_t __riscv_vfmerge_vfm_f32m4(vfloat32m4_t a,float value,vbool8_t mask,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { if(mask.lane[i])a.lane[i]=value; } return a;
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],mask.lane[j]?value:\at(a.lane[j],Pre)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { if(mask.lane[i])a.lane[i]=value; } return a;
+ }
+ 
+-vbool8_t __riscv_vmflt_vf_f32m4_b8(vfloat32m4_t a,float b,size_t vl) { vbool8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<b;return r; }
++/*@ requires vl<=16;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(\lt_float(a.lane[j],b)?1:0); */
++vbool8_t __riscv_vmflt_vf_f32m4_b8(vfloat32m4_t a,float b,size_t vl) { vbool8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(a.lane[j],b)?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<b;return r; }

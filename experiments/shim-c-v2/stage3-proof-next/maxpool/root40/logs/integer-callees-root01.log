@@ -1,0 +1,1066 @@
+# Patched WP underlying invocation: ["/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-unary-front/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8,vld1q_u32,vdupq_n_u32,vst1q_u32,vget_low_u32,vget_high_u32,vst1_u32,vst1_lane_u32", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv,__riscv_vle32_v_u32m8,__riscv_vmv_v_x_u32m8,__riscv_vse32_v_u32m8,__riscv_vmerge_vxm_u32m8,vld1q_u32,vdupq_n_u32,vst1q_u32,vget_low_u32,vget_high_u32,vst1_u32,vst1_lane_u32", "-wp", "-wp-rte", "-wp-par", "2", "-wp-timeout", "30", "-wp-memlimit", "2048", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-plus/wp-share", "-wp-why3-config", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-model-front/why3.conf", "-wp-no-why3-detect", "-wp-prover", "tip,z3,cvc5", "-wp-debug", "1", "-wp-msg-key", "strategy,script:allgoals", "-wp-session", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root40/logs/integer-callees-root01-session", "-wp-report-json", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root40/logs/integer-callees-root01.json", "-wp-fct", "vaddq_u32,vbslq_u32,vbslq_f32", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root40/.build/guard01/annotated/unit.c", "-cpp-command", "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/maxpool/root40/.build/guard01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vbslq_u32
+[rte:annot] annotating function vbslq_f32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] fp_masks.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] fp_masks.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+[wp] fp_masks.c:19: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+[wp] 51 goals scheduled
+[wp:script:allgoals] 
+  Goal Post-condition 'root40_add' in 'vaddq_u32':
+  Let a = shiftfield_F9_lane(global(P_a_6572)).
+  Let a_1 = shift_uint32(a, 0).
+  Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+  Let a_3 = shiftfield_F9_lane(global(P_b_6573)).
+  Let a_4 = shift_uint32(a, i).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_uint32_chunk(a_2).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 3).
+    (* Invariant 'root40_add_bounds' *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant 'root40_add_prefix' *)
+    Have: forall i_1 : Z. let a_5 = shift_uint32(a, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_2[a_5] =
+         ((Mint_0[a_5] + Mint_0[shift_uint32(a_3, i_1)]) % 4294967296)))).
+    (* Invariant 'root40_add_suffix' *)
+    Have: forall i_1 : Z. let a_5 = shift_uint32(a, i_1) in ((v <= i_1) ->
+        ((i_1 <= 3) -> (a_2[a_5] = Mint_0[a_5]))).
+    (* Else *)
+    Have: 4 <= v.
+  }
+  Prove: a_2[a_4] =
+      ((Mint_0[a_4] + Mint_0[shift_uint32(a_3, i)]) % 4294967296).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'root40_add_bounds' ("quantized.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'root40_add_bounds' ("quantized.c", line 5):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'root40_add_prefix' ("quantized.c", line 6):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'root40_add_prefix' ("quantized.c", line 6):
+  Let a = shiftfield_F9_lane(global(P_a_6572)).
+  Let a_1 = shift_uint32(a, 0).
+  Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+  Let a_3 = shiftfield_F9_lane(global(P_b_6573)).
+  Let x = Mint_0[shift_uint32(a_3, v)].
+  Let a_4 = shift_uint32(a, v).
+  Let a_5 = a_2[a_4].
+  Let a_6 = a_2[a_4 <- to_uint32(x + a_5)].
+  Let a_7 = shift_uint32(a, i).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_sint32(1 + v) /\
+        is_uint32(x) /\ is_uint32_chunk(a_2) /\ is_uint32(a_5) /\
+        is_uint32_chunk(a_6).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= v).
+    (* Invariant 'root40_add_bounds' *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant 'root40_add_prefix' *)
+    Have: forall i_1 : Z. let a_8 = shift_uint32(a, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_2[a_8] =
+         ((Mint_0[a_8] + Mint_0[shift_uint32(a_3, i_1)]) % 4294967296)))).
+    (* Invariant 'root40_add_suffix' *)
+    Have: forall i_1 : Z. let a_8 = shift_uint32(a, i_1) in ((v <= i_1) ->
+        ((i_1 <= 3) -> (a_2[a_8] = Mint_0[a_8]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,signed_overflow' *)
+    Have: v <= 2147483646.
+    (* Invariant 'root40_add_bounds' *)
+    Have: (-1) <= v.
+  }
+  Prove: a_6[a_7] =
+      ((Mint_0[a_7] + Mint_0[shift_uint32(a_3, i)]) % 4294967296).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'root40_add_suffix' ("quantized.c", line 7):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'root40_add_suffix' ("quantized.c", line 7):
+  Let a = shiftfield_F9_lane(global(P_a_6572)).
+  Let a_1 = shift_uint32(a, 0).
+  Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+  Let a_3 = shift_uint32(a, v).
+  Let a_4 = shiftfield_F9_lane(global(P_b_6573)).
+  Let x = Mint_0[shift_uint32(a_4, v)].
+  Let a_5 = a_2[a_3].
+  Let a_6 = a_2[a_3 <- to_uint32(x + a_5)].
+  Let a_7 = shift_uint32(a, i).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_sint32(1 + v) /\
+        is_uint32(x) /\ is_uint32_chunk(a_2) /\ is_uint32(a_5) /\
+        is_uint32_chunk(a_6).
+    (* Goal *)
+    When: (v < i) /\ (i <= 3).
+    (* Invariant 'root40_add_bounds' *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant 'root40_add_prefix' *)
+    Have: forall i_1 : Z. let a_8 = shift_uint32(a, i_1) in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_2[a_8] =
+         ((Mint_0[a_8] + Mint_0[shift_uint32(a_4, i_1)]) % 4294967296)))).
+    (* Invariant 'root40_add_suffix' *)
+    Have: forall i_1 : Z. let a_8 = shift_uint32(a, i_1) in ((v <= i_1) ->
+        ((i_1 <= 3) -> (a_2[a_8] = Mint_0[a_8]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,signed_overflow' *)
+    Have: v <= 2147483646.
+    (* Invariant 'root40_add_bounds' *)
+    Have: (-1) <= v.
+    (* Invariant 'root40_add_prefix' *)
+    Have: forall i_1 : Z. let a_8 = shift_uint32(a, i_1) in ((0 <= i_1) ->
+        ((i_1 <= v) ->
+        (a_6[a_8] =
+         ((Mint_0[a_8] + Mint_0[shift_uint32(a_4, i_1)]) % 4294967296)))).
+  }
+  Prove: a_6[a_7] = Mint_0[a_7].
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("quantized.c", line 8) (2/2):
+  Effect at line 9
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'vaddq_u32':
+  Effect at line 9
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: invalid(Malloc_0, global(L_i_6578), 1) /\
+      invalid(Malloc_0, shift_uint32(shiftfield_F9_lane(global(P_a_6572)), 0),
+        4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("quantized.c", line 9):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Post-condition 'root40_select' in 'vbslq_u32':
+  Let a = shiftfield_F9_lane(global(P_a_6777)).
+  Let a_1 = shift_uint32(a, 0).
+  Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+  Let a_3 = shiftfield_F9_lane(global(P_m_6776)).
+  Let a_4 = shiftfield_F9_lane(global(P_b_6778)).
+  Let a_5 = shift_uint32(a, i).
+  Let x = Mint_0[shift_uint32(a_3, i)].
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_uint32_chunk(a_2).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= 3).
+    (* Invariant 'root40_select_bounds' *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant 'root40_select_prefix' *)
+    Have: forall i_1 : Z. let a_6 = shift_uint32(a, i_1) in
+        let x_1 = Mint_0[shift_uint32(a_3, i_1)] in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_2[a_6] = lor(land(Mint_0[a_6], x_1), land(lnot(x_1),
+         Mint_0[shift_uint32(a_4, i_1)]))))).
+    (* Invariant 'root40_select_suffix' *)
+    Have: forall i_1 : Z. let a_6 = shift_uint32(a, i_1) in ((v <= i_1) ->
+        ((i_1 <= 3) -> (a_2[a_6] = Mint_0[a_6]))).
+    (* Else *)
+    Have: 4 <= v.
+  }
+  Prove: a_2[a_5] = lor(land(Mint_0[a_5], x), land(lnot(x),
+      Mint_0[shift_uint32(a_4, i)])).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'root40_select_bounds' ("fp_masks.c", line 13):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'root40_select_bounds' ("fp_masks.c", line 13):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'root40_select_prefix' ("fp_masks.c", line 14):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'root40_select_prefix' ("fp_masks.c", line 14):
+  Let a = shiftfield_F9_lane(global(P_a_6777)).
+  Let a_1 = shift_uint32(a, 0).
+  Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+  Let a_3 = shiftfield_F9_lane(global(P_m_6776)).
+  Let a_4 = shiftfield_F9_lane(global(P_b_6778)).
+  Let x = Mint_0[shift_uint32(a_4, v)].
+  Let x_1 = Mint_0[shift_uint32(a_3, v)].
+  Let a_5 = shift_uint32(a, v).
+  Let a_6 = a_2[a_5].
+  Let a_7 = a_2[a_5 <- lor(land(to_uint32(lnot(x_1)), x), land(x_1, a_6))].
+  Let a_8 = shift_uint32(a, i).
+  Let x_2 = Mint_0[shift_uint32(a_3, i)].
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_sint32(1 + v) /\
+        is_uint32(x) /\ is_uint32(x_1) /\ is_uint32_chunk(a_2) /\
+        is_uint32(a_6) /\ is_uint32_chunk(a_7).
+    (* Goal *)
+    When: (0 <= i) /\ (i <= v).
+    (* Invariant 'root40_select_bounds' *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant 'root40_select_prefix' *)
+    Have: forall i_1 : Z. let a_9 = shift_uint32(a, i_1) in
+        let x_3 = Mint_0[shift_uint32(a_3, i_1)] in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_2[a_9] = lor(land(Mint_0[a_9], x_3), land(lnot(x_3),
+         Mint_0[shift_uint32(a_4, i_1)]))))).
+    (* Invariant 'root40_select_suffix' *)
+    Have: forall i_1 : Z. let a_9 = shift_uint32(a, i_1) in ((v <= i_1) ->
+        ((i_1 <= 3) -> (a_2[a_9] = Mint_0[a_9]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,signed_overflow' *)
+    Have: v <= 2147483646.
+    (* Invariant 'root40_select_bounds' *)
+    Have: (-1) <= v.
+  }
+  Prove: a_7[a_8] = lor(land(Mint_0[a_8], x_2), land(lnot(x_2),
+      Mint_0[shift_uint32(a_4, i)])).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Establishment of Invariant 'root40_select_suffix' ("fp_masks.c", line 15):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Preservation of Invariant 'root40_select_suffix' ("fp_masks.c", line 15):
+  Let a = shiftfield_F9_lane(global(P_a_6777)).
+  Let a_1 = shift_uint32(a, 0).
+  Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+  Let a_3 = shift_uint32(a, v).
+  Let a_4 = shiftfield_F9_lane(global(P_m_6776)).
+  Let x = Mint_0[shift_uint32(a_4, v)].
+  Let a_5 = shiftfield_F9_lane(global(P_b_6778)).
+  Let x_1 = Mint_0[shift_uint32(a_5, v)].
+  Let a_6 = a_2[a_3].
+  Let a_7 = a_2[a_3 <- lor(land(to_uint32(lnot(x)), x_1), land(x, a_6))].
+  Let a_8 = shift_uint32(a, i).
+  Assume {
+    Type: is_uint32_chunk(Mint_0) /\ is_sint32(v) /\ is_sint32(1 + v) /\
+        is_uint32(x_1) /\ is_uint32(x) /\ is_uint32_chunk(a_2) /\
+        is_uint32(a_6) /\ is_uint32_chunk(a_7).
+    (* Goal *)
+    When: (v < i) /\ (i <= 3).
+    (* Invariant 'root40_select_bounds' *)
+    Have: (0 <= v) /\ (v <= 4).
+    (* Invariant 'root40_select_prefix' *)
+    Have: forall i_1 : Z. let a_9 = shift_uint32(a, i_1) in
+        let x_2 = Mint_0[shift_uint32(a_4, i_1)] in ((0 <= i_1) ->
+        ((i_1 < v) ->
+        (a_2[a_9] = lor(land(Mint_0[a_9], x_2), land(lnot(x_2),
+         Mint_0[shift_uint32(a_5, i_1)]))))).
+    (* Invariant 'root40_select_suffix' *)
+    Have: forall i_1 : Z. let a_9 = shift_uint32(a, i_1) in ((v <= i_1) ->
+        ((i_1 <= 3) -> (a_2[a_9] = Mint_0[a_9]))).
+    (* Then *)
+    Have: v <= 3.
+    (* Assertion 'rte,signed_overflow' *)
+    Have: v <= 2147483646.
+    (* Invariant 'root40_select_bounds' *)
+    Have: (-1) <= v.
+    (* Invariant 'root40_select_prefix' *)
+    Have: forall i_1 : Z. let a_9 = shift_uint32(a, i_1) in
+        let x_2 = Mint_0[shift_uint32(a_4, i_1)] in ((0 <= i_1) ->
+        ((i_1 <= v) ->
+        (a_7[a_9] = lor(land(Mint_0[a_9], x_2), land(lnot(x_2),
+         Mint_0[shift_uint32(a_5, i_1)]))))).
+  }
+  Prove: a_7[a_8] = Mint_0[a_8].
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,index_bound' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assertion 'rte,signed_overflow' ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Loop assigns ("fp_masks.c", line 16) (2/2):
+  Effect at line 17
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Assigns nothing in 'vbslq_u32':
+  Effect at line 17
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: invalid(Malloc_0, global(L_i_6785), 1) /\
+      invalid(Malloc_0, shift_uint32(shiftfield_F9_lane(global(P_a_6777)), 0),
+        4).
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Positivity of Loop variant at loop ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Decreasing of Loop variant at loop ("fp_masks.c", line 17):
+  Prove: true.
+  
+  ------------------------------------------------------------
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: P_valid_or_empty(Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4]
+                            [L_ua_6796 <- 4][L_ub_6797 <- 4], w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_u32_loop_invariant_root40_select_prefix_preserved (Qed 12ms) (Z3)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Assume { (* Heap *) Type: linked(Malloc_0). }
+  Prove: P_valid_read_or_empty(Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795
+                                 <- 4][L_ua_6796 <- 4][L_ub_6797 <- 4], w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_dest (Qed 13ms) (Z3) (Stronger, 2 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Prove: separated(shift_sint8(w, 0), 16, shift_sint8(w_1, 0), 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_valid_src (Qed 18ms) (Z3) (Stronger, 2 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let m = Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4][L_ua_6796 <- 4]
+            [L_ub_6797 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7007), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7008), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7009), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7010), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7019), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7020), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7021), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7022), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7211), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7212), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7213), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7214), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7215), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7216), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_1, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+  }
+  Prove: P_valid_or_empty(m, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_requires_separation (Qed 10ms) (Z3) (Stronger, 2 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let m = Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4][L_ua_6796 <- 4]
+            [L_ub_6797 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7007), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7008), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7009), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7010), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7019), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7020), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7021), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7022), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7211), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7212), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7213), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7214), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7215), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7216), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_1, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+  }
+  Prove: P_valid_read_or_empty(m, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_dest (Qed 35ms) (Z3) (Stronger, 4 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  Let a = shift_sint8(memcpy_0, 0).
+  Let a_1 = memcpy(Mchar_0, a, Mchar_undef_0, a, 16).
+  Let m = Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4][L_ua_6796 <- 4]
+            [L_ub_6797 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_sint8_chunk(a_1).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7007), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7008), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7009), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7010), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7019), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7020), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7021), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7022), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7211), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7212), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7213), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7214), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7215), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7216), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_1, memcpy_0, w_2, 16) = 0) /\
+        separated(a, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+  }
+  Prove: separated(shift_sint8(w, 0), 16, shift_sint8(w_1, 0), 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_valid_src (Qed 23ms) (Z3) (Stronger, 4 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  Let a = global(L_ua_6796).
+  Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, 4).
+  Let a_2 = shiftfield_F9_lane(a).
+  Let a_3 = shiftfield_F9_lane(global(P_m_6793)).
+  Let a_4 = shift_sint8(memcpy_0, 0).
+  Let a_5 = memcpy(Mchar_0, a_4, Mchar_undef_0, a_4, 16).
+  Let a_6 = shift_sint8(memcpy_1, 0).
+  Let a_7 = memcpy(a_5, a_6, Mchar_undef_1, a_6, 16).
+  Let m = Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4][L_ua_6796 <- 4]
+            [L_ub_6797 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint32_chunk(a_1) /\ is_sint8_chunk(a_5) /\ is_sint8_chunk(a_7).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7007), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7008), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7009), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7010), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7019), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7020), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7021), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7022), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7211), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7212), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7213), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7214), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7215), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7216), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_5, memcpy_0, w_1, 16) = 0) /\
+        separated(a_4, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(a_5, a_7, memcpy_1, w_2, 16) = 0) /\
+        separated(a_6, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_1, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+    (* Call 'vbslq_u32' *)
+    Have: forall i : Z. let a_8 = shift_uint32(a_2, i) in
+        let x = Mint_0[shift_uint32(a_3, i)] in ((0 <= i) -> ((i <= 3) ->
+        (a_1[a_8] = lor(land(Mint_0[a_8], x), land(lnot(x),
+         Mint_0[shift_uint32(shiftfield_F9_lane(global(L_ub_6797)), i)]))))).
+  }
+  Prove: P_valid_or_empty(m, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_2_requires_separation (Qed 41ms) (Z3) (Stronger, 4 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  Let a = global(L_ua_6796).
+  Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, 4).
+  Let a_2 = shiftfield_F9_lane(a).
+  Let a_3 = shiftfield_F9_lane(global(P_m_6793)).
+  Let a_4 = shift_sint8(memcpy_0, 0).
+  Let a_5 = memcpy(Mchar_0, a_4, Mchar_undef_0, a_4, 16).
+  Let a_6 = shift_sint8(memcpy_1, 0).
+  Let a_7 = memcpy(a_5, a_6, Mchar_undef_1, a_6, 16).
+  Let m = Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4][L_ua_6796 <- 4]
+            [L_ub_6797 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint32_chunk(a_1) /\ is_sint8_chunk(a_5) /\ is_sint8_chunk(a_7).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7007), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7008), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7009), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7010), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7019), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7020), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7021), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7022), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7211), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7212), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7213), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7214), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7215), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7216), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_5, memcpy_0, w_1, 16) = 0) /\
+        separated(a_4, 16, shift_sint8(w_1, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_1, 16).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(a_5, a_7, memcpy_1, w_2, 16) = 0) /\
+        separated(a_6, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_1, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+    (* Call 'vbslq_u32' *)
+    Have: forall i : Z. let a_8 = shift_uint32(a_2, i) in
+        let x = Mint_0[shift_uint32(a_3, i)] in ((0 <= i) -> ((i <= 3) ->
+        (a_1[a_8] = lor(land(Mint_0[a_8], x), land(lnot(x),
+         Mint_0[shift_uint32(shiftfield_F9_lane(global(L_ub_6797)), i)]))))).
+  }
+  Prove: P_valid_read_or_empty(m, w, 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_dest (Qed 39ms) (CVC5) (Stronger, 6 warnings)
+[wp:script:allgoals] 
+  Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vbslq_f32' at call 'memcpy' ("fp_masks.c", line 19)
+  :
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_float32x4_t_4*)
+     (target: sint8*)
+  fp_masks.c:19: warning from Typed Model:
+   - Warning: Hide sub-term definition
+     Reason: Cast with incompatible pointers types (source: __anonstruct_uint32x4_t_8*)
+     (target: sint8*)
+  Let a = global(L_ua_6796).
+  Let a_1 = memcpy(Mint_0, a, Mint_undef_0, a, 4).
+  Let a_2 = shiftfield_F9_lane(a).
+  Let a_3 = shiftfield_F9_lane(global(P_m_6793)).
+  Let a_4 = shift_sint8(memcpy_0, 0).
+  Let a_5 = memcpy(Mchar_0, a_4, Mchar_undef_0, a_4, 16).
+  Let a_6 = shift_sint8(memcpy_1, 0).
+  Let a_7 = memcpy(a_5, a_6, Mchar_undef_1, a_6, 16).
+  Let m = Malloc_0[P_m_6793 <- 4][P_a_6794 <- 4][P_b_6795 <- 4][L_ua_6796 <- 4]
+            [L_ub_6797 <- 4].
+  Assume {
+    Type: is_sint8_chunk(Mchar_0) /\ is_uint32_chunk(Mint_0) /\
+        is_uint32_chunk(a_1) /\ is_sint8_chunk(a_5) /\ is_sint8_chunk(a_7).
+    (* Heap *)
+    Type: linked(Malloc_0) /\ sconst(Mchar_0).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string1_7005), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string2_7006), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string3_7007), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string4_7008), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string5_7009), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string6_7010), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string7_7019), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string8_7020), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string9_7021), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 6) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string10_7022), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 18) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string11_7211), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string12_7212), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 21) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string13_7213), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string14_7214), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 13) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string15_7215), i)] = 0))).
+    (* Initializer *)
+    Init: forall i : Z. ((0 <= i) -> ((i <= 5) ->
+        (Mchar_0[shift_sint8(global(K___fc_lit_string16_7216), i)] = 0))).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(Mchar_0, a_5, memcpy_0, w_2, 16) = 0) /\
+        separated(a_4, 16, shift_sint8(w_2, 0), 16) /\
+        P_valid_or_empty(m, memcpy_0, 16) /\ P_valid_read_or_empty(m, w_2, 16).
+    (* Call 'memcpy' *)
+    Have: (L_memcmp(a_5, a_7, memcpy_1, w_3, 16) = 0) /\
+        separated(a_6, 16, shift_sint8(w_3, 0), 16) /\
+        P_valid_or_empty(m, memcpy_1, 16) /\ P_valid_read_or_empty(m, w_3, 16).
+    (* Call 'vbslq_u32' *)
+    Have: forall i : Z. let a_8 = shift_uint32(a_2, i) in
+        let x = Mint_0[shift_uint32(a_3, i)] in ((0 <= i) -> ((i <= 3) ->
+        (a_1[a_8] = lor(land(Mint_0[a_8], x), land(lnot(x),
+         Mint_0[shift_uint32(shiftfield_F9_lane(global(L_ub_6797)), i)]))))).
+  }
+  Prove: separated(shift_sint8(w, 0), 16, shift_sint8(w_1, 0), 16).
+  
+  ------------------------------------------------------------
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_valid_src (Qed 18ms) (CVC5) (Stronger, 6 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_vbslq_f32_call_memcpy_3_requires_separation (Qed 18ms) (Z3) (Stronger, 6 warnings)
+[wp] Proved goals:   45 / 55
+  Terminating:     2
+  Unreachable:     2
+  Qed:            34 (3ms-6ms-41ms)
+  CVC5 1.2.1:      7 (50ms-97ms-188ms)
+  Timeout:        10
+[wp] Updated session
+   - 10 new scripts to complete
+[wp:pedantic-assigns] fp_masks.c:19: Warning: 
+  No 'assigns' specification for function 'vbslq_f32'.
+  Callers assumptions might be imprecise.
+[wp] Logging keys: strategy,script:allgoals.

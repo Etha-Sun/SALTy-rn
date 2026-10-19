@@ -1,0 +1,50 @@
+{
+  "scope": "Diagnostic only. Adds two literal ground instances of universal assumptions already in the same task; goal unchanged. No new address law and no standard checker acceptance.",
+  "instances": [
+    {
+      "source": "(assert\n  (forall ((a addr) (m (Array Int Int)) (n Int))\n    (=> (< 0 n) (=> (valid_rd m a n) (statically_allocated (base a))))))",
+      "mapping": {
+        "a": "a",
+        "m": "t",
+        "n": "4"
+      },
+      "instance": "(assert (=> (< 0 4) (=> (valid_rd t a 4) (statically_allocated (base a)))))"
+    },
+    {
+      "source": "(assert\n  (forall ((p addr))\n    (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))))",
+      "mapping": {
+        "p": "a"
+      },
+      "instance": "(assert (=> (statically_allocated (base a)) (= (addr_of_int (int_of_addr a)) a)))"
+    }
+  ],
+  "runs": [
+    {
+      "source": "experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/drop-only-address02/0/subset.smt2",
+      "command": [
+        "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/bin/z3",
+        "-T:10",
+        "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/address-instance-diagnostic01/0.smt2"
+      ],
+      "exit": 0,
+      "seconds": 1.6094603629317135,
+      "stdout": "unsat\n",
+      "source_sha256": "7e3ebbd5ff9e85f36abde0abf617aa329ebcd0ce8a03bfa4607daafec81dcc1b",
+      "task_sha256": "3ede73796baae78b535bbc0200d391f0aa53181badebf4bab34e0bbb391b70e6"
+    },
+    {
+      "source": "experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/drop-only-address02/1/subset.smt2",
+      "command": [
+        "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/handoff-solvers/.build/bin/z3",
+        "-T:10",
+        "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/byte-address-audit02/address-instance-diagnostic01/1.smt2"
+      ],
+      "exit": 0,
+      "seconds": 1.802879675058648,
+      "stdout": "unsat\n",
+      "source_sha256": "fb212dfd5bae17430cd001feea084608ef01586f78573ce930e61e95c1646b5c",
+      "task_sha256": "f3b30b76feb4161d41eec8564fe68226bca848ba6150ceb4b8f8b9d4d36e3e78"
+    }
+  ],
+  "qualified": false
+}
