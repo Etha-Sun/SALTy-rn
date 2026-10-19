@@ -1,0 +1,15 @@
+--- original/neon.c
++++ tail-v1/neon.c
+@@ -148,7 +148,11 @@
+         uint32x4_t vidx;
+         if (ab) {
+           vmax = vld1q_f32(ab);
+-          vidx = vld1q_u32(ib);
++          /* Only c live index lanes remain; the public domain gives no index padding. */
++          const uint32_t tail_index[4] = {
++            ib[0], c >= 2 ? ib[1] : 0, c >= 3 ? ib[2] : 0, 0
++          };
++          vidx = vld1q_u32(tail_index);
+ 
+           const uint32x4_t vm0 = vcgtq_f32(vi0, vmax);
+           vmax = vbslq_f32(vm0, vi0, vmax);

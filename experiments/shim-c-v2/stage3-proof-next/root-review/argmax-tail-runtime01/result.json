@@ -1,0 +1,64 @@
+{
+  "compiler_command": [
+    "gcc",
+    "-std=c11",
+    "-O0",
+    "-g",
+    "-fno-omit-frame-pointer",
+    "-fsanitize=address,undefined",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-proof-next/root-review/argmax-tail-runtime01/main.c",
+    "-lm",
+    "-o",
+    "/tmp/shim-argmax-tail-root01"
+  ],
+  "compiler_version": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "binary_sha256": "6c12931b2791819ee4098d2167bcb0cdfacfec14e2f3dff894e7253c84a18ee5",
+  "runs": [
+    {
+      "name": "rvv-exact",
+      "command": [
+        "/tmp/shim-argmax-tail-root01",
+        "1"
+      ],
+      "exit": 0,
+      "seconds": 0.03773236693814397,
+      "stdout_sha256": "438714f4f59c3643fb3a4571329a032b6c8de5008a92ae91228d5e7aa19a8d4c",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "neon-exact",
+      "command": [
+        "/tmp/shim-argmax-tail-root01",
+        "2"
+      ],
+      "exit": 1,
+      "seconds": 0.1297220679698512,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c72890a49bb035598c1b4ba631411c4478a6783d14a67b28e812dd63a7c54780"
+    },
+    {
+      "name": "equivalent-exact",
+      "command": [
+        "/tmp/shim-argmax-tail-root01"
+      ],
+      "exit": 1,
+      "seconds": 0.08935105195268989,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "c9451418e51d0c2da8027cb7407395001bebbabfc93b21a66f6c3fe3d76c777b"
+    },
+    {
+      "name": "equivalent-padded",
+      "command": [
+        "/tmp/shim-argmax-tail-root01",
+        "0",
+        "pad"
+      ],
+      "exit": 0,
+      "seconds": 0.0057252669939771295,
+      "stdout_sha256": "5f8cda4a7cd56c8d551be0c66612e8ac3cd9b985b74cb74c8bdd2fde5a5d872e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "inputs_unchanged": true,
+  "proof": false
+}

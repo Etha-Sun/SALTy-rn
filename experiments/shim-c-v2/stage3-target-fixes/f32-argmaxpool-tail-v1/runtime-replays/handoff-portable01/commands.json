@@ -1,0 +1,73 @@
+[
+  {
+    "label": "compile-original",
+    "command": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-O0",
+      "-g",
+      "-fno-omit-frame-pointer",
+      "-fsanitize=address,undefined",
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/original.c",
+      "-lm",
+      "-o",
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/original/replay"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  },
+  {
+    "label": "compile-repaired",
+    "command": [
+      "/usr/bin/gcc",
+      "-std=c11",
+      "-O0",
+      "-g",
+      "-fno-omit-frame-pointer",
+      "-fsanitize=address,undefined",
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/repaired.c",
+      "-lm",
+      "-o",
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/repaired/replay"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  },
+  {
+    "label": "original-rvv-exact",
+    "command": [
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/original/replay",
+      "1"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  },
+  {
+    "label": "original-neon-exact",
+    "command": [
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/original/replay",
+      "2"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  },
+  {
+    "label": "original-equivalent-exact",
+    "command": [
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/original/replay"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  },
+  {
+    "label": "original-equivalent-padded",
+    "command": [
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/original/replay",
+      "0",
+      "pad"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  },
+  {
+    "label": "repaired-matrix",
+    "command": [
+      "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1/runtime-replays/handoff-portable01/.build/repaired/replay"
+    ],
+    "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c"
+  }
+]
