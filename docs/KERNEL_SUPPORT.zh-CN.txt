@@ -1,0 +1,48 @@
+新增kernel：不计证明工作，除了shim还需要什么？
+
+公共后置条件可以沿用“相同输入的输出相等”。它不自动提供下面的程序接入信息。
+这里不把循环不变量、辅助引理和证明策略计入接入工作。
+
+1. 编译上下文与类型。
+固定原C版本、宏分支、params结构体、函数声明、向量类型和typedef。
+Frama-C已有普通C parser，常见for/if不需要每个kernel重新实现frontend。
+但GNU向量扩展、_Float16/bfloat16、内联汇编、特殊builtin或非标准类型可能需要
+额外lowering/建模支持。把某个intrinsic名字加入列表并不能解决这些语法/类型问题。
+
+2. 调用入口与数据布局。
+生成两边共享输入、独立输出的wrapper，连接参数的具体含义与单位。
+例如GEMM的kc是字节、mr/nc是元素个数，权重是packed NR8并带bias，
+a_stride/cm_stride/cn_stride决定不同步进。不能套用rsum的一个byte数组接口。
+这些属于调用和布局接入，不是矩阵乘法数学结果规格。
+
+3. 合法内存域与分配。
+确定输入/输出大小、padding、对齐、允许的alias和stride、整数大小计算是否溢出。
+这是有意义地运行程序和比较输出所需的前提。后置条件相同不意味着前置条件统一。
+目前rsum使用15字节可读padding，GEMM试验使用连续行/NR8及4行完整分配；
+不能把这个试验域自动推广成任意stride/分配方式。
+
+4. 支持的机器环境。
+配置ABI、endianness、VLEN/LMUL/SEW、合法VL策略、mask/tail政策。
+浮点还要固定rounding、subnormal处理与被观察的环境状态。
+现有rsum仅固定VLEN128和min(remaining,32)，没有参数化全部硬件选择。
+这些配置可以按family复用，但当前没有自动从任意新kernel推导它们。
+
+5. 与已有C/内存模型兼容。
+指针与整数往返、union/bitcast、非对齐访问、不同类型别名、动态内存等
+可能超出当前WP Typed模型的顺畅支持范围，需要选择合适模型或建立转换接口。
+这是执行语义/工具支持问题，不能通过新增一个算术shim函数解决。
+GEMM的float/uint32 memcpy位表示就是当前具体缺口之一。
+
+6. 输出观察、构建与回归接入。
+确定输出哪些元素有效，是否比较原始bits、数值或NaN-aware数值；决定是否观察flags/errno。
+接入普通C构建、真实目标intrinsic语法检查、source hash与实现不变检查、反例和回归测试。
+这些测试帮助发现接错参数/布局/语义，不是任意输入的等价性证明。
+
+因此“intrinsic库齐全”之后，普通简单逐元素kernel的剩余接入可以很薄；
+GEMM/卷积/packing/reduction的参数和布局适配通常仍然存在。
+当前没有证明所有family都能由同一个固定profile自动接入。
+
+两条路线的区别
+当前WP路线复用Frama-C的普通C前端，本轮不再经过手写的Clang AST→Lean转换。
+旧Arcadia Lean extraction路线还涉及profiles.json、context.h和自定义frontend节点支持。
+不要把旧路线的每项配置义务误说成新WP路线也必然需要同一个配置文件。

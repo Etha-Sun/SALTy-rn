@@ -4,23 +4,37 @@
     {
       "name": "qs8-rsum",
       "status": "proved_under_declared_c_model",
-      "proof_file": "qs8-rsum/proof.c",
+      "proof_file": "qs8-rsum/proof.patch",
       "proof_helper_files": [],
       "public_functional_postcondition": "two final int32 outputs equal",
       "raw_obligations": {
         "passed": 579,
         "total": 579
       },
-      "seconds": 262.409,
+      "seconds": 261.765,
       "isa_to_c_shim_proved": false,
       "source_and_evidence_sha256": {
-        "qs8-rsum/proof.c": "4293713fbeb8d65fad068013ef62dd625dac321269ae2d612828481bc5a4bcc7",
-        "qs8-rsum/provenance.json": "1c947c8dcba43f0259049c21cec1f28b724f0c0cc31e895a5d804d55cffe8b53",
-        "qs8-rsum/audit.py": "3e57610f034c151d86c016c1b9eb8fd7273870c4f0180c2ac20811e5d0c89c70",
-        "qs8-rsum/check.py": "4dfb0b2491fc7bbf7360670f0962fa8a4fbf37258649bb1fff61db921fe875a6",
-        "qs8-rsum/logs/recorded-summary.json": "ff6841c53ee5bfb1b6960ca5757bee60038538de54dc97af5df8279266e507b1",
-        "qs8-rsum/logs/recorded.json": "a6c8cdfa9a39bcc180bb412fb9ed76b2be9d0ffa65ee1def4e9394fe0648219e",
-        "qs8-rsum/logs/recorded.log": "8af13ef0ab550f972e2fa2e5273d130e0e7b1ac3d3d8555a64ff3e56bf6a5e97"
+        "qs8-rsum/proof.patch": "6d59368cf1df795db0c4f5aad46efa76f3b098ccfa96ad26684a57252d98a6f6",
+        "qs8-rsum/frozen.json": "b328a12d6fbe52df821740c9fd222b2e54af783713047ac63590c4988f086401",
+        "qs8-rsum/provenance.json": "6dfff8620cba2d60381387f5693dd33ab9e8dc252a7b01fccf959eb52a7c44fb",
+        "qs8-rsum/audit.py": "bd90c78d059e3897ca009219565cd26f658bfe4efb092e0ba4052617c682a797",
+        "qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+        "qs8-rsum/check.py": "499b9d4c20a45c71ee1430ed1d61a1b6149b867643cbd1318fdf775a0ecf1c3f",
+        "qs8-rsum/shim.h": "8b0422d9279abffa08abd539aeb27ee42c6b00c4bf407ae596b816d43280cfc7",
+        "qs8-rsum/shim.c": "89c228370fdeaab20340fe3d2dcd73b9f7cc02a8713f459c2ad33d8b08181c1d",
+        "qs8-rsum/neon.c": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+        "qs8-rsum/rvv.c": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+        "qs8-rsum/spec.h": "8901ed9cc527806b93a16d7ad6563c381a4598377908db96235346d9e4a28574",
+        "qs8-rsum/harness.c": "933a05cf540aa559cb8ea218a2744a87514da8e1475fa1a8d9b64484fc9af9dd",
+        "qs8-rsum/original/neon.c": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+        "qs8-rsum/original/rvv.c": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+        "qs8-rsum/metrics.json": "197d4b830ec04732d7fd979f5922bec847c36155f3e4f5a681c87002f29c7532",
+        "qs8-rsum/logs/separated-summary.json": "8c3b6ac7808c4ff21358f8a4bda36c0e283a552fcbe8aa2dffbf910375a5d335",
+        "qs8-rsum/logs/separated.json": "e65bda3fe0fd315b435c3fd96474b67c71b63d7d66cb8bcf1b6025062d5ed567",
+        "qs8-rsum/logs/separated.log": "e8cc782ab369c2b16810ff50c7044c2006882635541b5b79d9cfdfb8bc0c6ad4",
+        "qs8-rsum/logs/separated-source-audit.json": "6f500c3af46a8d55914f0ccb3db5dd2964c96d1ec9a02d3b097811e0e61ae458",
+        "qs8-rsum/logs/separated-guard.json": "5d7423df589a2ed728800d5c9d027be4e11732a0030b7f5fa7241a8285776e1f",
+        "qs8-rsum/logs/llvm-identity.json": "fb38a6877611fdf06a3f294a64e5878a82cf49069625aa8db4040c2490e1e694"
       },
       "scope": {
         "machdep": "x86_64 LP64 little endian",
@@ -33,6 +47,33 @@
         "math_in_public_requires": true,
         "math_in_public_functional_postcondition": false,
         "math_in_internal_proof": true
+      },
+      "implementation_files": [
+        "qs8-rsum/neon.c",
+        "qs8-rsum/rvv.c",
+        "qs8-rsum/shim.h",
+        "qs8-rsum/shim.c",
+        "qs8-rsum/harness.c"
+      ],
+      "spec_file": "qs8-rsum/spec.h",
+      "source_freeze": "qs8-rsum/frozen.json",
+      "source_guard": "qs8-rsum/build.py",
+      "llvm_identity_evidence": "qs8-rsum/logs/llvm-identity.json",
+      "historical_monolithic_evidence": {
+        "source_commit": "3b31101",
+        "proof_file": "verified/qs8-rsum/proof.c",
+        "summary": "qs8-rsum/logs/recorded-summary.json",
+        "passed": 579,
+        "total": 579,
+        "seconds": 262.409
+      },
+      "proof_evidence": "qs8-rsum/logs/separated-summary.json",
+      "implementation_unchanged_checks": {
+        "original_kernel_bytes": true,
+        "preprocessed_C_tokens": 2552,
+        "LLVM_IR_byte_identical": true,
+        "public_spec_frozen": true,
+        "negative_tests": "tests/verification/proof_separation/evidence"
       }
     }
   ],

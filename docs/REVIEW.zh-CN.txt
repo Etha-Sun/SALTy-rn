@@ -1,95 +1,95 @@
-新分支独立审计
+实现/spec/proof分离版：最终独立审计
 
-状态：最终审计完成。qs8-rsum可进入既定C模型verified；GEMM修复仅进入experiments。
-审计者只写docs，没有修改其他agent的实现、runner或证明文件。
+结论：当前qs8-rsum分离包审计完成，可作为声明C模型中的verified条目；
+GEMM修复仍属experiments，不是已证条目。审计者只写docs和独立负测试，没有修改case输入。
 
-qs8-rsum：准许作为固定普通C模型的verified条目
+当前qs8-rsum布局与新鲜证明
 
-新鲜单文件运行：579/579 raw目标，262.409秒，exit0。
-独立核对 recorded-summary.json 的全部6个证明输入/脚本/original哈希，均与当前文件匹配。
-raw目标名称集合hash与原v2完全相同：0814123a3a9d5b1f8646195411445de6063cc578f030ea4911d2e306207a625b。
-wrapper+19shim+13ghosthelper共33函数，每个函数的ensures义务都出现，没有遗漏。
-两个model_bridge、两个reduced_*断言、rvv_proof_s32_u32_ensures和
-wrapper输出等价ensures都在raw JSON中逐项passed。
-运行不是仅验证wrapper再信任未验证的kernel合同；kernel公开ensures已经移除。
+实现为neon.c/rvv.c/shim.h/shim.c，spec在spec.h，harness在harness.c；
+唯一证明输入proof.patch，build只对一次性副本注入ACSL/ghost与受限#line。
+两份kernel与original文件逐字节相同，没有通过证明工程重写kernel。
+公共唯一功能后置仍是result==1；requires与内部proof仍引用sum8，原合法域不变。
 
-proof.c710行，4个标准include，无本地proof include。
-独立按拼接规则从原v2重建8个component：移除本地include、外层guard和边缘空行后，
-全文C/ACSL内容逐一相同；非空表达式没有改写。
-再独立strip注释比较两个kernel与original，均为完全相同的可执行文本。
-注释里没有用户axiom/axiomatic/assume/admit。
-公共唯一功能后置为输出相等，但requires和内部proof仍使用sum8，域未变。
+logs/separated-summary.json：新鲜579/579 raw义务，261.765秒，exit0。
+独立核对全部14个源码/规格/证明/脚本输入hash、7个生成副本hash、6个冻结文件hash，全部匹配。
+源输入与生成副本在运行期间都未变化；spec.h与生成副本字节完全相同。
+33函数（wrapper+19shim+13ghosthelper）的ensures全部出现，无遗漏。
+目标名称集合与历史579项精确一致，sha256：
+0814123a3a9d5b1f8646195411445de6063cc578f030ea4911d2e306207a625b。
+两个model_bridge、两个reduced_*、rvv_proof_s32_u32_ensures和wrapper equal目标逐项passed。
+当前verified/manifest.json的21项源/证据hash独立核对一致，时间已更新为261.765。
 
-保留的边界：固定LP64/ARM64分支/VLEN128/min(n,32)调度/padding15，
-最终signed int32加法无溢出；Typed还假设input与私有mask表分离。
-alignment guards未支持，实际无函数指针调用；相关警告未被隐藏。
-没有证明ISA->shim、全部VL策略/硬件VLEN或机器码执行。
-非空域可给n=1、16个零字节、initial0的显式见证；当前runner没有smoke-tests，
-不把“579个VC通过”当作一般非空性/规格充分性检查。
-19个shim和13个helper的已验证契约不应再列成自由TCB；其ISA语义对应仍未证明。
+隔离guard与实际负测
 
-旧symbolic系统修复：与新WP条目隔离
+frozen.json摘要固定在build.py；当前build hash：
+a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6。
+raw C子集lexer检查inactive分支和多字符operator；Clang14实际预处理后的2552个
+kind+spelling也完全相同，含assert展开的__FILE__/__LINE__。
+只有#line位置元数据被特殊允许，不允许任意宏或执行代码改写。
+不仅冻结spec.h，还限制从别处注入公共函数合同，防requires false改变公共输入域。
 
-原Arcadia BW neon/core.hpp:1074起注释明确为匹配RVV而绕过nan-propagating helpers。
-新分支已把所审f32 NEON入口恢复传播NaN，并显式约束opposite signed zero结果。
-CVC5也新增传播包装和zero符号规则，避免直接使用欠约束SMT fp.min/fp.max。
-独立检查tests/verification/neon_nan/evidence/results.json：
-旧实际header编译成功、反例查询SAT；新实际header编译成功、同约束查询UNSAT。
-最终再次独立核对新header hash与源码匹配；BW未安装库，只有源码审查而未编译。
-环境链接错误和nan-only初版zero反例独立保留，未伪装成最终通过。
-这是symbolic语义系统的修复，不是新WP proof依赖或真实ISA payload证明。
-此次范围不等于所有FP16/FP64、minnm与其他RVV入口都完成语义审计。
+独立测试在temp副本进行，主case所有输入hash保持不变：
+- 改冻结neon.c末端赋值：frozen hash拒绝。
+- 合法proof patch新增普通*output=0：non-ghost C guard拒绝。
+- 合法proof patch新增无用#define：preprocessor guard拒绝，即使它不影响active C tokens。
+- 在harness定义前追加requires false、保持spec.h不变：public-contract guard拒绝。
+正例通过；四种负例都匹配具体拒绝原因，未把patch格式错误当成功。
+证据：tests/verification/proof_separation/evidence/results.json和public-contract-rejected.json。
+独立再核两份结果中的case输入hash，均与当前case匹配。
 
-GEMM真实target修复：源码审查
+Ghost效果与TCB边界
 
-repaired_rvv.c仍执行原vfmin/vfmax，未将其改成ARM语义。
-非NaN标量bound分支在min/max之前取self!=self的mask，merge只覆盖原NaN活跃lane。
-非NaN普通lane的mask=false，保留原min/max结果；NaN bound时广播全部活跃lane符合
-reference传播NaN的canonical-qNaN模型。min阶段保留的NaN在max阶段仍被mask保留。
-b8 mask对应SEW32/LMUL4；所有新增比较/merge/broadcast按vl处理，未见误覆盖普通lane的逻辑。
-这项结论来自代码审查，不冒充全部lane/指令形式证明。
-真实ARM payload/FPCR.DN/sNaN/flags未建模；native canonical bits一致不能外推到真实ISA全部NaN位。
+本例13个ghosthelper都带assigns nothing且函数体在完整WP中检查；
+7个为空体代数lemma，2个只递增ghost局部i，4个只调用这些helper和写逻辑assert。
+kernel内ghost变量保存快照/计数，未见ghost向真实input/output heap赋值。
+所有helper的循环frame/variant和已知组合依赖都覆盖在579个义务中。
+这项具体审查不等于Frama已形式证明任意ghost程序无干扰。
+官方Frama33 ACSL1.24实现手册仍列完整ghost noninterference未实现。
+C编译器会忽略ghost注释，所以token/LLVM相同不能单独解除这一边界。
 
-GEMM系统错误与kernel差异应分别修：系统要忠实报告原差异；在含NaN约定域下target需要
-实际改代码或明确重新定义产品域。当前没有因证明困难而把reference偷偷换成minNum。
+独立LLVM检查：Clang14，-O0/-g0、assert开启；llvm-diff exit0，两份IR逐字节一致：
+44b2600d405ca7371acf9c1ce740255461012cf8c8c571ec0fe11c49ebbe0a80。
+logs/llvm-identity.json的冻结/patch/token摘要与当前case匹配。
+这是相同编译器和配置下的证据，不是通用C/ISA等价或ghost非干扰定理。
 
-GEMM最终记录独立核验
+固定LP64/ARM64分支/VLEN128/min(n,32)调度/padding15、最终signed加法不溢出；
+Typed额外要求input与私有mask表分离，alignment guards未支持，实际无间接调用。
+原ISA→C shim、全部VL选择/硬件VLEN、机器码与浮点flags均不在此证明结论内。
+已检查的shim/helper合同不是自由假设；其ISA含义仍需独立桥接。
+非空域见证n=1、16个零字节、initial0；runner没有通用smoke-test/非空性定理。
 
-reference_neon.c和original_rvv.c与Arcadia快照逐字相同。
-repaired_rvv.c与实际分支kernels/target/f32-gemm-minmax.c逐字相同，sha256为
+明确保留的历史
+
+logs/recorded*是原710行monolith输入的新鲜检查：579/579，262.409秒。
+当前目录不保留另一份proof.c，旧文件可从Git中记录的3b31101/570a7c5恢复。
+历史检查/packing记录仍保留，未把其结果冒充当前分离版检查。
+当前proof.patch688物理行包含diff上下文和52个#line；不能称688行纯证明。
+生成副本中冻结spec注释34非空行，proof注释416非空行，共450，统计口径有明确区分。
+
+旧symbolic系统与GEMM修复的既有审计
+
+原BW f32 NEON min/max曾刻意转成minNum以匹配RVV，隐藏真实NaN差异。
+新分支恢复所审NEON f32入口的传播规则，并显式处理opposite signed zero。
+CVC5实际header回归：旧header编译成功且反例查询SAT；新header编译成功且相同查询UNSAT，
+新header hash已独立核对。BW库未安装，只有源码审查而未编译，不能说两后端都运行验证。
+这次旧系统修复不是当前WP条目的TCB或证明成果；未声称所有FP16/FP64/minnm/RVV入口已审。
+
+GEMM原reference与old target保持Arcadia快照；实际新target与tested repaired_rvv逐字一致，hash：
 b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162。
-source-manifest的全部6份源、正式GCC检查记录的全部6份C/h哈希均与当前文件匹配。
-verified/manifest.json全部证据哈希独立核对一致，未把GEMM列为已证条目。
+mask在min/max之前取self!=self，仅覆盖NaN活跃lane；NaN bound时广播canonical NaN。
+普通lane的min/max结果保留，原vfmin/vfmax原语语义没有被偷换。
+2400个ASan/UBSan canonical-qNaN模型回归通过，旧反例单独保留；真实RVV header语法检查exit0。
+真实ARM NaN payload/FPCR.DN/sNaN/flags未覆盖，不能外推真实ISA全float bits等价。
 
-native完整原reference/新target普通C shim：ASan/UBSan，2400case通过；
-旧反例reference=7fc00000、old=3f800000、repaired=7fc00000单独保留。
-测试比较canonical-qNaN模型bits，不能作所有float输入或ISA的无界证明。
-Clang riscv64/rv64gcv使用真实riscv_vector.h语法检查exit0；
-只做旧header API前缀与merge参数序映射，未用普通C shim替换后冒充RVV编译。
+GEMM完整proof.c包含完整两核，不是schedule shadow；但wrapper约定连续stride、NR8 packing，
+并要求4满行allocation，即使mr<4也要a的4*K和输出4*NC有效。
+正式gcc_x86_64/Typed+float尝试180.193秒wall-timeout，未形成最终raw goal report。
+summary正确用report_available=false、raw计数null；没有把0/0或timeout说成证明通过/反例。
+还缺common_fma的真实语义桥、same_value下congruence、nanf NaN契约、memcpy位桥与整核不变量。
+新target的2400回归不是完整无界证明；未进入verified的标记正确。
+GEMM runner另补fresh-clone logs/.build目录初始化，空目录smoke通过；C/h/proof不变，
+未将未重跑的180秒尝试说成新验证，summary只刷新runner摘要。
 
-proof.c确实直接包含完整reference和repaired两份kernel全文，不是旧schedule shadow。
-完整wrapper使用4满行allocation（mr<4仍要求a的4*K与两输出4*NC有效），
-连续stride和NR8 packing；不能称覆盖任意原接口内存布局。
-其后置是活跃输出数值相等或两边同为NaN；不是位相等，也没有矩阵乘法公式。
-显式新增未验证fmaf契约是shared common_fma下same_value结果关系，属于库级TCB。
-只保证该关系还不自动给出下一轮FMA在same_value下的congruence，缺口已明确列出。
-GCC builtin nanf的类型识别不代表其NaN结果合同已证明；memcpy Typed位表示桥也仍缺。
-
-正式gcc_x86_64/Typed+float整核尝试：前端exit0，180.193秒wall-timeout，
-未完成大AST验证条件生成/调度，没有最终raw goal JSON。
-summary.json正确用raw_goal_report_available=false及raw_proved/raw_total=null，
-而不是把raw0/0写成成功，也没有SMT判定不等价的新证据。
-C/h源在正式尝试中稳定；旧generic机型的不稳定runner/builtin警告记录仅作诊断。
-大量缺loop assigns/default havoc和缺不变量/内存对应说明仍需实质proof工程，
-不是只把内置函数名注册完就会完成等价验证。
-complete_original_c_equivalence_proved=false与admitted_to_verified=false标记正确。
-
-TCB审计口径
-TCB.zh-CN.txt拆成10类工具链/证据可信组件和6类语义环境前提，
-不是声称只有10个具体软件包，也不是源码没有axiom就没有TCB。
-已证shim/helper不算自由假设；agent不算逻辑TCB的条件是固定spec/impl并完整验收。
-
-结论
-单文件qs8包来源/新鲜目标/覆盖/边界均一致；系统NaN与signed-zero修复有实际CVC5负对照。
-真实GEMM target修复有2400回归和RVV语法证据，但完整无界C/ISA等价仍未证明，留在实验区。
-没有从timeout推断kernel错误，也没有为使等价成立而改reference intrinsic语义。
+TCB文档拆10类工具链/证据信任与6类语义环境前提，是分类，不是10个具体软件包。
+agent不算逻辑TCB的前提是冻结spec/impl、信任验收脚本并完整检查结果；
+若agent可同时改受信脚本和baseline，仍需要CI/独立review，不能靠自报hash解除信任。

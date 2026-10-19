@@ -25,8 +25,11 @@ T3. 源到待证明AST的转换。
 本次使用 -inline-calls test_neon,test_rvv、-inline-stmt-contracts、
 -remove-inlined；内联需要保持变量重命名、ghost/Pre/LoopEntry标签、控制流与断言。
 删除standalone定义只是避免重复，必须确认wrapper中的实际函数体仍存在。
-proof.c打包也属于源对应证据链：本次仅拼接、移除本地include和外层header guards，
-不是已形式验证的源转换；审计通过各component哈希和原kernel可执行文本比较降低风险。
+当前分离版的build.py只把proof.patch应用到一次性副本；impl/spec原文件不变。
+冻结manifest本身的hash固定在build.py；guard比较原始C token及Clang完整预处理kind+spelling，
+并限制新增公共函数contract，避免仅保持spec.h字节却从别处注入requires false。
+#line定位用于保持__FILE__/__LINE__展开一致；它是受限元数据，不是任意宏改写许可。
+上一版整体proof.c是历史输入，已由当前分离布局替代；patch应用/guard仍是工具TCB，不是形式证明。
 
 T4. C/ACSL语义模型及支持理论。
 整数有限宽运算、逻辑integer、Typed内存、pointer provenance/别名、函数契约、
@@ -77,9 +80,12 @@ T9. 检查器可执行运行基础。
 T10. 结果验收和证明覆盖的证据链。
 check.py、audit.py、manifest、哈希/目标计数的解释，决定汇报的是不是刚检查的输入及完整依赖。
 这不是数学演算规则TCB，但在“这个源程序已证明”的交付主张中必须可信或独立复核。
-新runner删除本轮旧JSON，检查源码前后哈希、33个body ensures、579个目标及名称集合，
+新runner删除本轮旧JSON，检查冻结impl/spec、proof.patch、build/检查脚本前后哈希，
+比较33个body ensures、579个目标及名称集合，
 拒绝只凭exit0、日志一句passed或旧结果作结论。独立审计仍须确认spec/impl没有一起改弱。
-工具版本会记录；不是所有标准头、driver和运行时依赖都由proof.c本身哈希覆盖。
+工具版本会记录；不是所有标准头、driver和运行时依赖都由proof.patch本身哈希覆盖。
+如果agent还能改build.py及其固定基线，仍需受信CI/独立review冻结这些脚本；
+不能把同一agent自行更新guard和baseline后的成功当作独立防篡改证据。
 
 6类语义/环境前提（与工具实现错误分开）
 
@@ -129,7 +135,9 @@ S6. 规格充分性与程序边界。
   它们的修复应独立记录，不应当作这次WP正确性的额外前提或证明成果。
 
 取证定位
-单文件输入：verified/qs8-rsum/proof.c；真实命令与目标：verified/qs8-rsum/logs/。
+独立impl/spec：verified/qs8-rsum/{neon.c,rvv.c,shim.h,shim.c,spec.h,harness.c}。
+单一证明入口：verified/qs8-rsum/proof.patch；生成输入是.build/<name>/annotated/unit.c；
+真实命令与目标：verified/qs8-rsum/logs/。
 本地工具取证目录（工具未vendor进新分支）：
 /zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/。
 本地环境记录：原workspace research/frama-c-qs8-rsum/environment.json。
@@ -137,3 +145,14 @@ S6. 规格充分性与程序边界。
 https://www.frama-c.com/fc-plugins/wp.html
 https://www.frama-c.com/download/frama-c-wp-manual.pdf
 这些是工具说明，不是本项目工具链自身的形式验证证书。
+
+Ghost语义的额外边界
+Clang预处理tokens相等或同一编译配置LLVM IR相同，只能说明普通C编译路径没被改。
+C编译器会忽略ACSL/ghost注释，因此这些比较不能证明Frama看到的ghost执行无干扰。
+Frama33对直接ghost修改普通变量、以及ghost alias写真实memory有拒绝诊断，
+但官方ACSL1.24 implementation manual仍明确列出完整ghost noninterference尚未实现。
+本例需额外审查13个ghosthelper的assigns nothing、已验证终止/循环frame、
+且实际赋值只作用于局部ghost状态；不使用ghost写真实heap来证明结果。
+这项具体审查和全部VC闭合不能宣传成对任意ghost程序的通用非干扰定理。
+官方当前实现说明（Introduction及2.13）：
+https://www.frama-c.com/download/frama-c-acsl-implementation.pdf

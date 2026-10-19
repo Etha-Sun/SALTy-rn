@@ -1,0 +1,62 @@
+实现、公共规格和单一证明文件的隔离
+
+实现文件：neon.c、rvv.c、shim.h、shim.c。
+公共规格：spec.h；它保留输入域、frame、终止条件和唯一输出相等后置。
+调用上下文：harness.c；负责同输入、同初值调用两边，返回两输出比较。
+证明入口：只有proof.patch；内含ACSL逻辑辅助定义、shim合同、ghosthelpers、
+不变量、断言和受限#line位置映射。它是标准unified diff，不是另一份可执行实现。
+
+日常修改proof.patch；build.py先核对冻结文件和frozen.json本身的固定hash，
+然后复制到.build/<name>/plain和annotated，仅把patch应用到annotated副本。
+原impl/spec不会由proof工具原地改写。原NEON/RVV文件与original是逐字相同的源文本。
+
+防止证明改变实现的检查
+1. 冻结6个实现/规格/上下文文件的完整字节hash。
+2. patch只能触及白名单文件，不能patch spec.h；任何普通C/预处理token变化拒绝。
+   raw lexer还覆盖inactive #if分支；多字符operator按整体比较。
+3. Clang14实际预处理完整unit.c，逐token比较kind与spelling；当前正例2552个token一致。
+   #line锚定原位置，避免插入注释改变assert字符串中的__FILE__/__LINE__。
+4. 不仅冻结spec.h：禁止在kernel/harness/unit里另注入requires/ensures等公共函数合同。
+   单纯新增requires false也可能改变公共输入域，不能因为C tokens没改就允许。
+5. 完整WP仍验证两核实际体、19个shim体、13个ghosthelper和全部中间义务；
+   token检查不是证明检查，字节相同更不是等价性定理。
+
+已执行的独立临时副本负测
+基线正例通过；改冻结neon.c末端赋值、proof patch新增普通*output=0、
+proof patch追加无用#define，三种均被对应guard拒绝。
+额外公共合同负测：在harness.c定义前新增requires false、保持spec.h不变，
+被public-contract guard拒绝。测试仅修改temp副本，主case所有输入保持不变。
+结果含实际命令、输入hash、错误信息和修改说明：
+  tests/verification/proof_separation/evidence/results.json
+  tests/verification/proof_separation/evidence/public-contract-rejected.json
+复现：
+  python3 tests/verification/proof_separation/check.py
+  python3 tests/verification/proof_separation/probe_public_contract.py
+GNU patch在当前受限沙箱中可能因fchown失败；记录中的有效运行在允许本地文件元数据操作的环境。
+
+Ghost不是普通编译器token
+另用独立工具和同一Clang14、-O0/-g0且assert开启，比较plain/annotated生成的LLVM IR，
+llvm-diff通过且文件字节相同，证据在verified/qs8-rsum/logs/llvm-identity.json。
+这只适用于该编译配置，不是任意编译器、优化选项或机器码的通用语义定理。
+尤其C编译器看不到ghost：一个危险ghost写入也可能被C编译器完全忽略。
+
+本例13个ghosthelper都要求assigns nothing，函数体在完整WP检查中验证；
+实际13个helper可按效果分成：7个空体代数lemma；2个仅递增局部i的空循环；
+4个只调用这些已检查helper并写逻辑assert的组合lemma。没有通过指针写入真实memory。
+内核中的ghost变量保存输入/初值/累计中间量，写入只作用于ghost local，
+没有ghost assignment写普通输出或真实输入heap。
+Frama33可拒绝直接/alias形式的若干ghost写普通状态，但官方当前实现手册仍说明
+完整ghost noninterference没有实现，不能从少量拒绝探针或LLVM相同扩大成全局保证。
+https://www.frama-c.com/download/frama-c-acsl-implementation.pdf
+
+防护范围
+这是有明确冻结基线和独立审计的工程检查，不是patch解析器/Clang/Frama自身的形式验证。
+若agent能同时改受信build/check脚本、manifest和预期目标集合，仍需要CI/独立review守住基线。
+新增证明注释不应被视为免审权限；特别要检查没有新增未验证的外部函数合同或公共前提。
+ISA→C shim、ABI/VL/内存合法域等原有TCB边界保持不变。
+
+分离版新鲜完整WP已结束：579/579，261.765秒，33函数依赖齐全，
+源输入与生成副本哈希均不变，目标集合与历史579项精确一致。
+见logs/separated-summary.json、separated.json；旧monolith记录明确作为历史保留。
+当前proof.patch688物理行（含diff上下文/#line），冻结spec注释34非空行，
+独立proof注释416非空行；这些不是纯tactic行数。

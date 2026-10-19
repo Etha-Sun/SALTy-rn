@@ -15,7 +15,7 @@ ROOT = Path(__file__).resolve().parent
 
 
 def hashes():
-    names = ["proof.c", "provenance.json", "audit.py", "check.py", "original/neon.c", "original/rvv.c"]
+    names = ["proof.patch", "frozen.json", "provenance.json", "audit.py", "build.py", "check.py", "shim.h", "shim.c", "neon.c", "rvv.c", "spec.h", "harness.c", "original/neon.c", "original/rvv.c"]
     return {name: audit.digest((ROOT / name).read_bytes()) for name in names}
 
 
@@ -24,10 +24,13 @@ if __name__ == "__main__":
     parser.add_argument("--framac", default=os.environ.get("FRAMAC", "frama-c"))
     parser.add_argument("--prover-bin", default=os.environ.get("PROVER_BIN"))
     parser.add_argument("--name", default="replay", help="log prefix; retain recorded evidence by using a new name")
+    parser.add_argument("--clang", default="clang")
     args = parser.parse_args()
     if not args.name.replace("-", "").replace("_", "").isalnum():
         parser.error("name must contain only letters, digits, - or _")
-    source_audit = audit.check()
+    source_audit = audit.check(args.name, args.clang)
+    guard = source_audit["source_guard"]
+    generated = Path(guard["annotated_dir"])
     if not source_audit["passed"]:
         raise SystemExit(json.dumps(source_audit, indent=2))
     manifest = json.loads((ROOT / "provenance.json").read_text())
@@ -44,7 +47,7 @@ if __name__ == "__main__":
                "-wp", "-wp-rte", "-wp-par", "2", "-wp-prover", "z3,cvc5,alt-ergo",
                "-wp-timeout", "10", "-wp-memlimit", "1024", "-wp-cache", "none",
                "-wp-session", str(ROOT / ".build" / args.name),
-               "-wp-report-json", str(raw), str(ROOT / "proof.c")]
+               "-wp-report-json", str(raw), str(generated / "unit.c")]
     versions = {}
     for name, version_args in [(tool, ["-version"]), ("z3", ["--version"]),
                                ("cvc5", ["--version"]), ("alt-ergo", ["--version"])]:
@@ -63,7 +66,7 @@ if __name__ == "__main__":
         output.write("COMMAND " + repr(command) + "\n")
         output.flush()
         try:
-            code = subprocess.run(command, env=env, stdout=output,
+            code = subprocess.run(command, cwd=generated, env=env, stdout=output,
                                   stderr=subprocess.STDOUT, timeout=600).returncode
         except subprocess.TimeoutExpired:
             code = 124
@@ -73,11 +76,13 @@ if __name__ == "__main__":
     goal_hash = audit.digest("\n".join(sorted(r["goal"] for r in rows)).encode())
     exact_coverage = len(rows) == manifest["expected_goal_count"] and goal_hash == manifest["expected_goal_names_sha256"]
     unchanged = before == hashes()
+    generated_unchanged = all(audit.digest((generated / file).read_bytes()) == sha
+                              for file, sha in guard["generated_sha256"].items())
     complete = (code == 0 and bool(rows) and all(r["passed"] for r in rows)
-                and unchanged and not missing and exact_coverage)
+                and unchanged and generated_unchanged and not missing and exact_coverage)
     report = dict(started_utc=timestamp, command=command, exit=code,
                   seconds=round(time.monotonic() - started, 3), tool_versions=versions,
-                  input_sha256=before, source_unchanged_during_run=unchanged,
+                  input_sha256=before, source_unchanged_during_run=unchanged, generated_unchanged_during_run=generated_unchanged,
                   source_audit=source_audit,
                   raw_obligations=dict(passed=sum(bool(r["passed"]) for r in rows), total=len(rows)),
                   pending=[r for r in rows if not r["passed"]],

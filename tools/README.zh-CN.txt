@@ -21,6 +21,15 @@ Z3/CVC5/Alt-Ergo需要另行安装对应版本并放入PATH；
   python3 verified/qs8-rsum/check.py --framac /path/to/frama-c \
     --prover-bin /path/to/provers/bin --name replay
 
+实现不变的独立编译检查（先用build.py --name replay生成副本）：
+  python3 tools/check_llvm_identity.py \
+    verified/qs8-rsum/.build/replay/plain/unit.c \
+    verified/qs8-rsum/.build/replay/annotated/unit.c \
+    --output-directory verified/qs8-rsum/.build/llvm-identity
+默认使用clang-14和llvm-diff-14；在相同编译器/参数、assert启用条件下，
+同时要求llvm-diff成功与完整LLVM IR逐字一致。这不是通用C程序等价性工具，
+也不证明ghost语义无干扰。脚本与冻结摘要本身属于构建/证据检查信任链。
+
 这里的源码不再依赖原工作区的research/目录。旧工作区仅作为本次实际使用的
 外部工具安装位置，运行命令中的绝对路径由CLI参数替换即可。
 本次使用已配置的工具环境，尚未在全新系统完成全部solver的从零安装复现。

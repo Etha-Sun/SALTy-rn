@@ -3,49 +3,6 @@
   "branch": "verification",
   "commit": "4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca",
   "experiment_baseline": "research/output-equivalence-v2/rsum",
-  "packing": "Concatenate components in the recorded order, remove local quoted includes and outer header guards only. No C or ACSL expression is rewritten. Section markers delimit the exact packed text.",
-  "sections": [
-    {
-      "name": "shim.h",
-      "source_sha256": "c29460caf31889c74dddc9afa102ab4fdf261c6bf1deb969fe9217df89e50cf6",
-      "packed_sha256": "fd803b37e541d2de81bf8533cade3545a824447fe50c6978ccbae0dd55f52e82"
-    },
-    {
-      "name": "shim.c",
-      "source_sha256": "4989fd0d9bb4df3a6912667931ab648af058fb01ab013ae8e52a420ccc8b80ea",
-      "packed_sha256": "410a15eb324a810d763b2e8f0e238ce315bcf7db88d23c528175684d95225142"
-    },
-    {
-      "name": "proof_s16.h",
-      "source_sha256": "aaf318ebdcdf1911042b0767730343797698d1f112b69a7dc36dea0f24772724",
-      "packed_sha256": "307e52aa835871b5c332ab523036553a6a407366962fad8199e8e8dba342a2a5"
-    },
-    {
-      "name": "proof_math.h",
-      "source_sha256": "eabdf87fc13b3267b5d733a86444f50f32b0c3018960d83134bcb49c946a0b34",
-      "packed_sha256": "4fbbf60b0d9eabb5edc2917d297195e755d13982382d106af4b87cd6699b9e4d"
-    },
-    {
-      "name": "proof_helpers.h",
-      "source_sha256": "255ba858ebe1008a5a617a346bf348bf1c56a7ccd50f80dce9421fedbdcfa537",
-      "packed_sha256": "476f51822bf04deafc5fc34756ceb1646c3061a656ed7fa06d5a86705cad859a"
-    },
-    {
-      "name": "kernel_neon.c",
-      "source_sha256": "ec03d981e8f6da91d223f9de382893049c3390bf1e9365d5f3cf0a32e45bfe5d",
-      "packed_sha256": "e91df1d781daad501bc3fcd7f110a84f55037318c0c46f60844f760000d921db"
-    },
-    {
-      "name": "kernel_rvv.c",
-      "source_sha256": "d377ac3e691d60a4ff41f7d8cfc78c0f28df87d745c99f5433505b943d1a0796",
-      "packed_sha256": "ff9f1b192a760c139a43cb028211333a46e600addd4ec9a60c4ed8323a2143ac"
-    },
-    {
-      "name": "equivalence.c",
-      "source_sha256": "d8c3b4e301589a06a5ac6896a4bfbd8b036cbf86f0481ac368f7c3be420442e3",
-      "packed_sha256": "0a635c64ee31eeb473985308693db9d12972cc399a4b83290dab381b84c03298"
-    }
-  ],
   "original": {
     "neon.c": {
       "repository_path": "kernels/source/qs8-rsum.c",
@@ -68,7 +25,6 @@
     "math_in_public_functional_postcondition": false,
     "math_in_internal_proof": true
   },
-  "proof_sha256": "4293713fbeb8d65fad068013ef62dd625dac321269ae2d612828481bc5a4bcc7",
   "expected_goal_count": 579,
   "expected_goal_names_sha256": "0814123a3a9d5b1f8646195411445de6063cc578f030ea4911d2e306207a625b",
   "expected_body_ensures": [
@@ -112,5 +68,32 @@
       "total": 579
     },
     "sha256": "dc10b37b7957974ff0346eb97b26dff09122c074e0e590e39841b638b2a1751b"
+  },
+  "layout": {
+    "implementation": [
+      "shim.h",
+      "shim.c",
+      "neon.c",
+      "rvv.c",
+      "harness.c"
+    ],
+    "public_specification": [
+      "spec.h"
+    ],
+    "proof_material": [
+      "proof.patch"
+    ],
+    "generated_only": "build.py applies proof.patch to disposable .build/NAME/annotated copies; source implementation/spec remain untouched"
+  },
+  "frozen_manifest_sha256": "b328a12d6fbe52df821740c9fd222b2e54af783713047ac63590c4988f086401",
+  "proof_patch_sha256": "6d59368cf1df795db0c4f5aad46efa76f3b098ccfa96ad26684a57252d98a6f6",
+  "historical_single_file": {
+    "proof_sha256": "4293713fbeb8d65fad068013ef62dd625dac321269ae2d612828481bc5a4bcc7",
+    "record": "logs/recorded-summary.json",
+    "restore_git_commits": [
+      "3b31101",
+      "570a7c5"
+    ],
+    "current_proof_c_retained": false
   }
 }
