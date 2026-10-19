@@ -1,0 +1,46 @@
+[
+  {
+    "variant": "original_rvv.c",
+    "compile": 0,
+    "command": [
+      "gcc",
+      "-x",
+      "c",
+      "-std=c11",
+      "-O0",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-fsanitize=address,undefined",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c",
+      "-lm",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out"
+    ],
+    "returncode": 1,
+    "stderr": "=================================================================\n==218==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x503000000064 at pc 0x5633dbc15603 bp 0x7ffd483afbe0 sp 0x7ffd483afbd0\nREAD of size 4 at 0x503000000064 thread T0\n    #0 0x5633dbc15602 in __riscv_vlse32_v_f32m1 (/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out+0x10602)\n    #1 0x5633dbc1f8a3 in test_rvv (/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out+0x1a8a3)\n    #2 0x5633dbc2148b in main (/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out+0x1c48b)\n    #3 0x7f85be94fd8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n    #4 0x7f85be94fe3f in __libc_start_main_impl ../csu/libc-start.c:392\n    #5 0x5633dbc0f3c4 in _start (/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out+0xa3c4)\n\n0x503000000064 is located 12 bytes to the left of 24-byte region [0x503000000070,0x503000000088)\nallocated by thread T0 here:\n    #0 0x7f85bf31fa57 in __interceptor_calloc ../../../../src/libsanitizer/asan/asan_malloc_linux.cpp:154\n    #1 0x5633dbc2131e in main (/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out+0x1c31e)\n    #2 0x7f85be94fd8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58\n\nSUMMARY: AddressSanitizer: heap-buffer-overflow (/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-original_rvv.c.out+0x10602) in __riscv_vlse32_v_f32m1\nShadow bytes around the buggy address:\n  0x0a067fff7fb0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x0a067fff7fc0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x0a067fff7fd0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x0a067fff7fe0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n  0x0a067fff7ff0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00\n=>0x0a067fff8000: fa fa 00 00 00 fa fa fa 00 00 00 fa[fa]fa 00 00\n  0x0a067fff8010: 00 fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x0a067fff8020: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x0a067fff8030: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x0a067fff8040: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\n  0x0a067fff8050: fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa fa\nShadow byte legend (one shadow byte represents 8 application bytes):\n  Addressable:           00\n  Partially addressable: 01 02 03 04 05 06 07 \n  Heap left redzone:       fa\n  Freed heap region:       fd\n  Stack left redzone:      f1\n  Stack mid redzone:       f2\n  Stack right redzone:     f3\n  Stack after return:      f5\n  Stack use after scope:   f8\n  Global redzone:          f9\n  Global init order:       f6\n  Poisoned by user:        f7\n  Container overflow:      fc\n  Array cookie:            ac\n  Intra object redzone:    bb\n  ASan internal:           fe\n  Left alloca redzone:     ca\n  Right alloca redzone:    cb\n  Shadow gap:              cc\n==218==ABORTING\n",
+    "source_sha256": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200",
+    "shim_sha256": "8b0e8f77037b28e1c31e3cd4f5e9466f1e3705f85d44115f12e1fb54a7ede4e1"
+  },
+  {
+    "variant": "rvv.c",
+    "compile": 0,
+    "command": [
+      "gcc",
+      "-x",
+      "c",
+      "-std=c11",
+      "-O0",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-fsanitize=address,undefined",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-rvv.c",
+      "-lm",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/oob-rvv.c.out"
+    ],
+    "returncode": 0,
+    "stderr": "",
+    "source_sha256": "ad1e5b1bf080182086946e8a770206a0acb85dc4c8497bea06076712008e30ff",
+    "shim_sha256": "8b0e8f77037b28e1c31e3cd4f5e9466f1e3705f85d44115f12e1fb54a7ede4e1"
+  }
+]

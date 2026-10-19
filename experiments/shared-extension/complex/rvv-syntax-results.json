@@ -1,0 +1,223 @@
+[
+  {
+    "kernel": "f32-argmaxpool",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-argmaxpool-isa-syntax.c"
+    ],
+    "source_sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vle32_v_f32m8 vle32_v_f32m8\n#define __riscv_vle32_v_u32m8 vle32_v_u32m8\n#define __riscv_vmerge_vvm_f32m8(a,b,m,vl) vmerge_vvm_f32m8(m,a,b,vl)\n#define __riscv_vmerge_vxm_u32m8(a,b,m,vl) vmerge_vxm_u32m8(m,a,b,vl)\n#define __riscv_vmfgt_vv_f32m8_b4 vmfgt_vv_f32m8_b4\n#define __riscv_vmv_v_x_u32m8 vmv_v_x_u32m8\n#define __riscv_vse32_v_f32m8 vse32_v_f32m8\n#define __riscv_vse32_v_u32m8 vse32_v_u32m8\n#define __riscv_vsetvl_e32m8 vsetvl_e32m8\n"
+  },
+  {
+    "kernel": "f32-conv-hwc2chw",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-conv-hwc2chw-isa-syntax.c"
+    ],
+    "source_sha256": "ad1e5b1bf080182086946e8a770206a0acb85dc4c8497bea06076712008e30ff",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vadd_vx_i32m1 vadd_vx_i32m1\n#define __riscv_vadd_vx_u32m1 vadd_vx_u32m1\n#define __riscv_vfmacc_vf_f32m1 vfmacc_vf_f32m1\n#define __riscv_vfmax_vf_f32m1 vfmax_vf_f32m1\n#define __riscv_vfmerge_vfm_f32m1(v,x,m,vl) vfmerge_vfm_f32m1(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m1 vfmin_vf_f32m1\n#define __riscv_vfmv_v_f_f32m1 vfmv_v_f_f32m1\n#define __riscv_vid_v_u32m1 vid_v_u32m1\n#define __riscv_vlse32_v_f32m1_m(m,p,s,vl) vlse32_v_f32m1_m(m,vfmv_v_f_f32m1(0.0f,vl),p,s,vl)\n#define __riscv_vmand_mm_b32 vmand_mm_b32\n#define __riscv_vmerge_vvm_f32m1(a,b,m,vl) vmerge_vvm_f32m1(m,a,b,vl)\n#define __riscv_vmfne_vv_f32m1_b32 vmfne_vv_f32m1_b32\n#define __riscv_vmsge_vx_i32m1_b32 vmsge_vx_i32m1_b32\n#define __riscv_vmslt_vx_i32m1_b32 vmslt_vx_i32m1_b32\n#define __riscv_vmul_vx_u32m1 vmul_vx_u32m1\n#define __riscv_vreinterpret_v_u32m1_i32m1 vreinterpret_v_u32m1_i32m1\n#define __riscv_vse32_v_f32m1 vse32_v_f32m1\n#define __riscv_vsetvl_e32m1 vsetvl_e32m1\n#define __riscv_vsub_vx_i32m1 vsub_vx_i32m1\n"
+  },
+  {
+    "kernel": "f32-dwconv-minmax",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-dwconv-minmax-isa-syntax.c"
+    ],
+    "source_sha256": "05ab39b30b84b05090cd646af0edf83912a057e6a34c75ee5034e8356569ce1f",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfadd_vv_f32m4 vfadd_vv_f32m4\n#define __riscv_vfmacc_vv_f32m4 vfmacc_vv_f32m4\n#define __riscv_vfmax_vf_f32m4 vfmax_vf_f32m4\n#define __riscv_vfmerge_vfm_f32m4(v,x,m,vl) vfmerge_vfm_f32m4(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m4 vfmin_vf_f32m4\n#define __riscv_vfmul_vv_f32m4 vfmul_vv_f32m4\n#define __riscv_vfmv_v_f_f32m4 vfmv_v_f_f32m4\n#define __riscv_vle32_v_f32m4 vle32_v_f32m4\n#define __riscv_vmfne_vv_f32m4_b8 vmfne_vv_f32m4_b8\n#define __riscv_vse32_v_f32m4 vse32_v_f32m4\n#define __riscv_vsetvl_e32m4 vsetvl_e32m4\n"
+  },
+  {
+    "kernel": "f32-dwconv2d-chw",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-dwconv2d-chw-isa-syntax.c"
+    ],
+    "source_sha256": "b7655578e41d4a8c28c07668bc0989c139de3e76497e3af87fab2b9d1f7a470c",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfmacc_vf_f32m2 vfmacc_vf_f32m2\n#define __riscv_vfmax_vf_f32m2 vfmax_vf_f32m2\n#define __riscv_vfmerge_vfm_f32m2(v,x,m,vl) vfmerge_vfm_f32m2(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m2 vfmin_vf_f32m2\n#define __riscv_vfmv_v_f_f32m2 vfmv_v_f_f32m2\n#define __riscv_vfslide1down_vf_f32m2 vfslide1down_vf_f32m2\n#define __riscv_vfslide1up_vf_f32m2 vfslide1up_vf_f32m2\n#define __riscv_vle32_v_f32m2 vle32_v_f32m2\n#define __riscv_vmfne_vv_f32m2_b16 vmfne_vv_f32m2_b16\n#define __riscv_vse32_v_f32m2 vse32_v_f32m2\n#define __riscv_vsetvl_e32m2 vsetvl_e32m2\n"
+  },
+  {
+    "kernel": "f32-gemm-minmax",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-gemm-minmax-isa-syntax.c"
+    ],
+    "source_sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfmacc_vf_f32m4 vfmacc_vf_f32m4\n#define __riscv_vfmax_vf_f32m4 vfmax_vf_f32m4\n#define __riscv_vfmerge_vfm_f32m4(v,x,m,vl) vfmerge_vfm_f32m4(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m4 vfmin_vf_f32m4\n#define __riscv_vfmv_v_f_f32m4 vfmv_v_f_f32m4\n#define __riscv_vle32_v_f32m4 vle32_v_f32m4\n#define __riscv_vmfne_vv_f32m4_b8 vmfne_vv_f32m4_b8\n#define __riscv_vse32_v_f32m4 vse32_v_f32m4\n#define __riscv_vsetvl_e32m4 vsetvl_e32m4\n"
+  },
+  {
+    "kernel": "f32-igemm-minmax",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-igemm-minmax-isa-syntax.c"
+    ],
+    "source_sha256": "551fb621ce3354fc61c0e3229325d654cf1ffe96c8fa7f17a40394bc29398d3a",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfmacc_vf_f32m4 vfmacc_vf_f32m4\n#define __riscv_vfmax_vf_f32m4 vfmax_vf_f32m4\n#define __riscv_vfmerge_vfm_f32m4(v,x,m,vl) vfmerge_vfm_f32m4(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m4 vfmin_vf_f32m4\n#define __riscv_vfmv_v_f_f32m4 vfmv_v_f_f32m4\n#define __riscv_vle32_v_f32m4 vle32_v_f32m4\n#define __riscv_vmfne_vv_f32m4_b8 vmfne_vv_f32m4_b8\n#define __riscv_vse32_v_f32m4 vse32_v_f32m4\n"
+  },
+  {
+    "kernel": "f32-maxpool",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-maxpool-isa-syntax.c"
+    ],
+    "source_sha256": "42f71641eddbba2a5d2b39308f0ef5074554d330ab4607bd9aa19742a8735c51",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfmax_vf_f32m8 vfmax_vf_f32m8\n#define __riscv_vfmax_vv_f32m8 vfmax_vv_f32m8\n#define __riscv_vfmerge_vfm_f32m8(v,x,m,vl) vfmerge_vfm_f32m8(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m8 vfmin_vf_f32m8\n#define __riscv_vfmv_v_f_f32m8 vfmv_v_f_f32m8\n#define __riscv_vle32_v_f32m8 vle32_v_f32m8\n#define __riscv_vmfne_vv_f32m8_b4 vmfne_vv_f32m8_b4\n#define __riscv_vse32_v_f32m8 vse32_v_f32m8\n#define __riscv_vsetvl_e32m8 vsetvl_e32m8\n"
+  },
+  {
+    "kernel": "f32-raddstoreexpminusmax",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-raddstoreexpminusmax-isa-syntax.c"
+    ],
+    "source_sha256": "b5230b7b984aad0f560dafac3544023440a841176853c1e374741864a4be1301",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfadd_vv_f32m4 vfadd_vv_f32m4\n#define __riscv_vfmacc_vf_f32m4 vfmacc_vf_f32m4\n#define __riscv_vfmacc_vv_f32m4 vfmacc_vv_f32m4\n#define __riscv_vfmadd_vf_f32m4 vfmadd_vf_f32m4\n#define __riscv_vfmerge_vfm_f32m4(v,x,m,vl) vfmerge_vfm_f32m4(m,v,x,vl)\n#define __riscv_vfmul_vv_f32m4 vfmul_vv_f32m4\n#define __riscv_vfmv_v_f_f32m4 vfmv_v_f_f32m4\n#define __riscv_vfsub_vf_f32m4 vfsub_vf_f32m4\n#define __riscv_vle32_v_f32m4 vle32_v_f32m4\n#define __riscv_vmflt_vf_f32m4_b8 vmflt_vf_f32m4_b8\n#define __riscv_vreinterpret_v_f32m4_i32m4 vreinterpret_v_f32m4_i32m4\n#define __riscv_vreinterpret_v_i32m4_f32m4 vreinterpret_v_i32m4_f32m4\n#define __riscv_vse32_v_f32m4 vse32_v_f32m4\n#define __riscv_vsetvl_e32m4 vsetvl_e32m4\n#define __riscv_vsll_vx_i32m4 vsll_vx_i32m4\n"
+  },
+  {
+    "kernel": "f32-spmm-minmax",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-spmm-minmax-isa-syntax.c"
+    ],
+    "source_sha256": "1da8546421f21874f5aa5f51d41f0a8ea096fbec8c8912e1e1c9ce46a0c3d5f4",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfmacc_vf_f32m8 vfmacc_vf_f32m8\n#define __riscv_vfmax_vf_f32m8 vfmax_vf_f32m8\n#define __riscv_vfmerge_vfm_f32m8(v,x,m,vl) vfmerge_vfm_f32m8(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m8 vfmin_vf_f32m8\n#define __riscv_vfmv_v_f_f32m8 vfmv_v_f_f32m8\n#define __riscv_vle32_v_f32m8 vle32_v_f32m8\n#define __riscv_vmfne_vv_f32m8_b4 vmfne_vv_f32m8_b4\n#define __riscv_vse32_v_f32m8 vse32_v_f32m8\n#define __riscv_vsetvl_e32m8 vsetvl_e32m8\n"
+  },
+  {
+    "kernel": "f32-vcmul",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/f32-vcmul-isa-syntax.c"
+    ],
+    "source_sha256": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vfadd_vv_f32m4 vfadd_vv_f32m4\n#define __riscv_vfmul_vv_f32m4 vfmul_vv_f32m4\n#define __riscv_vfsub_vv_f32m4 vfsub_vv_f32m4\n#define __riscv_vle32_v_f32m4 vle32_v_f32m4\n#define __riscv_vse32_v_f32m4 vse32_v_f32m4\n#define __riscv_vsetvl_e32m4 vsetvl_e32m4\n"
+  },
+  {
+    "kernel": "qd8-f32-qc4w-gemm-minmax",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/qd8-f32-qc4w-gemm-minmax-isa-syntax.c"
+    ],
+    "source_sha256": "368e8e19d70f8d5935671c49304954a3c6c027e133e4452e19c5441621913bda",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vand_vx_i8m2 vand_vx_i8m2\n#define __riscv_vfcvt_f_x_v_f32m8 vfcvt_f_x_v_f32m8\n#define __riscv_vfmacc_vv_f32m8 vfmacc_vv_f32m8\n#define __riscv_vfmax_vf_f32m8 vfmax_vf_f32m8\n#define __riscv_vfmerge_vfm_f32m8(v,x,m,vl) vfmerge_vfm_f32m8(m,v,x,vl)\n#define __riscv_vfmin_vf_f32m8 vfmin_vf_f32m8\n#define __riscv_vfmul_vf_f32m8 vfmul_vf_f32m8\n#define __riscv_vfmv_v_f_f32m8 vfmv_v_f_f32m8\n#define __riscv_vle32_v_f32m8 vle32_v_f32m8\n#define __riscv_vle32_v_i32m8 vle32_v_i32m8\n#define __riscv_vle8_v_i8m2 vle8_v_i8m2\n#define __riscv_vmfne_vv_f32m8_b4 vmfne_vv_f32m8_b4\n#define __riscv_vmul_vx_i32m8 vmul_vx_i32m8\n#define __riscv_vse32_v_f32m8 vse32_v_f32m8\n#define __riscv_vsetvl_e32m8 vsetvl_e32m8\n#define __riscv_vsext_vf2_i16m4 vsext_vf2_i16m4\n#define __riscv_vsll_vx_i8m2 vsll_vx_i8m2\n#define __riscv_vsra_vx_i32m8 vsra_vx_i32m8\n#define __riscv_vwmacc_vx_i32m8 vwmacc_vx_i32m8\n"
+  },
+  {
+    "kernel": "x32-packw-gemm-goi",
+    "returncode": 1,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c"
+    ],
+    "source_sha256": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+    "stdout": "",
+    "stderr": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:79:22: error: expected ';' after expression\n        vuint32m4x2_t vw = __riscv_vcreate_v_u32m4x2(vw0, vw1);\n                     ^\n                     ;\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:79:9: error: use of undeclared identifier 'vuint32m4x2_t'\n        vuint32m4x2_t vw = __riscv_vcreate_v_u32m4x2(vw0, vw1);\n        ^\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:79:23: error: use of undeclared identifier 'vw'\n        vuint32m4x2_t vw = __riscv_vcreate_v_u32m4x2(vw0, vw1);\n                      ^\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:79:28: error: implicit declaration of function 'vcreate_v_u32m4x2' is invalid in C99 [-Werror,-Wimplicit-function-declaration]\n        vuint32m4x2_t vw = __riscv_vcreate_v_u32m4x2(vw0, vw1);\n                           ^\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:14:35: note: expanded from macro '__riscv_vcreate_v_u32m4x2'\n#define __riscv_vcreate_v_u32m4x2 vcreate_v_u32m4x2\n                                  ^\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:81:9: error: implicit declaration of function 'vsseg2e32_v_u32m4x2' is invalid in C99 [-Werror,-Wimplicit-function-declaration]\n        __riscv_vsseg2e32_v_u32m4x2(packed_weights, vw, vl);\n        ^\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:21:37: note: expanded from macro '__riscv_vsseg2e32_v_u32m4x2'\n#define __riscv_vsseg2e32_v_u32m4x2 vsseg2e32_v_u32m4x2\n                                    ^\n/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-packw-gemm-goi-isa-syntax.c:81:53: error: use of undeclared identifier 'vw'\n        __riscv_vsseg2e32_v_u32m4x2(packed_weights, vw, vl);\n                                                    ^\n6 errors generated.\n",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vcreate_v_u32m4x2 vcreate_v_u32m4x2\n#define __riscv_vle32_v_u32m1 vle32_v_u32m1\n#define __riscv_vle32_v_u32m4 vle32_v_u32m4\n#define __riscv_vmv_v_x_u32m1 vmv_v_x_u32m1\n#define __riscv_vse32_v_u32m1 vse32_v_u32m1\n#define __riscv_vsetvl_e32m4 vsetvl_e32m4\n#define __riscv_vsse32_v_u32m4 vsse32_v_u32m4\n#define __riscv_vsseg2e32_v_u32m4x2 vsseg2e32_v_u32m4x2\n"
+  },
+  {
+    "kernel": "x32-transposec",
+    "returncode": 0,
+    "command": [
+      "clang",
+      "--target=riscv64",
+      "-march=rv64gcv",
+      "-ffreestanding",
+      "-fsyntax-only",
+      "-Werror=implicit-function-declaration",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shared-extension/complex/.build/x32-transposec-isa-syntax.c"
+    ],
+    "source_sha256": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f",
+    "stdout": "",
+    "stderr": "",
+    "compatibility_prelude": "#include <stddef.h>\n#include <stdint.h>\n#include <riscv_vector.h>\n#define assert(x) ((void)0)\n#define XNN_OOB_READS\n#define XNN_UNPREDICTABLE(x) (x)\n#define XNN_UNLIKELY(x) (x)\n#define XNN_LIKELY(x) (x)\nstruct xnn_f32_minmax_params { struct { float min,max; } scalar; };\nstruct xnn_f32_default_params { char unused; };\nstruct xnn_qd8_quantization_params { int32_t zero_point;float inv_scale; };\nstruct xnn_f32_qc4w_minmax_params { struct { float min,max;int32_t kernel_zero_point; } scalar; };\nstatic size_t round_up_po2(size_t n,size_t q) { return (n+q-1)&~(q-1); }\n#define __riscv_vle32_v_u32m8 vle32_v_u32m8\n#define __riscv_vsetvl_e32m8 vsetvl_e32m8\n#define __riscv_vsse32_v_u32m8 vsse32_v_u32m8\n"
+  }
+]
