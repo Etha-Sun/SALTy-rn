@@ -1,0 +1,195 @@
+[kernel] Parsing qualification01/memory.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function positive_loop
+[wp] 11 goals scheduled
+[wp] [Timeout] bytes_bytefloat_fma_positive_loop_loop_invariant_2_preserved (Qed 7ms) (Z3)
+[wp] [Timeout] bytes_bytefloat_fma_positive_loop_assert_rte_mem_access (Qed 5ms) (CVC5)
+[wp] Proved goals:   11 / 13
+  Terminating:     1
+  Unreachable:     1
+  Qed:             6 (4ms-2ms-7ms)
+  CVC5 1.2.1:      2 (879ms-956ms)
+  Z3 4.12.5:       1 (160ms)
+  Timeout:         2
+
+Goal Post-condition ("qualification01/memory.c", line 17) in 'positive_loop':
+Let a = shift_float32(p, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, 16).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i_1) /\ bytes(a_1).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 3).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 16).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i_1) ->
+      P_same32(decode32(read_uint32(a_1, shift_float32(p, i_2))), x))).
+  (* Else *)
+  Have: 4 <= i_1.
+}
+Prove: P_same32(decode32(read_uint32(a_1, shift_float32(p, i))), x).
+Prover CVC5 1.2.1 returns Timeout (Qed:4ms) (1s)
+Prover Z3 4.12.5 returns Valid (Qed:4ms) (160ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("qualification01/memory.c", line 19):
+Prove: true.
+Prover Qed returns Valid (0.63ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("qualification01/memory.c", line 19):
+Let a = shift_float32(p, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, 16).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_1).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same32(decode32(read_uint32(a_1, shift_float32(p, i_1))), x))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, shift_float32(p, i), 4).
+}
+Prove: to_uint64(1 + i) <= 4.
+Prover CVC5 1.2.1 returns Valid (Qed:5ms) (956ms)
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("qualification01/memory.c", line 20):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("qualification01/memory.c", line 20):
+Let x_1 = to_uint64(1 + i).
+Let a = shift_float32(p, i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let m = write_uint32(a_2, a, encode32(x, nan_seed_0)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x_1).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i) ->
+      P_same32(decode32(read_uint32(a_2, shift_float32(p, i_2))), x))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a, 4).
+  (* Invariant *)
+  Have: x_1 <= 4.
+}
+Prove: P_same32(decode32(read_uint32(m, shift_float32(p, i_1))), x).
+Prover CVC5 1.2.1 returns Unknown (Qed:7ms)
+Prover Z3 4.12.5 returns Timeout (Qed:7ms) (1s)
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("qualification01/memory.c", line 22):
+Let a = shift_float32(p, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, 16).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_1).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same32(decode32(read_uint32(a_1, shift_float32(p, i_1))), x))).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: valid_rw(alloc_0, shift_float32(p, i), 4).
+Prover CVC5 1.2.1 returns Timeout (Qed:5ms) (1s)
+Prover Z3 4.12.5 returns Timeout (Qed:5ms) (1s)
+
+------------------------------------------------------------
+
+Goal Loop assigns ("qualification01/memory.c", line 21) (1/2):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns ("qualification01/memory.c", line 21) (2/2):
+Effect at line 22
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns ("qualification01/memory.c", line 17) in 'positive_loop':
+Effect at line 22
+Prove: true.
+Prover Qed returns Valid (0.96ms)
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("qualification01/memory.c", line 22):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("qualification01/memory.c", line 22):
+Let x_1 = to_uint64(1 + i).
+Let a = shift_float32(p, 0).
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, 16).
+Let a_2 = shift_float32(p, i).
+Let m = write_uint32(a_1, a_2, encode32(x, nan_seed_0)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_1) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same32(decode32(read_uint32(a_1, shift_float32(p, i_1))), x))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_2, 4).
+  (* Invariant *)
+  Have: x_1 <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x_1) ->
+      P_same32(decode32(read_uint32(m, shift_float32(p, i_1))), x))).
+}
+Prove: i < x_1.
+Prover CVC5 1.2.1 returns Valid (Qed:6ms) (879ms)
+
+------------------------------------------------------------

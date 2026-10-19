@@ -1,0 +1,13 @@
+{
+  "print_exit": 0,
+  "source_sha256": "fe209b177dbc68a90a6bbac1ab819b90c864d023be160c8f93d8d3272057bb2e",
+  "goal": "ext_same(Mf32_0[vacc.lane+i], Mf32_0[w+i]) for 0<=i<vl",
+  "actual_loader_fact": "forall i<vl: ext_same(return.F6_lane[i], Mf32_69[w+i])",
+  "return_copy": "Mf32_70=memcpy(Mf32_69,vacc,undef,vacc,16); Mf32_70=Mf32_71=Mf32_0",
+  "established": "r19 closed lane0 prestate, using native projection/transitivity. It does not establish other lanes or postheap weights.",
+  "remaining_components": [
+    "all-lane logical return -> physical vacc projection/composition",
+    "postheap Mf32_0[w+i] -> preload Mf32_69[w+i] frame across real aggregate return-copy"
+  ],
+  "next_candidate": "bias-lanes-r20 targets first component with actual no-requires helper body and stronger actual loader ensures. No separated/valid assertion assumed. Second component remains an explicit unresolved dependency; original local/normalized retained."
+}

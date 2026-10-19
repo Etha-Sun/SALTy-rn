@@ -1,0 +1,25 @@
+{
+  "base": "candidate42",
+  "candidate": "candidate43",
+  "exact_single_replacement": true,
+  "old_assert": "/*@ assert next_acc_frame: \\forall integer j;0<=j<4 ==> ext_same(vacc0x0.lane[j],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,j,(KC-k)/4+2,KC/4)); */",
+  "new_assertions": [
+    "      /*@ assert next_acc_frame_fixed_0: ext_same(vacc0x0.lane[0],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,0,(KC-k)/4+2,KC/4)); */",
+    "      /*@ assert next_acc_frame_fixed_1: ext_same(vacc0x0.lane[1],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,1,(KC-k)/4+2,KC/4)); */",
+    "      /*@ assert next_acc_frame_fixed_2: ext_same(vacc0x0.lane[2],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,2,(KC-k)/4+2,KC/4)); */",
+    "      /*@ assert next_acc_frame_fixed_3: ext_same(vacc0x0.lane[3],stage3_gacc{Stage3Block}(A0,W0,0,(NC-nc)/8,3,(KC-k)/4+2,KC/4)); */"
+  ],
+  "equivalence": "For integer j, 0<=j<4 iff j=0 or j=1 or j=2 or j=3. Replacement expands the same ext_same expression at these four values; no new antecedent, domain restriction or accumulator seed. Each replacement assertion remains independently mandatory.",
+  "source_sha256": {
+    "experiments/shim-c-v2/stage3-proof-next/gemm/candidate42/.build/diagnostic01/annotated/neon.c": "aab568c88b311ffe1a7fadf63d402827c9806bbdcf0a59c516aa4a81051ee0c6",
+    "experiments/shim-c-v2/stage3-proof-next/gemm/candidate43/.build/diagnostic01/annotated/neon.c": "8d966eb3aa70aff2b1db17e9f8e8d7644de2f042b1938f01fa33b6d53795efd8"
+  },
+  "focus_obligations": {
+    "new_frame": 4,
+    "scalar_invariants": 8,
+    "retained_frame_snapshots": 8,
+    "acc_entry_before_after_first_second": 7,
+    "total": 27
+  },
+  "complete": false
+}

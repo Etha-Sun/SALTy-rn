@@ -1,0 +1,25 @@
+--- r9/quantized.c
++++ r10/quantized.c
+@@ -1,10 +1,22 @@
+ /*@ predicate qd8_shift_same(integer x, integer y) = x == y; */
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures qd8_mask8_identity: \forall integer u; 0<=u<=255 ==> qd8_shift_same(255 & u, u);
++@/
++static void qd8_mask8_identity(void) { }
++*/
++/*@ \wp::strategy Qd8MaskLeaf: \prover("z3",10), \prover("cvc5",10);
++    \wp::strategy Qd8MaskBits: \tactic("Wp.bitwised",\ingoal(A==B),\param("Wp.bitwised.range",8),\children(Qd8MaskLeaf)), Qd8MaskLeaf;
++    \wp::strategy Qd8MaskUnfold: \tactic("Wp.unfold",\ingoal(A),\children(Qd8MaskBits)), Qd8MaskLeaf;
++    \wp::proof Qd8MaskUnfold: qd8_mask8_identity;
++*/
+ /*@ ghost
+ /@ terminates \true; assigns \nothing;
+     ensures qd8_and8_range: \forall integer u,v; 0<=u<=255 && 0<=v<=255 ==> 0<=(u&v)<=255;
+     ensures qd8_and8_cast: \forall integer u,v; 0<=u<=255 && 0<=v<=255 ==> qd8_shift_same((int8_t)(255 & (u&v)), (int8_t)(u&v));
+ @/
+ static void qd8_and8_cast(void) {
++  qd8_mask8_identity();
+   /@ assert qd8_and8_range_cut: \forall integer u,v; 0<=u<=255 && 0<=v<=255 ==> 0<=(u&v)<=255; @/
+ }
+ */

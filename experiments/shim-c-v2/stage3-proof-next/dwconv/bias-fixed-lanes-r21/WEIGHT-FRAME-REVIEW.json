@@ -1,0 +1,24 @@
+{
+  "status": "source_review_completed_no_new_frame_candidate",
+  "kernel_complete": false,
+  "observed_facts": [
+    "r19 local goal uses current Mf32_0[w+i]; actual loader contract uses old Mf32_69[w+i].",
+    "Actual return copy changes Mf32_69 to Mf32_70 via memcpy into vacc,16; Mf32_70=Mf32_71=Mf32_0.",
+    "r10 next_bias_disjoint asks separated(vacc,16,w,vl), the same alias relation.",
+    "r10 later weightframe includes that unproved disjoint assertion in assumptions yet still timed out. This is conditional solver evidence, not a proof of separation or semantic unprovability.",
+    "r19 has linked(Malloc_0),framed(Mptr_1) initially; actual local allocation maps vacc base to16 in Malloc_47, equal to Malloc_48 where loader valid_rd is available."
+  ],
+  "analysis": "Loader valid_rd alone, after local vacc allocation, does not imply source w is separate from vacc. A sound proof must trace pre-existing input pointer/validity and local allocation/region/frame facts. Exact locked framed/linked definitions still awaiting read-only tool completion; no claim that the existing model lacks the needed facts.",
+  "no_new_candidate": "No unconditional valid=>separated helper added; no extra precondition, cut or model change.",
+  "read_only_commands_login_false": true,
+  "locked_source_sha256": {
+    "experiments/shim-c-v2/handoff-model-plus/wp-share/why3/frama_c_wp/memory.mlw": "89befdbbe079934c8145bf3af8fbfa886a438af9063788eaaab496e6f13c69a9",
+    "experiments/shim-c-v2/handoff-model-plus/wp-share/why3/frama_c_wp/memaddr.mlw": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f"
+  },
+  "definitions": {
+    "framed": "forall p [m[p]], region(p.base)<=0 -> region(m[p].base)<=0",
+    "linked": "predicate declaration in MemAddr, generated context supplies any further facts",
+    "memcpy": "pointwise if separated(query,1,destination,size) then old_map[query] else source_map[translated query]"
+  },
+  "next_needed": "For query w+i, instantiate actual base/region relations and separated point from interval, then memcpy definition. Framed is conditional on region of pointer storage, so need trace both that storage and resulting source base; loader validity alone insufficient. Existing frame lemmas already present; no model change justified."
+}

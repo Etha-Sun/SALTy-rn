@@ -1,0 +1,1 @@
+原wordbytes.mlw使用EuclideanDivision，但实际membytes_le.ValueCodec使用ComputerDivision，且原lemma对任意整数v无条件成立。v=-1时encode_uint32最低byte为ComputerDivision.mod(-1,256)=-1，原目标EuclideanDivision.mod(EuclideanDivision.div(-1,1),256)=255，因此原全整数命题不成立。原0/4超时记录保留；不能据此归为solver触发困难、工具或kernel错误。read02改为真实ComputerDivision全整数定义关系，无新requires；真实C uint32域非负时与Euclidean形式一致，但此额外转换必须另证，不能偷加kernel前提。

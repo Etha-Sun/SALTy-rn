@@ -1,0 +1,119 @@
+{
+  "command": [
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/.build/install/bin/frama-c",
+    "-machdep",
+    "gcc_x86_64",
+    "-wp",
+    "-wp-rte",
+    "-wp-model",
+    "Bytes+float",
+    "-warn-special-float",
+    "none",
+    "-wp-share",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/wp-share",
+    "-wp-why3-config",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/why3-02.conf",
+    "-wp-no-why3-detect",
+    "-wp-prover",
+    "tip,z3,cvc5",
+    "-wp-timeout",
+    "30",
+    "-wp-memlimit",
+    "2048",
+    "-wp-par",
+    "1",
+    "-wp-cache",
+    "none",
+    "-wp-driver",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/bytefloat.driver,/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-fma/fma.driver",
+    "-cpp-command",
+    "gcc -E -C -I/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/model-plus/libc -I.",
+    "-cpp-frama-c-compliant",
+    "-wp-session",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/qualification01/ieee01/.build/session",
+    "-wp-report-json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/qualification01/ieee01/raw.json",
+    "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/qualification01/ieee.c"
+  ],
+  "cwd": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19",
+  "input_snapshot_sha256": "d5c20779b849a8903f146c121e0ff918f49780e70de2dd14d443bab8abf6cfc0",
+  "runner_sha256": "0926cc69c6cafd5dbb8087469d602f69a9ddf4ec4c92ca08a4e569ddffb08416",
+  "budget_seconds": 300,
+  "qualification": false,
+  "exit": 0,
+  "seconds": 95.274,
+  "raw_total": 26,
+  "raw_passed": 23,
+  "inputs_unchanged": true,
+  "pending": [
+    {
+      "goal": "bytes_bytefloat_fma_impossible_ensures",
+      "property": "impossible_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/qualification01/ieee.c",
+      "line": 28,
+      "function": "impossible",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_wrong_literal_sign_ensures",
+      "property": "wrong_literal_sign_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/qualification01/ieee.c",
+      "line": 16,
+      "function": "wrong_literal_sign",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.000716,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "bytes_bytefloat_fma_wrong_nan_cast_ensures",
+      "property": "wrong_nan_cast_ensures",
+      "file": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shim-c-v2/stage3-byte-fp-front-v19/qualification01/ieee.c",
+      "line": 18,
+      "function": "wrong_nan_cast",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00122,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ]
+}

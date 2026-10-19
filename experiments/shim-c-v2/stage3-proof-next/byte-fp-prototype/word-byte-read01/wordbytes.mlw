@@ -1,0 +1,18 @@
+module WordBytes32
+ use int.Int
+ use int.EuclideanDivision
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_word_byte0 (m:memory) (a:addr) (v:int) : unit
+ ensures { read_uint8 (write_uint32 m a v) (shift a 0) = mod (div v 1) 256 }
+ = ()
+ let lemma checked_word_byte1 (m:memory) (a:addr) (v:int) : unit
+ ensures { read_uint8 (write_uint32 m a v) (shift a 1) = mod (div v 256) 256 }
+ = ()
+ let lemma checked_word_byte2 (m:memory) (a:addr) (v:int) : unit
+ ensures { read_uint8 (write_uint32 m a v) (shift a 2) = mod (div v 65536) 256 }
+ = ()
+ let lemma checked_word_byte3 (m:memory) (a:addr) (v:int) : unit
+ ensures { read_uint8 (write_uint32 m a v) (shift a 3) = mod (div v 16777216) 256 }
+ = ()
+end

@@ -1,0 +1,10 @@
+{
+  "original_sha256": "b1c8507718516f3ed6b71282955184f0ab7bd470f494bd7bbebff6b25c6beae0",
+  "reduced_sha256": "1773a1d41e3da487528eda9d00cec4e15c57c60b3f7830fa6912134bba0741f4",
+  "removed_assertions": [
+    "(assert\n  (forall ((m (Array Int (Array Int Int))) (a addr) (v Float32) (seed Int))\n    (! (= ((_ to_fp 8 24) ((_ int2bv 32) (read_uint32\n                                           (write_uint32\n                                             m\n                                             a\n                                             (bv2nat (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 32) seed) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) seed) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv v))))\n                                           a))) v) :pattern ((write_uint32\n                                                               m\n                                                               a\n                                                               (bv2nat (ite (fp.isNaN v) (bvor (bvand ((_ int2bv 32) seed) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) seed) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv v))))) )))"
+  ],
+  "goal_sha256": "34810f7428e557fa45a2e35525506f65124f612f72e208bde526769530b95000",
+  "goal_preserved": true,
+  "qualification": false
+}

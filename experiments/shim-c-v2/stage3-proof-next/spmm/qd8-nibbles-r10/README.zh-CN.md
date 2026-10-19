@@ -1,0 +1,3 @@
+r9新显式mask post实际3/4，仅该post未证。r10不扩大求解预算或枚举65536；新增无requires真实ghost helper，完整body必须证明forall0<=u<=255的255&u=u定义谓词。checked策略先展开该定义，再用已资格bitwised-v2分解8位，range及所有bit子目标均必须记录有效。原cast helper真实调用新helper，已有body range事实用于实例化AND结果；旧signed post仍单独验，不把signed值作为非负8位对象。
+
+完整策略语法parse01通过，none01正常32项含CFG，未执行solver。所有helper/真实vand完整闭包清单见AND-INVENTORY.json和commands.txt。bits_i8旧三项仍属未闭合依赖。

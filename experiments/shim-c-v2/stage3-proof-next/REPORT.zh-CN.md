@@ -1,6 +1,20 @@
 # 第三阶段九项：后续 proof 与独立审核
 
-## 2026-10-19 最新闭合的局部链（ROOT02）
+## 最新阶段记录（ROOT03）
+
+仍 **0/9 新整核通过**，没有新 kernel 反例，manifest 未改，未 push。以下更新覆盖下文较旧局部计数；历史日志保留。
+
+- GEMM47：真实 vfmaq_f32 原合同及新增四 lane 后置条件完整 **26/26**；相关 kernel 局部组 **40/48**，精确剩两次 FMA 后各四条累加关系。完整库存 **1275 = 1263 body + 12 globals**，另32 CFG。GEMM48 新实例化 helper **2/2**、扩展组 **44/52**，新增四条实例化已证，但原八条仍未证；完整库存1281，不能称累加链闭合。46双合同解析错误保留，47仅合并注释修正语法。
+- DWCONV21：投影 helper **6/6**、真实 loader **18/18**、caller **6/9**；原逐 lane 0..3 prestate关系已通过，全称和权重 frame仍未闭合。完整库存865。23c新增真实 ghost 有限归纳循环，选中组 **8/10**，prefix保持与原forall仍未证；完整879项。新增14项中的assigns/variant未被旧属性名选择器全选中，仍需补齐，不以8/10宣称全部新增已验。
+- QD8 r10：掩码/helper组 **9/9**，连同真实 vand body 完整 **30/30**；r7真实shift闭包64/64保留。剩bits_i8的memcpy/位表示与kernel调用关系，尚未整核通过。
+- IGEMM r3完整尝试1800秒结束：771库存中 **373 valid、27已尝试未证、371无完成结果**，没有最终raw。另轮globals9/9单独保存，不拼入373。
+- 独立Bytes/IEEE v19重新编译合并已审计bitwised/Qed记录修复。fresh memory31/34、unary17/19、highbits7/10、IEEE23/26、FMA62/66，pending逐项恰为预设错误post。新ABI observer已重编译，memory有/无observer raw字段一致。**仍未qualified、未用于kernel**：编解码控制及依赖审查、严格已知case复验尚待完成。
+- 字节引理read01混用Euclidean与实际Computer除法，对负整数不成立，已单独ERRATA并保留失败。read02改为真实定义并拆body，仍有未证子目标；read04仅提高归约步数，不能在全部证明前接入模型。
+- `audit17`核对118候选、30169外部锁条目，C/spec/checker及允许模型版本未变，无新增requires。后续候选另审。
+
+固定已完成证据及SHA见 `PROGRESS-ROOT03.json`。进行中的GEMM50、字节引理诊断不计通过。
+
+## 历史阶段记录（ROOT02）
 
 - QD8 r7 用有定义的等式 predicate 保留被前端提前化简的 nested shift 项，没有新增断言数量或假设。完整移位 helper **38/38**，连同真实 vsll body **64/64**，原移位溢出义务闭合。r8 新 AND helper **4/4**；真实 AND 调用链仍在验证。
 - IGEMM r3 给真实循环补 kc 保持不变量，新增10项与原 k 建立/保持共 **12/12**；原16项加新增10项扩展回归 **26/26**。新完整库存 **771 = 762 body + 9 globals**（另30 CFG）；完整尝试已启动，不能将26/26作整核结果。

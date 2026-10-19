@@ -1,0 +1,11 @@
+module DivisionControls
+ use int.Int
+ use int.ComputerDivision as CD
+ use int.EuclideanDivision as ED
+ let lemma checked_negative_division_difference () : unit
+ ensures { CD.mod (-1) 256 = -1 /\ ED.mod (-1) 256 = 255 }
+ = ()
+ let lemma deliberately_false_equal_divisions () : unit
+ ensures { CD.mod (-1) 256 = ED.mod (-1) 256 }
+ = ()
+end

@@ -1,5 +1,5 @@
-<!-- ROOT02 current progress: supersedes earlier partial counts below. -->
-最新局部进展见 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT02.json`：QD8 r7真实shift闭包64/64；IGEMM r3扩展组26/26，完整771项尝试进行中；DWCONV19 helper2/2、GEMM40选定10/24。仍0/9整核通过，manifest未改，不push。模型Bytes实验尚未认证，不能用于kernel。
+<!-- ROOT03 current progress: historical counts below are retained. -->
+最新先读 `experiments/shim-c-v2/stage3-proof-next/PROGRESS-ROOT03.json` 和 REPORT 顶部。GEMM47真实FMA26/26、局部40/48；48扩展44/52仍原八条未证。DW21 helper6/6、loader18/18、caller6/9；QD8 r10真实AND闭包30/30。IGEMM完整771库存中373 valid/27未证/371无完成结果，缺raw，不能验收。仍0/9，manifest未改、不push。Bytes v19新构建正反控制符合预期但尚未qualified、未用于kernel。
 
 ## 最新续作提示
 

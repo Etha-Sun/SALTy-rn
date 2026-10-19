@@ -1,0 +1,12 @@
+{
+  "scope": "scalar invariant lane 1 establishment, actual WP none formula comparison",
+  "logs_sha256": {
+    "candidate39": "c5f0e081d613e64ca686cb4bd0300af5af3b7fc2034c1845aadbe66aec5b8b81",
+    "candidate41": "292518a9121c3f0d059e0c6e44f415663db36970e22a079ca79034a74cef217a",
+    "candidate42": "6fc008e1eabed09b6f15cf591021a8568e9d85b1de207f2683f7d311957e7c11"
+  },
+  "candidate41": "Pointer projection gives ext_same(undef0[lane1],logic_lane1(Load_S5(vacc,a13))). There is no typed bias predicate for this record; vld1q bias fact still quantifies over reads of earlier memcpy map a11. Pure ext_same transitivity is not yet the sole identified gap.",
+  "candidate42": "Four fixed scalar postconditions of actual vld1q generate ext_same(undef0[lane1],a6[w+1+blockOffset]) directly, with original forall retained. Goal is ext_same(the same undef0[lane1],gacc(a6,...,lane1,t0)). This removes the observed copy-map mismatch for establishment.",
+  "verification": "none formulas only; new 4 postconditions must pass original loader body alongside all old VCs before caller improvement is accepted",
+  "unchanged": "No C body, requires, assigns, public spec, or model changed."
+}

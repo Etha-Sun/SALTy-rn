@@ -1,0 +1,12 @@
+module StoreWideTrigger32
+ use int.Int
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.membytes_le.MemBytes
+ use frama_c_wp.cfloat.Cfloat
+ use frama_c_wp.bytefloat.Bytefloat
+ use storeread.StoreRead32
+ let lemma checked_store_read32_wide_trigger () : unit
+ ensures { forall m:memory,a:addr,v:f32,seed:int [write_uint32 m a (encode32 v seed)].
+ decode32 (read_uint32 (write_uint32 m a (encode32 v seed)) a) = v }
+ = ()
+end

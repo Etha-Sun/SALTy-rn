@@ -1,0 +1,54 @@
+module WordBytes32
+ meta "compute_max_steps" 100000
+ use int.Int
+ use int.ComputerDivision as CD
+ use map.Map as M
+ use frama_c_wp.memaddr.MemAddr
+ use frama_c_wp.sequence.Seq as S
+ use frama_c_wp.membytes_le.ValueCodec as VC
+ use frama_c_wp.membytes_le.RWBytes as RW
+ use frama_c_wp.membytes_le.ValueBlockRW as VB
+ use frama_c_wp.membytes_le.MemBytes
+ let lemma checked_encode32 (v:int) : unit
+ ensures { VC.encode_uint32 v = S.L.Cons (CD.mod v 256) (S.L.Cons (CD.mod (CD.div v 256) 256) (S.L.Cons (CD.mod (CD.div v 65536) 256) (S.L.Cons (CD.mod (CD.div v 16777216) 256) (S.L.Nil)))) }
+ = ()
+
+ let lemma checked_block_write32 (b:VB.vblock) (o v:int) : unit
+ ensures { VB.bwrite_uint32 b o v = M.set (M.set (M.set (M.set (b) (o+3) (CD.mod (CD.div v 16777216) 256)) (o+2) (CD.mod (CD.div v 65536) 256)) (o+1) (CD.mod (CD.div v 256) 256)) (o+0) (CD.mod v 256) }
+ = checked_encode32 v;
+   assert { VB.bwrite_uint32 b o v = RW.bwrite_32bits b o (VC.encode_uint32 v) };
+   assert { RW.bwrite_32bits b o (S.L.Cons (CD.mod v 256) (S.L.Cons (CD.mod (CD.div v 256) 256) (S.L.Cons (CD.mod (CD.div v 65536) 256) (S.L.Cons (CD.mod (CD.div v 16777216) 256) (S.L.Nil))))) = M.set (M.set (M.set (M.set (b) (o+3) (CD.mod (CD.div v 16777216) 256)) (o+2) (CD.mod (CD.div v 65536) 256)) (o+1) (CD.mod (CD.div v 256) 256)) (o+0) (CD.mod v 256) }
+
+ let lemma checked_block_read8 (b:VB.vblock) (o:int) : unit
+ ensures { VB.bread_uint8 b o = M.get b o }
+ = assert { RW.bread_8bits b o = S.L.Cons (M.get b o) S.L.Nil };
+   assert { VC.decode_uint8 (S.L.Cons (M.get b o) S.L.Nil) = M.get b o };
+   assert { VB.bread_uint8 b o = VC.decode_uint8 (RW.bread_8bits b o) }
+
+ let lemma checked_word_bytes32 (m:memory) (a:addr) (v:int) : unit
+ ensures { read_uint8 (write_uint32 m a v) (shift a 0) = CD.mod v 256 }
+ ensures { read_uint8 (write_uint32 m a v) (shift a 1) = CD.mod (CD.div v 256) 256 }
+ ensures { read_uint8 (write_uint32 m a v) (shift a 2) = CD.mod (CD.div v 65536) 256 }
+ ensures { read_uint8 (write_uint32 m a v) (shift a 3) = CD.mod (CD.div v 16777216) 256 }
+ = let b = pure { M.get m a.base } in
+   checked_block_write32 b a.offset v;
+   assert { write_uint32 m a v = M.set m a.base (VB.bwrite_uint32 b a.offset v) };
+   let updated = pure { VB.bwrite_uint32 b a.offset v } in
+   checked_block_read8 updated (a.offset+0);
+   assert { (shift a 0).base=a.base /\ (shift a 0).offset=a.offset+0 };
+   assert { M.get (M.get (write_uint32 m a v) a.base) (a.offset+0) = CD.mod v 256 };
+   assert { read_uint8 (write_uint32 m a v) (shift a 0) = VB.bread_uint8 updated (a.offset+0) };
+   checked_block_read8 updated (a.offset+1);
+   assert { (shift a 1).base=a.base /\ (shift a 1).offset=a.offset+1 };
+   assert { M.get (M.get (write_uint32 m a v) a.base) (a.offset+1) = CD.mod (CD.div v 256) 256 };
+   assert { read_uint8 (write_uint32 m a v) (shift a 1) = VB.bread_uint8 updated (a.offset+1) };
+   checked_block_read8 updated (a.offset+2);
+   assert { (shift a 2).base=a.base /\ (shift a 2).offset=a.offset+2 };
+   assert { M.get (M.get (write_uint32 m a v) a.base) (a.offset+2) = CD.mod (CD.div v 65536) 256 };
+   assert { read_uint8 (write_uint32 m a v) (shift a 2) = VB.bread_uint8 updated (a.offset+2) };
+   checked_block_read8 updated (a.offset+3);
+   assert { (shift a 3).base=a.base /\ (shift a 3).offset=a.offset+3 };
+   assert { M.get (M.get (write_uint32 m a v) a.base) (a.offset+3) = CD.mod (CD.div v 16777216) 256 };
+   assert { read_uint8 (write_uint32 m a v) (shift a 3) = VB.bread_uint8 updated (a.offset+3) };
+   ()
+end

@@ -1,0 +1,166 @@
+theory WordBytes32
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use why3.Bool.Bool *)
+  
+  (* use why3.Unit.Unit *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use map.Map *)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  (* use frama_c_wp.sequence.Seq *)
+  
+  (* use frama_c_wp.membytes_le.ValueCodec *)
+  
+  (* use frama_c_wp.membytes_le.RWBytes *)
+  
+  (* use frama_c_wp.membytes_le.ValueBlockRW *)
+  
+  (* use frama_c_wp.membytes_le.MemBytes *)
+  
+  goal checked_encode32'vc :
+    forall v:int.
+     encode_uint32 v =
+     Cons (mod v 256)
+     (Cons (mod (div v 256) 256)
+      (Cons (mod (div v 65536) 256)
+       (Cons (mod (div v 16777216) 256) (Nil: list int))))
+  
+  axiom checked_encode32 :
+    forall v:int.
+     encode_uint32 v =
+     Cons (mod v 256)
+     (Cons (mod (div v 256) 256)
+      (Cons (mod (div v 65536) 256)
+       (Cons (mod (div v 16777216) 256) (Nil: list int))))
+  
+  goal checked_block_write32'vc :
+    forall b:int -> int, o:int, v:int.
+     encode_uint32 v =
+     Cons (mod v 256)
+     (Cons (mod (div v 256) 256)
+      (Cons (mod (div v 65536) 256)
+       (Cons (mod (div v 16777216) 256) (Nil: list int)))) ->
+     bwrite_uint32 b o v = bwrite_32bits b o (encode_uint32 v) &&
+     bwrite_32bits b o
+     (Cons (mod v 256)
+      (Cons (mod (div v 256) 256)
+       (Cons (mod (div v 65536) 256)
+        (Cons (mod (div v 16777216) 256) (Nil: list int))))) =
+     set
+     (set
+      (set (set b (o + 3) (mod (div v 16777216) 256)) (o + 2)
+       (mod (div v 65536) 256))
+      (o + 1) (mod (div v 256) 256))
+     (o + 0) (mod v 256) &&
+     bwrite_uint32 b o v =
+     set
+     (set
+      (set (set b (o + 3) (mod (div v 16777216) 256)) (o + 2)
+       (mod (div v 65536) 256))
+      (o + 1) (mod (div v 256) 256))
+     (o + 0) (mod v 256)
+  
+  axiom checked_block_write32 :
+    forall b:int -> int, o:int, v:int.
+     bwrite_uint32 b o v =
+     set
+     (set
+      (set (set b (o + 3) (mod (div v 16777216) 256)) (o + 2)
+       (mod (div v 65536) 256))
+      (o + 1) (mod (div v 256) 256))
+     (o + 0) (mod v 256)
+  
+  goal checked_block_read8'vc :
+    forall b:int -> int, o:int.
+     bread_8bits b o = Cons (get b o) (Nil: list int) &&
+     decode_uint8 (Cons (get b o) (Nil: list int)) = get b o &&
+     bread_uint8 b o = decode_uint8 (bread_8bits b o) &&
+     bread_uint8 b o = get b o
+  
+  axiom checked_block_read8 :
+    forall b:int -> int, o:int. bread_uint8 b o = get b o
+  
+  goal checked_word_bytes32'vc :
+    forall m:int -> int -> int, a:addr, v:int.
+     let b = get m (a.base) in
+     let o = a.offset in
+     let offset'result'unused = o in
+     bwrite_uint32 b o v =
+     set
+     (set
+      (set (set b (o + 3) (mod (div v 16777216) 256)) (o + 2)
+       (mod (div v 65536) 256))
+      (o + 1) (mod (div v 256) 256))
+     (o + 0) (mod v 256) ->
+     write_uint32 m a v = set m (a.base) (bwrite_uint32 b (a.offset) v) &&
+     (let updated = bwrite_uint32 b (a.offset) v in
+      let o1 = a.offset in
+      let offset'result'unused1 = o1 in
+      let o2 = o1 + 0 in
+      let (+)'result'unused = o2 in
+      bread_uint8 updated o2 = get updated o2 ->
+      ((shift a 0).base = a.base /\ (shift a 0).offset = (a.offset + 0)) &&
+      get (get (write_uint32 m a v) (a.base)) (a.offset + 0) = mod v 256 &&
+      read_uint8 (write_uint32 m a v) (shift a 0) =
+      bread_uint8 updated (a.offset + 0) &&
+      (let o3 = a.offset in
+       let offset'result'unused2 = o3 in
+       let o4 = o3 + 1 in
+       let (+)'result'unused1 = o4 in
+       bread_uint8 updated o4 = get updated o4 ->
+       ((shift a 1).base = a.base /\ (shift a 1).offset = (a.offset + 1)) &&
+       get (get (write_uint32 m a v) (a.base)) (a.offset + 1) =
+       mod (div v 256) 256 &&
+       read_uint8 (write_uint32 m a v) (shift a 1) =
+       bread_uint8 updated (a.offset + 1) &&
+       (let o5 = a.offset in
+        let offset'result'unused3 = o5 in
+        let o6 = o5 + 2 in
+        let (+)'result'unused2 = o6 in
+        bread_uint8 updated o6 = get updated o6 ->
+        ((shift a 2).base = a.base /\ (shift a 2).offset = (a.offset + 2)) &&
+        get (get (write_uint32 m a v) (a.base)) (a.offset + 2) =
+        mod (div v 65536) 256 &&
+        read_uint8 (write_uint32 m a v) (shift a 2) =
+        bread_uint8 updated (a.offset + 2) &&
+        (let o7 = a.offset in
+         let offset'result'unused4 = o7 in
+         let o8 = o7 + 3 in
+         let (+)'result'unused3 = o8 in
+         bread_uint8 updated o8 = get updated o8 ->
+         ((shift a 3).base = a.base /\ (shift a 3).offset = (a.offset + 3)) &&
+         get (get (write_uint32 m a v) (a.base)) (a.offset + 3) =
+         mod (div v 16777216) 256 &&
+         read_uint8 (write_uint32 m a v) (shift a 3) =
+         bread_uint8 updated (a.offset + 3) &&
+         read_uint8 (write_uint32 m a v) (shift a 0) = mod v 256 &&
+         read_uint8 (write_uint32 m a v) (shift a 1) = mod (div v 256) 256 &&
+         read_uint8 (write_uint32 m a v) (shift a 2) = mod (div v 65536) 256 &&
+         read_uint8 (write_uint32 m a v) (shift a 3) =
+         mod (div v 16777216) 256))))
+  
+  axiom checked_word_bytes32'2 :
+    forall m:int -> int -> int, a:addr, v:int.
+     read_uint8 (write_uint32 m a v) (shift a 0) = mod v 256
+  
+  axiom checked_word_bytes32'1 :
+    forall m:int -> int -> int, a:addr, v:int.
+     read_uint8 (write_uint32 m a v) (shift a 1) = mod (div v 256) 256
+  
+  axiom checked_word_bytes32'0 :
+    forall m:int -> int -> int, a:addr, v:int.
+     read_uint8 (write_uint32 m a v) (shift a 2) = mod (div v 65536) 256
+  
+  axiom checked_word_bytes32 :
+    forall m:int -> int -> int, a:addr, v:int.
+     read_uint8 (write_uint32 m a v) (shift a 3) = mod (div v 16777216) 256
+  
+end
+

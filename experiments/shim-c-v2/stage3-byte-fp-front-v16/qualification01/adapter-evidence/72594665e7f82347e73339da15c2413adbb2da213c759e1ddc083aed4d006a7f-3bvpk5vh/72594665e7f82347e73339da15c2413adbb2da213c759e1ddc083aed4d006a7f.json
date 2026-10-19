@@ -1,0 +1,11 @@
+{
+  "original_sha256": "72594665e7f82347e73339da15c2413adbb2da213c759e1ddc083aed4d006a7f",
+  "reduced_sha256": "c4c1ecedfdca80902c5b3f0364fb1c311e57562c544a1efe3a50143d6652309d",
+  "removed_assertions": [
+    "(assert\n  (bytes\n    (write_uint32\n      (memcpy1 t3 (shift_float32 a 0) t4 (shift_float32 a 0) 16)\n      (shift_float32 a i)\n      (bv2nat (ite (fp.isNaN f) (bvor (bvand ((_ int2bv 32) i1) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) \n      i1) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv f))))))",
+    "(assert\n  (forall ((i2 Int))\n    (=>\n      (<= 0 i2)\n      (=>\n        (< i2 (to_uint64 (+ 1 i)))\n        (P_same32\n          ((_ to_fp 8 24) ((_ int2bv 32) (read_uint32\n                                           (write_uint32\n                                             (memcpy1\n                                               t3\n                                               (shift_float32 a 0)\n                                               t4\n                                               (shift_float32 a 0)\n                                               16)\n                                             (shift_float32 a i)\n                                             (bv2nat (ite (fp.isNaN f) (bvor (bvand ((_ int2bv 32) \n                                             i1) #x80000000) (bvadd #x7f800000 (bvadd #x00000001 (bvurem (bvand ((_ int2bv 32) \n                                             i1) #x7fffffff) #x007fffff)))) (fp.to_ieee_bv \n                                             f))))\n                                           (shift_float32 a i2))))\n          f)))))"
+  ],
+  "goal_sha256": "f21e29306ba4b9abd84180ccd87c05ae12a34e9e3babc3c4a46837202d79ae1e",
+  "goal_preserved": true,
+  "qualification": false
+}
