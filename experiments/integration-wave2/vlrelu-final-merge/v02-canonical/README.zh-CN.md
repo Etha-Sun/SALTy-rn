@@ -1,1 +1,1 @@
-只对verified/f32-vlrelu中已逐字核对的冻结源/spec/单proof做fresh完整canonical。目录存在不代表manifest准入。所有749main及21global、sourceguard、model-controls、全部body/caller和posthash都通过后再准入。
+打包canonical已完整通过770/770（749main+21global），1451.548秒；36函数体覆盖、全部前件/RTE/frame/assigns/循环/终止/exits均检查，source/model posthash、controls及LLVM身份合格。Root已准入verified/f32-vlrelu；spec与实现保持原字节，唯一proof.patch1063行。原始logs/verify01-summary.json在本attempt内；打包副本为verified/f32-vlrelu/logs/canonical01-summary.json，所有环境启动错误保留。

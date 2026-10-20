@@ -1,13 +1,12 @@
 # 第二轮整合检查点
 
-当前 `verified/manifest.json` 仍为 15 个程序，与 HEAD 相同。本轮新增整核通过为 **0**。
-既有全局清单另有 22 个待证、3 个缺 target；本轮处理的是其中两批材料去重后的 17 个 kernel，
-均已建立独立候选、整合证明并实际运行。其余 5 个待证项未由本轮结果自动变成通过。
+当前 `verified/manifest.json` 已收录 **16** 个程序。本轮17个候选中新增通过 **1** 个：f32-vlrelu；其它 **16** 个仍未完成。
+全局40项中：16已收录、21待证、3缺target；本轮处理其中17个，另外5个待证项不由本轮结果自动变为通过。
 下列数字对应特定 proof 快照；不把诊断计数、全局引理与整核重复相加。
 
 | Kernel | 已完成的本轮证据 | 尚未关闭的原因 |
 |---|---|---|
-| f32-vlrelu | 最终合并 v02 完整 **770/770**（main749/749+global21/21），36个body coverage齐全；source/model posthash、control、LLVM和独立目标ID审计均通过。8片诊断另749/749，root独审 | 同proof独立完整重放及打包canonical仍在运行，manifest尚未准入；旧729/735、depth8 727/735及timeout记录均保留 |
+| f32-vlrelu | 两次独立完整重放及打包canonical均 **770/770**（main749/749+global21/21），36个body coverage；全105调用前件、77RTE、frame/assigns、循环/终止/exits均检查；source/model posthash、control、LLVM及目标ID审计通过，原生C8256组ASan/UBSan通过 | **已准入 `verified/f32-vlrelu`**；唯一proof.patch为1063行，spec和实现冻结；结论限于声明的C模型、固定VLEN128/容量32，ISA→shim仍属TCB。旧失败/timeout记录保留 |
 | f32-vsqrt | 整核 459/476 | 10 条 Typed memcpy/codec、1 条纯 C sqrt 算法与 IEEE sqrt 关系、6 条 caller |
 | f32-vrndne | 整核 1500/1674 | caller 157、helper 17；已关闭 store 和 ghost read 等具体义务，仍缺舍入/位表示与 caller 关系 |
 | f32-vcmul | 整核 388/426；VMLA/VMLS 两项原 helper 缺口关闭，helper body 全部通过 | 38 条 caller；含地址整数转换后的布局/边界和读写 frame |
@@ -50,3 +49,5 @@ packw/transpose 的旧 Alt-Ergo profile 存在导出失败，因此其旧 negati
 
 详见 `noncomplex/final-results.json`、`gemm-sparse/RESULTS.json`、`conv-pool/*/review.json`，
 以及各次 `attempts/*/proof.patch`、raw JSON 和 root 审计文件。最新 vlrelu 收尾结果应以其新快照为准。
+
+最终准入证据：[verified/f32-vlrelu/audit/final-review.json](../../verified/f32-vlrelu/audit/final-review.json)。两次candidate和fresh打包canonical原始VC报告均保留；8片诊断与未采用的qs8-vmul v13也保留。没有通过未证cut或加强公开spec来取得准入。

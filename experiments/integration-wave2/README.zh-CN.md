@@ -95,11 +95,11 @@ depth8完整检查为727/735，额外两条RVV输入内存义务未闭，最终�
   新 `vlrelu-mainframe/v07-exact-instance` 已在同snapshot关闭全部4项和新依赖：caller64/64、body/frame6/6、globals21/21；root已核对raw及新增6项参数RTE。匿名前件曾被局部focus漏掉，故统一版本必须全量检查。
 - harness最终两点读取权限`vmem_final_reads`。`vlrelu-final-reads/v04-helper-order-callers` 的14项确切依赖已全部通过，含body/frame、6项前件、无wrap cut、原目标和相关range invariant，root已审。
 
-最终统一 proof 在 `vlrelu-final-merge/v02`，SHA `31eda107…cf79457`，两次独立完整检查均 **770/770**，36个body coverage及source/model posthash、controls均通过；depth16/par128/30s1024MiB/admin3600，无function/property子集。三项合并来源实际局部闭合都不自动继承为合并后的通过。Root独立检查单patch零fuzz roundtrip20文件、公spec/shim/driver原字节身份、source guard5740和最终host LLVM IR身份均通过；两名agent还分别独立审查新增ghost helper和前置条件。两次raw的770个ID逐个相同、main749与新独立目标清单恰好相同。8片并行诊断另749/749无重复遗漏。逐字复制的包在`verified/f32-vlrelu`，fresh打包canonical session71394仍运行，未通过前manifest暂不增加。
+最终统一 proof 在 `vlrelu-final-merge/v02`，SHA `31eda107…cf79457`，两次独立完整检查均 **770/770**，36个body coverage及source/model posthash、controls均通过；depth16/par128/30s1024MiB/admin3600，无function/property子集。三项合并来源实际局部闭合都不自动继承为合并后的通过。Root独立检查单patch零fuzz roundtrip20文件、公spec/shim/driver原字节身份、source guard5740和最终host LLVM IR身份均通过；两名agent还分别独立审查新增ghost helper和前置条件。两次raw的770个ID逐个相同、main749与新独立目标清单恰好相同。8片并行诊断另749/749无重复遗漏。逐字复制的包在`verified/f32-vlrelu`，fresh打包canonical也已770/770通过，source/model posthash、全部body/lemma coverage、controls与LLVM均合格；现已准入manifest。
 
 普通C token、公开spec、source guard、主版本LLVM identity均通过审计；
 四份model lock的34307个不同文件再次检查无漂移。控制检查通过也不等于模型一致性定理。
-目前manifest仍为15项，本轮新增整核通过0项。其它16个kernel见`STATUS.zh-CN.md`逐项表。
+目前manifest为16项，本轮17个中新增通过1项f32-vlrelu；全局21待证、3缺target。其它16个本轮kernel见`STATUS.zh-CN.md`逐项表。
 
 历史阶段全部保留：signed reinterpret v09为36/36+12globals；完整`merged-v02`为559/569；
 RVV v03为172/172+13globals、harness v04为36/36+18globals；

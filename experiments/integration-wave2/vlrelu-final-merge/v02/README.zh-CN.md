@@ -1,6 +1,6 @@
-# 最终统一候选 v02：已冻结，完整检查运行中
+# 最终统一候选 v02：已冻结，完整检查与准入完成
 
-Agent先提交未冻结草稿；root复核后已建立 `task.json`、`case/frozen.json`，并启动全新full。single proof `31eda107…`，frozen SHA `818e5caf…`。当前**未完成整核验证、未准入verified**；最早的 `merge-audit.json`/`run-proposed.json`是冻结前历史，当前冻结/运行以task、attempt和root审计为准。
+Agent先提交未冻结草稿；root复核后已建立 `task.json`、`case/frozen.json`，并启动全新full。single proof `31eda107…`，frozen SHA `818e5caf…`。当前**两次完整重放及打包canonical均770/770通过，已准入verified/f32-vlrelu**；最早的 `merge-audit.json`/`run-proposed.json`是冻结前历史，当前冻结/运行以task、attempt和root审计为准。
 
 精确基底仍为 merged-values-v02 实际 proof `d5b18b2b...`。继承 v01 已检查的主prefix名字/MP4Filter与read helper/caller，再叠加 conv actor 明确确认的稳定 v07-exact-instance 来源：case/proof.patch `d63b30dd...`、最小delta `767a33b4...`、case/.build/guard01/annotated。完整确认和 SHA 见 actor-confirmation.json、merge-audit.json；没有采用未运行的 v08。
 
@@ -15,3 +15,5 @@ Agent先提交未冻结草稿；root复核后已建立 `task.json`、`case/froze
 冻结前run-proposed.json记录拟定full；正式task现已pin depth16_progress、shell逐目标日志、par128、每solver30秒/1024MiB、行政3600秒；没有函数或属性子集。root已完成精确read依赖审计并冻结，正在重新检查全部caller/helpers/globals、RTE/前件/frame/assigns/termination、直接与ghost调用闭包、controls和实现身份。局部数字不能拼成整核通过。
 
 同一proof的独立完整重放在 `../v02-independent/`，原进程和独立进程各有自己的不可变attempt。独立无prover枚举为749个main ID，见root-full-enumeration；最终raw必须逐个ID一致且全valid，另核21globals和controls。枚举和局部计数都不是整核通过。
+
+最终：两次candidate及fresh packaged canonical均770/770；model/source posthash、36body/21global覆盖、全部749main ID和controls通过；原生C有限8256组也通过。原始草稿/拟定配置和失败记录均保留，不反写历史。最终规格/实现/单proof及审计见verified/f32-vlrelu。

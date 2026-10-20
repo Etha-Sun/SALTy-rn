@@ -1,6 +1,6 @@
 # 2026-10-20 当前整合检查点
 
-工作分支为 `feat/shim-c`。本轮去重处理17个kernel；`verified/manifest.json`仍为原15项，新增候选整核通过1项（f32-vlrelu已两次770/770，打包canonical未完成前manifest不变）。逐项结果在[STATUS](STATUS.zh-CN.md)，不能把不同proof快照的局部计数相加。
+工作分支为 `feat/shim-c`。本轮去重处理17个kernel；新增通过 **f32-vlrelu**，`verified/manifest.json`已从15增为 **16** 项。全局40项中21待证、3缺target，本轮其余16项未完成。逐项结果在[STATUS](STATUS.zh-CN.md)，不把不同proof快照的局部计数相加。
 
 ## VLReLU
 
@@ -13,8 +13,8 @@
 - 最终合并 `vlrelu-final-merge/v02` 冻结为唯一 proof `31eda107…`。新full完整 **770/770**（main749/749+global21/21），36个body coverage齐全，model/source posthash、control、LLVM与749独立ID清单均通过。36函数体不是36条义务，其RTE/callpre/frame也在749中。
 - 同proof `v02-independent` 第二次完整 **770/770**，1519.905秒；所有770目标ID与第一份相同，root复核posthash/control/LLVM均通过。第一份1478.463秒。此前d5版本的timeout和失败不改写。
 - `vlrelu-mainframe/shards-v03` 是额外8片实际诊断，749/749无重复遗漏，globals21/21引用相同snapshot，root独审通过。它不替代完整或打包canonical；旧两个CLI负参数调用错误保留，不是模型/证明失败。
-- 新包 `verified/f32-vlrelu` 是23个冻结原文件的逐字复制，加单一 `proof.patch`，frozen SHA `06c50d51…`。两次整核已通过，但manifest尚未准入；`vlrelu-final-merge/v02-canonical` session71394正在对打包源做fresh完整检查，128路/30s1024/admin3600。启动前漏放Gateway要求的draft副本的两次环境错误已记录，未启动WP、不算proof失败；已补齐精确SHA副本后正常运行。
-- Git检查点 `bc0fb840`、`91b5d55a` 均已推送 `origin/feat/shim-c`；完整raw和新包在后者之后，待下一次提交。额度16:22UTC检查为57%，下一轮16:52UTC；低于55%停止新补证、保存收尾，既有有限CPU检查可以完成。
+- 新包 `verified/f32-vlrelu` 是23个冻结原文件的逐字复制，加单一 `proof.patch`，frozen SHA `06c50d51…`。两次整核及`vlrelu-final-merge/v02-canonical` fresh打包检查全部 **770/770**，打包1451.548秒，128路/30s1024/admin3600；model/source posthash、36函数体coverage、749目标清单及21globals、controls、LLVM均合格。现已root准入manifest，唯一proof.patch1063行。原生C8256组在RNE/ASan/UBSan下通过，仅为有限测试；初次LSan在sandbox ptrace环境失败，原样记录并在host同二进制重跑通过。启动前漏放Gateway要求的draft副本的两次环境错误已记录，未启动WP、不算proof失败；已补齐精确SHA副本后正常运行。
+- Git检查点 `bc0fb840`、`91b5d55a` 均已推送 `origin/feat/shim-c`；新检查点`9b04f2a4`也已推送，包含两次完整通过证据和待canonical包；最终准入提交在其后，见git log。额度16:52UTC检查为56%，低于55%停止新补证、保存收尾，既有有限CPU检查可以完成。
 
 ## 其它本轮补证
 
