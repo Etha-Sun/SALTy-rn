@@ -1,0 +1,220 @@
+{
+  "scope": "Three properties only: RVV prefix establishment/preservation and original vector result. This fast probe does not check all new helper dependencies and cannot admit the kernel.",
+  "complete_kernel": false,
+  "main": {
+    "passed": 3,
+    "total": 3
+  },
+  "globals": {
+    "passed": 13,
+    "total": 13
+  },
+  "full_dependency_candidate": "../rvv-values-v03",
+  "pending": [],
+  "rows": [
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_prefix_established",
+      "property": "equivalent_loop_invariant_rvv_values_prefix",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/rvv-values-v03-probe/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 53,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0296,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    },
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_prefix_preserved",
+      "property": "equivalent_loop_invariant_rvv_values_prefix",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/rvv-values-v03-probe/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 53,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 9.04,
+          "success": 1
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 1.91,
+          "success": 1
+        }
+      ],
+      "subgoals": 2,
+      "tactics": 2,
+      "proved": 2
+    },
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_assert_rvv_values_result",
+      "property": "equivalent_assert_rvv_values_result",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/rvv-values-v03-probe/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 64,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 5.78,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.78,
+          "success": 1
+        }
+      ],
+      "tactics": 1,
+      "proved": 1
+    }
+  ],
+  "proof_sha256": "be0b03c29dbac860115aaa2f04c34ab4e1a56eec0f7cecceddf397846b654afc",
+  "scripts": {
+    "equivalent_loop_invariant_rvv_values_prefix_preserved.json": [
+      {
+        "strategy": "RVVPrefixPoint",
+        "header": "Cut",
+        "tactic": "Wp.cut",
+        "params": {
+          "case": "CASES",
+          "clause": {
+            "select": "compose",
+            "id": "wp:eq",
+            "args": [
+              {
+                "select": "inside-goal",
+                "occur": 0,
+                "target": "i_3",
+                "pattern": "$i"
+              },
+              {
+                "select": "inside-step",
+                "at": 174,
+                "kind": "have",
+                "occur": 0,
+                "target": "proof_j_rvv_1",
+                "pattern": "$proof_j_rvv"
+              }
+            ]
+          }
+        },
+        "select": {
+          "select": "clause-goal",
+          "target": "let a_0 = (shift_float32 o_base_9 0) in\nlet x_0 = ((to_uint64 (4*n_9)) div 4) in\n(P_same_value vout_0.F18_lane[i_3]\n  (L_unary_value\n    (repr_decode32\n      (read_uint32 (memcpy mem_40 a_0 mem_undef_4 a_0 (4*x_0))\n        (shift_float32 i_base_9 (i_3+x_0-n_1))))\n    (repr_decode32\n      (read_uint32 mem_40\n        (shiftfield_F20_slope\n          (shiftfield_F19_xnn_f32_lrelu_params_scalar (global L_params_4792)))))))",
+          "pattern": "P_same_value[]L_unary_value.F18_lane"
+        },
+        "children": {
+          "Positive": [
+            {
+              "prover": "qed",
+              "verdict": "valid"
+            }
+          ],
+          "Negative": [
+            {
+              "prover": "CVC5:1.2.1",
+              "verdict": "failed"
+            },
+            {
+              "prover": "Z3:4.12.5",
+              "verdict": "failed"
+            },
+            {
+              "strategy": "RVVPrefixInstance",
+              "header": "Instance",
+              "tactic": "Wp.instance",
+              "params": {
+                "P1": {
+                  "select": "inside-goal",
+                  "occur": 0,
+                  "target": "i_3",
+                  "pattern": "$i"
+                },
+                "P2": null,
+                "P3": null,
+                "P4": null,
+                "P5": null,
+                "P6": null,
+                "P7": null,
+                "P8": null,
+                "P9": null,
+                "P10": null
+              },
+              "select": {
+                "select": "clause-step",
+                "at": 167,
+                "kind": "have",
+                "target": "let a_0 = (shift_float32 o_base_9 0) in\nlet x_0 = ((to_uint64 (4*n_9)) div 4) in\nforall i_0:int.\n(0<=i_0) -> (i_0<proof_j_rvv_1)\n-> (P_same_value vout_0.F18_lane[i_0]\n     (L_unary_value\n       (repr_decode32\n         (read_uint32 (memcpy mem_40 a_0 mem_undef_4 a_0 (4*x_0))\n           (shift_float32 i_base_9 (i_0+x_0-n_1))))\n       (repr_decode32\n         (read_uint32 mem_40\n           (shiftfield_F20_slope\n             (shiftfield_F19_xnn_f32_lrelu_params_scalar\n               (global L_params_4792)))))))",
+                "pattern": "\\F0$proof_j_rvv.F18_lanerepr_decode32"
+              },
+              "children": {
+                "Instance": [
+                  {
+                    "prover": "CVC5:1.2.1",
+                    "verdict": "valid",
+                    "time": 1.91
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "equivalent_assert_rvv_values_result.json": [
+      {
+        "strategy": "RVVPrefixInstance",
+        "header": "Instance",
+        "tactic": "Wp.instance",
+        "params": {
+          "P1": {
+            "select": "inside-goal",
+            "occur": 0,
+            "target": "i_5",
+            "pattern": "$i"
+          },
+          "P2": null,
+          "P3": null,
+          "P4": null,
+          "P5": null,
+          "P6": null,
+          "P7": null,
+          "P8": null,
+          "P9": null,
+          "P10": null
+        },
+        "select": {
+          "select": "clause-step",
+          "at": 168,
+          "kind": "have",
+          "target": "let a_0 = (shift_float32 o_base_13 0) in\nlet x_0 = ((to_uint64 (4*n_9)) div 4) in\nforall i_0:int.\n(0<=i_0) -> (i_0<proof_j_rvv_1)\n-> (P_same_value vout_2.F18_lane[i_0]\n     (L_unary_value\n       (repr_decode32\n         (read_uint32 (memcpy mem_40 a_0 mem_undef_4 a_0 (4*x_0))\n           (shift_float32 i_base_11 (i_0+x_0-n_4))))\n       (repr_decode32\n         (read_uint32 mem_40\n           (shiftfield_F20_slope\n             (shiftfield_F19_xnn_f32_lrelu_params_scalar\n               (global L_params_4792)))))))",
+          "pattern": "\\F0$proof_j_rvv.F18_lanerepr_decode32"
+        },
+        "children": {
+          "Instance": [
+            {
+              "prover": "CVC5:1.2.1",
+              "verdict": "valid",
+              "time": 0.78
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "official_tactic_source": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/TacInstance.ml:25 composer P1; :129 Wp.instance. WP manual Instance paragraph lines407-408.",
+  "actual_branches": "prefix CASES current lane Positive Qed; Negative checked instance then CVC5 1.91s. Result checked instance then CVC5 .78s. No branch omitted.",
+  "missing_helper_scope_expected": "Gateway incomplete because proof_values_unary_point body deliberately absent in this small probe; full172 dependency run required."
+}

@@ -1,0 +1,1 @@
+v02三条纯值lemma，加root批准kernel真实入口ghost slope快照；只将aux unary_value关系里当前heap slope改为不可变入口值。publicspec及ordinaryC不变。快照初始化读RTE和wrapper联系需实际验证。

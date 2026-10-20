@@ -1,0 +1,54 @@
+{
+  "plain": {
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-O0",
+      "-g0",
+      "-S",
+      "-emit-llvm",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "-"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "unit_sha256": "993e7a88e62af1fab62f1975c2bd99e9c7f7ac9af1276611a83864d3a37fef42"
+  },
+  "annotated": {
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-O0",
+      "-g0",
+      "-S",
+      "-emit-llvm",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "-"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "unit_sha256": "993e7a88e62af1fab62f1975c2bd99e9c7f7ac9af1276611a83864d3a37fef42"
+  },
+  "llvm_diff": {
+    "command": [
+      "llvm-diff-14",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/.build/llvm-audit/f32-argmaxpool/plain.ll",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/.build/llvm-audit/f32-argmaxpool/annotated.ll"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "in function test_neon:\n  in block %207 / %207:\n    >   %208 = phi float* [ %204, %201 ], [ %206, %205 ]\n    >   store float* %208, float** %31, align 8\n    <   %208 = phi float* [ %204, %201 ], [ %206, %205 ]\n    <   store float* %208, float** %31, align 8\n\nin function test_rvv:\n  in block %122 / %122:\n    >   %123 = phi float* [ %119, %116 ], [ %121, %120 ]\n    >   store float* %123, float** %29, align 8\n    <   %123 = phi float* [ %119, %116 ], [ %121, %120 ]\n    <   store float* %123, float** %29, align 8\n"
+  },
+  "llvm_ir_byte_identical": true,
+  "plain_ir_sha256": "c24fbc4c6ae3e5666ccc26fb439a3ea0e0206d48a055ddc15b23664dbbc04fab",
+  "annotated_ir_sha256": "c24fbc4c6ae3e5666ccc26fb439a3ea0e0206d48a055ddc15b23664dbbc04fab",
+  "clang_version": "Ubuntu clang version 14.0.0-1ubuntu1.1",
+  "scope": "Same host compiler and flags, assertions enabled; no general C/ISA equivalence or ghost noninterference theorem.",
+  "passed": false
+}

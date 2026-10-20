@@ -1,0 +1,57 @@
+{
+  "body": {
+    "passed": 36,
+    "total": 36
+  },
+  "globals": {
+    "passed": 12,
+    "total": 12
+  },
+  "scope": "Complete actual bodies of two signed reinterpret functions; not full kernel",
+  "new_global_generalization": [
+    {
+      "goal": "bytes_extensions_acsl-bits_lemma_reinterpret_signed32_sign",
+      "property": "lemma_reinterpret_signed32_sign",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/v10/attempts/0001/.build/verify01/annotated/bits.c",
+      "line": 29,
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.667,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    }
+  ],
+  "lemma": "For every integer u, non-NaN decode(u) implies signed32 cast sign equals native IEEE sign of decode(u). No 0..UINT32_MAX premise.",
+  "primary_sources": [
+    "native-v6/wp-share/why3/frama_c_wp/float_bits32.mlw:8 decode_int uses BV32.of_int",
+    "native-v6/cvc5.drv:15 int2bv32, :18 native to_fp",
+    "native-v6/z3.drv:12 int2bv32, :15 native to_fp",
+    "native-v6/wp-share/why3/frama_c_wp/cint.mlw:332 sint32_mod"
+  ],
+  "bounded_word_loop_cuts_added": false,
+  "ordinary_files_identical": true,
+  "sourceguard_passed": true,
+  "model_inputs_unchanged": true,
+  "model_control": {
+    "exit": 0,
+    "impossible_goal_proved": false,
+    "positive_control_proved": true,
+    "reports_present": true,
+    "scope": "Rejection test only; non-rejection is not a consistency theorem.",
+    "accepted": true
+  },
+  "proof_sha256": "9f07982fb946a9065b30ba9c4c453d2a67641f3de0f2d1799674cc17b800a565",
+  "frozen_sha256": "d7908644434edf5a5a316ca08e9908bf50f36106641196adc5fa85560a986ab3",
+  "root_adoption": "Kept as independently proved more general alternative; root selected v09 for merged full run."
+}

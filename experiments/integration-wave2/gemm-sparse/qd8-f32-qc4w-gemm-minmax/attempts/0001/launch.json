@@ -1,0 +1,56 @@
+{
+  "task_id": "wave2-qd8-f32-qc4w-gemm-minmax",
+  "kernel": "qd8-f32-qc4w-gemm-minmax",
+  "source_case": "experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r10",
+  "source_frozen_sha256": null,
+  "migration": "keep",
+  "focus": "Wrap32 K/nibble fold, postprocess FMA and packed weights; errno alias domain remains a gate.",
+  "wave": 1,
+  "agent_wall_seconds": 1200,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/gemm-sparse/qd8-f32-qc4w-gemm-minmax/case",
+  "frozen_sha256": "ed1a4cc15319bcc77e136b1f88ebe82a85686ce8c872cff1ffd6048c16a13b0c",
+  "runner": "tools/shim_c_campaign_v4.py",
+  "runner_sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "tools/shim_c_campaign_v4.py": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339",
+    "tools/shim_c_campaign_private.py": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127",
+    "tools/shim_c_campaign_closure.py": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443",
+    "tools/shim_c_call_closure.py": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/frama-c.py": "24f223c12c74d79de7ffdb1890d32d3936ef4911eedb7be389734622f6f1c9b6"
+  },
+  "wp_par": 16,
+  "wall_seconds": 1200,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "equivalent"
+  ],
+  "diagnostic_properties": [
+    "stage3_low_nibble",
+    "stage3_high_nibble",
+    "wave2_qc4_low_fold_view",
+    "wave2_qc4_high_fold_view"
+  ],
+  "default_mode": "full",
+  "readiness": "candidate_pending_guard",
+  "sourceguard_exit": null,
+  "model": "Bytes",
+  "resources": {
+    "wp_timeout": 3,
+    "wp_memlimit": 1024,
+    "wp_budget": 1200,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits.",
+  "mode": "focus",
+  "task_manifest_sha256": "bc802b686c9eeeebc16d96d23b18aebc5cc8e4ac2f0d6fa928dc48586d5c792b",
+  "attempt": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/qd8-f32-qc4w-gemm-minmax/attempts/0001",
+  "attempt_frozen_sha256": "c3c31e90f1f95a742fee0f1b2f3f6f94be0c54eaede003d4e685bacb9610518b",
+  "proof_sha256": "c8aacdb7b7498e7bccb6e31ac58381bb2554c2954af3792ac83f9bf4d8fa1fde"
+}

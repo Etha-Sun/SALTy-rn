@@ -1,0 +1,35 @@
+--- v19/harness.c
++++ neon-final-v01/harness.c
+@@ -40,3 +40,6 @@
+ /*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */
+ 
+ /*@ \wp::proof ValuesSMT: values_neon1_old_point,values_neon1_index; */
++
++/*@ \wp::strategy NFinalSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::proof NFinalSMT: nf_one_extent,nf_counter_bounds,nf_counter_done,nf_normal_prefix,values_neon_all; */
+--- v19/neon.c
++++ neon-final-v01/neon.c
+@@ -171,10 +171,12 @@
+       /*@ assert values_neon1: \forall integer j; 0<=j<1 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-1)+j],proof_slope_entry)); */
+ //@ ghost Unary1: ;
+     vst1_lane_f32(output, vacc_lo, 0);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-1)+(1);
++    size_t k=0;
++    /@ assert nf_one_extent: (size_t)((size_t)(total-1)+1)==total; @/
++    /@ loop invariant nf_counter_bounds: 0<=k<=(total-1)+(1);
+        loop invariant values_neon1_prefix: \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-1)+(1)-k; @/
+-    for(size_t k=0;k<(total-1)+(1);k++) {
++    for(;k<(total-1)+(1);k++) {
+       /@ assert \valid_read(i_base+k); @/
+       /@ assert \separated(i_base+k,o_base+((total-1)..(total-1)+(1)-1)); @/
+       /@ assert same_float(i_base[k],\at(i_base[\at(k,Here)],Unary1)); @/
+@@ -192,6 +194,8 @@
+       }
+       /@ assert values_neon1_lane: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
++    /@ assert nf_counter_done: k==total; @/
++    /@ assert nf_normal_prefix: \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); @/
+     */
+     }
+   }

@@ -1,0 +1,73 @@
+{
+  "name": "qs8-vmul-minmax-fp32",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/integer/shared/shim.h",
+      "sha256": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163"
+    },
+    "integer-qs8-vmul-minmax-fp32.c": {
+      "path": "experiments/shared-extension/integer/shared/integer-qs8-vmul-minmax-fp32.c",
+      "sha256": "477403ecc9cfaf6bf2c69c7f90bd7a2ce2ef08f685207d7267ed307265e84ef3"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/neon.c",
+      "sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/rvv.c",
+      "sha256": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/spec.h",
+      "sha256": "5aa814192c87ae17b8569e54bde8a5d445cef555d0d97d48465c44807a47f962"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/harness.c",
+      "sha256": "b4e86da159d7125590ebeef285f0005c41dcd9279863704cca8f00d314ceabad"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/interface.json",
+      "sha256": "135b2c9118b2fabe77ae83a17d9523c0b7c16667b441b4674f62ed9dea920e3d"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/unit.c",
+      "sha256": "c596c5085d0254224e1ae3679b561e605a30a689586daedaf3043ec6ee80d6fc"
+    },
+    "generate_interfaces.py": {
+      "path": "experiments/shared-extension/integer/generate_interfaces.py",
+      "sha256": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v2.py",
+      "sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v05/case/proof.patch"
+  ],
+  "model": "Typed+float",
+  "VLEN_bits": 128,
+  "origin": "original NEON unchanged, original target preserved separately; four explicit target repairs documented in witness-results.json",
+  "revision": "Independent proof-only continuation; all C/spec/driver source paths and hashes preserved from previous frozen manifest.",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "previous_version": "experiments/shim-c-v2/integer-float/qs8-vmul-minmax-fp32",
+  "swarm_migration": {
+    "source": "experiments/shim-c-v2/frontend-campaign/qs8-vmul-minmax-fp32",
+    "source_frozen_sha256": "a4226ed94edc1770ce7d86bcb16207b610146e3f9aa8ebc76bde7b13fd7ed65d",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  },
+  "integration_wave2": {
+    "seed": "experiments/deepseek-swarm-v1/kernel-tasks/qs8-vmul-minmax-fp32/attempts/0025/.build/verify01/annotated",
+    "only": "Proof annotations; source/spec/model/driver records unchanged"
+  },
+  "previous_candidate": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v04"
+}

@@ -1,0 +1,30 @@
+--- v10/integer-qs8-vmul-minmax-fp32.c
++++ v12/integer-qs8-vmul-minmax-fp32.c
+@@ -241,7 +241,12 @@
+   loop variant 8-i;
+ */
+ for(size_t i=0;i<8;i++) r.lane[i]=i<4?a.lane[i]:b.lane[i-4]; return r; }
+-void vst1_lane_u16(void *p,uint16x4_t a,int n) { unsigned char *q=p; uint16_t x=a.lane[n]; for(size_t i=0;i<2;i++)q[i]=(unsigned char)(x>>(8*i)); }
++/*@ requires qstore16_index: 0<=n<4;
++    terminates \true; */
++void vst1_lane_u16(void *p,uint16x4_t a,int n) { unsigned char *q=p; uint16_t x=a.lane[n]; /*@
++    loop invariant 0<=i<=2;
++    loop variant 2-i; */
++    for(size_t i=0;i<2;i++)q[i]=(unsigned char)(x>>(8*i)); }
+ /*@
+   terminates \true;
+   assigns \nothing;
+@@ -254,7 +259,12 @@
+   loop variant 4-i;
+ */
+ for(size_t i=0;i<4;i++) r.lane[i]=x; return r; }
+-void vst1_lane_u32(void *p,uint32x2_t a,int n) { unsigned char *q=p; uint32_t x=a.lane[n]; for(size_t i=0;i<4;i++)q[i]=(unsigned char)(x>>(8*i)); }
++/*@ requires qstore32_index: 0<=n<2;
++    terminates \true; */
++void vst1_lane_u32(void *p,uint32x2_t a,int n) { unsigned char *q=p; uint32_t x=a.lane[n]; /*@
++    loop invariant 0<=i<=4;
++    loop variant 4-i; */
++    for(size_t i=0;i<4;i++)q[i]=(unsigned char)(x>>(8*i)); }
+ /*@
+   terminates \true;
+   assigns \nothing;

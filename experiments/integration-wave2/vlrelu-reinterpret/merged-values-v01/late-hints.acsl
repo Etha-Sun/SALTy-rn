@@ -1,0 +1,32 @@
+
+/*@ \wp::strategy HVFilter: \tactic("Wp.filter",\children(VmemAddress));
+    \wp::proof HVFilter:hv_left_post,hv_right_post,hv_left_old_values,hv_right_values,hv_left_transport,values_harness_lane,values_harness_all,hv_count_exact,hv_slope_frame,hv_entry_slopes,hv_params_outer,hv_params4,hv_params2,hv_params1,hv_counter_done,hv_count_exit,hv_guard_store4,hv_guard_store2,hv_guard_store1; */
+
+/*@ \wp::strategy RVVValuesSMT: \prover("cvc5",30),\prover("z3",30);
+    \wp::proof RVVValuesSMT: proof_values_unary_point,values_unary_mask_source,values_point_input,values_point_slope,values_point_product,values_point_sign,values_point_select,values_point_value,rvv_values_shape,rvv_values_pointer,rvv_values_current_read,rvv_values_read,rvv_values_sep,rvv_values_slope,rvv_values_slope_all,rvv_values_operands_all,rvv_values_sign_all,rvv_values_select_all,rvv_values_output_prefix,rvv_values_prefix,rvv_values_result; */
+
+/*@ \wp::strategy RVVPrefixInstance:
+    \tactic("Wp.instance",
+      \ingoal(P_same_value(V[J],T)),
+      \when(Fact:(\forall integer K; 0<=K && K<N ==> P_same_value(V[K],E))),
+      \select(Fact),\param("P1",J),\children(RVVValuesSMT)),RVVValuesSMT;
+    \wp::strategy RVVPrefixPoint:
+    \tactic("Wp.cut",
+      \ingoal(P_same_value(V[J],T)),
+      \incontext(P_same_value(V[I],L_unary_value(X,S))),
+      \incontext(is_uint64(I)),
+      \param("case","CASES"),\param("clause",J==I),
+      \children(RVVPrefixInstance)),RVVPrefixInstance;
+    \wp::proof RVVPrefixInstance: rvv_values_result;
+    \wp::proof RVVPrefixPoint: rvv_values_prefix; */
+
+/*@ \wp::proof ValuesSMT:
+      proof_values_unary_point,values_point_input,values_point_slope,values_point_product,
+      values_point_sign,values_point_select,values_point_value,values_point_offsets,values_four_lane_cases,
+      values_neon4_operands,values_neon4_source_sign,values_neon4_select,values_neon4,
+      values_tail_operands,values_tail_source_sign,values_tail_select,values_tail_vector,
+      values_neon2,values_neon_tailprefix,values_neon1,values_neon1_prefix,values_neon1_lane,values_neon_all,
+      proof_values_unary_transfer,values_transfer_source,values_transfer_value,values_transfer_result,values_tail_extent_cut,values_tail_extent; */
+
+/*@ \wp::proof ValuesSMT: values_tail_div_cast,values_one_extent_cut; */
+/*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */

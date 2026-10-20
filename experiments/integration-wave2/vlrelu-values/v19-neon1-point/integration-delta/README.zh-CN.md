@@ -1,0 +1,1 @@
+这是整合材料，不是新增trusted helper输入。对有效v15只需24行minimal-on-v15.patch（或neon1-only.patch+末尾hints）。definitions.fragment.txt仅记录已有v15/v19相同定义；勿重复追加已有全局lemma/helper。v19 raw主201/201+18globals219/219，所有新pointcuts/privatepre/read/两helperbody闭；其余prefix/最终all仍须root统一full，不能拼接不同快照green当整核通过。

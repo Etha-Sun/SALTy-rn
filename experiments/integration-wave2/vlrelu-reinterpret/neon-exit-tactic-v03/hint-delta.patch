@@ -1,0 +1,66 @@
+--- a/harness.c
++++ b/harness.c
+@@ -38,3 +38,63 @@
+ 
+ /*@ \wp::proof ValuesSMT: values_tail_div_cast,values_one_extent_cut; */
+ /*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */
++
++/*@ \wp::strategy NTailPrefixBranch:
++    \tactic("Wp.cut",\incontext(bit_test(B,3)),
++      \param("case","CASES"),\param("clause",B==8 || B==12),
++      \children(ValuesSMT)),ValuesSMT;
++    \wp::proof NTailPrefixBranch: values_neon_tailprefix;
++
++    \wp::strategy NExitPrefixInstance:
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(M,shift_float32(P,K))),E))),
++      \select(Fact),\param("P1",J),\children(ValuesSMT)),
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(N,shift_float32(P,K))),E))),
++      \incontext(N==M),\select(Fact),\param("P1",J),\children(ValuesSMT)),
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(N,shift_float32(P,K))),E))),
++      \incontext(M==N),\select(Fact),\param("P1",J),\children(ValuesSMT)),ValuesSMT;
++    \wp::strategy NExitPrefixPoint:
++    \tactic("Wp.cut",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,I))),T)),
++      \incontext(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),L_unary_value(X,S))),
++      \incontext(is_uint64(J)),\param("case","CASES"),\param("clause",I==J),
++      \children(NExitPrefixInstance)),NExitPrefixInstance;
++
++    \wp::strategy NExitFinalBit:
++    \tactic("Wp.cut",\incontext(bit_test(B,2)),
++      \param("case","CASES"),\param("clause",B==4 || B==12),
++      \children(NExitPrefixInstance)),NExitPrefixInstance;
++    \wp::strategy NExitFinal:
++    \tactic("Wp.cut",\when(B==0 || B==4 || B==8 || B==12),
++      \param("case","CASES"),\param("clause",B==0),
++      \children(NExitFinalBit)),NExitFinalBit;
++
++    \wp::strategy NExitLaneInstance:
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \incontext(P_same_float(repr_decode32(read_uint32(M,shift_float32(P,J))),V[0])),
++      \when(Fact:(\forall integer K; K<=0 && 0<=K ==> P_same_value(V[K],E))),
++      \select(Fact),\param("P1",0),\children(ValuesSMT)),
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \incontext(P_same_float(repr_decode32(read_uint32(M,shift_float32(P,J))),
++        repr_decode32(read_uint32(N,shift_float32(P,J))))),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(N,shift_float32(P,K))),E))),
++      \select(Fact),\param("P1",J),\children(ValuesSMT)),NExitPrefixInstance;
++    \wp::strategy NExitLaneBranch:
++    \tactic("Wp.cut",
++      \ingoal(P_same_value(repr_decode32(read_uint32(write_uint32(N,shift_float32(P,L),W),shift_float32(P,J))),T)),
++      \param("case","CASES"),\param("clause",J==L),
++      \children(NExitLaneInstance)),NExitLaneInstance;
++    \wp::proof NExitPrefixPoint: values_neon1_prefix;
++    \wp::proof NExitFinal: values_neon_all;
++    \wp::proof NExitLaneBranch: values_neon1_lane; */

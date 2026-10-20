@@ -1,0 +1,304 @@
+/* Preserve NEON propagating NaNs using real RVV masks and merges. */
+/*@ requires vl<=4; assigns \nothing;
+ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+static inline vfloat32m1_t salty_min_vf_m1(vfloat32m1_t a,float b,size_t vl) {
+  if (b!=b) return __riscv_vfmv_v_f_f32m1(__builtin_nanf(""),vl);
+  vbool32_t nan=__riscv_vmfne_vv_f32m1_b32(a,a,vl);
+  vfloat32m1_t r=__riscv_vfmin_vf_f32m1(a,b,vl);
+  return __riscv_vfmerge_vfm_f32m1(r,__builtin_nanf(""),nan,vl);
+}
+/*@ requires vl<=4; assigns \nothing;
+ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+static inline vfloat32m1_t salty_max_vf_m1(vfloat32m1_t a,float b,size_t vl) {
+  if (b!=b) return __riscv_vfmv_v_f_f32m1(__builtin_nanf(""),vl);
+  vbool32_t nan=__riscv_vmfne_vv_f32m1_b32(a,a,vl);
+  vfloat32m1_t r=__riscv_vfmax_vf_f32m1(a,b,vl);
+  return __riscv_vfmerge_vfm_f32m1(r,__builtin_nanf(""),nan,vl);
+}
+void test_rvv(
+    size_t input_height,
+    size_t input_width,
+    size_t output_y_start,
+    size_t output_y_end,
+    const float* input,
+    const float* zero,
+    const float* weights,
+    float* output,
+    size_t input_padding_top,
+    size_t output_channels,
+    size_t output_height_stride,
+    size_t output_channel_stride,
+    const struct xnn_f32_minmax_params* restrict params) XNN_OOB_READS
+{
+#line 29 "./rvv.c"
+#line 29 "./rvv.c"
+#line 29 "./rvv.c"
+#line 29 "./rvv.c"
+#line 29 "./rvv.c"
+#line 29 "./rvv.c"
+  assert(input_width != 0);
+#line 30 "./rvv.c"
+#line 30 "./rvv.c"
+#line 30 "./rvv.c"
+#line 30 "./rvv.c"
+#line 30 "./rvv.c"
+#line 30 "./rvv.c"
+  assert(output_y_end > output_y_start);
+#line 31 "./rvv.c"
+#line 31 "./rvv.c"
+#line 31 "./rvv.c"
+#line 31 "./rvv.c"
+#line 31 "./rvv.c"
+#line 31 "./rvv.c"
+  assert(input_padding_top <= 1);
+#line 32 "./rvv.c"
+#line 32 "./rvv.c"
+#line 32 "./rvv.c"
+#line 32 "./rvv.c"
+#line 32 "./rvv.c"
+#line 32 "./rvv.c"
+  assert(output_channels != 0);
+
+  const size_t input_height_stride = input_width * 3 /* channels */ * sizeof(float);
+  const size_t output_width = (input_width + 1) / 2;
+  const size_t output_channel_increment = output_channel_stride * 4 - output_width * sizeof(float);
+
+  // Adjustment for padding processed below
+  const float* i0 = (const float*) ((uintptr_t) input + input_height_stride * (output_y_start * 2 - input_padding_top));
+  const float* i1 = (const float*) ((uintptr_t) i0 + input_height_stride);
+  const float* i2 = (const float*) ((uintptr_t) i1 + input_height_stride);
+  const float* i3 = (const float*) ((uintptr_t) i2 + input_height_stride);
+  const float* i4 = (const float*) ((uintptr_t) i3 + input_height_stride);
+  float* output0 = (float*) ((uintptr_t) output + output_height_stride * output_y_start);
+  float* output1 = (float*) ((uintptr_t) output0 + output_height_stride);
+
+  if XNN_UNPREDICTABLE(output_y_start < input_padding_top) {
+    i0 = zero;
+  }
+
+  /*@ loop invariant stage3_rows: output_y_start <= output_y <= output_y_end+1;
+      loop invariant stage3_row_parity: (output_y-output_y_start)%2==0;
+      loop assigns output_y,i0,i1,i2,i3,i4,output0,output1,output[0..output_channels*((input_height+1)/2)*output_width-1],errno;
+      loop variant output_y_end+1-output_y;
+  */
+  for (size_t output_y = output_y_start; output_y < output_y_end; output_y += 2) {
+    const size_t input_y2 = output_y * 2 + 2 - input_padding_top;
+    const size_t input_y4 = input_y2 + 2;
+    if XNN_UNPREDICTABLE(input_y2 >= input_height) {
+      i2 = zero;
+    }
+    if XNN_UNPREDICTABLE(input_y4 > input_height) {
+      i3 = zero;
+    }
+    if XNN_UNPREDICTABLE(input_y4 >= input_height) {
+      i4 = zero;
+    }
+    if XNN_UNPREDICTABLE(output_y + 2 > output_y_end) {
+      output1 = output0;
+    }
+
+    const float* w = weights;
+    size_t c = output_channels;
+    float* o0c0 = output0;
+    float* o1c0 = output1;
+    float* o0c1 = (float*) ((uintptr_t) o0c0 + output_channel_stride);
+    float* o1c1 = (float*) ((uintptr_t) o1c0 + output_channel_stride);
+    float* o0c2 = (float*) ((uintptr_t) o0c1 + output_channel_stride);
+    float* o1c2 = (float*) ((uintptr_t) o1c1 + output_channel_stride);
+    float* o0c3 = (float*) ((uintptr_t) o0c2 + output_channel_stride);
+    float* o1c3 = (float*) ((uintptr_t) o1c2 + output_channel_stride);
+    /*@ loop invariant stage3_channels: 0<=c<=output_channels;
+        loop invariant stage3_channel_blocks: c==0 || (output_channels-c)%4==0;
+        loop assigns c,w,i0,i1,i2,i3,i4,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3,output[0..output_channels*((input_height+1)/2)*output_width-1],errno;
+        loop variant c;
+    */
+    do {
+      if XNN_UNPREDICTABLE(c < 2) {
+        o0c1 = o0c0;
+        o1c1 = o1c0;
+      }
+      if XNN_UNPREDICTABLE(c <= 2) {
+        o0c2 = o0c1;
+        o1c2 = o1c1;
+      }
+      if XNN_UNPREDICTABLE(c < 4) {
+        o0c3 = o0c2;
+        o1c3 = o1c2;
+      }
+
+      size_t ow = output_width;
+      size_t ow_done = 0;
+      
+      // Base pointers shifted back by 1 pixel (3 channels) to ensure all indexed offsets are non-negative
+      const float* i0_base = (const float*)((uintptr_t)i0 - 3 * sizeof(float));
+      const float* i1_base = (const float*)((uintptr_t)i1 - 3 * sizeof(float));
+      const float* i2_base = (const float*)((uintptr_t)i2 - 3 * sizeof(float));
+      const float* i3_base = (const float*)((uintptr_t)i3 - 3 * sizeof(float));
+      const float* i4_base = (const float*)((uintptr_t)i4 - 3 * sizeof(float));
+
+      float* current_o0c0 = o0c0;
+      float* current_o0c1 = o0c1;
+      float* current_o0c2 = o0c2;
+      float* current_o0c3 = o0c3;
+      float* current_o1c0 = o1c0;
+      float* current_o1c1 = o1c1;
+      float* current_o1c2 = o1c2;
+      float* current_o1c3 = o1c3;
+
+      /*@ loop invariant stage3_width: 0<=ow<=output_width;
+          loop invariant stage3_cursor: ow_done+ow==output_width;
+          loop invariant next_done_range: 0<=ow_done<=output_width;
+          loop invariant stage3_store_cursor: current_o0c0==o0c0+ow_done;
+          loop assigns ow,ow_done,current_o0c0,current_o0c1,current_o0c2,current_o0c3,current_o1c0,current_o1c1,current_o1c2,current_o1c3,output[0..output_channels*((input_height+1)/2)*output_width-1],errno;
+          loop variant ow;
+      */
+      while (ow > 0) {
+        size_t vl = __riscv_vsetvl_e32m1(ow);
+        /*@ assert stage3_vl: 0<vl<=4 && vl<=ow; */
+        /*@ assert next_width_before: ow_done+ow==output_width && 0<vl<=ow; */
+        /*@ assert next_width_add_bound: ow_done+vl<=output_width; */
+        vfloat32m1_t v_zero = __riscv_vfmv_v_f_f32m1(0.0f, vl);
+
+        vuint32m1_t vj = __riscv_vid_v_u32m1(vl);
+        vuint32m1_t v_j_plus_done = __riscv_vadd_vx_u32m1(vj, ow_done, vl);
+        
+        // v_idx_base_pos = 2 * (j + ow_done)
+        vuint32m1_t v_idx_base_pos = __riscv_vmul_vx_u32m1(v_j_plus_done, 2, vl);
+        // v_offset_base_pos = v_idx_base_pos * 3 channels * sizeof(float)
+        vuint32m1_t v_offset_base_pos = __riscv_vmul_vx_u32m1(v_idx_base_pos, 12, vl);
+
+        // True signed index for bounds checking: 2 * (j + ow_done) - 1
+        vint32m1_t v_idx_base = __riscv_vsub_vx_i32m1(__riscv_vreinterpret_v_u32m1_i32m1(v_idx_base_pos), 1, vl);
+
+        vfloat32m1_t v_o0c0 = __riscv_vfmv_v_f_f32m1(w[0], vl);
+        vfloat32m1_t v_o0c1 = __riscv_vfmv_v_f_f32m1(w[1], vl);
+        vfloat32m1_t v_o0c2 = __riscv_vfmv_v_f_f32m1(w[2], vl);
+        vfloat32m1_t v_o0c3 = __riscv_vfmv_v_f_f32m1(w[3], vl);
+
+        vfloat32m1_t v_o1c0 = __riscv_vfmv_v_f_f32m1(w[0], vl);
+        vfloat32m1_t v_o1c1 = __riscv_vfmv_v_f_f32m1(w[1], vl);
+        vfloat32m1_t v_o1c2 = __riscv_vfmv_v_f_f32m1(w[2], vl);
+        vfloat32m1_t v_o1c3 = __riscv_vfmv_v_f_f32m1(w[3], vl);
+
+        /*@ loop invariant stage3_dx_bounds: 0<=dx<=3;
+              loop assigns dx,v_o0c0,v_o0c1,v_o0c2,v_o0c3,v_o1c0,v_o1c1,v_o1c2,v_o1c3,errno;
+              loop variant 3-dx;
+          */
+          for (int dx = 0; dx < 3; dx++) {
+          vint32m1_t v_idx = __riscv_vadd_vx_i32m1(v_idx_base, dx, vl);
+          vbool32_t mask = __riscv_vmand_mm_b32(
+              __riscv_vmsge_vx_i32m1_b32(v_idx, 0, vl),
+              __riscv_vmslt_vx_i32m1_b32(v_idx, input_width, vl),
+              vl
+          );
+
+          /*@ loop invariant stage3_c_in_bounds: 0<=c_in<=3;
+              loop assigns c_in,v_o0c0,v_o0c1,v_o0c2,v_o0c3,v_o1c0,v_o1c1,v_o1c2,v_o1c3,errno;
+              loop variant 3-c_in;
+          */
+          for (int c_in = 0; c_in < 3; c_in++) {
+            int32_t scalar_offset = (dx * 3 + c_in) * 4;
+            // Per-lane offset is (lane+ow_done)*24 + scalar_offset: a fixed 24-byte stride,
+            // so a strided load + mask-merge replaces the indexed gather (same values).
+            const ptrdiff_t v_off = (ptrdiff_t)ow_done * 24 + scalar_offset;
+            const ptrdiff_t v_str = 24;
+            vfloat32m1_t v_in0 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i0_base + v_off), v_str, vl), mask, vl);
+            vfloat32m1_t v_in1 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i1_base + v_off), v_str, vl), mask, vl);
+            vfloat32m1_t v_in2 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i2_base + v_off), v_str, vl), mask, vl);
+            vfloat32m1_t v_in3 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i3_base + v_off), v_str, vl), mask, vl);
+            vfloat32m1_t v_in4 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i4_base + v_off), v_str, vl), mask, vl);
+
+            /*@ loop invariant stage3_ky_bounds: 0<=ky<=3;
+              loop assigns ky,v_o0c0,v_o0c1,v_o0c2,v_o0c3,v_o1c0,v_o1c1,v_o1c2,v_o1c3,errno;
+              loop variant 3-ky;
+          */
+          for (int ky = 0; ky < 3; ky++) {
+              vfloat32m1_t v_in_row0 = (ky == 0) ? v_in0 : (ky == 1) ? v_in1 : v_in2;
+              vfloat32m1_t v_in_row1 = (ky == 0) ? v_in2 : (ky == 1) ? v_in3 : v_in4;
+
+              // NEON c3x4 plane order = kc*9 + ch*3 + kr (= dx*9 + c_in*3 + ky); aligns weight
+              // reads with the gold so the shared symbolic weight buffer matches on both sides.
+              int w_idx = (dx * 9 + c_in * 3 + ky) * 4;
+              float w0 = w[4 + w_idx + 0];
+              float w1 = w[4 + w_idx + 1];
+              float w2 = w[4 + w_idx + 2];
+              float w3 = w[4 + w_idx + 3];
+
+              v_o0c0 = __riscv_vfmacc_vf_f32m1(v_o0c0, w0, v_in_row0, vl);
+              v_o0c1 = __riscv_vfmacc_vf_f32m1(v_o0c1, w1, v_in_row0, vl);
+              v_o0c2 = __riscv_vfmacc_vf_f32m1(v_o0c2, w2, v_in_row0, vl);
+              v_o0c3 = __riscv_vfmacc_vf_f32m1(v_o0c3, w3, v_in_row0, vl);
+
+              v_o1c0 = __riscv_vfmacc_vf_f32m1(v_o1c0, w0, v_in_row1, vl);
+              v_o1c1 = __riscv_vfmacc_vf_f32m1(v_o1c1, w1, v_in_row1, vl);
+              v_o1c2 = __riscv_vfmacc_vf_f32m1(v_o1c2, w2, v_in_row1, vl);
+              v_o1c3 = __riscv_vfmacc_vf_f32m1(v_o1c3, w3, v_in_row1, vl);
+            }
+          }
+        }
+
+        v_o0c0 = salty_max_vf_m1(v_o0c0, params->scalar.min, vl);
+        v_o0c1 = salty_max_vf_m1(v_o0c1, params->scalar.min, vl);
+        v_o0c2 = salty_max_vf_m1(v_o0c2, params->scalar.min, vl);
+        v_o0c3 = salty_max_vf_m1(v_o0c3, params->scalar.min, vl);
+
+        v_o1c0 = salty_max_vf_m1(v_o1c0, params->scalar.min, vl);
+        v_o1c1 = salty_max_vf_m1(v_o1c1, params->scalar.min, vl);
+        v_o1c2 = salty_max_vf_m1(v_o1c2, params->scalar.min, vl);
+        v_o1c3 = salty_max_vf_m1(v_o1c3, params->scalar.min, vl);
+
+        v_o0c0 = salty_min_vf_m1(v_o0c0, params->scalar.max, vl);
+        v_o0c1 = salty_min_vf_m1(v_o0c1, params->scalar.max, vl);
+        v_o0c2 = salty_min_vf_m1(v_o0c2, params->scalar.max, vl);
+        v_o0c3 = salty_min_vf_m1(v_o0c3, params->scalar.max, vl);
+        v_o1c0 = salty_min_vf_m1(v_o1c0, params->scalar.max, vl);
+        v_o1c1 = salty_min_vf_m1(v_o1c1, params->scalar.max, vl);
+        v_o1c2 = salty_min_vf_m1(v_o1c2, params->scalar.max, vl);
+        v_o1c3 = salty_min_vf_m1(v_o1c3, params->scalar.max, vl);
+
+        // Store row 1 BEFORE row 0: when there is a single output row the caller
+        // aliases output1==output0, so the LAST store must be the valid row 0
+        // (matches the NEON gold; storing o0 last fixes the row-1-overwrites-row-0 bug).
+        __riscv_vse32_v_f32m1(current_o1c0, v_o1c0, vl); current_o1c0 += vl;
+        __riscv_vse32_v_f32m1(current_o1c1, v_o1c1, vl); current_o1c1 += vl;
+        __riscv_vse32_v_f32m1(current_o1c2, v_o1c2, vl); current_o1c2 += vl;
+        __riscv_vse32_v_f32m1(current_o1c3, v_o1c3, vl); current_o1c3 += vl;
+
+        __riscv_vse32_v_f32m1(current_o0c0, v_o0c0, vl); current_o0c0 += vl;
+        /*@ assert next_store_advanced: current_o0c0==o0c0+(ow_done+vl); */
+        __riscv_vse32_v_f32m1(current_o0c1, v_o0c1, vl); current_o0c1 += vl;
+        __riscv_vse32_v_f32m1(current_o0c2, v_o0c2, vl); current_o0c2 += vl;
+        __riscv_vse32_v_f32m1(current_o0c3, v_o0c3, vl); current_o0c3 += vl;
+
+        /*@ ghost next_conv_sub(ow,vl); */
+        ow -= vl;
+        /*@ assert next_width_subtracted: ow_done+ow+vl==output_width; */
+        /*@ ghost next_conv_add(ow_done,vl); */
+        ow_done += vl;
+        /*@ assert next_width_rebased: ow_done+ow==output_width; */
+        /*@ assert next_store_rebased: current_o0c0==o0c0+ow_done; */
+      }
+
+      o0c0 = (float*) ((uintptr_t) current_o0c0 + output_channel_increment);
+      o0c1 = (float*) ((uintptr_t) current_o0c1 + output_channel_increment);
+      o0c2 = (float*) ((uintptr_t) current_o0c2 + output_channel_increment);
+      o0c3 = (float*) ((uintptr_t) current_o0c3 + output_channel_increment);
+      o1c0 = (float*) ((uintptr_t) current_o1c0 + output_channel_increment);
+      o1c1 = (float*) ((uintptr_t) current_o1c1 + output_channel_increment);
+      o1c2 = (float*) ((uintptr_t) current_o1c2 + output_channel_increment);
+      o1c3 = (float*) ((uintptr_t) current_o1c3 + output_channel_increment);
+
+      w += 112;
+      c = (c > 4) ? c - 4 : 0;
+    } while (c != 0);
+
+    output0 = (float*) ((uintptr_t) output1 + output_height_stride);
+    output1 = (float*) ((uintptr_t) output0 + output_height_stride);
+
+    i0 = i4;
+    i1 = (const float*) ((uintptr_t) i0 + input_height_stride);
+    i2 = (const float*) ((uintptr_t) i1 + input_height_stride);
+    i3 = (const float*) ((uintptr_t) i2 + input_height_stride);
+    i4 = (const float*) ((uintptr_t) i3 + input_height_stride);
+  }
+}

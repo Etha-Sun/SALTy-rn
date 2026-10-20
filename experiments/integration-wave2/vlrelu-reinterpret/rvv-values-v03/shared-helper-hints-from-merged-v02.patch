@@ -1,0 +1,51 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -132,4 +132,24 @@
+ vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl);
+ float f32_sqrt(float x);
+ /*@ logic float unary_value(float x,float s) = \sign(x)==\sign((float)-1.0) ? fp_mul32(x,s) : x; */
++/*@ lemma values_unary_mask_source:
++      \forall float x,y,s,t,m,r; \forall integer mask;
++      same_float(x,y) && same_float(s,t) &&
++      same_value(m,fp_mul32(x,s)) &&
++      (!\is_NaN(x) ==>
++        ((mask!=0) <==> (\sign(x)==\sign((float)-1.0)))) &&
++      same_float(r,mask!=0?m:x) ==>
++      same_value(r,unary_value(y,t)); */
++/*@ ghost
++/@ requires values_point_input: same_float(x,y);
++    requires values_point_slope: same_float(s,t);
++    requires values_point_product: same_value(m,fp_mul32(x,s));
++    requires values_point_sign: !\is_NaN(x) ==>
++      ((mask!=0) <==> (\sign(x)==\sign((float)-1.0)));
++    requires values_point_select: same_float(r,mask!=0?m:x);
++    terminates \true;
++    assigns \nothing;
++    ensures values_point_value: same_value(r,unary_value(y,t)); @/
++void proof_values_unary_point(float x,float y,float s,float t,float m,float r,uint32_t mask) {}
++*/
+ #endif
+--- a/harness.c
++++ b/harness.c
+@@ -27,3 +27,21 @@
+   }
+   return 1;
+ }
++
++/*@ \wp::strategy RVVValuesSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::proof RVVValuesSMT: proof_values_unary_point,values_unary_mask_source,values_point_input,values_point_slope,values_point_product,values_point_sign,values_point_select,values_point_value,rvv_values_shape,rvv_values_pointer,rvv_values_current_read,rvv_values_read,rvv_values_sep,rvv_values_slope,rvv_values_slope_all,rvv_values_operands_all,rvv_values_sign_all,rvv_values_select_all,rvv_values_output_prefix,rvv_values_prefix,rvv_values_result; */
++
++/*@ \wp::strategy RVVPrefixInstance:
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(V[J],T)),
++      \when(Fact:(\forall integer K; 0<=K && K<N ==> P_same_value(V[K],E))),
++      \select(Fact),\param("P1",J),\children(RVVValuesSMT)),RVVValuesSMT;
++    \wp::strategy RVVPrefixPoint:
++    \tactic("Wp.cut",
++      \ingoal(P_same_value(V[J],T)),
++      \incontext(P_same_value(V[I],L_unary_value(X,S))),
++      \incontext(is_uint64(I)),
++      \param("case","CASES"),\param("clause",J==I),
++      \children(RVVPrefixInstance)),RVVPrefixInstance;
++    \wp::proof RVVPrefixInstance: rvv_values_result;
++    \wp::proof RVVPrefixPoint: rvv_values_prefix; */

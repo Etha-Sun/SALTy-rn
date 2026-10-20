@@ -1,0 +1,19 @@
+{
+  "scope": "Manual root audit of restricted newly introduced ghost effects; no general ghost noninterference theorem",
+  "proof_sha256": "d5b18b2b5506dde3de8df80b7b4543ae18334723ed600d2437e04d2f392a13d9",
+  "reviewed_new_effects": [
+    "Ghost entry scalars and input/product snapshots only initialize ghost locals from ordinary values.",
+    "Point and transfer helper parameters are scalar values; both actual function bodies are empty. Their ensures and assigns-nothing body obligations are independently checked in the v15 raw report.",
+    "New point/transfer calls read ordinary arrays and update no ordinary object. All48 v15 call preconditions are actually checked; array-read RTE and helper frames are included.",
+    "Proof traversal loops change their locally declared ghost counters only; they contain assertions and readonly helper calls. Their loop frames/variants are part of fresh full verification.",
+    "No ghost assignment to input/output/params or ordinary kernel control variable is introduced by this unified proof.",
+    "Ordinary source tokens and host compiler LLVM IR are independently equal; this identity evidence complements the restricted-effect review, it does not prove general ghost noninterference."
+  ],
+  "full_admission_pending": true,
+  "inherited_audit_sha256": "50ae2480371919c0b47089fd1fa5378bc2f4978f9b1eabd6c03323c9d780b2f7",
+  "additional_review": [
+    "Delta is two ghost point assertions and one scalar readonly call to the previously checked empty transfer helper; no ordinary store or control change.",
+    "v19 checked all50 point/transfer call preconditions and both helper ensures/assigns pairs.",
+    "Final21-line CASES hints only split exhaustive cases; all strategy branch leaves have actual checked source scripts; final full replay still required."
+  ]
+}

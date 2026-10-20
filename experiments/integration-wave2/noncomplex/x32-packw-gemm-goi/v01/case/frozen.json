@@ -1,0 +1,66 @@
+{
+  "name": "x32-packw-gemm-goi",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-packw-gemm-goi/neon.c",
+      "sha256": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-packw-gemm-goi/rvv.c",
+      "sha256": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/x32-packw-gemm-goi/spec.h",
+      "sha256": "c7d0e406999c2dfd5ead3b3010a25b1ac9d2d89f9b86b7c8ba0e563ad0aa9731"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-packw-gemm-goi/harness.c",
+      "sha256": "25b6f12cf35881295c55bbebb30e5cff779ee285ea8dcd9893c46fafe0949edd"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-packw-gemm-goi/unit.c",
+      "sha256": "44ce202adf936dcb2cd4eac55ede6704ed1d21a9fb646f836c37f85840c77fe1"
+    },
+    "u32_shim.h": {
+      "path": "experiments/shared-extension/complex/shared/u32_shim.h",
+      "sha256": "08f39fad2fa1012e274e9cb81df24b601398910dc4136e2182b7f64ed4323217"
+    },
+    "u32_shim.c": {
+      "path": "experiments/shared-extension/complex/shared/u32_shim.c",
+      "sha256": "608464204358c0287f0585c697b675ce445ba9b90e4230a048371dc42e8bfa4f"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v3.py",
+      "sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/integration-wave2/noncomplex/x32-packw-gemm-goi/v01/case/proof.patch"
+  ],
+  "model": "Typed",
+  "wp_model_variant": "Typed+raw",
+  "previous_version": "experiments/shim-c-v2/complex-v3/x32-packw-gemm-goi",
+  "reason": "Independent probe shows Typed+raw retains aggregate-array initializer constraints; implementation and public spec byte-identical",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "proof_stage": "Independent proof copy allows private static-helper proof while preceding frozen replay runs unchanged.",
+  "swarm_migration": {
+    "source": "experiments/shim-c-v2/complex-v3-next/x32-packw-gemm-goi",
+    "source_frozen_sha256": "df1d280685871cab6b077235eaa0b9abf5c91c5a97104077a92690193f5f9f45",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  },
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "integration_wave2": {
+    "seed": "experiments/deepseek-swarm-v1/kernel-tasks/x32-packw-gemm-goi/attempts/0018/.build/verify01/annotated",
+    "only": "Proof annotations; source/spec/model/driver records unchanged"
+  }
+}

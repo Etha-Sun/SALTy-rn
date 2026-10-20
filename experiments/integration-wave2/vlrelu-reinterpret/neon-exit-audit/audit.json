@@ -1,0 +1,54 @@
+{
+  "scope": "Read-only audit of frozen NEON v14 tailprefix, NEON1 ghostprefix establishment/preservation, finalall. -wp-prover none, no solver, no proof success claim. No edits to worker or frozen model/source.",
+  "source": {
+    "source": "experiments/integration-wave2/vlrelu-values/v14-tail-transfer",
+    "proof_sha256": "66e47e71851e7224ddd021b7e7df139984219b277b343571a53f6b84d2ce956a",
+    "frozen_sha256": "bed8f850c546c6f3ff985161d4010c3bdfe0f98c95bf01164d9f6d2757bdc09d",
+    "scope": "Read-only no-prover export of actual v14 tailprefix/finalall/NEON1 ghostprefix; no source or worker edits, no verification claim."
+  },
+  "export_exit": 0,
+  "sequent_sha256": "7da0bd794217a0d972f7970888c709b5215cf17a4988feec12ec19f173d0abde",
+  "properties": [
+    "values_neon_tailprefix",
+    "values_neon1_prefix",
+    "values_neon_all"
+  ],
+  "findings": [
+    {
+      "property": "values_neon_tailprefix",
+      "actual_exit_line": 280,
+      "actual_exit": "to_uint64(2+to_uint64(T-to_uint64(B/4))) <= k",
+      "existing_cut_line": 288,
+      "existing_cut": "T = (B%8)/4 + to_uint64(2+to_uint64(T-B/4))",
+      "gap": "One nested projection of B/4; under B=8 or12, B/4=2 or3. Actual current v14 cut does not syntactically eliminate that inner projection. This is a scalar proof/normalization gap, not a missing memory axiom.",
+      "minimal_checked_suggestion": "Add an actual checked local assertion (size_t)(batch/4)==batch/4, preserving public pre; then reuse existing values_tail_extent lemma/cut. Or change only the pure lemma/cut to exactly include (size_t)(B/4) and reprove. Existing cut own VC still must be checked; appearance in this export is not a proof."
+    },
+    {
+      "property": "values_neon_all",
+      "actual_exit_line": 1026,
+      "actual_exit": "to_uint64(1+to_uint64(T-1))<=k1",
+      "prefix_lines": [
+        1016,
+        1018
+      ],
+      "prefix": "0<=k1<=T; forall i in [0,k1): same_value(output[i], unary_value(input[i], slope_entry)) in final memory mem3=mem0",
+      "gap": "Need explicit T>0 projection and an instance of the checked prefix at goal index; source public size bound gives T<=SIZE_MAX and positive T.",
+      "minimal_checked_suggestion": "A local checked assertion (size_t)((size_t)(total-1)+1)==total at the relevant join suffices for the extent identity. Then use official Wp.instance(P1=goal_index) on the real output-prefix fact after exposing the corresponding actual C branch. Each cut own VC and every new proof dependency must be checked."
+    }
+  ],
+  "official_tactic_primary_source": {
+    "path": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/TacInstance.ml",
+    "sha256": "c42a54a3a3327a5f37b7afcc8a16b74db957f2394c497256077a9376ee0f88b4",
+    "P1_lines": [
+      25,
+      26
+    ],
+    "id_line": 129
+  },
+  "not_claimed": [
+    "No new NEON kernel success",
+    "No validation of currently pending high-lane transfer frame",
+    "No unproved extent equality introduced as assumption",
+    "No new TCB or model modification"
+  ]
+}

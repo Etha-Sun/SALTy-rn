@@ -1,0 +1,60 @@
+--- a/bits.c
++++ b/bits.c
+@@ -1,4 +1,39 @@
+ #include "shim.h"
++/*@ \wp::strategy VmemSignSMT: \prover("cvc5",30),\prover("z3",30);
++ \wp::strategy VmemSignAddress:
++ \tactic("Wp.unfold",\ingoal(A:shift_sint32(P,0)),\ingoal(B:shift_sint32(P,I)),\ingoal(C:shift_float32(Q,I)),\incontext(D:shift_sint32(P,I)),\incontext(E:shift_float32(Q,I)),\select(A,B,C,D,E),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\ingoal(shift_sint32(P,I)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\incontext(shift_sint32(P,I)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\ingoal(shift_float32(P,I)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\incontext(shift_float32(P,I)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\ingoal(shift_sint8(P,I)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\incontext(shift_sint8(P,I)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\ingoal(shiftfield_F21_lane(P)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\ingoal(shiftfield_F22_lane(P)),\children(VmemSignAddress)),
++ \tactic("Wp.unfold",\ingoal(global(P)),\children(VmemSignAddress)),VmemSignSMT;
++ \wp::strategy VmemSignValidity:
++ \tactic("Wp.unfold",\ingoal(valid_obj(M,P)),\children(VmemSignValidity)),
++ \tactic("Wp.unfold",\ingoal(P_valid_or_empty(M,P,N)),\children(VmemSignValidity)),
++ \tactic("Wp.valid",\ingoal(valid_rw(M,P,N)),\children(VmemSignAddress)),VmemSignAddress;
++ \wp::strategy VmemSignWord:
++ \tactic("Wp.cut",\ingoal(T:read_sint32(M,D)),\incontext(L_memcmp(PM,M,D,S,4)==0),\select(T),\param("case","MODUS"),\param("clause",read_sint32(M,D)==to_sint32(read_uint32(PM,S))),\children(VmemSignValidity)),VmemSignValidity;
++ \wp::strategy VmemSignUint:
++ \tactic("Wp.cut",\ingoal(T:read_sint32(M,D)),\incontext(L_memcmp(PM,M,D,S,4)==0),\select(T),\param("case","MODUS"),\param("clause",read_uint32(M,D)==read_uint32(PM,S) && read_uint32(M,S)==read_uint32(PM,S) && 0<=read_uint32(PM,S) && read_uint32(PM,S)<=4294967295),\children(VmemSignWord)),VmemSignWord;
++ \wp::strategy VmemSignBytes:
++ \tactic("Wp.cut",\ingoal(T:read_sint32(M,D)),\incontext(L_memcmp(PM,M,D,S,4)==0),\select(T),\param("case","MODUS"),\param("clause",read_sint8(M,shift_sint8(D,0))==read_sint8(PM,shift_sint8(S,0)) && read_sint8(M,shift_sint8(D,1))==read_sint8(PM,shift_sint8(S,1)) && read_sint8(M,shift_sint8(D,2))==read_sint8(PM,shift_sint8(S,2)) && read_sint8(M,shift_sint8(D,3))==read_sint8(PM,shift_sint8(S,3))),\children(VmemSignUint)),VmemSignValidity;
++ \wp::strategy VmemSignPoint:
++ \tactic("Wp.cut",\ingoal(read_sint32(M,shift_sint32(P,J))),\incontext(L_memcmp(M0,M,shift_sint32(P,I),S,4)==0),\param("case","CASES"),\param("clause",J==I),\children(VmemSignBytes)),VmemSignValidity;
++ \wp::proof VmemSignPoint:vreinterpretq_s32_f32,__riscv_vreinterpret_v_f32m8_i32m8;
++ \wp::proof VmemSignValidity:"@requires";
++*/
++/*@ lemma reinterpret_signed32_sign:
++  \forall integer u; 0<=u<=4294967295 && !\is_NaN(from_repr32(u)) ==>
++   (((int32_t)u < 0) <==> (\sign(from_repr32(u)) == \sign((float)-1.0)));
++*/
++/*@ lemma reinterpret_float32_sign:
++ \forall float x; !\is_NaN(x) ==>
++  (((int32_t)repr32(x)<0) <==> (\sign(x)==\sign((float)-1.0)));
++*/
+ /* memcpy is C-defined bit transport, not pointer type punning. */
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> same_float(\result.lane[j],x); */
+ float32x4_t vdupq_n_f32(float x) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],x); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
+@@ -7,7 +42,7 @@
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==x; */
+ uint32x4_t vmovq_n_u32(uint32_t x) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==x; loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<4 && !\is_NaN(a.lane[j]) ==> ((\result.lane[j] < 0) <==> (\sign(a.lane[j]) == \sign((float)-1.0))); */
+-int32x4_t vreinterpretq_s32_f32(float32x4_t a) { int32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i && !\is_NaN(a.lane[j]) ==> ((r.lane[j] < 0) <==> (\sign(a.lane[j]) == \sign((float)-1.0))); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
++int32x4_t vreinterpretq_s32_f32(float32x4_t a) { int32x4_t r;/*@ loop invariant 0<=i<=4;  loop invariant \forall integer j; 0<=j<i && !\is_NaN(a.lane[j]) ==> ((r.lane[j] < 0) <==> (\sign(a.lane[j]) == \sign((float)-1.0))); loop assigns i,r.lane[0..(i<4?i:4)-1]; loop variant 4-i; */ for(size_t i=0;i<4;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> same_float(\result.lane[j],from_repr32(a.lane[j])); */
+ float32x4_t vreinterpretq_f32_u32(uint32x4_t a) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],from_repr32(a.lane[j])); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=bits_float(a.lane[i]);return r; }
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(a.lane[j]<b.lane[j]?4294967295:0); */
+@@ -30,7 +65,7 @@
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(\lt_float(from_repr32(repr32(a.lane[j])&2147483647),from_repr32(repr32(b.lane[j])&2147483647))?4294967295:0); */
+ uint32x4_t vcaltq_f32(float32x4_t a,float32x4_t b) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(from_repr32(repr32(a.lane[j])&2147483647),from_repr32(repr32(b.lane[j])&2147483647))?4294967295:0); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff))<bits_float(float_bits(b.lane[i])&UINT32_C(0x7fffffff))?UINT32_MAX:0;return r; }
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<32 && !\is_NaN(a.lane[j]) ==> ((\result.lane[j] < 0) <==> (\sign(a.lane[j]) == \sign((float)-1.0))); */
+-vint32m8_t __riscv_vreinterpret_v_f32m8_i32m8(vfloat32m8_t a) { vint32m8_t r;/*@ loop invariant 0<=i<=32; loop invariant \forall integer j; 0<=j<i && !\is_NaN(a.lane[j]) ==> ((r.lane[j] < 0) <==> (\sign(a.lane[j]) == \sign((float)-1.0))); loop assigns i,r.lane[0..31]; loop variant 32-i; */ for(size_t i=0;i<RVV_CAP;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
++vint32m8_t __riscv_vreinterpret_v_f32m8_i32m8(vfloat32m8_t a) { vint32m8_t r;/*@ loop invariant 0<=i<=32;  loop invariant \forall integer j; 0<=j<i && !\is_NaN(a.lane[j]) ==> ((r.lane[j] < 0) <==> (\sign(a.lane[j]) == \sign((float)-1.0))); loop assigns i,r.lane[0..(i<32?i:32)-1]; loop variant 32-i; */ for(size_t i=0;i<RVV_CAP;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<32 ==> \result.lane[j]==repr32(a.lane[j]); */
+ vuint32m8_t __riscv_vreinterpret_v_f32m8_u32m8(vfloat32m8_t a) { vuint32m8_t r;/*@ loop invariant 0<=i<=32; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==repr32(a.lane[j]); loop assigns i,r.lane[0..31]; loop variant 32-i; */ for(size_t i=0;i<RVV_CAP;i++)r.lane[i]=float_bits(a.lane[i]);return r; }
+ /*@ assigns \nothing; ensures \forall integer j; 0<=j<32 ==> same_float(\result.lane[j],from_repr32(a.lane[j])); */

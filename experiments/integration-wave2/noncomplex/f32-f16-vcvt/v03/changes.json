@@ -1,0 +1,16 @@
+{
+  "changes": [
+    "integer-f32-f16-vcvt.c: repair 20 unconditional IEEE equality contracts/invariants to NaN-aware same_float",
+    "Explicit checked exact min-VL and positive/cap bounds"
+  ],
+  "syntax_fix": "Separate each assertion into one ACSL code annotation comment",
+  "files_fixed": [
+    "rvv.c"
+  ],
+  "rounding_fix": "Use explicit ACSL add_float/mul_float, not real arithmetic followed by one cast; preserve per-operation IEEE rounding and negative zero. Intermediate L_* proof functions only, public spec unchanged.",
+  "rounding_replacements": {
+    "(float)(a.lane[j]+b.lane[j])": 8,
+    "(float)(a.lane[j]*b.lane[j])": 4,
+    "(float)(a.lane[j]*b)": 4
+  }
+}

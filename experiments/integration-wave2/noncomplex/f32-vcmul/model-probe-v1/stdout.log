@@ -1,0 +1,22 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/model-probe-v1/report.json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/model-probe-v1/probe.c", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/integration-wave2/noncomplex/f32-vcmul/model-probe-v1/probe.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function direct_step
+[rte:annot] annotating function false_control
+[rte:annot] annotating function pointer_roundtrip
+[rte:annot] annotating function pointer_step
+[rte:annot] annotating function pointer_step_one
+[wp] 10 goals scheduled
+[wp] [Timeout] typed_raw_fma_pointer_step_one_ensures (Qed 2ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_false_control_ensures (Qed 0.75ms) (Z3)
+[wp] [Timeout] typed_raw_fma_pointer_step_ensures (Qed 3ms) (CVC5)
+[wp] Proved goals:   17 / 20
+  Terminating:     5
+  Unreachable:     5
+  Qed:             2 (0.64ms-0.78ms-3ms)
+  CVC5 1.2.1:      3 (15ms-33ms)
+  Z3 4.12.5:       2 (26ms)
+  Timeout:         3

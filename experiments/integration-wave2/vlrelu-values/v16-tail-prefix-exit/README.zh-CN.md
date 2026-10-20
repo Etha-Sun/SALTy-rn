@@ -1,0 +1,1 @@
+v16依据真实v15 sequent：unsigned cast已正规化，剩branch内prefix实例化。仅延长2store ghostk到loop外，在实际storebranch内查已有2castcuts+精确exit+规范prefix，再保留原branch外tailprefix。保留六旧tail目标与所有新frame/helperprivatepre/RTE/assigns检查；不改活跃v15/统一full，ordinaryC/spec/model/driver/checker冻结。

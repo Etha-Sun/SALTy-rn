@@ -1,0 +1,1 @@
+同v04-helper逐字proof；含helper实际body/assigns、caller全部pre、readRTE/loop/原assert及frame/termination，四舍五入/bithelpers其它body仍rootfull检查。公开spec冻结。

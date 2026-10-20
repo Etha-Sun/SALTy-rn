@@ -1,0 +1,148 @@
+{
+  "scope": "Only old values_neon_tailprefix; other v15 dependencies remain separately required.",
+  "complete_kernel": false,
+  "main": {
+    "passed": 1,
+    "total": 1,
+    "sha256": "5419ab80d0c938979238bd6d408e53c20a4906fbab2f818bd6c4a152abd0a46b"
+  },
+  "globals": {
+    "passed": 18,
+    "total": 18
+  },
+  "combined": {
+    "passed": 19,
+    "total": 19
+  },
+  "model_inputs_unchanged": true,
+  "inputs_unchanged_after_run": true,
+  "model_control": {
+    "command": [
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/frama_depth16.py",
+      "-machdep",
+      "gcc_x86_64",
+      "-inline-calls",
+      "test_neon,test_rvv",
+      "-inline-stmt-contracts",
+      "-remove-inlined",
+      "test_neon,test_rvv",
+      "-wp",
+      "-wp-rte",
+      "-wp-par",
+      "2",
+      "-wp-prover",
+      "tip,z3,cvc5",
+      "-wp-timeout",
+      "30",
+      "-wp-memlimit",
+      "1024",
+      "-wp-cache",
+      "none",
+      "-wp-report-json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-tailprefix-tactic/attempts/0001/logs/verify01-model-control.json",
+      "-wp-model",
+      "Bytes",
+      "-warn-special-float",
+      "none",
+      "-wp-driver",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-tailprefix-tactic/attempts/0001/.build/verify01/annotated/extensions.driver",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-tailprefix-tactic/attempts/0001/logs/verify01-model-control.c",
+      "-wp-skip-fct",
+      "__riscv_vfabs_v_f32m8,__riscv_vfadd_vf_f32m8,__riscv_vfadd_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfsgnj_vv_f32m8,__riscv_vfsub_vf_f32m8,__riscv_vfsub_vv_f32m8,__riscv_vmfgt_vf_f32m8_b4,__riscv_vmfne_vv_f32m8_b4,__riscv_vor_vx_u32m8,__riscv_vreinterpret_v_f32m8_u32m8,__riscv_vreinterpret_v_u32m8_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,f32_sub,vabsq_f32,vaddq_f32,vcaltq_f32,vld1q_dup_f32,vld1q_s8,vmovq_n_u32,vorrq_u32,vreinterpretq_f32_u32,vsubq_f32",
+      "-wp-share",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share",
+      "-wp-why3-config",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf",
+      "-wp-no-why3-detect",
+      "-wp-fct",
+      "shim_control_false,shim_control_true"
+    ],
+    "exit": 0,
+    "impossible_goal_proved": false,
+    "positive_control_proved": true,
+    "reports_present": true,
+    "scope": "Rejection test only; non-rejection is not a consistency theorem.",
+    "accepted": true
+  },
+  "sourceguard_passed": true,
+  "script": [
+    {
+      "strategy": "NTailPrefixBranch",
+      "header": "Cut",
+      "tactic": "Wp.cut",
+      "params": {
+        "case": "CASES",
+        "clause": {
+          "select": "compose",
+          "id": "wp:or",
+          "args": [
+            {
+              "select": "compose",
+              "id": "wp:eq",
+              "args": [
+                {
+                  "select": "inside-step",
+                  "at": 47,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "batch_8",
+                  "pattern": "$batch"
+                },
+                {
+                  "select": "kint",
+                  "val": "8"
+                }
+              ]
+            },
+            {
+              "select": "compose",
+              "id": "wp:eq",
+              "args": [
+                {
+                  "select": "inside-step",
+                  "at": 47,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "batch_8",
+                  "pattern": "$batch"
+                },
+                {
+                  "select": "kint",
+                  "val": "12"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "select": {
+        "select": "inside-step",
+        "at": 47,
+        "kind": "have",
+        "occur": 0,
+        "target": "(bit_test batch_8 3)",
+        "pattern": "bit_test$batch3"
+      },
+      "children": {
+        "Positive": [
+          {
+            "prover": "CVC5:1.2.1",
+            "verdict": "valid",
+            "time": 1.9
+          }
+        ],
+        "Negative": [
+          {
+            "prover": "CVC5:1.2.1",
+            "verdict": "valid",
+            "time": 4.28
+          }
+        ]
+      }
+    }
+  ],
+  "only_executed_new_tactic": "CASES B==8||B==12, Positive CVC5 1.9s, Negative4.28s. No Wp.instance fallback executed.",
+  "proof_sha256": "fbc1883dc8ace0f621631fc21586e6a3e3ada564b3a651ca105e2033d6cab4be",
+  "base_v15_proof_is_exact_prefix": true,
+  "next_candidate_minimizes_unused_fallback": "experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v02"
+}

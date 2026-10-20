@@ -1,0 +1,1 @@
+v01重建patch遗漏无newline标记导致guard拒绝，未执行WP。v02保留原完整proof，仅替换extensions.h diff新增3纯值lemma；其它patch逐字原样。

@@ -1,0 +1,21 @@
+#include "fp_primitives.h"
+
+/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],p[j])); */
+vfloat32m8_t __riscv_vle32_v_f32m8(const float *p,size_t vl) { vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant vl-i; */
+for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
+
+/*@ requires vl<=32; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures rvv_store_values: \forall integer j; 0<=j<vl ==> (ext_same(p[j],a.lane[j]));  ensures prefix_frame: \forall float *base; \forall integer n,j; n>=0 && p==base+n && 0<=j<n && \valid_read{Pre}(base+j) ==> \valid_read(base+j) && ext_same(base[j],\at(base[j],Pre)); */
+void __riscv_vse32_v_f32m8(float *p,vfloat32m8_t a,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant just_written: 0<i ==> ext_same(p[i-1],a.lane[i-1]); loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],a.lane[j]));   loop invariant readonly_source: \forall integer j;0<=j<32 ==> ext_same(a.lane[j],\at(a.lane[j],Pre));  loop invariant prefix_words: \forall float *base; \forall integer n,j; n>=0 && p==base+n && 0<=j<n && \valid_read{Pre}(base+j) ==> *((uint32_t*)(base+j))==\at(*((uint32_t*)(base+j)),Pre);  loop invariant prefix_frame: \forall float *base; \forall integer n,j; n>=0 && p==base+n && 0<=j<n && \valid_read{Pre}(base+j) ==> \valid_read(base+j) && ext_same(base[j],\at(base[j],Pre)); loop assigns i,p[0..vl-1]; loop variant vl-i; */
+for(size_t i=0;i<vl;i++) /*@ assert store_prefix_separated: \forall float *base; \forall integer n,j; 0<=n && p==base+n && 0<=j<n ==> \separated(base+j,p+i); */ /*@ assert store_written_separated: \forall integer j;0<=j<i ==> \separated(p+j,p+i); */ p[i]=a.lane[i]; }
+
+/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],x)); */
+vfloat32m8_t __riscv_vfmv_v_f_f32m8(float x,size_t vl) { vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant vl-i; */
+for(size_t i=0;i<vl;i++)r.lane[i]=x;return r; }
+
+/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (j==0 ? ext_same(\result.lane[j],x) : ext_same(\result.lane[j],a.lane[j-1])); */
+vfloat32m8_t __riscv_vfslide1up_vf_f32m8(vfloat32m8_t a,float x,size_t vl) { vfloat32m8_t r=a;/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (j==0 ? ext_same(r.lane[j],x) : ext_same(r.lane[j],a.lane[j-1]));  loop assigns i,r; loop variant vl-i; */
+for(size_t i=0;i<vl;i++)r.lane[i]=i?a.lane[i-1]:x;return r; }
+
+/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (j+1<vl ? ext_same(\result.lane[j],a.lane[j+1]) : ext_same(\result.lane[j],x)); */
+vfloat32m8_t __riscv_vfslide1down_vf_f32m8(vfloat32m8_t a,float x,size_t vl) { vfloat32m8_t r=a;/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (j+1<vl ? ext_same(r.lane[j],a.lane[j+1]) : ext_same(r.lane[j],x));  loop assigns i,r; loop variant vl-i; */
+for(size_t i=0;i<vl;i++)r.lane[i]=i+1<vl?a.lane[i+1]:x;return r; }

@@ -1,0 +1,330 @@
+{
+  "scope": "Diagnostic only, no full-kernel admission. Only remaining NEON1 prefix establishment/preservation and finalall on immutable body-checked v19 base (3VC).",
+  "complete_kernel": false,
+  "main": {
+    "passed": 3,
+    "total": 3,
+    "sha256": "cdb13007d3195c8b95fdec9ea5caef8601c6dd3a315e0bfe1095c3dd88bd97ce"
+  },
+  "globals": {
+    "passed": 18,
+    "total": 18,
+    "sha256": "031102afdb4fbc077ddca2ad317087919629df16059723434e325172f67b10c0"
+  },
+  "pending": [],
+  "rows": [
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon1_prefix_established",
+      "property": "equivalent_loop_invariant_values_neon1_prefix",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 171,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0263,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    },
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon1_prefix_preserved",
+      "property": "equivalent_loop_invariant_values_neon1_prefix",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 171,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 5.65,
+          "success": 1
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 6.3,
+          "success": 1
+        }
+      ],
+      "subgoals": 2,
+      "tactics": 1,
+      "proved": 2
+    },
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_assert_values_neon_all",
+      "property": "equivalent_assert_values_neon_all",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 195,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 9.66,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 10.5,
+          "success": 3
+        }
+      ],
+      "subgoals": 3,
+      "tactics": 2,
+      "proved": 3
+    }
+  ],
+  "sourceguard_passed": true,
+  "source_tokens": 5740,
+  "model_control": {
+    "command": [
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/frama_depth16.py",
+      "-machdep",
+      "gcc_x86_64",
+      "-inline-calls",
+      "test_neon,test_rvv",
+      "-inline-stmt-contracts",
+      "-remove-inlined",
+      "test_neon,test_rvv",
+      "-wp",
+      "-wp-rte",
+      "-wp-par",
+      "2",
+      "-wp-prover",
+      "tip,z3,cvc5",
+      "-wp-timeout",
+      "30",
+      "-wp-memlimit",
+      "1024",
+      "-wp-cache",
+      "none",
+      "-wp-report-json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/logs/verify01-model-control.json",
+      "-wp-model",
+      "Bytes",
+      "-warn-special-float",
+      "none",
+      "-wp-driver",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/.build/verify01/annotated/extensions.driver",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/logs/verify01-model-control.c",
+      "-wp-skip-fct",
+      "__riscv_vfabs_v_f32m8,__riscv_vfadd_vf_f32m8,__riscv_vfadd_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfsgnj_vv_f32m8,__riscv_vfsub_vf_f32m8,__riscv_vfsub_vv_f32m8,__riscv_vmfgt_vf_f32m8_b4,__riscv_vmfne_vv_f32m8_b4,__riscv_vor_vx_u32m8,__riscv_vreinterpret_v_f32m8_u32m8,__riscv_vreinterpret_v_u32m8_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,f32_sub,vabsq_f32,vaddq_f32,vcaltq_f32,vld1q_dup_f32,vld1q_s8,vmovq_n_u32,vorrq_u32,vreinterpretq_f32_u32,vsubq_f32",
+      "-wp-share",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share",
+      "-wp-why3-config",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf",
+      "-wp-no-why3-detect",
+      "-wp-fct",
+      "shim_control_false,shim_control_true"
+    ],
+    "exit": 0,
+    "impossible_goal_proved": false,
+    "positive_control_proved": true,
+    "reports_present": true,
+    "scope": "Rejection test only; non-rejection is not a consistency theorem.",
+    "accepted": true
+  },
+  "model_inputs_unchanged": true,
+  "inputs_unchanged_after_run": true,
+  "proof_sha256": "70aa929fbdadb54bf3807f2d85fdbbed1abda378aae77173320e48fa57122460",
+  "frozen_sha256": "86796fee70d91d0c08eb376d48328a09283049839a370abb413a4cf77167dae2",
+  "ordinary_C_spec_contracts_invariants_ghost_unchanged": true,
+  "actual_resources": "Explicit depth16, wp-par128, all18globals and controls fresh; perprover30s/1024MiB unchanged.",
+  "scripts": {
+    "equivalent_loop_invariant_values_neon1_prefix_preserved.json": {
+      "sha256": "7e7cedf5380aae7d627fb55016f3958146ae9c05e1977027e98b43e64ab7c17e",
+      "script": [
+        {
+          "strategy": "NExitPrefixPoint",
+          "header": "Cut",
+          "tactic": "Wp.cut",
+          "params": {
+            "case": "CASES",
+            "clause": {
+              "select": "compose",
+              "id": "wp:eq",
+              "args": [
+                {
+                  "select": "inside-goal",
+                  "occur": 0,
+                  "target": "i_3",
+                  "pattern": "$i"
+                },
+                {
+                  "select": "inside-step",
+                  "at": 178,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "k_12",
+                  "pattern": "$k"
+                }
+              ]
+            }
+          },
+          "select": {
+            "select": "clause-goal",
+            "target": "let x_0 = (to_uint32 nan_store_bits_0) in\nlet m_0 =\n    (write_uint32 mem_53\n      (shift_float32 o_base_6 (((to_uint64 (4*n_7)) div 4)-1))\n      (if (is_NaN_f32 v_0)\n       then (if (is_NaN_f32 (repr_decode32 x_0)) then x_0 else 2143289344)\n       else (repr_encode32 v_0))) in\n(P_same_value (repr_decode32 (read_uint32 m_0 (shift_float32 o_base_6 i_3)))\n  (L_unary_value\n    (repr_decode32 (read_uint32 m_0 (shift_float32 i_base_6 i_3)))\n    (repr_decode32\n      (read_uint32 mem_89\n        (shiftfield_F20_slope\n          (shiftfield_F19_xnn_f32_lrelu_params_scalar (global L_params_4838)))))))",
+            "pattern": "P_same_valuerepr_decode32L_unary_value"
+          },
+          "children": {
+            "Positive": [
+              {
+                "prover": "qed",
+                "verdict": "valid"
+              }
+            ],
+            "Negative": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "valid",
+                "time": 6.3
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "equivalent_assert_values_neon_all.json": {
+      "sha256": "81b76bbbd74dc664ed1b038b37388bb88a77e683a1956c38f20e267a1759b920",
+      "script": [
+        {
+          "strategy": "NExitFinal",
+          "header": "Cut",
+          "tactic": "Wp.cut",
+          "params": {
+            "case": "CASES",
+            "clause": {
+              "select": "compose",
+              "id": "wp:eq",
+              "args": [
+                {
+                  "select": "inside-step",
+                  "at": 45,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "batch_10",
+                  "pattern": "$batch"
+                },
+                {
+                  "select": "kint",
+                  "val": "0"
+                }
+              ]
+            }
+          },
+          "select": {
+            "select": "clause-step",
+            "at": 45,
+            "kind": "have",
+            "target": "(batch_10=0) \\/ (batch_10=4) \\/ (batch_10=8) \\/ (batch_10=12)",
+            "pattern": "|====$batch0$batch4$batch8$batch"
+          },
+          "children": {
+            "Positive": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "valid",
+                "time": 1.75
+              }
+            ],
+            "Negative": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "timeout",
+                "time": 30
+              },
+              {
+                "prover": "Z3:4.12.5",
+                "verdict": "failed"
+              },
+              {
+                "strategy": "NExitFinalBit",
+                "header": "Cut",
+                "tactic": "Wp.cut",
+                "params": {
+                  "case": "CASES",
+                  "clause": {
+                    "select": "compose",
+                    "id": "wp:or",
+                    "args": [
+                      {
+                        "select": "compose",
+                        "id": "wp:eq",
+                        "args": [
+                          {
+                            "select": "inside-step",
+                            "at": 48,
+                            "kind": "have",
+                            "occur": 0,
+                            "target": "batch_8",
+                            "pattern": "$batch"
+                          },
+                          {
+                            "select": "kint",
+                            "val": "4"
+                          }
+                        ]
+                      },
+                      {
+                        "select": "compose",
+                        "id": "wp:eq",
+                        "args": [
+                          {
+                            "select": "inside-step",
+                            "at": 48,
+                            "kind": "have",
+                            "occur": 0,
+                            "target": "batch_8",
+                            "pattern": "$batch"
+                          },
+                          {
+                            "select": "kint",
+                            "val": "12"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "select": {
+                  "select": "inside-step",
+                  "at": 48,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "(bit_test batch_8 2)",
+                  "pattern": "bit_test$batch2"
+                },
+                "children": {
+                  "Positive": [
+                    {
+                      "prover": "CVC5:1.2.1",
+                      "verdict": "valid",
+                      "time": 6.84
+                    }
+                  ],
+                  "Negative": [
+                    {
+                      "prover": "CVC5:1.2.1",
+                      "verdict": "valid",
+                      "time": 1.9
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "minimal_delivery": "../neon-exit-tactic-v03/minimal-cases-only.acsl.txt (21lines), minimal-on-v19.patch, minimal-delivery.json",
+  "important_dependency_note": "v03 only lane alternative remains unknown and is not promoted; v19 separately discharges lane and all new point/transfer pre/read/body checks201/201+18globals. v04 directly confirms prefix/all on that exact v19 source proof. Root must perform new whole merged full closure, and no historical counts are inherited into these current totals."
+}

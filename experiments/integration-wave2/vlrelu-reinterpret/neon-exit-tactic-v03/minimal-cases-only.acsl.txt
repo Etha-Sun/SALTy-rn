@@ -1,0 +1,21 @@
+/*@ \wp::strategy NTailPrefixBranch:
+    \tactic("Wp.cut",\incontext(bit_test(B,3)),
+      \param("case","CASES"),\param("clause",B==8 || B==12),
+      \children(ValuesSMT)),ValuesSMT;
+    \wp::strategy NExitPrefixPoint:
+    \tactic("Wp.cut",
+      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,I))),T)),
+      \incontext(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),L_unary_value(X,S))),
+      \incontext(is_uint64(J)),\param("case","CASES"),\param("clause",I==J),
+      \children(ValuesSMT)),ValuesSMT;
+    \wp::strategy NExitFinalBit:
+    \tactic("Wp.cut",\incontext(bit_test(B,2)),
+      \param("case","CASES"),\param("clause",B==4 || B==12),
+      \children(ValuesSMT)),ValuesSMT;
+    \wp::strategy NExitFinal:
+    \tactic("Wp.cut",\when(B==0 || B==4 || B==8 || B==12),
+      \param("case","CASES"),\param("clause",B==0),
+      \children(NExitFinalBit)),NExitFinalBit;
+    \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+    \wp::proof NExitPrefixPoint: values_neon1_prefix;
+    \wp::proof NExitFinal: values_neon_all; */

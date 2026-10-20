@@ -1,0 +1,49 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/attempts/0001/.build/verify01/annotated/unit.c']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'tip,z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/attempts/0001/.build/verify01/annotated/unit.c', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/attempts/0001/logs/verify01.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vabsq_f32,__riscv_vfabs_v_f32m8,vst1_lane_u16,vst1_lane_u32", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vabsq_f32
+[kernel:annot:missing-spec] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc/math.h:1432: Warning: 
+  Neither code nor explicit exits and terminates for function fabsf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vfabs_v_f32m8
+[wp] integer-f32-f16-vcvt.c:31: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-f32-f16-vcvt.c:32: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-f32-f16-vcvt.c:34: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-f32-f16-vcvt.c:29: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint16*)
+[wp] integer-f32-f16-vcvt.c:161: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-f32-f16-vcvt.c:162: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-f32-f16-vcvt.c:164: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-f32-f16-vcvt.c:159: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint16*)
+[wp] 64 goals scheduled
+[wp] [Unknown] typed_fma_vst1_lane_u16_assert_rte_mem_access (Qed 9ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assigns (Qed 8ms) (Z3) (Stronger, 3 warnings)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assigns (Qed 7ms) (Z3) (Stronger, 3 warnings)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_mem_access (Qed 9ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vst1_lane_u16_ensures (Qed 10ms) (CVC5) (Stronger, 3 warnings)
+[wp] [Timeout] typed_fma_vst1_lane_u32_ensures (Qed 10ms) (CVC5) (Stronger, 3 warnings)
+[wp] [Timeout] typed_fma_vabsq_f32_loop_invariant_2_preserved (Tactic) (Qed 23ms) (CVC5 1/2 52ms) (Z3)
+[wp] [Timeout] typed_fma_riscv_vfabs_v_f32m8_loop_invariant_2_preserved (Tactic) (Qed 20ms) (CVC5 1/2 66ms) (Z3)
+[wp] Proved goals:   60 / 68
+  Terminating:     2
+  Unreachable:     2
+  Qed:            38 (7ms-4ms-23ms)
+  CVC5 1.2.1:     18 (33ms-68ms-182ms)
+  Timeout:         7
+  Unknown:         1
+[wp] Updated session
+   - 8 new scripts to complete

@@ -1,0 +1,1708 @@
+{
+  "source_summary": "noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01-summary.json",
+  "source_summary_sha256": "0ea88f441b8c8f0db97ce8e6d1b7c86f4aa7d9b824705e0a235ba9e7cfff1dea",
+  "omitted_model_input_entries": 10238,
+  "scope": "Full source summary retained locally; duplicate model inventory omitted only from compact Git receipt.",
+  "case": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001",
+  "command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+    "-machdep",
+    "gcc_x86_64",
+    "-inline-calls",
+    "test_neon,test_rvv",
+    "-inline-stmt-contracts",
+    "-remove-inlined",
+    "test_neon,test_rvv",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5,alt-ergo",
+    "-wp-timeout",
+    "10",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01.json",
+    "-wp-model",
+    "Typed+float",
+    "-warn-special-float",
+    "none",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/unit.c"
+  ],
+  "source_guard": {
+    "passed": true,
+    "frozen_sha256": "4dd527c9058cb1e3afa9d91fb545930e9a967ceb3174d1d9c38171c2ce923346",
+    "tokens": 14059,
+    "plain": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/plain",
+    "annotated": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated",
+    "proof": {
+      "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/proof.patch": "1aae9893943b4ba0094e45e431795dd1e575a083900d75ed85d704daae779948"
+    },
+    "generated": {
+      "shim.h": "3bbb40c0a193a9c9a524470e7bba11413aba379b087a2859e66b31bf8807e89d",
+      "integer-qs8-vmul-minmax-fp32.c": "e26f4efd9cca9278d4d2801effcd8e5b699daa4035aa16cb1b02801ea158f262",
+      "neon.c": "0643d906f34441344a88b869d121922b88ae4a3e90e5ffd62b28be2f405ca482",
+      "rvv.c": "e97225bf0b6d21400558156b6a37377725a60780d27ce8652ee247970eb9c080",
+      "spec.h": "5aa814192c87ae17b8569e54bde8a5d445cef555d0d97d48465c44807a47f962",
+      "harness.c": "8aa35836a5bde0c12881fe9318bed0fc442ab7b0769d879edd5b17d9fdf3ef77",
+      "interface.json": "135b2c9118b2fabe77ae83a17d9523c0b7c16667b441b4674f62ed9dea920e3d",
+      "unit.c": "c596c5085d0254224e1ae3679b561e605a30a689586daedaf3043ec6ee80d6fc",
+      "generate_interfaces.py": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7",
+      "model_runner.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+      "float_model_lock.json": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "checker_inputs": {
+    "tools/shim_c_campaign.py": "a700b3deb2cfdaef82d5910f816084bc5dd37d6994ddd112bfdaec8fd9ab4b60",
+    "tools/shim_c_check.py": "8cd2b5c8951d08bc7887dde838884e7ce9361ed618256373e76f6fbbf5d52f03",
+    "verified/qs8-rsum/build.py": "a33b8c561b6a92706ff4b0999444dd6746b28fd6b93545857dd6056e35a447e6",
+    "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/proof.patch": "1aae9893943b4ba0094e45e431795dd1e575a083900d75ed85d704daae779948"
+  },
+  "exit": 0,
+  "seconds": 340.321,
+  "unchanged": true,
+  "raw_obligations": {
+    "passed": 721,
+    "total": 784
+  },
+  "pending": [
+    {
+      "goal": "typed_fma_riscv_vfadd_vf_f32m8_ensures",
+      "property": "riscv_vfadd_vf_f32m8_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 442,
+      "function": "__riscv_vfadd_vf_f32m8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00616,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_riscv_vfcvt_f_x_v_f32m8_loop_invariant_2_preserved",
+      "property": "riscv_vfcvt_f_x_v_f32m8_loop_invariant_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 423,
+      "function": "__riscv_vfcvt_f_x_v_f32m8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0112,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_riscv_vfmul_vf_f32m8_ensures",
+      "property": "riscv_vfmul_vf_f32m8_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 431,
+      "function": "__riscv_vfmul_vf_f32m8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00687,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_valid_dest",
+      "property": "memcpy_requires_valid_dest",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 450,
+      "function": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00275,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_valid_src",
+      "property": "memcpy_requires_valid_src",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 450,
+      "function": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00254,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_separation",
+      "property": "memcpy_requires_separation",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 450,
+      "function": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00243,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_riscv_vsub_vx_i16m4_loop_invariant_2_preserved",
+      "property": "riscv_vsub_vx_i16m4_loop_invariant_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 358,
+      "function": "__riscv_vsub_vx_i16m4",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.028,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_asr64_assert_rte_signed_overflow",
+      "property": "asr64_assert_rte_signed_overflow",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 31,
+      "function": "asr64",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00463,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_asr64_assert_rte_division_by_zero_2",
+      "property": "asr64_assert_rte_division_by_zero_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 31,
+      "function": "asr64",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00387,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_asr64_assert_rte_signed_overflow_3",
+      "property": "asr64_assert_rte_signed_overflow_3",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 31,
+      "function": "asr64",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00527,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_ensures_equal",
+      "property": "equivalent_ensures_equal",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 23,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 4.99,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access",
+      "property": "equivalent_assert_rte_mem_access",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/harness.c",
+      "line": 6,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 4.05,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_loop_invariant_6_preserved",
+      "property": "equivalent_loop_invariant_6",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 51,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.698,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access_9",
+      "property": "equivalent_assert_rte_mem_access_9",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 14,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.54,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access_10",
+      "property": "equivalent_assert_rte_mem_access_10",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 15,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.38,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access_11",
+      "property": "equivalent_assert_rte_mem_access_11",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 16,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.7,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access_12",
+      "property": "equivalent_assert_rte_mem_access_12",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 17,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.48,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access_13",
+      "property": "equivalent_assert_rte_mem_access_13",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 18,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.87,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assert_rte_mem_access_14",
+      "property": "equivalent_assert_rte_mem_access_14",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 19,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 3.9,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_loop_invariant_11_established",
+      "property": "equivalent_loop_invariant_11",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 25,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 4.02,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_loop_invariant_11_preserved",
+      "property": "equivalent_loop_invariant_11",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 25,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 5.22,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_loop_assigns_2_part17",
+      "property": "equivalent_loop_assigns_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 52,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.812,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_loop_assigns_2_part19",
+      "property": "equivalent_loop_assigns_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 52,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.596,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_loop_assigns_3_part13",
+      "property": "equivalent_loop_assigns_3",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 26,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 4.35,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part28",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.723,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part30",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.712,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part38",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.941,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part39",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.98,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part42",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.64,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part43",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.57,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_normal_part46",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 2.44,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part27",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.577,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part29",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.575,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part53",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.825,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part55",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.877,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part63",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.905,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part64",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.931,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part67",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.63,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part68",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 1.72,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part71",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 2.26,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_assigns_exit_part84",
+      "property": "equivalent_assigns",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/spec.h",
+      "line": 22,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 4.56,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_call_vst1_s8_requires",
+      "property": "vst1_s8_requires",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 93,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.719,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_call_vst1_lane_s8_requires",
+      "property": "vst1_lane_s8_requires",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/neon.c",
+      "line": 138,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 2.18,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_equivalent_call___riscv_vse8_v_i8m2_riscv_vse8_v_i8m2_requires_2",
+      "property": "riscv_vse8_v_i8m2_requires_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/rvv.c",
+      "line": 59,
+      "function": "equivalent",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 4.55,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_round_shift_assert_rte_signed_overflow",
+      "property": "round_shift_assert_rte_signed_overflow",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 37,
+      "function": "round_shift",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00634,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_vaddq_f32_ensures",
+      "property": "vaddq_f32_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 185,
+      "function": "vaddq_f32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0053,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vcvtq_f32_s32_loop_invariant_2_preserved",
+      "property": "vcvtq_f32_s32_loop_invariant_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 285,
+      "function": "vcvtq_f32_s32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00807,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vmulq_f32_ensures",
+      "property": "vmulq_f32_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 195,
+      "function": "vmulq_f32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00614,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpret_u16_s8_call_memcpy_requires_valid_dest",
+      "property": "memcpy_requires_valid_dest_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 203,
+      "function": "vreinterpret_u16_s8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00576,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpret_u16_s8_call_memcpy_requires_separation",
+      "property": "memcpy_requires_separation_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 203,
+      "function": "vreinterpret_u16_s8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00632,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpret_u32_s8_call_memcpy_requires_valid_dest",
+      "property": "memcpy_requires_valid_dest_3",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 205,
+      "function": "vreinterpret_u32_s8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00485,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpret_u32_s8_call_memcpy_requires_separation",
+      "property": "memcpy_requires_separation_3",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 205,
+      "function": "vreinterpret_u32_s8",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0045,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpretq_s32_f32_call_memcpy_requires_valid_dest",
+      "property": "memcpy_requires_valid_dest_4",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 204,
+      "function": "vreinterpretq_s32_f32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "unknown",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00447,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "unknown": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpretq_s32_f32_call_memcpy_requires_valid_src",
+      "property": "memcpy_requires_valid_src_4",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 204,
+      "function": "vreinterpretq_s32_f32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00282,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vreinterpretq_s32_f32_call_memcpy_requires_separation",
+      "property": "memcpy_requires_separation_4",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 204,
+      "function": "vreinterpretq_s32_f32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00289,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u16_terminates",
+      "property": "vst1_lane_u16_terminates",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 157,
+      "function": "vst1_lane_u16",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00334,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u16_assert_rte_index_bound",
+      "property": "vst1_lane_u16_assert_rte_index_bound",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 157,
+      "function": "vst1_lane_u16",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00314,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u16_assert_rte_index_bound_2",
+      "property": "vst1_lane_u16_assert_rte_index_bound_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 157,
+      "function": "vst1_lane_u16",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0026,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u16_assert_rte_mem_access",
+      "property": "vst1_lane_u16_assert_rte_mem_access",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 157,
+      "function": "vst1_lane_u16",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00415,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_terminates",
+      "property": "vst1_lane_u32_terminates",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 170,
+      "function": "vst1_lane_u32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00301,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_assert_rte_index_bound",
+      "property": "vst1_lane_u32_assert_rte_index_bound",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 170,
+      "function": "vst1_lane_u32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00268,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_assert_rte_index_bound_2",
+      "property": "vst1_lane_u32_assert_rte_index_bound_2",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 170,
+      "function": "vst1_lane_u32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00249,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_assert_rte_mem_access",
+      "property": "vst1_lane_u32_assert_rte_mem_access",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 170,
+      "function": "vst1_lane_u32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0043,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ],
+  "expected_functions": [
+    "__riscv_vfadd_vf_f32m8",
+    "__riscv_vfcvt_f_x_v_f32m8",
+    "__riscv_vfmul_vf_f32m8",
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vmax_vx_i8m2",
+    "__riscv_vmin_vx_i8m2",
+    "__riscv_vnclip_wx_i16m4",
+    "__riscv_vnclip_wx_i8m2",
+    "__riscv_vreinterpret_v_f32m8_i32m8",
+    "__riscv_vse8_v_i8m2",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsext_vf2_i16m4",
+    "__riscv_vssub_vx_i32m8",
+    "__riscv_vsub_vx_i16m4",
+    "__riscv_vwmul_vv_i32m8",
+    "asr64",
+    "equivalent",
+    "round_shift",
+    "sat16",
+    "sat32",
+    "sat8",
+    "vaddq_f32",
+    "vcombine_s16",
+    "vcvtq_f32_s32",
+    "vdup_n_s8",
+    "vdupq_n_f32",
+    "vdupq_n_s32",
+    "vext_s8",
+    "vget_high_s16",
+    "vget_low_s16",
+    "vld1_s8",
+    "vmax_s8",
+    "vmin_s8",
+    "vmull_s16",
+    "vmulq_f32",
+    "vqmovn_high_s32",
+    "vqmovn_s16",
+    "vqmovn_s32",
+    "vqsubq_s32",
+    "vreinterpret_u16_s8",
+    "vreinterpret_u32_s8",
+    "vreinterpretq_s32_f32",
+    "vst1_lane_s8",
+    "vst1_lane_u16",
+    "vst1_lane_u32",
+    "vst1_s8",
+    "vsubl_s8",
+    "wrap16"
+  ],
+  "functions": [
+    "__riscv_vfadd_vf_f32m8",
+    "__riscv_vfcvt_f_x_v_f32m8",
+    "__riscv_vfmul_vf_f32m8",
+    "__riscv_vle8_v_i8m2",
+    "__riscv_vmax_vx_i8m2",
+    "__riscv_vmin_vx_i8m2",
+    "__riscv_vnclip_wx_i16m4",
+    "__riscv_vnclip_wx_i8m2",
+    "__riscv_vse8_v_i8m2",
+    "__riscv_vsetvl_e8m2",
+    "__riscv_vsext_vf2_i16m4",
+    "__riscv_vssub_vx_i32m8",
+    "__riscv_vsub_vx_i16m4",
+    "__riscv_vwmul_vv_i32m8",
+    "asr64",
+    "equivalent",
+    "round_shift",
+    "sat16",
+    "sat32",
+    "sat8",
+    "vaddq_f32",
+    "vcombine_s16",
+    "vcvtq_f32_s32",
+    "vdup_n_s8",
+    "vdupq_n_f32",
+    "vdupq_n_s32",
+    "vext_s8",
+    "vget_high_s16",
+    "vget_low_s16",
+    "vld1_s8",
+    "vmax_s8",
+    "vmin_s8",
+    "vmull_s16",
+    "vmulq_f32",
+    "vqmovn_high_s32",
+    "vqmovn_s16",
+    "vqmovn_s32",
+    "vqsubq_s32",
+    "vst1_lane_s8",
+    "vst1_s8",
+    "vsubl_s8",
+    "wrap16"
+  ],
+  "missing_body_ensures": [
+    "__riscv_vreinterpret_v_f32m8_i32m8",
+    "vreinterpret_u16_s8",
+    "vreinterpret_u32_s8",
+    "vreinterpretq_s32_f32",
+    "vst1_lane_u16",
+    "vst1_lane_u32"
+  ],
+  "expected_global_lemmas": [],
+  "missing_global_lemmas": [],
+  "complete": false,
+  "isa_to_c_shim_proved": false,
+  "actual_command": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+    "-machdep",
+    "gcc_x86_64",
+    "-inline-calls",
+    "test_neon,test_rvv",
+    "-inline-stmt-contracts",
+    "-remove-inlined",
+    "test_neon,test_rvv",
+    "-wp",
+    "-wp-rte",
+    "-wp-par",
+    "2",
+    "-wp-prover",
+    "z3,cvc5",
+    "-wp-timeout",
+    "30",
+    "-wp-memlimit",
+    "1024",
+    "-wp-cache",
+    "none",
+    "-wp-report-json",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01.json",
+    "-wp-model",
+    "Typed+float",
+    "-warn-special-float",
+    "none",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/unit.c",
+    "-wp-share",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share",
+    "-wp-why3-config",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf",
+    "-wp-no-why3-detect"
+  ],
+  "model_inputs_unchanged": true,
+  "model_control": {
+    "command": [
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+      "-machdep",
+      "gcc_x86_64",
+      "-inline-calls",
+      "test_neon,test_rvv",
+      "-inline-stmt-contracts",
+      "-remove-inlined",
+      "test_neon,test_rvv",
+      "-wp",
+      "-wp-rte",
+      "-wp-par",
+      "2",
+      "-wp-prover",
+      "z3,cvc5",
+      "-wp-timeout",
+      "30",
+      "-wp-memlimit",
+      "1024",
+      "-wp-cache",
+      "none",
+      "-wp-report-json",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01-model-control.json",
+      "-wp-model",
+      "Typed+float",
+      "-warn-special-float",
+      "none",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01-model-control.c",
+      "-wp-share",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share",
+      "-wp-why3-config",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf",
+      "-wp-no-why3-detect",
+      "-wp-fct",
+      "shim_control_false,shim_control_true"
+    ],
+    "exit": 0,
+    "impossible_goal_proved": false,
+    "positive_control_proved": true,
+    "reports_present": true,
+    "scope": "Rejection test only; non-rejection is not a consistency theorem.",
+    "accepted": true
+  }
+}

@@ -1,0 +1,1 @@
+v09同17global/C/spec/模型/driver/checker/point private pre基础上，仅加入root指定point_offsets循环不变式（无C无wrap桥，实际检查建立/保持），并新profile pin root已批准的frama_depth16.py（同原native-v6工具+WP auto-depth16）。solver30s/1GiB/par64不变。运行中v09不修改，本版fresh控制/guard/global/全caller+point-helper VC独立检查，不继承旧green。

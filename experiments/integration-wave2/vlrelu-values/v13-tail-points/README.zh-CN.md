@@ -1,0 +1,1 @@
+v13 extends checked NEON4 pointer/product snapshots+4pointcalls to existing tail4load. Tail loads4 even when stores1/2/3, covered by original public padding. Select all8calls privatepre, allinputRTE, helperensures, newtailcuts, original6tail/storeprefix values. Other kernel helpers remain outside focused scope. C/spec/model/checker frozen, no new public pre.

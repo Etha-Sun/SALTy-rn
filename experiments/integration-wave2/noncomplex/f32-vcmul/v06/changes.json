@@ -1,0 +1,14 @@
+{
+  "changes": [
+    "Explicit checked exact min-VL and positive/cap bounds",
+    "Check both split-complex input lane ranges before loads",
+    "Retain baseline cx_same_float contracts rather than transplant ambiguous DeepSeek == rewrites"
+  ],
+  "syntax_fix": "Keep the current-lane congruence as a named loop invariant where i is in scope; v04 statement annotation before single-statement loop body was rejected as unbound i, preserved as failed.",
+  "files_fixed": [
+    "rvv.c",
+    "rvv.c"
+  ],
+  "core_fix": "Add a checked per-iteration congruence cut to instantiate the already checked IEEE/NaN lemmas before the nested multiply-add/sub calls. Ordinary C tokens unchanged.",
+  "pre_index_scope_fix": "For-loop C variable i does not exist at function Pre. Snapshot the original aggregate as at(a,Pre).lane[i], index at Here. Preserve v05 parse rejection."
+}

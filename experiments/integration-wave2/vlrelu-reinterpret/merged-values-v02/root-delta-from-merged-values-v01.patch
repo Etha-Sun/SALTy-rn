@@ -1,0 +1,46 @@
+--- merged-v01/harness.c
++++ merged-v02/harness.c
+@@ -75,3 +75,27 @@
+ 
+ /*@ \wp::proof ValuesSMT: values_tail_div_cast,values_one_extent_cut; */
+ /*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */
++
++/*@ \wp::proof ValuesSMT: values_neon1_old_point,values_neon1_index; */
++
++/*@ \wp::strategy NTailPrefixBranch:
++    \tactic("Wp.cut",\incontext(bit_test(B,3)),
++      \param("case","CASES"),\param("clause",B==8 || B==12),
++      \children(ValuesSMT)),ValuesSMT;
++    \wp::strategy NExitPrefixPoint:
++    \tactic("Wp.cut",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,I))),T)),
++      \incontext(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),L_unary_value(X,S))),
++      \incontext(is_uint64(J)),\param("case","CASES"),\param("clause",I==J),
++      \children(ValuesSMT)),ValuesSMT;
++    \wp::strategy NExitFinalBit:
++    \tactic("Wp.cut",\incontext(bit_test(B,2)),
++      \param("case","CASES"),\param("clause",B==4 || B==12),
++      \children(ValuesSMT)),ValuesSMT;
++    \wp::strategy NExitFinal:
++    \tactic("Wp.cut",\when(B==0 || B==4 || B==8 || B==12),
++      \param("case","CASES"),\param("clause",B==0),
++      \children(NExitFinalBit)),NExitFinalBit;
++    \wp::proof NTailPrefixBranch: values_neon_tailprefix;
++    \wp::proof NExitPrefixPoint: values_neon1_prefix;
++    \wp::proof NExitFinal: values_neon_all; */
+--- merged-v01/neon.c
++++ merged-v02/neon.c
+@@ -189,9 +189,13 @@
+         /@ assert \valid_read(o_base+k); @/
+         /@ assert \separated(o_base+k,o_base+((total-1)..(total-1)+(1)-1)); @/
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary1)); @/
++      /@ assert values_neon1_old_point: same_value(\at(o_base[\at(k,Here)],Unary1),
++          unary_value(\at(i_base[\at(k,Here)],Unary1),proof_slope_entry)); @/
+       } else {
+         /@ assert 0<=k-(total-1)<(1); @/
+         /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-1)]); @/
++      /@ assert values_neon1_index: k==total-1; @/
++      proof_values_unary_transfer(o_base[k],vacc_lo.lane[0],i_base[k],proof_slope_entry);
+       }
+       /@ assert values_neon1_lane: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }

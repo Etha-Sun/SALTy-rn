@@ -1,0 +1,31 @@
+{
+  "scope": "Source audit of existing inline-stmt-contracts and residual statement-contract warning, not a program-correctness theorem",
+  "configuration": [
+    "-inline-calls test_neon,test_rvv",
+    "-inline-stmt-contracts",
+    "-remove-inlined test_neon,test_rvv"
+  ],
+  "source_files": [
+    {
+      "path": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/kernel_services/ast_transformations/inline_stmt_contracts.ml",
+      "sha256": "446a9f9782b0cd01edb000adf0d4277fea01609544a11e75cfd37b38e2b0b605"
+    },
+    {
+      "path": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/cfgAnnot.ml",
+      "sha256": "b28d95a0f032d23b6bb56908fc30c19fecf8a265d6d0536ebfe9703d68e55602"
+    }
+  ],
+  "findings": [
+    "The official inline_stmt_contracts pass adds an AAssert for each requires (conditional on behavior assumes).",
+    "Normal ensures are added as assertions after the statement.",
+    "The original AStmtSpec remains in the AST; WP warns and ignores that residual node. cfgAnnot returns the existing accumulator unchanged, without admitting its predicates.",
+    "Ignored residual statement contracts do not replace checking the actual inlined body. Actual caller assertions, loop/RTE/callpre/assigns/termination obligations must all close.",
+    "No complete-kernel claim is made while caller assertions remain pending."
+  ],
+  "source_locations": {
+    "requires_to_assert": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/kernel_services/ast_transformations/inline_stmt_contracts.ml:60",
+    "normal_ensures_to_assert": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/kernel_services/ast_transformations/inline_stmt_contracts.ml:70",
+    "residual_warning": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/cfgAnnot.ml:404"
+  },
+  "changes_to_frozen_toolchain": false
+}

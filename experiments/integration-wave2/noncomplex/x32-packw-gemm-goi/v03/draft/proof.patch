@@ -1,0 +1,345 @@
+--- a/harness.c
++++ b/harness.c
+@@ -1,7 +1,14 @@
+ #include "spec.h"
+ int equivalent(size_t g,size_t nc,size_t kc,size_t extra,const uint32_t *weights,const uint32_t *bias,uint32_t *left,uint32_t *right) {
+   test_neon(g,nc,kc,2,1,1,weights,bias,NULL,left,extra*sizeof(uint32_t),NULL);
++  /*@ assert \forall integer t; 0<=t<g*((nc+1)/2)*(2+2*kc+extra) ==> left[t]==pk_flat{Pre}(left,weights,bias,nc,kc,extra,t); */
+   test_rvv(g,nc,kc,2,1,1,weights,bias,NULL,right,extra*sizeof(uint32_t),NULL);
++  /*@ assert \forall integer t; 0<=t<g*((nc+1)/2)*(2+2*kc+extra) ==> right[t]==pk_flat{Pre}(right,weights,bias,nc,kc,extra,t); */
++  /*@ loop invariant 0<=i<=g*((nc+1)/2)*(2+2*kc+extra);
++      loop invariant \forall integer j; 0<=j<i ==> left[j]==right[j];
++      loop assigns i;
++      loop variant g*((nc+1)/2)*(2+2*kc+extra)-i;
++  */
+   for(size_t i=0;i<g*((nc+1)/2)*(2+2*kc+extra);i++) if(left[i]!=right[i])return 0;
+   return 1;
+ }
+--- a/neon.c
++++ b/neon.c
+@@ -1,3 +1,4 @@
++/* pk_flat/pk_block are defined in u32_shim.c (see unit.c include order). */
+ /*
+ no params struct: const void* params (unused)
+ */
+@@ -16,6 +17,11 @@
+   size_t extra_bytes,
+   const void* params)
+ {
++  /*@ ghost const uint32_t *W0=weights,*B0=bias; */
++  /*@ ghost uint32_t *O0=packed_weights; */
++  /*@ ghost size_t G=g,N=nc,K=kc,E=extra_bytes/4; */
++  /*@ ghost size_t NB=(nc+1)/2,L=2+2*kc+E; */
++  /*@ assert extra_bytes==4*E; */
+   assert(g != 0);
+   assert(nc != 0);
+   assert(kc != 0);
+@@ -29,11 +35,32 @@
+   v00.val[0] = vdup_n_u32(0);
+   v00.val[1] = vdup_n_u32(0);
+ 
++  /*@ loop invariant 0<g<=G;
++      loop invariant integration_weights_allocation: \valid_read(W0+(0..G*N*K-1));
++      loop invariant integration_bias_allocation: B0==\null || \valid_read(B0+(0..G*N-1));
++      loop invariant integration_output_allocation: \valid(O0+(0..G*NB*L-1));
++      loop invariant weights==W0+(G-g)*N*K;
++      loop invariant bias==\null || bias==B0+(G-g)*N;
++      loop invariant packed_weights==O0+(G-g)*NB*L;
++      loop invariant \forall integer t; 0<=t<(G-g)*NB*L ==> O0[t]==pk_flat{Pre}(O0,W0,B0,N,K,E,t);
++      loop invariant \forall integer t; (G-g)*NB*L<=t<G*NB*L ==> O0[t]==\at(packed_weights,Pre)[t];
++      loop assigns g,weights,bias,packed_weights,O0[0..G*NB*L-1],v00;
++      loop variant g;
++  */
+   do {
+     // NC main loop multiple of 2
+     const uint32_t* w0 = weights;
+     size_t n = nc;
+ 
++    /*@ loop invariant 0<=n<=N && (N-n)%2==0;
++        loop invariant w0==W0+(G-g)*N*K+(N-n)*K;
++        loop invariant bias==\null || bias==B0+(G-g)*N+(N-n);
++        loop invariant packed_weights==O0+((G-g)*NB+(N-n)/2)*L;
++        loop invariant \forall integer t; 0<=t<((G-g)*NB+(N-n)/2)*L ==> O0[t]==pk_flat{Pre}(O0,W0,B0,N,K,E,t);
++        loop invariant \forall integer t; ((G-g)*NB+(N-n)/2)*L<=t<G*NB*L ==> O0[t]==\at(packed_weights,Pre)[t];
++        loop assigns n,w0,bias,packed_weights,O0[0..G*NB*L-1],v00;
++        loop variant n;
++    */
+     for (; n >= 2; n -= 2) {
+       if XNN_LIKELY(bias != NULL) {
+         uint32x2_t vb0 = vld1_u32(bias); bias += 2;
+@@ -47,6 +74,15 @@
+ 
+       // KC main loop multiple of 2
+       size_t k = kc;
++      /*@ loop invariant 0<=k<=K;
++          loop invariant w0==W0+(G-g)*N*K+(N-n)*K+(K-k);
++          loop invariant w1==W0+(G-g)*N*K+(N-n+1)*K+(K-k);
++          loop invariant packed_weights==O0+((G-g)*NB+(N-n)/2)*L+2+2*(K-k);
++          loop invariant \forall integer s; 0<=s<2+2*(K-k) ==> O0[((G-g)*NB+(N-n)/2)*L+s]==pk_block{Pre}(O0,W0,B0,N,K,E,G-g,(N-n)/2,s);
++          loop invariant \forall integer s; 2+2*(K-k)<=s<L ==> O0[((G-g)*NB+(N-n)/2)*L+s]==\at(packed_weights,Pre)[((G-g)*NB+(N-n)/2)*L+s];
++          loop assigns k,w0,w1,packed_weights,O0[0..G*NB*L-1],v00;
++          loop variant k;
++      */
+       for (; k >= 2; k -= 2) {
+         v00 = vld2_lane_u32(w0, v00, 0); w0 += 2;
+         v00 = vld2_lane_u32(w1, v00, 1); w1 += 2;
+@@ -56,12 +92,22 @@
+       }
+ 
+       // KC remainder
++      /*@ loop invariant 0<=k<=K;
++          loop invariant w0==W0+(G-g)*N*K+(N-n)*K+(K-k);
++          loop invariant w1==W0+(G-g)*N*K+(N-n+1)*K+(K-k);
++          loop invariant packed_weights==O0+((G-g)*NB+(N-n)/2)*L+2+2*(K-k);
++          loop invariant \forall integer s; 0<=s<2+2*(K-k) ==> O0[((G-g)*NB+(N-n)/2)*L+s]==pk_block{Pre}(O0,W0,B0,N,K,E,G-g,(N-n)/2,s);
++          loop invariant \forall integer s; 2+2*(K-k)<=s<L ==> O0[((G-g)*NB+(N-n)/2)*L+s]==\at(packed_weights,Pre)[((G-g)*NB+(N-n)/2)*L+s];
++          loop assigns k,w0,w1,packed_weights,O0[0..G*NB*L-1],v00;
++          loop variant k;
++      */
+       for (; k != 0; --k) {
+         v00.val[0] = vld1_lane_u32(w0, v00.val[0], 0);  w0 += 1;
+         v00.val[0] = vld1_lane_u32(w1, v00.val[0], 1);  w1 += 1;
+         vst1_u32(packed_weights + 0, v00.val[0]);
+         packed_weights += 2;
+       }
++      /*@ assert \forall integer s; 0<=s<L ==> O0[((G-g)*NB+(N-n)/2)*L+s]==pk_flat{Pre}(O0,W0,B0,N,K,E,(G-g)*((N+1)/2)*(2+2*K+E)+(N-n)/2*(2+2*K+E)+s); */
+       packed_weights = (uint32_t*) ((uintptr_t) packed_weights + extra_bytes);
+       w0 = w1;
+     }
+@@ -76,12 +122,24 @@
+       }
+       packed_weights += 2;
+       size_t k = kc;
++      /*@ loop invariant 0<=k<=K;
++          loop invariant w0==W0+(G-g)*N*K+(N-1)*K+(K-k);
++          loop invariant packed_weights==O0+(G-g+1)*NB*L-L+2+2*(K-k);
++          loop invariant \forall integer s; 0<=s<2+2*(K-k) ==> O0[(G-g+1)*NB*L-L+s]==pk_block{Pre}(O0,W0,B0,N,K,E,G-g,NB-1,s);
++          loop invariant \forall integer s; 2+2*(K-k)<=s<L ==> O0[(G-g+1)*NB*L-L+s]==\at(packed_weights,Pre)[(G-g+1)*NB*L-L+s];
++          loop assigns k,w0,packed_weights,O0[0..G*NB*L-1];
++          loop variant k;
++      */
+       do {
+         *packed_weights = *w0++;
+         packed_weights += 2;
++        /*@ assert \forall integer s; 0<=s<2+2*(K-k+1) ==> O0[(G-g+1)*NB*L-L+s]==pk_block{Pre}(O0,W0,B0,N,K,E,G-g,NB-1,s); */
++        /*@ assert \forall integer s; 2+2*(K-k+1)<=s<L ==> O0[(G-g+1)*NB*L-L+s]==\at(packed_weights,Pre)[(G-g+1)*NB*L-L+s]; */
+       } while (--k);
++      /*@ assert \forall integer s; 0<=s<L ==> O0[(G-g+1)*NB*L-L+s]==pk_flat{Pre}(O0,W0,B0,N,K,E,(G-g)*((N+1)/2)*(2+2*K+E)+(NB-1)*(2+2*K+E)+s); */
+       packed_weights = (uint32_t*) ((uintptr_t) packed_weights + extra_bytes);
+     }
+     weights += nc * kc;
+   } while (--g != 0);
++  /*@ assert \forall integer t; 0<=t<G*NB*L ==> O0[t]==pk_flat{Pre}(O0,W0,B0,N,K,E,t); */
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,3 +1,4 @@
++/* pk_flat/pk_block are defined in u32_shim.c (see unit.c include order). */
+ #ifndef XNN_LIKELY
+ #define XNN_LIKELY(x) (x)
+ #endif
+@@ -20,6 +21,11 @@
+   size_t extra_bytes,
+   const void* params)
+ {
++  /*@ ghost const uint32_t *W0=weights,*B0=bias; */
++  /*@ ghost uint32_t *O0=packed_weights; */
++  /*@ ghost size_t G=g,N=nc,K=kc,E=extra_bytes/4; */
++  /*@ ghost size_t NB=(nc+1)/2,L=2+2*kc+E; */
++  /*@ assert extra_bytes==4*E; */
+   assert(g != 0);
+   assert(nc != 0);
+   assert(kc != 0);
+@@ -29,11 +35,32 @@
+   assert(weights != NULL);
+   assert(packed_weights != NULL);
+ 
++  /*@ loop invariant 0<g<=G;
++      loop invariant integration_weights_allocation: \valid_read(W0+(0..G*N*K-1));
++      loop invariant integration_bias_allocation: B0==\null || \valid_read(B0+(0..G*N-1));
++      loop invariant integration_output_allocation: \valid(O0+(0..G*NB*L-1));
++      loop invariant weights==W0+(G-g)*N*K;
++      loop invariant bias==\null || bias==B0+(G-g)*N;
++      loop invariant packed_weights==O0+(G-g)*NB*L;
++      loop invariant \forall integer t; 0<=t<(G-g)*NB*L ==> O0[t]==pk_flat{Pre}(O0,W0,B0,N,K,E,t);
++      loop invariant \forall integer t; (G-g)*NB*L<=t<G*NB*L ==> O0[t]==\at(packed_weights,Pre)[t];
++      loop assigns g,weights,bias,packed_weights,O0[0..G*NB*L-1];
++      loop variant g;
++  */
+   do {
+     // NC main loop multiple of 2
+     const uint32_t* w0 = weights;
+     size_t n = nc;
+ 
++    /*@ loop invariant 0<=n<=N && (N-n)%2==0;
++        loop invariant w0==W0+(G-g)*N*K+(N-n)*K;
++        loop invariant bias==\null || bias==B0+(G-g)*N+(N-n);
++        loop invariant packed_weights==O0+((G-g)*NB+(N-n)/2)*L;
++        loop invariant \forall integer t; 0<=t<((G-g)*NB+(N-n)/2)*L ==> O0[t]==pk_flat{Pre}(O0,W0,B0,N,K,E,t);
++        loop invariant \forall integer t; ((G-g)*NB+(N-n)/2)*L<=t<G*NB*L ==> O0[t]==\at(packed_weights,Pre)[t];
++        loop assigns n,w0,bias,packed_weights,O0[0..G*NB*L-1];
++        loop variant n;
++    */
+     for (; n >= 2; n -= 2) {
+       if XNN_LIKELY(bias != NULL) {
+         vuint32m1_t vb0 = __riscv_vle32_v_u32m1(bias, 2);
+@@ -50,14 +77,26 @@
+ 
+       // KC main loop
+       size_t k = kc;
++      /*@ loop invariant 0<=k<=K;
++          loop invariant w0==W0+(G-g)*N*K+(N-n)*K+(K-k);
++          loop invariant w1==W0+(G-g)*N*K+(N-n+1)*K+(K-k);
++          loop invariant packed_weights==O0+((G-g)*NB+(N-n)/2)*L+2+2*(K-k);
++          loop invariant \forall integer s; 0<=s<2+2*(K-k) ==> O0[((G-g)*NB+(N-n)/2)*L+s]==pk_block{Pre}(O0,W0,B0,N,K,E,G-g,(N-n)/2,s);
++          loop invariant \forall integer s; 2+2*(K-k)<=s<L ==> O0[((G-g)*NB+(N-n)/2)*L+s]==\at(packed_weights,Pre)[((G-g)*NB+(N-n)/2)*L+s];
++          loop assigns k,w0,w1,packed_weights,O0[0..G*NB*L-1];
++          loop variant k;
++      */
+       while (k > 0) {
+         size_t vl = __riscv_vsetvl_e32m4(k);
++    /*@ assert integration_vl_exact: vl==(k<16?k:16); */
++    /*@ assert integration_vl_positive: 0<vl && vl<=k && vl<=16; */
+         vuint32m4_t vw0 = __riscv_vle32_v_u32m4(w0, vl);
+         vuint32m4_t vw1 = __riscv_vle32_v_u32m4(w1, vl);
+         
+         vuint32m4x2_t vw = __riscv_vcreate_v_u32m4x2(vw0, vw1);
+         
+         __riscv_vsseg2e32_v_u32m4x2(packed_weights, vw, vl);
++        /*@ assert integration_packed_lanes: \forall integer j; 0<=j<vl ==> O0[((G-g)*NB+(N-n)/2)*L+2+2*(K-k+j)]==W0[(G-g)*N*K+(N-n)*K+(K-k+j)] && O0[((G-g)*NB+(N-n)/2)*L+3+2*(K-k+j)]==W0[(G-g)*N*K+(N-n+1)*K+(K-k+j)]; */
+         
+         w0 += vl;
+         w1 += vl;
+@@ -65,6 +104,7 @@
+         k -= vl;
+       }
+ 
++      /*@ assert \forall integer s; 0<=s<L ==> O0[((G-g)*NB+(N-n)/2)*L+s]==pk_flat{Pre}(O0,W0,B0,N,K,E,(G-g)*((N+1)/2)*(2+2*K+E)+(N-n)/2*(2+2*K+E)+s); */
+       packed_weights = (uint32_t*) ((uintptr_t) packed_weights + extra_bytes);
+       w0 = w1;
+     }
+@@ -80,15 +120,27 @@
+       packed_weights += 2;
+       
+       size_t k = kc;
++      /*@ loop invariant 0<=k<=K;
++          loop invariant w0==W0+(G-g)*N*K+(N-1)*K+(K-k);
++          loop invariant packed_weights==O0+(G-g+1)*NB*L-L+2+2*(K-k);
++          loop invariant \forall integer s; 0<=s<2+2*(K-k) ==> O0[(G-g+1)*NB*L-L+s]==pk_block{Pre}(O0,W0,B0,N,K,E,G-g,NB-1,s);
++          loop invariant \forall integer s; 2+2*(K-k)<=s<L ==> O0[(G-g+1)*NB*L-L+s]==\at(packed_weights,Pre)[(G-g+1)*NB*L-L+s];
++          loop assigns k,w0,packed_weights,O0[0..G*NB*L-1];
++          loop variant k;
++      */
+       while (k > 0) {
+         size_t vl = __riscv_vsetvl_e32m4(k);
++    /*@ assert integration_vl_exact: vl==(k<16?k:16); */
++    /*@ assert integration_vl_positive: 0<vl && vl<=k && vl<=16; */
+         vuint32m4_t vw0 = __riscv_vle32_v_u32m4(w0, vl);
+         __riscv_vsse32_v_u32m4(packed_weights, 2 * sizeof(uint32_t), vw0, vl);
++        /*@ assert integration_packed_tail_lanes: \forall integer j; 0<=j<vl ==> O0[(G-g+1)*NB*L-L+2+2*(K-k+j)]==W0[(G-g)*N*K+(N-1)*K+(K-k+j)]; */
+         
+         w0 += vl;
+         packed_weights += 2 * vl;
+         k -= vl;
+       }
++      /*@ assert \forall integer s; 0<=s<L ==> O0[(G-g+1)*NB*L-L+s]==pk_flat{Pre}(O0,W0,B0,N,K,E,(G-g)*((N+1)/2)*(2+2*K+E)+(NB-1)*(2+2*K+E)+s); */
+       packed_weights = (uint32_t*) ((uintptr_t) packed_weights + extra_bytes);
+     }
+     weights += nc * kc;
+--- a/u32_shim.c
++++ b/u32_shim.c
+@@ -1,44 +1,90 @@
+ #include "u32_shim.h"
++/*@
++  logic integer pk_block{L}(uint32_t *out,uint32_t *weights,uint32_t *bias,integer nc,integer kc,integer extra,integer g,integer b,integer s) =
++    \let blocks=(nc+1)/2;
++    \let blockwords=2+2*kc+extra;
++    \let off=g*(blocks*blockwords)+b*blockwords+s;
++    s<2 ?
++      (2*b+s<nc ? (bias==\null ? 0 : \at(bias[g*nc+2*b+s],L)) :
++        (bias==\null ? 0 : \at(out[off],L))) :
++      (s<2+2*kc && 2*b+(s-2)%2<nc ?
++        \at(weights[g*nc*kc+(2*b+(s-2)%2)*kc+(s-2)/2],L) : \at(out[off],L));
++*/
++/*@
++  logic integer pk_flat{L}(uint32_t *out,uint32_t *weights,uint32_t *bias,integer nc,integer kc,integer extra,integer t) =
++    \let blocks=(nc+1)/2;
++    \let blockwords=2+2*kc+extra;
++    pk_block(out,weights,bias,nc,kc,extra,t/(blocks*blockwords),(t%(blocks*blockwords))/blockwords,t%blockwords);
++*/
++/*@ requires q==2; assigns \nothing; ensures \result == n-n%2; */
+ size_t round_down_po2(size_t n,size_t q) { return n & ~(q-1); }
++/*@ assigns \nothing; ensures \result == (n>d?n-d:0); */
+ size_t doz(size_t n,size_t d) { return n>d ? n-d : 0; }
++/*@ requires \valid_read(p+(0..1)); assigns \nothing; ensures \result.lane[0]==p[0] && \result.lane[1]==p[1]; */
+ uint32x2_t vld1_u32(const uint32_t *p) { uint32x2_t r={{p[0],p[1]}}; return r; }
++/*@ assigns \nothing; ensures \result.lane[0]==x && \result.lane[1]==x; */
+ uint32x2_t vmov_n_u32(uint32_t x) { uint32x2_t r={{x,x}}; return r; }
++/*@ assigns \nothing; ensures \result.lane[0]==x && \result.lane[1]==x; */
+ uint32x2_t vdup_n_u32(uint32_t x) { return vmov_n_u32(x); }
++/*@ assigns \nothing; ensures \result.val[0].lane[0]==a.lane[0] && \result.val[0].lane[1]==b.lane[0]; ensures \result.val[1].lane[0]==a.lane[1] && \result.val[1].lane[1]==b.lane[1]; */
+ uint32x2x2_t vzip_u32(uint32x2_t a,uint32x2_t b) {
+   uint32x2x2_t r={{{{a.lane[0],b.lane[0]}},{{a.lane[1],b.lane[1]}}}}; return r;
+ }
++/*@ requires \valid_read(p+(0..1)); requires 0<=lane<2; assigns \nothing; ensures \result.val[0].lane[lane]==p[0] && \result.val[1].lane[lane]==p[1]; ensures \forall integer j;0<=j<2 && j!=lane ==> \result.val[0].lane[j]==a.val[0].lane[j] && \result.val[1].lane[j]==a.val[1].lane[j]; */
+ uint32x2x2_t vld2_lane_u32(const uint32_t *p,uint32x2x2_t a,int lane) {
+   a.val[0].lane[lane]=p[0]; a.val[1].lane[lane]=p[1]; return a;
+ }
++/*@ requires \valid_read(p); requires 0<=lane<2; assigns \nothing; ensures \result.lane[lane]==*p; ensures \forall integer j;0<=j<2 && j!=lane ==> \result.lane[j]==a.lane[j]; */
+ uint32x2_t vld1_lane_u32(const uint32_t *p,uint32x2_t a,int lane) { a.lane[lane]=*p; return a; }
++/*@ requires \valid(p+(0..1)); assigns p[0..1]; ensures p[0]==a.lane[0] && p[1]==a.lane[1]; */
+ void vst1_u32(uint32_t *p,uint32x2_t a) { p[0]=a.lane[0]; p[1]=a.lane[1]; }
++/*@ requires \valid(p); requires 0<=lane<2; assigns *p; ensures *p==a.lane[lane]; */
+ void vst1_lane_u32(uint32_t *p,uint32x2_t a,int lane) { *p=a.lane[lane]; }
++/*@ assigns \nothing; ensures \result==(n<32?n:32); */
+ size_t __riscv_vsetvl_e32m8(size_t n) { return n<32 ? n : 32; }
++/*@ assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<16 ? n : 16; }
++/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
+ vuint32m8_t __riscv_vle32_v_u32m8(const uint32_t *p,size_t vl) {
+-  vuint32m8_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vuint32m8_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ requires vl<=32; requires 0<stride<=PTRDIFF_MAX && vl*stride<=PTRDIFF_MAX && stride%4==0; requires \valid(p+(0..(vl-1)*(stride/4))); assigns p[0..(vl-1)*(stride/4)]; ensures \forall integer j;0<=j<vl ==> p[j*(stride/4)]==a.lane[j]; ensures \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\old(p[j]); */
+ void __riscv_vsse32_v_u32m8(uint32_t *p,ptrdiff_t stride,vuint32m8_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[j*(stride/4)]==a.lane[j]; loop invariant \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\at(p[j],Pre); loop assigns i,p[0..(vl-1)*(stride/4)]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)*(uint32_t*)((char*)p+i*stride)=a.lane[i];
+ }
++/*@ requires vl<=4; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
+ vuint32m1_t __riscv_vle32_v_u32m1(const uint32_t *p,size_t vl) {
+-  vuint32m1_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vuint32m1_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==x; */
+ vuint32m1_t __riscv_vmv_v_x_u32m1(uint32_t x,size_t vl) {
+-  vuint32m1_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=x; return r;
++  vuint32m1_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==x; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=x; return r;
+ }
++/*@ requires vl<=4; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j;0<=j<vl ==> p[j]==a.lane[j]; */
+ void __riscv_vse32_v_u32m1(uint32_t *p,vuint32m1_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[j]==a.lane[j]; loop assigns i,p[0..vl-1]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)p[i]=a.lane[i];
+ }
++/*@ requires vl<=16; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==p[j]; */
+ vuint32m4_t __riscv_vle32_v_u32m4(const uint32_t *p,size_t vl) {
+-  vuint32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
++  vuint32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==p[j]; loop assigns i,r; loop variant vl-i; */
++  for(size_t i=0;i<vl;i++)r.lane[i]=p[i]; return r;
+ }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<16 ==> \result.val[0].lane[j]==a.lane[j] && \result.val[1].lane[j]==b.lane[j]; */
+ vuint32m4x2_t __riscv_vcreate_v_u32m4x2(vuint32m4_t a,vuint32m4_t b) {
+   vuint32m4x2_t r={{a,b}}; return r;
+ }
++/*@ requires vl<=16; requires \valid(p+(0..2*vl-1)); assigns p[0..2*vl-1]; ensures \forall integer j;0<=j<vl ==> p[2*j]==a.val[0].lane[j] && p[2*j+1]==a.val[1].lane[j]; */
+ void __riscv_vsseg2e32_v_u32m4x2(uint32_t *p,vuint32m4x2_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[2*j]==a.val[0].lane[j] && p[2*j+1]==a.val[1].lane[j]; loop assigns i,p[0..2*vl-1]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++) { p[2*i]=a.val[0].lane[i]; p[2*i+1]=a.val[1].lane[i]; }
+ }
++/*@ requires vl<=16; requires 0<stride<=PTRDIFF_MAX && vl*stride<=PTRDIFF_MAX && stride%4==0; requires \valid(p+(0..(vl-1)*(stride/4))); assigns p[0..(vl-1)*(stride/4)]; ensures \forall integer j;0<=j<vl ==> p[j*(stride/4)]==a.lane[j]; ensures \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\old(p[j]); */
+ void __riscv_vsse32_v_u32m4(uint32_t *p,ptrdiff_t stride,vuint32m4_t a,size_t vl) {
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> p[j*(stride/4)]==a.lane[j]; loop invariant \forall integer j;0<=j<vl*(stride/4) && j%(stride/4)!=0 ==> p[j]==\at(p[j],Pre); loop assigns i,p[0..(vl-1)*(stride/4)]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++)*(uint32_t*)((char*)p+i*stride)=a.lane[i];
+ }

@@ -1,0 +1,1 @@
+此尝试已取消，非proof失败或kernel反例。主目标策略的composer不支持直接构造bit_test(B,2)，产生Computer lf:bit_test not found警告；18globals和controls已完成，但无主raw，因此不计任何主目标green。原输入和日志保留，cancel-reason.json记录有界行政收尾。v03仅把composer clause修成B==4||B==12，selector bit_test仍合法；后续目标真实结果见v03/v04。

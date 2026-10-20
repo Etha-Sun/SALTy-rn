@@ -1,0 +1,58 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -188,3 +188,14 @@
+ void proof_values_unary_point(float x,float y,float s,float t,float m,float r,uint32_t mask) {}
+ */
+ #endif
++
++/*@ lemma values_tail_extent: \forall integer T,B;
++      0<=T<=SIZE_MAX && (B==8 || B==12) && B/4<=T ==>
++      (size_t)((size_t)(T-B/4)+2)==T-(B%8)/4; */
++/*@ ghost
++/@ requires values_transfer_source: same_float(r,v);
++   requires values_transfer_value: same_value(v,unary_value(y,t));
++   terminates \true; assigns \nothing;
++   ensures values_transfer_result: same_value(r,unary_value(y,t)); @/
++void proof_values_unary_transfer(float r,float v,float y,float t) {}
++*/
+--- a/neon.c
++++ b/neon.c
+@@ -123,6 +123,10 @@
+     /*@ assert values_tail_vector: \forall integer j; 0<=j<4 ==>
+           same_value(vacc.lane[j],unary_value(i_base[total-batch/4+j],proof_slope_entry)); */
+     float32x2_t vacc_lo = vget_low_f32(vacc);
++    /*@ ghost
++      proof_values_unary_transfer(vacc_lo.lane[0],vacc.lane[0],proof_tail_input[0],proof_slope_entry);
++      proof_values_unary_transfer(vacc_lo.lane[1],vacc.lane[1],proof_tail_input[1],proof_slope_entry);
++    */
+     if (batch & (2 * sizeof(float))) {
+       /*@ assert values_neon2: \forall integer j; 0<=j<2 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-batch/4)+j],proof_slope_entry)); */
+ //@ ghost Unary2: ;
+@@ -147,9 +151,18 @@
+     */ output += 2;
+       vacc_lo = vget_high_f32(vacc);
+     }
++    /*@ assert values_tail_extent_cut: !(batch & 8) ||
++          (size_t)((size_t)(total-batch/4)+2)==total-(batch%8)/4; */
+     /*@ assert values_neon_tailprefix: \forall integer j; 0<=j<total-(batch%8)/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); */
+     if (batch & (1 * sizeof(float))) {
+       //@ assert output==o_base+(total-1);
++      /*@ ghost
++        if(batch & (2*sizeof(float))) {
++          proof_values_unary_transfer(vacc_lo.lane[0],vacc.lane[2],proof_tail_input[2],proof_slope_entry);
++        } else {
++          proof_values_unary_transfer(vacc_lo.lane[0],vacc.lane[0],proof_tail_input[0],proof_slope_entry);
++        }
++      */
+       /*@ assert values_neon1: \forall integer j; 0<=j<1 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-1)+j],proof_slope_entry)); */
+ //@ ghost Unary1: ;
+     vst1_lane_f32(output, vacc_lo, 0);/*@ ghost
+--- a/harness.c
++++ b/harness.c
+@@ -33,4 +33,5 @@
+       values_point_sign,values_point_select,values_point_value,values_point_offsets,values_four_lane_cases,
+       values_neon4_operands,values_neon4_source_sign,values_neon4_select,values_neon4,
+       values_tail_operands,values_tail_source_sign,values_tail_select,values_tail_vector,
+-      values_neon2,values_neon_tailprefix,values_neon1,values_neon1_prefix,values_neon1_lane,values_neon_all; */
++      values_neon2,values_neon_tailprefix,values_neon1,values_neon1_prefix,values_neon1_lane,values_neon_all,
++      proof_values_unary_transfer,values_transfer_source,values_transfer_value,values_transfer_result,values_tail_extent_cut,values_tail_extent; */

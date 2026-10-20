@@ -1,0 +1,45 @@
+{
+  "task_id": "qs8-vmul-store11-body",
+  "kernel": "qs8-vmul-minmax-fp32",
+  "source_case": "experiments/shim-c-v2/frontend-campaign/qs8-vmul-minmax-fp32",
+  "source_frozen_sha256": "a4226ed94edc1770ce7d86bcb16207b610146e3f9aa8ebc76bde7b13fd7ed65d",
+  "migration": "keep",
+  "focus": "Quantized multiply, float rounding and saturation; Typed float model preserved.",
+  "wave": 1,
+  "agent_wall_seconds": 1200,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/case",
+  "frozen_sha256": "caa072f9ae303e4ccb0fb6bb2f45170aa4b66a900fa263859ac9c70b2d92125a",
+  "runner": "tools/shim_c_campaign_v2.py",
+  "runner_sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "experiments/shared-extension/integer/generate_interfaces.py": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7",
+    "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py": "d032418b923bd50c490e90124e5aea4f8f41b67aaeb7d7d3a6a64603113afc2e"
+  },
+  "wp_par": 128,
+  "wall_seconds": 300,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "vst1_lane_u16",
+    "vst1_lane_u32"
+  ],
+  "diagnostic_properties": [],
+  "default_mode": "full",
+  "readiness": "ready",
+  "sourceguard_exit": 0,
+  "model": "Typed+float",
+  "resources": {
+    "wp_timeout": 30,
+    "wp_memlimit": 1024,
+    "wp_budget": 300,
+    "wp_par": 128
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits."
+}

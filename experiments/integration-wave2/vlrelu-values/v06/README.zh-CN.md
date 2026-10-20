@@ -1,0 +1,1 @@
+v05 operands/select两cut真证，sign和值仍timeout。本版增加same_float非NaN sign-transfer的2条global，以及先验证mask关联源vx符号的cut，后转移到load来源input。只诊断3条新/剩余值目标；尚未选的v05两cut需最终full重新检查，不得自动计入本版整核成功。C/spec/model/driver/checker/资源不变。

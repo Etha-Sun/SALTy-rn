@@ -1,0 +1,591 @@
+--- a/neon.c
++++ b/neon.c
+@@ -33,13 +33,32 @@
+   assert(w != NULL);
+   assert(c != NULL);
+ 
++  //@ ghost size_t NC=nc,KC=kc,KS=ks;
++  //@ ghost const float **A=a;
++  //@ ghost const float *W=w;
++  //@ ghost float *C=c;
+   float* c0 = c;
+ 
++  /*@ loop invariant stage3_nc: 0<=nc<=NC && (nc>0 ==> (NC-nc)%8==0);
++      loop invariant nc>0 ==> (a==A);
++      loop invariant nc>0 ==> (c0==C+(NC-nc));
++      loop invariant nc>0 ==> (w==W+((NC-nc)/8)*(8+8*(KC/4)*(KS/sizeof(void*))));
++      loop assigns nc,a,w,c0,C[0..NC-1],errno; loop variant nc; */
+   do {
++    //@ ghost Stage3Block: ;
+     float32x4_t vacc0x0 = vld1q_f32(w); w += 4;
+     float32x4_t vacc0x1 = vld1q_f32(w); w += 4;
+ 
+     size_t p = ks;
++    /*@ loop invariant stage3_positions: 0<=p<=KS && p%sizeof(void*)==0;
++        loop invariant a==A+(KS-p)/sizeof(void*);
++        loop invariant w==W+((NC-nc)/8)*(8+8*(KC/4)*(KS/sizeof(void*)))+8+8*((KS-p)/sizeof(void*))*(KC/4);
++        loop invariant stage3_position_acc_neon_0: \forall integer j;0<=j<4 ==> ext_same(vacc0x0.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,0+j,((KS-p)/sizeof(void*))*(KC/4),KC/4,KS/sizeof(void*)));
++        loop invariant stage3_position_acc_neon_1: \forall integer j;0<=j<4 ==> ext_same(vacc0x1.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,4+j,((KS-p)/sizeof(void*))*(KC/4),KC/4,KS/sizeof(void*)));
++        loop invariant stage3_read_table: \forall integer q;0<=q<KS/sizeof(void*) ==> A[q]==\at(A[q],Stage3Block);
++        loop invariant stage3_read_rows: \forall integer q,t;0<=q<KS/sizeof(void*) && 0<=t<KC/4 ==> ext_same(A[q][t],\at(A[q][t],Stage3Block));
++        loop invariant stage3_read_w: \forall integer q;0<=q<((NC+7)/8)*(8+8*(KC/4)*(KS/sizeof(void*))) ==> ext_same(W[q],\at(W[q],Stage3Block));
++        loop assigns p,a,w,vacc0x0,vacc0x1,errno; loop variant p; */
+     do {
+       const float* restrict a0 = a[0];
+       assert(a0 != NULL);
+@@ -49,6 +68,17 @@
+       a += 1;
+ 
+       size_t k = kc;
++      //@ ghost const float *stage3_row=a0;
++      //@ ghost const float *stage3_weights=w;
++      /*@ loop invariant stage3_k: 0<=k<=KC && k%4==0;
++          loop invariant a0==stage3_row+(KC-k)/4;
++          loop invariant w==stage3_weights+8*((KC-k)/4);
++          loop invariant stage3_inner_acc_neon_0: \forall integer j;0<=j<4 ==> ext_same(vacc0x0.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,0+j,((KS-p)/sizeof(void*))*(KC/4)+(KC-k)/4,KC/4,KS/sizeof(void*)));
++          loop invariant stage3_inner_acc_neon_1: \forall integer j;0<=j<4 ==> ext_same(vacc0x1.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,4+j,((KS-p)/sizeof(void*))*(KC/4)+(KC-k)/4,KC/4,KS/sizeof(void*)));
++        loop invariant stage3_read_table: \forall integer q;0<=q<KS/sizeof(void*) ==> A[q]==\at(A[q],Stage3Block);
++        loop invariant stage3_read_rows: \forall integer q,t;0<=q<KS/sizeof(void*) && 0<=t<KC/4 ==> ext_same(A[q][t],\at(A[q][t],Stage3Block));
++        loop invariant stage3_read_w: \forall integer q;0<=q<((NC+7)/8)*(8+8*(KC/4)*(KS/sizeof(void*))) ==> ext_same(W[q],\at(W[q],Stage3Block));
++          loop assigns k,a0,w,vacc0x0,vacc0x1,errno; loop variant k; */
+       for (; k >= 2 * sizeof(float); k -= 2 * sizeof(float)) {
+         const float32x2_t va0 = vld1_f32(a0); a0 += 2;
+ 
+@@ -78,13 +108,18 @@
+       p -= 1 * sizeof(void*);
+     } while (p != 0);
+ 
++    //@ ghost float32x4_t wave2_pre0=vacc0x0,wave2_pre1=vacc0x1;
+     const float32x4_t vmax = vdupq_n_f32(params->scalar.max);
+     vacc0x0 = vminq_f32(vacc0x0, vmax);
++    /*@ assert wave2_ig_min_vacc0x0: \forall integer j;0<=j<4 ==> ext_same(vacc0x0.lane[j],ext_neon_min32(wave2_pre0.lane[j],vmax.lane[j])); */
+     vacc0x1 = vminq_f32(vacc0x1, vmax);
++    /*@ assert wave2_ig_min_vacc0x1: \forall integer j;0<=j<4 ==> ext_same(vacc0x1.lane[j],ext_neon_min32(wave2_pre1.lane[j],vmax.lane[j])); */
+ 
+     const float32x4_t vmin = vdupq_n_f32(params->scalar.min);
+     vacc0x0 = vmaxq_f32(vacc0x0, vmin);
++    /*@ assert wave2_ig_clamp_vacc0x0: \forall integer j;0<=j<4 ==> ext_same(vacc0x0.lane[j],ext_neon_max32(ext_neon_min32(wave2_pre0.lane[j],vmax.lane[j]),vmin.lane[j])); */
+     vacc0x1 = vmaxq_f32(vacc0x1, vmin);
++    /*@ assert wave2_ig_clamp_vacc0x1: \forall integer j;0<=j<4 ==> ext_same(vacc0x1.lane[j],ext_neon_max32(ext_neon_min32(wave2_pre1.lane[j],vmax.lane[j]),vmin.lane[j])); */
+ 
+     if XNN_LIKELY(nc >= 8) {
+       vst1q_f32(c0, vacc0x0);
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,10 +1,23 @@
++/*@ ghost
++/@ terminates \true; assigns \nothing;
++    ensures igemm_nonzero_multiple: k>0 && k%4==0 ==> k>=4;
++    ensures igemm_step4_math: 4<=k<=K && k%4==0 ==>
++      (size_t)(k-4)==k-4 &&
++      (K-(size_t)(k-4))/4==(K-k)/4+1 &&
++      0<=(size_t)(k-4)<=K && ((size_t)(k-4))%4==0; @/
++static void igemm_step4(size_t K,size_t k) {}
++*/
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
++/*@ requires vl<=16; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+ static inline vfloat32m4_t salty_min_vf_m4(vfloat32m4_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m4(__builtin_nanf(""),vl);
+   vbool8_t nan=__riscv_vmfne_vv_f32m4_b8(a,a,vl);
+   vfloat32m4_t r=__riscv_vfmin_vf_f32m4(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m4(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=16; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+ static inline vfloat32m4_t salty_max_vf_m4(vfloat32m4_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m4(__builtin_nanf(""),vl);
+   vbool8_t nan=__riscv_vmfne_vv_f32m4_b8(a,a,vl);
+@@ -39,15 +52,37 @@
+ 
+   (void) cm_stride;
+ 
++  //@ ghost size_t NC=nc,KC=kc,KS=ks;
++  //@ ghost const float **A=a;
++  //@ ghost const float *W=w;
++  //@ ghost float *C=c;
+   float* c0 = c;
+ 
++  /*@ loop invariant igemm_outer_kc_equal: kc==KC;
++      loop invariant igemm_outer_kc_multiple: kc%4==0;
++      loop invariant stage3_nc: 0<=nc<=NC && (nc>0 ==> (NC-nc)%8==0);
++      loop invariant nc>0 ==> (a==A);
++      loop invariant nc>0 ==> (c0==C+(NC-nc));
++      loop invariant nc>0 ==> (w==W+((NC-nc)/8)*(8+8*(KC/4)*(KS/sizeof(void*))));
++      loop assigns nc,a,w,c0,C[0..NC-1],errno; loop variant nc; */
+   do {
++    //@ ghost Stage3Block: ;
+     size_t vl = nc > 8 ? 8 : nc;
+ 
+     vfloat32m4_t vacc = __riscv_vle32_v_f32m4(w, vl);
+     w += 8;
+ 
+     size_t p = ks;
++    /*@ loop invariant igemm_positions_kc_equal: kc==KC;
++        loop invariant igemm_positions_kc_multiple: kc%4==0;
++        loop invariant stage3_positions: 0<=p<=KS && p%sizeof(void*)==0;
++        loop invariant a==A+(KS-p)/sizeof(void*);
++        loop invariant w==W+((NC-nc)/8)*(8+8*(KC/4)*(KS/sizeof(void*)))+8+8*((KS-p)/sizeof(void*))*(KC/4);
++        loop invariant stage3_position_acc_rvv_0: \forall integer j;0<=j<vl ==> ext_same(vacc.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,j,((KS-p)/sizeof(void*))*(KC/4),KC/4,KS/sizeof(void*)));
++        loop invariant stage3_read_table: \forall integer q;0<=q<KS/sizeof(void*) ==> A[q]==\at(A[q],Stage3Block);
++        loop invariant stage3_read_rows: \forall integer q,t;0<=q<KS/sizeof(void*) && 0<=t<KC/4 ==> ext_same(A[q][t],\at(A[q][t],Stage3Block));
++        loop invariant stage3_read_w: \forall integer q;0<=q<((NC+7)/8)*(8+8*(KC/4)*(KS/sizeof(void*))) ==> ext_same(W[q],\at(W[q],Stage3Block));
++        loop assigns p,a,w,vacc,errno; loop variant p; */
+     do {
+       const float* restrict a0 = a[0];
+       assert(a0 != NULL);
+@@ -56,12 +91,33 @@
+       }
+       a += 1;
+ 
++      /*@ assert igemm_entry_kc_equal: kc==KC; */
++      /*@ assert igemm_entry_kc_multiple: kc%4==0; */
+       size_t k = kc;
++      //@ ghost const float *stage3_row=a0;
++      //@ ghost const float *stage3_weights=w;
++      /*@ loop invariant igemm_rvv_k: 0<=k<=KC && k%4==0;
++          loop invariant igemm_rvv_row_cursor: a0==stage3_row+(KC-k)/4;
++          loop invariant igemm_rvv_weight_cursor: w==stage3_weights+8*((KC-k)/4);
++          loop invariant stage3_inner_acc_rvv_0: \forall integer j;0<=j<vl ==> ext_same(vacc.lane[j],stage3_iacc{Stage3Block}(A,W,(NC-nc)/8,j,((KS-p)/sizeof(void*))*(KC/4)+(KC-k)/4,KC/4,KS/sizeof(void*)));
++        loop invariant stage3_read_table: \forall integer q;0<=q<KS/sizeof(void*) ==> A[q]==\at(A[q],Stage3Block);
++        loop invariant stage3_read_rows: \forall integer q,t;0<=q<KS/sizeof(void*) && 0<=t<KC/4 ==> ext_same(A[q][t],\at(A[q][t],Stage3Block));
++        loop invariant stage3_read_w: \forall integer q;0<=q<((NC+7)/8)*(8+8*(KC/4)*(KS/sizeof(void*))) ==> ext_same(W[q],\at(W[q],Stage3Block));
++          loop assigns k,a0,w,vacc,errno; loop variant k; */
+       while (k > 0) {
+         float va = *a0++;
+         vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl);
+         w += 8;
+         vacc = __riscv_vfmacc_vf_f32m4(vacc, va, vb, vl);
++        //@ ghost igemm_step4(KC,k);
++        /*@ assert igemm_before_sub: 4<=k<=KC && k%4==0; */
++        /*@ assert igemm_k_exact: (size_t)(k-4)==k-4; */
++        /*@ assert igemm_step_index: (KC-(size_t)(k-4))/4==(KC-k)/4+1; */
++        /*@ assert igemm_row_advanced: a0==stage3_row+(KC-k)/4+1; */
++        /*@ assert igemm_weight_advanced: w==stage3_weights+8*((KC-k)/4+1); */
++        /*@ assert igemm_row_rebased: a0==stage3_row+(KC-(size_t)(k-4))/4; */
++        /*@ assert igemm_weight_rebased: w==stage3_weights+8*((KC-(size_t)(k-4))/4); */
++        /*@ assert igemm_next_range: 0<=(size_t)(k-4)<=KC && ((size_t)(k-4))%4==0; */
+         k -= sizeof(float);
+       }
+       p -= 1 * sizeof(void*);
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,11 @@
+   struct xnn_f32_minmax_params params={{lower,upper}};
+   test_neon(1,nc,k*4,positions*sizeof(void*),a,w,left,nc*4,32,0,NULL,&params);
+   test_rvv(1,nc,k*4,positions*sizeof(void*),a,w,right,nc*4,32,0,NULL,&params);
++  /*@ loop invariant 0<=i<=nc;
++      loop invariant \forall integer j; 0<=j<i ==> (\eq_float(left[j],right[j]) || (\is_NaN(left[j]) && \is_NaN(right[j])));
++      loop assigns i;
++      loop variant nc-i;
++  */
+   for(size_t i=0;i<nc;i++)if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }
+--- a/fp_primitives.h
++++ b/fp_primitives.h
+@@ -1,6 +1,21 @@
+ #ifndef COMPLEX_FP_PRIMITIVES_H
+ #define COMPLEX_FP_PRIMITIVES_H
+ #include "native_types.h"
++/*@
++ predicate ext_same(float x,float y) = (\is_NaN(x) && \is_NaN(y)) || (\eq_float(x,y) && \sign(x)==\sign(y));
++ logic float complex_add32(float x,float y);
++ logic float complex_sub32(float x,float y);
++ logic float complex_mul32(float x,float y);
++ logic float ext_num_min32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(a,b)?a:(\lt_float(b,a)?b:(\sign(a)==\Negative?a:b))));
++ logic float ext_num_max32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(b,a)?a:(\lt_float(a,b)?b:(\sign(a)==\Positive?a:b))));
++ logic float ext_neon_min32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_min32(a,b));
++ logic float ext_neon_max32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_max32(a,b));
++ lemma ext_same_refl: \forall float a; ext_same(a,a);
++ lemma ext_same_trans: \forall float a,b,c; ext_same(a,b) && ext_same(b,c) ==> ext_same(a,c);
++ lemma ext_add_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_add32(a,c),complex_add32(b,c));
++ lemma ext_mul_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_mul32(a,c),complex_mul32(b,c));
++ lemma ext_sub_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_sub32(a,c),complex_sub32(b,c));
++*/
+ int fp_nan(float x);
+ float canonical_nan(void);
+ float min_number(float a,float b);
+@@ -187,4 +202,29 @@
+ vint32m8_t __riscv_vsra_vx_i32m8(vint32m8_t a,unsigned n,size_t vl);
+ vfloat32m8_t __riscv_vfcvt_f_x_v_f32m8(vint32m8_t a,size_t vl);
+ vfloat32m1_t __riscv_vlse32_v_f32m1_m(vbool32_t mask,const float *p,ptrdiff_t stride,size_t vl);
++
++/*@ logic float stage3_iacc{L}(float **a,float *w,integer block,integer lane,integer t,integer K,integer P) =
++ t<=0 ? w[block*(8+8*K*P)+lane] : shim_fma32(a[(t-1)/K][(t-1)%K],w[block*(8+8*K*P)+8+8*(t-1)+lane],stage3_iacc(a,w,block,lane,t-1,K,P)); */
++
++
++/*@ lemma stage3_iacc_seed{L}: \forall float **a,*w; \forall integer block,lane,K,P;
++ ext_same(stage3_iacc(a,w,block,lane,0,K,P),w[block*(8+8*K*P)+lane]);
++ lemma stage3_iacc_step{L}: \forall float **a,*w; \forall integer block,lane,t,K,P;
++ 0<=t && 0<K ==> ext_same(stage3_iacc(a,w,block,lane,t+1,K,P),shim_fma32(a[t/K][t%K],w[block*(8+8*K*P)+8+8*t+lane],stage3_iacc(a,w,block,lane,t,K,P))); */
++
++
++/*@ lemma stage3_fma_congruence: \forall float a,b,c,x,y,z;
++ ext_same(a,x) && ext_same(b,y) && ext_same(c,z) ==> ext_same(shim_fma32(a,b,c),shim_fma32(x,y,z)); */
+ #endif
++
++/*@
++ lemma ext_neon_min_cong1: \forall float a,b,c; ext_same(a,b) ==> ext_same(ext_neon_min32(a,c),ext_neon_min32(b,c));
++ lemma ext_neon_min_cong2: \forall float a,b,c; ext_same(a,b) ==> ext_same(ext_neon_min32(c,a),ext_neon_min32(c,b));
++ lemma ext_neon_max_cong1: \forall float a,b,c; ext_same(a,b) ==> ext_same(ext_neon_max32(a,c),ext_neon_max32(b,c));
++ lemma ext_neon_max_cong2: \forall float a,b,c; ext_same(a,b) ==> ext_same(ext_neon_max32(c,a),ext_neon_max32(c,b));
++ lemma ext_same_sym: \forall float a,b; ext_same(a,b) ==> ext_same(b,a);
++ lemma ext_same_weak: \forall float a,b; ext_same(a,b) ==> (\eq_float(a,b) || (\is_NaN(a) && \is_NaN(b)));
++ lemma ig_fma_congruence: \forall float x,X,y,Y,z,Z;
++      ext_same(x,X) && ext_same(y,Y) && ext_same(z,Z) ==>
++      ext_same(shim_fma32(x,y,z),shim_fma32(X,Y,Z));
++*/
+--- a/fp_minmax.c
++++ b/fp_minmax.c
+@@ -1,12 +1,15 @@
+ #include "fp_primitives.h"
+ 
++/*@ assigns \nothing; ensures \result==(\is_NaN(x)?1:0); */
+ int fp_nan(float x) { return x != x; }
+ 
++/*@ assigns \nothing; ensures \is_NaN(\result); */
+ float canonical_nan(void) {
+   uint32_t bits=UINT32_C(0x7fc00000); float value;
+   memcpy(&value,&bits,sizeof(value)); return value;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_min32(a,b)); */
+ float min_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -14,6 +17,7 @@
+   return a < b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_max32(a,b)); */
+ float max_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -21,6 +25,7 @@
+   return a > b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_min32(a,b)); */
+ float neon_min(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return min_number(a,b);
+@@ -29,6 +34,7 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_max32(a,b)); */
+ float neon_max(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return max_number(a,b);
+@@ -37,16 +43,24 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
+ float32x4_t vminq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
+ float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
+-float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
++float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
+ 
+-float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
++float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
+--- a/fp_memory.c
++++ b/fp_memory.c
+@@ -1,69 +1,106 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires \valid_read(p+(0..4-1)); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],p[j])); */
+ float32x4_t vld1q_f32(const float *p) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@ requires \valid_read(p+(0..2-1)); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],p[j])); */
+ float32x2_t vld1_f32(const float *p) {
+-  float32x2_t r; for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
++  float32x2_t r; /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 2-i; */
++for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vdupq_n_f32(float x) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
+ }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],*p)); */
+ float32x4_t vld1q_dup_f32(const float *p) { return vdupq_n_f32(*p); }
+ 
++/*@ requires 0<=lane<2; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],v.lane[lane])); */
+ float32x4_t vdupq_lane_f32(float32x2_t v,int lane) { return vdupq_n_f32(v.lane[lane]); }
+ 
+-void vst1q_f32(float *p,float32x4_t v) { for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..4-1)); assigns p[0..4-1]; ensures \forall integer j; 0<=j<4 ==> (ext_same(p[j],v.lane[j])); */
++void vst1q_f32(float *p,float32x4_t v) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..4-1]; loop variant 4-i; */
++for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
+ 
+-void vst1_f32(float *p,float32x2_t v) { for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..2-1)); assigns p[0..2-1]; ensures \forall integer j; 0<=j<2 ==> (ext_same(p[j],v.lane[j])); */
++void vst1_f32(float *p,float32x2_t v) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..2-1]; loop variant 2-i; */
++for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
+ 
++/*@ requires \valid(p); requires 0<=lane<2; assigns p[0..1-1]; ensures ext_same(*p,v.lane[lane]); */
+ void vst1_lane_f32(float *p,float32x2_t v,int lane) { *p=v.lane[lane]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j])); */
+ float32x2_t vget_low_f32(float32x4_t v) { float32x2_t r={{v.lane[0],v.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j+2])); */
+ float32x2_t vget_high_f32(float32x4_t v) { float32x2_t r={{v.lane[2],v.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<RVV_CAP ? n : RVV_CAP; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vmovq_n_f32(float x) { return vdupq_n_f32(x); }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],*p)); */
+ float32x2_t vld1_dup_f32(const float *p) { float32x2_t r={{*p,*p}};return r; }
+ 
+ float32x4x2_t vld2q_dup_f32(const float *p) { float32x4x2_t r={{vdupq_n_f32(p[0]),vdupq_n_f32(p[1])}};return r; }
+ 
+ float32x2x2_t vld2_dup_f32(const float *p) { float32x2x2_t r={{vld1_dup_f32(p),vld1_dup_f32(p+1)}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ((j<2 ? ext_same(\result.lane[j],a.lane[j]) : ext_same(\result.lane[j],b.lane[j-2]))); */
+ float32x4_t vcombine_f32(float32x2_t a,float32x2_t b) { float32x4_t r={{a.lane[0],a.lane[1],b.lane[0],b.lane[1]}};return r; }
+ 
+-float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
++/*@ requires 0<=n<=4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j+n<4 ? ext_same(\result.lane[j],a.lane[j+n]) : ext_same(\result.lane[j],b.lane[j+n-4])); */
++float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (j+n<4 ? ext_same(r.lane[j],a.lane[j+n]) : ext_same(r.lane[j],b.lane[j+n-4]));  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
+ 
++/*@ requires 0<=n<2; assigns \nothing; ensures ext_same(\result,a.lane[n]); */
+ float vget_lane_f32(float32x2_t a,int n) { return a.lane[n]; }
+ 
++/*@ requires \valid_read(p); requires 0<=n<4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j==n ? ext_same(\result.lane[j],*p) : ext_same(\result.lane[j],a.lane[j])); */
+ float32x4_t vld1q_lane_f32(const float *p,float32x4_t a,int n) { a.lane[n]=*p;return a; }
+ 
++/*@ requires \valid(p); requires 0<=n<4; assigns p[0..1-1]; ensures ext_same(*p,a.lane[n]); */
+ void vst1q_lane_f32(float *p,float32x4_t a,int n) { *p=a.lane[n]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2]) : ext_same(\result.lane[j],b.lane[j/2])); */
+ float32x4_t vzip1q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[0],b.lane[0],a.lane[1],b.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2+2]) : ext_same(\result.lane[j],b.lane[j/2+2])); */
+ float32x4_t vzip2q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[2],b.lane[2],a.lane[3],b.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==16; */
+ size_t __riscv_vsetvlmax_e32m4(void) { return 16; }
+ 
++/*@  assigns \nothing; ensures \result==(n<4?n:4); */
+ size_t __riscv_vsetvl_e32m1(size_t n) { return n<4?n:4; }
+ 
++/*@  assigns \nothing; ensures \result==4; */
+ size_t __riscv_vsetvlmax_e32m1(void) { return 4; }
+ 
++/*@  assigns \nothing; ensures \result==(n<8?n:8); */
+ size_t __riscv_vsetvl_e32m2(size_t n) { return n<8?n:8; }
+ 
++/*@  assigns \nothing; ensures \result==8; */
+ size_t __riscv_vsetvlmax_e32m2(void) { return 8; }
+ 
++/*@  assigns \nothing; ensures \result==(n<32?n:32); */
+ size_t __riscv_vsetvl_e32m8(size_t n) { return n<32?n:32; }
+ 
++/*@  assigns \nothing; ensures \result==32; */
+ size_t __riscv_vsetvlmax_e32m8(void) { return 32; }
+ 
+-int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j]); */
++int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
+ 
+-int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j+4]); */
++int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j+4]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
+--- a/fp_arithmetic.c
++++ b/fp_arithmetic.c
+@@ -1,23 +1,45 @@
+ #include "fp_primitives.h"
++/*@ lemma ext_fma_congruence: \forall float a,b,x,y;
++ ext_same(a,b) ==> ext_same(shim_fma32(x,y,a),shim_fma32(x,y,b)); */
+ 
++/*@ assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
+ float32x4_t vfmaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */ a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); /*@ assert ext_same(a.lane[i],shim_fma32(b.lane[i],c.lane[i],\at(a,Pre).lane[i])); */ }
+   return a;
+ }
+ 
+-float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<2; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<4; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { for(int i=0;i<2;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ assigns errno; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 2-i; */
++for(int i=0;i<2;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+ 
+-float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
+ 
+-float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
+ 
+-float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_sub32(a.lane[j],b.lane[j])); */
++float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
+ 
+-float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];a.lane[i]=a.lane[i]+p;}return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],complex_mul32(b.lane[j],c.lane[j]))); */
++float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),complex_mul32(b.lane[j],c.lane[j]))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];
++ /*@ assert ext_same(p,complex_mul32(b.lane[i],c.lane[i])); */
++ /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */
++ a.lane[i]=a.lane[i]+p;
++ /*@ assert ext_same(a.lane[i],complex_add32(\at(a,Pre).lane[i],complex_mul32(b.lane[i],c.lane[i]))); */}return a; }
+ 
+ float vaddv_f32(float32x2_t a) { return a.lane[0]+a.lane[1]; }
+ 
+--- a/fp_memory_m4.c
++++ b/fp_memory_m4.c
+@@ -1,15 +1,21 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],p[j])); */
+ vfloat32m4_t __riscv_vle32_v_f32m4(const float *p,size_t vl) {
+-  vfloat32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r;
++  vfloat32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r;
+ }
+ 
++/*@ requires vl<=16; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j; 0<=j<vl ==> (ext_same(p[j],v.lane[j])); */
+ void __riscv_vse32_v_f32m4(float *p,vfloat32m4_t v,size_t vl) {
+-  for(size_t i=0;i<vl;i++)p[i]=v.lane[i];
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..vl-1]; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)p[i]=v.lane[i];
+ }
+ 
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],value)); */
+ vfloat32m4_t __riscv_vfmv_v_f_f32m4(float value,size_t vl) {
+-  vfloat32m4_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=value; return r;
++  vfloat32m4_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],value));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=value; return r;
+ }
+ 
+ vfloat32m1_t __riscv_vfredusum_vs_f32m4_f32m1(vfloat32m4_t a,vfloat32m1_t z,size_t vl) { for(size_t i=0;i<vl;i++)z.lane[0]+=a.lane[i];return z; }
+--- a/fp_arithmetic_m4.c
++++ b/fp_arithmetic_m4.c
+@@ -1,18 +1,30 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b,c.lane[j],a.lane[j])); */
+ vfloat32m4_t __riscv_vfmacc_vf_f32m4(vfloat32m4_t a,float b,vfloat32m4_t c,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { a.lane[i]=fmaf(b,c.lane[i],a.lane[i]); }
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b,c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */ a.lane[i]=fmaf(b,c.lane[i],a.lane[i]); /*@ assert ext_same(a.lane[i],shim_fma32(b,c.lane[i],\at(a,Pre).lane[i])); */ }
+   return a;
+ }
+ 
+-vfloat32m4_t __riscv_vfmul_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]*=b.lane[i];return a; }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++vfloat32m4_t __riscv_vfmul_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]*=b.lane[i];return a; }
+ 
+-vfloat32m4_t __riscv_vfadd_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]+=b.lane[i];return a; }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++vfloat32m4_t __riscv_vfadd_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]+=b.lane[i];return a; }
+ 
+-vfloat32m4_t __riscv_vfsub_vf_f32m4(vfloat32m4_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]-=b;return a; }
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_sub32(a.lane[j],b)); */
++vfloat32m4_t __riscv_vfsub_vf_f32m4(vfloat32m4_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]-=b;return a; }
+ 
+-vfloat32m4_t __riscv_vfmacc_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,vfloat32m4_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ requires vl<=16; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++vfloat32m4_t __riscv_vfmacc_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,vfloat32m4_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+ 
+-vfloat32m4_t __riscv_vfmadd_vf_f32m4(vfloat32m4_t a,float b,vfloat32m4_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b,a.lane[i],c.lane[i]);return a; }
++/*@ requires vl<=16; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b,a.lane[j],c.lane[j])); */
++vfloat32m4_t __riscv_vfmadd_vf_f32m4(vfloat32m4_t a,float b,vfloat32m4_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b,\at(a.lane[j],Pre),c.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b,a.lane[i],c.lane[i]); return a; }
+ 
+ vfloat32m4_t __riscv_vfadd_vv_f32m4_tu(vfloat32m4_t dest,vfloat32m4_t a,vfloat32m4_t b,size_t vl) { for(size_t i=0;i<vl;i++)dest.lane[i]=a.lane[i]+b.lane[i];return dest; }
+--- a/fp_minmax_m4.c
++++ b/fp_minmax_m4.c
+@@ -1,11 +1,15 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_min32(a.lane[j],b)); */
+ vfloat32m4_t __riscv_vfmin_vf_f32m4(vfloat32m4_t a,float b,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { a.lane[i]=min_number(a.lane[i],b); }
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_min32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { a.lane[i]=min_number(a.lane[i],b); }
+   return a;
+ }
+ 
++/*@ requires vl<=16; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_max32(a.lane[j],b)); */
+ vfloat32m4_t __riscv_vfmax_vf_f32m4(vfloat32m4_t a,float b,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { a.lane[i]=max_number(a.lane[i],b); }
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_max32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { a.lane[i]=max_number(a.lane[i],b); }
+   return a;
+ }
+--- a/fp_masks_m4.c
++++ b/fp_masks_m4.c
+@@ -1,11 +1,17 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires vl<=16;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(!\eq_float(a.lane[j],b.lane[j])?1:0); */
+ vbool8_t __riscv_vmfne_vv_f32m4_b8(vfloat32m4_t a,vfloat32m4_t b,size_t vl) {
+-  vbool8_t r={{0}}; for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=b.lane[i]; return r;
++  vbool8_t r={{0}}; /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(!\eq_float(a.lane[j],b.lane[j])?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=b.lane[i]; return r;
+ }
+ 
++/*@ requires vl<=16;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],mask.lane[j]?value:a.lane[j]); */
+ vfloat32m4_t __riscv_vfmerge_vfm_f32m4(vfloat32m4_t a,float value,vbool8_t mask,size_t vl) {
+-  for(size_t i=0;i<vl;i++) { if(mask.lane[i])a.lane[i]=value; } return a;
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],mask.lane[j]?value:\at(a.lane[j],Pre)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) { if(mask.lane[i])a.lane[i]=value; } return a;
+ }
+ 
+-vbool8_t __riscv_vmflt_vf_f32m4_b8(vfloat32m4_t a,float b,size_t vl) { vbool8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<b;return r; }
++/*@ requires vl<=16;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(\lt_float(a.lane[j],b)?1:0); */
++vbool8_t __riscv_vmflt_vf_f32m4_b8(vfloat32m4_t a,float b,size_t vl) { vbool8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(a.lane[j],b)?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<b;return r; }

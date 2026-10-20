@@ -1,0 +1,54 @@
+{
+  "plain": {
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-O0",
+      "-g0",
+      "-S",
+      "-emit-llvm",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "-"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "unit_sha256": "8b16b6ea2af416bf3087b016fb69b8bc14a76a3b47160cff6268bde9f844e5f1"
+  },
+  "annotated": {
+    "command": [
+      "clang-14",
+      "-std=c11",
+      "-O0",
+      "-g0",
+      "-S",
+      "-emit-llvm",
+      "-x",
+      "c",
+      "-",
+      "-o",
+      "-"
+    ],
+    "exit": 0,
+    "stderr": "",
+    "unit_sha256": "8b16b6ea2af416bf3087b016fb69b8bc14a76a3b47160cff6268bde9f844e5f1"
+  },
+  "llvm_diff": {
+    "command": [
+      "llvm-diff-14",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/.build/llvm-audit/f32-dwconv2d-chw/plain.ll",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/.build/llvm-audit/f32-dwconv2d-chw/annotated.ll"
+    ],
+    "exit": 1,
+    "stdout": "",
+    "stderr": "in function min_number:\n  in block %51 / %51:\n    >   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    >   store float %52, float* %3, align 4\n    <   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    <   store float %52, float* %3, align 4\n  in block %39 / %39:\n    >   %40 = phi i1 [ true, %31 ], [ %38, %35 ]\n    >   %41 = zext i1 %40 to i64\n    >   %42 = select i1 %40, float -0.000000e+00, float 0.000000e+00\n    >   store float %42, float* %3, align 4\n    <   %40 = phi i1 [ true, %31 ], [ %38, %35 ]\n    <   %41 = zext i1 %40 to i64\n    <   %42 = select i1 %40, float -0.000000e+00, float 0.000000e+00\n    <   store float %42, float* %3, align 4\n\nin function max_number:\n  in block %51 / %51:\n    >   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    >   store float %52, float* %3, align 4\n    <   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    <   store float %52, float* %3, align 4\n"
+  },
+  "llvm_ir_byte_identical": true,
+  "plain_ir_sha256": "04c8d2addf577f1d20dab76e8260743d01a327da1e6e296fcc1a138957165a8e",
+  "annotated_ir_sha256": "04c8d2addf577f1d20dab76e8260743d01a327da1e6e296fcc1a138957165a8e",
+  "clang_version": "Ubuntu clang version 14.0.0-1ubuntu1.1",
+  "scope": "Same host compiler and flags, assertions enabled; no general C/ISA equivalence or ghost noninterference theorem.",
+  "passed": false
+}

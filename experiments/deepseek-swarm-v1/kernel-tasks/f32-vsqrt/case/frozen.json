@@ -1,0 +1,109 @@
+{
+  "name": "f32-vsqrt",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/float/shared/shim.h",
+      "sha256": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de"
+    },
+    "base.h": {
+      "path": "experiments/shared-extension/float/shared/base.h",
+      "sha256": "f183efc8678a15b3f7d7689e9903463056dd19a5f68f8939a3fb228a6ef1e611"
+    },
+    "rsum.h": {
+      "path": "experiments/shared-extension/float/shared/rsum.h",
+      "sha256": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c"
+    },
+    "clamp.h": {
+      "path": "experiments/shared-extension/float/shared/clamp.h",
+      "sha256": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3"
+    },
+    "float_ops.h": {
+      "path": "experiments/shared-extension/float/shared/float_ops.h",
+      "sha256": "a57b888ef34f3b71b91e02d4f4eebbdd8c36a8aa95c09c86a7f0e45733b1c08f"
+    },
+    "extensions.h": {
+      "path": "experiments/shared-extension/float/shared/extensions.h",
+      "sha256": "3423814909e15e8bc4a38017b4c4b966074897909be2968f520a94ffd8a17939"
+    },
+    "extensions.driver": {
+      "path": "experiments/shared-extension/float/shared/extensions.driver",
+      "sha256": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6"
+    },
+    "base.c": {
+      "path": "experiments/shared-extension/float/shared/base.c",
+      "sha256": "095827d1ac5719c50384d0c1444751575317d591bef8ce688cc7e11c5f25cc6a"
+    },
+    "float_ops.c": {
+      "path": "experiments/shared-extension/float/shared/float_ops.c",
+      "sha256": "8db947ee4e340de61fcb71ce859334372537f682c2842ff9a2f436bf5a47ed14"
+    },
+    "representation.c": {
+      "path": "experiments/shared-extension/float/shared/representation.c",
+      "sha256": "5c8be5599fa20f22798de6a1e9dfb2d6de05574e47a4b5ce12ab2f52b057e6a3"
+    },
+    "sqrt.c": {
+      "path": "experiments/shared-extension/float/shared/sqrt.c",
+      "sha256": "45fd330f37fdb1d7a2044a114bb3ebac69d1bc93ebde826b5054c27f6e8c110e"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/neon.c",
+      "sha256": "b4970661c787e642b8428f213a4b60bd894f4a63704ffc31ec96087beab4ef3e"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/rvv.c",
+      "sha256": "b09b69f0e4b7de2a839b71c1207f21ac2f024a7aa173e7ca1b4c19cca5b06012"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/spec.h",
+      "sha256": "529137edfba0625292e2cfefe86ebbafa14c4e63e469b432aee1c10fdf2fdd18"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/harness.c",
+      "sha256": "e2f65831c208fd8ed4159f8bd4f10a7e781a2a86a81d418dffebcd6c725c60b5"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/interface.json",
+      "sha256": "45748323193775588d37a117f39b72d097271008d7f1ef6a61c2cb6972857d1d"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/unit.c",
+      "sha256": "b5a2f665a54069b0f934546e9468e118f9ca57522758d1aa02b0da1be5cc1f0c"
+    },
+    "generate.py": {
+      "path": "experiments/shared-extension/float/generate.py",
+      "sha256": "d77961f85086e00480d99a503336933bcde21bfcf6f349d55e001b93c7b8a65a"
+    },
+    "modules.json": {
+      "path": "experiments/shared-extension/float/f32-vsqrt/modules.json",
+      "sha256": "e45aa41b51803fc5c270fdb718f5fc456bf4f6129567e5caa07fe0682019d236"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v2.py",
+      "sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/deepseek-swarm-v1/kernel-tasks/f32-vsqrt/case/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "extensions.driver",
+  "observation": "number-or-both-nan; signed-zero numeric equality; no FP flags",
+  "original_target": null,
+  "VLEN_bits": 128,
+  "previous_version": "experiments/shim-c-v2/float-unary/f32-vsqrt",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_budget": 1200,
+  "wp_timeout": 30,
+  "swarm_migration": {
+    "source": "experiments/shim-c-v2/frontend-campaign/f32-vsqrt",
+    "source_frozen_sha256": "08ffa3900c884a6daf7b1b13ba83fe6e924643f05b91f91f3fbc5c9b11c7fc26",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  }
+}

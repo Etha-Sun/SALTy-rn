@@ -1,0 +1,47 @@
+{
+  "task_id": "f32-f16-vcvt-integration-v05",
+  "kernel": "f32-f16-vcvt",
+  "source_case": "experiments/shim-c-v2/frontend-campaign/f32-f16-vcvt",
+  "source_frozen_sha256": "bfe5eb5645bfe9fdcdf72f29844aac164105c409aa00de41fc487b6fa557d734",
+  "migration": "keep",
+  "focus": "Half conversion semantic support and proof; preserved source contains prior frozen target repairs. Do not silently change source or shrink domain.",
+  "wave": 1,
+  "agent_wall_seconds": 1200,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/noncomplex/f32-f16-vcvt/v05/case",
+  "frozen_sha256": "f70e82e4e2e91c7cfc5027140a702373c002633740f7e9ba16684de35a0ddf16",
+  "runner": "tools/shim_c_campaign_v2.py",
+  "runner_sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "experiments/shared-extension/integer/generate_interfaces.py": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7",
+    "tools/shim_c_campaign_v2.py": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py": "d032418b923bd50c490e90124e5aea4f8f41b67aaeb7d7d3a6a64603113afc2e"
+  },
+  "wp_par": 16,
+  "wall_seconds": 1200,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "vabsq_f32",
+    "__riscv_vfabs_v_f32m8",
+    "vst1_lane_u16",
+    "vst1_lane_u32"
+  ],
+  "diagnostic_properties": [],
+  "default_mode": "full",
+  "readiness": "ready",
+  "sourceguard_exit": 0,
+  "model": "Typed+float",
+  "resources": {
+    "wp_timeout": 30,
+    "wp_memlimit": 1024,
+    "wp_budget": 1200,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits."
+}

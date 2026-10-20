@@ -1,0 +1,48 @@
+--- a/neon.c
++++ b/neon.c
+@@ -23,7 +23,8 @@
+ 
+   const float32x4_t vslope = vdupq_n_f32(params->scalar.slope);
+ 
+-  /*@ loop invariant 0<=batch<=4*total && batch%4==0;
++  /*@ loop invariant hv_params_outer: same_float(params->scalar.slope,proof_slope_entry);
++      loop invariant 0<=batch<=4*total && batch%4==0;
+       loop invariant input==i_base+(total-batch/4);
+       loop invariant output==o_base+(total-batch/4);
+       loop invariant \valid(output+(0..batch/4-1));
+@@ -39,8 +40,10 @@
+ 
+     /*@ assert \forall integer j; 0<=j<4 ==> same_value(vacc0123.lane[j],unary_value(i_base[(total-batch/4)+j],proof_slope_entry)); */
+ //@ ghost Unary4: ;
++    /*@ assert hv_guard_store4: \valid_read(&params->scalar.slope) && \separated(&params->scalar.slope,output+(0..3)); */
+     vst1q_f32(output, vacc0123);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-batch/4)+(4);
++    /@ loop invariant hv_params4: same_float(params->scalar.slope,proof_slope_entry);
++       loop invariant 0<=k<=(total-batch/4)+(4);
+        loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-batch/4)+(4)-k; @/
+     for(size_t k=0;k<(total-batch/4)+(4);k++) {
+@@ -71,8 +74,10 @@
+     if (batch & (2 * sizeof(float))) {
+       /*@ assert \forall integer j; 0<=j<2 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-batch/4)+j],proof_slope_entry)); */
+ //@ ghost Unary2: ;
++    /*@ assert hv_guard_store2: \valid_read(&params->scalar.slope) && \separated(&params->scalar.slope,output+(0..1)); */
+     vst1_f32(output, vacc_lo);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-batch/4)+(2);
++    /@ loop invariant hv_params2: same_float(params->scalar.slope,proof_slope_entry);
++       loop invariant 0<=k<=(total-batch/4)+(2);
+        loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-batch/4)+(2)-k; @/
+     for(size_t k=0;k<(total-batch/4)+(2);k++) {
+@@ -97,8 +102,10 @@
+       //@ assert output==o_base+(total-1);
+       /*@ assert \forall integer j; 0<=j<1 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-1)+j],proof_slope_entry)); */
+ //@ ghost Unary1: ;
++    /*@ assert hv_guard_store1: \valid_read(&params->scalar.slope) && \separated(&params->scalar.slope,output+(0..0)); */
+     vst1_lane_f32(output, vacc_lo, 0);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-1)+(1);
++    /@ loop invariant hv_params1: same_float(params->scalar.slope,proof_slope_entry);
++       loop invariant 0<=k<=(total-1)+(1);
+        loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-1)+(1)-k; @/
+     for(size_t k=0;k<(total-1)+(1);k++) {

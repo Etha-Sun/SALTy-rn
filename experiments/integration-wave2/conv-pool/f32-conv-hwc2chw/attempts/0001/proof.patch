@@ -1,0 +1,1461 @@
+--- a/neon.c
++++ b/neon.c
+@@ -1,3 +1,20 @@
++/*@ logic float *cv_row(float *I,float *Z,integer H,integer W,integer y) = y<0 || y>=H?Z:I+3*y*W;
++     logic float cv_sample{L}(float *I,float *Z,integer H,integer W,integer y,integer x,integer ch) =
++      x<0 || x>=W ? 0.0f : cv_row(I,Z,H,W,y)[3*x+ch];
++     logic float cv_fold{L}(float *I,float *Z,float *WT,integer H,integer W,integer pad,integer y,integer x,integer ch,integer t) =
++      t<=0 ? WT[(ch/4)*112+ch%4] :
++      shim_fma32(WT[(ch/4)*112+4+4*(t-1)+ch%4],
++       cv_sample(I,Z,H,W,2*y-pad+(t-1)%3,2*x-1+(t-1)/9,((t-1)/3)%3),cv_fold(I,Z,WT,H,W,pad,y,x,ch,t-1));
++     logic integer cv_effective_ch(integer C,integer ch) = C%4!=0 && ch==C-1 ? (ch/4)*4+3 : ch;
++     logic integer cv_neon_steps(integer W,integer x) = W%2!=0 && x==W/2?18:27;
++     logic float cv_progress{L}(float *I,float *Z,float *WT,integer H,integer W,integer pad,integer y,integer x,integer ch,integer t) =
++ cv_fold(I,Z,WT,H,W,pad,y,x,ch,t<cv_neon_steps(W,x)?t:cv_neon_steps(W,x));
++ logic float cv_clamp(float x,float lo,float hi) = ext_neon_min32(ext_neon_max32(x,lo),hi);
++*/
++/*@ lemma cv_fold_zero{L}: \forall float *I,*Z,*WT;\forall integer H,W,pad,y,x,c;ext_same(cv_fold(I,Z,WT,H,W,pad,y,x,c,0),WT[(c/4)*112+c%4]);
++     lemma cv_fold_step{L}: \forall float *I,*Z,*WT;\forall integer H,W,pad,y,x,c,t;t>=0 ==> ext_same(cv_fold(I,Z,WT,H,W,pad,y,x,c,t+1),shim_fma32(WT[(c/4)*112+4+4*t+c%4],cv_sample(I,Z,H,W,2*y-pad+t%3,2*x-1+t/9,(t/3)%3),cv_fold(I,Z,WT,H,W,pad,y,x,c,t)));
++*/
++
+ /*
+ struct xnn_f32_minmax_params {
+   struct {
+@@ -22,11 +39,17 @@
+     size_t output_channel_stride,
+     const struct xnn_f32_minmax_params* restrict params) XNN_OOB_READS
+ {
++#line 25 "./neon.c"
+   assert(input_width != 0);
++#line 26 "./neon.c"
+   assert(output_y_end > output_y_start);
++#line 27 "./neon.c"
+   assert(input_padding_top <= 1);
++#line 28 "./neon.c"
+   assert(output_channels != 0);
+ 
++  //@ ghost CvN: ;
++  /*@ ghost const float *cv_I=input; const float *cv_Z=zero; const float *cv_W=weights; float *cv_O=output; */
+   const size_t input_height_stride = input_width * 3 /* channels */ * sizeof(float);
+   const size_t input_width_increment = round_down_po2(input_width, 4) * 3 /* channels */ * sizeof(float);
+   const size_t output_width = (input_width + 1) / 2;
+@@ -48,6 +71,18 @@
+   const float32x4_t vmin = vld1q_dup_f32(&params->scalar.min);
+   const float32x4_t vmax = vld1q_dup_f32(&params->scalar.max);
+ 
++  /*@ loop invariant cv_y: output_y_start<=output_y<=output_y_end+1;
++      loop invariant cv_output_rows: \forall integer yy,xx,cc; output_y_start<=yy<output_y && yy<output_y_end && 0<=xx<output_width && 0<=cc<output_channels ==> ext_same(cv_O[(cc)*(output_channel_stride/4)+(yy)*(output_height_stride/4)+(xx)],cv_clamp(cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,yy,xx,cv_effective_ch(output_channels,cc),cv_neon_steps(input_width,xx)),params->scalar.min,params->scalar.max));
++      loop invariant cv_outer_i0: output_y<output_y_end && 0<=2*output_y-input_padding_top+0<input_height ==> i0==cv_I+3*(2*output_y-input_padding_top+0)*input_width;
++      loop invariant cv_outer_i1: output_y<output_y_end && 0<=2*output_y-input_padding_top+1<input_height ==> i1==cv_I+3*(2*output_y-input_padding_top+1)*input_width;
++      loop invariant cv_outer_i2: output_y<output_y_end && 0<=2*output_y-input_padding_top+2<input_height ==> i2==cv_I+3*(2*output_y-input_padding_top+2)*input_width;
++      loop invariant cv_outer_i3: output_y<output_y_end && 0<=2*output_y-input_padding_top+3<input_height ==> i3==cv_I+3*(2*output_y-input_padding_top+3)*input_width;
++      loop invariant cv_outer_i4: output_y<output_y_end && 0<=2*output_y-input_padding_top+4<input_height ==> i4==cv_I+3*(2*output_y-input_padding_top+4)*input_width;
++      loop invariant cv_outer_o0: output_y<output_y_end ==> output0==cv_O+output_y*(output_height_stride/4);
++      loop invariant cv_outer_o1: output_y+1<output_y_end ==> output1==cv_O+(output_y+1)*(output_height_stride/4);
++      loop assigns output_y,i0,i1,i2,i3,i4,output0,output1,cv_O[0..output_channels*(output_channel_stride/4)-1],errno;
++      loop variant output_y_end-output_y;
++  */
+   for (size_t output_y = output_y_start; output_y < output_y_end; output_y += 2) {
+     const size_t input_y2 = output_y * 2 + 2 - input_padding_top;
+     const size_t input_y4 = input_y2 + 2;
+@@ -74,6 +109,18 @@
+     float* o1c2 = (float*) ((uintptr_t) o1c1 + output_channel_stride);
+     float* o0c3 = (float*) ((uintptr_t) o0c2 + output_channel_stride);
+     float* o1c3 = (float*) ((uintptr_t) o1c2 + output_channel_stride);
++    /*@ loop invariant cv_channels: 0<c<=output_channels;
++        loop invariant cv_channel_block: (output_channels-c)%4==0;
++        loop invariant cv_weight_cursor: w==cv_W+((output_channels-c)/4)*112;
++        loop invariant cv_output_channels: \forall integer yy,xx,cc;output_y<=yy<output_y+2 && yy<output_y_end && 0<=xx<output_width && 0<=cc<(output_channels-c) ==> ext_same(cv_O[(cc)*(output_channel_stride/4)+(yy)*(output_height_stride/4)+(xx)],cv_clamp(cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,yy,xx,cv_effective_ch(output_channels,cc),cv_neon_steps(input_width,xx)),params->scalar.min,params->scalar.max));
++        loop invariant cv_row_i0: i0==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+0);
++        loop invariant cv_row_i1: i1==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+1);
++        loop invariant cv_row_i2: i2==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+2);
++        loop invariant cv_row_i3: i3==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+3);
++        loop invariant cv_row_i4: i4==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+4);
++        loop assigns c,w,i0,i1,i2,i3,i4,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3,cv_O[0..output_channels*(output_channel_stride/4)-1],errno;
++        loop variant c;
++    */
+     do {
+       if XNN_UNPREDICTABLE(c < 2) {
+         o0c1 = o0c0;
+@@ -96,6 +143,24 @@
+       float32x4_t vi4x0 = vmovq_n_f32(0.0f);
+ 
+       size_t iw = input_width;
++      /*@ loop invariant cv_width: 0<=iw<=input_width && (input_width-iw)%4==0;
++          loop invariant cv_output_width: \forall integer yy,xx,cc;output_y<=yy<output_y+2 && yy<output_y_end && 0<=xx<((input_width-iw)/2) && (output_channels-c)<=cc<(output_channels-c)+4 && cc<output_channels ==> ext_same(cv_O[(cc)*(output_channel_stride/4)+(yy)*(output_height_stride/4)+(xx)],cv_clamp(cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,yy,xx,cv_effective_ch(output_channels,cc),cv_neon_steps(input_width,xx)),params->scalar.min,params->scalar.max));
++          loop invariant cv_i0: i0==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+0)+3*(input_width-iw);
++          loop invariant cv_i1: i1==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+1)+3*(input_width-iw);
++          loop invariant cv_i2: i2==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+2)+3*(input_width-iw);
++          loop invariant cv_i3: i3==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+3)+3*(input_width-iw);
++          loop invariant cv_i4: i4==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+4)+3*(input_width-iw);
++          loop invariant cv_output_cursor00: o0c0==cv_O+((output_channels-c)+(0<c?0:c-1))*(output_channel_stride/4)+output_y*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor01: o0c1==cv_O+((output_channels-c)+(1<c?1:c-1))*(output_channel_stride/4)+output_y*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor02: o0c2==cv_O+((output_channels-c)+(2<c?2:c-1))*(output_channel_stride/4)+output_y*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor03: o0c3==cv_O+((output_channels-c)+(3<c?3:c-1))*(output_channel_stride/4)+output_y*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor10: o1c0==cv_O+((output_channels-c)+(0<c?0:c-1))*(output_channel_stride/4)+(output_y+1<output_y_end?output_y+1:output_y)*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor11: o1c1==cv_O+((output_channels-c)+(1<c?1:c-1))*(output_channel_stride/4)+(output_y+1<output_y_end?output_y+1:output_y)*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor12: o1c2==cv_O+((output_channels-c)+(2<c?2:c-1))*(output_channel_stride/4)+(output_y+1<output_y_end?output_y+1:output_y)*(output_height_stride/4)+((input_width-iw)/2);
++          loop invariant cv_output_cursor13: o1c3==cv_O+((output_channels-c)+(3<c?3:c-1))*(output_channel_stride/4)+(output_y+1<output_y_end?output_y+1:output_y)*(output_height_stride/4)+((input_width-iw)/2);
++          loop assigns iw,vi0x0,vi1x0,vi2x0,vi3x0,vi4x0,i0,i1,i2,i3,i4,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3,cv_O[0..output_channels*(output_channel_stride/4)-1],errno;
++          loop variant iw;
++      */
+       for (; iw >= 4; iw -= 4) {
+         float32x4_t vo0x0 = vld1q_f32(w);
+         float32x4_t vo1x0 = vo0x0;
+@@ -112,23 +177,35 @@
+         const float32x4_t vi4x1 = vld1q_f32(i4); i4 += 4;
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c0, vi0x0, 1);
++        /*@ assert cv_acc_1_vo0x0_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),1)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c0, vi2x0, 1);
++        /*@ assert cv_acc_1_vo1x0_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),1)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c0, vi0x1, 3);
++        /*@ assert cv_acc_1_vo0x1_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),1)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c0, vi2x1, 3);
++        /*@ assert cv_acc_1_vo1x1_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),1)); */
+ 
+         const float32x4_t vk10c0 = vld1q_f32(w + 8);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c0, vi1x0, 1);
++        /*@ assert cv_acc_1_vo0x0_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),2)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c0, vi3x0, 1);
++        /*@ assert cv_acc_1_vo1x0_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),2)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c0, vi1x1, 3);
++        /*@ assert cv_acc_1_vo0x1_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),2)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c0, vi3x1, 3);
++        /*@ assert cv_acc_1_vo1x1_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),2)); */
+ 
+         const float32x4_t vk20c0 = vld1q_f32(w + 12);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c0, vi2x0, 1);
++        /*@ assert cv_acc_1_vo0x0_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),3)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c0, vi4x0, 1);
++        /*@ assert cv_acc_1_vo1x0_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),3)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c0, vi2x1, 3);
++        /*@ assert cv_acc_1_vo0x1_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),3)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c0, vi4x1, 3);
++        /*@ assert cv_acc_1_vo1x1_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),3)); */
+ 
+         const float32x4_t vk00c1 = vld1q_f32(w + 16);
+ 
+@@ -140,86 +217,134 @@
+         const float32x4_t vi4x2 = vld1q_f32(i4); i4 += 4;
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c1, vi0x0, 2);
++        /*@ assert cv_acc_1_vo0x0_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),4)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c1, vi2x0, 2);
++        /*@ assert cv_acc_1_vo1x0_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),4)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c1, vi0x2, 0);
++        /*@ assert cv_acc_1_vo0x1_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),4)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c1, vi2x2, 0);
++        /*@ assert cv_acc_1_vo1x1_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),4)); */
+ 
+         const float32x4_t vk10c1 = vld1q_f32(w + 20);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c1, vi1x0, 2);
++        /*@ assert cv_acc_1_vo0x0_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),5)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c1, vi3x0, 2);
++        /*@ assert cv_acc_1_vo1x0_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),5)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c1, vi1x2, 0);
++        /*@ assert cv_acc_1_vo0x1_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),5)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c1, vi3x2, 0);
++        /*@ assert cv_acc_1_vo1x1_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),5)); */
+ 
+         const float32x4_t vk20c1 = vld1q_f32(w + 24);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c1, vi2x0, 2);
++        /*@ assert cv_acc_1_vo0x0_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),6)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c1, vi4x0, 2);
++        /*@ assert cv_acc_1_vo1x0_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),6)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c1, vi2x2, 0);
++        /*@ assert cv_acc_1_vo0x1_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),6)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c1, vi4x2, 0);
++        /*@ assert cv_acc_1_vo1x1_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),6)); */
+ 
+         const float32x4_t vk00c2 = vld1q_f32(w + 28);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c2, vi0x0, 3);
++        /*@ assert cv_acc_1_vo0x0_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),7)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c2, vi2x0, 3);
++        /*@ assert cv_acc_1_vo1x0_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),7)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c2, vi0x2, 1);
++        /*@ assert cv_acc_1_vo0x1_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),7)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c2, vi2x2, 1);
++        /*@ assert cv_acc_1_vo1x1_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),7)); */
+ 
+         const float32x4_t vk10c2 = vld1q_f32(w + 32);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c2, vi1x0, 3);
++        /*@ assert cv_acc_1_vo0x0_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),8)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c2, vi3x0, 3);
++        /*@ assert cv_acc_1_vo1x0_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),8)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c2, vi1x2, 1);
++        /*@ assert cv_acc_1_vo0x1_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),8)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c2, vi3x2, 1);
++        /*@ assert cv_acc_1_vo1x1_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),8)); */
+ 
+         const float32x4_t vk20c2 = vld1q_f32(w + 36);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c2, vi2x0, 3);
++        /*@ assert cv_acc_1_vo0x0_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),9)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c2, vi4x0, 3);
++        /*@ assert cv_acc_1_vo1x0_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),9)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c2, vi2x2, 1);
++        /*@ assert cv_acc_1_vo0x1_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),9)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c2, vi4x2, 1);
++        /*@ assert cv_acc_1_vo1x1_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),9)); */
+ 
+         const float32x4_t vk01c0 = vld1q_f32(w + 40);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c0, vi0x1, 0);
++        /*@ assert cv_acc_1_vo0x0_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),10)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c0, vi2x1, 0);
++        /*@ assert cv_acc_1_vo1x0_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),10)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c0, vi0x2, 2);
++        /*@ assert cv_acc_1_vo0x1_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),10)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c0, vi2x2, 2);
++        /*@ assert cv_acc_1_vo1x1_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),10)); */
+ 
+         const float32x4_t vk11c0 = vld1q_f32(w + 44);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c0, vi1x1, 0);
++        /*@ assert cv_acc_1_vo0x0_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),11)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c0, vi3x1, 0);
++        /*@ assert cv_acc_1_vo1x0_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),11)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c0, vi1x2, 2);
++        /*@ assert cv_acc_1_vo0x1_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),11)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c0, vi3x2, 2);
++        /*@ assert cv_acc_1_vo1x1_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),11)); */
+ 
+         const float32x4_t vk21c0 = vld1q_f32(w + 48);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c0, vi2x1, 0);
++        /*@ assert cv_acc_1_vo0x0_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),12)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c0, vi4x1, 0);
++        /*@ assert cv_acc_1_vo1x0_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),12)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c0, vi2x2, 2);
++        /*@ assert cv_acc_1_vo0x1_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),12)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c0, vi4x2, 2);
++        /*@ assert cv_acc_1_vo1x1_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),12)); */
+ 
+         const float32x4_t vk01c1 = vld1q_f32(w + 52);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c1, vi0x1, 1);
++        /*@ assert cv_acc_1_vo0x0_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),13)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c1, vi2x1, 1);
++        /*@ assert cv_acc_1_vo1x0_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),13)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c1, vi0x2, 3);
++        /*@ assert cv_acc_1_vo0x1_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),13)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c1, vi2x2, 3);
++        /*@ assert cv_acc_1_vo1x1_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),13)); */
+ 
+         const float32x4_t vk11c1 = vld1q_f32(w + 56);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c1, vi1x1, 1);
++        /*@ assert cv_acc_1_vo0x0_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),14)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c1, vi3x1, 1);
++        /*@ assert cv_acc_1_vo1x0_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),14)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c1, vi1x2, 3);
++        /*@ assert cv_acc_1_vo0x1_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),14)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c1, vi3x2, 3);
++        /*@ assert cv_acc_1_vo1x1_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),14)); */
+ 
+         const float32x4_t vk21c1 = vld1q_f32(w + 60);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c1, vi2x1, 1);
++        /*@ assert cv_acc_1_vo0x0_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),15)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c1, vi4x1, 1);
++        /*@ assert cv_acc_1_vo1x0_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),15)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c1, vi2x2, 3);
++        /*@ assert cv_acc_1_vo0x1_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),15)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c1, vi4x2, 3);
++        /*@ assert cv_acc_1_vo1x1_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),15)); */
+ 
+         const float32x4_t vk01c2 = vld1q_f32(w + 64);
+ 
+@@ -231,86 +356,134 @@
+         const float32x4_t vi4x3 = vld1q_f32(i4); i4 += 4;
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c2, vi0x1, 2);
++        /*@ assert cv_acc_1_vo0x0_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),16)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c2, vi2x1, 2);
++        /*@ assert cv_acc_1_vo1x0_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),16)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c2, vi0x3, 0);
++        /*@ assert cv_acc_1_vo0x1_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),16)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c2, vi2x3, 0);
++        /*@ assert cv_acc_1_vo1x1_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),16)); */
+ 
+         const float32x4_t vk11c2 = vld1q_f32(w + 68);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c2, vi1x1, 2);
++        /*@ assert cv_acc_1_vo0x0_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),17)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c2, vi3x1, 2);
++        /*@ assert cv_acc_1_vo1x0_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),17)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c2, vi1x3, 0);
++        /*@ assert cv_acc_1_vo0x1_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),17)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c2, vi3x3, 0);
++        /*@ assert cv_acc_1_vo1x1_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),17)); */
+ 
+         const float32x4_t vk21c2 = vld1q_f32(w + 72);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c2, vi2x1, 2);
++        /*@ assert cv_acc_1_vo0x0_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),18)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c2, vi4x1, 2);
++        /*@ assert cv_acc_1_vo1x0_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),18)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c2, vi2x3, 0);
++        /*@ assert cv_acc_1_vo0x1_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),18)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c2, vi4x3, 0);
++        /*@ assert cv_acc_1_vo1x1_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),18)); */
+ 
+         const float32x4_t vk02c0 = vld1q_f32(w + 76);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c0, vi0x1, 3);
++        /*@ assert cv_acc_1_vo0x0_19: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),19)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c0, vi2x1, 3);
++        /*@ assert cv_acc_1_vo1x0_19: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),19)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk02c0, vi0x3, 1);
++        /*@ assert cv_acc_1_vo0x1_19: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),19)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk02c0, vi2x3, 1);
++        /*@ assert cv_acc_1_vo1x1_19: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),19)); */
+ 
+         const float32x4_t vk12c0 = vld1q_f32(w + 80);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c0, vi1x1, 3);
++        /*@ assert cv_acc_1_vo0x0_20: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),20)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c0, vi3x1, 3);
++        /*@ assert cv_acc_1_vo1x0_20: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),20)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk12c0, vi1x3, 1);
++        /*@ assert cv_acc_1_vo0x1_20: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),20)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk12c0, vi3x3, 1);
++        /*@ assert cv_acc_1_vo1x1_20: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),20)); */
+ 
+         const float32x4_t vk22c0 = vld1q_f32(w + 84);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c0, vi2x1, 3);
++        /*@ assert cv_acc_1_vo0x0_21: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),21)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c0, vi4x1, 3);
++        /*@ assert cv_acc_1_vo1x0_21: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),21)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk22c0, vi2x3, 1);
++        /*@ assert cv_acc_1_vo0x1_21: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),21)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk22c0, vi4x3, 1);
++        /*@ assert cv_acc_1_vo1x1_21: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),21)); */
+ 
+         const float32x4_t vk02c1 = vld1q_f32(w + 88);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c1, vi0x2, 0);
++        /*@ assert cv_acc_1_vo0x0_22: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),22)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c1, vi2x2, 0);
++        /*@ assert cv_acc_1_vo1x0_22: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),22)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk02c1, vi0x3, 2);
++        /*@ assert cv_acc_1_vo0x1_22: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),22)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk02c1, vi2x3, 2);
++        /*@ assert cv_acc_1_vo1x1_22: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),22)); */
+ 
+         const float32x4_t vk12c1 = vld1q_f32(w + 92);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c1, vi1x2, 0);
++        /*@ assert cv_acc_1_vo0x0_23: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),23)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c1, vi3x2, 0);
++        /*@ assert cv_acc_1_vo1x0_23: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),23)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk12c1, vi1x3, 2);
++        /*@ assert cv_acc_1_vo0x1_23: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),23)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk12c1, vi3x3, 2);
++        /*@ assert cv_acc_1_vo1x1_23: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),23)); */
+ 
+         const float32x4_t vk22c1 = vld1q_f32(w + 96);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c1, vi2x2, 0);
++        /*@ assert cv_acc_1_vo0x0_24: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),24)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c1, vi4x2, 0);
++        /*@ assert cv_acc_1_vo1x0_24: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),24)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk22c1, vi2x3, 2);
++        /*@ assert cv_acc_1_vo0x1_24: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),24)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk22c1, vi4x3, 2);
++        /*@ assert cv_acc_1_vo1x1_24: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),24)); */
+ 
+         const float32x4_t vk02c2 = vld1q_f32(w + 100);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c2, vi0x2, 1);
++        /*@ assert cv_acc_1_vo0x0_25: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),25)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c2, vi2x2, 1);
++        /*@ assert cv_acc_1_vo1x0_25: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),25)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk02c2, vi0x3, 3);
++        /*@ assert cv_acc_1_vo0x1_25: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),25)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk02c2, vi2x3, 3);
++        /*@ assert cv_acc_1_vo1x1_25: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),25)); */
+ 
+         const float32x4_t vk12c2 = vld1q_f32(w + 104);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c2, vi1x2, 1);
++        /*@ assert cv_acc_1_vo0x0_26: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),26)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c2, vi3x2, 1);
++        /*@ assert cv_acc_1_vo1x0_26: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),26)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk12c2, vi1x3, 3);
++        /*@ assert cv_acc_1_vo0x1_26: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),26)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk12c2, vi3x3, 3);
++        /*@ assert cv_acc_1_vo1x1_26: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),26)); */
+ 
+         const float32x4_t vk22c2 = vld1q_f32(w + 108);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c2, vi2x2, 1);
++        /*@ assert cv_acc_1_vo0x0_27: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),27)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c2, vi4x2, 1);
++        /*@ assert cv_acc_1_vo1x0_27: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),27)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk22c2, vi2x3, 3);
++        /*@ assert cv_acc_1_vo0x1_27: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),27)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk22c2, vi4x3, 3);
++        /*@ assert cv_acc_1_vo1x1_27: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),27)); */
+ 
+         vi0x0 = vi0x3;
+         vi1x0 = vi1x3;
+@@ -344,6 +517,7 @@
+         vst1_f32(o0c2, vget_low_f32(vo0c23)); o0c2 += 2;
+         vst1_f32(o0c3, vget_high_f32(vo0c23)); o0c3 += 2;
+       }
++#line 347 "./neon.c"
+       assert(iw < 4);
+       if XNN_UNLIKELY(iw != 0) {
+         float32x4_t vo0x0 = vld1q_f32(w);
+@@ -361,28 +535,40 @@
+         float32x4_t vi4x1 = vld1q_f32(i4);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c0, vi0x0, 1);
++        /*@ assert cv_acc_2_vo0x0_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),1)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c0, vi2x0, 1);
++        /*@ assert cv_acc_2_vo1x0_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),1)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c0, vi0x1, 3);
++          /*@ assert cv_acc_2_vo0x1_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),1)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c0, vi2x1, 3);
++          /*@ assert cv_acc_2_vo1x1_1: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),1)); */
+         }
+ 
+         const float32x4_t vk10c0 = vld1q_f32(w + 8);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c0, vi1x0, 1);
++        /*@ assert cv_acc_2_vo0x0_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),2)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c0, vi3x0, 1);
++        /*@ assert cv_acc_2_vo1x0_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),2)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c0, vi1x1, 3);
++          /*@ assert cv_acc_2_vo0x1_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),2)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c0, vi3x1, 3);
++          /*@ assert cv_acc_2_vo1x1_2: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),2)); */
+         }
+ 
+         const float32x4_t vk20c0 = vld1q_f32(w + 12);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c0, vi2x0, 1);
++        /*@ assert cv_acc_2_vo0x0_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),3)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c0, vi4x0, 1);
++        /*@ assert cv_acc_2_vo1x0_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),3)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c0, vi2x1, 3);
++          /*@ assert cv_acc_2_vo0x1_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),3)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c0, vi4x1, 3);
++          /*@ assert cv_acc_2_vo1x1_3: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),3)); */
+         }
+ 
+         const float32x4_t vk00c1 = vld1q_f32(w + 16);
+@@ -402,97 +588,145 @@
+         }
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c1, vi0x0, 2);
++        /*@ assert cv_acc_2_vo0x0_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),4)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c1, vi2x0, 2);
++        /*@ assert cv_acc_2_vo1x0_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),4)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c1, vi0x2, 0);
++        /*@ assert cv_acc_2_vo0x1_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),4)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c1, vi2x2, 0);
++        /*@ assert cv_acc_2_vo1x1_4: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),4)); */
+ 
+         const float32x4_t vk10c1 = vld1q_f32(w + 20);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c1, vi1x0, 2);
++        /*@ assert cv_acc_2_vo0x0_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),5)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c1, vi3x0, 2);
++        /*@ assert cv_acc_2_vo1x0_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),5)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c1, vi1x2, 0);
++        /*@ assert cv_acc_2_vo0x1_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),5)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c1, vi3x2, 0);
++        /*@ assert cv_acc_2_vo1x1_5: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),5)); */
+ 
+         const float32x4_t vk20c1 = vld1q_f32(w + 24);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c1, vi2x0, 2);
++        /*@ assert cv_acc_2_vo0x0_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),6)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c1, vi4x0, 2);
++        /*@ assert cv_acc_2_vo1x0_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),6)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c1, vi2x2, 0);
++        /*@ assert cv_acc_2_vo0x1_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),6)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c1, vi4x2, 0);
++        /*@ assert cv_acc_2_vo1x1_6: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),6)); */
+ 
+         const float32x4_t vk00c2 = vld1q_f32(w + 28);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk00c2, vi0x0, 3);
++        /*@ assert cv_acc_2_vo0x0_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),7)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk00c2, vi2x0, 3);
++        /*@ assert cv_acc_2_vo1x0_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),7)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk00c2, vi0x2, 1);
++        /*@ assert cv_acc_2_vo0x1_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),7)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk00c2, vi2x2, 1);
++        /*@ assert cv_acc_2_vo1x1_7: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),7)); */
+ 
+         const float32x4_t vk10c2 = vld1q_f32(w + 32);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk10c2, vi1x0, 3);
++        /*@ assert cv_acc_2_vo0x0_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),8)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk10c2, vi3x0, 3);
++        /*@ assert cv_acc_2_vo1x0_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),8)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk10c2, vi1x2, 1);
++        /*@ assert cv_acc_2_vo0x1_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),8)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk10c2, vi3x2, 1);
++        /*@ assert cv_acc_2_vo1x1_8: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),8)); */
+ 
+         const float32x4_t vk20c2 = vld1q_f32(w + 36);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk20c2, vi2x0, 3);
++        /*@ assert cv_acc_2_vo0x0_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),9)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk20c2, vi4x0, 3);
++        /*@ assert cv_acc_2_vo1x0_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),9)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk20c2, vi2x2, 1);
++        /*@ assert cv_acc_2_vo0x1_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),9)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk20c2, vi4x2, 1);
++        /*@ assert cv_acc_2_vo1x1_9: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),9)); */
+ 
+         const float32x4_t vk01c0 = vld1q_f32(w + 40);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c0, vi0x1, 0);
++        /*@ assert cv_acc_2_vo0x0_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),10)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c0, vi2x1, 0);
++        /*@ assert cv_acc_2_vo1x0_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),10)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c0, vi0x2, 2);
++          /*@ assert cv_acc_2_vo0x1_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),10)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c0, vi2x2, 2);
++          /*@ assert cv_acc_2_vo1x1_10: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),10)); */
+         }
+ 
+         const float32x4_t vk11c0 = vld1q_f32(w + 44);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c0, vi1x1, 0);
++        /*@ assert cv_acc_2_vo0x0_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),11)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c0, vi3x1, 0);
++        /*@ assert cv_acc_2_vo1x0_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),11)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c0, vi1x2, 2);
++          /*@ assert cv_acc_2_vo0x1_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),11)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c0, vi3x2, 2);
++          /*@ assert cv_acc_2_vo1x1_11: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),11)); */
+         }
+ 
+         const float32x4_t vk21c0 = vld1q_f32(w + 48);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c0, vi2x1, 0);
++        /*@ assert cv_acc_2_vo0x0_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),12)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c0, vi4x1, 0);
++        /*@ assert cv_acc_2_vo1x0_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),12)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c0, vi2x2, 2);
++          /*@ assert cv_acc_2_vo0x1_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),12)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c0, vi4x2, 2);
++          /*@ assert cv_acc_2_vo1x1_12: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),12)); */
+         }
+ 
+         const float32x4_t vk01c1 = vld1q_f32(w + 52);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c1, vi0x1, 1);
++        /*@ assert cv_acc_2_vo0x0_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),13)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c1, vi2x1, 1);
++        /*@ assert cv_acc_2_vo1x0_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),13)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c1, vi0x2, 3);
++          /*@ assert cv_acc_2_vo0x1_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),13)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c1, vi2x2, 3);
++          /*@ assert cv_acc_2_vo1x1_13: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),13)); */
+         }
+ 
+         const float32x4_t vk11c1 = vld1q_f32(w + 56);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c1, vi1x1, 1);
++        /*@ assert cv_acc_2_vo0x0_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),14)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c1, vi3x1, 1);
++        /*@ assert cv_acc_2_vo1x0_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),14)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c1, vi1x2, 3);
++          /*@ assert cv_acc_2_vo0x1_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),14)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c1, vi3x2, 3);
++          /*@ assert cv_acc_2_vo1x1_14: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),14)); */
+         }
+ 
+         const float32x4_t vk21c1 = vld1q_f32(w + 60);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c1, vi2x1, 1);
++        /*@ assert cv_acc_2_vo0x0_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),15)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c1, vi4x1, 1);
++        /*@ assert cv_acc_2_vo1x0_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),15)); */
+         if (iw > 2) {
+           vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c1, vi2x2, 3);
++          /*@ assert cv_acc_2_vo0x1_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),15)); */
+           vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c1, vi4x2, 3);
++          /*@ assert cv_acc_2_vo1x1_15: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),15)); */
+         }
+ 
+         const float32x4_t vk01c2 = vld1q_f32(w + 64);
+@@ -512,69 +746,99 @@
+         }
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk01c2, vi0x1, 2);
++        /*@ assert cv_acc_2_vo0x0_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),16)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk01c2, vi2x1, 2);
++        /*@ assert cv_acc_2_vo1x0_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),16)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk01c2, vi0x3, 0);
++        /*@ assert cv_acc_2_vo0x1_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),16)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk01c2, vi2x3, 0);
++        /*@ assert cv_acc_2_vo1x1_16: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),16)); */
+ 
+         const float32x4_t vk11c2 = vld1q_f32(w + 68);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk11c2, vi1x1, 2);
++        /*@ assert cv_acc_2_vo0x0_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),17)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk11c2, vi3x1, 2);
++        /*@ assert cv_acc_2_vo1x0_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),17)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk11c2, vi1x3, 0);
++        /*@ assert cv_acc_2_vo0x1_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),17)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk11c2, vi3x3, 0);
++        /*@ assert cv_acc_2_vo1x1_17: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),17)); */
+ 
+         const float32x4_t vk21c2 = vld1q_f32(w + 72);
+ 
+         vo0x0 = vfmaq_laneq_f32(vo0x0, vk21c2, vi2x1, 2);
++        /*@ assert cv_acc_2_vo0x0_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),18)); */
+         vo1x0 = vfmaq_laneq_f32(vo1x0, vk21c2, vi4x1, 2);
++        /*@ assert cv_acc_2_vo1x0_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),18)); */
+         vo0x1 = vfmaq_laneq_f32(vo0x1, vk21c2, vi2x3, 0);
++        /*@ assert cv_acc_2_vo0x1_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo0x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+1),((output_channels-c)+j),18)); */
+         vo1x1 = vfmaq_laneq_f32(vo1x1, vk21c2, vi4x3, 0);
++        /*@ assert cv_acc_2_vo1x1_18: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+1)<output_width ==> ext_same(vo1x1.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+1),((output_channels-c)+j),18)); */
+ 
+         if (iw >= 2) {
+           const float32x4_t vk02c0 = vld1q_f32(w + 76);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c0, vi0x1, 3);
++          /*@ assert cv_acc_2_vo0x0_19: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),19)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c0, vi2x1, 3);
++          /*@ assert cv_acc_2_vo1x0_19: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),19)); */
+ 
+           const float32x4_t vk12c0 = vld1q_f32(w + 80);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c0, vi1x1, 3);
++          /*@ assert cv_acc_2_vo0x0_20: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),20)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c0, vi3x1, 3);
++          /*@ assert cv_acc_2_vo1x0_20: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),20)); */
+ 
+           const float32x4_t vk22c0 = vld1q_f32(w + 84);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c0, vi2x1, 3);
++          /*@ assert cv_acc_2_vo0x0_21: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),21)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c0, vi4x1, 3);
++          /*@ assert cv_acc_2_vo1x0_21: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),21)); */
+ 
+           const float32x4_t vk02c1 = vld1q_f32(w + 88);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c1, vi0x2, 0);
++          /*@ assert cv_acc_2_vo0x0_22: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),22)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c1, vi2x2, 0);
++          /*@ assert cv_acc_2_vo1x0_22: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),22)); */
+ 
+           const float32x4_t vk12c1 = vld1q_f32(w + 92);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c1, vi1x2, 0);
++          /*@ assert cv_acc_2_vo0x0_23: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),23)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c1, vi3x2, 0);
++          /*@ assert cv_acc_2_vo1x0_23: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),23)); */
+ 
+           const float32x4_t vk22c1 = vld1q_f32(w + 96);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c1, vi2x2, 0);
++          /*@ assert cv_acc_2_vo0x0_24: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),24)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c1, vi4x2, 0);
++          /*@ assert cv_acc_2_vo1x0_24: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),24)); */
+ 
+           const float32x4_t vk02c2 = vld1q_f32(w + 100);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk02c2, vi0x2, 1);
++          /*@ assert cv_acc_2_vo0x0_25: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),25)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk02c2, vi2x2, 1);
++          /*@ assert cv_acc_2_vo1x0_25: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),25)); */
+ 
+           const float32x4_t vk12c2 = vld1q_f32(w + 104);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk12c2, vi1x2, 1);
++          /*@ assert cv_acc_2_vo0x0_26: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),26)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk12c2, vi3x2, 1);
++          /*@ assert cv_acc_2_vo1x0_26: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),26)); */
+ 
+           const float32x4_t vk22c2 = vld1q_f32(w + 108);
+ 
+           vo0x0 = vfmaq_laneq_f32(vo0x0, vk22c2, vi2x2, 1);
++          /*@ assert cv_acc_2_vo0x0_27: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+0)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo0x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+0),(((input_width-iw)/2)+0),((output_channels-c)+j),27)); */
+           vo1x0 = vfmaq_laneq_f32(vo1x0, vk22c2, vi4x2, 1);
++          /*@ assert cv_acc_2_vo1x0_27: \forall integer j;0<=j<4 && ((output_channels-c)+j)<output_channels && (output_y+1)<output_y_end && (((input_width-iw)/2)+0)<output_width ==> ext_same(vo1x0.lane[j],cv_progress{CvN}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,(output_y+1),(((input_width-iw)/2)+0),((output_channels-c)+j),27)); */
+         }
+ 
+         vo0x0 = vmaxq_f32(vo0x0, vmin);
+--- a/rvv.c
++++ b/rvv.c
+@@ -1,10 +1,14 @@
+ /* Preserve NEON propagating NaNs using real RVV masks and merges. */
++/*@ requires vl<=4; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b)); */
+ static inline vfloat32m1_t salty_min_vf_m1(vfloat32m1_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m1(__builtin_nanf(""),vl);
+   vbool32_t nan=__riscv_vmfne_vv_f32m1_b32(a,a,vl);
+   vfloat32m1_t r=__riscv_vfmin_vf_f32m1(a,b,vl);
+   return __riscv_vfmerge_vfm_f32m1(r,__builtin_nanf(""),nan,vl);
+ }
++/*@ requires vl<=4; assigns \nothing;
++ ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b)); */
+ static inline vfloat32m1_t salty_max_vf_m1(vfloat32m1_t a,float b,size_t vl) {
+   if (b!=b) return __riscv_vfmv_v_f_f32m1(__builtin_nanf(""),vl);
+   vbool32_t nan=__riscv_vmfne_vv_f32m1_b32(a,a,vl);
+@@ -26,11 +30,17 @@
+     size_t output_channel_stride,
+     const struct xnn_f32_minmax_params* restrict params) XNN_OOB_READS
+ {
++#line 29 "./rvv.c"
+   assert(input_width != 0);
++#line 30 "./rvv.c"
+   assert(output_y_end > output_y_start);
++#line 31 "./rvv.c"
+   assert(input_padding_top <= 1);
++#line 32 "./rvv.c"
+   assert(output_channels != 0);
+ 
++  //@ ghost CvR: ;
++  /*@ ghost const float *cv_I=input; const float *cv_Z=zero; const float *cv_W=weights; float *cv_O=output; */
+   const size_t input_height_stride = input_width * 3 /* channels */ * sizeof(float);
+   const size_t output_width = (input_width + 1) / 2;
+   const size_t output_channel_increment = output_channel_stride * 4 - output_width * sizeof(float);
+@@ -48,6 +58,18 @@
+     i0 = zero;
+   }
+ 
++  /*@ loop invariant cv_y: output_y_start<=output_y<=output_y_end+1;
++      loop invariant cv_output_rows: \forall integer yy,xx,cc; output_y_start<=yy<output_y && yy<output_y_end && 0<=xx<output_width && 0<=cc<output_channels ==> ext_same(cv_O[(cc)*(output_channel_stride/4)+(yy)*(output_height_stride/4)+(xx)],cv_clamp(cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,yy,xx,cv_effective_ch(output_channels,cc),27),params->scalar.min,params->scalar.max));
++      loop invariant cv_outer_i0: output_y<output_y_end && 0<=2*output_y-input_padding_top+0<input_height ==> i0==cv_I+3*(2*output_y-input_padding_top+0)*input_width;
++      loop invariant cv_outer_i1: output_y<output_y_end && 0<=2*output_y-input_padding_top+1<input_height ==> i1==cv_I+3*(2*output_y-input_padding_top+1)*input_width;
++      loop invariant cv_outer_i2: output_y<output_y_end && 0<=2*output_y-input_padding_top+2<input_height ==> i2==cv_I+3*(2*output_y-input_padding_top+2)*input_width;
++      loop invariant cv_outer_i3: output_y<output_y_end && 0<=2*output_y-input_padding_top+3<input_height ==> i3==cv_I+3*(2*output_y-input_padding_top+3)*input_width;
++      loop invariant cv_outer_i4: output_y<output_y_end && 0<=2*output_y-input_padding_top+4<input_height ==> i4==cv_I+3*(2*output_y-input_padding_top+4)*input_width;
++      loop invariant cv_outer_o0: output_y<output_y_end ==> output0==cv_O+output_y*(output_height_stride/4);
++      loop invariant cv_outer_o1: output_y+1<output_y_end ==> output1==cv_O+(output_y+1)*(output_height_stride/4);
++      loop assigns output_y,i0,i1,i2,i3,i4,output0,output1,cv_O[0..output_channels*(output_channel_stride/4)-1],errno;
++      loop variant output_y_end-output_y;
++  */
+   for (size_t output_y = output_y_start; output_y < output_y_end; output_y += 2) {
+     const size_t input_y2 = output_y * 2 + 2 - input_padding_top;
+     const size_t input_y4 = input_y2 + 2;
+@@ -74,6 +96,18 @@
+     float* o1c2 = (float*) ((uintptr_t) o1c1 + output_channel_stride);
+     float* o0c3 = (float*) ((uintptr_t) o0c2 + output_channel_stride);
+     float* o1c3 = (float*) ((uintptr_t) o1c2 + output_channel_stride);
++    /*@ loop invariant cv_channels: 0<c<=output_channels;
++        loop invariant cv_channel_block: (output_channels-c)%4==0;
++        loop invariant cv_weight_cursor: w==cv_W+((output_channels-c)/4)*112;
++        loop invariant cv_output_channels: \forall integer yy,xx,cc;output_y<=yy<output_y+2 && yy<output_y_end && 0<=xx<output_width && 0<=cc<(output_channels-c) ==> ext_same(cv_O[(cc)*(output_channel_stride/4)+(yy)*(output_height_stride/4)+(xx)],cv_clamp(cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,yy,xx,cv_effective_ch(output_channels,cc),27),params->scalar.min,params->scalar.max));
++        loop invariant cv_row_i0: i0==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+0);
++        loop invariant cv_row_i1: i1==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+1);
++        loop invariant cv_row_i2: i2==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+2);
++        loop invariant cv_row_i3: i3==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+3);
++        loop invariant cv_row_i4: i4==cv_row(cv_I,cv_Z,input_height,input_width,2*output_y-input_padding_top+4);
++        loop assigns c,w,i0,i1,i2,i3,i4,o0c0,o0c1,o0c2,o0c3,o1c0,o1c1,o1c2,o1c3,cv_O[0..output_channels*(output_channel_stride/4)-1],errno;
++        loop variant c;
++    */
+     do {
+       if XNN_UNPREDICTABLE(c < 2) {
+         o0c1 = o0c0;
+@@ -107,8 +141,22 @@
+       float* current_o1c2 = o1c2;
+       float* current_o1c3 = o1c3;
+ 
++      /*@ loop invariant cv_width: 0<=ow<=output_width && ow_done+ow==output_width;
++          loop invariant cv_output_width: \forall integer yy,xx,cc;output_y<=yy<output_y+2 && yy<output_y_end && 0<=xx<ow_done && (output_channels-c)<=cc<(output_channels-c)+4 && cc<output_channels ==> ext_same(cv_O[(cc)*(output_channel_stride/4)+(yy)*(output_height_stride/4)+(xx)],cv_clamp(cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,yy,xx,cv_effective_ch(output_channels,cc),27),params->scalar.min,params->scalar.max));
++          loop invariant cv_o0c0: current_o0c0==o0c0+ow_done;
++          loop invariant cv_o0c1: current_o0c1==o0c1+ow_done;
++          loop invariant cv_o0c2: current_o0c2==o0c2+ow_done;
++          loop invariant cv_o0c3: current_o0c3==o0c3+ow_done;
++          loop invariant cv_o1c0: current_o1c0==o1c0+ow_done;
++          loop invariant cv_o1c1: current_o1c1==o1c1+ow_done;
++          loop invariant cv_o1c2: current_o1c2==o1c2+ow_done;
++          loop invariant cv_o1c3: current_o1c3==o1c3+ow_done;
++          loop assigns ow,ow_done,current_o0c0,current_o0c1,current_o0c2,current_o0c3,current_o1c0,current_o1c1,current_o1c2,current_o1c3,cv_O[0..output_channels*(output_channel_stride/4)-1],errno;
++          loop variant ow;
++      */
+       while (ow > 0) {
+         size_t vl = __riscv_vsetvl_e32m1(ow);
++        /*@ assert cv_active_vl: 0<vl<=4 && vl<=ow; */
+         vfloat32m1_t v_zero = __riscv_vfmv_v_f_f32m1(0.0f, vl);
+ 
+         vuint32m1_t vj = __riscv_vid_v_u32m1(vl);
+@@ -132,7 +180,19 @@
+         vfloat32m1_t v_o1c2 = __riscv_vfmv_v_f_f32m1(w[2], vl);
+         vfloat32m1_t v_o1c3 = __riscv_vfmv_v_f_f32m1(w[3], vl);
+ 
+-        for (int dx = 0; dx < 3; dx++) {
++                /*@ loop invariant cv_dx: 0<=dx<=3;
++            loop invariant cv_acc_dx00: \forall integer j;0<=j<vl ==> ext_same(v_o0c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+0,dx*9));
++            loop invariant cv_acc_dx01: \forall integer j;0<=j<vl ==> ext_same(v_o0c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+1,dx*9));
++            loop invariant cv_acc_dx02: \forall integer j;0<=j<vl ==> ext_same(v_o0c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+2,dx*9));
++            loop invariant cv_acc_dx03: \forall integer j;0<=j<vl ==> ext_same(v_o0c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+3,dx*9));
++            loop invariant cv_acc_dx10: \forall integer j;0<=j<vl ==> ext_same(v_o1c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+0,dx*9));
++            loop invariant cv_acc_dx11: \forall integer j;0<=j<vl ==> ext_same(v_o1c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+1,dx*9));
++            loop invariant cv_acc_dx12: \forall integer j;0<=j<vl ==> ext_same(v_o1c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+2,dx*9));
++            loop invariant cv_acc_dx13: \forall integer j;0<=j<vl ==> ext_same(v_o1c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+3,dx*9));
++            loop assigns v_o0c0,v_o0c1,v_o0c2,v_o0c3,v_o1c0,v_o1c1,v_o1c2,v_o1c3,errno;
++            loop variant 3-dx;
++        */
++for (int dx = 0; dx < 3; dx++) {
+           vint32m1_t v_idx = __riscv_vadd_vx_i32m1(v_idx_base, dx, vl);
+           vbool32_t mask = __riscv_vmand_mm_b32(
+               __riscv_vmsge_vx_i32m1_b32(v_idx, 0, vl),
+@@ -140,7 +200,20 @@
+               vl
+           );
+ 
+-          for (int c_in = 0; c_in < 3; c_in++) {
++                            /*@ assert cv_right_mask: dx==2 ==> (\forall integer j;0<=j<vl ==> ((mask.lane[j]!=0) <==> ow_done+j<input_width/2)); */
++/*@ loop invariant cv_c_in: 0<=c_in<=3;
++            loop invariant cv_acc_c_in00: \forall integer j;0<=j<vl ==> ext_same(v_o0c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+0,dx*9+c_in*3));
++            loop invariant cv_acc_c_in01: \forall integer j;0<=j<vl ==> ext_same(v_o0c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+1,dx*9+c_in*3));
++            loop invariant cv_acc_c_in02: \forall integer j;0<=j<vl ==> ext_same(v_o0c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+2,dx*9+c_in*3));
++            loop invariant cv_acc_c_in03: \forall integer j;0<=j<vl ==> ext_same(v_o0c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+3,dx*9+c_in*3));
++            loop invariant cv_acc_c_in10: \forall integer j;0<=j<vl ==> ext_same(v_o1c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+0,dx*9+c_in*3));
++            loop invariant cv_acc_c_in11: \forall integer j;0<=j<vl ==> ext_same(v_o1c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+1,dx*9+c_in*3));
++            loop invariant cv_acc_c_in12: \forall integer j;0<=j<vl ==> ext_same(v_o1c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+2,dx*9+c_in*3));
++            loop invariant cv_acc_c_in13: \forall integer j;0<=j<vl ==> ext_same(v_o1c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+3,dx*9+c_in*3));
++            loop assigns v_o0c0,v_o0c1,v_o0c2,v_o0c3,v_o1c0,v_o1c1,v_o1c2,v_o1c3,errno;
++            loop variant 3-c_in;
++        */
++for (int c_in = 0; c_in < 3; c_in++) {
+             int32_t scalar_offset = (dx * 3 + c_in) * 4;
+             // Per-lane offset is (lane+ow_done)*24 + scalar_offset: a fixed 24-byte stride,
+             // so a strided load + mask-merge replaces the indexed gather (same values).
+@@ -152,7 +225,19 @@
+             vfloat32m1_t v_in3 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i3_base + v_off), v_str, vl), mask, vl);
+             vfloat32m1_t v_in4 = __riscv_vmerge_vvm_f32m1(v_zero, __riscv_vlse32_v_f32m1_m(mask, (const float*)((uintptr_t)i4_base + v_off), v_str, vl), mask, vl);
+ 
+-            for (int ky = 0; ky < 3; ky++) {
++                    /*@ loop invariant cv_ky: 0<=ky<=3;
++            loop invariant cv_acc_ky00: \forall integer j;0<=j<vl ==> ext_same(v_o0c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+0,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky01: \forall integer j;0<=j<vl ==> ext_same(v_o0c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+1,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky02: \forall integer j;0<=j<vl ==> ext_same(v_o0c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+2,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky03: \forall integer j;0<=j<vl ==> ext_same(v_o0c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+3,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky10: \forall integer j;0<=j<vl ==> ext_same(v_o1c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+0,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky11: \forall integer j;0<=j<vl ==> ext_same(v_o1c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+1,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky12: \forall integer j;0<=j<vl ==> ext_same(v_o1c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+2,dx*9+c_in*3+ky));
++            loop invariant cv_acc_ky13: \forall integer j;0<=j<vl ==> ext_same(v_o1c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+3,dx*9+c_in*3+ky));
++            loop assigns v_o0c0,v_o0c1,v_o0c2,v_o0c3,v_o1c0,v_o1c1,v_o1c2,v_o1c3,errno;
++            loop variant 3-ky;
++        */
++for (int ky = 0; ky < 3; ky++) {
+               vfloat32m1_t v_in_row0 = (ky == 0) ? v_in0 : (ky == 1) ? v_in1 : v_in2;
+               vfloat32m1_t v_in_row1 = (ky == 0) ? v_in2 : (ky == 1) ? v_in3 : v_in4;
+ 
+@@ -164,35 +249,67 @@
+               float w2 = w[4 + w_idx + 2];
+               float w3 = w[4 + w_idx + 3];
+ 
++              //@ ghost CvUpdate00: ;
+               v_o0c0 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o0c0, __riscv_vfmacc_vf_f32m1(v_o0c0, w0, v_in_row0, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o0c0, w0, v_in_row0, vl);
++              /*@ assert cv_actual_update00: \forall integer j;0<=j<vl ==> ext_same(v_o0c0.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o0c0.lane[j],CvUpdate00):shim_fma32(w0,v_in_row0.lane[j],\at(v_o0c0.lane[j],CvUpdate00))); */
++              /*@ assert cv_actual_skip00: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o0c0.lane[j],\at(v_o0c0.lane[j],CvUpdate00))); */
++              //@ ghost CvUpdate01: ;
+               v_o0c1 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o0c1, __riscv_vfmacc_vf_f32m1(v_o0c1, w1, v_in_row0, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o0c1, w1, v_in_row0, vl);
++              /*@ assert cv_actual_update01: \forall integer j;0<=j<vl ==> ext_same(v_o0c1.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o0c1.lane[j],CvUpdate01):shim_fma32(w1,v_in_row0.lane[j],\at(v_o0c1.lane[j],CvUpdate01))); */
++              /*@ assert cv_actual_skip01: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o0c1.lane[j],\at(v_o0c1.lane[j],CvUpdate01))); */
++              //@ ghost CvUpdate02: ;
+               v_o0c2 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o0c2, __riscv_vfmacc_vf_f32m1(v_o0c2, w2, v_in_row0, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o0c2, w2, v_in_row0, vl);
++              /*@ assert cv_actual_update02: \forall integer j;0<=j<vl ==> ext_same(v_o0c2.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o0c2.lane[j],CvUpdate02):shim_fma32(w2,v_in_row0.lane[j],\at(v_o0c2.lane[j],CvUpdate02))); */
++              /*@ assert cv_actual_skip02: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o0c2.lane[j],\at(v_o0c2.lane[j],CvUpdate02))); */
++              //@ ghost CvUpdate03: ;
+               v_o0c3 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o0c3, __riscv_vfmacc_vf_f32m1(v_o0c3, w3, v_in_row0, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o0c3, w3, v_in_row0, vl);
+-
++              /*@ assert cv_actual_update03: \forall integer j;0<=j<vl ==> ext_same(v_o0c3.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o0c3.lane[j],CvUpdate03):shim_fma32(w3,v_in_row0.lane[j],\at(v_o0c3.lane[j],CvUpdate03))); */
++              /*@ assert cv_actual_skip03: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o0c3.lane[j],\at(v_o0c3.lane[j],CvUpdate03))); */
++
++              //@ ghost CvUpdate10: ;
+               v_o1c0 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o1c0, __riscv_vfmacc_vf_f32m1(v_o1c0, w0, v_in_row1, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o1c0, w0, v_in_row1, vl);
++              /*@ assert cv_actual_update10: \forall integer j;0<=j<vl ==> ext_same(v_o1c0.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o1c0.lane[j],CvUpdate10):shim_fma32(w0,v_in_row1.lane[j],\at(v_o1c0.lane[j],CvUpdate10))); */
++              /*@ assert cv_actual_skip10: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o1c0.lane[j],\at(v_o1c0.lane[j],CvUpdate10))); */
++              //@ ghost CvUpdate11: ;
+               v_o1c1 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o1c1, __riscv_vfmacc_vf_f32m1(v_o1c1, w1, v_in_row1, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o1c1, w1, v_in_row1, vl);
++              /*@ assert cv_actual_update11: \forall integer j;0<=j<vl ==> ext_same(v_o1c1.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o1c1.lane[j],CvUpdate11):shim_fma32(w1,v_in_row1.lane[j],\at(v_o1c1.lane[j],CvUpdate11))); */
++              /*@ assert cv_actual_skip11: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o1c1.lane[j],\at(v_o1c1.lane[j],CvUpdate11))); */
++              //@ ghost CvUpdate12: ;
+               v_o1c2 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o1c2, __riscv_vfmacc_vf_f32m1(v_o1c2, w2, v_in_row1, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o1c2, w2, v_in_row1, vl);
++              /*@ assert cv_actual_update12: \forall integer j;0<=j<vl ==> ext_same(v_o1c2.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o1c2.lane[j],CvUpdate12):shim_fma32(w2,v_in_row1.lane[j],\at(v_o1c2.lane[j],CvUpdate12))); */
++              /*@ assert cv_actual_skip12: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o1c2.lane[j],\at(v_o1c2.lane[j],CvUpdate12))); */
++              //@ ghost CvUpdate13: ;
+               v_o1c3 = (dx == 2)
+                 ? __riscv_vmerge_vvm_f32m1(v_o1c3, __riscv_vfmacc_vf_f32m1(v_o1c3, w3, v_in_row1, vl), mask, vl)
+                 : __riscv_vfmacc_vf_f32m1(v_o1c3, w3, v_in_row1, vl);
++              /*@ assert cv_actual_update13: \forall integer j;0<=j<vl ==> ext_same(v_o1c3.lane[j],(dx==2 && mask.lane[j]==0)?\at(v_o1c3.lane[j],CvUpdate13):shim_fma32(w3,v_in_row1.lane[j],\at(v_o1c3.lane[j],CvUpdate13))); */
++              /*@ assert cv_actual_skip13: \forall integer j;0<=j<vl ==> ((dx==2 && mask.lane[j]==0) ==> ext_same(v_o1c3.lane[j],\at(v_o1c3.lane[j],CvUpdate13))); */
+             }
+           }
+         }
+ 
++        /*@ assert cv_full_acc00: \forall integer j;0<=j<vl ==> ext_same(v_o0c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+0,27)); */
++        /*@ assert cv_full_acc01: \forall integer j;0<=j<vl ==> ext_same(v_o0c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+1,27)); */
++        /*@ assert cv_full_acc02: \forall integer j;0<=j<vl ==> ext_same(v_o0c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+2,27)); */
++        /*@ assert cv_full_acc03: \forall integer j;0<=j<vl ==> ext_same(v_o0c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+0,ow_done+j,(output_channels-c)+3,27)); */
++        /*@ assert cv_full_acc10: \forall integer j;0<=j<vl ==> ext_same(v_o1c0.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+0,27)); */
++        /*@ assert cv_full_acc11: \forall integer j;0<=j<vl ==> ext_same(v_o1c1.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+1,27)); */
++        /*@ assert cv_full_acc12: \forall integer j;0<=j<vl ==> ext_same(v_o1c2.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+2,27)); */
++        /*@ assert cv_full_acc13: \forall integer j;0<=j<vl ==> ext_same(v_o1c3.lane[j],cv_progress{CvR}(cv_I,cv_Z,cv_W,input_height,input_width,input_padding_top,output_y+1,ow_done+j,(output_channels-c)+3,27)); */
+         v_o0c0 = salty_max_vf_m1(v_o0c0, params->scalar.min, vl);
+         v_o0c1 = salty_max_vf_m1(v_o0c1, params->scalar.min, vl);
+         v_o0c2 = salty_max_vf_m1(v_o0c2, params->scalar.min, vl);
+--- a/harness.c
++++ b/harness.c
+@@ -4,6 +4,36 @@
+   size_t oh=(h+1)/2,ow=(w+1)/2;
+   test_neon(h,w,0,oh,input,zero,weights,left,1,channels,ow*4,oh*ow*4,&params);
+   test_rvv(h,w,0,oh,input,zero,weights,right,1,channels,ow*4,oh*ow*4,&params);
++  /*@ loop invariant 0<=i<=channels*oh*ow;
++      loop invariant \forall integer j; 0<=j<i ==> (\eq_float(left[j],right[j]) || (\is_NaN(left[j]) && \is_NaN(right[j])));
++      loop assigns i;
++      loop variant channels*oh*ow-i;
++  */
+   for(size_t i=0;i<channels*oh*ow;i++)if(!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i])))return 0;
+   return 1;
+ }
++
++/*@ lemma cv_progress_before{L}: \forall float *I,*Z,*WT;\forall integer H,W,pad,y,x,c,t;
++ 0<=t<=cv_neon_steps(W,x) ==> ext_same(cv_progress(I,Z,WT,H,W,pad,y,x,c,t),cv_fold(I,Z,WT,H,W,pad,y,x,c,t));
++ lemma cv_progress_done{L}: \forall float *I,*Z,*WT;\forall integer H,W,pad,y,x,c,t;
++ t>=cv_neon_steps(W,x) ==> ext_same(cv_progress(I,Z,WT,H,W,pad,y,x,c,t),cv_fold(I,Z,WT,H,W,pad,y,x,c,cv_neon_steps(W,x)));
++ lemma cv_progress_skip{L}: \forall float *I,*Z,*WT;\forall integer H,W,pad,y,x,c,t;
++ t>=cv_neon_steps(W,x) ==> ext_same(cv_progress(I,Z,WT,H,W,pad,y,x,c,t+1),cv_progress(I,Z,WT,H,W,pad,y,x,c,t));
++*/
++/*@ \wp::strategy CvPointSolve: \prover("cvc5",10), \prover("z3",10);
++    \wp::strategy CvPointFilter: \tactic("Wp.filter",\children(CvPointSolve)), CvPointSolve;
++    \wp::proof CvPointFilter: equivalent;
++    \wp::strategy CvHelperSolve: \prover("cvc5",5), \prover("z3",5);
++    \wp::strategy CvHelperFilter: \tactic("Wp.filter",\children(CvHelperSolve)), CvHelperSolve;
++    \wp::proof CvHelperFilter: canonical_nan;
++    \wp::proof CvHelperFilter: vminq_f32; \wp::proof CvHelperFilter: vmaxq_f32; \wp::proof CvHelperFilter: vmin_f32; \wp::proof CvHelperFilter: vmax_f32;
++    \wp::proof CvHelperFilter: vst1q_f32; \wp::proof CvHelperFilter: vst1_f32; \wp::proof CvHelperFilter: vld2q_dup_f32; \wp::proof CvHelperFilter: vld2_dup_f32;
++    \wp::proof CvHelperFilter: vextq_f32; \wp::proof CvHelperFilter: vzip2q_f32;
++    \wp::proof CvHelperFilter: vfmaq_lane_f32; \wp::proof CvHelperFilter: vfmaq_laneq_f32; \wp::proof CvHelperFilter: vfma_f32;
++    \wp::proof CvHelperFilter: __riscv_vse32_v_f32m1;
++    \wp::proof CvHelperFilter: __riscv_vfmacc_vf_f32m1; \wp::proof CvHelperFilter: __riscv_vfmacc_vv_f32m1;
++    \wp::proof CvHelperFilter: __riscv_vmerge_vvm_f32m1; \wp::proof CvHelperFilter: __riscv_vmand_mm_b32;
++    \wp::proof CvHelperFilter: __riscv_vfslide1up_vf_f32m1; \wp::proof CvHelperFilter: __riscv_vfslide1down_vf_f32m1;
++    \wp::strategy CvLemmaSolve: \prover("z3",30), \prover("cvc5",30);
++    \wp::proof CvLemmaSolve: ci_u32_sub_cast; \wp::proof CvLemmaSolve: ci_u32_add_cast;
++*/
+--- a/fp_primitives.h
++++ b/fp_primitives.h
+@@ -1,6 +1,21 @@
+ #ifndef COMPLEX_FP_PRIMITIVES_H
+ #define COMPLEX_FP_PRIMITIVES_H
+ #include "native_types.h"
++/*@
++ predicate ext_same(float x,float y) = (\is_NaN(x) && \is_NaN(y)) || (\eq_float(x,y) && \sign(x)==\sign(y));
++ logic float complex_add32(float x,float y);
++ logic float complex_sub32(float x,float y);
++ logic float complex_mul32(float x,float y);
++ logic float ext_num_min32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(a,b)?a:(\lt_float(b,a)?b:(\sign(a)==\Negative?a:b))));
++ logic float ext_num_max32(float a,float b) = \is_NaN(a) ? (\is_NaN(b)?a:b) : (\is_NaN(b)?a:(\lt_float(b,a)?a:(\lt_float(a,b)?b:(\sign(a)==\Positive?a:b))));
++ logic float ext_neon_min32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_min32(a,b));
++ logic float ext_neon_max32(float a,float b) = \is_NaN(a)?a:(\is_NaN(b)?b:ext_num_max32(a,b));
++ lemma ext_same_refl: \forall float a; ext_same(a,a);
++ lemma ext_same_trans: \forall float a,b,c; ext_same(a,b) && ext_same(b,c) ==> ext_same(a,c);
++ lemma ext_add_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_add32(a,c),complex_add32(b,c));
++ lemma ext_mul_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_mul32(a,c),complex_mul32(b,c));
++ lemma ext_sub_congruence: \forall float a,b,c; ext_same(a,b) ==> ext_same(complex_sub32(a,c),complex_sub32(b,c));
++*/
+ int fp_nan(float x);
+ float canonical_nan(void);
+ float min_number(float a,float b);
+--- a/fp_minmax.c
++++ b/fp_minmax.c
+@@ -1,12 +1,15 @@
+ #include "fp_primitives.h"
+ 
++/*@ assigns \nothing; ensures \result==(\is_NaN(x)?1:0); */
+ int fp_nan(float x) { return x != x; }
+ 
++/*@ assigns \nothing; ensures \is_NaN(\result); */
+ float canonical_nan(void) {
+   uint32_t bits=UINT32_C(0x7fc00000); float value;
+   memcpy(&value,&bits,sizeof(value)); return value;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_min32(a,b)); */
+ float min_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -14,6 +17,7 @@
+   return a < b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_num_max32(a,b)); */
+ float max_number(float a,float b) {
+   if(fp_nan(a)) return fp_nan(b) ? canonical_nan() : b;
+   if(fp_nan(b)) return a;
+@@ -21,6 +25,7 @@
+   return a > b ? a : b;
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_min32(a,b)); */
+ float neon_min(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return min_number(a,b);
+@@ -29,6 +34,7 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures ext_same(\result,ext_neon_max32(a,b)); */
+ float neon_max(float a,float b) {
+ #ifdef NEON_MINNUM_MODEL
+   return max_number(a,b);
+@@ -37,16 +43,24 @@
+ #endif
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
+ float32x4_t vminq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_min(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
+ float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { a.lane[i]=neon_max(a.lane[i],b.lane[i]); }
+   return a;
+ }
+ 
+-float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_min32(a.lane[j],b.lane[j])); */
++float32x2_t vmin_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_min(a.lane[i],b.lane[i]);return a; }
+ 
+-float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],ext_neon_max32(a.lane[j],b.lane[j])); */
++float32x2_t vmax_f32(float32x2_t a,float32x2_t b) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_neon_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 2-i; */
++for(int i=0;i<2;i++)a.lane[i]=neon_max(a.lane[i],b.lane[i]);return a; }
+--- a/fp_memory.c
++++ b/fp_memory.c
+@@ -1,69 +1,108 @@
+ #include "fp_primitives.h"
+ 
++/*@ requires \valid_read(p+(0..4-1)); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],p[j])); */
+ float32x4_t vld1q_f32(const float *p) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@ requires \valid_read(p+(0..2-1)); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],p[j])); */
+ float32x2_t vld1_f32(const float *p) {
+-  float32x2_t r; for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
++  float32x2_t r; /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant 2-i; */
++for(size_t i=0;i<2;i++)r.lane[i]=p[i]; return r;
+ }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vdupq_n_f32(float x) {
+-  float32x4_t r; for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
++  float32x4_t r; /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant 4-i; */
++for(size_t i=0;i<4;i++)r.lane[i]=x; return r;
+ }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],*p)); */
+ float32x4_t vld1q_dup_f32(const float *p) { return vdupq_n_f32(*p); }
+ 
++/*@ requires 0<=lane<2; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],v.lane[lane])); */
+ float32x4_t vdupq_lane_f32(float32x2_t v,int lane) { return vdupq_n_f32(v.lane[lane]); }
+ 
+-void vst1q_f32(float *p,float32x4_t v) { for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..4-1)); assigns p[0..4-1]; ensures \forall integer j; 0<=j<4 ==> (ext_same(p[j],v.lane[j])); */
++void vst1q_f32(float *p,float32x4_t v) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..4-1]; loop variant 4-i; */
++for(size_t i=0;i<4;i++)p[i]=v.lane[i]; }
+ 
+-void vst1_f32(float *p,float32x2_t v) { for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
++/*@ requires \valid(p+(0..2-1)); assigns p[0..2-1]; ensures \forall integer j; 0<=j<2 ==> (ext_same(p[j],v.lane[j])); */
++void vst1_f32(float *p,float32x2_t v) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],v.lane[j]));  loop assigns i,p[0..2-1]; loop variant 2-i; */
++for(size_t i=0;i<2;i++)p[i]=v.lane[i]; }
+ 
++/*@ requires \valid(p); requires 0<=lane<2; assigns p[0..1-1]; ensures ext_same(*p,v.lane[lane]); */
+ void vst1_lane_f32(float *p,float32x2_t v,int lane) { *p=v.lane[lane]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j])); */
+ float32x2_t vget_low_f32(float32x4_t v) { float32x2_t r={{v.lane[0],v.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],v.lane[j+2])); */
+ float32x2_t vget_high_f32(float32x4_t v) { float32x2_t r={{v.lane[2],v.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==(n<16?n:16); */
+ size_t __riscv_vsetvl_e32m4(size_t n) { return n<RVV_CAP ? n : RVV_CAP; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (ext_same(\result.lane[j],x)); */
+ float32x4_t vmovq_n_f32(float x) { return vdupq_n_f32(x); }
+ 
++/*@ requires \valid_read(p); assigns \nothing; ensures \forall integer j; 0<=j<2 ==> (ext_same(\result.lane[j],*p)); */
+ float32x2_t vld1_dup_f32(const float *p) { float32x2_t r={{*p,*p}};return r; }
+ 
++/*@ requires \valid_read(p); requires \valid_read(p+1); assigns \nothing; */
+ float32x4x2_t vld2q_dup_f32(const float *p) { float32x4x2_t r={{vdupq_n_f32(p[0]),vdupq_n_f32(p[1])}};return r; }
+ 
++/*@ requires \valid_read(p); requires \valid_read(p+1); assigns \nothing; */
+ float32x2x2_t vld2_dup_f32(const float *p) { float32x2x2_t r={{vld1_dup_f32(p),vld1_dup_f32(p+1)}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ((j<2 ? ext_same(\result.lane[j],a.lane[j]) : ext_same(\result.lane[j],b.lane[j-2]))); */
+ float32x4_t vcombine_f32(float32x2_t a,float32x2_t b) { float32x4_t r={{a.lane[0],a.lane[1],b.lane[0],b.lane[1]}};return r; }
+ 
+-float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
++/*@ requires 0<=n<=4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j+n<4 ? ext_same(\result.lane[j],a.lane[j+n]) : ext_same(\result.lane[j],b.lane[j+n-4])); */
++float32x4_t vextq_f32(float32x4_t a,float32x4_t b,int n) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (j+n<4 ? ext_same(r.lane[j],a.lane[j+n]) : ext_same(r.lane[j],b.lane[j+n-4]));  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=i+n<4?a.lane[i+n]:b.lane[i+n-4];return r; }
+ 
++/*@ requires 0<=n<2; assigns \nothing; ensures ext_same(\result,a.lane[n]); */
+ float vget_lane_f32(float32x2_t a,int n) { return a.lane[n]; }
+ 
++/*@ requires \valid_read(p); requires 0<=n<4; assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j==n ? ext_same(\result.lane[j],*p) : ext_same(\result.lane[j],a.lane[j])); */
+ float32x4_t vld1q_lane_f32(const float *p,float32x4_t a,int n) { a.lane[n]=*p;return a; }
+ 
++/*@ requires \valid(p); requires 0<=n<4; assigns p[0..1-1]; ensures ext_same(*p,a.lane[n]); */
+ void vst1q_lane_f32(float *p,float32x4_t a,int n) { *p=a.lane[n]; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2]) : ext_same(\result.lane[j],b.lane[j/2])); */
+ float32x4_t vzip1q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[0],b.lane[0],a.lane[1],b.lane[1]}};return r; }
+ 
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (j%2==0 ? ext_same(\result.lane[j],a.lane[j/2+2]) : ext_same(\result.lane[j],b.lane[j/2+2])); */
+ float32x4_t vzip2q_f32(float32x4_t a,float32x4_t b) { float32x4_t r={{a.lane[2],b.lane[2],a.lane[3],b.lane[3]}};return r; }
+ 
++/*@  assigns \nothing; ensures \result==16; */
+ size_t __riscv_vsetvlmax_e32m4(void) { return 16; }
+ 
++/*@  assigns \nothing; ensures \result==(n<4?n:4); */
+ size_t __riscv_vsetvl_e32m1(size_t n) { return n<4?n:4; }
+ 
++/*@  assigns \nothing; ensures \result==4; */
+ size_t __riscv_vsetvlmax_e32m1(void) { return 4; }
+ 
++/*@  assigns \nothing; ensures \result==(n<8?n:8); */
+ size_t __riscv_vsetvl_e32m2(size_t n) { return n<8?n:8; }
+ 
++/*@  assigns \nothing; ensures \result==8; */
+ size_t __riscv_vsetvlmax_e32m2(void) { return 8; }
+ 
++/*@  assigns \nothing; ensures \result==(n<32?n:32); */
+ size_t __riscv_vsetvl_e32m8(size_t n) { return n<32?n:32; }
+ 
++/*@  assigns \nothing; ensures \result==32; */
+ size_t __riscv_vsetvlmax_e32m8(void) { return 32; }
+ 
+-int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j]); */
++int16x4_t vget_low_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i];return r; }
+ 
+-int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
++/*@  assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (\result.lane[j]==a.lane[j+4]); */
++int16x4_t vget_high_s16(int16x8_t a) { int16x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j]==a.lane[j+4]);  loop assigns i,r; loop variant 4-i; */
++for(int i=0;i<4;i++)r.lane[i]=a.lane[i+4];return r; }
+--- a/fp_arithmetic.c
++++ b/fp_arithmetic.c
+@@ -1,23 +1,45 @@
+ #include "fp_primitives.h"
++/*@ lemma ext_fma_congruence: \forall float a,b,x,y;
++ ext_same(a,b) ==> ext_same(shim_fma32(x,y,a),shim_fma32(x,y,b)); */
+ 
++/*@ assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
+ float32x4_t vfmaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) {
+-  for(size_t i=0;i<4;i++) { a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); }
++  /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(size_t i=0;i<4;i++) { /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */ a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); /*@ assert ext_same(a.lane[i],shim_fma32(b.lane[i],c.lane[i],\at(a,Pre).lane[i])); */ }
+   return a;
+ }
+ 
+-float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<2; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_lane_f32(float32x4_t a,float32x4_t b,float32x2_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { for(int i=0;i<4;i++)a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]);return a; }
++/*@ requires 0<=n<4; assigns errno; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[n],a.lane[j])); */
++float32x4_t vfmaq_laneq_f32(float32x4_t a,float32x4_t b,float32x4_t c,int n) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[n],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 4-i; */
++for(int i=0;i<4;i++) a.lane[i]=fmaf(b.lane[i],c.lane[n],a.lane[i]); return a; }
+ 
+-float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { for(int i=0;i<2;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ assigns errno; ensures \forall integer j; 0<=j<2 ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++float32x2_t vfma_f32(float32x2_t a,float32x2_t b,float32x2_t c) { /*@ loop invariant 0<=i<=2; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<2 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant 2-i; */
++for(int i=0;i<2;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+ 
+-float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++float32x4_t vmulq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
+ 
+-float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++float32x4_t vaddq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
+ 
+-float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_sub32(a.lane[j],b.lane[j])); */
++float32x4_t vsubq_f32(float32x4_t a,float32x4_t b) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_sub32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++)a.lane[i]=a.lane[i]-b.lane[i];return a; }
+ 
+-float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];a.lane[i]=a.lane[i]+p;}return a; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> ext_same(\result.lane[j],complex_add32(a.lane[j],complex_mul32(b.lane[j],c.lane[j]))); */
++float32x4_t vmlaq_f32(float32x4_t a,float32x4_t b,float32x4_t c) { /*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),complex_mul32(b.lane[j],c.lane[j]))); loop invariant \forall integer j; i<=j<4 ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant 4-i; */
++for(int i=0;i<4;i++){float p=b.lane[i]*c.lane[i];
++ /*@ assert ext_same(p,complex_mul32(b.lane[i],c.lane[i])); */
++ /*@ assert ext_same(a.lane[i],\at(a,Pre).lane[i]); */
++ a.lane[i]=a.lane[i]+p;
++ /*@ assert ext_same(a.lane[i],complex_add32(\at(a,Pre).lane[i],complex_mul32(b.lane[i],c.lane[i]))); */}return a; }
+ 
+ float vaddv_f32(float32x2_t a) { return a.lane[0]+a.lane[1]; }
+ 
+--- a/fp_memory_m1.c
++++ b/fp_memory_m1.c
+@@ -1,13 +1,24 @@
+ #include "fp_primitives.h"
+ 
+-vfloat32m1_t __riscv_vle32_v_f32m1(const float *p,size_t vl) { vfloat32m1_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
++/*@ requires vl<=4; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],p[j])); */
++vfloat32m1_t __riscv_vle32_v_f32m1(const float *p,size_t vl) { vfloat32m1_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],p[j]));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=p[i];return r; }
+ 
+-void __riscv_vse32_v_f32m1(float *p,vfloat32m1_t a,size_t vl) { for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
++/*@ requires vl<=4; requires \valid(p+(0..vl-1)); assigns p[0..vl-1]; ensures \forall integer j; 0<=j<vl ==> (ext_same(p[j],a.lane[j])); */
++void __riscv_vse32_v_f32m1(float *p,vfloat32m1_t a,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(p[j],a.lane[j]));  loop assigns i,p[0..vl-1]; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)p[i]=a.lane[i]; }
+ 
+-vfloat32m1_t __riscv_vfmv_v_f_f32m1(float x,size_t vl) { vfloat32m1_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=x;return r; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (ext_same(\result.lane[j],x)); */
++vfloat32m1_t __riscv_vfmv_v_f_f32m1(float x,size_t vl) { vfloat32m1_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (ext_same(r.lane[j],x));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=x;return r; }
+ 
+-vfloat32m1_t __riscv_vfslide1up_vf_f32m1(vfloat32m1_t a,float x,size_t vl) { vfloat32m1_t r=a;for(size_t i=0;i<vl;i++)r.lane[i]=i?a.lane[i-1]:x;return r; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (j==0 ? ext_same(\result.lane[j],x) : ext_same(\result.lane[j],a.lane[j-1])); */
++vfloat32m1_t __riscv_vfslide1up_vf_f32m1(vfloat32m1_t a,float x,size_t vl) { vfloat32m1_t r=a;/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (j==0 ? ext_same(r.lane[j],x) : ext_same(r.lane[j],a.lane[j-1]));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=i?a.lane[i-1]:x;return r; }
+ 
+-vfloat32m1_t __riscv_vfslide1down_vf_f32m1(vfloat32m1_t a,float x,size_t vl) { vfloat32m1_t r=a;for(size_t i=0;i<vl;i++)r.lane[i]=i+1<vl?a.lane[i+1]:x;return r; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (j+1<vl ? ext_same(\result.lane[j],a.lane[j+1]) : ext_same(\result.lane[j],x)); */
++vfloat32m1_t __riscv_vfslide1down_vf_f32m1(vfloat32m1_t a,float x,size_t vl) { vfloat32m1_t r=a;/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (j+1<vl ? ext_same(r.lane[j],a.lane[j+1]) : ext_same(r.lane[j],x));  loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=i+1<vl?a.lane[i+1]:x;return r; }
+ 
++/*@  assigns \nothing; ensures ext_same(\result,a.lane[0]); */
+ float __riscv_vfmv_f_s_f32m1_f32(vfloat32m1_t a) { return a.lane[0]; }
+--- a/fp_minmax_m1.c
++++ b/fp_minmax_m1.c
+@@ -1,9 +1,17 @@
+ #include "fp_primitives.h"
+ 
+-vfloat32m1_t __riscv_vfmax_vf_f32m1(vfloat32m1_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b);return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_max32(a.lane[j],b)); */
++vfloat32m1_t __riscv_vfmax_vf_f32m1(vfloat32m1_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_max32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b);return a; }
+ 
+-vfloat32m1_t __riscv_vfmin_vf_f32m1(vfloat32m1_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b);return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_min32(a.lane[j],b)); */
++vfloat32m1_t __riscv_vfmin_vf_f32m1(vfloat32m1_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_min32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b);return a; }
+ 
+-vfloat32m1_t __riscv_vfmax_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b.lane[i]);return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_max32(a.lane[j],b.lane[j])); */
++vfloat32m1_t __riscv_vfmax_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_max32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=max_number(a.lane[i],b.lane[i]);return a; }
+ 
+-vfloat32m1_t __riscv_vfmin_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b.lane[i]);return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],ext_num_min32(a.lane[j],b.lane[j])); */
++vfloat32m1_t __riscv_vfmin_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],ext_num_min32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=min_number(a.lane[i],b.lane[i]);return a; }
+--- a/fp_arithmetic_m1.c
++++ b/fp_arithmetic_m1.c
+@@ -1,11 +1,23 @@
+ #include "fp_primitives.h"
+ 
+-vfloat32m1_t __riscv_vfmul_vf_f32m1(vfloat32m1_t a,float b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b;return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b)); */
++vfloat32m1_t __riscv_vfmul_vf_f32m1(vfloat32m1_t a,float b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b;return a; }
+ 
+-vfloat32m1_t __riscv_vfadd_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_add32(a.lane[j],b.lane[j])); */
++vfloat32m1_t __riscv_vfadd_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_add32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]+b.lane[i];return a; }
+ 
+-vfloat32m1_t __riscv_vfmul_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],complex_mul32(a.lane[j],b.lane[j])); */
++vfloat32m1_t __riscv_vfmul_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],complex_mul32(\at(a.lane[j],Pre),b.lane[j])); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]*b.lane[i];return a; }
+ 
+-vfloat32m1_t __riscv_vfmacc_vf_f32m1(vfloat32m1_t a,float b,vfloat32m1_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b,c.lane[i],a.lane[i]);return a; }
++/*@ requires vl<=4; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b,c.lane[j],a.lane[j])); */
++vfloat32m1_t __riscv_vfmacc_vf_f32m1(vfloat32m1_t a,float b,vfloat32m1_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b,c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)
++/*@ assert ci_fma_current_pre: ext_same(a.lane[i],\at(a,Pre).lane[i]); */
++a.lane[i]=fmaf(b,c.lane[i],a.lane[i]); return a; }
+ 
+-vfloat32m1_t __riscv_vfmacc_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,vfloat32m1_t c,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]);return a; }
++/*@ requires vl<=4; assigns errno; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],shim_fma32(b.lane[j],c.lane[j],a.lane[j])); */
++vfloat32m1_t __riscv_vfmacc_vv_f32m1(vfloat32m1_t a,vfloat32m1_t b,vfloat32m1_t c,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],shim_fma32(b.lane[j],c.lane[j],\at(a.lane[j],Pre))); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a,errno; loop variant vl-i; */
++for(size_t i=0;i<vl;i++) a.lane[i]=fmaf(b.lane[i],c.lane[i],a.lane[i]); return a; }
+--- a/fp_masks_m1.c
++++ b/fp_masks_m1.c
+@@ -1,9 +1,17 @@
+ #include "fp_primitives.h"
+ 
+-vbool32_t __riscv_vmfgt_vv_f32m1_b32(vfloat32m1_t a,vfloat32m1_t c,size_t vl) { vbool32_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>c.lane[i];return r; }
++/*@ requires vl<=4;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(\lt_float(c.lane[j],a.lane[j])?1:0); */
++vbool32_t __riscv_vmfgt_vv_f32m1_b32(vfloat32m1_t a,vfloat32m1_t c,size_t vl) { vbool32_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(c.lane[j],a.lane[j])?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>c.lane[i];return r; }
+ 
+-vbool32_t __riscv_vmfne_vv_f32m1_b32(vfloat32m1_t a,vfloat32m1_t c,size_t vl) { vbool32_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=c.lane[i];return r; }
++/*@ requires vl<=4;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(!\eq_float(a.lane[j],c.lane[j])?1:0); */
++vbool32_t __riscv_vmfne_vv_f32m1_b32(vfloat32m1_t a,vfloat32m1_t c,size_t vl) { vbool32_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(!\eq_float(a.lane[j],c.lane[j])?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]!=c.lane[i];return r; }
+ 
+-vfloat32m1_t __riscv_vmerge_vvm_f32m1(vfloat32m1_t a,vfloat32m1_t c,vbool32_t mask,size_t vl) { for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c.lane[i];return a; }
++/*@ requires vl<=4;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],mask.lane[j]?c.lane[j]:a.lane[j]); */
++vfloat32m1_t __riscv_vmerge_vvm_f32m1(vfloat32m1_t a,vfloat32m1_t c,vbool32_t mask,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],mask.lane[j]?c.lane[j]:\at(a.lane[j],Pre)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c.lane[i];return a; }
+ 
+-vfloat32m1_t __riscv_vfmerge_vfm_f32m1(vfloat32m1_t a,float c,vbool32_t mask,size_t vl) { for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c;return a; }
++/*@ requires vl<=4;  assigns \nothing; ensures \forall integer j; 0<=j<vl ==> ext_same(\result.lane[j],mask.lane[j]?c:a.lane[j]); */
++vfloat32m1_t __riscv_vfmerge_vfm_f32m1(vfloat32m1_t a,float c,vbool32_t mask,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> ext_same(a.lane[j],mask.lane[j]?c:\at(a.lane[j],Pre)); loop invariant \forall integer j; i<=j<vl ==> ext_same(a.lane[j],\at(a.lane[j],Pre)); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)if(mask.lane[i])a.lane[i]=c;return a; }
+--- a/fp_index.c
++++ b/fp_index.c
+@@ -1,23 +1,93 @@
+ #include "fp_primitives.h"
++/*@ \wp::strategy CiMemorySolve: \prover("cvc5",5),\prover("z3",5);
++ \wp::strategy CiMemoryUnfold:
++  \tactic("Wp.unfold",\ingoal(shiftfield_F20_lane(P)),\children(CiMemoryUnfold)),
++  \tactic("Wp.unfold",\ingoal(shiftfield_F21_lane(P)),\children(CiMemoryUnfold)),
++  \tactic("Wp.unfold",\ingoal(shift_uint32(P,I)),\children(CiMemoryUnfold)),
++  \tactic("Wp.unfold",\ingoal(shift_sint32(P,I)),\children(CiMemoryUnfold)),
++  \tactic("Wp.unfold",\ingoal(shift_uint8(P,I)),\children(CiMemoryUnfold)),
++  \tactic("Wp.unfold",\ingoal(shift_sint8(P,I)),\children(CiMemoryUnfold)),CiMemorySolve;
++*/
++/*@ lemma core_u32_bytes{L}: \forall uint32_t *p;
++ \valid_read(p) ==> *p==((unsigned char*)p)[0]+256*((unsigned char*)p)[1]+65536*((unsigned char*)p)[2]+16777216*((unsigned char*)p)[3]; */
++/*@ lemma ci_cast_roundtrip: \forall integer x;0<=x<=4294967295 ==> (uint32_t)(int32_t)x==x;
++    lemma ci_unsigned_view{L}: \forall uint32_t *p;\valid_read(p) ==> *(int32_t*)p==(int32_t)*p;
++*/
+ 
+-vuint32m1_t __riscv_vid_v_u32m1(size_t vl) { vuint32m1_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=i;return r; }
++/*@ lemma core_equal_u32_bytes{L}: \forall uint32_t *p,*q;
++ \valid_read(p) && \valid_read(q) && (\forall integer b;0<=b<4 ==> ((unsigned char*)p)[b]==((unsigned char*)q)[b]) ==> *p==*q; */
+ 
+-vuint32m1_t __riscv_vadd_vx_u32m1(vuint32m1_t a,uint32_t x,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]+=x;return a; }
++/*@ lemma core_u32_byte_offset{L}: \forall uint32_t *p; \forall integer i,b;
++ 0<=i && 0<=b<4 && \valid_read(p+i) ==> ((unsigned char*)(p+i))[b]==((unsigned char*)p)[4*i+b]; */
+ 
+-vuint32m1_t __riscv_vmul_vx_u32m1(vuint32m1_t a,uint32_t x,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]*=x;return a; }
++/*@
++ \wp::strategy CoreOffsetSolve: \prover("cvc5",5),\prover("z3",5);
++ \wp::strategy CoreOffsetUnfold:
++  \tactic("Wp.unfold",\ingoal(shift_uint32(P,I)),\children(CoreOffsetUnfold)),
++  \tactic("Wp.unfold",\ingoal(shift_uint8(P,I)),\children(CoreOffsetUnfold)),CoreOffsetSolve;
++ \wp::proof CoreOffsetUnfold:core_u32_byte_offset;
++*/
+ 
+-vint32m1_t __riscv_vreinterpret_v_u32m1_i32m1(vuint32m1_t a) { vint32m1_t r;memcpy(&r,&a,sizeof r);return r; }
+ 
+-vint32m1_t __riscv_vadd_vx_i32m1(vint32m1_t a,int32_t x,size_t vl) { for(size_t i=0;i<vl;i++){uint32_t u;memcpy(&u,&a.lane[i],4);u+=(uint32_t)x;memcpy(&a.lane[i],&u,4);}return a; }
++/*@ lemma ci_u32_add_cast: \forall integer a,b; (uint32_t)((uint32_t)a+(uint32_t)b)==(uint32_t)(a+b);
++ lemma ci_u32_sub_cast: \forall integer a,b; (uint32_t)((uint32_t)a-(uint32_t)b)==(uint32_t)(a-b); */
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==j; */
++vuint32m1_t __riscv_vid_v_u32m1(size_t vl) { vuint32m1_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==j; loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=i;return r; }
+ 
+-vint32m1_t __riscv_vsub_vx_i32m1(vint32m1_t a,int32_t x,size_t vl) { for(size_t i=0;i<vl;i++){uint32_t u;memcpy(&u,&a.lane[i],4);u-=(uint32_t)x;memcpy(&a.lane[i],&u,4);}return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==((uint32_t)(a.lane[j]+x)); */
++vuint32m1_t __riscv_vadd_vx_u32m1(vuint32m1_t a,uint32_t x,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==((uint32_t)(\at(a.lane[j],Pre)+x)); loop invariant \forall integer j;i<=j<vl ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]+=x;return a; }
+ 
+-vbool32_t __riscv_vmsge_vx_i32m1_b32(vint32m1_t a,int32_t x,size_t vl) { vbool32_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>=x;return r; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==((uint32_t)(a.lane[j]*x)); */
++vuint32m1_t __riscv_vmul_vx_u32m1(vuint32m1_t a,uint32_t x,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==((uint32_t)(\at(a.lane[j],Pre)*x)); loop invariant \forall integer j;i<=j<vl ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]*=x;return a; }
+ 
+-vbool32_t __riscv_vmslt_vx_i32m1_b32(vint32m1_t a,int32_t x,size_t vl) { vbool32_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<x;return r; }
++/*@ assigns \nothing; ensures \forall integer j;0<=j<4 ==> \result.lane[j]==((int32_t)(a.lane[j])); */
++vint32m1_t __riscv_vreinterpret_v_u32m1_i32m1(vuint32m1_t a) { vint32m1_t r;memcpy(&r,&a,sizeof r); /*@ assert source_bytes_unchanged: \forall integer b;0<=b<16 ==> ((unsigned char*)&a)[b]==\at(((unsigned char*)&a)[b],Pre); */ /*@ assert source_word_0_unchanged: ((uint32_t*)&a)[0]==\at(((uint32_t*)&a)[0],Pre); */ /*@ assert source_word_1_unchanged: ((uint32_t*)&a)[1]==\at(((uint32_t*)&a)[1],Pre); */ /*@ assert source_word_2_unchanged: ((uint32_t*)&a)[2]==\at(((uint32_t*)&a)[2],Pre); */ /*@ assert source_word_3_unchanged: ((uint32_t*)&a)[3]==\at(((uint32_t*)&a)[3],Pre); */ /*@ assert source_words_unchanged: \forall integer j;0<=j<4 ==> ((uint32_t*)&a)[j]==\at(((uint32_t*)&a)[j],Pre); */ /*@ assert copied_bytes_ci_reinterpret: \forall integer b;0<=b<16 ==> ((unsigned char*)&r)[b]==((unsigned char*)&a)[b]; */ /*@ assert copied_four_bytes_0_ci_reinterpret: \forall integer b;0<=b<4 ==> ((unsigned char*)(((uint32_t*)&r)+0))[b]==((unsigned char*)(((uint32_t*)&a)+0))[b]; */ /*@ assert copied_word_0_ci_reinterpret: ((uint32_t*)&r)[0]==((uint32_t*)&a)[0]; */ /*@ assert copied_four_bytes_1_ci_reinterpret: \forall integer b;0<=b<4 ==> ((unsigned char*)(((uint32_t*)&r)+1))[b]==((unsigned char*)(((uint32_t*)&a)+1))[b]; */ /*@ assert copied_word_1_ci_reinterpret: ((uint32_t*)&r)[1]==((uint32_t*)&a)[1]; */ /*@ assert copied_four_bytes_2_ci_reinterpret: \forall integer b;0<=b<4 ==> ((unsigned char*)(((uint32_t*)&r)+2))[b]==((unsigned char*)(((uint32_t*)&a)+2))[b]; */ /*@ assert copied_word_2_ci_reinterpret: ((uint32_t*)&r)[2]==((uint32_t*)&a)[2]; */ /*@ assert copied_four_bytes_3_ci_reinterpret: \forall integer b;0<=b<4 ==> ((unsigned char*)(((uint32_t*)&r)+3))[b]==((unsigned char*)(((uint32_t*)&a)+3))[b]; */ /*@ assert copied_word_3_ci_reinterpret: ((uint32_t*)&r)[3]==((uint32_t*)&a)[3]; */ /*@ assert copied_words_ci_reinterpret: \forall integer j;0<=j<4 ==> ((uint32_t*)&r)[j]==((uint32_t*)&a)[j]; */ /*@ assert source_typed_layout: \forall integer j;0<=j<4 ==> \at(((uint32_t*)&a)[j],Pre)==\at(a.lane[j],Pre); */ /*@ assert destination_typed_layout: \forall integer j;0<=j<4 ==> r.lane[j]==(int32_t)(((uint32_t*)&r)[j]); */ return r; }
+ 
+-vbool32_t __riscv_vmand_mm_b32(vbool32_t a,vbool32_t b,size_t vl) { for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]&&b.lane[i];return a; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==((int32_t)(a.lane[j]+x)); */
++vint32m1_t __riscv_vadd_vx_i32m1(vint32m1_t a,int32_t x,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==((int32_t)(\at(a.lane[j],Pre)+x)); loop invariant \forall integer j;i<=j<vl ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++){uint32_t u; /*@ assert ci_source_pre_before: a.lane[i]==\at(a,Pre).lane[i]; */ /*@ assert ci_read_src_valid: \valid_read((unsigned char*)&a.lane[i]+(0..3)); */ memcpy(&u,&a.lane[i],4); /*@ assert ci_source_pre_after: a.lane[i]==\at(a,Pre).lane[i]; */  /*@ assert ci_read_bytes: \forall integer b;0<=b<4 ==> ((unsigned char*)&u)[b]==((unsigned char*)&a.lane[i])[b]; */  /*@ assert ci_read_physical: u==*(uint32_t*)&a.lane[i]; */  /*@ assert ci_read_layout: a.lane[i]==(int32_t)(*(uint32_t*)&a.lane[i]); */  /*@ assert ci_read_bits: u==(uint32_t)\at(a,Pre).lane[i]; */ u+=(uint32_t)x; /*@ assert ci_updated_bits: u==(uint32_t)(\at(a,Pre).lane[i]+x); */  /*@ assert ci_write_separated: \forall integer j;i<j<vl ==> \separated(&a.lane[i],&a.lane[j]); */ /*@ assert ci_write_dst_valid: \valid((unsigned char*)&a.lane[i]+(0..3)); */ memcpy(&a.lane[i],&u,4); /*@ assert ci_write_bytes: \forall integer b;0<=b<4 ==> ((unsigned char*)&a.lane[i])[b]==((unsigned char*)&u)[b]; */  /*@ assert ci_write_physical: *(uint32_t*)&a.lane[i]==u; */  /*@ assert ci_write_layout: a.lane[i]==(int32_t)(*(uint32_t*)&a.lane[i]); */  /*@ assert ci_written_bits: a.lane[i]==(int32_t)(\at(a,Pre).lane[i]+x); */  /*@ assert ci_future_unchanged: \forall integer j;i<j<vl ==> a.lane[j]==\at(a,Pre).lane[j]; */ }return a; }
+ 
+-vfloat32m1_t __riscv_vlse32_v_f32m1(const float *p,ptrdiff_t stride,size_t vl) { vfloat32m1_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=*(const float*)((const char*)p+i*stride);return r; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==((int32_t)(a.lane[j]-x)); */
++vint32m1_t __riscv_vsub_vx_i32m1(vint32m1_t a,int32_t x,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==((int32_t)(\at(a.lane[j],Pre)-x)); loop invariant \forall integer j;i<=j<vl ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++){uint32_t u; /*@ assert ci_source_pre_before: a.lane[i]==\at(a,Pre).lane[i]; */ /*@ assert ci_read_src_valid: \valid_read((unsigned char*)&a.lane[i]+(0..3)); */ memcpy(&u,&a.lane[i],4); /*@ assert ci_source_pre_after: a.lane[i]==\at(a,Pre).lane[i]; */  /*@ assert ci_read_bytes: \forall integer b;0<=b<4 ==> ((unsigned char*)&u)[b]==((unsigned char*)&a.lane[i])[b]; */  /*@ assert ci_read_physical: u==*(uint32_t*)&a.lane[i]; */  /*@ assert ci_read_layout: a.lane[i]==(int32_t)(*(uint32_t*)&a.lane[i]); */  /*@ assert ci_read_bits: u==(uint32_t)\at(a,Pre).lane[i]; */ u-=(uint32_t)x; /*@ assert ci_updated_machine: u==(uint32_t)((uint32_t)\at(a,Pre).lane[i]-(uint32_t)x); */
++ /*@ assert ci_updated_cast_bridge: (uint32_t)((uint32_t)\at(a,Pre).lane[i]-(uint32_t)x)==(uint32_t)(\at(a,Pre).lane[i]-x); */  /*@ assert ci_updated_bits: u==(uint32_t)(\at(a,Pre).lane[i]-x); */  /*@ assert ci_write_separated: \forall integer j;i<j<vl ==> \separated(&a.lane[i],&a.lane[j]); */ /*@ assert ci_write_dst_valid: \valid((unsigned char*)&a.lane[i]+(0..3)); */ memcpy(&a.lane[i],&u,4); /*@ assert ci_write_bytes: \forall integer b;0<=b<4 ==> ((unsigned char*)&a.lane[i])[b]==((unsigned char*)&u)[b]; */  /*@ assert ci_write_physical: *(uint32_t*)&a.lane[i]==u; */  /*@ assert ci_write_layout: a.lane[i]==(int32_t)(*(uint32_t*)&a.lane[i]); */  /*@ assert ci_written_bits: a.lane[i]==(int32_t)(\at(a,Pre).lane[i]-x); */  /*@ assert ci_future_unchanged: \forall integer j;i<j<vl ==> a.lane[j]==\at(a,Pre).lane[j]; */ }return a; }
+ 
+-vfloat32m1_t __riscv_vlse32_v_f32m1_m(vbool32_t mask,const float *p,ptrdiff_t stride,size_t vl) { vfloat32m1_t r={{0}};for(size_t i=0;i<vl;i++)if(mask.lane[i])r.lane[i]=*(const float*)((const char*)p+i*stride);return r; }
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==(a.lane[j]>=x?1:0); */
++vbool32_t __riscv_vmsge_vx_i32m1_b32(vint32m1_t a,int32_t x,size_t vl) { vbool32_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==(a.lane[j]>=x?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>=x;return r; }
++
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==(a.lane[j]<x?1:0); */
++vbool32_t __riscv_vmslt_vx_i32m1_b32(vint32m1_t a,int32_t x,size_t vl) { vbool32_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> r.lane[j]==(a.lane[j]<x?1:0); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<x;return r; }
++
++/*@ requires vl<=4; assigns \nothing; ensures \forall integer j;0<=j<vl ==> \result.lane[j]==((a.lane[j]!=0 && b.lane[j]!=0)?1:0); */
++vbool32_t __riscv_vmand_mm_b32(vbool32_t a,vbool32_t b,size_t vl) { /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> a.lane[j]==((\at(a.lane[j],Pre)!=0 && b.lane[j]!=0)?1:0); loop invariant \forall integer j;i<=j<vl ==> a.lane[j]==\at(a.lane[j],Pre); loop assigns i,a; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)a.lane[i]=a.lane[i]&&b.lane[i];return a; }
++
++/*@ requires vl<=4; requires stride>=0 && stride%sizeof(float)==0; requires (vl>0) ==> 0*stride<=SIZE_MAX && \valid_read(p+0*(stride/sizeof(float))); requires (vl>1) ==> 1*stride<=SIZE_MAX && \valid_read(p+1*(stride/sizeof(float))); requires (vl>2) ==> 2*stride<=SIZE_MAX && \valid_read(p+2*(stride/sizeof(float))); requires (vl>3) ==> 3*stride<=SIZE_MAX && \valid_read(p+3*(stride/sizeof(float))); assigns \nothing; ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],\at(p[j*(stride/sizeof(float))],Pre)); */
++vfloat32m1_t __riscv_vlse32_v_f32m1(const float *p,ptrdiff_t stride,size_t vl) { vfloat32m1_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> ext_same(r.lane[j],\at(p[j*(stride/sizeof(float))],Pre)); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)/*@ assert ci_stride_lane: i==0 || i==1 || i==2 || i==3; */ /*@ assert ci_stride_nonnegative: i*stride>=0; */ /*@ assert ci_stride_no_wrap: i*stride<=SIZE_MAX; */
++/*@ assert ci_stride_quotient: i*stride==4*(i*(stride/4)); */
++/*@ assert ci_stride_cast: (size_t)(i*stride)==i*stride; */
++/*@ assert ci_stride_typed_valid: \valid_read(p+i*(stride/4)); */
++/*@ assert ci_stride_pointer: (float*)((char*)p+i*stride)==p+i*(stride/4); */
++r.lane[i]=*(const float*)((const char*)p+i*stride);return r; }
++
++/*@ requires vl<=4; requires stride>=0 && stride%sizeof(float)==0; requires (vl>0 && mask.lane[0]!=0) ==> 0*stride<=SIZE_MAX && \valid_read(p+0*(stride/sizeof(float))); requires (vl>1 && mask.lane[1]!=0) ==> 1*stride<=SIZE_MAX && \valid_read(p+1*(stride/sizeof(float))); requires (vl>2 && mask.lane[2]!=0) ==> 2*stride<=SIZE_MAX && \valid_read(p+2*(stride/sizeof(float))); requires (vl>3 && mask.lane[3]!=0) ==> 3*stride<=SIZE_MAX && \valid_read(p+3*(stride/sizeof(float))); assigns \nothing; ensures \forall integer j;0<=j<vl ==> ext_same(\result.lane[j],(mask.lane[j]?\at(p[j*(stride/sizeof(float))],Pre):0.0f)); */
++vfloat32m1_t __riscv_vlse32_v_f32m1_m(vbool32_t mask,const float *p,ptrdiff_t stride,size_t vl) { vfloat32m1_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j;0<=j<i ==> ext_same(r.lane[j],(mask.lane[j]?\at(p[j*(stride/sizeof(float))],Pre):0.0f)); loop invariant \forall integer j;i<=j<vl ==> ext_same(r.lane[j],0.0f); loop assigns i,r; loop variant vl-i; */
++for(size_t i=0;i<vl;i++)/*@ assert ci_mask_zero: mask.lane[i]==0 ==> ext_same(r.lane[i],0.0f); */
++/*@ assert ci_mask_input: \forall integer j;j==i && mask.lane[j]!=0 ==> ext_same(p[j*(stride/4)],\at(p[j*(stride/4)],Pre)); */
++if(mask.lane[i])/*@ assert ci_stride_lane: i==0 || i==1 || i==2 || i==3; */ /*@ assert ci_stride_nonnegative: i*stride>=0; */ /*@ assert ci_stride_no_wrap: i*stride<=SIZE_MAX; */
++/*@ assert ci_stride_quotient: i*stride==4*(i*(stride/4)); */
++/*@ assert ci_stride_cast: (size_t)(i*stride)==i*stride; */
++/*@ assert ci_stride_typed_valid: \valid_read(p+i*(stride/4)); */
++/*@ assert ci_stride_pointer: (float*)((char*)p+i*stride)==p+i*(stride/4); */
++r.lane[i]=*(const float*)((const char*)p+i*stride);return r; }
++
++/*@ \wp::strategy CiSolve: \prover("cvc5",5), \prover("z3",5);
++     \wp::strategy CiFilter: \tactic("Wp.filter",\children(CiSolve)), CiSolve;
++     \wp::proof CiMemoryUnfold: __riscv_vreinterpret_v_u32m1_i32m1; \wp::proof CiMemoryUnfold: __riscv_vadd_vx_i32m1; \wp::proof CiMemoryUnfold: __riscv_vsub_vx_i32m1; \wp::proof CiFilter: __riscv_vlse32_v_f32m1; \wp::proof CiFilter: __riscv_vlse32_v_f32m1_m;
++*/

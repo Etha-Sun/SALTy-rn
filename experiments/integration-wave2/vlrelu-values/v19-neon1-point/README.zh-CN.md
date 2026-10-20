@@ -1,0 +1,1 @@
+v19基于v15不改任何ghostloop，独立仅修NEON1lane：oldprefix branch显式checked pointcut；lastcell branch checkedk==total-1+已有transfer helper调用。所有newpointcuts/privatepre/reads/helperbody检查。oldtailprefix/NEON1prefix/finalall不在本诊断scope，仍由v16/conv/最终rootfull真查，绝不抹去旧债务。C/spec/model/driver/checker冻结，1200/30s/1024/par64。

@@ -1,0 +1,52 @@
+--- a/rvv.c
++++ b/rvv.c
+@@ -7,6 +7,7 @@
+   //@ ghost const float *i_base=input;
+   //@ ghost float *o_base=output;
+   //@ ghost size_t total=batch/sizeof(float);
++  //@ ghost const float proof_slope_entry=params->scalar.slope;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input != NULL);
+@@ -22,7 +23,7 @@
+       loop invariant input==i_base+(total-n);
+       loop invariant output==o_base+(total-n);
+       loop invariant \valid(output+(0..n-1));
+-      loop invariant \forall integer j; 0<=j<total-n ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++      loop invariant \forall integer j; 0<=j<total-n ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+       loop assigns n,input,output,o_base[0..total-1]; loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(n);
+@@ -35,13 +36,13 @@
+ 
+     vfloat32m8_t vout = __riscv_vmerge_vvm_f32m8(vx, vacc, mask, vl);
+ 
+-    /*@ assert \forall integer j; 0<=j<vl ==> same_value(vout.lane[j],unary_value(i_base[total-n+j],params->scalar.slope)); */
++    /*@ assert \forall integer j; 0<=j<vl ==> same_value(vout.lane[j],unary_value(i_base[total-n+j],proof_slope_entry)); */
+     //@ ghost UnaryVL: ;
+     __riscv_vse32_v_f32m8(output, vout, vl);/*@ ghost
+     /@ loop invariant vmem_rvv_inner_read: \valid_read(i_base+(0..total+2));
+        loop invariant vmem_rvv_inner_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
+        loop invariant 0<=k<=(total-n)+(vl);
+-       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-n)+(vl)-k; @/
+     for(size_t k=0;k<(total-n)+(vl);k++) {
+       /@ assert vmem_rvv_input_read: \valid_read(i_base+k); @/
+@@ -55,7 +56,7 @@
+         /@ assert 0<=k-(total-n)<(vl); @/
+         /@ assert same_float(o_base[k],vout.lane[k-(total-n)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],params->scalar.slope)); @/
++      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */
+ 
+@@ -63,5 +64,5 @@
+     output += vl;
+     n -= vl;
+   }
+-  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope)); */
++  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); */
+ }
+\ No newline at end of file

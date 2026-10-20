@@ -1,0 +1,107 @@
+{
+  "actual_export": "experiments/integration-wave2/vcmul-memory/v01/export-why3/run.log",
+  "export_sha256": "c8a4195998b2534f7f4364b74ae3d1427116d0b4ee7f3f20805605926f0d7392",
+  "actual_used_theories": [
+    "Axiomatic",
+    "Chunk",
+    "Compound",
+    "Globals",
+    "Init_S2",
+    "S2",
+    "S3",
+    "S4",
+    "bool.Bool",
+    "frama_c_wp.cbits.Cbits",
+    "frama_c_wp.cfloat.Cfloat",
+    "frama_c_wp.cint.Cint",
+    "frama_c_wp.cmath.Cmath",
+    "frama_c_wp.cmath.Square1",
+    "frama_c_wp.memaddr.MemAddr",
+    "frama_c_wp.memory.Memory",
+    "frama_c_wp.qed.Qed",
+    "int.ComputerDivision",
+    "int.Int",
+    "map.Map",
+    "real.Abs",
+    "real.RealInfix",
+    "real.Square",
+    "why3.BuiltIn.BuiltIn"
+  ],
+  "physical_address_references_in_generated_common_context": 0,
+  "all_qualified_model_why3_files_sha256": {
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/membytes_le.mlw": "c051bb399e0fec6435d3cf7a57369e4f679fe3026055725d1c7001b6fca4a073",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/cmath.mlw": "03ab68c3ae875144c15b0497f8a903b30288faa2bc975bd68aff364db0cc0c42",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/sequence.mlw": "c89b3bbec69a9f89d0b45a1122e5a26696e34f3ff386f9300d3c40332c98bd04",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/vset.mlw": "6dc25b86b2e3b8ee20f0c7159a464e4a61396a38ddb57cab56634fcad0b32c6b",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/fma.mlw": "4e8f2e2c91fd965fd722ce912a3798e914b8052c20b925ff85be457b80ee4551",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/cint.mlw": "34165df36963929dc7fc2d06e7609434fddc43924af5a9979e78d89b9c5b989e",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/memory.mlw": "89befdbbe079934c8145bf3af8fbfa886a438af9063788eaaab496e6f13c69a9",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/qed.mlw": "54d50c3e40ea87b2bb0fd7195341c6c8bfc5ebcf300cb7b18752fae28e622efe",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/membytes_be.mlw": "9cde5a3dc490fc0a45e5b21a8fef9c00dc22bbf645a17b62e1add4a1b765f730",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/cfloat.mlw": "3114deed572a82447f1f63da8c3baa610014c19919528d3b66a21ddfb10b606d",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/vlist.mlw": "efd54a0db68c3526445f8a7a3df49389ab2905bb343447645514cbedc7366334",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/memaddr.mlw": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f",
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/cbits.mlw": "2843934c585b3bf29cc81d98200abacf87c8720d0b0a8e2ba48495e4e4ca4099"
+  },
+  "all_physical_address_symbol_references_in_model": {
+    "experiments/shim-c-v2/model-front/wp-share/why3/frama_c_wp/memaddr.mlw": [
+      {
+        "line": 137,
+        "text": "  function int_of_addr addr: int"
+      },
+      {
+        "line": 138,
+        "text": "  function addr_of_int int: addr"
+      },
+      {
+        "line": 141,
+        "text": "    int_of_addr null = 0"
+      },
+      {
+        "line": 145,
+        "text": "      statically_allocated p.base -> addr_of_int (int_of_addr p) = p"
+      }
+    ]
+  },
+  "finding": "Actual generated common clusters have no additional physical-address constraints. The only qualified model definitions constraining these symbols are MemAddr null and statically-allocated inverse; no connection to nonzero shift. Whole model consistency is not established by this audit.",
+  "actual_typed_float_stride": "Generated Compound defines shift_float32(p,k)=MemAddr.shift(p,k), so one typed float advances offset 1 while sizeof(float) in uintptr arithmetic is 4 bytes.",
+  "actual_smt": {
+    "path": "experiments/integration-wave2/vcmul-memory/address-audit/smt-export/typed_raw_fma_complex_fp/address_step_ensures_Why3_Z3_4_12_5.smt2",
+    "sha256": "972ed8f3f97d1f8e6dd8c3c33d410a230688b2ef9786e0417d2b7ca92df67c1f",
+    "lines": 1146,
+    "physical_symbol_lines": [
+      {
+        "line": 496,
+        "text": ";; \"int_of_addr\""
+      },
+      {
+        "line": 497,
+        "text": "(declare-fun int_of_addr (addr) Int)"
+      },
+      {
+        "line": 499,
+        "text": ";; \"addr_of_int\""
+      },
+      {
+        "line": 500,
+        "text": "(declare-fun addr_of_int (Int) addr)"
+      },
+      {
+        "line": 503,
+        "text": "(assert (= (int_of_addr null) 0))"
+      },
+      {
+        "line": 505,
+        "text": ";; \"addr_of_int_bijection\""
+      },
+      {
+        "line": 508,
+        "text": "    (=> (statically_allocated (base p)) (= (addr_of_int (int_of_addr p)) p))))"
+      },
+      {
+        "line": 1141,
+        "text": "            (= (addr_of_int (to_uint64 (+ 4 (to_uint64 (int_of_addr a))))) "
+      }
+    ]
+  }
+}

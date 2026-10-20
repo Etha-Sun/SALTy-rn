@@ -1,0 +1,1 @@
+从已证v19独立备选：同proof.patch加入一个readonly空body prefix-step ghosthelper，前件当前forall j<k和当前点k，后件forall j<=k；在旧lane断言后调用。helper无ordinaryC memory读取，仅逻辑断言，故不额外加validread公开或私有pre。实际验证helperensures/assigns2项、两callpre、原prefix建立/保持、原lane/RTE/loopframe/variant及3NEON memoryinvariant6项。旧tailprefix/finalall仍外债，不继承它们为通过。未重排loop，impl/spec/shim/model/driver/checker冻结，1200/30s/1024/par64。

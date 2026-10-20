@@ -1,0 +1,164 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "64", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vrndne-proof-pass/sequent01/report.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-fct", "proof_vget2_join,proof_store_join", "-wp-print", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function proof_vget2_join
+[rte:annot] annotating function proof_store_join
+
+Goal Post-condition ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 518) in 'proof_vget2_join':
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 519) in 'proof_vget2_join':
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'integration_vget2_value_0' ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 521):
+Let a = vy_0.F16_lane.
+Let a_1 = vy_lo_0.F17_lane.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(off_0) /\ is_uint64(s).
+  (* Heap *)
+  Type: (region(i_base_0.base) <= 0) /\ framed(mem_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a_1[i], a[s + i]))).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a[s + i],
+        L_unary_value(repr_decode32(read_uint32(mem_0,
+                                      shift_float32(i_base_0, off_0 + i))))))).
+}
+Prove: P_same_value(a_1[0], a[s]).
+
+------------------------------------------------------------
+
+Goal Assertion 'integration_vget2_join_0' ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 522):
+Let a = vy_lo_0.F17_lane.
+Let a_1 = a[0].
+Let a_2 = vy_0.F16_lane.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(off_0) /\ is_uint64(s).
+  (* Heap *)
+  Type: (region(i_base_0.base) <= 0) /\ framed(mem_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a[i], a_2[s + i]))).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a_2[s + i],
+        L_unary_value(repr_decode32(read_uint32(mem_0,
+                                      shift_float32(i_base_0, off_0 + i))))))).
+  (* Assertion 'integration_vget2_value_0' *)
+  Have: P_same_value(a_1, a_2[s]).
+}
+Prove: P_same_value(a_1,
+         L_unary_value(repr_decode32(read_uint32(mem_0,
+                                       shift_float32(i_base_0, off_0))))).
+
+------------------------------------------------------------
+
+Goal Assertion 'integration_vget2_value_1' ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 523):
+Let a = vy_lo_0.F17_lane.
+Let a_1 = a[0].
+Let a_2 = vy_0.F16_lane.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(off_0) /\ is_uint64(s).
+  (* Heap *)
+  Type: (region(i_base_0.base) <= 0) /\ framed(mem_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a[i], a_2[s + i]))).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a_2[s + i],
+        L_unary_value(repr_decode32(read_uint32(mem_0,
+                                      shift_float32(i_base_0, off_0 + i))))))).
+  (* Assertion 'integration_vget2_value_0' *)
+  Have: P_same_value(a_1, a_2[s]).
+  (* Assertion 'integration_vget2_join_0' *)
+  Have: P_same_value(a_1,
+          L_unary_value(repr_decode32(read_uint32(mem_0,
+                                        shift_float32(i_base_0, off_0))))).
+}
+Prove: P_same_value(a[1], a_2[1 + s]).
+
+------------------------------------------------------------
+
+Goal Assertion 'integration_vget2_join_1' ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 524):
+Let a = vy_lo_0.F17_lane.
+Let a_1 = a[1].
+Let a_2 = vy_0.F16_lane.
+Let a_3 = a[0].
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(off_0) /\ is_uint64(s).
+  (* Heap *)
+  Type: (region(i_base_0.base) <= 0) /\ framed(mem_0) /\ sconst(mem_0).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a[i], a_2[s + i]))).
+  (* Pre-condition *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a_2[s + i],
+        L_unary_value(repr_decode32(read_uint32(mem_0,
+                                      shift_float32(i_base_0, off_0 + i))))))).
+  (* Assertion 'integration_vget2_value_0' *)
+  Have: P_same_value(a_3, a_2[s]).
+  (* Assertion 'integration_vget2_join_0' *)
+  Have: P_same_value(a_3,
+          L_unary_value(repr_decode32(read_uint32(mem_0,
+                                        shift_float32(i_base_0, off_0))))).
+  (* Assertion 'integration_vget2_value_1' *)
+  Have: P_same_value(a_1, a_2[1 + s]).
+}
+Prove: P_same_value(a_1,
+         L_unary_value(repr_decode32(read_uint32(mem_0,
+                                       shift_float32(i_base_0, 1 + off_0))))).
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'proof_vget2_join':
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Post-condition ("experiments/integration-wave2/noncomplex/f32-vrndne/v04/attempts/0001/.build/verify01/annotated/unit.c", line 545) in 'proof_store_join':
+Let a = vy_0.F18_lane.
+Let x = i + off_0.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(off_0) /\ is_uint64(vl_0).
+  (* Heap *)
+  Type: (region(i_base_0.base) <= 0) /\ (region(o_base_0.base) <= 0) /\
+      framed(mem_0) /\ sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i < vl_0).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < vl_0) ->
+      P_same_value(a[i_1],
+        L_unary_value(repr_decode32(read_uint32(mem_0,
+                                      shift_float32(i_base_0, off_0 + i_1))))))).
+  (* Pre-condition *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < vl_0) ->
+      P_same_float(repr_decode32(read_uint32(mem_0,
+                                   shift_float32(o_base_0, off_0 + i_1))),
+        a[i_1]))).
+}
+Prove: P_same_value(repr_decode32(read_uint32(mem_0,
+                                    shift_float32(o_base_0, x))),
+         L_unary_value(repr_decode32(read_uint32(mem_0,
+                                       shift_float32(i_base_0, x))))).
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'proof_store_join':
+Prove: true.
+
+------------------------------------------------------------

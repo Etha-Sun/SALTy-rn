@@ -1,0 +1,1 @@
+v08基础上手工合入root独审memory/v13的7invariant+5label，保留自身所有entry-slope/value cuts。point ghostloop显式carry完整operands(含slope)/source-sign/select与shape/read事实，建立/保持和private callpre/RTE全查；另按同一whole/current read模式加NEON3invariant，针对旧两个load-pre，属于新待验内容。仍只equivalent+checked point helper全函数VC诊断，不是全项目full。全部普通C/spec/shim/model/driver/checker及30s/1GiB/par64不变。

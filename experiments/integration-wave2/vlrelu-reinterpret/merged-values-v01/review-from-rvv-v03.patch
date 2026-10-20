@@ -1,0 +1,315 @@
+--- RVV-v03/extensions.h
++++ merged-draft/extensions.h
+@@ -152,4 +152,49 @@
+     ensures values_point_value: same_value(r,unary_value(y,t)); @/
+ void proof_values_unary_point(float x,float y,float s,float t,float m,float r,uint32_t mask) {}
+ */
++/*@ \wp::strategy ValuesSMT: \prover("cvc5",30),\prover("z3",30);
++ */
++/*@ lemma values_unary_congruence:
++      \forall float x,y,s,t;
++      same_float(x,y) && same_float(s,t) ==>
++      same_value(unary_value(x,s),unary_value(y,t)); */
++/*@ lemma values_unary_select:
++      \forall float x,y,s,t,m,r;
++      same_float(x,y) && same_float(s,t) &&
++      same_value(m,fp_mul32(x,s)) &&
++      same_float(r,\sign(y)==\sign((float)-1.0)?m:x) ==>
++      same_value(r,unary_value(y,t)); */
++/*@ lemma values_unary_join:
++      \forall float x,y,s,t,a,b;
++      same_float(x,y) && same_float(s,t) &&
++      same_value(a,unary_value(x,s)) &&
++      same_value(b,unary_value(y,t)) ==> same_value(a,b); */
++/*@ lemma values_unary_mask:
++      \forall float x,y,s,t,m,r; \forall integer mask;
++      same_float(x,y) && same_float(s,t) &&
++      same_value(m,fp_mul32(x,s)) &&
++      (!\is_NaN(y) ==>
++        ((mask!=0) <==> (\sign(y)==\sign((float)-1.0)))) &&
++      same_float(r,mask!=0?m:x) ==>
++      same_value(r,unary_value(y,t)); */
++/*@ lemma values_float_sign_transfer:
++      \forall float x,y;
++      same_float(x,y) && !\is_NaN(y) ==> \sign(x)==\sign(y); */
++/*@ lemma values_mask_sign_transfer:
++      \forall float x,y; \forall integer mask;
++      same_float(x,y) &&
++      (!\is_NaN(x) ==>
++        ((mask!=0) <==> (\sign(x)==\sign((float)-1.0)))) ==>
++      (!\is_NaN(y) ==>
++        ((mask!=0) <==> (\sign(y)==\sign((float)-1.0)))); */
++/*@ lemma values_tail_extent: \forall integer T,B;
++      0<=T<=SIZE_MAX && (B==8 || B==12) && B/4<=T ==>
++      (size_t)((size_t)(T-B/4)+2)==T-(B%8)/4; */
++/*@ ghost
++/@ requires values_transfer_source: same_float(r,v);
++   requires values_transfer_value: same_value(v,unary_value(y,t));
++   terminates \true; assigns \nothing;
++   ensures values_transfer_result: same_value(r,unary_value(y,t)); @/
++void proof_values_unary_transfer(float r,float v,float y,float t) {}
++*/
+ #endif
+--- RVV-v03/neon.c
++++ merged-draft/neon.c
+@@ -15,6 +15,7 @@
+   //@ ghost const float *i_base=input;
+   //@ ghost float *o_base=output;
+   //@ ghost size_t total=batch/sizeof(float);
++  //@ ghost const float proof_slope_entry=params->scalar.slope;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input != NULL);
+@@ -22,25 +23,60 @@
+ 
+   const float32x4_t vslope = vdupq_n_f32(params->scalar.slope);
+ 
+-  /*@ loop invariant 0<=batch<=4*total && batch%4==0;
++  /*@ loop invariant hv_params_outer: same_float(params->scalar.slope,proof_slope_entry);
++      loop invariant values_neon_whole_read: \valid_read(i_base+(0..total+2));
++      loop invariant values_neon_whole_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
++      loop invariant values_neon_current_read: \valid_read(input+(0..batch/4+2));
++      loop invariant 0<=batch<=4*total && batch%4==0;
+       loop invariant input==i_base+(total-batch/4);
+       loop invariant output==o_base+(total-batch/4);
+       loop invariant \valid(output+(0..batch/4-1));
+-      loop invariant \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++      loop invariant \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+       loop assigns batch,input,output,o_base[0..total-1]; loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
++    //@ ghost const float* proof_input4=input;
+     const float32x4_t vx0123 = vld1q_f32(input); input += 4;
+ 
+     float32x4_t vacc0123 = vmulq_f32(vx0123, vslope);
+     const uint32x4_t vmask0123 = vcltq_s32(vreinterpretq_s32_f32(vx0123), vmovq_n_s32(0));
+ 
++    //@ ghost const float32x4_t proof_product4=vacc0123;
+     vacc0123 = vbslq_f32(vmask0123, vacc0123, vx0123);
+-
+-    /*@ assert \forall integer j; 0<=j<4 ==> same_value(vacc0123.lane[j],unary_value(i_base[(total-batch/4)+j],params->scalar.slope)); */
++    /*@ assert values_neon4_operands: \forall integer j; 0<=j<4 ==>
++          same_float(vx0123.lane[j],i_base[total-batch/4+j]) &&
++          same_float(vslope.lane[j],proof_slope_entry) &&
++          same_value(proof_product4.lane[j],fp_mul32(vx0123.lane[j],vslope.lane[j])); */
++    /*@ assert values_neon4_source_sign: \forall integer j; 0<=j<4 ==>
++          (!\is_NaN(vx0123.lane[j]) ==>
++            ((vmask0123.lane[j]!=0) <==>
++             (\sign(vx0123.lane[j])==\sign((float)-1.0)))); */
++    /*@ assert values_neon4_select: \forall integer j; 0<=j<4 ==>
++          same_float(vacc0123.lane[j],vmask0123.lane[j]!=0?proof_product4.lane[j]:vx0123.lane[j]); */
++
++
++    /*@ assert values_point_offsets: 0<=batch/4<=total && total-batch/4+4<=total; */
++    /*@ ghost
++      proof_values_unary_point(
++        vx0123.lane[0],proof_input4[0],vslope.lane[0],proof_slope_entry,
++        proof_product4.lane[0],vacc0123.lane[0],vmask0123.lane[0]);
++      proof_values_unary_point(
++        vx0123.lane[1],proof_input4[1],vslope.lane[1],proof_slope_entry,
++        proof_product4.lane[1],vacc0123.lane[1],vmask0123.lane[1]);
++      proof_values_unary_point(
++        vx0123.lane[2],proof_input4[2],vslope.lane[2],proof_slope_entry,
++        proof_product4.lane[2],vacc0123.lane[2],vmask0123.lane[2]);
++      proof_values_unary_point(
++        vx0123.lane[3],proof_input4[3],vslope.lane[3],proof_slope_entry,
++        proof_product4.lane[3],vacc0123.lane[3],vmask0123.lane[3]);
++    */
++    /*@ assert values_four_lane_cases: \forall integer j; 0<=j<4 ==> j==0 || j==1 || j==2 || j==3; */
++    /*@ assert values_neon4: \forall integer j; 0<=j<4 ==> same_value(vacc0123.lane[j],unary_value(i_base[(total-batch/4)+j],proof_slope_entry)); */
+ //@ ghost Unary4: ;
++    /*@ assert hv_guard_store4: \valid_read(&params->scalar.slope) && \separated(&params->scalar.slope,output+(0..3)); */
+     vst1q_f32(output, vacc0123);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-batch/4)+(4);
+-       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++    /@ loop invariant hv_params4: same_float(params->scalar.slope,proof_slope_entry);
++       loop invariant 0<=k<=(total-batch/4)+(4);
++       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-batch/4)+(4)-k; @/
+     for(size_t k=0;k<(total-batch/4)+(4);k++) {
+       /@ assert \valid_read(i_base+k); @/
+@@ -54,25 +90,55 @@
+         /@ assert 0<=k-(total-batch/4)<(4); @/
+         /@ assert same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],params->scalar.slope)); @/
++      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 4;
+   }
+   //@ assert batch==0 || batch==4 || batch==8 || batch==12;
+   //@ ghost proof_f32_tail_bits(batch);
+   if XNN_UNLIKELY(batch != 0) {
++    //@ ghost const float* proof_tail_input=input;
+     const float32x4_t vx = vld1q_f32(input);
+     float32x4_t vacc = vmulq_f32(vx, vslope);
+     const uint32x4_t vmask = vcltq_s32(vreinterpretq_s32_f32(vx), vmovq_n_s32(0));
++    //@ ghost const float32x4_t proof_tail_product=vacc;
+     vacc = vbslq_f32(vmask, vacc, vx);
+ 
++    /*@ assert values_tail_operands: \forall integer j; 0<=j<4 ==>
++          same_float(vx.lane[j],proof_tail_input[j]) &&
++          same_float(vslope.lane[j],proof_slope_entry) &&
++          same_value(proof_tail_product.lane[j],fp_mul32(vx.lane[j],vslope.lane[j])); */
++    /*@ assert values_tail_source_sign: \forall integer j; 0<=j<4 ==>
++          (!\is_NaN(vx.lane[j]) ==>
++            ((vmask.lane[j]!=0) <==> (\sign(vx.lane[j])==\sign((float)-1.0)))); */
++    /*@ assert values_tail_select: \forall integer j; 0<=j<4 ==>
++          same_float(vacc.lane[j],vmask.lane[j]!=0?proof_tail_product.lane[j]:vx.lane[j]); */
++    /*@ ghost
++      proof_values_unary_point(vx.lane[0],proof_tail_input[0],vslope.lane[0],proof_slope_entry,
++        proof_tail_product.lane[0],vacc.lane[0],vmask.lane[0]);
++      proof_values_unary_point(vx.lane[1],proof_tail_input[1],vslope.lane[1],proof_slope_entry,
++        proof_tail_product.lane[1],vacc.lane[1],vmask.lane[1]);
++      proof_values_unary_point(vx.lane[2],proof_tail_input[2],vslope.lane[2],proof_slope_entry,
++        proof_tail_product.lane[2],vacc.lane[2],vmask.lane[2]);
++      proof_values_unary_point(vx.lane[3],proof_tail_input[3],vslope.lane[3],proof_slope_entry,
++        proof_tail_product.lane[3],vacc.lane[3],vmask.lane[3]);
++    */
++    /*@ assert values_tail_vector: \forall integer j; 0<=j<4 ==>
++          same_value(vacc.lane[j],unary_value(i_base[total-batch/4+j],proof_slope_entry)); */
++    //@ ghost const float proof_tail_y2=proof_tail_input[2];
+     float32x2_t vacc_lo = vget_low_f32(vacc);
++    /*@ ghost
++      proof_values_unary_transfer(vacc_lo.lane[0],vacc.lane[0],proof_tail_input[0],proof_slope_entry);
++      proof_values_unary_transfer(vacc_lo.lane[1],vacc.lane[1],proof_tail_input[1],proof_slope_entry);
++    */
+     if (batch & (2 * sizeof(float))) {
+-      /*@ assert \forall integer j; 0<=j<2 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-batch/4)+j],params->scalar.slope)); */
++      /*@ assert values_neon2: \forall integer j; 0<=j<2 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-batch/4)+j],proof_slope_entry)); */
+ //@ ghost Unary2: ;
++    /*@ assert hv_guard_store2: \valid_read(&params->scalar.slope) && \separated(&params->scalar.slope,output+(0..1)); */
+     vst1_f32(output, vacc_lo);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-batch/4)+(2);
+-       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++    /@ loop invariant hv_params2: same_float(params->scalar.slope,proof_slope_entry);
++       loop invariant 0<=k<=(total-batch/4)+(2);
++       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-batch/4)+(2)-k; @/
+     for(size_t k=0;k<(total-batch/4)+(2);k++) {
+       /@ assert \valid_read(i_base+k); @/
+@@ -86,19 +152,34 @@
+         /@ assert 0<=k-(total-batch/4)<(2); @/
+         /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],params->scalar.slope)); @/
++      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 2;
+       vacc_lo = vget_high_f32(vacc);
+     }
+-    /*@ assert \forall integer j; 0<=j<total-(batch%8)/4 ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope)); */
++    /*@ assert values_tail_div_cast: (size_t)(batch/4)==batch/4; */
++    /*@ assert values_tail_extent_cut: !(batch & 8) ||
++          (size_t)((size_t)(total-batch/4)+2)==total-(batch%8)/4; */
++    /*@ assert values_neon_tailprefix: \forall integer j; 0<=j<total-(batch%8)/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); */
+     if (batch & (1 * sizeof(float))) {
+       //@ assert output==o_base+(total-1);
+-      /*@ assert \forall integer j; 0<=j<1 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-1)+j],params->scalar.slope)); */
++      /*@ ghost
++        if(batch & (2*sizeof(float))) {
++          /@ assert values_tail_high_read: \valid_read(proof_tail_input+2); @/
++          /@ assert values_tail_high_sep: \separated(proof_tail_input+2,o_base+(total-3..total-2)); @/
++          /@ assert values_tail_high_frame: same_float(proof_tail_input[2],proof_tail_y2); @/
++          proof_values_unary_transfer(vacc_lo.lane[0],vacc.lane[2],proof_tail_y2,proof_slope_entry);
++        } else {
++          proof_values_unary_transfer(vacc_lo.lane[0],vacc.lane[0],proof_tail_input[0],proof_slope_entry);
++        }
++      */
++      /*@ assert values_neon1: \forall integer j; 0<=j<1 ==> same_value(vacc_lo.lane[j],unary_value(i_base[(total-1)+j],proof_slope_entry)); */
+ //@ ghost Unary1: ;
++    /*@ assert hv_guard_store1: \valid_read(&params->scalar.slope) && \separated(&params->scalar.slope,output+(0..0)); */
+     vst1_lane_f32(output, vacc_lo, 0);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-1)+(1);
+-       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++    /@ loop invariant hv_params1: same_float(params->scalar.slope,proof_slope_entry);
++       loop invariant 0<=k<=(total-1)+(1);
++       loop invariant values_neon1_prefix: \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-1)+(1)-k; @/
+     for(size_t k=0;k<(total-1)+(1);k++) {
+       /@ assert \valid_read(i_base+k); @/
+@@ -112,10 +193,11 @@
+         /@ assert 0<=k-(total-1)<(1); @/
+         /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-1)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],params->scalar.slope)); @/
++      /@ assert values_neon1_lane: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */
+     }
+   }
+-  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope)); */
++  /*@ assert values_one_extent_cut: (size_t)((size_t)(total-1)+1)==total; */
++  /*@ assert values_neon_all: \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); */
+ }
+--- RVV-v03/harness.c
++++ merged-draft/harness.c
+@@ -1,32 +1,51 @@
+ #include "spec.h"
++
++/*@ lemma hv_count4: \forall integer N;
++    0<=N<=SIZE_MAX/4-3 ==> ((size_t)(4*N))/4==N; */
++/*@ \wp::proof VmemSMT: hv_count4; */
+ 
+ int equivalent(size_t n,const float *input,float *left,float *right,float slope) {
+   struct xnn_f32_lrelu_params params={{slope}};
++  /*@ assert hv_count_exact: ((size_t)(4*n))/4==n; */
++  //@ ghost UnaryFirst: ;
+   test_neon(n*sizeof(float),input,left,&params);
++  /*@ assert hv_slope_frame: same_float(\at(params.scalar.slope,UnaryFirst),params.scalar.slope); */
++  /*@ assert hv_left_post: \forall integer j; 0<=j<n ==> same_value(left[j],unary_value(input[j],\at(params.scalar.slope,UnaryFirst))); */
+   //@ ghost UnarySecond: ;
+   test_rvv(n*sizeof(float),input,right,&params);
++  /*@ assert hv_right_post: \forall integer j; 0<=j<n ==> same_value(right[j],unary_value(input[j],\at(params.scalar.slope,UnarySecond))); */
+   /*@ ghost
++    size_t k=0;
+     /@ loop invariant vmem_final_whole_reads: \valid_read(left+(0..n-1)) && \valid_read(input+(0..n+2));
+        loop invariant vmem_final_whole_sep: \separated(input+(0..n+2),right+(0..n-1));
++       loop invariant hv_left_old_values: \forall integer j; 0<=j<n ==> same_value(\at(left[j],UnarySecond),unary_value(\at(input[j],UnarySecond),\at(params.scalar.slope,UnaryFirst)));
++       loop invariant hv_entry_slopes: same_float(\at(params.scalar.slope,UnaryFirst),\at(params.scalar.slope,UnarySecond));
++       loop invariant hv_right_values: \forall integer j; 0<=j<n ==> same_value(right[j],unary_value(input[j],\at(params.scalar.slope,UnarySecond)));
+        loop invariant 0<=k<=n;
+        loop invariant \forall integer j; 0<=j<k ==> same_value(left[j],right[j]);
+        loop assigns k; loop variant n-k; @/
+-    for(size_t k=0;k<n;k++) {
++    for(;k<n;k++) {
+       /@ assert vmem_final_reads: \valid_read(left+k) && \valid_read(input+k); @/
+       /@ assert \separated(left+k,right+(0..n-1)); @/
+       /@ assert vmem_final_input_sep: \separated(input+k,right+(0..n-1)); @/
+       /@ assert same_float(left[k],\at(left[\at(k,Here)],UnarySecond)); @/
+       /@ assert same_float(input[k],\at(input[\at(k,Here)],UnarySecond)); @/
+-      /@ assert same_value(left[k],right[k]); @/
++      /@ assert hv_left_transport: same_value(left[k],unary_value(input[k],\at(params.scalar.slope,UnaryFirst))); @/
++      /@ assert values_harness_lane: same_value(left[k],right[k]); @/
+     }
++    /@ assert hv_counter_done: k==n; @/
++    /@ assert hv_count_exit: ((size_t)(4*k))/4==n; @/
+   */
+-  /*@ assert \forall integer j; 0<=j<n ==> same_value(left[j],right[j]); */
++  /*@ assert values_harness_all: \forall integer j; 0<=j<n ==> same_value(left[j],right[j]); */
+   /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
+   for(size_t i=0;i<n;i++) {
+     if (!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i]))) return 0;
+   }
+   return 1;
+ }
++
++/*@ \wp::strategy HVFilter: \tactic("Wp.filter",\children(VmemAddress));
++    \wp::proof HVFilter:hv_left_post,hv_right_post,hv_left_old_values,hv_right_values,hv_left_transport,values_harness_lane,values_harness_all,hv_count_exact,hv_slope_frame,hv_entry_slopes,hv_params_outer,hv_params4,hv_params2,hv_params1,hv_counter_done,hv_count_exit,hv_guard_store4,hv_guard_store2,hv_guard_store1; */
+ 
+ /*@ \wp::strategy RVVValuesSMT: \prover("cvc5",30),\prover("z3",30);
+     \wp::proof RVVValuesSMT: proof_values_unary_point,values_unary_mask_source,values_point_input,values_point_slope,values_point_product,values_point_sign,values_point_select,values_point_value,rvv_values_shape,rvv_values_pointer,rvv_values_current_read,rvv_values_read,rvv_values_sep,rvv_values_slope,rvv_values_slope_all,rvv_values_operands_all,rvv_values_sign_all,rvv_values_select_all,rvv_values_output_prefix,rvv_values_prefix,rvv_values_result; */
+@@ -45,3 +64,14 @@
+       \children(RVVPrefixInstance)),RVVPrefixInstance;
+     \wp::proof RVVPrefixInstance: rvv_values_result;
+     \wp::proof RVVPrefixPoint: rvv_values_prefix; */
++
++/*@ \wp::proof ValuesSMT:
++      proof_values_unary_point,values_point_input,values_point_slope,values_point_product,
++      values_point_sign,values_point_select,values_point_value,values_point_offsets,values_four_lane_cases,
++      values_neon4_operands,values_neon4_source_sign,values_neon4_select,values_neon4,
++      values_tail_operands,values_tail_source_sign,values_tail_select,values_tail_vector,
++      values_neon2,values_neon_tailprefix,values_neon1,values_neon1_prefix,values_neon1_lane,values_neon_all,
++      proof_values_unary_transfer,values_transfer_source,values_transfer_value,values_transfer_result,values_tail_extent_cut,values_tail_extent; */
++
++/*@ \wp::proof ValuesSMT: values_tail_div_cast,values_one_extent_cut; */
++/*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */

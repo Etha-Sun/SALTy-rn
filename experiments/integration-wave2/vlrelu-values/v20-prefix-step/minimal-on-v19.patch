@@ -1,0 +1,34 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -199,3 +199,13 @@
+    ensures values_transfer_result: same_value(r,unary_value(y,t)); @/
+ void proof_values_unary_transfer(float r,float v,float y,float t) {}
+ */
++
++/*@ ghost
++/@ requires values_step_prefix: \forall integer j; 0<=j<k ==>
++       same_value(out[j],unary_value(in[j],slope));
++   requires values_step_point: same_value(out[k],unary_value(in[k],slope));
++   terminates \true; assigns \nothing;
++   ensures values_step_result: \forall integer j; 0<=j<=k ==>
++       same_value(out[j],unary_value(in[j],slope)); @/
++void proof_values_prefix_step(const float* in,const float* out,size_t k,float slope) {}
++*/
+--- a/neon.c
++++ b/neon.c
+@@ -191,6 +191,7 @@
+       proof_values_unary_transfer(o_base[k],vacc_lo.lane[0],i_base[k],proof_slope_entry);
+       }
+       /@ assert values_neon1_lane: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      proof_values_prefix_step(i_base,o_base,k,proof_slope_entry);
+     }
+     */
+     }
+--- a/harness.c
++++ b/harness.c
+@@ -40,3 +40,5 @@
+ /*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */
+ 
+ /*@ \wp::proof ValuesSMT: values_neon1_old_point,values_neon1_index; */
++
++/*@ \wp::proof ValuesSMT: proof_values_prefix_step,values_step_prefix,values_step_point,values_step_result; */

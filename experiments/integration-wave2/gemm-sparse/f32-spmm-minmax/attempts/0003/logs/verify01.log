@@ -1,0 +1,274 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/.build/verify01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/.build/verify01/annotated/unit.c', '-wp-skip-fct', '__riscv_vfadd_vv_f32m8,__riscv_vfmacc_vv_f32m8,__riscv_vfmax_vv_f32m8,__riscv_vfmin_vv_f32m8,__riscv_vfmul_vf_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,doz,round_down_po2,round_up_po2,vaddq_f32,vaddv_f32,vaddvq_f32,vcombine_f32,vdupq_lane_f32,vextq_f32,vfmaq_lane_f32,vfmaq_laneq_f32,vget_high_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1q_lane_f32,vld2_dup_f32,vmlaq_f32,vmovq_n_f32,vmulq_f32,vst1q_lane_f32,vsubq_f32,vzip1q_f32,vzip2q_f32']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '5', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/logs/verify01.json', '-wp-model', 'Typed+raw+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/.build/verify01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/.build/verify01/annotated/unit.c', '-wp-skip-fct', '__riscv_vfadd_vv_f32m8,__riscv_vfmacc_vv_f32m8,__riscv_vfmax_vv_f32m8,__riscv_vfmin_vv_f32m8,__riscv_vfmul_vf_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,doz,round_down_po2,round_up_po2,vaddq_f32,vaddv_f32,vaddvq_f32,vcombine_f32,vdupq_lane_f32,vextq_f32,vfmaq_lane_f32,vfmaq_laneq_f32,vget_high_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1q_lane_f32,vld2_dup_f32,vmlaq_f32,vmovq_n_f32,vmulq_f32,vst1q_lane_f32,vsubq_f32,vzip1q_f32,vzip2q_f32', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model/why3.conf', '-wp-no-why3-detect']
+# FMA underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "z3,cvc5", "-wp-timeout", "5", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/logs/verify01.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/.build/verify01/annotated/unit.c", "-wp-skip-fct", "__riscv_vfadd_vv_f32m8,__riscv_vfmacc_vv_f32m8,__riscv_vfmax_vv_f32m8,__riscv_vfmin_vv_f32m8,__riscv_vfmul_vf_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vmerge_vvm_f32m8,__riscv_vmfgt_vv_f32m8_b4,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,doz,round_down_po2,round_up_po2,vaddq_f32,vaddv_f32,vaddvq_f32,vcombine_f32,vdupq_lane_f32,vextq_f32,vfmaq_lane_f32,vfmaq_laneq_f32,vget_high_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1q_lane_f32,vld2_dup_f32,vmlaq_f32,vmovq_n_f32,vmulq_f32,vst1q_lane_f32,vsubq_f32,vzip1q_f32,vzip2q_f32", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0003/.build/verify01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfmacc_vf_f32m8
+[kernel:annot:missing-spec] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc/math.h:2142: Warning: 
+  Neither code nor explicit exits and terminates for function fmaf, generating
+  default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vfmax_vf_f32m8
+[rte:annot] annotating function __riscv_vfmerge_vfm_f32m8
+[rte:annot] annotating function __riscv_vfmin_vf_f32m8
+[rte:annot] annotating function __riscv_vfmv_v_f_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmfne_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function canonical_nan
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function fp_nan
+[rte:annot] annotating function max_number
+[kernel:annot:missing-spec] /zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc/math.h:203: Warning: 
+  Neither code nor explicit exits and terminates for function __fc_signbitf,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function min_number
+[rte:annot] annotating function neon_max
+[rte:annot] annotating function neon_min
+[rte:annot] annotating function salty_max_vf_m8
+[kernel:annot:missing-spec] <unknown location>: Warning: 
+  Neither code nor specification for function __builtin_nanf, generating
+  default exits, assigns and terminates.
+  See -generated-spec-* options for more info.
+[rte:annot] annotating function salty_min_vf_m8
+[rte:annot] annotating function spmm_prefix_zero
+[rte:annot] annotating function spmm_size_decrement
+[rte:annot] annotating function spmm_u32_decrement
+[rte:annot] annotating function spn_store4_bounds
+[rte:annot] annotating function spn_zero_product
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vfma_f32
+[rte:annot] annotating function vfmaq_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1_dup_f32
+[rte:annot] annotating function vld1_f32
+[rte:annot] annotating function vld1q_dup_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld2q_dup_f32
+[rte:annot] annotating function vmax_f32
+[rte:annot] annotating function vmaxq_f32
+[rte:annot] annotating function vmin_f32
+[rte:annot] annotating function vminq_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function xnn_prefetch_to_l1
+[wp] fp_minmax.c:9: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] fp_minmax.c:9: Warning: 
+  Cast with incompatible pointers types (source: uint32*) (target: sint8*)
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] neon.c:78: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] neon.c:76: Warning: 
+  Cast with incompatible pointers types (source: float32*) (target: sint8*)
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] Computing [900 goals...]
+[wp] 911 goals scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_valid_dest (Qed 12ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_assigns_normal (Qed 14ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_ensures (Qed 16ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_separation (Qed 12ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_canonical_nan_call_memcpy_requires_valid_src (Qed 13ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_min_number_ensures (Qed 213ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_max_number_ensures (Qed 292ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld2q_dup_f32_assert_rte_mem_access_2 (Qed 5ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_vld2q_dup_f32_assert_rte_mem_access (Qed 3ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_vfma_f32_loop_invariant_2_preserved (Qed 13ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_riscv_vfmacc_vf_f32m8_loop_invariant_2_preserved (Qed 14ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_ensures_equal (Qed 5.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_3_preserved (Qed 5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_2_preserved (Qed 4.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2 (Qed 4.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access (Qed 4.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_4_preserved (Qed 5.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_output_row_preserved (Qed 496ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_mc_range_preserved (Qed 502ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_mc_range_established (Qed 31ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_map_4_preserved (Qed 472ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_column_base_4_preserved (Qed 448ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_n_4_preserved (Qed 465ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_7 (Qed 149ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_4_preserved (Qed 492ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_nnz_4_preserved (Qed 226ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_dstep_4_preserved (Qed 227ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_8 (Qed 173ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_wstep_4_preserved (Qed 232ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_map_2_established (Qed 99ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_map_2_preserved (Qed 630ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_nnz_2_preserved (Qed 426ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_9 (Qed 134ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_2_preserved (Qed 632ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_2_established (Qed 101ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_n_2_preserved (Qed 601ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_wstep_2_preserved (Qed 393ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_map_1_established (Qed 1.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_10 (Qed 284ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_11 (Qed 1.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_1_preserved (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_n_1_preserved (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_nnz_1_preserved (Qed 1.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_out_1_established (Qed 1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_map_1_preserved (Qed 2.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_14 (Qed 3.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_12 (Qed 1.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_spn_wstep_1_preserved (Qed 1.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_13 (Qed 4.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_spmm_origin_nnz (Qed 5.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_strip_bounds_preserved (Qed 9.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_spmm_origin_weight (Qed 5.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_delta_cursor_preserved (Qed 9.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_spmm_origin_delta (Qed 5.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_15 (Qed 6.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_stage3_weight_cursor_preserved (Qed 9.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_spmm_map_local_disjoint (Qed 6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_16 (Qed 6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_18 (Qed 7.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_17 (Qed 6.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_part2 (Qed 4.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part04 (Qed 473ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part03 (Qed 478ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part02 (Qed 435ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part08 (Qed 264ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part07 (Qed 474ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part09 (Qed 263ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part06 (Qed 475ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part05 (Qed 477ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part10 (Qed 271ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part12 (Qed 293ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part11 (Qed 374ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part14 (Qed 389ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part17 (Qed 277ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part13 (Qed 387ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part16 (Qed 278ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part15 (Qed 292ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part18 (Qed 595ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part20 (Qed 655ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part19 (Qed 553ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part21 (Qed 661ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part02 (Qed 421ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part03 (Qed 470ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part05 (Qed 254ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part04 (Qed 473ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part08 (Qed 204ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part07 (Qed 250ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part06 (Qed 253ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part10 (Qed 289ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part09 (Qed 365ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part11 (Qed 263ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part13 (Qed 462ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part12 (Qed 249ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_5_part3 (Qed 201ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_5_part2 (Qed 209ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part15 (Qed 453ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_4_part14 (Qed 460ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_5_part6 (Qed 191ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_5_part5 (Qed 240ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_5_part4 (Qed 181ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part03 (Qed 600ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part04 (Qed 636ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part07 (Qed 401ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part06 (Qed 405ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part10 (Qed 400ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part09 (Qed 402ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part05 (Qed 408ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part11 (Qed 623ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part08 (Qed 410ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part12 (Qed 622ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_7_part3 (Qed 278ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_7_part2 (Qed 283ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part15 (Qed 631ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part14 (Qed 632ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_6_part13 (Qed 634ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_7_part4 (Qed 279ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part04 (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part03 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part08 (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part07 (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part10 (Qed 2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part09 (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part06 (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part05 (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part12 (Qed 2.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part11 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_9_part3 (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_9_part2 (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part15 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part14 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_8_part13 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_9_part4 (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part05 (Qed 8.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part04 (Qed 8.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part03 (Qed 8.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part09 (Qed 9.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part08 (Qed 8.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part07 (Qed 8.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part06 (Qed 9.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part10 (Qed 9.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part13 (Qed 8.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part12 (Qed 8.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part11 (Qed 8.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part17 (Qed 8.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part16 (Qed 8.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part15 (Qed 9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part14 (Qed 8.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part18 (Qed 8.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part21 (Qed 8.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part20 (Qed 8.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part19 (Qed 8.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part25 (Qed 9.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part24 (Qed 9.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part23 (Qed 9.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part22 (Qed 8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part26 (Qed 9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_10_part27 (Qed 9.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part08 (Qed 8.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part07 (Qed 8.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part06 (Qed 8.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part05 (Qed 9.7s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part04 (Qed 9.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part03 (Qed 9.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part09 (Qed 8.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part10 (Qed 8.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_12_part2 (Qed 7.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part14 (Qed 9.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part13 (Qed 10s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part12 (Qed 9.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_11_part11 (Qed 8.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_12_part4 (Qed 7.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_12_part3 (Qed 8.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part07 (Qed 23ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part08 (Qed 42ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part10 (Qed 112ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part15 (Qed 171ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part28 (Qed 556ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part34 (Qed 1.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part39 (Qed 1.3s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part52 (Qed 2.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part02 (Qed 24ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_normal_part57 (Qed 3.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part04 (Qed 84ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part03 (Qed 36ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part14 (Qed 181ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part17 (Qed 188ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part24 (Qed 102ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part29 (Qed 157ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part42 (Qed 563ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part48 (Qed 1.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part53 (Qed 1.1s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part66 (Qed 2.2s) (CVC5)

@@ -1,0 +1,33 @@
+{
+  "root10_revision": "101fc27d738d6bfd934730ef5aec055dca716542",
+  "root10_proof_source": "experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v10",
+  "root10_proof_sha256": "dd772d7f5abb9d4f09bac30f174305793174444f61d150071a422cf31d968d81",
+  "deepseek_proof_sha256": "51b9d8d439d0cb501ee4c969b84f50a2bdf2a963783d2d6d309454bc0b398654",
+  "deepseek_pure_declarations": [
+    "ext_neon_min_cong1",
+    "ext_neon_min_cong2",
+    "ext_neon_max_cong1",
+    "ext_neon_max_cong2",
+    "ext_fma_cong_x",
+    "ext_fma_cong_y",
+    "sp_fma_swap"
+  ],
+  "changes": [
+    "Copy reviewed DeepSeek pure congruence/representation declarations and check all global lemmas, no assumptions.",
+    "Actual NEON min/final clamp cuts and zero-inclusive do/while countdown bounds; body/input/output unchanged."
+  ],
+  "removed_strategy_blocks": [],
+  "ordinary_C_spec_shim_model_driver_unchanged": true,
+  "frozen_sha256": "5a99c762dc0fd8217c290b81b4e92df093086a0518279a94828b4cce315b1dd2",
+  "proof_sha256": "1d071ccf8b5c7664cc7e1386e4df33c9be474ccce10e81c7980f8428181d2128",
+  "complete_kernel": false,
+  "previous_v3_frozen_sha256": "99adc1f1a15bdc9f0a275d73c82957cb1829b63b2c63b03bdda1f0818f0b5f76",
+  "checker_migration": {
+    "from": "tools/shim_c_campaign_v3.py",
+    "to": "tools/shim_c_campaign_v4.py",
+    "reason": "Existing stronger v4 checks all explicit global lemmas separately, retaining source/model/control/body coverage. No tool source or model change."
+  },
+  "frozen_C_spec_shim_driver_model_and_private_checker_items_unchanged": true,
+  "pre_syntax_fix_proof_sha256": "7d705bdaac974deacfe5f85f0a76404b93c0113701d8c4ee866e98b260472ba0",
+  "annotation_syntax_fix": "Move new header lemma block inside existing include guard to avoid duplicate registration; split QC4 two assertions into two code annotation comments. No formula/C/spec/model change."
+}

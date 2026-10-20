@@ -1,0 +1,102 @@
+{
+  "scope": "Only original main-four-lane prefix invariant establishment/preservation; not complete kernel",
+  "main_passed": 2,
+  "main_total": 2,
+  "globals_passed": 21,
+  "globals_total": 21,
+  "main_raw_contains_21_global_rows_already": true,
+  "proof_sha256": "b0125e5f94da899ceb20f8439bbb1e38eae609ffdf10959231df4e4b474947ed",
+  "frozen_attempt_sha256": "288118e7ae5555ccbce3708ad050654539cfbd27902ef2a41fef0d610f76cbe2",
+  "source_guard_sha256": "7df6c2ca3de0124c3e32249f5506c8a4a91d982e9d7e1952ff420316efaabb27",
+  "main_raw_sha256": "ad5bc464698bbf48bdc4220b85e1d1233deec22bda1cdb1c4f693f0c08698f65",
+  "globals_raw_sha256": "b769598f9721e50f4b9bc25ae593d47ac9fdbf875300f4dc089233559cdbeb2f",
+  "control_raw_sha256": "9b1307166316f8f4f5d010d6ee49e9249e811709830766f51996b290c764f8bc",
+  "successful_script_sha256": "ba4f20ece873808617ac2af54a9b783169291d2c72688fbcfa055826b64c5333",
+  "successful_script": [
+    {
+      "strategy": "MP4Filter",
+      "header": "Filter",
+      "tactic": "Wp.filter",
+      "params": {
+        "anti": false
+      },
+      "select": {
+        "select": "clause-goal",
+        "target": "let a_0 = (shift_float32 o_base_0 0) in\nlet a_1 = (shift_float32 o_base_0 (n_9-(batch_2 div 4))) in\nlet a_2 =\n    (memcpy (memcpy mem_94 a_0 mem_undef_7 a_0 (4*n_9)) a_1 mem_undef_0 a_1\n      16) in\n(P_same_value (repr_decode32 (read_uint32 a_2 (shift_float32 o_base_0 i_0)))\n  (L_unary_value\n    (repr_decode32 (read_uint32 a_2 (shift_float32 i_base_0 i_0)))\n    (repr_decode32\n      (read_uint32 mem_94\n        (shiftfield_F20_slope\n          (shiftfield_F19_xnn_f32_lrelu_params_scalar (global L_params_4847)))))))",
+        "pattern": "P_same_valuerepr_decode32L_unary_value"
+      },
+      "children": {
+        "Filter": [
+          {
+            "prover": "CVC5:1.2.1",
+            "verdict": "timeout",
+            "time": 30
+          },
+          {
+            "prover": "Z3:4.12.5",
+            "verdict": "failed"
+          },
+          {
+            "strategy": "VmemAddress",
+            "header": "Definition",
+            "tactic": "Wp.unfold",
+            "params": {},
+            "select": {
+              "select": "inside-goal",
+              "occur": 0,
+              "target": "(shift_float32 o_base_0 0)",
+              "pattern": "shift_float32$o_base0"
+            },
+            "children": {
+              "Unfold 'shift_float32'": [
+                {
+                  "prover": "CVC5:1.2.1",
+                  "verdict": "valid",
+                  "time": 4.85
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "actual_proof_path": "Wp.filter anti=false, then inherited VmemAddress unfolds only shift_float32(o_base,0), then CVC5 valid4.85s; earlier direct SMT failure is not the final proof result.",
+  "resources": [
+    {
+      "report": "verify01-model-control.json",
+      "par": "128",
+      "timeout": "30",
+      "memlimit": "1024"
+    },
+    {
+      "report": "verify01-lemmas.json",
+      "par": "128",
+      "timeout": "30",
+      "memlimit": "1024"
+    },
+    {
+      "report": "verify01.json",
+      "par": "128",
+      "timeout": "30",
+      "memlimit": "1024"
+    }
+  ],
+  "source_and_model_unchanged": true,
+  "model_controls_qualified": true,
+  "tool_export_errors": [],
+  "old_to_new_goal_mapping": {
+    "equivalent_loop_invariant_8_established": "equivalent_loop_invariant_mp4_main_prefix_established",
+    "equivalent_loop_invariant_8_preserved": "equivalent_loop_invariant_mp4_main_prefix_preserved"
+  },
+  "predicate_unchanged": true,
+  "new_semantic_cuts": 0,
+  "new_helper_or_private_requires": 0,
+  "remaining_external_dependencies": [
+    "full assert11 four-lane output-read/selected-lane frame",
+    "full assert12 four-lane scalar unary point relation",
+    "other full failures assert21/22 and vmem_final_reads are not selected or resolved here"
+  ],
+  "full_qualified_kernel": false,
+  "minimal_delta_sha256": "9e5e46a03532bc66acf384979daf8ade0cfb0d87d6bd0c688e73c7deddd4bb94"
+}

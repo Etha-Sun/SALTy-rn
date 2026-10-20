@@ -1,0 +1,1018 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-prover", "none", "-wp-par", "16", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-memory/v02/attempts/0001/.build/guard01/annotated/extensions.driver", "-wp-fct", "vst1q_f32,vst1_f32,__riscv_vse32_v_f32m8,vst1_lane_f32", "-wp-print", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-memory/sequent02/out", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-memory/sequent02/raw.json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-memory/v02/attempts/0001/.build/guard01/annotated/unit.c", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+
+Goal Post-condition ("float_ops.h", line 34) in 'vst1q_f32':
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i_1).
+Let a_3 = a.F16_lane.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i_1) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 3).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i_1) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_2))),
+        a_3[i_2]))).
+  (* Else *)
+  Have: 4 <= i_1.
+}
+Prove: P_same_float(repr_decode32(read_uint32(memcpy(mem_0, a_1, mem_undef_0,
+                                                a_1, 16),
+                                    shift_float32(p, i))), a_3[i]).
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 34) in 'vst1q_f32':
+Let a_2 = shift_float32(p, 0).
+Let a_3 = memcpy(mem_0, a_2, mem_undef_0, a_2, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_3).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: valid_rd(alloc_0, a, 4) /\ separated(a, 4, a_2, 16).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_2, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_3, shift_float32(p, i_1))),
+        (a_1.F16_lane)[i_1]))).
+  (* Else *)
+  Have: 4 <= i.
+}
+Prove: P_same_float(repr_decode32(read_uint32(memcpy(mem_0, a_2, mem_undef_0,
+                                                a_2, 16), a)),
+         repr_decode32(read_uint32(mem_0, a))).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("float_ops.c", line 26):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("float_ops.c", line 26):
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        (a.F16_lane)[i_1]))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, shift_float32(p, i), 4).
+}
+Prove: to_uint64(1 + i) <= 4.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("float_ops.c", line 27):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("float_ops.c", line 27):
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, i).
+Let a_2 = shift_float32(p, 0).
+Let a_3 = memcpy(mem_0, a_2, mem_undef_0, a_2, 4 * i).
+Let a_4 = a.F16_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_3, a_1,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_3) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_2, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_3, shift_float32(p, i_2))),
+        a_4[i_2]))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_1, 4).
+  (* Invariant *)
+  Have: x <= 4.
+}
+Prove: P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+         a_4[i_1]).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("float_ops.c", line 30):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("float_ops.c", line 30):
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        (a.F16_lane)[i_1]))).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: valid_rw(alloc_0, shift_float32(p, i), 4).
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 28) (1/3):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 28) (2/3):
+Effect at line 30
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let x_1 = 4 * i.
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, x_1).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F16_lane.
+Let a_5 = a_4[i].
+Let x_2 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_2)) then x_2 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 < i) /\ (!invalid(alloc_0, a_1, x_1)).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: i <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i <= x.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 28) (3/3):
+Effect at line 30
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F16_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: !invalid(alloc_0, a_3, 4).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Assigns ("float_ops.h", line 34) in 'vst1q_f32':
+Effect at line 30
+Let a = shift_float32(p, 0).
+Assume {
+  Have: 0 < i.
+  Have: !invalid(alloc_0, a, 4 * i).
+  Type: is_uint64(i).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ linked(alloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 16).
+}
+Prove: i <= 4.
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("float_ops.c", line 30):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("float_ops.c", line 30):
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F16_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 16).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 40) in 'vst1_f32':
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i_1).
+Let a_3 = a.F17_lane.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i_1) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 1).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 8).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 2).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i_1) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_2))),
+        a_3[i_2]))).
+  (* Else *)
+  Have: 2 <= i_1.
+}
+Prove: P_same_float(repr_decode32(read_uint32(memcpy(mem_0, a_1, mem_undef_0,
+                                                a_1, 8), shift_float32(p, i))),
+         a_3[i]).
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 40) in 'vst1_f32':
+Let a_2 = shift_float32(p, 0).
+Let a_3 = memcpy(mem_0, a_2, mem_undef_0, a_2, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_3).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: valid_rd(alloc_0, a, 4) /\ separated(a, 4, a_2, 8).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_2, 8).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_3, shift_float32(p, i_1))),
+        (a_1.F17_lane)[i_1]))).
+  (* Else *)
+  Have: 2 <= i.
+}
+Prove: P_same_float(repr_decode32(read_uint32(memcpy(mem_0, a_2, mem_undef_0,
+                                                a_2, 8), a)),
+         repr_decode32(read_uint32(mem_0, a))).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("float_ops.c", line 54):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("float_ops.c", line 54):
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 8).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        (a.F17_lane)[i_1]))).
+  (* Then *)
+  Have: i <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, shift_float32(p, i), 4).
+}
+Prove: to_uint64(1 + i) <= 2.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("float_ops.c", line 55):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("float_ops.c", line 55):
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, i).
+Let a_2 = shift_float32(p, 0).
+Let a_3 = memcpy(mem_0, a_2, mem_undef_0, a_2, 4 * i).
+Let a_4 = a.F17_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_3, a_1,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_3) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_2, 8).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_3, shift_float32(p, i_2))),
+        a_4[i_2]))).
+  (* Then *)
+  Have: i <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_1, 4).
+  (* Invariant *)
+  Have: x <= 2.
+}
+Prove: P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+         a_4[i_1]).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("float_ops.c", line 58):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("float_ops.c", line 58):
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 8).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        (a.F17_lane)[i_1]))).
+  (* Then *)
+  Have: i <= 1.
+}
+Prove: valid_rw(alloc_0, shift_float32(p, i), 4).
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 56) (1/3):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 56) (2/3):
+Effect at line 58
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 56) (3/3):
+Effect at line 58
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F17_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: !invalid(alloc_0, a_3, 4).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 8).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Invariant *)
+  Have: x <= 2.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Assigns ("float_ops.h", line 40) in 'vst1_f32':
+Effect at line 58
+Let a = shift_float32(p, 0).
+Assume {
+  Have: 0 < i.
+  Have: !invalid(alloc_0, a, 4 * i).
+  Type: is_uint64(i).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ linked(alloc_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 8).
+}
+Prove: i <= 2.
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("float_ops.c", line 58):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("float_ops.c", line 58):
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F17_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 8).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Invariant *)
+  Have: x <= 2.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 42) in 'vst1_lane_f32':
+Let a_1 = (a.F17_lane)[lane_0].
+Let x = to_uint32(nan_store_bits_0).
+Let m = write_uint32(mem_0, p,
+          if is_NaN_f32(a_1)
+          then (if is_NaN_f32(repr_decode32(x)) then x else 2143289344)
+          else repr_encode32(a_1)).
+Assume {
+  Type: bytes(mem_0) /\ is_sint32(lane_0) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: (0 <= lane_0) /\ (lane_0 <= 1).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, p, 4).
+}
+Prove: P_same_float(repr_decode32(read_uint32(m, p)), a_1).
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 42) in 'vst1_lane_f32':
+Let a_2 = (a.F17_lane)[lane_0].
+Let x = to_uint32(nan_store_bits_0).
+Let m = write_uint32(mem_0, p,
+          if is_NaN_f32(a_2)
+          then (if is_NaN_f32(repr_decode32(x)) then x else 2143289344)
+          else repr_encode32(a_2)).
+Assume {
+  Type: bytes(mem_0) /\ is_sint32(lane_0) /\ bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: valid_rd(alloc_0, a_1, 4) /\
+      separated(a_1, 4, shift_float32(p, 0), 4).
+  (* Pre-condition *)
+  Have: (0 <= lane_0) /\ (lane_0 <= 1).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, p, 4).
+}
+Prove: P_same_float(repr_decode32(read_uint32(m, a_1)),
+         repr_decode32(read_uint32(mem_0, a_1))).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("float_ops.c", line 61):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("float_ops.c", line 61):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("float_ops.c", line 61):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assigns ("float_ops.h", line 42) in 'vst1_lane_f32':
+Effect at line 61
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 48) in '__riscv_vse32_v_f32m8':
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = a.F18_lane.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < vl_0).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_2))),
+        a_3[i_2]))).
+  (* Else *)
+  Have: vl_0 <= i.
+}
+Prove: P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+         a_3[i_1]).
+
+------------------------------------------------------------
+
+Goal Post-condition ("float_ops.h", line 48) in '__riscv_vse32_v_f32m8':
+Let a_2 = shift_float32(p, 0).
+Let a_3 = memcpy(mem_0, a_2, mem_undef_0, a_2, 4 * i).
+Let x = 4 * vl_0.
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_3).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: valid_rd(alloc_0, a, 4) /\ separated(a, 4, a_2, x).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_2, x).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_3, shift_float32(p, i_1))),
+        (a_1.F18_lane)[i_1]))).
+  (* Else *)
+  Have: vl_0 <= i.
+}
+Prove: P_same_float(repr_decode32(read_uint32(a_3, a)),
+         repr_decode32(read_uint32(mem_0, a))).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("float_ops.c", line 84):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("float_ops.c", line 84):
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        (a.F18_lane)[i_1]))).
+  (* Then *)
+  Have: i < vl_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, shift_float32(p, i), 4).
+  (* Assertion 'rte,index_bound' *)
+  Have: i <= 31.
+}
+Prove: to_uint64(1 + i) <= vl_0.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("float_ops.c", line 85):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("float_ops.c", line 85):
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, i).
+Let a_2 = shift_float32(p, 0).
+Let a_3 = memcpy(mem_0, a_2, mem_undef_0, a_2, 4 * i).
+Let a_4 = a.F18_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_3, a_1,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_3) /\
+      bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_2, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_3, shift_float32(p, i_2))),
+        a_4[i_2]))).
+  (* Then *)
+  Have: i < vl_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_1, 4).
+  (* Assertion 'rte,index_bound' *)
+  Have: i <= 31.
+  (* Invariant *)
+  Have: x <= vl_0.
+}
+Prove: P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+         a_4[i_1]).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("float_ops.c", line 88):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("float_ops.c", line 88):
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_2).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        (a.F18_lane)[i_1]))).
+  (* Then *)
+  Have: i < vl_0.
+}
+Prove: valid_rw(alloc_0, shift_float32(p, i), 4).
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 86) (1/3):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 86) (2/3):
+Effect at line 88
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let x_1 = 4 * i.
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, x_1).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F18_lane.
+Let a_5 = a_4[i].
+Let x_2 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_2)) then x_2 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_2) /\
+      bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: (0 < i) /\ (!invalid(alloc_0, a_1, x_1)).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: i <= vl_0.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i < vl_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Assertion 'rte,index_bound' *)
+  Have: i <= 31.
+  (* Invariant *)
+  Have: x <= vl_0.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i <= x.
+
+------------------------------------------------------------
+
+Goal Loop assigns ("float_ops.c", line 86) (3/3):
+Effect at line 88
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F18_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_2) /\
+      bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Goal *)
+  When: !invalid(alloc_0, a_3, 4).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i < vl_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Assertion 'rte,index_bound' *)
+  Have: i <= 31.
+  (* Invariant *)
+  Have: x <= vl_0.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Assigns ("float_ops.h", line 48) in '__riscv_vse32_v_f32m8':
+Effect at line 88
+Let a = shift_float32(p, 0).
+Assume {
+  Have: 0 < i.
+  Have: !invalid(alloc_0, a, 4 * i).
+  Type: is_uint64(i) /\ is_uint64(vl_0).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ linked(alloc_0).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+}
+Prove: i <= vl_0.
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("float_ops.c", line 88):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("float_ops.c", line 88):
+Let x = to_uint64(1 + i).
+Let a_1 = shift_float32(p, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 4 * i).
+Let a_3 = shift_float32(p, i).
+Let a_4 = a.F18_lane.
+Let a_5 = a_4[i].
+Let x_1 = to_uint32(nan_store_bits_0).
+Let m = write_uint32(a_2, a_3,
+          if is_NaN_f32(a_5)
+          then (if is_NaN_f32(repr_decode32(x_1)) then x_1 else 2143289344)
+          else repr_encode32(a_5)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ is_uint64(vl_0) /\ bytes(a_2) /\
+      bytes(m).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: vl_0 <= 32.
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_1, 4 * vl_0).
+  (* Invariant *)
+  Have: 0 <= vl_0.
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= vl_0).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      P_same_float(repr_decode32(read_uint32(a_2, shift_float32(p, i_1))),
+        a_4[i_1]))).
+  (* Then *)
+  Have: i < vl_0.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(alloc_0, a_3, 4).
+  (* Assertion 'rte,index_bound' *)
+  Have: i <= 31.
+  (* Invariant *)
+  Have: x <= vl_0.
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < x) ->
+      P_same_float(repr_decode32(read_uint32(m, shift_float32(p, i_1))),
+        a_4[i_1]))).
+}
+Prove: i < x.
+
+------------------------------------------------------------

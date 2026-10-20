@@ -1,0 +1,51 @@
+{
+  "task_id": "f32-dwconv2d-chw",
+  "kernel": "f32-dwconv2d-chw",
+  "source_case": "experiments/codex-kernel-wave1/core-address-wave2/f32-dwconv2d-chw-r8",
+  "source_frozen_sha256": "36d621121c2b070622dd777a1ae9fa708c13a978d71131f905863335f2d44f54",
+  "migration": "keep",
+  "focus": "Strided loads, row addressing and accumulator/output relation.",
+  "wave": 1,
+  "agent_wall_seconds": 3600,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/conv-pool/f32-dwconv2d-chw/pairload-helper02/case",
+  "frozen_sha256": "b98ff900e98d6ea14c4ff35dd4a6fae7cf57b4d11f6acacaaec63bee092c8e3c",
+  "runner": "tools/shim_c_campaign_v3.py",
+  "runner_sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "tools/shim_c_campaign_v3.py": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a",
+    "tools/shim_c_campaign_private.py": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py": "becfe6e4c07a1df06e9f893e796f822db4ca1255f545f084e86da98ebfba7ab5"
+  },
+  "wp_par": 16,
+  "wall_seconds": 400,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "vld2q_dup_f32",
+    "vld2_dup_f32"
+  ],
+  "diagnostic_properties": [],
+  "default_mode": "full",
+  "readiness": "ready",
+  "sourceguard_exit": 0,
+  "model": "Typed+raw+float",
+  "resources": {
+    "wp_timeout": 5,
+    "wp_memlimit": 1024,
+    "wp_budget": 900,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits.",
+  "wave2_scope": "Root reviewed paired proof integration; no API",
+  "mode": "focus",
+  "task_manifest_sha256": "95dd28ebdf508b7bf94d88825456f2f6dd1134c081364ece7740fa54dc74ba95",
+  "attempt": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-dwconv2d-chw/pairload-helper02/attempts/0003",
+  "attempt_frozen_sha256": "c31ab5592408259db9e18128a7489db23e662e78218877b9abb1775f2e1badfa",
+  "proof_sha256": "b4ed8eae8292fed62c1699927237612eb6c0b69e744191bfeb6934e079b4d75d"
+}

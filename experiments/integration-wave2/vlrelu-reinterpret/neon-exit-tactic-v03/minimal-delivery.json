@@ -1,0 +1,290 @@
+{
+  "source_candidate": "experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v03",
+  "source_proof_sha256": "a4e879b35893ffea6810f1745539f2e2793e42fa92a5b97049adcbd23563b69d",
+  "source_main_sha256": "ac4848ee470702a108289a0b7bf4668d95fc4a719909e8097f4935f9dda4a94c",
+  "source_v03_main": {
+    "passed": 4,
+    "total": 5,
+    "only_pending": "values_neon1_lane; independently closed in v19-neon1-point201/201+18globals"
+  },
+  "source_globals": {
+    "passed": 18,
+    "total": 18
+  },
+  "source_script_records": {
+    "equivalent_assert_values_neon_tailprefix.json": {
+      "sha256": "a3d5d9c3754caf1369cba8847573c17a9a36043cba1dda2f0de5197cb422a435",
+      "script": [
+        {
+          "strategy": "NTailPrefixBranch",
+          "header": "Cut",
+          "tactic": "Wp.cut",
+          "params": {
+            "case": "CASES",
+            "clause": {
+              "select": "compose",
+              "id": "wp:or",
+              "args": [
+                {
+                  "select": "compose",
+                  "id": "wp:eq",
+                  "args": [
+                    {
+                      "select": "inside-step",
+                      "at": 47,
+                      "kind": "have",
+                      "occur": 0,
+                      "target": "batch_8",
+                      "pattern": "$batch"
+                    },
+                    {
+                      "select": "kint",
+                      "val": "8"
+                    }
+                  ]
+                },
+                {
+                  "select": "compose",
+                  "id": "wp:eq",
+                  "args": [
+                    {
+                      "select": "inside-step",
+                      "at": 47,
+                      "kind": "have",
+                      "occur": 0,
+                      "target": "batch_8",
+                      "pattern": "$batch"
+                    },
+                    {
+                      "select": "kint",
+                      "val": "12"
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          "select": {
+            "select": "inside-step",
+            "at": 47,
+            "kind": "have",
+            "occur": 0,
+            "target": "(bit_test batch_8 3)",
+            "pattern": "bit_test$batch3"
+          },
+          "children": {
+            "Positive": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "valid",
+                "time": 1.94
+              }
+            ],
+            "Negative": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "valid",
+                "time": 4.31
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "equivalent_loop_invariant_values_neon1_prefix_preserved.json": {
+      "sha256": "948230d12512eab8f3eb296e4989ea9686cf3b2b014128a662cf2f728798ad3d",
+      "script": [
+        {
+          "strategy": "NExitPrefixPoint",
+          "header": "Cut",
+          "tactic": "Wp.cut",
+          "params": {
+            "case": "CASES",
+            "clause": {
+              "select": "compose",
+              "id": "wp:eq",
+              "args": [
+                {
+                  "select": "inside-goal",
+                  "occur": 0,
+                  "target": "i_3",
+                  "pattern": "$i"
+                },
+                {
+                  "select": "inside-step",
+                  "at": 172,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "k_12",
+                  "pattern": "$k"
+                }
+              ]
+            }
+          },
+          "select": {
+            "select": "clause-goal",
+            "target": "let x_0 = (to_uint32 nan_store_bits_0) in\nlet m_0 =\n    (write_uint32 mem_50\n      (shift_float32 o_base_6 (((to_uint64 (4*n_7)) div 4)-1))\n      (if (is_NaN_f32 v_0)\n       then (if (is_NaN_f32 (repr_decode32 x_0)) then x_0 else 2143289344)\n       else (repr_encode32 v_0))) in\n(P_same_value (repr_decode32 (read_uint32 m_0 (shift_float32 o_base_6 i_3)))\n  (L_unary_value\n    (repr_decode32 (read_uint32 m_0 (shift_float32 i_base_6 i_3)))\n    (repr_decode32\n      (read_uint32 mem_86\n        (shiftfield_F20_slope\n          (shiftfield_F19_xnn_f32_lrelu_params_scalar (global L_params_4838)))))))",
+            "pattern": "P_same_valuerepr_decode32L_unary_value"
+          },
+          "children": {
+            "Positive": [
+              {
+                "prover": "qed",
+                "verdict": "valid"
+              }
+            ],
+            "Negative": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "valid",
+                "time": 6.47
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "equivalent_assert_values_neon_all.json": {
+      "sha256": "2864ce539c0d52c73ec2163f86b62030e1baba2f3302d18b5ccedd4758937a47",
+      "script": [
+        {
+          "strategy": "NExitFinal",
+          "header": "Cut",
+          "tactic": "Wp.cut",
+          "params": {
+            "case": "CASES",
+            "clause": {
+              "select": "compose",
+              "id": "wp:eq",
+              "args": [
+                {
+                  "select": "inside-step",
+                  "at": 45,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "batch_10",
+                  "pattern": "$batch"
+                },
+                {
+                  "select": "kint",
+                  "val": "0"
+                }
+              ]
+            }
+          },
+          "select": {
+            "select": "clause-step",
+            "at": 45,
+            "kind": "have",
+            "target": "(batch_10=0) \\/ (batch_10=4) \\/ (batch_10=8) \\/ (batch_10=12)",
+            "pattern": "|====$batch0$batch4$batch8$batch"
+          },
+          "children": {
+            "Positive": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "valid",
+                "time": 1.75
+              }
+            ],
+            "Negative": [
+              {
+                "prover": "CVC5:1.2.1",
+                "verdict": "timeout",
+                "time": 30
+              },
+              {
+                "prover": "Z3:4.12.5",
+                "verdict": "failed"
+              },
+              {
+                "strategy": "NExitFinalBit",
+                "header": "Cut",
+                "tactic": "Wp.cut",
+                "params": {
+                  "case": "CASES",
+                  "clause": {
+                    "select": "compose",
+                    "id": "wp:or",
+                    "args": [
+                      {
+                        "select": "compose",
+                        "id": "wp:eq",
+                        "args": [
+                          {
+                            "select": "inside-step",
+                            "at": 48,
+                            "kind": "have",
+                            "occur": 0,
+                            "target": "batch_8",
+                            "pattern": "$batch"
+                          },
+                          {
+                            "select": "kint",
+                            "val": "4"
+                          }
+                        ]
+                      },
+                      {
+                        "select": "compose",
+                        "id": "wp:eq",
+                        "args": [
+                          {
+                            "select": "inside-step",
+                            "at": 48,
+                            "kind": "have",
+                            "occur": 0,
+                            "target": "batch_8",
+                            "pattern": "$batch"
+                          },
+                          {
+                            "select": "kint",
+                            "val": "12"
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "select": {
+                  "select": "inside-step",
+                  "at": 48,
+                  "kind": "have",
+                  "occur": 0,
+                  "target": "(bit_test batch_8 2)",
+                  "pattern": "bit_test$batch2"
+                },
+                "children": {
+                  "Positive": [
+                    {
+                      "prover": "CVC5:1.2.1",
+                      "verdict": "valid",
+                      "time": 6.87
+                    }
+                  ],
+                  "Negative": [
+                    {
+                      "prover": "CVC5:1.2.1",
+                      "verdict": "valid",
+                      "time": 1.87
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "minimal_hint_sha256": "1d21651484dc3a5322c91d4a7a064c347c7e50c09503bc471b3a5927e338ed30",
+  "minimal_delta_sha256": "ca12f7f7bd469f4252fe2fa4b1af02c2556e5d46beb60f5a25022eb425b5aaf2",
+  "executed_strategy_preservation": "Removed only unexecuted Wp.instance and unsuccessful extra lane alternatives. All surviving CASES clauses/bindings match the successful source scripts. Children now go directly to the same already-used ValuesSMT provers; root must recheck new frozen full candidate.",
+  "bindings": {
+    "tailprefix": "B bound by actual ground bit_test(B,3) term; CASES B==8||B==12",
+    "prefix_preserved": "I goal arbitrary output index, J actual current uint64 ghost counter bound by real ground lane fact; CASES I==J",
+    "finalall": "B first bound by actual proved tail quadruple 0/4/8/12; CASES B==0. In nonzero branch ground bit_test(B,2) selects actual tail count; CASES B==4||B==12. Do not compose bit_test itself, which lacks a registered Computer."
+  },
+  "scope_limit": "Full v03 remains4/5 (not complete). Successful prefix preservation uses the original lane cut as a premise; v19 separately discharges exactly that same lane property with checked point/transfer dependencies. Final merged full must include all dependencies.",
+  "merge_note": "Append source text to merged harness only once; if these strategy ids exist, replace prior versions rather than duplicate definitions. Preserve ValuesSMT already defined by worker; no C/spec/invariant/ghost/model changes in this delta."
+}

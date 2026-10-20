@@ -1,0 +1,31 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vcmul-memory/address-audit/probe-raw.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vcmul-memory/address-audit/address-probe.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "address_step", "-wp-prop", "@ensures", "-wp-print", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vcmul-memory/address-audit/smt-export", "-wp-msg-key", "prover:pp_task", "-wp-debug", "1", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vcmul-memory/v01/case/.build/audit01/annotated/complex_fp.driver"]
+[kernel] Parsing address-probe.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function address_step
+[wp] 1 goal scheduled
+[wp] [Timeout] typed_raw_fma_complex_fp_address_step_ensures (Qed 1ms) (CVC5)
+[wp] Proved goals:    0 / 1
+  Qed:             0 (1ms)
+  Timeout:         1
+
+Goal Post-condition ("address-probe.c", line 3) in 'address_step':
+Let a = Mptr_0[global(P_p_2240)].
+Assume {
+  (* Heap *)
+  Type: linked(Malloc_0) /\ framed(Mptr_0).
+  (* Pre-condition *)
+  Have: valid_rd(Malloc_0, shift_float32(a, 0), 8).
+}
+Prove: addr_of_int(to_uint64(4 + to_uint64(int_of_addr(a)))) =
+    shift_float32(a, 1).
+Prover CVC5 1.2.1 returns Timeout (Qed:1ms) (30s)
+Prover Z3 4.12.5 returns Unknown (Qed:1ms)
+
+------------------------------------------------------------
+[wp:pedantic-assigns] address-probe.c:4: Warning: 
+  No 'assigns \result \from ...' specification for function 'address_step'returning pointer type.
+  Callers assumptions might be imprecise.
+[wp] Logging keys: prover:pp_task.

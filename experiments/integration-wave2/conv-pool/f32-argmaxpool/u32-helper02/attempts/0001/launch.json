@@ -1,0 +1,57 @@
+{
+  "task_id": "f32-argmaxpool",
+  "kernel": "f32-argmaxpool",
+  "source_case": "experiments/codex-kernel-wave1/core-float-wave2/f32-argmaxpool/v18",
+  "source_frozen_sha256": "d79bb9f7e957917d0fde94ad37cc23b914a2c75019f83fac144675287d9c77d7",
+  "migration": "fma-v6",
+  "focus": "Original public index padding is insufficient for source NEON tail read. Report exact safety/domain issue; no precondition strengthening or unapproved repair.",
+  "wave": 2,
+  "agent_wall_seconds": 3600,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/conv-pool/f32-argmaxpool/u32-helper02/case",
+  "frozen_sha256": "da9c4c94ab119305acda0107d9dcffe4892ccd4c2d6c23da36360b52dae80ea1",
+  "runner": "tools/shim_c_campaign_v4.py",
+  "runner_sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "tools/shim_c_campaign_v4.py": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339",
+    "tools/shim_c_campaign_private.py": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127",
+    "tools/shim_c_campaign_closure.py": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443",
+    "tools/shim_c_call_closure.py": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/frama-c.py": "24f223c12c74d79de7ffdb1890d32d3936ef4911eedb7be389734622f6f1c9b6"
+  },
+  "wp_par": 16,
+  "wall_seconds": 400,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "__riscv_vle32_v_u32m8",
+    "__riscv_vmv_v_x_u32m8",
+    "__riscv_vse32_v_u32m8",
+    "__riscv_vmerge_vxm_u32m8"
+  ],
+  "diagnostic_properties": [],
+  "default_mode": "full",
+  "readiness": "blocked_source_domain",
+  "sourceguard_exit": 0,
+  "model": "Bytes",
+  "resources": {
+    "wp_timeout": 3,
+    "wp_memlimit": 1024,
+    "wp_budget": 1200,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits.",
+  "launch_allowed": false,
+  "blocker": "Known NEON tail index read exceeds frozen public padding; root repair/refreeze required",
+  "wave2_scope": "Root reviewed paired proof integration; no API",
+  "mode": "focus",
+  "task_manifest_sha256": "bb7650ff141b792a5088231c89d31efb03e4736f570055e1bb478aa7deb39bbd",
+  "attempt": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/u32-helper02/attempts/0001",
+  "attempt_frozen_sha256": "ddca870a2d8b4338e7e242748996c60e0a7f73b38869dbd1e92141d5dae736e5",
+  "proof_sha256": "4d7e92359197081b536c773213d949222e3986ca14fdb6a36a8022fffcf7ba7c"
+}

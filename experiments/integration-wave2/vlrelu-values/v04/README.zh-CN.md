@@ -1,0 +1,1 @@
+v03基础上新增直接匹配任意integer mask（NaN时不约束mask选择，兼容NEON word/RVV bool）的纯值lemma；对4个vector选择目标设置prover-only策略，避免继承仅处理memory inclusion的tactic。完整float域，普通C/spec/model不变。新增lemma及4目标需要实际验证；其余6值目标不在本focus。

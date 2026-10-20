@@ -1,0 +1,13 @@
+{
+  "scope": "Manual root audit of restricted newly introduced ghost effects; no general ghost noninterference theorem",
+  "proof_sha256": "f393fb0163882d837ef5744bda888734b2a673a95c401b327cc0024eee0ff97e",
+  "reviewed_new_effects": [
+    "Ghost entry scalars and input/product snapshots only initialize ghost locals from ordinary values.",
+    "Point and transfer helper parameters are scalar values; both actual function bodies are empty. Their ensures and assigns-nothing body obligations are independently checked in the v15 raw report.",
+    "New point/transfer calls read ordinary arrays and update no ordinary object. All48 v15 call preconditions are actually checked; array-read RTE and helper frames are included.",
+    "Proof traversal loops change their locally declared ghost counters only; they contain assertions and readonly helper calls. Their loop frames/variants are part of fresh full verification.",
+    "No ghost assignment to input/output/params or ordinary kernel control variable is introduced by this unified proof.",
+    "Ordinary source tokens and host compiler LLVM IR are independently equal; this identity evidence complements the restricted-effect review, it does not prove general ghost noninterference."
+  ],
+  "full_admission_pending": true
+}

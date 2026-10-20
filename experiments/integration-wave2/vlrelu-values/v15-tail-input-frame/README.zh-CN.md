@@ -1,0 +1,1 @@
+v15仅高半input memory frame：store前ghostfloat y2快照、store后3条checked read/sep/same_float cuts，第3transfercall改稳定y2。六旧tail目标继续实际选入；全部新reads/privatepre/assigns/ensures/variants检查。行政wall/frozen/resources均1200，单目标30s/1024保持；ordinaryC/spec/model/driver/checker未变。

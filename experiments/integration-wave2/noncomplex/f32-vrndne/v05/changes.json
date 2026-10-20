@@ -1,0 +1,20 @@
+{
+  "changes": [
+    "Explicit checked exact min-VL and positive/cap bounds",
+    "Keep global allocation/frame facts through round-to-nearest loop"
+  ],
+  "syntax_fix": "Separate each assertion into one ACSL code annotation comment",
+  "files_fixed": [
+    "rvv.c"
+  ],
+  "core_fix": "Split positive/negative NaN payload ranges when setting quiet bit; explicitly instantiate magic-number bitmask in absolute-value codec proof. No model/source/spec edits.",
+  "join_fix": "Add explicit value-transitivity instantiation cuts in two pure ghost output joins; add valid_read(input/left/right[0..n-1]) only to private ghost proof_join_all that actually executes C array reads. Public spec unchanged; full caller must discharge every new helper requirement.",
+  "new_private_helper_preconditions": {
+    "proof_join_all": [
+      "valid_read(input+(0..n-1))",
+      "valid_read(left+(0..n-1))",
+      "valid_read(right+(0..n-1))"
+    ]
+  },
+  "quiet_bit_strategy": "Use existing official Wp.bitwised(32)/Wp.bitrange on two exact quiet-bit range assertion goals. Original5s solver caps and all model/implementation/spec/checker unchanged."
+}

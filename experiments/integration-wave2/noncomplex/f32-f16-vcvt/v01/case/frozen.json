@@ -1,0 +1,72 @@
+{
+  "name": "f32-f16-vcvt",
+  "files": {
+    "shim.h": {
+      "path": "experiments/shared-extension/integer/shared/shim.h",
+      "sha256": "a5ee255e7ac03c42e06beefe3bdf68a09d934760de382d23f67cfe4809800163"
+    },
+    "integer-f32-f16-vcvt.c": {
+      "path": "experiments/shared-extension/integer/shared/integer-f32-f16-vcvt.c",
+      "sha256": "c67558c18ee2fa8403fa56f6671a5000a7d77f3ea8ae9c9f9f97141cdf6d1091"
+    },
+    "neon.c": {
+      "path": "experiments/shared-extension/integer/f32-f16-vcvt/neon.c",
+      "sha256": "41a081db8c9503ca62f077ad790dd92d92f2fe374e554cef8a9baf35dabd2aaa"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/integer/f32-f16-vcvt/rvv.c",
+      "sha256": "35730ec8f13c282e4b690536c738cce15a455f03eb649395253cf8be4712f851"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/integer/f32-f16-vcvt/spec.h",
+      "sha256": "4e5d97bb05dc51280088f2312ebf6bee0e9f4f2190dfac513a29b283cee754c8"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/integer/f32-f16-vcvt/harness.c",
+      "sha256": "014a21ae515354418cdb349582039a2820fc5d553b01904292282876fa6dab8e"
+    },
+    "interface.json": {
+      "path": "experiments/shared-extension/integer/f32-f16-vcvt/interface.json",
+      "sha256": "d1c0ece42400103c49a7c495f08b3a4c09702a6ad9972236d3fb5ff3a0e1cee1"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/integer/f32-f16-vcvt/unit.c",
+      "sha256": "5573e792333a63b49ebea64bb9f76de20c5c1d3fd73e4df51ececc8168b3d3fd"
+    },
+    "generate_interfaces.py": {
+      "path": "experiments/shared-extension/integer/generate_interfaces.py",
+      "sha256": "cc2f91c133c832f638f115f36160876e81c351b442792cd02be3a9a8bcd202d7"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v2.py",
+      "sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/integration-wave2/noncomplex/f32-f16-vcvt/v01/case/proof.patch"
+  ],
+  "model": "Typed+float",
+  "VLEN_bits": 128,
+  "origin": "original NEON unchanged, original target preserved separately; four explicit target repairs documented in witness-results.json",
+  "revision": "Independent proof-only continuation; all C/spec/driver source paths and hashes preserved from previous frozen manifest.",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "previous_version": "experiments/shim-c-v2/integer-float/f32-f16-vcvt",
+  "swarm_migration": {
+    "source": "experiments/shim-c-v2/frontend-campaign/f32-f16-vcvt",
+    "source_frozen_sha256": "bfe5eb5645bfe9fdcdf72f29844aac164105c409aa00de41fc487b6fa557d734",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  },
+  "integration_wave2": {
+    "seed": "experiments/deepseek-swarm-v1/kernel-tasks/f32-f16-vcvt/attempts/0018/.build/verify01/annotated",
+    "only": "Proof annotations; source/spec/model/driver records unchanged"
+  }
+}

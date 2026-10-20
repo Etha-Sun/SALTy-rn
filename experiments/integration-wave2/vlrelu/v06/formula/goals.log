@@ -1,0 +1,28 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/v06/formula/raw.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/v06/case/.build/root-preflight/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/v06/case/.build/root-preflight/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-fct", "proof_mask_choice", "-wp-prop", "@assert,@ensures", "-wp-gen", "-wp-print", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/v06/formula/session", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/v06/formula/out", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function proof_mask_choice
+
+Goal Post-condition ("extensions.h", lines 72-74) in 'proof_mask_choice':
+Let x = lor(land(i, m), land(i_1, to_uint32(lnot(m)))).
+Assume {
+  Type: is_uint32(m).
+  (* Goal *)
+  When: (0 <= i) /\ (0 <= i_1) /\ (i <= 4294967295) /\ (i_1 <= 4294967295) /\
+      ((m = 0) \/ (m = 4294967295)).
+  (* Assertion 'root_mask_word' *)
+  Have: forall i_2 : Z. ((0 <= i_2) -> ((i_2 <= 4294967295) ->
+      (land(4294967295, i_2) = i_2))).
+}
+Prove: if (m = 0) then (x = i_1) else (x = i).
+
+------------------------------------------------------------
+
+Goal Assertion 'root_mask_word' ("extensions.h", line 76):
+Assume { (* Goal *) When: (0 <= i) /\ (i <= 4294967295). }
+Prove: land(4294967295, i) = i.
+
+------------------------------------------------------------

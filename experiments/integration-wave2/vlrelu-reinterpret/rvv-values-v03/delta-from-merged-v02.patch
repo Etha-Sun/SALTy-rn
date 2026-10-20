@@ -1,0 +1,136 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -132,4 +132,24 @@
+ vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl);
+ float f32_sqrt(float x);
+ /*@ logic float unary_value(float x,float s) = \sign(x)==\sign((float)-1.0) ? fp_mul32(x,s) : x; */
++/*@ lemma values_unary_mask_source:
++      \forall float x,y,s,t,m,r; \forall integer mask;
++      same_float(x,y) && same_float(s,t) &&
++      same_value(m,fp_mul32(x,s)) &&
++      (!\is_NaN(x) ==>
++        ((mask!=0) <==> (\sign(x)==\sign((float)-1.0)))) &&
++      same_float(r,mask!=0?m:x) ==>
++      same_value(r,unary_value(y,t)); */
++/*@ ghost
++/@ requires values_point_input: same_float(x,y);
++    requires values_point_slope: same_float(s,t);
++    requires values_point_product: same_value(m,fp_mul32(x,s));
++    requires values_point_sign: !\is_NaN(x) ==>
++      ((mask!=0) <==> (\sign(x)==\sign((float)-1.0)));
++    requires values_point_select: same_float(r,mask!=0?m:x);
++    terminates \true;
++    assigns \nothing;
++    ensures values_point_value: same_value(r,unary_value(y,t)); @/
++void proof_values_unary_point(float x,float y,float s,float t,float m,float r,uint32_t mask) {}
++*/
+ #endif
+--- a/rvv.c
++++ b/rvv.c
+@@ -7,6 +7,7 @@
+   //@ ghost const float *i_base=input;
+   //@ ghost float *o_base=output;
+   //@ ghost size_t total=batch/sizeof(float);
++  //@ ghost const float proof_slope_entry=params->scalar.slope;
+ #line 7 "./rvv.c"
+   assert(batch != 0);
+ #line 8 "./rvv.c"
+@@ -22,11 +23,12 @@
+   /*@ loop invariant vmem_rvv_whole_read: \valid_read(i_base+(0..total+2));
+       loop invariant vmem_rvv_whole_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
+       loop invariant vmem_rvv_current_read: \valid_read(input+(0..n+2));
++      loop invariant rvv_values_slope: same_float(slope,proof_slope_entry);
+       loop invariant 0<=n<=total;
+       loop invariant input==i_base+(total-n);
+       loop invariant output==o_base+(total-n);
+       loop invariant \valid(output+(0..n-1));
+-      loop invariant \forall integer j; 0<=j<total-n ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++      loop invariant \forall integer j; 0<=j<total-n ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+       loop assigns n,input,output,o_base[0..total-1]; loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(n);
+@@ -39,13 +41,41 @@
+ 
+     vfloat32m8_t vout = __riscv_vmerge_vvm_f32m8(vx, vacc, mask, vl);
+ 
+-    /*@ assert \forall integer j; 0<=j<vl ==> same_value(vout.lane[j],unary_value(i_base[total-n+j],params->scalar.slope)); */
++    /*@ ghost
++      /@ loop invariant rvv_values_shape: 0<=proof_j_rvv<=vl && vl<=32 && vl<=n<=total && total-n+vl<=total;
++         loop invariant rvv_values_pointer: input==i_base+(total-n);
++         loop invariant rvv_values_current_read: \valid_read(input+(0..n+2));
++         loop invariant rvv_values_read: \valid_read(i_base+(0..total+2));
++         loop invariant rvv_values_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
++         loop invariant rvv_values_slope_all: same_float(slope,proof_slope_entry);
++         loop invariant rvv_values_operands_all: \forall integer k; 0<=k<vl ==>
++           same_float(vx.lane[k],input[k]) &&
++           same_value(vacc.lane[k],fp_mul32(vx.lane[k],slope));
++         loop invariant rvv_values_sign_all: \forall integer k; 0<=k<vl ==>
++           (!\is_NaN(vx.lane[k]) ==>
++             ((mask.lane[k]!=0) <==> (\sign(vx.lane[k])==\sign((float)-1.0))));
++         loop invariant rvv_values_select_all: \forall integer k; 0<=k<vl ==>
++           same_float(vout.lane[k],mask.lane[k]!=0?vacc.lane[k]:vx.lane[k]);
++         loop invariant rvv_values_output_prefix: \forall integer k; 0<=k<total-n ==>
++           same_value(o_base[k],unary_value(i_base[k],proof_slope_entry));
++         loop invariant rvv_values_prefix: \forall integer k; 0<=k<proof_j_rvv ==>
++           same_value(vout.lane[k],unary_value(i_base[total-n+k],proof_slope_entry));
++         loop assigns proof_j_rvv;
++         loop variant vl-proof_j_rvv; @/
++      for(size_t proof_j_rvv=0;proof_j_rvv<vl;proof_j_rvv++) {
++        proof_values_unary_point(
++          vx.lane[proof_j_rvv],input[proof_j_rvv],
++          slope,proof_slope_entry,vacc.lane[proof_j_rvv],vout.lane[proof_j_rvv],
++          (_Bool)mask.lane[proof_j_rvv]);
++      }
++    */
++    /*@ assert rvv_values_result: \forall integer j; 0<=j<vl ==> same_value(vout.lane[j],unary_value(i_base[total-n+j],proof_slope_entry)); */
+     //@ ghost UnaryVL: ;
+     __riscv_vse32_v_f32m8(output, vout, vl);/*@ ghost
+     /@ loop invariant vmem_rvv_inner_read: \valid_read(i_base+(0..total+2));
+        loop invariant vmem_rvv_inner_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
+        loop invariant 0<=k<=(total-n)+(vl);
+-       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
++       loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-n)+(vl)-k; @/
+     for(size_t k=0;k<(total-n)+(vl);k++) {
+       /@ assert vmem_rvv_input_read: \valid_read(i_base+k); @/
+@@ -59,7 +89,7 @@
+         /@ assert 0<=k-(total-n)<(vl); @/
+         /@ assert same_float(o_base[k],vout.lane[k-(total-n)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],params->scalar.slope)); @/
++      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */
+ 
+@@ -67,5 +97,5 @@
+     output += vl;
+     n -= vl;
+   }
+-  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope)); */
++  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); */
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -27,3 +27,21 @@
+   }
+   return 1;
+ }
++
++/*@ \wp::strategy RVVValuesSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::proof RVVValuesSMT: proof_values_unary_point,values_unary_mask_source,values_point_input,values_point_slope,values_point_product,values_point_sign,values_point_select,values_point_value,rvv_values_shape,rvv_values_pointer,rvv_values_current_read,rvv_values_read,rvv_values_sep,rvv_values_slope,rvv_values_slope_all,rvv_values_operands_all,rvv_values_sign_all,rvv_values_select_all,rvv_values_output_prefix,rvv_values_prefix,rvv_values_result; */
++
++/*@ \wp::strategy RVVPrefixInstance:
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(V[J],T)),
++      \when(Fact:(\forall integer K; 0<=K && K<N ==> P_same_value(V[K],E))),
++      \select(Fact),\param("P1",J),\children(RVVValuesSMT)),RVVValuesSMT;
++    \wp::strategy RVVPrefixPoint:
++    \tactic("Wp.cut",
++      \ingoal(P_same_value(V[J],T)),
++      \incontext(P_same_value(V[I],L_unary_value(X,S))),
++      \incontext(is_uint64(I)),
++      \param("case","CASES"),\param("clause",J==I),
++      \children(RVVPrefixInstance)),RVVPrefixInstance;
++    \wp::proof RVVPrefixInstance: rvv_values_result;
++    \wp::proof RVVPrefixPoint: rvv_values_prefix; */

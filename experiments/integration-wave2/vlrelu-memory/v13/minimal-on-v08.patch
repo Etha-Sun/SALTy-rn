@@ -1,0 +1,64 @@
+--- a/float_ops.h
++++ b/float_ops.h
+@@ -41,7 +41,7 @@
+ void vst1_f32(float *p, float32x2_t a);
+ /*@ requires 0<=lane<2; requires \valid(p); assigns *p; ensures same_float(*p,a.lane[lane]); ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..1-1)) ==> same_float(*q,\old(*q)); */
+ void vst1_lane_f32(float *p, float32x2_t a, int lane);
+-/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],p[i]); */
++/*@ requires vl<=32; requires vmem_rvv_load_read: \valid_read(p+(0..vl-1)); assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],p[i]); */
+ vfloat32m8_t __riscv_vle32_v_f32m8(const float *p, size_t vl);
+ /*@ requires vl<=32; assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_value(\result.lane[i],fp_add32(a.lane[i],b.lane[i])); */
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+--- a/harness.c
++++ b/harness.c
+@@ -6,13 +6,15 @@
+   //@ ghost UnarySecond: ;
+   test_rvv(n*sizeof(float),input,right,&params);
+   /*@ ghost
+-    /@ loop invariant 0<=k<=n;
++    /@ loop invariant vmem_final_whole_reads: \valid_read(left+(0..n-1)) && \valid_read(input+(0..n+2));
++       loop invariant vmem_final_whole_sep: \separated(input+(0..n+2),right+(0..n-1));
++       loop invariant 0<=k<=n;
+        loop invariant \forall integer j; 0<=j<k ==> same_value(left[j],right[j]);
+        loop assigns k; loop variant n-k; @/
+     for(size_t k=0;k<n;k++) {
+-      /@ assert \valid_read(left+k) && \valid_read(input+k); @/
++      /@ assert vmem_final_reads: \valid_read(left+k) && \valid_read(input+k); @/
+       /@ assert \separated(left+k,right+(0..n-1)); @/
+-      /@ assert \separated(input+k,right+(0..n-1)); @/
++      /@ assert vmem_final_input_sep: \separated(input+k,right+(0..n-1)); @/
+       /@ assert same_float(left[k],\at(left[\at(k,Here)],UnarySecond)); @/
+       /@ assert same_float(input[k],\at(input[\at(k,Here)],UnarySecond)); @/
+       /@ assert same_value(left[k],right[k]); @/
+--- a/rvv.c
++++ b/rvv.c
+@@ -15,7 +15,10 @@
+   size_t n = batch / sizeof(float);
+   const float slope = params->scalar.slope;
+ 
+-  /*@ loop invariant 0<=n<=total;
++  /*@ loop invariant vmem_rvv_whole_read: \valid_read(i_base+(0..total+2));
++      loop invariant vmem_rvv_whole_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
++      loop invariant vmem_rvv_current_read: \valid_read(input+(0..n+2));
++      loop invariant 0<=n<=total;
+       loop invariant input==i_base+(total-n);
+       loop invariant output==o_base+(total-n);
+       loop invariant \valid(output+(0..n-1));
+@@ -35,12 +38,14 @@
+     /*@ assert \forall integer j; 0<=j<vl ==> same_value(vout.lane[j],unary_value(i_base[total-n+j],params->scalar.slope)); */
+     //@ ghost UnaryVL: ;
+     __riscv_vse32_v_f32m8(output, vout, vl);/*@ ghost
+-    /@ loop invariant 0<=k<=(total-n)+(vl);
++    /@ loop invariant vmem_rvv_inner_read: \valid_read(i_base+(0..total+2));
++       loop invariant vmem_rvv_inner_sep: \separated(o_base+(0..total-1),i_base+(0..total+2));
++       loop invariant 0<=k<=(total-n)+(vl);
+        loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],params->scalar.slope));
+        loop assigns k; loop variant (total-n)+(vl)-k; @/
+     for(size_t k=0;k<(total-n)+(vl);k++) {
+-      /@ assert \valid_read(i_base+k); @/
+-      /@ assert \separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1)); @/
++      /@ assert vmem_rvv_input_read: \valid_read(i_base+k); @/
++      /@ assert vmem_rvv_input_sep: \separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1)); @/
+       /@ assert same_float(i_base[k],\at(i_base[\at(k,Here)],UnaryVL)); @/
+       if(k<(total-n)) {
+         /@ assert \valid_read(o_base+k); @/

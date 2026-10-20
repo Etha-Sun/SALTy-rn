@@ -1,0 +1,54 @@
+{
+  "task_id": "wave2-f32-igemm-minmax",
+  "kernel": "f32-igemm-minmax",
+  "source_case": "experiments/shim-c-v2/stage3-proof-next/dwconv/igemm-frame-r3",
+  "source_frozen_sha256": null,
+  "migration": "keep",
+  "focus": "Indirect input pointers, packed weights and nested loop invariants.",
+  "wave": 1,
+  "agent_wall_seconds": 1200,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/gemm-sparse/f32-igemm-minmax/case",
+  "frozen_sha256": "68d2a9427257add142d65b3a55f52a4a1f62cf42586c444385a90879d2693913",
+  "runner": "tools/shim_c_campaign_v3.py",
+  "runner_sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "tools/shim_c_campaign_v3.py": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a",
+    "tools/shim_c_campaign_private.py": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py": "becfe6e4c07a1df06e9f893e796f822db4ca1255f545f084e86da98ebfba7ab5"
+  },
+  "wp_par": 16,
+  "wall_seconds": 1200,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "equivalent"
+  ],
+  "diagnostic_properties": [
+    "igemm_entry_kc_equal",
+    "igemm_entry_kc_multiple",
+    "wave2_ig_min_vacc0x0",
+    "wave2_ig_clamp_vacc0x0"
+  ],
+  "default_mode": "full",
+  "readiness": "candidate_pending_guard",
+  "sourceguard_exit": null,
+  "model": "Typed+raw+float",
+  "resources": {
+    "wp_timeout": 5,
+    "wp_memlimit": 1024,
+    "wp_budget": 1200,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits.",
+  "mode": "focus",
+  "task_manifest_sha256": "25707ebaa07019ddf4fdedda350c0d1c5923c273860598cb087880c71bebc8dd",
+  "attempt": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-igemm-minmax/attempts/0001",
+  "attempt_frozen_sha256": "21b4d067106aef72585127c7ab372f8f2bacaceca28d3b2f3bfb9a67dc80373f",
+  "proof_sha256": "6f7b263c45880d0e78756e23317a53f8e465aa1734cc49824aea2eadad59805a"
+}

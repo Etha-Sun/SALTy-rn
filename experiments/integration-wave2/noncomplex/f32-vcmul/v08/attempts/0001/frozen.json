@@ -1,0 +1,76 @@
+{
+  "name": "f32-vcmul",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-vcmul/neon.c",
+      "sha256": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-vcmul/rvv.c",
+      "sha256": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/f32-vcmul/spec.h",
+      "sha256": "40da703f178584127d81b60b93a5f6a7f78dd7860b6efb8251281bd71948db27"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-vcmul/harness.c",
+      "sha256": "63963cdebc3f316512058d6f01bbc2ff2ee21cee8e6ece16d40778852036a7f0"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-vcmul/unit.c",
+      "sha256": "0e1ede0e9e26de95a20131bc1356ccc6e6e066f46776ddfda85dd9ea1240a9c6"
+    },
+    "complex_fp.h": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.h",
+      "sha256": "d64b68f47aade5e3cffab1c1e0f4661e3492162c1e525b711fd70f14ef23c9e0"
+    },
+    "complex_fp.c": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.c",
+      "sha256": "91c48aa7c405a07d1ff6e287495b52da4fe86cca774dbd1ff60a64fba97ee50e"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v3.py",
+      "sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    }
+  },
+  "proof_patches": [
+    "experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "wp_model_variant": "Typed+raw+float",
+  "previous_version": "experiments/shim-c-v2/complex-v3-next/f32-vcmul",
+  "reason": "Independent probe shows Typed+raw retains aggregate-array initializer constraints; implementation and public spec byte-identical",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "wp_provers": "tip,z3,cvc5",
+  "wp_timeout": 30,
+  "wp_budget": 1200,
+  "proof_stage": "Independent proof copy allows private static-helper proof while preceding frozen replay runs unchanged.",
+  "swarm_migration": {
+    "source": "experiments/shim-c-v2/frontend-campaign/f32-vcmul",
+    "source_frozen_sha256": "236fb16f5edb46b2afc23db6291e8e0b2c44eb20d38956fff413c5a11bdeaf3e",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  },
+  "integration_wave2": {
+    "seed": "experiments/deepseek-swarm-v1/kernel-tasks/f32-vcmul/inputs/annotated",
+    "only": "Proof annotations; source/spec/model/driver records unchanged"
+  },
+  "previous_candidate": "experiments/integration-wave2/noncomplex/f32-vcmul/v07",
+  "proof_strategy_config": "Root-approved existing TIP activation for Wp.array tactic; model/source/spec/checker/timeouts/memory unchanged."
+}

@@ -1,0 +1,54 @@
+{
+  "task_id": "wave2-f32-spmm-minmax",
+  "kernel": "f32-spmm-minmax",
+  "source_case": "experiments/shim-c-v2/stage3-proof-next/spmm/neon-frame-v10",
+  "source_frozen_sha256": null,
+  "migration": "keep",
+  "focus": "Sparse indices, address/layout correspondence and FMA output induction.",
+  "wave": 1,
+  "agent_wall_seconds": 1200,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/case-v4",
+  "frozen_sha256": "5a99c762dc0fd8217c290b81b4e92df093086a0518279a94828b4cce315b1dd2",
+  "runner": "tools/shim_c_campaign_v4.py",
+  "runner_sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "tools/shim_c_campaign_private.py": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/frama-c.py": "becfe6e4c07a1df06e9f893e796f822db4ca1255f545f084e86da98ebfba7ab5",
+    "tools/shim_c_campaign_v4.py": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339"
+  },
+  "wp_par": 16,
+  "wall_seconds": 1200,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "equivalent"
+  ],
+  "diagnostic_properties": [
+    "spmm_origin_count",
+    "spmm_map_initial_value",
+    "wave2_sp_min4",
+    "wave2_sp_clamp4"
+  ],
+  "default_mode": "full",
+  "readiness": "candidate_pending_guard",
+  "sourceguard_exit": null,
+  "model": "Typed+raw+float",
+  "resources": {
+    "wp_timeout": 5,
+    "wp_memlimit": 1024,
+    "wp_budget": 1200,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits.",
+  "mode": "full",
+  "task_manifest_sha256": "d06dddf32ac223776f70f82faf27c3c2f5f31b1d9f7ee776d3d4259f59b57f94",
+  "attempt": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-spmm-minmax/attempts/0002",
+  "attempt_frozen_sha256": "3b937e7a85d3ba24dcc1fcb542e392f281ecab9a71f53d2a6302f73897a678bc",
+  "proof_sha256": "7d705bdaac974deacfe5f85f0a76404b93c0113701d8c4ee866e98b260472ba0"
+}

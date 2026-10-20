@@ -1,0 +1,763 @@
+{
+  "kernel": "f32-vsqrt",
+  "candidate": {
+    "root": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01",
+    "case": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/case",
+    "proof": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/draft/proof.patch",
+    "proof_sha256": "f658698a047b18f2a0fef7cca26bb1bce8dfe5aabc5736f028f2731b2591f240",
+    "case_frozen_sha256": "3561ede14c0b836e9cac300a3984b9302380fcd4a395309d2980392231e744e4",
+    "task_frozen_pin_matches": true,
+    "seed": {
+      "task": "experiments/deepseek-swarm-v1/kernel-tasks/f32-vsqrt",
+      "attempt": "0038",
+      "annotated": "experiments/deepseek-swarm-v1/kernel-tasks/f32-vsqrt/attempts/0038/.build/verify01/annotated"
+    },
+    "merge": {
+      "baseline": "DeepSeek checked-sourceguard snapshot",
+      "proof_sha256": "f658698a047b18f2a0fef7cca26bb1bce8dfe5aabc5736f028f2731b2591f240",
+      "one_proof_patch": true
+    },
+    "changes": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/changes.json"
+  },
+  "freeze": {
+    "all_frozen_file_hashes_match": true,
+    "failed_file_hashes": [],
+    "public_spec_byte_identical": true,
+    "public_spec_sha256": "529137edfba0625292e2cfefe86ebbafa14c4e63e469b432aee1c10fdf2fdd18",
+    "public_pre_changed": false,
+    "ordinary_C_modified": false,
+    "model_driver_modified": false
+  },
+  "model": {
+    "frontend": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+    "wp_model": "Typed+float",
+    "share": "experiments/shim-c-v2/model-front/wp-share",
+    "why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+    "model_lock": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    },
+    "runner": "tools/shim_c_campaign_v2.py",
+    "runner_sha256": "35698c6a96fd542fad91cf62ee4e3ac0fc5a7fd5a95005aa009c4c7a9f42fc35",
+    "solver_timeout": 30,
+    "memlimit": 1024,
+    "wp_par": 16,
+    "provers": "z3,cvc5"
+  },
+  "full": {
+    "version": "v01",
+    "attempt": "0001",
+    "scope": "full",
+    "state": "incomplete",
+    "summary": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/logs/verify01-summary.json",
+    "sourceguard_passed": true,
+    "guard_proof_sha256": [
+      "f658698a047b18f2a0fef7cca26bb1bce8dfe5aabc5736f028f2731b2591f240"
+    ],
+    "framac_exit": 0,
+    "seconds": 164.368,
+    "model_control_accepted": true,
+    "expected_global_lemmas": [
+      "fp_add_congruence",
+      "fp_sqrt_congruence",
+      "same_float_refl",
+      "same_float_value",
+      "same_value_refl",
+      "same_value_trans"
+    ],
+    "missing_global_lemmas": [],
+    "raw": {
+      "path": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/logs/verify01.json",
+      "sha256": "9c8af5095b1fd094c496e0413d97bd20aba99de3ed84485c37acbf512f580e1d",
+      "passed": 459,
+      "total": 476,
+      "source_globals_in_this_raw": {
+        "passed": 6,
+        "total": 6
+      },
+      "pending_by_function": {
+        "bits_float": 5,
+        "equivalent": 6,
+        "f32_sqrt": 1,
+        "float_bits": 5
+      },
+      "pending_by_file": {
+        "extensions.h": 2,
+        "representation.c": 8,
+        "harness.c": 2,
+        "neon.c": 2,
+        "rvv.c": 2,
+        "sqrt.c": 1
+      },
+      "pending": [
+        {
+          "goal": "typed_fma_extensions_bits_float_ensures",
+          "property": "bits_float_ensures",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+          "line": 31,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_assigns_normal",
+          "property": "bits_float_assigns",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_dest",
+          "property": "memcpy_requires_valid_dest",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_src",
+          "property": "memcpy_requires_valid_src",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_separation",
+          "property": "memcpy_requires_separation",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_7",
+          "property": "equivalent_assert_7",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+          "line": 19,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_8",
+          "property": "equivalent_assert_8",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+          "line": 22,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_49",
+          "property": "equivalent_assert_49",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+          "line": 110,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_50",
+          "property": "equivalent_assert_50",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+          "line": 115,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_54",
+          "property": "equivalent_assert_54",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+          "line": 28,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_loop_invariant_21_preserved",
+          "property": "equivalent_loop_invariant_21",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+          "line": 32,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_f32_sqrt_ensures",
+          "property": "f32_sqrt_ensures",
+          "function": "f32_sqrt",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/sqrt.c",
+          "line": 6,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_ensures",
+          "property": "float_bits_ensures",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+          "line": 29,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_assigns_normal",
+          "property": "float_bits_assigns",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_dest",
+          "property": "memcpy_requires_valid_dest_2",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_src",
+          "property": "memcpy_requires_valid_src_2",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_separation",
+          "property": "memcpy_requires_separation_2",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "timeout"
+        }
+      ]
+    },
+    "main_raw": {
+      "path": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/main-report.json",
+      "sha256": "9c8af5095b1fd094c496e0413d97bd20aba99de3ed84485c37acbf512f580e1d",
+      "passed": 459,
+      "total": 476,
+      "source_globals_in_this_raw": {
+        "passed": 6,
+        "total": 6
+      },
+      "pending_by_function": {
+        "bits_float": 5,
+        "equivalent": 6,
+        "f32_sqrt": 1,
+        "float_bits": 5
+      },
+      "pending_by_file": {
+        "extensions.h": 2,
+        "representation.c": 8,
+        "harness.c": 2,
+        "neon.c": 2,
+        "rvv.c": 2,
+        "sqrt.c": 1
+      },
+      "pending": [
+        {
+          "goal": "typed_fma_extensions_bits_float_ensures",
+          "property": "bits_float_ensures",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+          "line": 31,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_assigns_normal",
+          "property": "bits_float_assigns",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_dest",
+          "property": "memcpy_requires_valid_dest",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_src",
+          "property": "memcpy_requires_valid_src",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_separation",
+          "property": "memcpy_requires_separation",
+          "function": "bits_float",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 4,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_7",
+          "property": "equivalent_assert_7",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+          "line": 19,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_8",
+          "property": "equivalent_assert_8",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+          "line": 22,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_49",
+          "property": "equivalent_assert_49",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+          "line": 110,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_50",
+          "property": "equivalent_assert_50",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+          "line": 115,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_assert_54",
+          "property": "equivalent_assert_54",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+          "line": 28,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_equivalent_loop_invariant_21_preserved",
+          "property": "equivalent_loop_invariant_21",
+          "function": "equivalent",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+          "line": 32,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_f32_sqrt_ensures",
+          "property": "f32_sqrt_ensures",
+          "function": "f32_sqrt",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/sqrt.c",
+          "line": 6,
+          "verdict": "timeout"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_ensures",
+          "property": "float_bits_ensures",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+          "line": 29,
+          "verdict": "failed"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_assigns_normal",
+          "property": "float_bits_assigns",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_dest",
+          "property": "memcpy_requires_valid_dest_2",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_src",
+          "property": "memcpy_requires_valid_src_2",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "unknown"
+        },
+        {
+          "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_separation",
+          "property": "memcpy_requires_separation_2",
+          "function": "float_bits",
+          "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+          "line": 3,
+          "verdict": "timeout"
+        }
+      ]
+    },
+    "separate_global_raw": null,
+    "actual_commands": {
+      "path": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/actual-commands.jsonl",
+      "sha256": "46787e51ba93102b82a6673e191d98a3d4c1f0a5401e55f9c4b59a74bf04435a"
+    },
+    "functions": [],
+    "properties": []
+  },
+  "full_uses_selected_proof": true,
+  "focus_history": [],
+  "complete_kernel": false,
+  "admitted": false,
+  "closed_helper_comparison": null,
+  "note": "选v01；同候选full459/476（含globals6/6），17欠：10条Typed bit/memcpy codec、sqrt舍入算法1、caller6。",
+  "attempts": [
+    {
+      "version": "v01",
+      "attempt": "0001",
+      "scope": "full",
+      "state": "incomplete",
+      "summary": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/logs/verify01-summary.json",
+      "sourceguard_passed": true,
+      "guard_proof_sha256": [
+        "f658698a047b18f2a0fef7cca26bb1bce8dfe5aabc5736f028f2731b2591f240"
+      ],
+      "framac_exit": 0,
+      "seconds": 164.368,
+      "model_control_accepted": true,
+      "expected_global_lemmas": [
+        "fp_add_congruence",
+        "fp_sqrt_congruence",
+        "same_float_refl",
+        "same_float_value",
+        "same_value_refl",
+        "same_value_trans"
+      ],
+      "missing_global_lemmas": [],
+      "raw": {
+        "path": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/logs/verify01.json",
+        "sha256": "9c8af5095b1fd094c496e0413d97bd20aba99de3ed84485c37acbf512f580e1d",
+        "passed": 459,
+        "total": 476,
+        "source_globals_in_this_raw": {
+          "passed": 6,
+          "total": 6
+        },
+        "pending_by_function": {
+          "bits_float": 5,
+          "equivalent": 6,
+          "f32_sqrt": 1,
+          "float_bits": 5
+        },
+        "pending_by_file": {
+          "extensions.h": 2,
+          "representation.c": 8,
+          "harness.c": 2,
+          "neon.c": 2,
+          "rvv.c": 2,
+          "sqrt.c": 1
+        },
+        "pending": [
+          {
+            "goal": "typed_fma_extensions_bits_float_ensures",
+            "property": "bits_float_ensures",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+            "line": 31,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_assigns_normal",
+            "property": "bits_float_assigns",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_dest",
+            "property": "memcpy_requires_valid_dest",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_src",
+            "property": "memcpy_requires_valid_src",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_separation",
+            "property": "memcpy_requires_separation",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_7",
+            "property": "equivalent_assert_7",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+            "line": 19,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_8",
+            "property": "equivalent_assert_8",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+            "line": 22,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_49",
+            "property": "equivalent_assert_49",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+            "line": 110,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_50",
+            "property": "equivalent_assert_50",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+            "line": 115,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_54",
+            "property": "equivalent_assert_54",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+            "line": 28,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_loop_invariant_21_preserved",
+            "property": "equivalent_loop_invariant_21",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+            "line": 32,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_f32_sqrt_ensures",
+            "property": "f32_sqrt_ensures",
+            "function": "f32_sqrt",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/sqrt.c",
+            "line": 6,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_ensures",
+            "property": "float_bits_ensures",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+            "line": 29,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_assigns_normal",
+            "property": "float_bits_assigns",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_dest",
+            "property": "memcpy_requires_valid_dest_2",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_src",
+            "property": "memcpy_requires_valid_src_2",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_separation",
+            "property": "memcpy_requires_separation_2",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "timeout"
+          }
+        ]
+      },
+      "main_raw": {
+        "path": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/main-report.json",
+        "sha256": "9c8af5095b1fd094c496e0413d97bd20aba99de3ed84485c37acbf512f580e1d",
+        "passed": 459,
+        "total": 476,
+        "source_globals_in_this_raw": {
+          "passed": 6,
+          "total": 6
+        },
+        "pending_by_function": {
+          "bits_float": 5,
+          "equivalent": 6,
+          "f32_sqrt": 1,
+          "float_bits": 5
+        },
+        "pending_by_file": {
+          "extensions.h": 2,
+          "representation.c": 8,
+          "harness.c": 2,
+          "neon.c": 2,
+          "rvv.c": 2,
+          "sqrt.c": 1
+        },
+        "pending": [
+          {
+            "goal": "typed_fma_extensions_bits_float_ensures",
+            "property": "bits_float_ensures",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+            "line": 31,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_assigns_normal",
+            "property": "bits_float_assigns",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_dest",
+            "property": "memcpy_requires_valid_dest",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_valid_src",
+            "property": "memcpy_requires_valid_src",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_bits_float_call_memcpy_requires_separation",
+            "property": "memcpy_requires_separation",
+            "function": "bits_float",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 4,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_7",
+            "property": "equivalent_assert_7",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+            "line": 19,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_8",
+            "property": "equivalent_assert_8",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/harness.c",
+            "line": 22,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_49",
+            "property": "equivalent_assert_49",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+            "line": 110,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_50",
+            "property": "equivalent_assert_50",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/neon.c",
+            "line": 115,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_assert_54",
+            "property": "equivalent_assert_54",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+            "line": 28,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_equivalent_loop_invariant_21_preserved",
+            "property": "equivalent_loop_invariant_21",
+            "function": "equivalent",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/rvv.c",
+            "line": 32,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_f32_sqrt_ensures",
+            "property": "f32_sqrt_ensures",
+            "function": "f32_sqrt",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/sqrt.c",
+            "line": 6,
+            "verdict": "timeout"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_ensures",
+            "property": "float_bits_ensures",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/extensions.h",
+            "line": 29,
+            "verdict": "failed"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_assigns_normal",
+            "property": "float_bits_assigns",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_dest",
+            "property": "memcpy_requires_valid_dest_2",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_valid_src",
+            "property": "memcpy_requires_valid_src_2",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "unknown"
+          },
+          {
+            "goal": "typed_fma_extensions_float_bits_call_memcpy_requires_separation",
+            "property": "memcpy_requires_separation_2",
+            "function": "float_bits",
+            "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/.build/verify01/annotated/representation.c",
+            "line": 3,
+            "verdict": "timeout"
+          }
+        ]
+      },
+      "separate_global_raw": null,
+      "actual_commands": {
+        "path": "experiments/integration-wave2/noncomplex/f32-vsqrt/v01/attempts/0001/actual-commands.jsonl",
+        "sha256": "46787e51ba93102b82a6673e191d98a3d4c1f0a5401e55f9c4b59a74bf04435a"
+      },
+      "functions": [],
+      "properties": []
+    }
+  ]
+}

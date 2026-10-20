@@ -1,0 +1,26 @@
+{
+  "changes": [
+    "Restore NaN-aware floating helper relation: \\result.lane[j]==x",
+    "Restore NaN-aware floating helper relation: r.lane[j]==x",
+    "Restore NaN-aware floating helper relation: \\result.lane[j]==a.lane[j]+b.lane[j]",
+    "Restore NaN-aware floating helper relation: \\result.lane[j]==a.lane[j]*b.lane[j]",
+    "Restore NaN-aware floating helper relation: \\result.lane[j]==(float)a.lane[j]",
+    "Restore NaN-aware floating helper relation: r.lane[j]==(float)a.lane[j]",
+    "Restore NaN-aware floating helper relation: \\result.lane[j]==a.lane[j]*b",
+    "Restore NaN-aware floating helper relation: \\result.lane[j]==a.lane[j]+b",
+    "Explicit checked exact min-VL and positive/cap bounds"
+  ],
+  "syntax_fix": "Separate each assertion into one ACSL code annotation comment",
+  "files_fixed": [
+    "rvv.c"
+  ],
+  "rounding_fix": "Use explicit ACSL add_float/mul_float, not real arithmetic followed by one cast; preserve per-operation IEEE rounding and negative zero. Intermediate L_* proof functions only, public spec unchanged.",
+  "rounding_replacements": {
+    "(float)(a.lane[j]+b.lane[j])": 1,
+    "(float)(a.lane[j]*b.lane[j])": 1,
+    "(float)(a.lane[j]*b)": 1,
+    "(float)(a.lane[j]+b)": 1
+  },
+  "core_invariant_fix": "Four float arithmetic helpers had no completed-lane loop invariant at all. Add NaN-aware IEEE add/mul mapping for processed lanes; conversion/codec obligations remain.",
+  "conversion_fix": "Express int32->binary32 post and invariant as round_float(NearestEven,int), not an ACSL cast that can denote a real conversion without explicit rounded representation."
+}

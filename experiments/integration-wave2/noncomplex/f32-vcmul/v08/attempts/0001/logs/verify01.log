@@ -1,0 +1,62 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/.build/verify01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/.build/verify01/annotated/unit.c']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'tip,z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+raw+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/.build/verify01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/.build/verify01/annotated/unit.c', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/logs/verify01.json", "-wp-model", "Typed+raw+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "equivalent", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver,/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/v08/attempts/0001/.build/verify01/annotated/complex_fp.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] 227 goals scheduled
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_ensures_equal (Qed 2.5s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert (Qed 39ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_5 (Qed 1.2s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_14_established (Qed 1.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_3 (Qed 33ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_2 (Qed 35ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access_2 (Qed 1.7s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_7 (Qed 1.2s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_6 (Qed 1.2s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_4 (Qed 1s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assert_rte_mem_access (Qed 1.6s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_16_established (Qed 1.3s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_20_established (Qed 1.5s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_18_established (Qed 1.3s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_12_preserved (Qed 225ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_21_established (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_invariant_23_preserved (Qed 2.4s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_loop_invariant_22_established (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_integration_imag_input_range (Qed 1.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assert_integration_real_input_range (Qed 1.8s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part15 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_loop_assigns_3_part14 (Qed 2.4s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_normal_part27 (Qed 595ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_normal_part28 (Qed 622ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_normal_part29 (Qed 1.5s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_exit_part40 (Qed 1.6s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_exit_part38 (Qed 589ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_exit_part39 (Qed 632ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_call_vst1_lane_f32_requires_2 (Qed 593ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_call_vst1_lane_f32_2_requires_2 (Qed 584ms) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_call_vld1q_f32_4_requires (Qed 197ms) (Z3)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_assigns_exit_part52 (Qed 2.2s) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_call_vst1_f32_2_requires (Qed 310ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_normal_part23 (Qed 254ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_assigns_exit_part34 (Qed 285ms) (CVC5)
+[wp] [Failure] typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m4_3_riscv_vle32_v_f32m4_requires_2 (Qed 2.0s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_call___riscv_vle32_v_f32m4_4_riscv_vle32_v_f32m4_requires_2 (Qed 1.9s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_call___riscv_vse32_v_f32m4_riscv_vse32_v_f32m4_requires_2 (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_raw_fma_complex_fp_equivalent_call___riscv_vse32_v_f32m4_2_riscv_vse32_v_f32m4_requires_2 (Qed 2.2s) (CVC5)
+[wp] Proved goals:  188 / 227
+  Qed:            47 (28ms-666ms-2.5s)
+  CVC5 1.2.1:    138 (68ms-1.8s-21.2s)
+  Z3 4.12.5:       3 (14.2s-19.9s-22.7s)
+  Failed:         26
+  Timeout:        13
+[wp] Updated session
+   - 39 new scripts to complete

@@ -1,0 +1,13 @@
+{
+  "same_frozen_files_as_v06": true,
+  "same_driver_model_prover_limits": true,
+  "sourceguard_passed": true,
+  "only_changed_annotated_files": [
+    "float_ops.c"
+  ],
+  "annotation_delta": {
+    "float_ops.c": "--- v06/float_ops.c\n+++ v08/float_ops.c\n@@ -14,6 +14,8 @@\n  \\wp::strategy VmemStore:\n  \\tactic(\"Wp.cut\",\\ingoal(memcpy(M,P,U,P,4*I)),\\incontext(I<=V),\\incontext(V<=I),\\param(\"clause\",I==V),\\children(VmemExitRewrite)),VmemPoint;\n  \\wp::proof VmemStore:vst1q_f32,vst1_f32,__riscv_vse32_v_f32m8,vst1_lane_f32;\n+ \\wp::proof VmemIncluded:equivalent;\n+ \\wp::proof VmemIncluded:\"@requires\";\n */\n \n float f32_add(float a, float b) { return a + b; }\n"
+  },
+  "all_semantic_assertions_invariants_contracts_unchanged": true,
+  "ordinary_C_spec_shim_driver_model_unchanged": true
+}

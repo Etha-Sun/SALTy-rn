@@ -1,0 +1,1 @@
+v04的14个已真证global不变。只对NEON4点保存product ghost并显式展开mask lemma的3组前件；前件每条均须实际证明。独立诊断将equivalent级memory tactic改为已有VmemSMT直接solver，helper/store策略不变。原语义/C/spec/model/driver/checker/30s/1024均不变。只诊断NEON4值链，不算full。

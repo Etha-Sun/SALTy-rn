@@ -1,0 +1,368 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/formula-root03/raw.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-review-v1/candidates/f32-vlrelu-native-v6-root03/attempts/0001/.build/verify01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-review-v1/candidates/f32-vlrelu-native-v6-root03/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vbslq_f32", "-wp-prop", "@invariant", "-wp-gen", "-wp-print", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/formula-root03/session", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu/formula-root03/out", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vbslq_f32
+
+Goal Establishment of Invariant ("bits.c", line 22):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 22):
+Let a_1 = m.F7_lane.
+Let a_2 = a_1[i].
+Let a_3 = b.F16_lane.
+Let a_4 = a_3[i].
+Let a_5 = a.F16_lane.
+Let a_6 = a_5[i].
+Assume {
+  Type: IsS7(m) /\ is_uint32(float_bits_0) /\ is_uint32(float_bits_1) /\
+      is_uint64(i) /\ is_uint32(a_2).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = a_5[i_1] in let a_8 = a_3[i_1] in
+      let a_9 = a_1[i_1] in ((0 <= i_1) -> ((i_1 < i) ->
+      ((!is_NaN_f32(a_7)) -> ((!is_NaN_f32(a_8)) ->
+      P_same_float(v[i_1],
+        repr_decode32(lor(land(repr_encode32(a_7), a_9),
+          land(lxor(4294967295, a_9), repr_encode32(a_8))))))))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = a_1[i_1] in ((0 <= i_1) -> ((i_1 < i) ->
+      (((a_7 = 0) \/ (a_7 = 4294967295)) ->
+      P_same_float(v[i_1], if (a_7 = 0) then a_3[i_1] else a_5[i_1])))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = a_1[i_1] in let a_8 = a_3[i_1] in
+      let a_9 = a_5[i_1] in let a_10 = sign_f32(v[i_1]) in ((0 <= i_1) ->
+      ((i_1 < i) ->
+      ((!(if (a_7 = 0) then is_NaN_f32(a_8) else is_NaN_f32(a_9))) ->
+      (((a_7 = 0) \/ (a_7 = 4294967295)) ->
+      (if (a_7 = 0) then (sign_f32(a_8) = a_10) else (sign_f32(a_9) = a_10)))))).
+  (* Invariant *)
+  Have: forall i_1 : Z. let a_7 = a_1[i_1] in let a_8 = v[i_1] in
+      ((0 <= i_1) -> ((i_1 < i) -> (((a_7 = 0) \/ (a_7 = 4294967295)) ->
+      (if (a_7 = 0) then (is_NaN_f32(a_3[i_1]) <-> is_NaN_f32(a_8))
+       else (is_NaN_f32(a_5[i_1]) <-> is_NaN_f32(a_8)))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_1), a_6) /\
+      (((!is_NaN_f32(a_6)) -> (repr_encode32(a_6) = float_bits_1))).
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_0), a_4) /\
+      (((!is_NaN_f32(a_4)) -> (repr_encode32(a_4) = float_bits_0))).
+  (* Call 'bits_float' *)
+  Have: P_same_float(v_1,
+          repr_decode32(lor(land(float_bits_1, a_2), land(float_bits_0,
+            to_uint32(lnot(a_2)))))).
+}
+Prove: to_uint64(1 + i) <= 4.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 23):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 23):
+Let x = to_uint64(1 + i).
+Let a_1 = m.F7_lane.
+Let a_2 = a_1[i].
+Let a_3 = b.F16_lane.
+Let a_4 = a_3[i].
+Let a_5 = a.F16_lane.
+Let a_6 = a_5[i].
+Let a_7 = a_5[i_1].
+Let a_8 = a_3[i_1].
+Let a_9 = a_1[i_1].
+Assume {
+  Type: IsS7(m) /\ is_uint32(float_bits_0) /\ is_uint32(float_bits_1) /\
+      is_uint64(i) /\ is_uint32(a_2).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x) /\ (!is_NaN_f32(a_7)) /\ (!is_NaN_f32(a_8)).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_10 = a_5[i_2] in let a_11 = a_3[i_2] in
+      let a_12 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < i) ->
+      ((!is_NaN_f32(a_10)) -> ((!is_NaN_f32(a_11)) ->
+      P_same_float(v[i_2],
+        repr_decode32(lor(land(repr_encode32(a_10), a_12),
+          land(lxor(4294967295, a_12), repr_encode32(a_11))))))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_10 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < i) ->
+      (((a_10 = 0) \/ (a_10 = 4294967295)) ->
+      P_same_float(v[i_2], if (a_10 = 0) then a_3[i_2] else a_5[i_2])))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_10 = a_1[i_2] in let a_11 = a_3[i_2] in
+      let a_12 = a_5[i_2] in let a_13 = sign_f32(v[i_2]) in ((0 <= i_2) ->
+      ((i_2 < i) ->
+      ((!(if (a_10 = 0) then is_NaN_f32(a_11) else is_NaN_f32(a_12))) ->
+      (((a_10 = 0) \/ (a_10 = 4294967295)) ->
+      (if (a_10 = 0) then (sign_f32(a_11) = a_13)
+       else (sign_f32(a_12) = a_13)))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_10 = a_1[i_2] in let a_11 = v[i_2] in
+      ((0 <= i_2) -> ((i_2 < i) -> (((a_10 = 0) \/ (a_10 = 4294967295)) ->
+      (if (a_10 = 0) then (is_NaN_f32(a_3[i_2]) <-> is_NaN_f32(a_11))
+       else (is_NaN_f32(a_5[i_2]) <-> is_NaN_f32(a_11)))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_1), a_6) /\
+      (((!is_NaN_f32(a_6)) -> (repr_encode32(a_6) = float_bits_1))).
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_0), a_4) /\
+      (((!is_NaN_f32(a_4)) -> (repr_encode32(a_4) = float_bits_0))).
+  (* Call 'bits_float' *)
+  Have: P_same_float(v_1,
+          repr_decode32(lor(land(float_bits_1, a_2), land(float_bits_0,
+            to_uint32(lnot(a_2)))))).
+  (* Invariant *)
+  Have: x <= 4.
+}
+Prove: P_same_float(v[i <- v_1][i_1],
+         repr_decode32(lor(land(repr_encode32(a_7), a_9),
+           land(lxor(4294967295, a_9), repr_encode32(a_8))))).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 24):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 24):
+Let x = to_uint64(1 + i).
+Let a_1 = a.F16_lane.
+Let a_2 = b.F16_lane.
+Let m_1 = v[i <- v_1].
+Let a_3 = m.F7_lane.
+Let a_4 = a_3[i].
+Let a_5 = a_2[i].
+Let a_6 = a_1[i].
+Let a_7 = a_3[i_1].
+Assume {
+  Type: IsS7(m) /\ is_uint32(float_bits_0) /\ is_uint32(float_bits_1) /\
+      is_uint64(i) /\ is_uint32(a_4).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x) /\ ((a_7 = 0) \/ (a_7 = 4294967295)).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_8 = a_1[i_2] in let a_9 = a_2[i_2] in
+      let a_10 = a_3[i_2] in ((0 <= i_2) -> ((i_2 < i) ->
+      ((!is_NaN_f32(a_8)) -> ((!is_NaN_f32(a_9)) ->
+      P_same_float(v[i_2],
+        repr_decode32(lor(land(repr_encode32(a_8), a_10),
+          land(lxor(4294967295, a_10), repr_encode32(a_9))))))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_8 = a_3[i_2] in ((0 <= i_2) -> ((i_2 < i) ->
+      (((a_8 = 0) \/ (a_8 = 4294967295)) ->
+      P_same_float(v[i_2], if (a_8 = 0) then a_2[i_2] else a_1[i_2])))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_8 = a_3[i_2] in let a_9 = a_2[i_2] in
+      let a_10 = a_1[i_2] in let a_11 = sign_f32(v[i_2]) in ((0 <= i_2) ->
+      ((i_2 < i) ->
+      ((!(if (a_8 = 0) then is_NaN_f32(a_9) else is_NaN_f32(a_10))) ->
+      (((a_8 = 0) \/ (a_8 = 4294967295)) ->
+      (if (a_8 = 0) then (sign_f32(a_9) = a_11) else (sign_f32(a_10) = a_11)))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_8 = a_3[i_2] in let a_9 = v[i_2] in
+      ((0 <= i_2) -> ((i_2 < i) -> (((a_8 = 0) \/ (a_8 = 4294967295)) ->
+      (if (a_8 = 0) then (is_NaN_f32(a_2[i_2]) <-> is_NaN_f32(a_9))
+       else (is_NaN_f32(a_1[i_2]) <-> is_NaN_f32(a_9)))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_1), a_6) /\
+      (((!is_NaN_f32(a_6)) -> (repr_encode32(a_6) = float_bits_1))).
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_0), a_5) /\
+      (((!is_NaN_f32(a_5)) -> (repr_encode32(a_5) = float_bits_0))).
+  (* Call 'bits_float' *)
+  Have: P_same_float(v_1,
+          repr_decode32(lor(land(float_bits_1, a_4), land(float_bits_0,
+            to_uint32(lnot(a_4)))))).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_8 = a_1[i_2] in let a_9 = a_2[i_2] in
+      let a_10 = a_3[i_2] in ((0 <= i_2) -> ((i_2 < x) ->
+      ((!is_NaN_f32(a_8)) -> ((!is_NaN_f32(a_9)) ->
+      P_same_float(m_1[i_2],
+        repr_decode32(lor(land(repr_encode32(a_8), a_10),
+          land(lxor(4294967295, a_10), repr_encode32(a_9))))))))).
+}
+Prove: P_same_float(m_1[i_1], if (a_7 = 0) then a_2[i_1] else a_1[i_1]).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 25):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 25):
+Let x = to_uint64(1 + i_1).
+Let a_1 = m.F7_lane.
+Let m_1 = v[i_1 <- v_1].
+Let a_2 = b.F16_lane.
+Let a_3 = a.F16_lane.
+Let a_4 = a_1[i_1].
+Let a_5 = a_2[i_1].
+Let a_6 = a_3[i_1].
+Let a_7 = a_1[i].
+Let a_8 = a_2[i].
+Let a_9 = a_3[i].
+Let a_10 = sign_f32(m_1[i]).
+Assume {
+  Type: IsS7(m) /\ is_uint32(float_bits_0) /\ is_uint32(float_bits_1) /\
+      is_uint64(i_1) /\ is_uint32(a_4).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x) /\
+      (!(if (a_7 = 0) then is_NaN_f32(a_8) else is_NaN_f32(a_9))) /\
+      ((a_7 = 0) \/ (a_7 = 4294967295)).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_11 = a_3[i_2] in let a_12 = a_2[i_2] in
+      let a_13 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < i_1) ->
+      ((!is_NaN_f32(a_11)) -> ((!is_NaN_f32(a_12)) ->
+      P_same_float(v[i_2],
+        repr_decode32(lor(land(repr_encode32(a_11), a_13),
+          land(lxor(4294967295, a_13), repr_encode32(a_12))))))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_11 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < i_1) ->
+      (((a_11 = 0) \/ (a_11 = 4294967295)) ->
+      P_same_float(v[i_2], if (a_11 = 0) then a_2[i_2] else a_3[i_2])))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_11 = a_1[i_2] in let a_12 = a_2[i_2] in
+      let a_13 = a_3[i_2] in let a_14 = sign_f32(v[i_2]) in ((0 <= i_2) ->
+      ((i_2 < i_1) ->
+      ((!(if (a_11 = 0) then is_NaN_f32(a_12) else is_NaN_f32(a_13))) ->
+      (((a_11 = 0) \/ (a_11 = 4294967295)) ->
+      (if (a_11 = 0) then (sign_f32(a_12) = a_14)
+       else (sign_f32(a_13) = a_14)))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_11 = a_1[i_2] in let a_12 = v[i_2] in
+      ((0 <= i_2) -> ((i_2 < i_1) -> (((a_11 = 0) \/ (a_11 = 4294967295)) ->
+      (if (a_11 = 0) then (is_NaN_f32(a_2[i_2]) <-> is_NaN_f32(a_12))
+       else (is_NaN_f32(a_3[i_2]) <-> is_NaN_f32(a_12)))))).
+  (* Then *)
+  Have: i_1 <= 3.
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_1), a_6) /\
+      (((!is_NaN_f32(a_6)) -> (repr_encode32(a_6) = float_bits_1))).
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_0), a_5) /\
+      (((!is_NaN_f32(a_5)) -> (repr_encode32(a_5) = float_bits_0))).
+  (* Call 'bits_float' *)
+  Have: P_same_float(v_1,
+          repr_decode32(lor(land(float_bits_1, a_4), land(float_bits_0,
+            to_uint32(lnot(a_4)))))).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_11 = a_3[i_2] in let a_12 = a_2[i_2] in
+      let a_13 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < x) ->
+      ((!is_NaN_f32(a_11)) -> ((!is_NaN_f32(a_12)) ->
+      P_same_float(m_1[i_2],
+        repr_decode32(lor(land(repr_encode32(a_11), a_13),
+          land(lxor(4294967295, a_13), repr_encode32(a_12))))))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_11 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < x) ->
+      (((a_11 = 0) \/ (a_11 = 4294967295)) ->
+      P_same_float(m_1[i_2], if (a_11 = 0) then a_2[i_2] else a_3[i_2])))).
+}
+Prove: if (a_7 = 0) then (sign_f32(a_8) = a_10) else (sign_f32(a_9) = a_10).
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 26):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 26):
+Let x = to_uint64(1 + i_1).
+Let a_1 = m.F7_lane.
+Let a_2 = b.F16_lane.
+Let a_3 = a.F16_lane.
+Let m_1 = v[i_1 <- v_1].
+Let a_4 = a_1[i_1].
+Let a_5 = a_2[i_1].
+Let a_6 = a_3[i_1].
+Let a_7 = a_1[i].
+Let a_8 = m_1[i].
+Assume {
+  Type: IsS7(m) /\ is_uint32(float_bits_0) /\ is_uint32(float_bits_1) /\
+      is_uint64(i_1) /\ is_uint32(a_4).
+  (* Goal *)
+  When: (0 <= i) /\ (i < x) /\ ((a_7 = 0) \/ (a_7 = 4294967295)).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_3[i_2] in let a_10 = a_2[i_2] in
+      let a_11 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < i_1) ->
+      ((!is_NaN_f32(a_9)) -> ((!is_NaN_f32(a_10)) ->
+      P_same_float(v[i_2],
+        repr_decode32(lor(land(repr_encode32(a_9), a_11),
+          land(lxor(4294967295, a_11), repr_encode32(a_10))))))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < i_1) ->
+      (((a_9 = 0) \/ (a_9 = 4294967295)) ->
+      P_same_float(v[i_2], if (a_9 = 0) then a_2[i_2] else a_3[i_2])))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_1[i_2] in let a_10 = a_2[i_2] in
+      let a_11 = a_3[i_2] in let a_12 = sign_f32(v[i_2]) in ((0 <= i_2) ->
+      ((i_2 < i_1) ->
+      ((!(if (a_9 = 0) then is_NaN_f32(a_10) else is_NaN_f32(a_11))) ->
+      (((a_9 = 0) \/ (a_9 = 4294967295)) ->
+      (if (a_9 = 0) then (sign_f32(a_10) = a_12) else (sign_f32(a_11) = a_12)))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_1[i_2] in let a_10 = v[i_2] in
+      ((0 <= i_2) -> ((i_2 < i_1) -> (((a_9 = 0) \/ (a_9 = 4294967295)) ->
+      (if (a_9 = 0) then (is_NaN_f32(a_2[i_2]) <-> is_NaN_f32(a_10))
+       else (is_NaN_f32(a_3[i_2]) <-> is_NaN_f32(a_10)))))).
+  (* Then *)
+  Have: i_1 <= 3.
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_1), a_6) /\
+      (((!is_NaN_f32(a_6)) -> (repr_encode32(a_6) = float_bits_1))).
+  (* Call 'float_bits' *)
+  Have: P_same_float(repr_decode32(float_bits_0), a_5) /\
+      (((!is_NaN_f32(a_5)) -> (repr_encode32(a_5) = float_bits_0))).
+  (* Call 'bits_float' *)
+  Have: P_same_float(v_1,
+          repr_decode32(lor(land(float_bits_1, a_4), land(float_bits_0,
+            to_uint32(lnot(a_4)))))).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_3[i_2] in let a_10 = a_2[i_2] in
+      let a_11 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < x) ->
+      ((!is_NaN_f32(a_9)) -> ((!is_NaN_f32(a_10)) ->
+      P_same_float(m_1[i_2],
+        repr_decode32(lor(land(repr_encode32(a_9), a_11),
+          land(lxor(4294967295, a_11), repr_encode32(a_10))))))))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_1[i_2] in ((0 <= i_2) -> ((i_2 < x) ->
+      (((a_9 = 0) \/ (a_9 = 4294967295)) ->
+      P_same_float(m_1[i_2], if (a_9 = 0) then a_2[i_2] else a_3[i_2])))).
+  (* Invariant *)
+  Have: forall i_2 : Z. let a_9 = a_1[i_2] in let a_10 = a_2[i_2] in
+      let a_11 = a_3[i_2] in let a_12 = sign_f32(m_1[i_2]) in ((0 <= i_2) ->
+      ((i_2 < x) ->
+      ((!(if (a_9 = 0) then is_NaN_f32(a_10) else is_NaN_f32(a_11))) ->
+      (((a_9 = 0) \/ (a_9 = 4294967295)) ->
+      (if (a_9 = 0) then (sign_f32(a_10) = a_12) else (sign_f32(a_11) = a_12)))))).
+}
+Prove: if (a_7 = 0) then (is_NaN_f32(a_2[i]) <-> is_NaN_f32(a_8))
+       else (is_NaN_f32(a_3[i]) <-> is_NaN_f32(a_8)).
+
+------------------------------------------------------------

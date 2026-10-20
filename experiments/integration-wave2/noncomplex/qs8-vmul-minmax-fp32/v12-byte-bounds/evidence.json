@@ -1,0 +1,45 @@
+{
+  "scope": "diagnostic",
+  "complete_kernel": false,
+  "passed": 14,
+  "total": 16,
+  "pending": [
+    {
+      "goal": "typed_fma_vst1_lane_u16_assert_rte_mem_access",
+      "function": "vst1_lane_u16",
+      "property": "vst1_lane_u16_assert_rte_mem_access",
+      "line": 249
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_assert_rte_mem_access",
+      "function": "vst1_lane_u32",
+      "property": "vst1_lane_u32_assert_rte_mem_access",
+      "line": 267
+    }
+  ],
+  "proof_sha256": "093b4d1a8a79ddda5c4e77a24c2e9d96cbb774e905e2120c50a0336a32f5d128",
+  "raw_report": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/logs/verify01.json",
+  "new_preconditions_checked": [
+    {
+      "goal": "typed_fma_equivalent_call_vst1_lane_u32_requires_qstore32_index",
+      "passed": true,
+      "verdict": "valid"
+    },
+    {
+      "goal": "typed_fma_equivalent_call_vst1_lane_u16_requires_qstore16_index",
+      "passed": true,
+      "verdict": "valid"
+    }
+  ],
+  "original_v10_failed_goals_now_passed": [
+    "typed_fma_vst1_lane_u16_assert_rte_index_bound",
+    "typed_fma_vst1_lane_u16_assert_rte_index_bound_2",
+    "typed_fma_vst1_lane_u32_assert_rte_index_bound",
+    "typed_fma_vst1_lane_u32_assert_rte_index_bound_2"
+  ],
+  "notes": [
+    "Only private lane-index requires and finite loop bounds/variant added. No destination-valid precondition, functional postcondition, or assigns contract added.",
+    "Ordinary C/public spec/shim implementation/model/driver/checker unchanged; whole kernel not rerun.",
+    "Two byte-store memory-access goals remain unresolved. Typed signed/unsigned byte-pointer warnings are diagnostic evidence, not a counterexample."
+  ]
+}

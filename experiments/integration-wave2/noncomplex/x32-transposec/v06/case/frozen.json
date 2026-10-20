@@ -1,0 +1,69 @@
+{
+  "name": "x32-transposec",
+  "files": {
+    "neon.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/neon.c",
+      "sha256": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a"
+    },
+    "rvv.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/rvv.c",
+      "sha256": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f"
+    },
+    "spec.h": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/spec.h",
+      "sha256": "15e85c0fad7211b53cc81aab146e264e5ffd053faabd9602aa0b2f6e36296441"
+    },
+    "harness.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/harness.c",
+      "sha256": "d97c92586a59d69f4eef50b4e461c7358ee90f8575263d24c7c48fa9d89a55fa"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/x32-transposec/unit.c",
+      "sha256": "44ce202adf936dcb2cd4eac55ede6704ed1d21a9fb646f836c37f85840c77fe1"
+    },
+    "u32_shim.h": {
+      "path": "experiments/shared-extension/complex/shared/u32_shim.h",
+      "sha256": "08f39fad2fa1012e274e9cb81df24b601398910dc4136e2182b7f64ed4323217"
+    },
+    "u32_shim.c": {
+      "path": "experiments/shared-extension/complex/shared/u32_shim.c",
+      "sha256": "608464204358c0287f0585c697b675ce445ba9b90e4230a048371dc42e8bfa4f"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v3.py",
+      "sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/shim-c-v2/model-front/float_model_lock.json",
+      "sha256": "948d1814c32545317f4340fff3b464743f94587510fbf954e080ba405f52ddc4"
+    }
+  },
+  "proof_patches": [
+    "experiments/integration-wave2/noncomplex/x32-transposec/v06/case/proof.patch"
+  ],
+  "model": "Typed",
+  "wp_model_variant": "Typed+raw",
+  "previous_version": "experiments/shim-c-v2/complex-v3/x32-transposec",
+  "reason": "Independent probe shows Typed+raw retains aggregate-array initializer constraints; implementation and public spec byte-identical",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "proof_stage": "Independent proof copy allows private static-helper proof while preceding frozen replay runs unchanged.",
+  "swarm_migration": {
+    "source": "experiments/shim-c-v2/complex-v3-next/x32-transposec",
+    "source_frozen_sha256": "96c49d4ea03098b3d0f82bf5d5927e1fdbe802151365d91b09f2a9a21b89775a",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  },
+  "wp_share": "experiments/shim-c-v2/model-front/wp-share",
+  "wp_why3_config": "experiments/shim-c-v2/model-front/why3.conf",
+  "integration_wave2": {
+    "seed": "experiments/deepseek-swarm-v1/kernel-tasks/x32-transposec/attempts/0019/.build/verify01/annotated",
+    "only": "Proof annotations; source/spec/model/driver records unchanged"
+  },
+  "previous_candidate": "experiments/integration-wave2/noncomplex/x32-transposec/v05",
+  "wp_provers": "tip,z3,cvc5,alt-ergo",
+  "proof_strategy_config": "Use existing TIP/Wp.array to split actual core memory-array updates. Original SMT10s/memory1024MiB, source/model/checker/spec unchanged."
+}

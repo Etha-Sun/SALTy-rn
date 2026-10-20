@@ -1,0 +1,40 @@
+{
+  "root10_revision": "101fc27d738d6bfd934730ef5aec055dca716542",
+  "root10_proof_source": "experiments/shim-c-v2/stage3-proof-next/spmm/qd8-nibbles-r10",
+  "root10_proof_sha256": "bbabba5b5c434b282ed5e79ea1fcf75843a9d790aed918bca29128f68b29f069",
+  "deepseek_proof_sha256": "964491b5cf30576069449bd3a3aeaaf43403265692f767a4bdad2fc630f4da54",
+  "deepseek_pure_declarations": [
+    "ext_neon_min_cong1",
+    "ext_neon_min_cong2",
+    "ext_neon_max_cong1",
+    "ext_neon_max_cong2",
+    "core_wrap32",
+    "core_nibble",
+    "qc4_modulo_cast_add",
+    "qc4_byte_unsigned_view"
+  ],
+  "changes": [
+    "Copy reviewed DeepSeek pure congruence/representation declarations and check all global lemmas, no assumptions.",
+    "Bridge ROOT10 actual nibble-extraction results to DeepSeek core_nibble fold vocabulary, with explicit checked assertions; preserve real AND/ghost body closure."
+  ],
+  "removed_strategy_blocks": [
+    {
+      "file": "fp_primitives.h",
+      "sha256": "0abb5ed620ecaf9c3412aba63ce100df278ba348edbf502dd818380aa5a6dcbd"
+    },
+    {
+      "file": "utils.c",
+      "sha256": "8217806f71709a2218316973a94dcba0579b8a54de0f4045f2bc1390d4ce0506"
+    },
+    {
+      "file": "quantized.c",
+      "sha256": "ee5cac0df7f9c5e603051656726acfc03052bd754d08db797f1bb9a7d22d54a0"
+    }
+  ],
+  "ordinary_C_spec_shim_model_driver_unchanged": true,
+  "frozen_sha256": "ed1a4cc15319bcc77e136b1f88ebe82a85686ce8c872cff1ffd6048c16a13b0c",
+  "proof_sha256": "953aaf4f00654e685a8abab98ea418f3167f1b451bf07b27afe7b34db960030e",
+  "complete_kernel": false,
+  "pre_syntax_fix_proof_sha256": "c8aacdb7b7498e7bccb6e31ac58381bb2554c2954af3792ac83f9bf4d8fa1fde",
+  "annotation_syntax_fix": "Move new header lemma block inside existing include guard to avoid duplicate registration; split QC4 two assertions into two code annotation comments. No formula/C/spec/model change."
+}

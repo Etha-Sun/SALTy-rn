@@ -1,0 +1,1 @@
+v07的source-x mask lemma真证但forall大context实例化未闭。按root授权添加同proof.patch内pointwise ghost helper，五条private pre，空body的ensures必须实际检查。NEON4 ghost for4逐点调用，所有private callpre/RTE/loopinvariant/variant/assigns由equivalent+helper两函数全VC诊断覆盖，非项目full。原memory策略保留，具体value hint放harness末尾。普通C/spec/shim/model/driver/checker和solver30s/1GiB/par64不变。任何helperbody/caller依赖未闭均不得当TCB或成功。

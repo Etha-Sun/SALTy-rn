@@ -1,0 +1,294 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "64", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-values/tail-transfer-sequent01/raw.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-values/v14-tail-transfer/attempts/0001/.build/verify01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-values/v14-tail-transfer/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-fct", "equivalent", "-wp-prop", "values_transfer_value", "-wp-print", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-values/tail-transfer-sequent01/out", "-wp-auto-depth", "16", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[wp] rvv.c:7: Warning: Statement specifications not yet supported (skipped).
+[wp] neon.c:15: Warning: Statement specifications not yet supported (skipped).
+
+Goal Instance of 'Pre-condition 'values_transfer_value' in 'proof_values_unary_transfer'' in 'equivalent' at call 'proof_values_unary_transfer' ("neon.c", line 123)
+:
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'values_transfer_value' in 'proof_values_unary_transfer'' in 'equivalent' at call 'proof_values_unary_transfer' ("neon.c", line 124)
+:
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'values_transfer_value' in 'proof_values_unary_transfer'' in 'equivalent' at call 'proof_values_unary_transfer' ("neon.c", line 157)
+:
+Let x = 4 * n.
+Let x_1 = to_uint64(x).
+Let x_2 = x_1 / 4.
+Let a = shift_float32(o_base_0, 0).
+Let x_3 = 4 * x_2.
+Let a_1 = memcpy(mem_0, a, mem_undef_0, a, x_3).
+Let x_4 = x_2 - 3.
+Let a_2 = shift_float32(o_base_0, x_4).
+Let a_3 = memcpy(a_1, a_2, mem_undef_1, a_2, 8).
+Let a_4 = shiftfield_F20_slope(shiftfield_F19_xnn_f32_lrelu_params_scalar(
+                                 global(L_params_4837))).
+Let a_5 = repr_decode32(read_uint32(mem_0, a_4)).
+Let x_5 = to_uint64(2 + to_uint64(x_4)).
+Let a_6 = vacc_0.F16_lane.
+Let m = alloc_0[L_params_4837 <- 4].
+Let a_7 = vacc_lo_0.F17_lane.
+Let a_8 = a_7[1].
+Let a_9 = a_6[1].
+Let a_10 = shift_float32(i_base_0, x_2 - 2).
+Let a_11 = repr_decode32(read_uint32(a_1, a_10)).
+Let a_12 = L_unary_value(a_11, a_5).
+Let a_13 = a_7[0].
+Let a_14 = a_6[0].
+Let a_15 = shift_float32(i_base_0, x_4).
+Let a_16 = repr_decode32(read_uint32(a_1, a_15)).
+Let a_17 = L_unary_value(a_16, a_5).
+Let a_18 = proof_tail_product_0.F16_lane.
+Let a_19 = a_18[3].
+Let a_20 = tmp_5_0.F16_lane.
+Let a_21 = a_20[3].
+Let a_22 = vslope_0.F16_lane.
+Let a_23 = a_22[3].
+Let a_24 = a_6[3].
+Let a_25 = tmp_9_0.F7_lane.
+Let a_26 = a_25[3].
+Let a_27 = shift_float32(i_base_0, x_2).
+Let a_28 = repr_decode32(read_uint32(a_1, a_27)).
+Let a_29 = sign_f32(to_f32(-1.0)).
+Let a_30 = a_18[2].
+Let a_31 = a_20[2].
+Let a_32 = a_22[2].
+Let a_33 = a_6[2].
+Let a_34 = a_25[2].
+Let a_35 = shift_float32(i_base_0, x_2 - 1).
+Let a_36 = repr_decode32(read_uint32(a_1, a_35)).
+Let a_37 = a_18[1].
+Let a_38 = a_20[1].
+Let a_39 = a_22[1].
+Let a_40 = a_25[1].
+Let a_41 = a_18[0].
+Let a_42 = a_20[0].
+Let a_43 = a_22[0].
+Let a_44 = a_25[0].
+Let a_45 = tmp_8_0.F21_lane.
+Let a_46 = tmp_7_0.F21_lane.
+Let a_47 = shift_float32(i_base_0, 0).
+Let x_6 = 12 + x_3.
+Let x_7 = 12 + x.
+Let a_48 = shift_float32(right_0, 0).
+Assume {
+  Type: IsS21(tmp_7_0) /\ IsS21(tmp_8_0) /\ IsS7(tmp_9_0) /\ bytes(mem_0) /\
+      is_uint64(batch_0) /\ is_uint64(k) /\ is_uint64(n) /\
+      is_uint32(a_44) /\ is_uint32(a_40) /\ is_uint32(a_34) /\
+      is_uint32(a_26) /\ bytes(a_1) /\ bytes(a_3).
+  (* Heap *)
+  Type: (region(i_base_0.base) <= 0) /\ (region(o_base_0.base) <= 0) /\
+      (region(right_0.base) <= 0) /\ framed(mem_0) /\ linked(alloc_0) /\
+      sconst(mem_0).
+  (* Pre-condition *)
+  Have: (0 < n) /\ (n <= 4611686018427387900).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a, x).
+  (* Pre-condition *)
+  Have: valid_rw(alloc_0, a_48, x).
+  (* Pre-condition *)
+  Have: separated(a, x, a_48, x).
+  (* Pre-condition *)
+  Have: valid_rd(alloc_0, a_47, x_7) /\ separated(a, x, a_47, x_7) /\
+      separated(a_48, x, a_47, x_7).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_4, 4).
+  (* Call '__FC_assert' *)
+  Have: x_1 != 0.
+  (* Call '__FC_assert' *)
+  Have: a_47 != null.
+  (* Call '__FC_assert' *)
+  Have: a != null.
+  (* Call 'vdupq_n_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) -> P_same_float(a_22[i], a_5))).
+  (* Invariant 'values_neon_current_read' *)
+  Have: valid_rd(m, a_47, x_6).
+  (* Invariant *)
+  Have: ((x_1 % 4) = 0) /\ (x_1 <= x_3).
+  (* Invariant *)
+  Have: valid_rw(m, a, x_3).
+  (* Invariant 'values_neon_whole_sep' *)
+  Have: separated(a, x_3, a_47, x_6).
+  (* Invariant 'values_neon_current_read' *)
+  Have: valid_rd(m, a_15, 24).
+  (* Invariant *)
+  Have: ((batch_0 % 4) = 0) /\ (0 <= batch_0) /\ (batch_0 <= x_3).
+  (* Invariant *)
+  Have: (batch_0 / 4) = 3.
+  (* Invariant *)
+  Have: valid_rw(m, a_2, 12).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> (((4 + i) <= x_2) ->
+      P_same_value(repr_decode32(read_uint32(a_1, shift_float32(o_base_0, i))),
+        L_unary_value(repr_decode32(read_uint32(a_1,
+                                      shift_float32(i_base_0, i))), a_5)))).
+  (* Else *)
+  Have: batch_0 <= 15.
+  (* Assertion *)
+  Have: (batch_0 = 4) \/ (batch_0 = 8) \/ (batch_0 = 12).
+  (* Call 'proof_f32_tail_bits' *)
+  Have: (((batch_0 % 8) / 4) = 1) /\ bit_test(batch_0, 2) /\
+      bit_test(batch_0, 3).
+  (* Then *)
+  Have: batch_0 != 0.
+  (* Call 'vld1q_f32' *)
+  Have: valid_rd(m, a_15, 16) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 3) ->
+       P_same_float(a_20[i],
+         repr_decode32(read_uint32(a_1, shift_float32(i_base_0, i + x_2 - 3))))))).
+  (* Call 'vmulq_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_same_value(a_18[i], mul_f32(a_20[i], a_22[i])))).
+  (* Call 'vmovq_n_s32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) -> (a_46[i] = 0))).
+  (* Call 'vreinterpretq_s32_f32' *)
+  Have: forall i : Z. let a_49 = a_20[i] in ((0 <= i) -> ((i <= 3) ->
+      ((!is_NaN_f32(a_49)) -> ((a_45[i] < 0) <-> (sign_f32(a_49) = a_29))))).
+  (* Call 'vcltq_s32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      (a_25[i] = (if (a_45[i] < a_46[i]) then 4294967295 else 0)))).
+  (* Call 'vbslq_f32' *)
+  Have: (forall i : Z. let a_49 = a_25[i] in let a_50 = a_6[i] in
+         ((0 <= i) -> ((i <= 3) -> (((a_49 = 0) \/ (a_49 = 4294967295)) ->
+         (if (a_49 = 0) then (is_NaN_f32(a_50) <-> is_NaN_f32(a_20[i]))
+          else (is_NaN_f32(a_50) <-> is_NaN_f32(a_18[i]))))))) /\
+      (forall i : Z. let a_49 = a_25[i] in ((0 <= i) -> ((i <= 3) ->
+       (((a_49 = 0) \/ (a_49 = 4294967295)) ->
+       P_same_float(a_6[i], if (a_49 = 0) then a_20[i] else a_18[i]))))) /\
+      (forall i : Z. let a_49 = a_25[i] in let a_50 = a_20[i] in
+       let a_51 = a_18[i] in let a_52 = sign_f32(a_6[i]) in ((0 <= i) ->
+       ((i <= 3) ->
+       ((!(if (a_49 = 0) then is_NaN_f32(a_50) else is_NaN_f32(a_51))) ->
+       (((a_49 = 0) \/ (a_49 = 4294967295)) ->
+       (if (a_49 = 0) then (a_52 = sign_f32(a_50))
+        else (a_52 = sign_f32(a_51)))))))) /\
+      (forall i : Z. let a_49 = a_18[i] in let a_50 = a_20[i] in
+       let a_51 = a_25[i] in ((0 <= i) -> ((i <= 3) ->
+       ((!is_NaN_f32(a_49)) -> ((!is_NaN_f32(a_50)) ->
+       P_same_float(a_6[i],
+         repr_decode32(lor(land(repr_encode32(a_49), a_51),
+           land(repr_encode32(a_50), to_uint32(lnot(a_51))))))))))).
+  (* Assertion 'values_tail_operands' *)
+  Have: forall i : Z. let a_49 = a_20[i] in let a_50 = a_22[i] in
+      ((0 <= i) -> ((i <= 3) ->
+      (P_same_value(a_18[i], mul_f32(a_49, a_50)) /\
+       P_same_float(a_50, a_5) /\
+       P_same_float(a_49,
+         repr_decode32(read_uint32(a_1, shift_float32(i_base_0, i + x_2 - 3))))))).
+  (* Assertion 'values_tail_source_sign' *)
+  Have: forall i : Z. let a_49 = a_20[i] in ((0 <= i) -> ((i <= 3) ->
+      ((!is_NaN_f32(a_49)) ->
+      ((sign_f32(a_49) = a_29) <-> (a_25[i] != 0))))).
+  (* Assertion 'values_tail_select' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_same_float(a_6[i], if (a_25[i] = 0) then a_20[i] else a_18[i]))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_15, 4).
+  (* Call 'proof_values_unary_point' *)
+  Have: P_same_value(a_41, mul_f32(a_42, a_43)) /\
+      P_same_float(a_14, if (a_44 = 0) then a_42 else a_41) /\
+      P_same_float(a_43, a_5) /\ P_same_float(a_42, a_16) /\
+      P_same_value(a_14, a_17) /\
+      (((!is_NaN_f32(a_42)) -> ((sign_f32(a_42) = a_29) <-> (a_44 != 0)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_10, 4).
+  (* Call 'proof_values_unary_point' *)
+  Have: P_same_value(a_37, mul_f32(a_38, a_39)) /\
+      P_same_float(a_9, if (a_40 = 0) then a_38 else a_37) /\
+      P_same_float(a_39, a_5) /\ P_same_float(a_38, a_11) /\
+      P_same_value(a_9, a_12) /\
+      (((!is_NaN_f32(a_38)) -> ((sign_f32(a_38) = a_29) <-> (a_40 != 0)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_35, 4).
+  (* Call 'proof_values_unary_point' *)
+  Have: P_same_value(a_30, mul_f32(a_31, a_32)) /\
+      P_same_float(a_33, if (a_34 = 0) then a_31 else a_30) /\
+      P_same_float(a_32, a_5) /\ P_same_float(a_31, a_36) /\
+      P_same_value(a_33, L_unary_value(a_36, a_5)) /\
+      (((!is_NaN_f32(a_31)) -> ((sign_f32(a_31) = a_29) <-> (a_34 != 0)))).
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rd(m, a_27, 4).
+  (* Call 'proof_values_unary_point' *)
+  Have: P_same_value(a_19, mul_f32(a_21, a_23)) /\
+      P_same_float(a_24, if (a_26 = 0) then a_21 else a_19) /\
+      P_same_float(a_23, a_5) /\ P_same_float(a_21, a_28) /\
+      P_same_value(a_24, L_unary_value(a_28, a_5)) /\
+      (((!is_NaN_f32(a_21)) -> ((sign_f32(a_21) = a_29) <-> (a_26 != 0)))).
+  (* Assertion 'values_tail_vector' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 3) ->
+      P_same_value(a_6[i],
+        L_unary_value(repr_decode32(read_uint32(a_1,
+                                      shift_float32(i_base_0, i + x_2 - 3))),
+          a_5)))).
+  (* Call 'vget_low_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float(a_7[i], a_6[i]))).
+  (* Call 'proof_values_unary_transfer' *)
+  Have: P_same_float(a_13, a_14) /\ P_same_value(a_13, a_17).
+  (* Call 'proof_values_unary_transfer' *)
+  Have: P_same_float(a_8, a_9) /\ P_same_value(a_8, a_12).
+  (* Assertion 'values_neon2' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_value(a_7[i],
+        L_unary_value(repr_decode32(read_uint32(a_1,
+                                      shift_float32(i_base_0, i + x_2 - 3))),
+          a_5)))).
+  (* Call 'vst1_f32' *)
+  Have: valid_rw(m, a_2, 8) /\
+      (forall a_49 : addr. (valid_rd(m, a_49, 4) ->
+       (separated(a_49, 4, a_2, 8) ->
+       P_same_float(repr_decode32(read_uint32(a_3, a_49)),
+         repr_decode32(read_uint32(a_1, a_49)))))) /\
+      (forall i : Z. ((0 <= i) -> ((i <= 1) ->
+       P_same_float(repr_decode32(read_uint32(a_3,
+                                    shift_float32(o_base_0, i + x_2 - 3))),
+         a_7[i])))).
+  (* Invariant *)
+  Have: 4 <= x_1.
+  (* Invariant *)
+  Have: (0 <= k) /\ (k < x_2).
+  (* Invariant *)
+  Have: forall i : Z. ((0 <= i) -> ((i < k) ->
+      P_same_value(repr_decode32(read_uint32(a_3, shift_float32(o_base_0, i))),
+        L_unary_value(repr_decode32(read_uint32(a_3,
+                                      shift_float32(i_base_0, i))), a_5)))).
+  (* Else *)
+  Have: x_5 <= k.
+  (* Call 'vget_high_f32' *)
+  Have: forall i : Z. ((0 <= i) -> ((i <= 1) ->
+      P_same_float((vacc_lo_1.F17_lane)[i], a_6[2 + i]))).
+  (* Assertion 'values_tail_extent_cut' *)
+  Have: x_2 = (1 + x_5).
+  (* Assertion 'values_neon_tailprefix' *)
+  Have: forall i : Z. ((0 <= i) -> (((2 + i) <= x_2) ->
+      P_same_value(repr_decode32(read_uint32(a_3, shift_float32(o_base_0, i))),
+        L_unary_value(repr_decode32(read_uint32(a_3,
+                                      shift_float32(i_base_0, i))), a_5)))).
+  (* Then *)
+  Have: (batch_0 = 4) \/ (batch_0 = 12).
+  (* Then *)
+  Have: (batch_0 = 8) \/ (batch_0 = 12).
+}
+Prove: P_same_value(a_33,
+         L_unary_value(repr_decode32(read_uint32(a_3, a_35)), a_5)).
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'values_transfer_value' in 'proof_values_unary_transfer'' in 'equivalent' at call 'proof_values_unary_transfer' ("neon.c", line 159)
+:
+Prove: true.
+
+------------------------------------------------------------

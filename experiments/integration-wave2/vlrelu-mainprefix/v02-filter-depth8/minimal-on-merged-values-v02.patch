@@ -1,0 +1,21 @@
+--- merged-values-v02/neon.c
++++ mainprefix-v02/neon.c
+@@ -31,7 +31,7 @@
+       loop invariant input==i_base+(total-batch/4);
+       loop invariant output==o_base+(total-batch/4);
+       loop invariant \valid(output+(0..batch/4-1));
+-      loop invariant \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
++      loop invariant mp4_main_prefix: \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+       loop assigns batch,input,output,o_base[0..total-1]; loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     //@ ghost const float* proof_input4=input;
+--- merged-values-v02/harness.c
++++ mainprefix-v02/harness.c
+@@ -99,3 +99,7 @@
+     \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+     \wp::proof NExitPrefixPoint: values_neon1_prefix;
+     \wp::proof NExitFinal: values_neon_all; */
++
++/*@ \wp::strategy MP4Filter:
++    \tactic("Wp.filter",\children(ValuesSMT)),ValuesSMT;
++    \wp::proof MP4Filter: mp4_main_prefix; */

@@ -1,0 +1,118 @@
+{
+  "exit": 0,
+  "seconds": 33.73995381296845,
+  "source_sha256": "0666b9779410f1a9a0263920af2aa4b6160a17fcf07b3fdba555ba7538ab9d95",
+  "report_sha256": "65e2019240296dc936a71567dc5dbdf08e77dcd8194d9a2681601b33dff970f6",
+  "raw_passed": 7,
+  "raw_total": 10,
+  "pending": [
+    {
+      "goal": "typed_raw_fma_false_control_ensures",
+      "property": "false_control_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/model-probe-v1/probe.c",
+      "line": 11,
+      "function": "false_control",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.000751,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_pointer_step_ensures",
+      "property": "pointer_step_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/model-probe-v1/probe.c",
+      "line": 3,
+      "function": "pointer_step",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00251,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    },
+    {
+      "goal": "typed_raw_fma_pointer_step_one_ensures",
+      "property": "pointer_step_one_ensures",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/f32-vcmul/model-probe-v1/probe.c",
+      "line": 5,
+      "function": "pointer_step_one",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00155,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "timeout": 1
+    }
+  ],
+  "scope": "Toy model probe only, unchanged qualified vcmul Typed+raw+float model; not kernel equivalence or impossibility proof.",
+  "outcomes": {
+    "direct_step": {
+      "passed": 2,
+      "total": 2,
+      "ensures": [
+        true
+      ]
+    },
+    "pointer_roundtrip": {
+      "passed": 2,
+      "total": 2,
+      "ensures": [
+        true
+      ]
+    },
+    "pointer_step_one": {
+      "passed": 1,
+      "total": 2,
+      "ensures": [
+        false
+      ]
+    },
+    "pointer_step": {
+      "passed": 1,
+      "total": 2,
+      "ensures": [
+        false
+      ]
+    },
+    "false_control": {
+      "passed": 1,
+      "total": 2,
+      "ensures": [
+        false
+      ]
+    }
+  },
+  "interpretation": "Direct pointer arithmetic and ptr-int-ptr roundtrip prove; ptr-int + sizeof(float) fails even with one-element constant offset and valid allocation. This narrows the missing proof to minimal integer/pointer addition bridge, but timeout is not an impossibility theorem."
+}

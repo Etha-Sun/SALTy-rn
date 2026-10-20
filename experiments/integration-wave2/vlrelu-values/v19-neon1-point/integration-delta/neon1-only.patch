@@ -1,0 +1,16 @@
+--- a/neon.c
++++ b/neon.c
+@@ -182,9 +182,13 @@
+         /@ assert \valid_read(o_base+k); @/
+         /@ assert \separated(o_base+k,o_base+((total-1)..(total-1)+(1)-1)); @/
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary1)); @/
++      /@ assert values_neon1_old_point: same_value(\at(o_base[\at(k,Here)],Unary1),
++          unary_value(\at(i_base[\at(k,Here)],Unary1),proof_slope_entry)); @/
+       } else {
+         /@ assert 0<=k-(total-1)<(1); @/
+         /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-1)]); @/
++      /@ assert values_neon1_index: k==total-1; @/
++      proof_values_unary_transfer(o_base[k],vacc_lo.lane[0],i_base[k],proof_slope_entry);
+       }
+       /@ assert values_neon1_lane: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }

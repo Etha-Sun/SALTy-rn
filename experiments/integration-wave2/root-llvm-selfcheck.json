@@ -1,0 +1,29 @@
+{
+  "finding": "llvm-diff-14 rejects even identical self input for these functions; retain its failure. Exact byte equality is reported independently, not converted into a WP success.",
+  "records": [
+    {
+      "kernel": "f32-argmaxpool",
+      "command": [
+        "llvm-diff-14",
+        "experiments/integration-wave2/.build/llvm-audit/f32-argmaxpool/plain.ll",
+        "experiments/integration-wave2/.build/llvm-audit/f32-argmaxpool/plain.ll"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "in function test_neon:\n  in block %207 / %207:\n    >   %208 = phi float* [ %204, %201 ], [ %206, %205 ]\n    >   store float* %208, float** %31, align 8\n    <   %208 = phi float* [ %204, %201 ], [ %206, %205 ]\n    <   store float* %208, float** %31, align 8\n\nin function test_rvv:\n  in block %122 / %122:\n    >   %123 = phi float* [ %119, %116 ], [ %121, %120 ]\n    >   store float* %123, float** %29, align 8\n    <   %123 = phi float* [ %119, %116 ], [ %121, %120 ]\n    <   store float* %123, float** %29, align 8\n",
+      "sha256": "c24fbc4c6ae3e5666ccc26fb439a3ea0e0206d48a055ddc15b23664dbbc04fab"
+    },
+    {
+      "kernel": "f32-gemm-minmax",
+      "command": [
+        "llvm-diff-14",
+        "experiments/integration-wave2/.build/llvm-audit/f32-gemm-minmax/plain.ll",
+        "experiments/integration-wave2/.build/llvm-audit/f32-gemm-minmax/plain.ll"
+      ],
+      "exit": 1,
+      "stdout": "",
+      "stderr": "in function min_number:\n  in block %51 / %51:\n    >   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    >   store float %52, float* %3, align 4\n    <   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    <   store float %52, float* %3, align 4\n  in block %39 / %39:\n    >   %40 = phi i1 [ true, %31 ], [ %38, %35 ]\n    >   %41 = zext i1 %40 to i64\n    >   %42 = select i1 %40, float -0.000000e+00, float 0.000000e+00\n    >   store float %42, float* %3, align 4\n    <   %40 = phi i1 [ true, %31 ], [ %38, %35 ]\n    <   %41 = zext i1 %40 to i64\n    <   %42 = select i1 %40, float -0.000000e+00, float 0.000000e+00\n    <   store float %42, float* %3, align 4\n\nin function max_number:\n  in block %51 / %51:\n    >   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    >   store float %52, float* %3, align 4\n    <   %52 = phi float [ %48, %47 ], [ %50, %49 ]\n    <   store float %52, float* %3, align 4\n",
+      "sha256": "d14ddce53ed878400d20e4986bd16962cb55ecf16207f216d8c378bf29b752b0"
+    }
+  ]
+}

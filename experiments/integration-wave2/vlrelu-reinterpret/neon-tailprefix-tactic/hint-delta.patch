@@ -1,0 +1,29 @@
+--- a/harness.c
++++ b/harness.c
+@@ -38,3 +38,26 @@
+ 
+ /*@ \wp::proof ValuesSMT: values_tail_div_cast,values_one_extent_cut; */
+ /*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */
++
++/*@ \wp::strategy NTailPrefixSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy NTailPrefixInstance:
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(M,shift_float32(P,K))),E))),
++      \select(Fact),\param("P1",J),\children(NTailPrefixSMT)),
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(N,shift_float32(P,K))),E))),
++      \incontext(N==M),\select(Fact),\param("P1",J),\children(NTailPrefixSMT)),
++    \tactic("Wp.instance",
++      \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,J))),T)),
++      \when(Fact:(\forall integer K; 0<=K && H ==>
++        P_same_value(repr_decode32(read_uint32(N,shift_float32(P,K))),E))),
++      \incontext(M==N),\select(Fact),\param("P1",J),\children(NTailPrefixSMT)),NTailPrefixSMT;
++    \wp::strategy NTailPrefixBranch:
++    \tactic("Wp.cut",\incontext(bit_test(B,3)),
++      \param("case","CASES"),\param("clause",B==8 || B==12),
++      \children(NTailPrefixInstance)),NTailPrefixInstance;
++    \wp::proof NTailPrefixBranch: values_neon_tailprefix; */

@@ -1,0 +1,98 @@
+{
+  "scope": "Printed only, not a proof",
+  "conclusion": "C ghost argument recomputes size_t subtraction/addition with to_uint64 projections; available loaded operands use mathematical offset",
+  "goals": [
+    {
+      "lane": 0,
+      "lets": [
+        "Let m = alloc_0[L_params_4818 <- 4].",
+        "Let x = batch_0 / 4.",
+        "Let x_1 = 4 * n.",
+        "Let x_2 = to_uint64(x_1).",
+        "Let x_3 = x_2 / 4.",
+        "Let a = shift_float32(i_base_0, to_uint64(x_3 - to_uint64(x))).",
+        "Let a_1 = vacc0123_0.F16_lane.",
+        "Let a_2 = tmp_4_0.F7_lane.",
+        "Let a_3 = vx0123_0.F16_lane.",
+        "Let a_4 = proof_product4_0.F16_lane.",
+        "Let a_5 = sign_f32(to_f32(-1.0)).",
+        "Let a_6 = vslope_0.F16_lane.",
+        "Let a_7 = shiftfield_F20_slope(shiftfield_F19_xnn_f32_lrelu_params_scalar(",
+        "Let a_8 = repr_decode32(read_uint32(mem_0, a_7)).",
+        "Let a_9 = shift_float32(o_base_0, 0).",
+        "Let x_4 = 4 * x_3."
+      ],
+      "operands": "  (* Assertion 'values_neon4_operands' *)\n  Have: forall i : Z. let a_16 = a_3[i] in let a_17 = a_6[i] in ((0 <= i) ->\n      ((i <= 3) ->\n      (P_same_value(a_4[i], mul_f32(a_16, a_17)) /\\\n       P_same_float(a_17, a_8) /\\\n       P_same_float(a_16,\n         repr_decode32(read_uint32(a_10,\n                         shift_float32(i_base_0, i + x_3 - x))))))).\n",
+      "goal": "Prove: P_same_float(a_3[0], repr_decode32(read_uint32(a_10, a)))."
+    },
+    {
+      "lane": 1,
+      "lets": [
+        "Let m = alloc_0[L_params_4818 <- 4].",
+        "Let x = batch_0 / 4.",
+        "Let x_1 = 4 * n.",
+        "Let x_2 = to_uint64(x_1).",
+        "Let x_3 = x_2 / 4.",
+        "Let x_4 = to_uint64(x_3 - to_uint64(x)).",
+        "Let a = shift_float32(i_base_0, to_uint64(1 + x_4)).",
+        "Let a_1 = proof_product4_0.F16_lane.",
+        "Let a_2 = a_1[0].",
+        "Let a_3 = vx0123_0.F16_lane.",
+        "Let a_4 = a_3[0].",
+        "Let a_5 = vslope_0.F16_lane.",
+        "Let a_6 = a_5[0].",
+        "Let a_7 = vacc0123_0.F16_lane.",
+        "Let a_8 = a_7[0].",
+        "Let a_9 = tmp_4_0.F7_lane."
+      ],
+      "operands": "  (* Assertion 'values_neon4_operands' *)\n  Have: forall i : Z. let a_23 = a_3[i] in let a_24 = a_5[i] in ((0 <= i) ->\n      ((i <= 3) ->\n      (P_same_value(a_1[i], mul_f32(a_23, a_24)) /\\\n       P_same_float(a_24, a_12) /\\\n       P_same_float(a_23,\n         repr_decode32(read_uint32(a_14,\n                         shift_float32(i_base_0, i + x_3 - x))))))).\n",
+      "goal": "Prove: P_same_float(a_3[1], repr_decode32(read_uint32(a_14, a)))."
+    },
+    {
+      "lane": 2,
+      "lets": [
+        "Let m = alloc_0[L_params_4818 <- 4].",
+        "Let x = batch_0 / 4.",
+        "Let x_1 = 4 * n.",
+        "Let x_2 = to_uint64(x_1).",
+        "Let x_3 = x_2 / 4.",
+        "Let x_4 = to_uint64(x_3 - to_uint64(x)).",
+        "Let a = shift_float32(i_base_0, to_uint64(2 + x_4)).",
+        "Let a_1 = proof_product4_0.F16_lane.",
+        "Let a_2 = a_1[1].",
+        "Let a_3 = vx0123_0.F16_lane.",
+        "Let a_4 = a_3[1].",
+        "Let a_5 = vslope_0.F16_lane.",
+        "Let a_6 = a_5[1].",
+        "Let a_7 = vacc0123_0.F16_lane.",
+        "Let a_8 = a_7[1].",
+        "Let a_9 = tmp_4_0.F7_lane."
+      ],
+      "operands": "  (* Assertion 'values_neon4_operands' *)\n  Have: forall i : Z. let a_30 = a_3[i] in let a_31 = a_5[i] in ((0 <= i) ->\n      ((i <= 3) ->\n      (P_same_value(a_1[i], mul_f32(a_30, a_31)) /\\\n       P_same_float(a_31, a_12) /\\\n       P_same_float(a_30,\n         repr_decode32(read_uint32(a_14,\n                         shift_float32(i_base_0, i + x_3 - x))))))).\n",
+      "goal": "Prove: P_same_float(a_3[2], repr_decode32(read_uint32(a_14, a)))."
+    },
+    {
+      "lane": 3,
+      "lets": [
+        "Let m = alloc_0[L_params_4818 <- 4].",
+        "Let x = batch_0 / 4.",
+        "Let x_1 = 4 * n.",
+        "Let x_2 = to_uint64(x_1).",
+        "Let x_3 = x_2 / 4.",
+        "Let x_4 = to_uint64(x_3 - to_uint64(x)).",
+        "Let a = shift_float32(i_base_0, to_uint64(3 + x_4)).",
+        "Let a_1 = proof_product4_0.F16_lane.",
+        "Let a_2 = a_1[2].",
+        "Let a_3 = vx0123_0.F16_lane.",
+        "Let a_4 = a_3[2].",
+        "Let a_5 = vslope_0.F16_lane.",
+        "Let a_6 = a_5[2].",
+        "Let a_7 = vacc0123_0.F16_lane.",
+        "Let a_8 = a_7[2].",
+        "Let a_9 = tmp_4_0.F7_lane."
+      ],
+      "operands": "  (* Assertion 'values_neon4_operands' *)\n  Have: forall i : Z. let a_37 = a_3[i] in let a_38 = a_5[i] in ((0 <= i) ->\n      ((i <= 3) ->\n      (P_same_value(a_1[i], mul_f32(a_37, a_38)) /\\\n       P_same_float(a_38, a_12) /\\\n       P_same_float(a_37,\n         repr_decode32(read_uint32(a_14,\n                         shift_float32(i_base_0, i + x_3 - x))))))).\n",
+      "goal": "Prove: P_same_float(a_3[3], repr_decode32(read_uint32(a_14, a)))."
+    }
+  ]
+}

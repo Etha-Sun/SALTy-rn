@@ -1,0 +1,294 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/unit.c']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '30', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/unit.c', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf', '-wp-no-why3-detect']
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/logs/verify01.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v02/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfadd_vf_f32m8
+[rte:annot] annotating function __riscv_vfcvt_f_x_v_f32m8
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle8_v_i8m2
+[rte:annot] annotating function __riscv_vmax_vx_i8m2
+[rte:annot] annotating function __riscv_vmin_vx_i8m2
+[rte:annot] annotating function __riscv_vnclip_wx_i16m4
+[rte:annot] annotating function __riscv_vnclip_wx_i8m2
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_i32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vse8_v_i8m2
+[rte:annot] annotating function __riscv_vsetvl_e8m2
+[rte:annot] annotating function __riscv_vsext_vf2_i16m4
+[rte:annot] annotating function __riscv_vssub_vx_i32m8
+[rte:annot] annotating function __riscv_vsub_vx_i16m4
+[rte:annot] annotating function __riscv_vwmul_vv_i32m8
+[rte:annot] annotating function asr64
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function round_shift
+[rte:annot] annotating function sat16
+[rte:annot] annotating function sat32
+[rte:annot] annotating function sat8
+[rte:annot] annotating function vaddq_f32
+[rte:annot] annotating function vcombine_s16
+[rte:annot] annotating function vcvtq_f32_s32
+[rte:annot] annotating function vdup_n_s8
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vdupq_n_s32
+[rte:annot] annotating function vext_s8
+[rte:annot] annotating function vget_high_s16
+[rte:annot] annotating function vget_low_s16
+[rte:annot] annotating function vld1_s8
+[rte:annot] annotating function vmax_s8
+[rte:annot] annotating function vmin_s8
+[rte:annot] annotating function vmull_s16
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vqmovn_high_s32
+[rte:annot] annotating function vqmovn_s16
+[rte:annot] annotating function vqmovn_s32
+[rte:annot] annotating function vqsubq_s32
+[rte:annot] annotating function vreinterpret_u16_s8
+[rte:annot] annotating function vreinterpret_u32_s8
+[rte:annot] annotating function vreinterpretq_s32_f32
+[rte:annot] annotating function vst1_lane_s8
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_s8
+[rte:annot] annotating function vsubl_s8
+[rte:annot] annotating function wrap16
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] integer-qs8-vmul-minmax-fp32.c:157: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer-qs8-vmul-minmax-fp32.c:157: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-qs8-vmul-minmax-fp32.c:170: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] integer-qs8-vmul-minmax-fp32.c:170: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] integer-qs8-vmul-minmax-fp32.c:203: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint16x4_t_7*)
+     (target: sint8*)
+[wp] integer-qs8-vmul-minmax-fp32.c:204: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_int32x4_t_10*)
+     (target: sint8*)
+[wp] integer-qs8-vmul-minmax-fp32.c:204: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_float32x4_t_14*)
+     (target: sint8*)
+[wp] integer-qs8-vmul-minmax-fp32.c:205: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_uint32x2_t_11*)
+     (target: sint8*)
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] integer-qs8-vmul-minmax-fp32.c:450: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vint32m8_t_19*)
+     (target: sint8*)
+[wp] integer-qs8-vmul-minmax-fp32.c:450: Warning: 
+  Cast with incompatible pointers types (source: __anonstruct_vfloat32m8_t_21*)
+     (target: sint8*)
+[wp:union] neon.c:51: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:51: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:51: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:51: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:51: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:51: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:25: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:25: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:25: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:25: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:25: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:25: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:19: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:19: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:18: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:18: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:17: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:17: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:16: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:16: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:15: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:15: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:14: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] rvv.c:14: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:45: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:45: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:44: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:44: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:43: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:43: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:41: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:41: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:40: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:40: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:39: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp:union] neon.c:39: Warning: 
+  Accessing union fields with Typed model might be unsound.
+  Please refer to WP manual.
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] 784 goals scheduled
+[wp] [Unknown] typed_fma_asr64_assert_rte_division_by_zero_2 (Qed 4ms) (CVC5)
+[wp] [Unknown] typed_fma_asr64_assert_rte_signed_overflow (Qed 5ms) (CVC5)
+[wp] [Unknown] typed_fma_vreinterpret_u16_s8_call_memcpy_requires_valid_dest (Qed 6ms) (CVC5) (Stronger)
+[wp] [Unknown] typed_fma_vreinterpret_u16_s8_call_memcpy_requires_separation (Qed 6ms) (CVC5) (Stronger)
+[wp] [Unknown] typed_fma_vreinterpretq_s32_f32_call_memcpy_requires_valid_dest (Qed 4ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma_round_shift_assert_rte_signed_overflow (Qed 6ms) (CVC5)
+[wp] [Unknown] typed_fma_vreinterpret_u32_s8_call_memcpy_requires_valid_dest (Qed 5ms) (CVC5) (Stronger)
+[wp] [Unknown] typed_fma_vreinterpret_u32_s8_call_memcpy_requires_separation (Qed 5ms) (CVC5) (Stronger)
+[wp] [Timeout] typed_fma_asr64_assert_rte_signed_overflow_3 (Qed 5ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_terminates (Qed 3ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assert_rte_mem_access (Qed 4ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assert_rte_index_bound_2 (Qed 3ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u16_assert_rte_index_bound (Qed 3ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_terminates (Qed 3ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_index_bound_2 (Qed 2ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_index_bound (Qed 3ms) (Z3)
+[wp] [Timeout] typed_fma_vst1_lane_u32_assert_rte_mem_access (Qed 4ms) (Z3)
+[wp] [Timeout] typed_fma_vaddq_f32_ensures (Qed 5ms) (Z3)
+[wp] [Timeout] typed_fma_vmulq_f32_ensures (Qed 6ms) (Z3)
+[wp] [Timeout] typed_fma_vreinterpretq_s32_f32_call_memcpy_requires_separation (Qed 3ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vreinterpretq_s32_f32_call_memcpy_requires_valid_src (Qed 3ms) (Z3) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_valid_dest (Qed 3ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Unknown] typed_fma___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_separation (Qed 2ms) (CVC5) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_vcvtq_f32_s32_loop_invariant_2_preserved (Qed 8ms) (CVC5)
+[wp] [Timeout] typed_fma_riscv_vsub_vx_i16m4_loop_invariant_2_preserved (Qed 28ms) (CVC5)
+[wp] [Timeout] typed_fma___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_valid_src (Qed 3ms) (Z3) (Stronger, 2 warnings)
+[wp] [Timeout] typed_fma_riscv_vfadd_vf_f32m8_ensures (Qed 6ms) (Z3)
+[wp] [Timeout] typed_fma_riscv_vfmul_vf_f32m8_ensures (Qed 7ms) (Z3)
+[wp] [Timeout] typed_fma_riscv_vfcvt_f_x_v_f32m8_loop_invariant_2_preserved (Qed 11ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_ensures_equal (Qed 5.0s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access (Qed 4s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access_10 (Qed 3.4s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access_9 (Qed 3.5s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_6_preserved (Qed 698ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access_13 (Qed 3.9s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access_12 (Qed 3.5s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access_11 (Qed 3.7s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assert_rte_mem_access_14 (Qed 3.9s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_11_established (Qed 4s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_invariant_11_preserved (Qed 5.2s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part19 (Qed 596ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_2_part17 (Qed 812ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_loop_assigns_3_part13 (Qed 4.3s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part30 (Qed 712ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part28 (Qed 723ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part38 (Qed 941ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part39 (Qed 980ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part42 (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part43 (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_normal_part46 (Qed 2.4s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part27 (Qed 577ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part29 (Qed 575ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part55 (Qed 877ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part53 (Qed 825ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part67 (Qed 1.6s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part64 (Qed 931ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part63 (Qed 905ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part68 (Qed 1.7s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part71 (Qed 2.3s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_assigns_exit_part84 (Qed 4.6s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_call_vst1_s8_requires (Qed 719ms) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_call_vst1_lane_s8_requires (Qed 2.2s) (CVC5)
+[wp] [Timeout] typed_fma_equivalent_call___riscv_vse8_v_i8m2_riscv_vse8_v_i8m2_requires_2 (Qed 4.5s) (CVC5)
+[wp] Proved goals:  787 / 850
+  Terminating:    32
+  Unreachable:    34
+  Qed:           540 (2ms-162ms-5.2s)
+  CVC5 1.2.1:     95 (4ms-51ms-361ms)
+  Z3 4.12.5:      86 (8ms-26ms-645ms)
+  Timeout:        53
+  Unknown:        10
+[wp:pedantic-assigns] integer-qs8-vmul-minmax-fp32.c:157: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u16'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer-qs8-vmul-minmax-fp32.c:170: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer-qs8-vmul-minmax-fp32.c:203: Warning: 
+  No 'assigns' specification for function 'vreinterpret_u16_s8'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer-qs8-vmul-minmax-fp32.c:204: Warning: 
+  No 'assigns' specification for function 'vreinterpretq_s32_f32'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer-qs8-vmul-minmax-fp32.c:205: Warning: 
+  No 'assigns' specification for function 'vreinterpret_u32_s8'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] integer-qs8-vmul-minmax-fp32.c:450: Warning: 
+  No 'assigns' specification for function '__riscv_vreinterpret_v_f32m8_i32m8'.
+  Callers assumptions might be imprecise.

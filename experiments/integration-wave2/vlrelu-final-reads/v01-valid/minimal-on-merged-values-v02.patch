@@ -1,0 +1,19 @@
+--- a/harness.c
++++ b/harness.c
+@@ -99,3 +99,16 @@
+     \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+     \wp::proof NExitPrefixPoint: values_neon1_prefix;
+     \wp::proof NExitFinal: values_neon_all; */
++
++/*@ \wp::strategy FinalReadAddress:
++    \tactic("Wp.unfold",\ingoal(shift_float32(P,I)),\children(FinalReadAddress)),
++    \tactic("Wp.unfold",\incontext(shift_float32(P,I)),\children(FinalReadAddress)),VmemSMT;
++    \wp::strategy FinalReadRanges:
++    \tactic("Wp.valid",\ingoal(valid_rd(M,P,N)),\children(FinalReadRanges)),
++    \tactic("Wp.valid",\ingoal(valid_rw(M,P,N)),\children(FinalReadRanges)),
++    \tactic("Wp.valid",\incontext(valid_rd(M,P,N)),\children(FinalReadRanges)),
++    \tactic("Wp.valid",\incontext(valid_rw(M,P,N)),\children(FinalReadRanges)),
++    \tactic("Wp.valid",\ingoal(included(P,N,Q,K)),\children(FinalReadRanges)),FinalReadAddress;
++    \wp::strategy FinalReadFilter: \tactic("Wp.filter",\children(FinalReadRanges));
++    \wp::proof FinalReadFilter: vmem_final_reads;
++*/

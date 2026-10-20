@@ -1,0 +1,114 @@
+{
+  "name": "f32-argmaxpool",
+  "files": {
+    "neon.c": {
+      "path": "experiments/integration-wave2/conv-pool/f32-argmaxpool/inputs/neon.c",
+      "sha256": "213e054a00a35375a98ca4c8bf735b9b559edfb9da7f26452fda6a4c5abfb7e1"
+    },
+    "rvv.c": {
+      "path": "experiments/integration-wave2/conv-pool/f32-argmaxpool/inputs/rvv.c",
+      "sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315"
+    },
+    "spec.h": {
+      "path": "experiments/integration-wave2/conv-pool/f32-argmaxpool/inputs/spec.h",
+      "sha256": "9c1708ef877f763a32327e2bd252219f99019f47ff18f6cdc8e5aabb53bd3e23"
+    },
+    "harness.c": {
+      "path": "experiments/integration-wave2/conv-pool/f32-argmaxpool/inputs/harness.c",
+      "sha256": "4abccad40aafa4ce75485f368b891209b3b05aee005f457cb4bb2c69859a29e8"
+    },
+    "native_types.h": {
+      "path": "experiments/shared-extension/complex/shared/native_types.h",
+      "sha256": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1"
+    },
+    "fp_primitives.h": {
+      "path": "experiments/shared-extension/complex/shared/fp_primitives.h",
+      "sha256": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268"
+    },
+    "complex_fp.driver": {
+      "path": "experiments/shared-extension/complex/shared/complex_fp.driver",
+      "sha256": "4ef75419de48b012f6aa0c9305ea06b79cf362167868734dd6796337e3f04bfa"
+    },
+    "fp_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory.c",
+      "sha256": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b"
+    },
+    "integer_memory.c": {
+      "path": "experiments/shared-extension/complex/shared/integer_memory.c",
+      "sha256": "739525e9fbef533fffd62a28c109ee7fc6c9c303836f52c859c39b920b7cee62"
+    },
+    "quantized.c": {
+      "path": "experiments/shared-extension/complex/shared/quantized.c",
+      "sha256": "91e3f3ff9c1e06f89f94a272977a9f17f89db31170499c4ed9072aa031b19aed"
+    },
+    "fp_masks.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks.c",
+      "sha256": "d4a5edf743bac30a80e468df6cf849ce48a98e3fae20bfce72714a8803555923"
+    },
+    "fp_memory_m8.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_memory_m8.c",
+      "sha256": "78bab19bfb060f30d7472c79fa803fbd591fb810efe1312a7d37273836a0d6ae"
+    },
+    "fp_masks_m8.c": {
+      "path": "experiments/shared-extension/complex/shared/fp_masks_m8.c",
+      "sha256": "b31de33c714437e7508f8903e77ca12e2e6efb0381b677fb7c01aeaf9be8f406"
+    },
+    "unit.c": {
+      "path": "experiments/shared-extension/complex/cases/f32-argmaxpool/unit.c",
+      "sha256": "993e7a88e62af1fab62f1975c2bd99e9c7f7ac9af1276611a83864d3a37fef42"
+    },
+    "model_runner.py": {
+      "path": "tools/shim_c_campaign_v4.py",
+      "sha256": "bcbaac9a02010bf9880b7994e704313b8bf7a8e4e87a6fa26be80020c9cb0339"
+    },
+    "float_model_lock.json": {
+      "path": "experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/float_model_lock.json",
+      "sha256": "719fc553cd7c9839b8cd767c1ecf8de67f423f75b91e462943232740909cf97c"
+    },
+    "private_checker.py": {
+      "path": "tools/shim_c_campaign_private.py",
+      "sha256": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127"
+    },
+    "closure_checker.py": {
+      "path": "tools/shim_c_campaign_closure.py",
+      "sha256": "c6cd6390fff54a0a755c6f310827b920f1ae8907ccf960612c8a8e56b414f443"
+    },
+    "call_closure.py": {
+      "path": "tools/shim_c_call_closure.py",
+      "sha256": "4ef7f38fccfca5fad42a076ae01bba0105a5789f72a99316d7b9726b06d4f12a"
+    }
+  },
+  "proof_patches": [
+    "experiments/integration-wave2/conv-pool/f32-argmaxpool/u32-helper02/attempts/0003/proof.patch"
+  ],
+  "model": "Typed+float",
+  "driver": "complex_fp.driver",
+  "VLEN_bits": 128,
+  "scope": "Actual NEON and preserved/repaired RVV, all output memory under declared wrapper; FMA/libc and representation bridges not assumed proved",
+  "previous_version": "experiments/codex-kernel-wave1/core-float-wave2/f32-argmaxpool/v10",
+  "scope_v2": "C, spec, wrapper and driver unchanged; proof annotations isolated from preserved v1.",
+  "wp_share": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share",
+  "wp_why3_config": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf",
+  "wp_provers": "z3,cvc5",
+  "wp_timeout": 3,
+  "wp_budget": 1200,
+  "wp_model_variant": "Bytes",
+  "model_variant_reason": "Root-reviewed native32 Bytes bookkeeping+existing FMA composition; no flat-address ABI plugin. C/spec/shared model remain byte frozen. Local mathematics does not establish full source equivalence.",
+  "proof_stage": "Full mathematical pixel/block/inner/tail candidates; all kernel/proof-body/global/callpre obligations still required. No new kernel admitted. Pure global fold-step lemmas added for actual block/inner induction, not assumed ghost helper contracts.",
+  "proof_note": "Real vbslq_f32 three memcpy body, unrestricted masks, piecewise original-input float post candidate. Known public index-padding blocker retained. No C/spec/model changes.",
+  "swarm_migration": {
+    "source": "experiments/codex-kernel-wave1/core-float-wave2/f32-argmaxpool/v18",
+    "source_frozen_sha256": "d79bb9f7e957917d0fde94ad37cc23b914a2c75019f83fac144675287d9c77d7",
+    "change": "Ordered proof concatenation and explicitly approved config-only model migration; no proof/C/spec edits",
+    "old_results_inherited": false
+  },
+  "integration_wave2": {
+    "remote": "101fc27d738d6bfd934730ef5aec055dca716542",
+    "remote_case": "experiments/shim-c-v2/stage3-target-fixes/f32-argmaxpool-tail-v1",
+    "deepseek_draft_sha256": "111c116d1a8c83d37459a1cc4e23c03c02cfe6b6a4e8d4538bb80ecbbb951db0",
+    "changes": [
+      "ROOT10 repaired-tail proof, independently rebound to local approved native Bytes-v6 FMA model; preserve exact repaired C/spec."
+    ],
+    "old_results_inherited": false
+  }
+}

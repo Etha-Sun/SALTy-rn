@@ -1,0 +1,55 @@
+{
+  "task_id": "wave2-f32-gemm-minmax",
+  "kernel": "f32-gemm-minmax",
+  "source_case": "experiments/integration-review-v1/candidates/gemm-hybrid-v3",
+  "source_frozen_sha256": null,
+  "migration": "keep",
+  "focus": "Packed weights, nested loops, FMA/clamp and public caller.",
+  "wave": 1,
+  "agent_wall_seconds": 1200,
+  "repo_root": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+  "case": "experiments/integration-wave2/gemm-sparse/f32-gemm-minmax/case",
+  "frozen_sha256": "f2503be55695faf6a5b1675cbfcee989436a32d47915fa97b8c601dcfa296aad",
+  "runner": "tools/shim_c_campaign_v3.py",
+  "runner_sha256": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a",
+  "framac": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py",
+  "prover_bin": "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers/bin",
+  "tool_hashes": {
+    "tools/shim_c_campaign_v3.py": "8446b5cb0db42294d85c5458fb8039ac063e9342b9566dbedd787629a4ad2a9a",
+    "tools/shim_c_campaign_private.py": "9218f285c82231d85e4dcc5a49e0b15d953cb1a44fbb82ed286c4e74a6cf8127",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/frama-c.py": "d032418b923bd50c490e90124e5aea4f8f41b67aaeb7d7d3a6a64603113afc2e"
+  },
+  "wp_par": 16,
+  "wall_seconds": 1200,
+  "max_proof_bytes": 4000000,
+  "diagnostic_functions": [
+    "equivalent"
+  ],
+  "diagnostic_properties": [
+    "root86_weight_origin",
+    "root86_weight_entry_valid",
+    "next_w_frame_0",
+    "wave2_neon_min_vacc0x0",
+    "hybrid_neon_clamp_vacc0x0"
+  ],
+  "default_mode": "full",
+  "readiness": "candidate_pending_guard",
+  "sourceguard_exit": null,
+  "model": "Typed+raw+float",
+  "resources": {
+    "wp_timeout": 30,
+    "wp_memlimit": 1024,
+    "wp_budget": 1200,
+    "wp_par": 16
+  },
+  "readonly_toolchain_roots": [
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/frama-c-qs8-rsum/toolchain/bundle",
+    "/zp_vegeta/scratch_sb/ycsun/verus/research/agent-qs8-rsum/provers"
+  ],
+  "acceptance": "All helper bodies, globals, public caller, RTE/callpre/assigns/termination and model controls required; root independently audits.",
+  "mode": "focus",
+  "task_manifest_sha256": "2a7e17a3c18b804db666a1a5a5e0e7ddf6a3f14c51143cc7cffe9e07671ca7eb",
+  "attempt": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/gemm-sparse/f32-gemm-minmax/attempts/0001",
+  "attempt_frozen_sha256": "1156165cf2f385f6fce6b1ee995c8d32e3a395c7856d1acbfcecdedef434ce32",
+  "proof_sha256": "8ccf9013f8bcd8a894579b16a5bf15fbd4b67d3ae8b9d961dd863e2f7f1b7795"
+}

@@ -1,0 +1,97 @@
+{
+  "reviewer": "/root/swarm_docs independent read-only review",
+  "reviewed_at_unix": 1792508600.255841,
+  "scope": "Diagnostic focus only, never a complete-kernel admission",
+  "main_passed": 3,
+  "main_total": 3,
+  "globals_passed": 18,
+  "globals_total": 18,
+  "global_rows_already_embedded_in_main_raw": 18,
+  "main_and_global_counts_not_added_twice": true,
+  "pending": [],
+  "proof_snapshot_sha256": "70aa929fbdadb54bf3807f2d85fdbbed1abda378aae77173320e48fa57122460",
+  "guard_sha256": "62076ac317834d4b2d9f76819da3371f75cb8b9a1776c8b2684da9894510ca03",
+  "source_guard_proof_and_frozen_binding": true,
+  "main_raw_sha256": "3f4174676ba8cc403929df73e94ab998d253846eedd08d6ca0430231f6037492",
+  "globals_raw_sha256": "031102afdb4fbc077ddca2ad317087919629df16059723434e325172f67b10c0",
+  "model_control_raw_sha256": "3fb224497ac75447212db5d6e0cef3ae41f76ed5177a318ba76784285700935c",
+  "model_control": {
+    "qualified": true,
+    "false_goal_proved": false,
+    "true_goal_proved": true,
+    "export_errors": [],
+    "scope": "Falsity rejection only; not a model consistency theorem"
+  },
+  "successful_goal_CASES_branch_audit": [
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon1_prefix_preserved",
+      "raw_passed": true,
+      "script": "experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/.build/verify01/annotated/.frama-c/wp/script/equivalent_loop_invariant_values_neon1_prefix_preserved.json",
+      "sha256": "7e7cedf5380aae7d627fb55016f3958146ae9c05e1977027e98b43e64ab7c17e",
+      "script_closed": true,
+      "CASES": [
+        {
+          "path": "root/0",
+          "strategy": "NExitPrefixPoint",
+          "branches": {
+            "Positive": true,
+            "Negative": true
+          },
+          "both_branches_closed": true
+        }
+      ]
+    },
+    {
+      "goal": "bytes_extensions_acsl-bits_equivalent_assert_values_neon_all",
+      "raw_passed": true,
+      "script": "experiments/integration-wave2/vlrelu-reinterpret/neon-exit-tactic-v04/attempts/0001/.build/verify01/annotated/.frama-c/wp/script/equivalent_assert_values_neon_all.json",
+      "sha256": "81b76bbbd74dc664ed1b038b37388bb88a77e683a1956c38f20e267a1759b920",
+      "script_closed": true,
+      "CASES": [
+        {
+          "path": "root/0",
+          "strategy": "NExitFinal",
+          "branches": {
+            "Positive": true,
+            "Negative": true
+          },
+          "both_branches_closed": true
+        },
+        {
+          "path": "root/0/Negative/2",
+          "strategy": "NExitFinalBit",
+          "branches": {
+            "Positive": true,
+            "Negative": true
+          },
+          "both_branches_closed": true
+        }
+      ]
+    }
+  ],
+  "actual_command_resources": [
+    {
+      "par": "128",
+      "provers": "tip,z3,cvc5",
+      "timeout": "30",
+      "memlimit": "1024",
+      "report": "verify01-model-control.json"
+    },
+    {
+      "par": "128",
+      "provers": "tip,z3,cvc5",
+      "timeout": "30",
+      "memlimit": "1024",
+      "report": "verify01-lemmas.json"
+    },
+    {
+      "par": "128",
+      "provers": "tip,z3,cvc5",
+      "timeout": "30",
+      "memlimit": "1024",
+      "report": "verify01.json"
+    }
+  ],
+  "full_kernel_verified": false,
+  "conclusion": "v03 closes 4/5 requested main goals; the one-lane assertion remains unknown and is not counted as passed. v04 closes only its selected 3/3; its success does not inherit unscreened v19/kernel obligations."
+}

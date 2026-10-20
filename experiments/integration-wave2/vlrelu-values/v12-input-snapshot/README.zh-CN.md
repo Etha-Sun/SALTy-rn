@@ -1,0 +1,1 @@
+v12 snapshots real load pointer before input+=4. Same narrow core diagnostic as v11-corefocus; all four private call preconditions, RTE, helperensures only (assigns/termination require final full) and original NEON4 value selected. Other value targets not checked here. Frozen ordinary C/spec/model retained.

@@ -1,0 +1,38 @@
+--- a/neon.c
++++ b/neon.c
+@@ -135,7 +135,8 @@
+     /@ loop invariant 0<=k<=(total-batch/4)+(2);
+        loop invariant \forall integer j; 0<=j<k ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+        loop assigns k; loop variant (total-batch/4)+(2)-k; @/
+-    for(size_t k=0;k<(total-batch/4)+(2);k++) {
++    size_t k=0;
++    for(;k<(total-batch/4)+(2);k++) {
+       /@ assert \valid_read(i_base+k); @/
+       /@ assert \separated(i_base+k,o_base+((total-batch/4)..(total-batch/4)+(2)-1)); @/
+       /@ assert same_float(i_base[k],\at(i_base[\at(k,Here)],Unary2)); @/
+@@ -149,12 +150,14 @@
+       }
+       /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
++    /@ assert values_tail_div_cast: (size_t)(batch/4)==batch/4; @/
++    /@ assert values_tail_extent_cut: (size_t)((size_t)(total-batch/4)+2)==total-(batch%8)/4; @/
++    /@ assert values_neon2_exit: k==total-(batch%8)/4; @/
++    /@ assert values_neon2_prefix: \forall integer j; 0<=j<total-(batch%8)/4 ==>
++          same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); @/
+     */ output += 2;
+       vacc_lo = vget_high_f32(vacc);
+     }
+-    /*@ assert values_tail_div_cast: (size_t)(batch/4)==batch/4; */
+-    /*@ assert values_tail_extent_cut: !(batch & 8) ||
+-          (size_t)((size_t)(total-batch/4)+2)==total-(batch%8)/4; */
+     /*@ assert values_neon_tailprefix: \forall integer j; 0<=j<total-(batch%8)/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry)); */
+     if (batch & (1 * sizeof(float))) {
+       //@ assert output==o_base+(total-1);
+--- a/harness.c
++++ b/harness.c
+@@ -38,3 +38,5 @@
+ 
+ /*@ \wp::proof ValuesSMT: values_tail_div_cast,values_one_extent_cut; */
+ /*@ \wp::proof VmemIncluded: values_tail_high_read,values_tail_high_sep,values_tail_high_frame; */
++
++/*@ \wp::proof ValuesSMT: values_neon2_exit,values_neon2_prefix; */

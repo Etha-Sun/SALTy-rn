@@ -1,0 +1,16 @@
+{
+  "target_count": 4,
+  "model_sha256": {
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share/why3/frama_c_wp/memaddr.mlw": "7b33b2217ca99aefc239ad0ccafcc7f7bac271ba7082e1ae354cee956f676d4f",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share/why3/frama_c_wp/membytes_le.mlw": "04050f134e71ca3933b4f0b53c26a791499a44f793d6f77c4c84f37e2cee6ead",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share/why3/frama_c_wp/cfloat.mlw": "1a9096b35b7f76a9b1511da38078b91861721deba4cd01e7a5b7e54a7b74b3ff",
+    "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share/why3/frama_c_wp/float_bits32.mlw": "23bbacdcfa39ccad81fbde1455411e1a89ad5aefa63691870716b4249db58246"
+  },
+  "model_gap_established": false,
+  "observed_bridges": [
+    "Actual Q_memcmp_zero expands memcpy result equality into signed-byte equality at every 0<=k<4.",
+    "read_sint32 and read_uint32 both use explicit bread_32bits, decode_sint32=to_sint32(decode_uint32).",
+    "cfloat repr_decode32=Bits32.decode_int, sign_f32 is native F32.is_negative."
+  ],
+  "proof_work_remaining": "Four byte equality instantiations, source frame and old prefix frame, then native IEEE sign-to-signed32 threshold. No absent semantic bridge or counterexample established."
+}

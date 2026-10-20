@@ -1,0 +1,1 @@
+root最后具体方案：新增以源x符号作前件的mask lemma，直接匹配已证source_sign；删除未证target_sign辅助assert，不能借用它。恢复equivalent原memory策略，只在harness末尾给NEON4四个value label注册后优先SMT hint。全体global及NEON4 operands/source_sign/select/原value均须实际证明。普通C/spec/shim/model/driver/checker不变。

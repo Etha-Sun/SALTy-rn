@@ -1,0 +1,1 @@
+v14定向low/high量化实例：新增checked空body transfer helper与4次groundcalls，全部privatepre/ensures/assigns/RTE查；纯整数uint64尾长度lemma+cut来自实际v13sequent。新lemma在global轮实际检查，非axiom。保留6旧tail值目标；不重复选NEON4已闭旧值和cuts。ordinaryC/spec/shim/model/driver/checker冻结，所有kernel/helper full仍由root最终整合检查。

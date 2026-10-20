@@ -1,0 +1,1058 @@
+--- a/base.h
++++ b/base.h
+@@ -1,9 +1,17 @@
+ #ifndef SHARED_BASE_H
+ #define SHARED_BASE_H
++/*@ terminates \true; assigns \nothing; ensures \result == RVV_CAP; */
+ size_t __riscv_vsetvlmax_e32m8(void);
++/*@ terminates \true; assigns \nothing; ensures \result == RVV_M1_CAP; */
+ size_t __riscv_vsetvlmax_e32m1(void);
++/*@ terminates \true; assigns \nothing; ensures \result == (n<RVV_CAP ? n : RVV_CAP); */
+ size_t __riscv_vsetvl_e8m2(size_t n);
++/*@ terminates \true; assigns \nothing; ensures \result == (n<RVV_CAP ? n : RVV_CAP); */
+ size_t __riscv_vsetvl_e32m8(size_t n);
++/*@ terminates \true; assigns \nothing; ensures \result == (n<RVV_I8M8_CAP ? n : RVV_I8M8_CAP); */
+ size_t __riscv_vsetvl_e8m8(size_t n);
++/*@ requires \valid_read(p+(0..15));
++    terminates \true; assigns \nothing;
++    ensures \forall integer j; 0<=j<16 ==> \result.lane[j]==p[j]; */
+ int8x16_t vld1q_s8(const int8_t *p);
+ #endif
+--- a/float_ops.h
++++ b/float_ops.h
+@@ -1,14 +1,68 @@
+ #ifndef SHARED_FLOAT_H
+ #define SHARED_FLOAT_H
++/*@
++  logic float fp_add32(float a, float b);
++  predicate same_value(float a, float b) =
++    \eq_float(a,b) || (\is_NaN(a) && \is_NaN(b));
++  predicate same_float(float a, float b) =
++    (\is_NaN(a) && \is_NaN(b)) ||
++    (same_value(a,b) && \sign(a) == \sign(b));
++  lemma same_float_refl: \forall float a; same_float(a,a);
++  lemma same_float_value: \forall float a,b; same_float(a,b) ==> same_value(a,b);
++  lemma same_float_sym: \forall float a,b; same_float(a,b) ==> same_float(b,a);
++  lemma same_float_trans: \forall float a,b,c;
++    same_float(a,b) && same_float(b,c) ==> same_float(a,c);
++  lemma same_value_refl: \forall float a; same_value(a,a);
++  lemma same_value_sym: \forall float a,b; same_value(a,b) ==> same_value(b,a);
++  lemma same_value_trans: \forall float a,b,c;
++    same_value(a,b) && same_value(b,c) ==> same_value(a,c);
++  lemma fp_add_congruence: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    same_value(fp_add32(a,b),fp_add32(c,d));
++  lemma fp_add_congruence_same: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    same_float(fp_add32(a,b),fp_add32(c,d));
++  lemma lt_float_cong: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    (\lt_float(a,b) <==> \lt_float(c,d));
++  lemma gt_float_cong: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    (\gt_float(a,b) <==> \gt_float(c,d));
++  lemma lt_gt_float: \forall float a,b;
++    \lt_float(a,b) <==> \gt_float(b,a);
++*/
++/*@ assigns \nothing; ensures same_float(\result, fp_add32(a,b)); */
+ float f32_add(float a, float b);
++/*@ requires \valid_read(p+(0..3)); assigns \nothing;
++    ensures \forall integer i; 0<=i<4 ==> same_float(\result.lane[i],p[i]); */
+ float32x4_t vld1q_f32(const float *p);
++/*@ assigns \nothing;
++    ensures \forall integer i; 0<=i<4 ==> same_float(\result.lane[i],fp_add32(a.lane[i],b.lane[i])); */
+ float32x4_t vaddq_f32(float32x4_t a, float32x4_t b);
++/*@ requires \valid(p+(0..3)); assigns p[0..3];
++    ensures \forall integer i; 0<=i<4 ==> same_float(p[i],a.lane[i]);
++    ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..4-1)) ==> same_float(*q,\old(*q)); */
+ void vst1q_f32(float *p, float32x4_t a);
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<2 ==> same_float(\result.lane[i],a.lane[i]); */
+ float32x2_t vget_low_f32(float32x4_t a);
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<2 ==> same_float(\result.lane[i],a.lane[i+2]); */
+ float32x2_t vget_high_f32(float32x4_t a);
++/*@ requires \valid(p+(0..1)); assigns p[0..1];
++    ensures \forall integer i; 0<=i<2 ==> same_float(p[i],a.lane[i]);
++    ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..2-1)) ==> same_float(*q,\old(*q)); */
+ void vst1_f32(float *p, float32x2_t a);
++/*@ requires 0<=lane<2; requires \valid(p); assigns *p;
++    ensures same_float(*p,a.lane[lane]);
++    ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..1-1)) ==> same_float(*q,\old(*q)); */
+ void vst1_lane_f32(float *p, float32x2_t a, int lane);
++/*@ requires vl<=32; requires \valid_read(p+(0..vl-1)); assigns \nothing;
++    ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],p[i]); */
+ vfloat32m8_t __riscv_vle32_v_f32m8(const float *p, size_t vl);
++/*@ requires vl<=32; assigns \nothing;
++    ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],fp_add32(a.lane[i],b.lane[i])); */
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
++/*@ requires vl<=32; requires \valid(p+(0..vl-1)); assigns p[0..vl-1];
++    ensures \forall integer i; 0<=i<vl ==> same_float(p[i],a.lane[i]);
++    ensures \forall float *q; \valid_read(q) && \separated(q,p+(0..vl-1)) ==> same_float(*q,\old(*q)); */
+ void __riscv_vse32_v_f32m8(float *p, vfloat32m8_t a, size_t vl);
+ #endif
+--- a/extensions.h
++++ b/extensions.h
+@@ -7,6 +7,16 @@
+ typedef struct { _Bool lane[RVV_CAP]; } vbool4_t;
+ float32x4_t vsubq_f32(float32x4_t a, float32x4_t b);
+ vfloat32m8_t __riscv_vfsub_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
++/*@
++  logic float fp_sub32(float a,float b) = \sub_float(a,b);
++  lemma fp_sub_congruence: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    same_value(fp_sub32(a,b),fp_sub32(c,d));
++  lemma fp_sub_congruence_same: \forall float a,b,c,d;
++    same_float(a,c) && same_float(b,d) ==>
++    same_float(fp_sub32(a,b),fp_sub32(c,d));
++*/
++/*@ assigns \nothing; ensures same_float(\result,fp_sub32(a,b)); */
+ float f32_sub(float a, float b);
+ float32x4_t vmulq_f32(float32x4_t a, float32x4_t b);
+ vfloat32m8_t __riscv_vfmul_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl);
+@@ -25,7 +35,17 @@
+ vbool4_t __riscv_vmfne_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t b,size_t vl);
+ vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t mask,size_t vl);
+ 
++/*@ logic integer repr32(float x); logic float from_repr32(integer u); */
++/*@ \wp::strategy MaskSMT: \prover("z3","cvc5",5);
++    \wp::strategy MaskBits32:
++      \tactic("Wp.bitwised",\param("Wp.bitwised.range",32),\children(MaskSMT)),MaskSMT; */
++/*@ \wp::strategy EqSMT: \prover("z3","cvc5",20);
++    \wp::proof EqSMT: "@assert","@invariant","@assigns","@check"; */
++/*@ \wp::proof MaskBits32: proof_abs_mask_shift; */
++/*@ \wp::proof MaskBits32: proof_mask_partition; */
++/*@ assigns \nothing; ensures same_float(from_repr32(\result),x); ensures !\is_NaN(x) ==> \result==repr32(x); */
+ uint32_t float_bits(float x);
++/*@ assigns \nothing; ensures same_float(\result,from_repr32(u)); */
+ float bits_float(uint32_t u);
+ float32x4_t vdupq_n_f32(float x);
+ int32x4_t vmovq_n_s32(int32_t x);
+@@ -48,4 +68,7 @@
+ vfloat32m8_t __riscv_vfsgnj_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl);
+ vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl);
+ float f32_sqrt(float x);
++/*@ logic float unary_abs(float x) = \is_NaN(x) ? x : from_repr32(repr32(x)&2147483647);
++logic float unary_round_abs(float x) = fp_sub32(fp_add32(unary_abs(x),from_repr32(1258291200)),from_repr32(1258291200));
++logic float unary_value(float x) = \is_NaN(x) ? x : \gt_float(unary_abs(x),from_repr32(1258291200)) ? x : from_repr32((repr32(x)&2147483648)|(repr32(unary_round_abs(x))&2147483647)); */
+ #endif
+--- a/base.c
++++ b/base.c
+@@ -6,6 +6,9 @@
+ size_t __riscv_vsetvl_e8m8(size_t n) { return n<RVV_I8M8_CAP ? n : RVV_I8M8_CAP; }
+ int8x16_t vld1q_s8(const int8_t *p) {
+   int8x16_t r;
++  /*@ loop invariant 0<=i<=16;
++      loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==p[j];
++      loop assigns i,r; loop variant 16-i; */
+   for (size_t i=0;i<16;i++) r.lane[i]=p[i];
+   return r;
+ }
+--- a/float_ops.c
++++ b/float_ops.c
+@@ -4,33 +4,57 @@
+ 
+ float32x4_t vld1q_f32(const float *p) {
+   float32x4_t r;
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],p[j]);
++      loop assigns i, r.lane[0..3];
++      loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) r.lane[i] = p[i];
+   return r;
+ }
+ 
+ float32x4_t vaddq_f32(float32x4_t a, float32x4_t b) {
+   float32x4_t r;
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],fp_add32(a.lane[j],b.lane[j]));
++      loop assigns i, r.lane[0..3];
++      loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) r.lane[i] = f32_add(a.lane[i], b.lane[i]);
+   return r;
+ }
+ 
+ void vst1q_f32(float *p, float32x4_t a) {
++  /*@ loop invariant 0 <= i <= 4;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(p[j],a.lane[j]);
++      loop assigns i, p[0..3];
++      loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) p[i] = a.lane[i];
+ }
+ 
+ float32x2_t vget_low_f32(float32x4_t a) {
+   float32x2_t r;
++  /*@ loop invariant 0 <= i <= 2;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],a.lane[j]);
++      loop assigns i, r.lane[0..1];
++      loop variant 2-i; */
+   for (size_t i = 0; i < 2; ++i) r.lane[i] = a.lane[i];
+   return r;
+ }
+ 
+ float32x2_t vget_high_f32(float32x4_t a) {
+   float32x2_t r;
++  /*@ loop invariant 0 <= i <= 2;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],a.lane[j+2]);
++      loop assigns i, r.lane[0..1];
++      loop variant 2-i; */
+   for (size_t i = 0; i < 2; ++i) r.lane[i] = a.lane[i+2];
+   return r;
+ }
+ 
+ void vst1_f32(float *p, float32x2_t a) {
++  /*@ loop invariant 0 <= i <= 2;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(p[j],a.lane[j]);
++      loop assigns i, p[0..1];
++      loop variant 2-i; */
+   for (size_t i = 0; i < 2; ++i) p[i] = a.lane[i];
+ }
+ 
+@@ -38,16 +62,28 @@
+ 
+ vfloat32m8_t __riscv_vle32_v_f32m8(const float *p, size_t vl) {
+   vfloat32m8_t r = {{0}};
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],p[j]);
++      loop assigns i, r.lane[0..32-1];
++      loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) r.lane[i] = p[i];
+   return r;
+ }
+ 
+ vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl) {
+   vfloat32m8_t r = {{0}};
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],fp_add32(a.lane[j],b.lane[j]));
++      loop assigns i, r.lane[0..32-1];
++      loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) r.lane[i] = f32_add(a.lane[i], b.lane[i]);
+   return r;
+ }
+ 
+ void __riscv_vse32_v_f32m8(float *p, vfloat32m8_t a, size_t vl) {
++  /*@ loop invariant 0 <= i <= vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(p[j],a.lane[j]);
++      loop assigns i, p[0..vl-1];
++      loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) p[i] = a.lane[i];
+ }
+--- a/representation.c
++++ b/representation.c
+@@ -1,4 +1,7 @@
+ #include "shim.h"
+ /* C-defined representation transport; assumptions are binary32, little endian. */
+-uint32_t float_bits(float x) { uint32_t u; memcpy(&u,&x,4); return u; }
+-float bits_float(uint32_t u) { float x; memcpy(&x,&u,4); return x; }
++uint32_t float_bits(float x) { uint32_t u; memcpy(&u,&x,4); /*@ assert bits_copied: u == *(uint32_t*)&x; */
++/*@ assert copied_value: same_float(from_repr32(u),x); */
++//@ ghost proof_repr_reencode(u,x);
++return u; }
++float bits_float(uint32_t u) { float x; memcpy(&x,&u,4); /*@ assert word_copied: *(uint32_t*)&x == u; */ return x; }
+--- a/sub.c
++++ b/sub.c
+@@ -1,12 +1,20 @@
+ #include "shim.h"
+ float f32_sub(float a, float b) { return a - b; }
++/*@ assigns \nothing; ensures \forall integer i; 0<=i<4 ==> same_float(\result.lane[i],fp_sub32(a.lane[i],b.lane[i])); */
+ float32x4_t vsubq_f32(float32x4_t a, float32x4_t b) {
+   float32x4_t r = {{0}};
++  /*@ loop invariant 0<=i<=4;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],fp_sub32(a.lane[j],b.lane[j]));
++      loop assigns i,r.lane[0..3]; loop variant 4-i; */
+   for (size_t i = 0; i < 4; ++i) r.lane[i] = f32_sub(a.lane[i], b.lane[i]);
+   return r;
+ }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],fp_sub32(a.lane[i],b.lane[i])); */
+ vfloat32m8_t __riscv_vfsub_vv_f32m8(vfloat32m8_t a, vfloat32m8_t b, size_t vl) {
+   vfloat32m8_t r = {{0}};
++  /*@ loop invariant 0<=i<=vl;
++      loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],fp_sub32(a.lane[j],b.lane[j]));
++      loop assigns i,r.lane[0..31]; loop variant vl-i; */
+   for (size_t i = 0; i < vl; ++i) r.lane[i] = f32_sub(a.lane[i], b.lane[i]);
+   return r;
+ }
+--- a/bits.c
++++ b/bits.c
+@@ -1,22 +1,47 @@
+ #include "shim.h"
+ /* memcpy is C-defined bit transport, not pointer type punning. */
+-float32x4_t vdupq_n_f32(float x) { float32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
+-int32x4_t vmovq_n_s32(int32_t x) { int32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
+-uint32x4_t vmovq_n_u32(uint32_t x) { uint32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
+-int32x4_t vreinterpretq_s32_f32(float32x4_t a) { int32x4_t r;for(size_t i=0;i<4;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
+-float32x4_t vreinterpretq_f32_u32(uint32x4_t a) { float32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=bits_float(a.lane[i]);return r; }
+-uint32x4_t vcltq_s32(int32x4_t a,int32x4_t b) { uint32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=a.lane[i]<b.lane[i]?UINT32_MAX:0;return r; }
+-uint32x4_t vorrq_u32(uint32x4_t a,uint32x4_t b) { uint32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=a.lane[i]|b.lane[i];return r; }
+-float32x4_t vbslq_f32(uint32x4_t m,float32x4_t a,float32x4_t b) { float32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=bits_float((m.lane[i]&float_bits(a.lane[i]))|(~m.lane[i]&float_bits(b.lane[i])));return r; }
+-float32x4_t vabsq_f32(float32x4_t a) { float32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff));return r; }
+-uint32x4_t vcaltq_f32(float32x4_t a,float32x4_t b) { uint32x4_t r;for(size_t i=0;i<4;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff))<bits_float(float_bits(b.lane[i])&UINT32_C(0x7fffffff))?UINT32_MAX:0;return r; }
+-vint32m8_t __riscv_vreinterpret_v_f32m8_i32m8(vfloat32m8_t a) { vint32m8_t r;for(size_t i=0;i<RVV_CAP;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
+-vuint32m8_t __riscv_vreinterpret_v_f32m8_u32m8(vfloat32m8_t a) { vuint32m8_t r;for(size_t i=0;i<RVV_CAP;i++)r.lane[i]=float_bits(a.lane[i]);return r; }
+-vfloat32m8_t __riscv_vreinterpret_v_u32m8_f32m8(vuint32m8_t a) { vfloat32m8_t r;for(size_t i=0;i<RVV_CAP;i++)r.lane[i]=bits_float(a.lane[i]);return r; }
+-vbool4_t __riscv_vmslt_vx_i32m8_b4(vint32m8_t a,int32_t b,size_t vl) { vbool4_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<b;return r; }
+-vbool4_t __riscv_vmfgt_vf_f32m8_b4(vfloat32m8_t a,float b,size_t vl) { vbool4_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>b;return r; }
+-vfloat32m8_t __riscv_vfabs_v_f32m8(vfloat32m8_t a,size_t vl) { vfloat32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff));return r; }
+-vfloat32m8_t __riscv_vfadd_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { vfloat32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=f32_add(a.lane[i],b);return r; }
+-vfloat32m8_t __riscv_vfsub_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { vfloat32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=f32_sub(a.lane[i],b);return r; }
+-vfloat32m8_t __riscv_vfsgnj_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { vfloat32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=bits_float((float_bits(a.lane[i])&UINT32_C(0x7fffffff))|(float_bits(b.lane[i])&UINT32_C(0x80000000)));return r; }
+-vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl) { vuint32m8_t r={{0}};for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]|b;return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> same_float(\result.lane[j],x); */
++float32x4_t vdupq_n_f32(float x) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],x); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==x; */
++int32x4_t vmovq_n_s32(int32_t x) { int32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==x; loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==x; */
++uint32x4_t vmovq_n_u32(uint32_t x) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==x; loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=x;return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> (!\is_NaN(a.lane[j]) ==> \result.lane[j]==(repr32(a.lane[j])<2147483648?repr32(a.lane[j]):repr32(a.lane[j])-4294967296)); */
++int32x4_t vreinterpretq_s32_f32(float32x4_t a) { int32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> (!\is_NaN(a.lane[j]) ==> r.lane[j]==(repr32(a.lane[j])<2147483648?repr32(a.lane[j]):repr32(a.lane[j])-4294967296)); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> same_float(\result.lane[j],from_repr32(a.lane[j])); */
++float32x4_t vreinterpretq_f32_u32(uint32x4_t a) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],from_repr32(a.lane[j])); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=bits_float(a.lane[i]);return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(a.lane[j]<b.lane[j]?4294967295:0); */
++uint32x4_t vcltq_s32(int32x4_t a,int32x4_t b) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]<b.lane[j]?4294967295:0); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=a.lane[i]<b.lane[i]?UINT32_MAX:0;return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(a.lane[j]|b.lane[j]); */
++uint32x4_t vorrq_u32(uint32x4_t a,uint32x4_t b) { uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]|b.lane[j]); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=a.lane[i]|b.lane[i];return r; }
++/*@ assigns \nothing;
++    ensures \forall integer j; 0<=j<4 ==>
++      (m.lane[j]==0 ==> same_float(\result.lane[j],b.lane[j])) &&
++      (m.lane[j]==4294967295 ==> same_float(\result.lane[j],a.lane[j])) &&
++      (!\is_NaN(a.lane[j]) && !\is_NaN(b.lane[j]) ==> same_float(\result.lane[j],from_repr32((repr32(a.lane[j])&m.lane[j])|(repr32(b.lane[j])&(~m.lane[j]))))) &&
++      (m.lane[j]==2147483648 && \is_NaN(b.lane[j]) ==> \is_NaN(\result.lane[j])); */
++float32x4_t vbslq_f32(uint32x4_t m,float32x4_t a,float32x4_t b) { float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> ((m.lane[j]==0 ==> same_float(r.lane[j],b.lane[j])) && (m.lane[j]==4294967295 ==> same_float(r.lane[j],a.lane[j])) && (!\is_NaN(a.lane[j]) && !\is_NaN(b.lane[j]) ==> same_float(r.lane[j],from_repr32((repr32(a.lane[j])&m.lane[j])|(repr32(b.lane[j])&(~m.lane[j]))))) && (m.lane[j]==2147483648 && \is_NaN(b.lane[j]) ==> \is_NaN(r.lane[j]))); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=bits_float((m.lane[i]&float_bits(a.lane[i]))|(~m.lane[i]&float_bits(b.lane[i])));return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> same_float(\result.lane[j],unary_abs(a.lane[j])); */
++float32x4_t vabsq_f32(float32x4_t a) { /*@ ghost proof_nan_abs_all(); */ float32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],unary_abs(a.lane[j])); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff));return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<4 ==> \result.lane[j]==(\lt_float(unary_abs(a.lane[j]),unary_abs(b.lane[j]))?4294967295:0); */
++uint32x4_t vcaltq_f32(float32x4_t a,float32x4_t b) { /*@ ghost proof_nan_abs_all(); */ uint32x4_t r;/*@ loop invariant 0<=i<=4; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(\lt_float(unary_abs(a.lane[j]),unary_abs(b.lane[j]))?4294967295:0); loop assigns i,r.lane[0..3]; loop variant 4-i; */ for(size_t i=0;i<4;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff))<bits_float(float_bits(b.lane[i])&UINT32_C(0x7fffffff))?UINT32_MAX:0;return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<32 ==> (!\is_NaN(a.lane[j]) ==> \result.lane[j]==(repr32(a.lane[j])<2147483648?repr32(a.lane[j]):repr32(a.lane[j])-4294967296)); */
++vint32m8_t __riscv_vreinterpret_v_f32m8_i32m8(vfloat32m8_t a) { vint32m8_t r;/*@ loop invariant 0<=i<=32; loop invariant \forall integer j; 0<=j<i ==> (!\is_NaN(a.lane[j]) ==> r.lane[j]==(repr32(a.lane[j])<2147483648?repr32(a.lane[j]):repr32(a.lane[j])-4294967296)); loop assigns i,r.lane[0..31]; loop variant 32-i; */ for(size_t i=0;i<RVV_CAP;i++)memcpy(&r.lane[i],&a.lane[i],4);return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<32 ==> (!\is_NaN(a.lane[j]) ==> \result.lane[j]==repr32(a.lane[j])) && (\is_NaN(a.lane[j]) ==> \is_NaN(from_repr32(\result.lane[j]))); */
++vuint32m8_t __riscv_vreinterpret_v_f32m8_u32m8(vfloat32m8_t a) { vuint32m8_t r;/*@ loop invariant 0<=i<=32; loop invariant \forall integer j; 0<=j<i ==> (!\is_NaN(a.lane[j]) ==> r.lane[j]==repr32(a.lane[j])) && (\is_NaN(a.lane[j]) ==> \is_NaN(from_repr32(r.lane[j]))); loop assigns i,r.lane[0..31]; loop variant 32-i; */ for(size_t i=0;i<RVV_CAP;i++)r.lane[i]=float_bits(a.lane[i]);return r; }
++/*@ assigns \nothing; ensures \forall integer j; 0<=j<32 ==> same_float(\result.lane[j],from_repr32(a.lane[j])); */
++vfloat32m8_t __riscv_vreinterpret_v_u32m8_f32m8(vuint32m8_t a) { vfloat32m8_t r;/*@ loop invariant 0<=i<=32; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],from_repr32(a.lane[j])); loop assigns i,r.lane[0..31]; loop variant 32-i; */ for(size_t i=0;i<RVV_CAP;i++)r.lane[i]=bits_float(a.lane[i]);return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (\result.lane[j] <==> a.lane[j]<b); */
++vbool4_t __riscv_vmslt_vx_i32m8_b4(vint32m8_t a,int32_t b,size_t vl) { vbool4_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j] <==> a.lane[j]<b); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]<b;return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (\result.lane[j] <==> \gt_float(a.lane[j],b)); */
++vbool4_t __riscv_vmfgt_vf_f32m8_b4(vfloat32m8_t a,float b,size_t vl) { vbool4_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j] <==> \gt_float(a.lane[j],b)); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]>b;return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> same_float(\result.lane[j],unary_abs(a.lane[j])); */
++vfloat32m8_t __riscv_vfabs_v_f32m8(vfloat32m8_t a,size_t vl) { /*@ ghost proof_nan_abs_all(); */ vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],unary_abs(a.lane[j])); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=bits_float(float_bits(a.lane[i])&UINT32_C(0x7fffffff));return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> same_float(\result.lane[j],fp_add32(a.lane[j],b)); */
++vfloat32m8_t __riscv_vfadd_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],fp_add32(a.lane[j],b)); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=f32_add(a.lane[i],b);return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> same_float(\result.lane[j],fp_sub32(a.lane[j],b)); */
++vfloat32m8_t __riscv_vfsub_vf_f32m8(vfloat32m8_t a,float b,size_t vl) { vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],fp_sub32(a.lane[j],b)); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=f32_sub(a.lane[i],b);return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> (\is_NaN(a.lane[j]) ==> \is_NaN(\result.lane[j])) && ((!\is_NaN(a.lane[j]) && !\is_NaN(b.lane[j])) ==> same_float(\result.lane[j],from_repr32((repr32(a.lane[j])&2147483647)|(repr32(b.lane[j])&2147483648)))); */
++vfloat32m8_t __riscv_vfsgnj_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) { /*@ ghost proof_nan_sign_all(); */ vfloat32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (\is_NaN(a.lane[j]) ==> \is_NaN(r.lane[j])) && ((!\is_NaN(a.lane[j]) && !\is_NaN(b.lane[j])) ==> same_float(r.lane[j],from_repr32((repr32(a.lane[j])&2147483647)|(repr32(b.lane[j])&2147483648)))); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=bits_float((float_bits(a.lane[i])&UINT32_C(0x7fffffff))|(float_bits(b.lane[i])&UINT32_C(0x80000000)));return r; }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer j; 0<=j<vl ==> \result.lane[j]==(a.lane[j]|b); */
++vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl) { vuint32m8_t r={{0}};/*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> r.lane[j]==(a.lane[j]|b); loop assigns i,r.lane[0..31]; loop variant vl-i; */ for(size_t i=0;i<vl;i++)r.lane[i]=a.lane[i]|b;return r; }
+--- a/mask.c
++++ b/mask.c
+@@ -1,11 +1,15 @@
+ #include "shim.h"
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer i; 0<=i<vl ==> (\result.lane[i] <==> !\eq_float(a.lane[i],b.lane[i])); */
+ vbool4_t __riscv_vmfne_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t b,size_t vl) {
+   vbool4_t r={{0}};
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> (r.lane[j] <==> !\eq_float(a.lane[j],b.lane[j])); loop assigns i,r.lane[0..31]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++) r.lane[i]=a.lane[i]!=b.lane[i];
+   return r;
+ }
++/*@ requires vl<=32; assigns \nothing; ensures \forall integer i; 0<=i<vl ==> same_float(\result.lane[i],mask.lane[i]?b.lane[i]:a.lane[i]); */
+ vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t mask,size_t vl) {
+   vfloat32m8_t r={{0}};
++  /*@ loop invariant 0<=i<=vl; loop invariant \forall integer j; 0<=j<i ==> same_float(r.lane[j],mask.lane[j]?b.lane[j]:a.lane[j]); loop assigns i,r.lane[0..31]; loop variant vl-i; */
+   for(size_t i=0;i<vl;i++) r.lane[i]=mask.lane[i]?b.lane[i]:a.lane[i];
+   return r;
+ }
+--- a/neon.c
++++ b/neon.c
+@@ -10,12 +10,22 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const float *i_base=input;
++  //@ ghost float *o_base=output;
++  //@ ghost size_t total=batch/sizeof(float);
++  //@ ghost float32x4_t vrndabsx_pre4;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input != NULL);
+   assert(output != NULL);
+ 
+   const float32x4_t vmagic_number = vreinterpretq_f32_u32(vmovq_n_u32(UINT32_C(0x4B000000)));
++  /*@ assert \forall integer j; 0<=j<4 ==> same_float(vmagic_number.lane[j],from_repr32(1258291200)); */
++  /*@ loop invariant 0<=batch<=4*total && batch%4==0;
++      loop invariant input==i_base+(total-batch/4);
++      loop invariant output==o_base+(total-batch/4);
++      loop invariant \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j]));
++      loop assigns batch,input,output,vrndabsx_pre4,o_base[0..total-1]; loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     const float32x4_t vx0123 = vld1q_f32(input); input += 4;
+ 
+@@ -25,28 +35,57 @@
+     float32x4_t vrndabsx0123 = vaddq_f32(vabsx0123, vmagic_number);
+ 
+     vrndmask0123 = vorrq_u32(vrndmask0123, vmovq_n_u32(UINT32_C(0x80000000)));
++    //@ ghost vrndabsx_pre4 = vrndabsx0123;
+ 
+     vrndabsx0123 = vsubq_f32(vrndabsx0123, vmagic_number);
+ 
+     const float32x4_t vy0123 = vbslq_f32(vrndmask0123, vx0123, vrndabsx0123);
++    /*@ ghost proof_neon_lane(vx0123.lane[0],i_base[total-batch/4+0],vabsx0123.lane[0],vmagic_number.lane[0],vrndmask0123.lane[0],vrndabsx_pre4.lane[0],vrndabsx0123.lane[0],vy0123.lane[0]);
++        proof_neon_lane(vx0123.lane[1],i_base[total-batch/4+1],vabsx0123.lane[1],vmagic_number.lane[1],vrndmask0123.lane[1],vrndabsx_pre4.lane[1],vrndabsx0123.lane[1],vy0123.lane[1]);
++        proof_neon_lane(vx0123.lane[2],i_base[total-batch/4+2],vabsx0123.lane[2],vmagic_number.lane[2],vrndmask0123.lane[2],vrndabsx_pre4.lane[2],vrndabsx0123.lane[2],vy0123.lane[2]);
++        proof_neon_lane(vx0123.lane[3],i_base[total-batch/4+3],vabsx0123.lane[3],vmagic_number.lane[3],vrndmask0123.lane[3],vrndabsx_pre4.lane[3],vrndabsx0123.lane[3],vy0123.lane[3]); */
+ 
+     vst1q_f32(output, vy0123); output += 4;
++    //@ ghost proof_store4_join(i_base, o_base, vy0123, total-batch/4);
++    //@ ghost proof_output_range4(i_base, o_base, total-batch/4);
+   }
++  //@ assert batch==0 || batch==4 || batch==8 || batch==12;
++  //@ ghost proof_f32_tail_bits(batch);
+   if XNN_UNLIKELY(batch != 0) {
++    //@ ghost size_t off = total-batch/4;
+     const float32x4_t vx = vld1q_f32(input);
+     const float32x4_t vabsx = vabsq_f32(vx);
+     uint32x4_t vrndmask = vcaltq_f32(vmagic_number, vx);
+     float32x4_t vrndabsx = vaddq_f32(vabsx, vmagic_number);
+     vrndmask = vorrq_u32(vrndmask, vmovq_n_u32(UINT32_C(0x80000000)));
++    //@ ghost float32x4_t vrndabsx_pre = vrndabsx;
+     vrndabsx = vsubq_f32(vrndabsx, vmagic_number);
+     const float32x4_t vy = vbslq_f32(vrndmask, vx, vrndabsx);
++    /*@ ghost proof_neon_lane(vx.lane[0],i_base[off+0],vabsx.lane[0],vmagic_number.lane[0],vrndmask.lane[0],vrndabsx_pre.lane[0],vrndabsx.lane[0],vy.lane[0]);
++        proof_neon_lane(vx.lane[1],i_base[off+1],vabsx.lane[1],vmagic_number.lane[1],vrndmask.lane[1],vrndabsx_pre.lane[1],vrndabsx.lane[1],vy.lane[1]);
++        proof_neon_lane(vx.lane[2],i_base[off+2],vabsx.lane[2],vmagic_number.lane[2],vrndmask.lane[2],vrndabsx_pre.lane[2],vrndabsx.lane[2],vy.lane[2]);
++        proof_neon_lane(vx.lane[3],i_base[off+3],vabsx.lane[3],vmagic_number.lane[3],vrndmask.lane[3],vrndabsx_pre.lane[3],vrndabsx.lane[3],vy.lane[3]); */
+     float32x2_t vy_lo = vget_low_f32(vy);
++    //@ ghost proof_vget2_join(i_base, vy_lo, vy, off, 0);
+     if (batch & (2 * sizeof(float))) {
+       vst1_f32(output, vy_lo); output += 2;
++      //@ ghost proof_store2_join(i_base, o_base, vy_lo, off);
++      //@ ghost proof_output_range2(i_base, o_base, off);
++      //@ ghost off = off + 2;
+       vy_lo = vget_high_f32(vy);
++      //@ ghost proof_vget2_join(i_base, vy_lo, vy, off, 2);
+     }
+     if (batch & (1 * sizeof(float))) {
+       vst1_lane_f32(output, vy_lo, 0);
++      //@ ghost proof_store1_join(i_base, o_base, vy_lo, off);
++      //@ ghost proof_output_range1(i_base, o_base, off);
+     }
+   }
++  /*@ ghost switch (batch) {
++    case 0: break;
++    case 4: /@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j])); @/ break;
++    case 8: /@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j])); @/ break;
++    case 12: /@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j])); @/ break;
++  } */
++  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j])); */
+ }
+--- a/rvv.c
++++ b/rvv.c
+@@ -4,14 +4,28 @@
+     float* output,
+     const struct xnn_f32_default_params* restrict params) XNN_OOB_READS
+ {
++  //@ ghost const float *i_base=input;
++  //@ ghost float *o_base=output;
++  //@ ghost size_t total=batch/sizeof(float);
++  //@ ghost vfloat32m8_t vrndabsx_pre;
++  //@ ghost vfloat32m8_t vy_pre;
+   assert(batch != 0);
+   assert(batch % sizeof(float) == 0);
+   assert(input != NULL);
+   assert(output != NULL);
+ 
+   size_t n = batch / sizeof(float);
++  /*@ loop invariant 0<=n<=total;
++      loop invariant integration_output_allocation: \valid(o_base+(0..total-1));
++      loop invariant integration_input_allocation: \valid_read(i_base+(0..total+2));
++      loop invariant input==i_base+(total-n);
++      loop invariant output==o_base+(total-n);
++      loop invariant \forall integer j; 0<=j<total-n ==> same_value(o_base[j],unary_value(i_base[j]));
++      loop assigns n,input,output,vrndabsx_pre,vy_pre,o_base[0..total-1]; loop variant n; */
+   while (n > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(n);
++    /*@ assert integration_vl_exact: vl==(n<RVV_CAP?n:RVV_CAP); */
++    /*@ assert integration_vl_positive: 0<vl && vl<=n && vl<=RVV_CAP; */
+     vfloat32m8_t vx = __riscv_vle32_v_f32m8(input, vl);
+ 
+     vfloat32m8_t vabsx = __riscv_vfabs_v_f32m8(vx, vl);
+@@ -20,6 +34,7 @@
+     vbool4_t cmp = __riscv_vmfgt_vf_f32m8_b4(vabsx, 8388608.0f, vl);
+ 
+     vfloat32m8_t vrndabsx = __riscv_vfadd_vf_f32m8(vabsx, 8388608.0f, vl);
++    //@ ghost vrndabsx_pre = vrndabsx;
+     vrndabsx = __riscv_vfsub_vf_f32m8(vrndabsx, 8388608.0f, vl);
+ 
+     // Combine sign bit of vx with bits 0-30 of vrndabsx
+@@ -34,12 +49,25 @@
+     vuint32m8_t vx_u32 = __riscv_vreinterpret_v_f32m8_u32m8(vx);
+     vuint32m8_t vx_quiet = __riscv_vor_vx_u32m8(vx_u32, UINT32_C(0x00400000), vl);
+     vfloat32m8_t vx_qnan = __riscv_vreinterpret_v_u32m8_f32m8(vx_quiet);
++    //@ ghost vy_pre = vy;
+     vy = __riscv_vmerge_vvm_f32m8(vy, vx_qnan, is_nan, vl);
+ 
+     __riscv_vse32_v_f32m8(output, vy, vl);
+ 
+     input += vl;
++    /*@ ghost
++      /@ loop invariant 0<=l<=vl;
++          loop invariant \forall integer j; 0<=j<l ==> same_value(vy.lane[j],unary_value(i_base[total-n+j]));
++          loop assigns l; loop variant vl-l; @/
++      for(size_t l=0;l<vl;l++) {
++        proof_rvv_lane(vx.lane[l],i_base[total-n+l],vabsx.lane[l],cmp.lane[l],vrndabsx_pre.lane[l],vrndabsx.lane[l],vrnd_signed.lane[l],vy_pre.lane[l],is_nan.lane[l],vx_u32.lane[l],vx_quiet.lane[l],vx_qnan.lane[l],vy.lane[l]);
++      }
++    */
++    /*@ assert \forall integer j; 0<=j<vl ==> same_value(vy.lane[j],unary_value(i_base[total-n+j])); */
++    //@ ghost proof_store_join(i_base, o_base, vy, total-n, vl);
++    //@ ghost proof_output_range(i_base, o_base, total-n, vl);
+     output += vl;
+     n -= vl;
+   }
++  /*@ assert \forall integer j; 0<=j<total ==> same_value(o_base[j],unary_value(i_base[j])); */
+ }
+\ No newline at end of file
+--- a/harness.c
++++ b/harness.c
+@@ -4,7 +4,10 @@
+   struct xnn_f32_default_params params={0};
+   test_neon(n*sizeof(float),input,left,&params);
+   test_rvv(n*sizeof(float),input,right,&params);
++  //@ ghost proof_join_all(input, left, right, n);
++  /*@ loop invariant 0<=i<=n; loop assigns i; loop variant n-i; */
+   for(size_t i=0;i<n;i++) {
++    /*@ assert same_value(left[i],right[i]); */
+     if (!(left[i]==right[i] || (left[i]!=left[i] && right[i]!=right[i]))) return 0;
+   }
+   return 1;
+--- a/unit.c
++++ b/unit.c
+@@ -1,4 +1,533 @@
+ #include "spec.h"
++/*@ ghost
++/@ requires 0<=u<4294967296;
++    terminates \true; assigns \nothing;
++    ensures \is_NaN(from_repr32(u)) <==>
++      ((2139095040<u<2147483648) || (4286578688<u<4294967296)); @/
++void proof_nan32_classifier(uint32_t u) {}
++
++/@ terminates \true; assigns \nothing;
++    ensures 0<=repr32(x)<4294967296; @/
++void proof_repr_range(float x) {}
++
++/@ terminates \true; assigns \nothing;
++    ensures !\is_NaN(x) ==> same_float(from_repr32(repr32(x)),x); @/
++void proof_repr_value(float x) {}
++
++/@ requires 0<=u<4294967296;
++    requires same_float(from_repr32(u),x);
++    terminates \true; assigns \nothing;
++    ensures !\is_NaN(x) ==> repr32(x)==u; @/
++void proof_repr_reencode(uint32_t u,float x) {}
++
++/@ requires \is_NaN(a); terminates \true; assigns \nothing;
++    ensures \is_NaN(fp_add32(a,b)); @/
++void proof_add_nan(float a,float b) {}
++
++/@ requires \is_NaN(a); terminates \true; assigns \nothing;
++    ensures \is_NaN(fp_sub32(a,b)); @/
++void proof_sub_nan(float a,float b) {}
++
++/@ requires \is_NaN(a); terminates \true; assigns \nothing;
++    ensures !\eq_float(a,a); @/
++void proof_eq_nan(float a) {}
++
++/@ requires !\is_NaN(a); terminates \true; assigns \nothing;
++    ensures \eq_float(a,a); @/
++void proof_eq_refl(float a) {}
++
++/@ terminates \true; assigns \nothing;
++    ensures \lt_float(a,b) <==> \gt_float(b,a); @/
++void proof_lt_gt(float a,float b) {}
++
++/@ requires \is_NaN(from_repr32(u));
++    terminates \true; assigns \nothing;
++    ensures \is_NaN(from_repr32(u|4194304)); @/
++void proof_qnan_scalar(uint32_t u) {
++  proof_nan32_classifier(u);
++  if (u < UINT32_C(0x80000000)) {
++    /@ assert integration_positive_nan_range: 2139095040<u<2147483648; @/
++    /@ assert integration_positive_quiet_range: 2139095040<(u|4194304)<2147483648; @/
++  } else {
++    /@ assert integration_negative_nan_range: 4286578688<u<4294967296; @/
++    /@ assert integration_negative_quiet_range: 4286578688<(u|4194304)<4294967296; @/
++  }
++  proof_nan32_classifier(u|4194304);
++}
++
++/@ requires same_float(a,b);
++    requires !\is_NaN(a);
++    terminates \true; assigns \nothing;
++    ensures repr32(a)==repr32(b); @/
++void proof_bits_eq(float a,float b) {}
++
++/@ requires same_float(vx,x);
++    requires !\is_NaN(x);
++    terminates \true; assigns \nothing;
++    ensures repr32(vx)==repr32(x); @/
++void proof_vx_bits(float vx,float x) {}
++
++/@ requires same_float(vrnd,unary_round_abs(x));
++    requires !\is_NaN(vrnd);
++    terminates \true; assigns \nothing;
++    ensures repr32(vrnd)==repr32(unary_round_abs(x)); @/
++void proof_round_bits(float vrnd,float x) {}
++
++/@ requires same_float(vabs,unary_abs(x));
++    requires same_float(vmagic,from_repr32(1258291200));
++    requires same_float(vrnd1,fp_add32(vabs,vmagic));
++    requires same_float(vrnd,fp_sub32(vrnd1,vmagic));
++    terminates \true; assigns \nothing;
++    ensures same_float(vrnd,unary_round_abs(x)); @/
++void proof_round_cong(float vabs,float vmagic,float vrnd1,float vrnd,float x) {
++  /@ assert same_float(fp_add32(vabs,vmagic),fp_add32(unary_abs(x),from_repr32(1258291200))); @/
++  /@ assert same_float(fp_sub32(vrnd1,vmagic),fp_sub32(fp_add32(vabs,vmagic),vmagic)); @/
++  /@ assert same_float(vrnd,unary_round_abs(x)); @/
++}
++
++/@ terminates \true; assigns \nothing;
++    ensures same_float(from_repr32(1258291200),8388608.0f); @/
++void proof_magic_literal(void) {}
++
++/@ requires same_float(a,b);
++    terminates \true; assigns \nothing;
++    ensures same_float(unary_abs(a),unary_abs(b)); @/
++void proof_unary_abs_cong(float a,float b) {
++  if (a != a) {
++    /@ assert \is_NaN(b); @/
++    /@ assert unary_abs(a)==a; @/
++    /@ assert unary_abs(b)==b; @/
++    /@ assert same_float(unary_abs(a),unary_abs(b)); @/
++  } else {
++    /@ assert !\is_NaN(b); @/
++    proof_bits_eq(a,b);
++    /@ assert repr32(b)==repr32(a); @/
++    /@ assert unary_abs(a)==from_repr32(repr32(a)&2147483647); @/
++    /@ assert unary_abs(b)==from_repr32(repr32(b)&2147483647); @/
++    /@ assert same_float(unary_abs(a),unary_abs(b)); @/
++  }
++}
++
++/@ requires same_float(vmagic,from_repr32(1258291200));
++    terminates \true; assigns \nothing;
++    ensures same_float(unary_abs(vmagic),vmagic); @/
++void proof_magic_abs(float vmagic) {
++  proof_nan32_classifier(1258291200);
++  proof_repr_reencode(1258291200,vmagic);
++  /@ assert !\is_NaN(vmagic); @/
++  /@ assert repr32(vmagic)==1258291200; @/
++  /@ assert integration_magic_mask: (1258291200&2147483647)==1258291200; @/
++  /@ assert integration_magic_payload: (repr32(vmagic)&2147483647)==1258291200; @/
++  /@ assert unary_abs(vmagic)==from_repr32(1258291200); @/
++  /@ assert same_float(unary_abs(vmagic),vmagic); @/
++}
++
++/@ requires same_float(vabs,unary_abs(x));
++    requires same_float(vrnd1,fp_add32(vabs,8388608.0f));
++    requires same_float(vrnd,fp_sub32(vrnd1,8388608.0f));
++    terminates \true; assigns \nothing;
++    ensures same_float(vrnd,unary_round_abs(x)); @/
++void proof_round_cong2(float vabs,float vrnd1,float vrnd,float x) {
++  proof_magic_literal();
++  /@ assert same_float(fp_add32(vabs,8388608.0f),fp_add32(unary_abs(x),from_repr32(1258291200))); @/
++  /@ assert same_float(fp_sub32(vrnd1,8388608.0f),fp_sub32(fp_add32(vabs,8388608.0f),8388608.0f)); @/
++  /@ assert same_float(vrnd,unary_round_abs(x)); @/
++}
++
++/@ requires same_float(vmagic,from_repr32(1258291200));
++    requires same_float(vabs,unary_abs(x));
++    requires same_float(vx,x);
++    terminates \true; assigns \nothing;
++    ensures (\lt_float(unary_abs(vmagic),unary_abs(vx)) <==> \lt_float(vmagic,vabs)); @/
++void proof_lt_abs_cong(float vmagic,float vabs,float vx,float x) {
++  proof_magic_abs(vmagic);
++  proof_unary_abs_cong(vx,x);
++  /@ assert same_float(unary_abs(vmagic),vmagic); @/
++  /@ assert same_float(unary_abs(vx),unary_abs(x)); @/
++  /@ assert same_float(unary_abs(vx),vabs); @/
++  /@ assert (\lt_float(unary_abs(vmagic),unary_abs(vx)) <==> \lt_float(vmagic,vabs)); @/
++}
++
++/@ requires same_float(vx,x);
++    requires same_float(vabs,unary_abs(x));
++    requires same_float(vmagic,from_repr32(1258291200));
++    requires mask == ((\lt_float(unary_abs(vmagic),unary_abs(vx)) ? 4294967295 : 0) | 2147483648);
++    requires same_float(vrnd1,fp_add32(vabs,vmagic));
++    requires same_float(vrnd,fp_sub32(vrnd1,vmagic));
++    requires (mask==4294967295 ==> same_float(vy,vx)) &&
++             (mask==2147483648 && !\is_NaN(vx) && !\is_NaN(vrnd) ==>
++                same_float(vy,from_repr32((repr32(vx)&2147483648)|(repr32(vrnd)&2147483647)))) &&
++             (mask==2147483648 && \is_NaN(vrnd) ==> \is_NaN(vy));
++    terminates \true; assigns \nothing;
++    ensures same_value(vy,unary_value(x)); @/
++void proof_neon_lane(float vx,float x,float vabs,float vmagic,uint32_t mask,float vrnd1,float vrnd,float vy) {
++  if (x != x) {
++    /@ assert \is_NaN(vx); @/
++    /@ assert \is_NaN(vabs); @/
++    proof_add_nan(vabs,vmagic);
++    /@ assert \is_NaN(vrnd1); @/
++    proof_sub_nan(vrnd1,vmagic);
++    /@ assert \is_NaN(vrnd); @/
++    /@ assert !\lt_float(unary_abs(vmagic),unary_abs(vx)); @/
++    /@ assert mask==2147483648; @/
++    /@ assert \is_NaN(vy); @/
++    /@ assert unary_value(x)==x; @/
++    /@ assert same_value(vy,x); @/
++    /@ assert same_value(vy,unary_value(x)); @/
++  } else if (vmagic < vabs) {
++    proof_lt_abs_cong(vmagic,vabs,vx,x);
++    /@ assert \lt_float(unary_abs(vmagic),unary_abs(vx)); @/
++    /@ assert mask==4294967295; @/
++    /@ assert same_float(vy,vx); @/
++    /@ assert same_float(vy,x); @/
++    proof_lt_gt(vmagic,vabs);
++    /@ assert \gt_float(vabs,vmagic); @/
++    /@ assert \gt_float(unary_abs(x),from_repr32(1258291200)); @/
++    /@ assert unary_value(x)==x; @/
++    /@ assert same_value(vy,unary_value(x)); @/
++  } else {
++    /@ assert !\is_NaN(vx); @/
++    proof_lt_abs_cong(vmagic,vabs,vx,x);
++    /@ assert !\lt_float(unary_abs(vmagic),unary_abs(vx)); @/
++    /@ assert mask==2147483648; @/
++    proof_round_cong(vabs,vmagic,vrnd1,vrnd,x);
++    /@ assert same_float(vrnd,unary_round_abs(x)); @/
++    proof_lt_gt(vmagic,vabs);
++    /@ assert !\gt_float(vabs,vmagic); @/
++    /@ assert !\gt_float(unary_abs(x),from_repr32(1258291200)); @/
++    if (vrnd != vrnd) {
++      /@ assert \is_NaN(vy); @/
++      /@ assert \is_NaN(unary_round_abs(x)); @/
++      /@ assert \is_NaN(unary_value(x)); @/
++      /@ assert same_value(vy,unary_value(x)); @/
++    } else {
++      /@ assert !\is_NaN(unary_round_abs(x)); @/
++      proof_round_bits(vrnd,x);
++      /@ assert repr32(unary_round_abs(x))==repr32(vrnd); @/
++      proof_vx_bits(vx,x);
++      /@ assert repr32(vx)==repr32(x); @/
++      /@ assert same_float(vy,from_repr32((repr32(vx)&2147483648)|(repr32(vrnd)&2147483647))); @/
++      /@ assert unary_value(x)==from_repr32((repr32(vx)&2147483648)|(repr32(vrnd)&2147483647)); @/
++      /@ assert same_value(vy,unary_value(x)); @/
++    }
++  }
++}
++
++/@ requires same_float(vx,x);
++    requires same_float(vabs,unary_abs(x));
++    requires cmp <==> \gt_float(vabs,8388608.0f);
++    requires same_float(vrnd1,fp_add32(vabs,8388608.0f));
++    requires same_float(vrnd,fp_sub32(vrnd1,8388608.0f));
++    requires (\is_NaN(vrnd) ==> \is_NaN(vsgn)) &&
++             (!\is_NaN(vrnd) && !\is_NaN(vx) ==>
++                same_float(vsgn,from_repr32((repr32(vrnd)&2147483647)|(repr32(vx)&2147483648))));
++    requires same_float(vy1, cmp ? vx : vsgn);
++    requires is_nan <==> !\eq_float(vx,vx);
++    requires (\is_NaN(vx) ==> \is_NaN(from_repr32(vxu)));
++    requires vxq == (vxu|4194304);
++    requires same_float(vqnan,from_repr32(vxq));
++    requires same_float(vy, is_nan ? vqnan : vy1);
++    terminates \true; assigns \nothing;
++    ensures same_value(vy,unary_value(x)); @/
++void proof_rvv_lane(float vx,float x,float vabs,_Bool cmp,float vrnd1,float vrnd,float vsgn,float vy1,_Bool is_nan,uint32_t vxu,uint32_t vxq,float vqnan,float vy) {
++  if (x != x) {
++    /@ assert \is_NaN(vx); @/
++    proof_eq_nan(vx);
++    /@ assert is_nan; @/
++    /@ assert \is_NaN(from_repr32(vxu)); @/
++    proof_qnan_scalar(vxu);
++    /@ assert \is_NaN(from_repr32(vxq)); @/
++    /@ assert \is_NaN(vqnan); @/
++    /@ assert same_float(vy,vqnan); @/
++    /@ assert \is_NaN(vy); @/
++    /@ assert unary_value(x)==x; @/
++    /@ assert same_value(vy,unary_value(x)); @/
++  } else if (8388608.0f < vabs) {
++    /@ assert !\is_NaN(vx); @/
++    proof_eq_refl(vx);
++    /@ assert !is_nan; @/
++    proof_lt_gt(8388608.0f,vabs);
++    /@ assert cmp; @/
++    /@ assert same_float(vy1,vx); @/
++    /@ assert same_float(vy,vx); @/
++    /@ assert same_float(vy,x); @/
++    proof_magic_literal();
++    /@ assert \gt_float(unary_abs(x),from_repr32(1258291200)); @/
++    /@ assert unary_value(x)==x; @/
++    /@ assert same_value(vy,unary_value(x)); @/
++  } else {
++    /@ assert !\is_NaN(vx); @/
++    proof_eq_refl(vx);
++    /@ assert !is_nan; @/
++    proof_lt_gt(8388608.0f,vabs);
++    /@ assert !cmp; @/
++    /@ assert same_float(vy1,vsgn); @/
++    /@ assert same_float(vy,vsgn); @/
++    proof_magic_literal();
++    /@ assert !\gt_float(unary_abs(x),from_repr32(1258291200)); @/
++    proof_round_cong2(vabs,vrnd1,vrnd,x);
++    /@ assert same_float(vrnd,unary_round_abs(x)); @/
++    if (vrnd != vrnd) {
++      /@ assert \is_NaN(vsgn); @/
++      /@ assert \is_NaN(vy); @/
++      /@ assert \is_NaN(unary_round_abs(x)); @/
++      /@ assert \is_NaN(unary_value(x)); @/
++      /@ assert same_value(vy,unary_value(x)); @/
++    } else {
++      /@ assert !\is_NaN(unary_round_abs(x)); @/
++      proof_round_bits(vrnd,x);
++      /@ assert repr32(unary_round_abs(x))==repr32(vrnd); @/
++      proof_vx_bits(vx,x);
++      /@ assert repr32(vx)==repr32(x); @/
++      /@ assert same_float(vsgn,from_repr32((repr32(vrnd)&2147483647)|(repr32(vx)&2147483648))); @/
++      /@ assert unary_value(x)==from_repr32((repr32(vrnd)&2147483647)|(repr32(x)&2147483648)); @/
++      /@ assert same_float(vy,unary_value(x)); @/
++      /@ assert same_value(vy,unary_value(x)); @/
++    }
++  }
++}
++
++/@ requires 0<=u<4294967296; terminates \true; assigns \nothing;
++    ensures (u&2147483647)==(((uint32_t)(u<<1))>>1); @/
++void proof_abs_mask_shift(uint32_t u) {}
++
++/@ requires 0<=u<4294967296; terminates \true; assigns \nothing;
++    ensures (((uint32_t)(u<<1))>>1)==(u<2147483648?u:u-2147483648); @/
++void proof_abs_shift_arithmetic(uint32_t u) {}
++
++/@ requires 0<=u<4294967296; terminates \true; assigns \nothing;
++    ensures (u&2147483647)==(u<2147483648?u:u-2147483648); @/
++void proof_abs_mask_arithmetic(uint32_t u) {
++  proof_abs_mask_shift(u);
++  proof_abs_shift_arithmetic(u);
++}
++
++/@ requires 0<=u<4294967296; terminates \true; assigns \nothing;
++    ensures ((u&2147483647)|(u&2147483648))==u; @/
++void proof_mask_partition(uint32_t u) {}
++
++/@ requires 0<=u<4294967296; terminates \true; assigns \nothing;
++    ensures ((u&2147483647)&(u&2147483648))==0; @/
++void proof_mask_disjoint(uint32_t u) {}
++
++/@ requires 0<=u<4294967296; terminates \true; assigns \nothing;
++    ensures (u&2147483648)==(u<2147483648?0:2147483648); @/
++void proof_sign_mask_arithmetic(uint32_t u) {
++  proof_abs_mask_arithmetic(u);
++  proof_mask_partition(u);
++  proof_mask_disjoint(u);
++}
++
++/@ requires 0<=u<4294967296 && 0<=v<4294967296;
++    terminates \true; assigns \nothing;
++    ensures ((u&2147483647)&(v&2147483648))==0; @/
++void proof_sign_pair_disjoint(uint32_t u,uint32_t v) {}
++
++/@ requires (x&y)==0;
++    terminates \true; assigns \nothing;
++    ensures (x|y)==x+y; @/
++void proof_disjoint_word_join(uint32_t x,uint32_t y) {}
++
++/@ requires 0<=u<4294967296 && 0<=v<4294967296;
++    terminates \true; assigns \nothing;
++    ensures ((u&2147483647)|(v&2147483648))==(u&2147483647)+(v&2147483648); @/
++void proof_disjoint_sign_join(uint32_t u,uint32_t v) {
++  proof_sign_pair_disjoint(u,v);
++  proof_disjoint_word_join(u&2147483647,v&2147483648);
++}
++
++/@ requires 0<=u<4294967296 && 0<=v<4294967296;
++    terminates \true; assigns \nothing;
++    ensures \is_NaN(from_repr32(u)) ==>
++      \is_NaN(from_repr32((u&2147483647)|(v&2147483648))); @/
++void proof_nan_sign_join(uint32_t u,uint32_t v) {
++  proof_abs_mask_arithmetic(u);
++  proof_sign_mask_arithmetic(v);
++  proof_disjoint_sign_join(u,v);
++  proof_nan32_classifier(u);
++  proof_nan32_classifier((u&2147483647)|(v&2147483648));
++}
++
++/@ terminates \true; assigns \nothing;
++    ensures \forall integer u,v; 0<=u<4294967296 && 0<=v<4294967296 ==>
++      (\is_NaN(from_repr32(u)) ==>
++       \is_NaN(from_repr32((u&2147483647)|(v&2147483648)))); @/
++void proof_nan_sign_all(void) {
++  /@ loop invariant 0<=k<=4294967296;
++      loop invariant \forall integer u,v; 0<=u<k && 0<=v<4294967296 ==>
++        (\is_NaN(from_repr32(u)) ==>
++         \is_NaN(from_repr32((u&2147483647)|(v&2147483648))));
++      loop assigns k;
++      loop variant 4294967296-k; @/
++  for (uint64_t k=0;k<UINT64_C(4294967296);k++) {
++    /@ loop invariant 0<=l<=4294967296;
++        loop invariant \forall integer v; 0<=v<l ==>
++          (\is_NaN(from_repr32(k)) ==>
++           \is_NaN(from_repr32((k&2147483647)|(v&2147483648))));
++        loop assigns l;
++        loop variant 4294967296-l; @/
++    for (uint64_t l=0;l<UINT64_C(4294967296);l++) {
++      proof_nan_sign_join((uint32_t)k,(uint32_t)l);
++    }
++  }
++}
++
++/@ requires 0<=u<4294967296;
++    terminates \true; assigns \nothing;
++    ensures \is_NaN(from_repr32(u)) ==>
++            \is_NaN(from_repr32(u&2147483647)); @/
++void proof_nan_abs_mask(uint32_t u) {
++  proof_abs_mask_arithmetic(u);
++  proof_nan32_classifier(u);
++  proof_nan32_classifier(u&2147483647);
++}
++
++/@ terminates \true; assigns \nothing;
++    ensures \forall integer u; 0<=u<4294967296 ==>
++      (\is_NaN(from_repr32(u)) ==> \is_NaN(from_repr32(u&2147483647))); @/
++void proof_nan_abs_all(void) {
++  /@ loop invariant 0<=k<=4294967296;
++      loop invariant \forall integer u; 0<=u<k ==>
++        (\is_NaN(from_repr32(u)) ==> \is_NaN(from_repr32(u&2147483647)));
++      loop assigns k;
++      loop variant 4294967296-k; @/
++  for (uint64_t k=0;k<UINT64_C(4294967296);k++) {
++    proof_nan_abs_mask((uint32_t)k);
++  }
++}
++
++/@ requires b==0 || b==4 || b==8 || b==12;
++    terminates \true;
++    assigns \nothing;
++    ensures tail_eight: ((b & 8) != 0) <==> (b==8 || b==12);
++    ensures tail_four: ((b & 4) != 0) <==> (b==4 || b==12);
++    ensures tail_parts: b/4 == ((b & 8) != 0 ? 2 : 0) + ((b & 4) != 0 ? 1 : 0);
++    ensures tail_remaining: (b%8)/4 == ((b & 4) != 0 ? 1 : 0);
++    ensures tail_after_two: b/4 - ((b & 8) != 0 ? 2 : 0) == (b%8)/4; @/
++void proof_f32_tail_bits(size_t b) {
++  switch (b) { case 0: break; case 4: break; case 8: break; case 12: break; }
++}
++
++/@ requires 0<len && off<=SIZE_MAX-len;
++    requires \valid_read(src+(0..off+len-1));
++    requires \valid(dst+(0..off+len-1));
++    requires \forall integer j; 0<=j<off ==> same_value(dst[j],unary_value(src[j]));
++    requires \forall integer j; off<=j<off+len ==> same_value(dst[j],unary_value(src[j]));
++    terminates \true;
++    assigns \nothing;
++    ensures \forall integer j; 0<=j<off+len ==> same_value(dst[j],unary_value(src[j])); @/
++void proof_output_range(const float *src, float *dst, size_t off, size_t len) {
++  /@ loop invariant 0<=k<=off+len;
++      loop invariant \forall integer j; 0<=j<k ==> same_value(dst[j],unary_value(src[j]));
++      loop assigns k;
++      loop variant off+len-k; @/
++  for (size_t k=0;k<off+len;k++) {
++    if (k<off) {
++      /@ assert same_value(dst[k],unary_value(src[k])); @/
++    } else {
++      /@ assert off<=k<off+len; @/
++      /@ assert same_value(dst[k],unary_value(src[k])); @/
++    }
++  }
++}
++
++/@ requires off<=SIZE_MAX-4;
++    requires \valid_read(src+(0..off+3));
++    requires \valid(dst+(0..off+3));
++    requires \forall integer j; 0<=j<off ==> same_value(dst[j],unary_value(src[j]));
++    requires same_value(dst[off],unary_value(src[off]));
++    requires same_value(dst[off+1],unary_value(src[off+1]));
++    requires same_value(dst[off+2],unary_value(src[off+2]));
++    requires same_value(dst[off+3],unary_value(src[off+3]));
++    terminates \true;
++    assigns \nothing;
++    ensures \forall integer j; 0<=j<off+4 ==> same_value(dst[j],unary_value(src[j])); @/
++void proof_output_range4(const float *src, float *dst, size_t off) {
++  proof_output_range(src,dst,off,4);
++}
++
++/@ requires off<=SIZE_MAX-2;
++    requires \valid_read(src+(0..off+1));
++    requires \valid(dst+(0..off+1));
++    requires \forall integer j; 0<=j<off ==> same_value(dst[j],unary_value(src[j]));
++    requires same_value(dst[off],unary_value(src[off]));
++    requires same_value(dst[off+1],unary_value(src[off+1]));
++    terminates \true;
++    assigns \nothing;
++    ensures \forall integer j; 0<=j<off+2 ==> same_value(dst[j],unary_value(src[j])); @/
++void proof_output_range2(const float *src, float *dst, size_t off) {
++  proof_output_range(src,dst,off,2);
++}
++
++/@ requires off<=SIZE_MAX-1;
++    requires \valid_read(src+(0..off));
++    requires \valid(dst+(0..off));
++    requires \forall integer j; 0<=j<off ==> same_value(dst[j],unary_value(src[j]));
++    requires same_value(dst[off],unary_value(src[off]));
++    terminates \true;
++    assigns \nothing;
++    ensures \forall integer j; 0<=j<off+1 ==> same_value(dst[j],unary_value(src[j])); @/
++void proof_output_range1(const float *src, float *dst, size_t off) {
++  proof_output_range(src,dst,off,1);
++}
++
++/@ requires same_value(a,unary_value(p[0]));
++    requires same_value(c,unary_value(p[0]));
++    terminates \true;
++    assigns \nothing;
++    ensures same_value(a,c); @/
++void proof_value_join3(float a,float c,const float *p) {}
++
++/@ requires \forall integer j; 0<=j<n ==> same_value(left[j],unary_value(input[j]));
++    requires \forall integer j; 0<=j<n ==> same_value(right[j],unary_value(input[j]));
++    terminates \true; assigns \nothing;
++    ensures \forall integer j; 0<=j<n ==> same_value(left[j],right[j]); @/
++void proof_join_all(const float *input,const float *left,const float *right,size_t n) {
++  /@ loop invariant 0<=k<=n;
++      loop invariant \forall integer j; 0<=j<k ==> same_value(left[j],right[j]);
++      loop assigns k; loop variant n-k; @/
++  for (size_t k=0;k<n;k++) {
++    proof_value_join3(left[k],right[k],input+k);
++  }
++}
++
++/@ requires \forall integer j; 0<=j<4 ==> same_value(vy.lane[j],unary_value(i_base[off+j]));
++    requires \forall integer j; 0<=j<4 ==> same_float(o_base[off+j],vy.lane[j]);
++    terminates \true; assigns \nothing;
++    ensures same_value(o_base[off+0],unary_value(i_base[off+0]));
++    ensures same_value(o_base[off+1],unary_value(i_base[off+1]));
++    ensures same_value(o_base[off+2],unary_value(i_base[off+2]));
++    ensures same_value(o_base[off+3],unary_value(i_base[off+3])); @/
++void proof_store4_join(const float *i_base,float *o_base,float32x4_t vy,size_t off) {}
++
++/@ requires \forall integer j; 0<=j<2 ==> same_float(vy_lo.lane[j],vy.lane[j+s]);
++    requires \forall integer j; 0<=j<2 ==> same_value(vy.lane[j+s],unary_value(i_base[off+j]));
++    terminates \true; assigns \nothing;
++    ensures same_value(vy_lo.lane[0],unary_value(i_base[off+0]));
++    ensures same_value(vy_lo.lane[1],unary_value(i_base[off+1])); @/
++void proof_vget2_join(const float *i_base,float32x2_t vy_lo,float32x4_t vy,size_t off,size_t s) {}
++
++/@ requires same_value(vy_lo.lane[0],unary_value(i_base[off+0]));
++    requires same_value(vy_lo.lane[1],unary_value(i_base[off+1]));
++    requires same_float(o_base[off+0],vy_lo.lane[0]);
++    requires same_float(o_base[off+1],vy_lo.lane[1]);
++    terminates \true; assigns \nothing;
++    ensures same_value(o_base[off+0],unary_value(i_base[off+0]));
++    ensures same_value(o_base[off+1],unary_value(i_base[off+1])); @/
++void proof_store2_join(const float *i_base,float *o_base,float32x2_t vy_lo,size_t off) {}
++
++/@ requires same_value(vy_lo.lane[0],unary_value(i_base[off+0]));
++    requires same_float(o_base[off+0],vy_lo.lane[0]);
++    terminates \true; assigns \nothing;
++    ensures same_value(o_base[off+0],unary_value(i_base[off+0])); @/
++void proof_store1_join(const float *i_base,float *o_base,float32x2_t vy_lo,size_t off) {}
++
++/@ requires \forall integer j; 0<=j<vl ==> same_value(vy.lane[j],unary_value(i_base[off+j]));
++    requires \forall integer j; 0<=j<vl ==> same_float(o_base[off+j],vy.lane[j]);
++    terminates \true; assigns \nothing;
++    ensures \forall integer j; 0<=j<vl ==> same_value(o_base[off+j],unary_value(i_base[off+j])); @/
++void proof_store_join(const float *i_base,float *o_base,vfloat32m8_t vy,size_t off,size_t vl) {}
++*/
+ #include "base.c"
+ #include "float_ops.c"
+ #include "representation.c"

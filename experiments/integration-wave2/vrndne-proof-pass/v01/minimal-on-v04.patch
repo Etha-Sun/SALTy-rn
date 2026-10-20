@@ -1,0 +1,24 @@
+--- a/unit.c
++++ b/unit.c
+@@ -519,8 +519,10 @@
+     ensures same_value(vy_lo.lane[1],unary_value(i_base[off+1])); @/
+ void proof_vget2_join(const float *i_base,float32x2_t vy_lo,float32x4_t vy,size_t off,size_t s)  {
+   /@ assert integration_vget2_value_0: same_value(vy_lo.lane[0],vy.lane[s+0]); @/
++  /@ assert vrndne_vget2_operand_0: same_value(vy.lane[s+0],unary_value(i_base[off+0])); @/
+   /@ assert integration_vget2_join_0: same_value(vy_lo.lane[0],unary_value(i_base[off+0])); @/
+   /@ assert integration_vget2_value_1: same_value(vy_lo.lane[1],vy.lane[s+1]); @/
++  /@ assert vrndne_vget2_operand_1: same_value(vy.lane[s+1],unary_value(i_base[off+1])); @/
+   /@ assert integration_vget2_join_1: same_value(vy_lo.lane[1],unary_value(i_base[off+1])); @/
+ }
+ 
+@@ -543,7 +545,9 @@
+     requires \forall integer j; 0<=j<vl ==> same_float(o_base[off+j],vy.lane[j]);
+     terminates \true; assigns \nothing;
+     ensures \forall integer j; 0<=j<vl ==> same_value(o_base[off+j],unary_value(i_base[off+j])); @/
+-void proof_store_join(const float *i_base,float *o_base,vfloat32m8_t vy,size_t off,size_t vl) {}
++void proof_store_join(const float *i_base,float *o_base,vfloat32m8_t vy,size_t off,size_t vl) {
++  /@ assert vrndne_store_values: \forall integer j; 0<=j<vl ==> same_value(o_base[off+j],vy.lane[j]); @/
++}
+ */
+ #include "base.c"
+ #include "float_ops.c"

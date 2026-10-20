@@ -1,0 +1,1 @@
+新private byte-store n范围/输出字节有效性契约及实际输出bytepost，配套loop bound/processedbytes/assigns/variant。普通C/spec/model/driver/checker冻结；body单独全查，newprivatepre由同proofcallers候选另查；不能只body成功就算8债务闭。300s行政窗口以守10分钟任务预算，单goal30s/1024保持。

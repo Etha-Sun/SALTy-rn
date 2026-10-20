@@ -1,0 +1,33 @@
+/*@ lemma values_unary_congruence:
+      \forall float x,y,s,t;
+      same_float(x,y) && same_float(s,t) ==>
+      same_value(unary_value(x,s),unary_value(y,t)); */
+/*@ lemma values_unary_select:
+      \forall float x,y,s,t,m,r;
+      same_float(x,y) && same_float(s,t) &&
+      same_value(m,fp_mul32(x,s)) &&
+      same_float(r,\sign(y)==\sign((float)-1.0)?m:x) ==>
+      same_value(r,unary_value(y,t)); */
+/*@ lemma values_unary_join:
+      \forall float x,y,s,t,a,b;
+      same_float(x,y) && same_float(s,t) &&
+      same_value(a,unary_value(x,s)) &&
+      same_value(b,unary_value(y,t)) ==> same_value(a,b); */
+/*@ lemma values_unary_mask:
+      \forall float x,y,s,t,m,r; \forall integer mask;
+      same_float(x,y) && same_float(s,t) &&
+      same_value(m,fp_mul32(x,s)) &&
+      (!\is_NaN(y) ==>
+        ((mask!=0) <==> (\sign(y)==\sign((float)-1.0)))) &&
+      same_float(r,mask!=0?m:x) ==>
+      same_value(r,unary_value(y,t)); */
+/*@ lemma values_float_sign_transfer:
+      \forall float x,y;
+      same_float(x,y) && !\is_NaN(y) ==> \sign(x)==\sign(y); */
+/*@ lemma values_mask_sign_transfer:
+      \forall float x,y; \forall integer mask;
+      same_float(x,y) &&
+      (!\is_NaN(x) ==>
+        ((mask!=0) <==> (\sign(x)==\sign((float)-1.0)))) ==>
+      (!\is_NaN(y) ==>
+        ((mask!=0) <==> (\sign(y)==\sign((float)-1.0)))); */

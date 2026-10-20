@@ -1,0 +1,1 @@
+策略-only tailprefix诊断真闭：main1/1+全部18globals=19/19。仅在immutable v15 proof后加harness hint，不改C/合同/invariants/ghost。实际只执行CASES B==8||B==12，两个分支CVC5 1.9/4.28秒真闭，instance fallback没有使用。此目标的依赖仍须与v19 lane及最后whole full一起检查，不能称整核通过。详细证据review.json；更精简的21行综合策略已交于neon-exit-tactic-v03/minimal-cases-only.acsl.txt。

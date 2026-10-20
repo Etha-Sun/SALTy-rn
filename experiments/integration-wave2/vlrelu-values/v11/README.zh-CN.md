@@ -1,0 +1,1 @@
+按root更简替代：NEON4 proof ghost loop完全删除，改4次固定lane0/1/2/3 checked point helper调用。20条private pre+4个input读RTE、offset no-wrap和整数0..3穷尽cut均实际检查；全equivalent+helper函数VC。n不受新限制，ordinaryC/spec/shim/model/driver/checker未改；depth16/par64/solver30s/1GiB不变。保留v09/v10活动版本自然落盘。

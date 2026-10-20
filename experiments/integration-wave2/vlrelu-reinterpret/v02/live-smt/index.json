@@ -1,0 +1,7 @@
+[
+  {
+    "file": "why_88f4b9_zilch-T-wp_goal.smt2",
+    "bytes": 45019,
+    "tail": "fp_sub32\"\n(declare-fun L_fp_sub32 (Float32\n  Float32) Float32)\n\n;; \"Q_fp_sub_congruence\"\n(assert\n  (forall ((a Float32) (b Float32) (c Float32) (d Float32))\n    (=>\n      (P_same_float a c)\n      (=>\n        (P_same_float b d)\n        (P_same_value (L_fp_sub32 a b) (L_fp_sub32 c d))))))\n\n;; Goal \"wp_goal\"\n(assert\n  (not\n  (forall ((f Float32) (f1 Float32) (i Int) (f2 Float32) (i1 Int) (i2 Int))\n    (=>\n      (<= 0 i2)\n      (=>\n        (<= 0 i1)\n        (=>\n          (<= i2 4294967295)\n          (=>\n            (<= i1 4294967295)\n            (=>\n              (P_same_float (decode_int i2) f1)\n              (=>\n                (P_same_float (decode_int i1) f)\n                (=>\n                  (P_same_float\n                    f2\n                    (decode_int\n                      (lor (land i1 i) (land i2 (to_uint32 (lnot i))))))\n                  (=>\n                    (or (= i 0) (= i 4294967295))\n                    (P_same_float f2 (ite (= i 0) f1 f)))))))))))))\n\n(check-sat)\n"
+  }
+]

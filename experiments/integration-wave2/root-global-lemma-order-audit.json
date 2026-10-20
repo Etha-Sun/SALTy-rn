@@ -1,0 +1,20 @@
+{
+  "scope": "Source audit of global-lemma dependency ordering in fixed local WP source; no complete tool soundness theorem",
+  "source_files": [
+    {
+      "path": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/LogicUsage.ml",
+      "sha256": "7d57e411cdc6a2dfb4f931692546ebcda2d1a9a2a4841f23b5cfa1b3b50bd341"
+    },
+    {
+      "path": "experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/source/src/plugins/wp/cfgWP.ml",
+      "sha256": "490ab8a263f85e50e304d6cd4ee9ff7a5137f1c7f00e4ec7cd7555b68483256c"
+    }
+  ],
+  "findings": [
+    "LogicUsage.lemma_of_global stores only the prior proofcontext as lem_depends (lines186-194).",
+    "The visitor creates/registers a top-level lemma before adding it to proofcontext (lines390-394). Therefore later top-level lemmas and the current lemma itself are not automatically proof hypotheses for that lemma.",
+    "cfgWP.compile_lemma supplies that lem_depends list as the VC axioms (line1638).",
+    "All candidate top-level lemma obligations still must actually pass; main WP can use their declarations, so a missing/failed lemma prevents admission. No new axiomatic blocks are allowed by the frozen checker."
+  ],
+  "changes_to_frozen_toolchain": false
+}

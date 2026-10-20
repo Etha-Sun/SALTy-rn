@@ -1,0 +1,1 @@
+逐字同v15 proof，独立新scope检查3条NEON+7条继承RVV/harness memory invariant的20个est/preserve，其他helperbody/value/RTE由并行主v15及最终统一full检查。不可当完整kernel。保持1200行政预算/30solver/1024MiB/par64，旧v09 sixgreen不继承为当前同proof结果。

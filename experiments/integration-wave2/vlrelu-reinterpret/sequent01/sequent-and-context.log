@@ -1,0 +1,1951 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "why3", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/sequent01/raw.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/attempts/0001/.build/guard01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/attempts/0001/.build/guard01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vreinterpretq_s32_f32,__riscv_vreinterpret_v_f32m8_i32m8", "-wp-print", "-wp-gen", "-wp-msg-key", "print-generated", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-reinterpret/sequent01/out", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vreinterpretq_s32_f32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_i32m8
+[wp] 34 goals scheduled
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits_vreinterpretq_s32_f32' Cluster 'Shifts' 
+---------------------------------------------
+theory Shifts
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  function shift_sint8 (p:addr) (k:int) : addr = shift p k
+  
+  function shift_sint32 (p:addr) (k:int) : addr = shift p (4 * k)
+  
+  function shiftfield_F16_lane (p:addr) : addr = shift p 0
+  
+  function shift_float32 (p:addr) (k:int) : addr = shift p (4 * k)
+  
+  function shiftfield_F21_lane (p:addr) : addr = shift p 0
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits_vreinterpretq_s32_f32' Cluster 'Axiomatic' 
+---------------------------------------------
+theory Axiomatic
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use real.Abs *)
+  
+  (* use frama_c_wp.cmath.Cmath *)
+  
+  (* use real.Square *)
+  
+  (* use frama_c_wp.cmath.Square1 *)
+  
+  (* use frama_c_wp.cfloat.Cfloat *)
+  
+  predicate P_same_value (a:t) (b:t) =
+    eq_f32 a b \/ is_NaN_f32 a /\ is_NaN_f32 b
+  
+  predicate P_same_float (a:t) (b:t) =
+    is_NaN_f32 a /\ is_NaN_f32 b \/
+    sign_f32 b = sign_f32 a /\ P_same_value a b
+  
+  lemma Q_fp_add_congruence :
+    forall a:t, b:t, c:t, d:t.
+     P_same_float a c ->
+     P_same_float b d -> P_same_value (add_f32 a b) (add_f32 c d)
+  
+  lemma Q_same_float_refl : forall a:t. P_same_float a a
+  
+  lemma Q_same_float_value :
+    forall a:t, b:t. P_same_float a b -> P_same_value a b
+  
+  lemma Q_same_value_refl : forall a:t. P_same_value a a
+  
+  lemma Q_same_value_trans :
+    forall a:t, b:t, c:t.
+     P_same_value a b -> P_same_value b c -> P_same_value a c
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits_vreinterpretq_s32_f32' Cluster 'Axiomatic13' 
+---------------------------------------------
+theory Axiomatic13
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use real.Abs *)
+  
+  (* use frama_c_wp.cmath.Cmath *)
+  
+  (* use real.Square *)
+  
+  (* use frama_c_wp.cmath.Square1 *)
+  
+  (* use frama_c_wp.cfloat.Cfloat *)
+  
+  function L_fp_sub32 t t : t
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  (* use Shifts *)
+  
+  predicate P_valid_or_empty (alloc:int -> int) (s:addr) (n:int) =
+    valid_obj alloc s /\ valid_rw alloc (shift_sint8 s 0) n
+  
+  predicate P_valid_read_or_empty (alloc:int -> int) (s:addr) (n:int) =
+    valid_obj alloc s /\ valid_rd alloc (shift_sint8 s 0) n
+  
+  (* use Axiomatic *)
+  
+  lemma Q_fp_mul_congruence :
+    forall a:t, b:t, c:t, d:t.
+     P_same_float a c ->
+     P_same_float b d -> P_same_value (mul_f32 a b) (mul_f32 c d)
+  
+  lemma Q_fp_sub_congruence :
+    forall a:t, b:t, c:t, d:t.
+     P_same_float a c ->
+     P_same_float b d -> P_same_value (L_fp_sub32 a b) (L_fp_sub32 c d)
+  
+  (* use frama_c_wp.cint.Cint *)
+  
+  (* use frama_c_wp.cbits.Cbits *)
+  
+  lemma Q_root_fullmask_same_float :
+    forall a:t, b:t, r:t, mask:int, u:int, v:int.
+     0 <= u ->
+     0 <= v ->
+     u <= 4294967295 ->
+     v <= 4294967295 ->
+     P_same_float (repr_decode32 u) a ->
+     P_same_float (repr_decode32 v) b ->
+     P_same_float r
+     (repr_decode32 (lor (land mask u) (land v (to_uint32 (lnot mask))))) ->
+     mask = 0 \/ mask = 4294967295 ->
+     P_same_float r (if mask = 0 then b else a)
+  
+  lemma Q_root_same_float_trans :
+    forall a:t, b:t, c:t.
+     P_same_float a b -> P_same_float b c -> P_same_float a c
+  
+  lemma Q_root_u32_word_mask :
+    forall u:int. 0 <= u -> u <= 4294967295 -> land 4294967295 u = u
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits_vreinterpretq_s32_f32' Cluster 'MemBytes.PointersProperties' 
+---------------------------------------------
+theory MemBytes.PointersProperties
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  (* use frama_c_wp.membytes_le.ValueCodec *)
+  
+  (* use frama_c_wp.membytes_le.InitCodec *)
+  
+  (* use frama_c_wp.membytes_le.Offset *)
+  
+  (* use frama_c_wp.membytes_le.RWBytes *)
+  
+  (* use frama_c_wp.membytes_le.ValueBlockRW *)
+  
+  (* use frama_c_wp.membytes_le.InitBlockRW *)
+  
+  (* use frama_c_wp.membytes_le.MemBytes *)
+  
+  predicate framed (m:int -> int -> int) =
+    forall a:addr.
+     region (a.base) <= 0 ->
+     region ((addr_of_int (read_uint64 m a)).base) <= 0
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits_vreinterpretq_s32_f32' Cluster 'Globals' 
+---------------------------------------------
+theory Globals
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  constant P_a_4318 : int = 4318
+  
+  constant L_r_4324 : int = 4324
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  axiom Q_P_a_4318_static_alloc : statically_allocated P_a_4318
+  
+  axiom Q_P_a_4318_region : region P_a_4318 = 2
+  
+  axiom Q_P_a_4318_linked :
+    forall t:int -> int. linked t -> get t P_a_4318 = 0
+  
+  (* use frama_c_wp.cint.Cint *)
+  
+  axiom Q_P_a_4318_is_pointer :
+    statically_allocated P_a_4318 ->
+    is_uint64 (int_of_addr (global P_a_4318))
+  
+  axiom Q_L_r_4324_static_alloc : statically_allocated L_r_4324
+  
+  axiom Q_L_r_4324_region : region L_r_4324 = 1
+  
+  axiom Q_L_r_4324_linked :
+    forall t:int -> int. linked t -> get t L_r_4324 = 0
+  
+  axiom Q_L_r_4324_is_pointer :
+    statically_allocated L_r_4324 ->
+    is_uint64 (int_of_addr (global L_r_4324))
+  
+end
+[wp:print-generated] 
+  theory WP
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use MemBytes.PointersProperties *)
+    
+    (* use Globals *)
+    
+    goal wp_goal :
+      let a = shiftfield_F21_lane (global L_r_4324) in
+      let a1 = shift_sint32 a 0 in
+      let a2 = shiftfield_F16_lane (global P_a_4318) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int.
+       let a3 = a in
+       let a4 = a1 in
+       let a5 = memcpy t1 a4 t2 a4 16 in
+       let a6 = a2 in
+       0 <= i ->
+       i <= 3 ->
+       i <= 4 ->
+       framed t1 ->
+       linked t ->
+       sconst t1 ->
+       bytes t1 ->
+       is_uint64 i ->
+       bytes a5 ->
+       (forall i1:int.
+         let a7 = a3 in
+         let a8 = a4 in
+         let a9 = a5 in
+         let a10 = repr_decode32 (read_uint32 a9 (shift_float32 a6 i1)) in
+         0 <= i1 ->
+         i1 < i ->
+         not is_NaN_f32 a10 ->
+         read_sint32 a9 (shift_sint32 a7 i1) < 0 <->
+         sign_f32 a10 = sign_f32 (to_f32 (- 1.0))) ->
+       P_valid_read_or_empty (set (set t P_a_4318 16) L_r_4324 16)
+       (shift_float32 a6 i) 4
+    
+  end
+[wp:print-generated] 
+  theory WP1
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use MemBytes.PointersProperties *)
+    
+    (* use Globals *)
+    
+    goal wp_goal :
+      let a = shiftfield_F21_lane (global L_r_4324) in
+      let a1 = shift_sint32 a 0 in
+      let a2 = shiftfield_F16_lane (global P_a_4318) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int.
+       let a3 = a in
+       let a4 = a1 in
+       let a5 = memcpy t1 a4 t2 a4 16 in
+       let a6 = a2 in
+       0 <= i ->
+       i <= 3 ->
+       i <= 4 ->
+       framed t1 ->
+       linked t ->
+       sconst t1 ->
+       bytes t1 ->
+       is_uint64 i ->
+       bytes a5 ->
+       (forall i1:int.
+         let a7 = a3 in
+         let a8 = a4 in
+         let a9 = a5 in
+         let a10 = repr_decode32 (read_uint32 a9 (shift_float32 a6 i1)) in
+         0 <= i1 ->
+         i1 < i ->
+         not is_NaN_f32 a10 ->
+         read_sint32 a9 (shift_sint32 a7 i1) < 0 <->
+         sign_f32 a10 = sign_f32 (to_f32 (- 1.0))) ->
+       P_valid_or_empty (set (set t P_a_4318 16) L_r_4324 16)
+       (shift_sint32 a3 i) 4
+    
+  end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits_vreinterpretq_s32_f32' Cluster 'A_MemCmp' 
+---------------------------------------------
+theory A_MemCmp
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool *)
+  
+  (* use int.Int *)
+  
+  (* use int.ComputerDivision *)
+  
+  (* use real.RealInfix *)
+  
+  (* use frama_c_wp.qed.Qed *)
+  
+  (* use map.Map *)
+  
+  (* use frama_c_wp.memaddr.MemAddr *)
+  
+  function L_memcmp (int -> int -> int) (int -> int -> int) addr addr int :
+    int
+  
+  (* use frama_c_wp.membytes_le.ValueCodec *)
+  
+  (* use frama_c_wp.membytes_le.InitCodec *)
+  
+  (* use frama_c_wp.membytes_le.Offset *)
+  
+  (* use frama_c_wp.membytes_le.RWBytes *)
+  
+  (* use frama_c_wp.membytes_le.ValueBlockRW *)
+  
+  (* use frama_c_wp.membytes_le.InitBlockRW *)
+  
+  (* use frama_c_wp.membytes_le.MemBytes *)
+  
+  (* use Shifts *)
+  
+  axiom Q_memcmp_zero :
+    forall mem:int -> int -> int, mem1:int -> int -> int, s1:addr, s2:addr,
+     n:int.
+     bytes mem ->
+     bytes mem1 ->
+     (forall i:int.
+       0 <= i ->
+       i < n ->
+       read_sint8 mem1 (shift_sint8 s1 i) = read_sint8 mem (shift_sint8 s2 i)) <->
+     L_memcmp mem mem1 s1 s2 n = 0
+  
+end
+[wp:print-generated] 
+  theory WP2
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use A_MemCmp *)
+    
+    (* use Globals *)
+    
+    (* use MemBytes.PointersProperties *)
+    
+    goal wp_goal :
+      let a = shiftfield_F21_lane (global L_r_4324) in
+      let a1 = shift_sint32 a 0 in
+      let a2 = shiftfield_F16_lane (global P_a_4318) in
+      let a3 = sign_f32 (to_f32 (- 1.0)) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int,
+       t3:int -> int -> int.
+       let a4 = a in
+       let a5 = a1 in
+       let a6 = memcpy t1 a5 t3 a5 16 in
+       let a7 = shift_sint32 a4 i in
+       let a8 = shift_sint8 a7 0 in
+       let a9 = memcpy a6 a8 t2 a8 4 in
+       let a10 = a2 in
+       let a11 = shift_float32 a10 i in
+       let x = to_uint64 (1 + i) in
+       let m = set (set t P_a_4318 16) L_r_4324 16 in
+       let a12 = a3 in
+       L_memcmp a6 a9 a7 a11 4 = 0 ->
+       0 <= i ->
+       i <= 3 ->
+       i <= 4 ->
+       x <= 4 ->
+       framed t1 ->
+       linked t ->
+       sconst t1 ->
+       bytes t1 ->
+       is_uint64 i ->
+       P_valid_or_empty m a7 4 ->
+       P_valid_read_or_empty m a11 4 ->
+       bytes a6 ->
+       bytes a9 ->
+       (forall i1:int.
+         let a13 = a4 in
+         let a14 = a5 in
+         let a15 = a6 in
+         let a16 = repr_decode32 (read_uint32 a15 (shift_float32 a10 i1)) in
+         0 <= i1 ->
+         i1 < i ->
+         not is_NaN_f32 a16 ->
+         read_sint32 a15 (shift_sint32 a13 i1) < 0 <-> sign_f32 a16 = a12) ->
+       (forall i1:int.
+         let a13 = a4 in
+         let a14 = a5 in
+         let a15 = a8 in
+         let a16 = a9 in
+         let a17 = repr_decode32 (read_uint32 a16 (shift_float32 a10 i1)) in
+         0 <= i1 ->
+         i1 < x ->
+         not is_NaN_f32 a17 ->
+         read_sint32 a16 (shift_sint32 a13 i1) < 0 <-> sign_f32 a17 = a12) ->
+       i < x
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_variant_positive (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_assigns_exit_part2 (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_assigns_exit_part1 (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_assigns_normal (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_assigns_part2 (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_assigns_part1 (Qed)
+[wp:print-generated] 
+  theory WP3
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use A_MemCmp *)
+    
+    (* use Globals *)
+    
+    (* use MemBytes.PointersProperties *)
+    
+    goal wp_goal :
+      let a = shiftfield_F21_lane (global L_r_4324) in
+      let a1 = shift_sint32 a 0 in
+      let a2 = shiftfield_F16_lane (global P_a_4318) in
+      let a3 = sign_f32 (to_f32 (- 1.0)) in
+      forall t:int -> int, i:int, i1:int, t1:int -> int -> int, t2:int -> int
+       -> int, t3:int -> int -> int.
+       let a4 = a in
+       let a5 = a1 in
+       let a6 = memcpy t1 a5 t3 a5 16 in
+       let a7 = shift_sint32 a4 i in
+       let a8 = shift_sint8 a7 0 in
+       let a9 = memcpy a6 a8 t2 a8 4 in
+       let a10 = a2 in
+       let a11 = shift_float32 a10 i in
+       let x = to_uint64 (1 + i) in
+       let m = set (set t P_a_4318 16) L_r_4324 16 in
+       let a12 = repr_decode32 (read_uint32 a9 (shift_float32 a10 i1)) in
+       let a13 = a3 in
+       L_memcmp a6 a9 a7 a11 4 = 0 ->
+       0 <= i1 ->
+       0 <= i ->
+       i1 < x ->
+       i <= 3 ->
+       i <= 4 ->
+       x <= 4 ->
+       framed t1 ->
+       linked t ->
+       sconst t1 ->
+       bytes t1 ->
+       is_uint64 i ->
+       P_valid_or_empty m a7 4 ->
+       P_valid_read_or_empty m a11 4 ->
+       bytes a6 ->
+       bytes a9 ->
+       not is_NaN_f32 a12 ->
+       (forall i2:int.
+         let a14 = a4 in
+         let a15 = a5 in
+         let a16 = a6 in
+         let a17 = repr_decode32 (read_uint32 a16 (shift_float32 a10 i2)) in
+         0 <= i2 ->
+         i2 < i ->
+         not is_NaN_f32 a17 ->
+         read_sint32 a16 (shift_sint32 a14 i2) < 0 <-> sign_f32 a17 = a13) ->
+       read_sint32 a9 (shift_sint32 a4 i1) < 0 <-> sign_f32 a12 = a13
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_invariant_2_established (Qed)
+[wp:print-generated] 
+  theory WP4
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use A_MemCmp *)
+    
+    (* use Globals *)
+    
+    (* use MemBytes.PointersProperties *)
+    
+    goal wp_goal :
+      let a = shiftfield_F21_lane (global L_r_4324) in
+      let a1 = shift_sint32 a 0 in
+      let a2 = shiftfield_F16_lane (global P_a_4318) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int,
+       t3:int -> int -> int.
+       let a3 = a in
+       let a4 = a1 in
+       let a5 = memcpy t1 a4 t3 a4 16 in
+       let a6 = shift_sint32 a3 i in
+       let a7 = shift_sint8 a6 0 in
+       let a8 = memcpy a5 a7 t2 a7 4 in
+       let a9 = a2 in
+       let a10 = shift_float32 a9 i in
+       let m = set (set t P_a_4318 16) L_r_4324 16 in
+       L_memcmp a5 a8 a6 a10 4 = 0 ->
+       0 <= i ->
+       i <= 3 ->
+       i <= 4 ->
+       framed t1 ->
+       linked t ->
+       sconst t1 ->
+       bytes t1 ->
+       is_uint64 i ->
+       P_valid_or_empty m a6 4 ->
+       P_valid_read_or_empty m a10 4 ->
+       bytes a5 ->
+       bytes a8 ->
+       (forall i1:int.
+         let a11 = a3 in
+         let a12 = a4 in
+         let a13 = a5 in
+         let a14 = repr_decode32 (read_uint32 a13 (shift_float32 a9 i1)) in
+         0 <= i1 ->
+         i1 < i ->
+         not is_NaN_f32 a14 ->
+         read_sint32 a13 (shift_sint32 a11 i1) < 0 <->
+         sign_f32 a14 = sign_f32 (to_f32 (- 1.0))) ->
+       to_uint64 (1 + i) <= 4
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_invariant_established (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_exits (Qed)
+[wp:print-generated] 
+  theory WP5
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool *)
+    
+    (* use int.Int *)
+    
+    (* use int.ComputerDivision *)
+    
+    (* use real.RealInfix *)
+    
+    (* use frama_c_wp.qed.Qed *)
+    
+    (* use map.Map *)
+    
+    (* use Axiomatic13 *)
+    
+    (* use MemBytes.PointersProperties *)
+    
+    (* use Globals *)
+    
+    goal wp_goal :
+      let a = shiftfield_F16_lane (global P_a_4318) in
+      let a1 = shiftfield_F21_lane (global L_r_4324) in
+      let a2 = shift_sint32 a1 0 in
+      let a3 = sign_f32 (to_f32 (- 1.0)) in
+      forall i:int, i1:int, t:int -> int -> int, t1:int -> int -> int.
+       let a4 = a in
+       let a5 = repr_decode32 (read_uint32 t (shift_float32 a4 i)) in
+       let a6 = a1 in
+       let a7 = a2 in
+       let a8 = memcpy t a7 t1 a7 16 in
+       let a9 = a3 in
+       0 <= i1 ->
+       0 <= i ->
+       4 <= i1 ->
+       i <= 3 ->
+       i1 <= 4 ->
+       framed t ->
+       sconst t ->
+       bytes t ->
+       is_uint64 i1 ->
+       not is_NaN_f32 a5 ->
+       bytes a8 ->
+       (forall i2:int.
+         let a10 = a6 in
+         let a11 = a7 in
+         let a12 = a8 in
+         let a13 = repr_decode32 (read_uint32 a12 (shift_float32 a4 i2)) in
+         0 <= i2 ->
+         i2 < i1 ->
+         not is_NaN_f32 a13 ->
+         read_sint32 a12 (shift_sint32 a10 i2) < 0 <-> sign_f32 a13 = a9) ->
+       read_sint32 a8 (shift_sint32 a6 i) < 0 <-> sign_f32 a5 = a9
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_terminates (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_assigns_part2 (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_assigns_part1 (Qed)
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8' Cluster 'Shifts' 
+---------------------------------------------
+theory Shifts1
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool1 *)
+  
+  (* use int.Int1 *)
+  
+  (* use int.ComputerDivision1 *)
+  
+  (* use real.RealInfix1 *)
+  
+  (* use frama_c_wp.qed.Qed1 *)
+  
+  (* use map.Map1 *)
+  
+  (* use frama_c_wp.memaddr.MemAddr1 *)
+  
+  function shift_sint81 (p:addr1) (k:int) : addr1 = shift1 p k
+  
+  function shift_sint321 (p:addr1) (k:int) : addr1 = shift1 p (4 *' k)
+  
+  function shiftfield_F18_lane (p:addr1) : addr1 = shift1 p 0
+  
+  function shift_float321 (p:addr1) (k:int) : addr1 = shift1 p (4 *' k)
+  
+  function shiftfield_F22_lane (p:addr1) : addr1 = shift1 p 0
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8' Cluster 'Axiomatic' 
+---------------------------------------------
+theory Axiomatic1
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool1 *)
+  
+  (* use int.Int1 *)
+  
+  (* use int.ComputerDivision1 *)
+  
+  (* use real.RealInfix1 *)
+  
+  (* use frama_c_wp.qed.Qed1 *)
+  
+  (* use map.Map1 *)
+  
+  (* use real.Abs1 *)
+  
+  (* use frama_c_wp.cmath.Cmath1 *)
+  
+  (* use real.Square2 *)
+  
+  (* use frama_c_wp.cmath.Square3 *)
+  
+  (* use frama_c_wp.cfloat.Cfloat1 *)
+  
+  predicate P_same_value1 (a:t1) (b:t1) =
+    eq_f321 a b \/ is_NaN_f321 a /\ is_NaN_f321 b
+  
+  predicate P_same_float1 (a:t1) (b:t1) =
+    is_NaN_f321 a /\ is_NaN_f321 b \/
+    sign_f321 b = sign_f321 a /\ P_same_value1 a b
+  
+  lemma Q_fp_add_congruence1 :
+    forall a:t1, b:t1, c:t1, d:t1.
+     P_same_float1 a c ->
+     P_same_float1 b d -> P_same_value1 (add_f321 a b) (add_f321 c d)
+  
+  lemma Q_same_float_refl1 : forall a:t1. P_same_float1 a a
+  
+  lemma Q_same_float_value1 :
+    forall a:t1, b:t1. P_same_float1 a b -> P_same_value1 a b
+  
+  lemma Q_same_value_refl1 : forall a:t1. P_same_value1 a a
+  
+  lemma Q_same_value_trans1 :
+    forall a:t1, b:t1, c:t1.
+     P_same_value1 a b -> P_same_value1 b c -> P_same_value1 a c
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8' Cluster 'Axiomatic13' 
+---------------------------------------------
+theory Axiomatic131
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool1 *)
+  
+  (* use int.Int1 *)
+  
+  (* use int.ComputerDivision1 *)
+  
+  (* use real.RealInfix1 *)
+  
+  (* use frama_c_wp.qed.Qed1 *)
+  
+  (* use map.Map1 *)
+  
+  (* use real.Abs1 *)
+  
+  (* use frama_c_wp.cmath.Cmath1 *)
+  
+  (* use real.Square2 *)
+  
+  (* use frama_c_wp.cmath.Square3 *)
+  
+  (* use frama_c_wp.cfloat.Cfloat1 *)
+  
+  function L_fp_sub321 t1 t1 : t1
+  
+  (* use frama_c_wp.memaddr.MemAddr1 *)
+  
+  (* use Shifts1 *)
+  
+  predicate P_valid_or_empty1 (alloc:int -> int) (s:addr1) (n:int) =
+    valid_obj1 alloc s /\ valid_rw1 alloc (shift_sint81 s 0) n
+  
+  predicate P_valid_read_or_empty1 (alloc:int -> int) (s:addr1) (n:int) =
+    valid_obj1 alloc s /\ valid_rd1 alloc (shift_sint81 s 0) n
+  
+  (* use Axiomatic1 *)
+  
+  lemma Q_fp_mul_congruence1 :
+    forall a:t1, b:t1, c:t1, d:t1.
+     P_same_float1 a c ->
+     P_same_float1 b d -> P_same_value1 (mul_f321 a b) (mul_f321 c d)
+  
+  lemma Q_fp_sub_congruence1 :
+    forall a:t1, b:t1, c:t1, d:t1.
+     P_same_float1 a c ->
+     P_same_float1 b d -> P_same_value1 (L_fp_sub321 a b) (L_fp_sub321 c d)
+  
+  (* use frama_c_wp.cint.Cint1 *)
+  
+  (* use frama_c_wp.cbits.Cbits1 *)
+  
+  lemma Q_root_fullmask_same_float1 :
+    forall a:t1, b:t1, r:t1, mask:int, u:int, v:int.
+     0 <=' u ->
+     0 <=' v ->
+     u <=' 4294967295 ->
+     v <=' 4294967295 ->
+     P_same_float1 (repr_decode321 u) a ->
+     P_same_float1 (repr_decode321 v) b ->
+     P_same_float1 r
+     (repr_decode321
+      (lor1 (land1 mask u) (land1 v (to_uint321 (lnot1 mask))))) ->
+     mask = 0 \/ mask = 4294967295 ->
+     P_same_float1 r (if mask = 0 then b else a)
+  
+  lemma Q_root_same_float_trans1 :
+    forall a:t1, b:t1, c:t1.
+     P_same_float1 a b -> P_same_float1 b c -> P_same_float1 a c
+  
+  lemma Q_root_u32_word_mask1 :
+    forall u:int. 0 <=' u -> u <=' 4294967295 -> land1 4294967295 u = u
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8' Cluster 'A_MemCmp' 
+---------------------------------------------
+theory A_MemCmp1
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool1 *)
+  
+  (* use int.Int1 *)
+  
+  (* use int.ComputerDivision1 *)
+  
+  (* use real.RealInfix1 *)
+  
+  (* use frama_c_wp.qed.Qed1 *)
+  
+  (* use map.Map1 *)
+  
+  (* use frama_c_wp.memaddr.MemAddr1 *)
+  
+  function L_memcmp1 (int -> int -> int) (int -> int -> int) addr1 addr1
+    int : int
+  
+  (* use frama_c_wp.membytes_le.ValueCodec1 *)
+  
+  (* use frama_c_wp.membytes_le.InitCodec1 *)
+  
+  (* use frama_c_wp.membytes_le.Offset1 *)
+  
+  (* use frama_c_wp.membytes_le.RWBytes1 *)
+  
+  (* use frama_c_wp.membytes_le.ValueBlockRW1 *)
+  
+  (* use frama_c_wp.membytes_le.InitBlockRW1 *)
+  
+  (* use frama_c_wp.membytes_le.MemBytes1 *)
+  
+  (* use Shifts1 *)
+  
+  axiom Q_memcmp_zero1 :
+    forall mem:int -> int -> int, mem1:int -> int -> int, s1:addr1, s2:addr1,
+     n:int.
+     bytes1 mem ->
+     bytes1 mem1 ->
+     (forall i:int.
+       0 <=' i ->
+       i <' n ->
+       read_sint81 mem1 (shift_sint81 s1 i) =
+       read_sint81 mem (shift_sint81 s2 i)) <->
+     L_memcmp1 mem mem1 s1 s2 n = 0
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8' Cluster 'Globals' 
+---------------------------------------------
+theory Globals1
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool1 *)
+  
+  (* use int.Int1 *)
+  
+  (* use int.ComputerDivision1 *)
+  
+  (* use real.RealInfix1 *)
+  
+  (* use frama_c_wp.qed.Qed1 *)
+  
+  (* use map.Map1 *)
+  
+  constant P_a_4448 : int = 4448
+  
+  constant L_r_4454 : int = 4454
+  
+  (* use frama_c_wp.memaddr.MemAddr1 *)
+  
+  axiom Q_P_a_4448_static_alloc : statically_allocated1 P_a_4448
+  
+  axiom Q_P_a_4448_region : region1 P_a_4448 = 2
+  
+  axiom Q_P_a_4448_linked :
+    forall t:int -> int. linked1 t -> get1 t P_a_4448 = 0
+  
+  (* use frama_c_wp.cint.Cint1 *)
+  
+  axiom Q_P_a_4448_is_pointer :
+    statically_allocated1 P_a_4448 ->
+    is_uint641 (int_of_addr1 (global1 P_a_4448))
+  
+  axiom Q_L_r_4454_static_alloc : statically_allocated1 L_r_4454
+  
+  axiom Q_L_r_4454_region : region1 L_r_4454 = 1
+  
+  axiom Q_L_r_4454_linked :
+    forall t:int -> int. linked1 t -> get1 t L_r_4454 = 0
+  
+  axiom Q_L_r_4454_is_pointer :
+    statically_allocated1 L_r_4454 ->
+    is_uint641 (int_of_addr1 (global1 L_r_4454))
+  
+end
+---------------------------------------------
+--- Context 'bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8' Cluster 'MemBytes.PointersProperties' 
+---------------------------------------------
+theory MemBytes.PointersProperties1
+  
+  (* use why3.BuiltIn.BuiltIn *)
+  
+  (* use bool.Bool1 *)
+  
+  (* use int.Int1 *)
+  
+  (* use int.ComputerDivision1 *)
+  
+  (* use real.RealInfix1 *)
+  
+  (* use frama_c_wp.qed.Qed1 *)
+  
+  (* use map.Map1 *)
+  
+  (* use frama_c_wp.memaddr.MemAddr1 *)
+  
+  (* use frama_c_wp.membytes_le.ValueCodec1 *)
+  
+  (* use frama_c_wp.membytes_le.InitCodec1 *)
+  
+  (* use frama_c_wp.membytes_le.Offset1 *)
+  
+  (* use frama_c_wp.membytes_le.RWBytes1 *)
+  
+  (* use frama_c_wp.membytes_le.ValueBlockRW1 *)
+  
+  (* use frama_c_wp.membytes_le.InitBlockRW1 *)
+  
+  (* use frama_c_wp.membytes_le.MemBytes1 *)
+  
+  predicate framed1 (m:int -> int -> int) =
+    forall a:addr1.
+     region1 (a.base1) <=' 0 ->
+     region1 ((addr_of_int1 (read_uint641 m a)).base1) <=' 0
+  
+end
+[wp:print-generated] 
+  theory WP6
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool1 *)
+    
+    (* use int.Int1 *)
+    
+    (* use int.ComputerDivision1 *)
+    
+    (* use real.RealInfix1 *)
+    
+    (* use frama_c_wp.qed.Qed1 *)
+    
+    (* use map.Map1 *)
+    
+    (* use Axiomatic131 *)
+    
+    (* use A_MemCmp1 *)
+    
+    (* use Globals1 *)
+    
+    (* use MemBytes.PointersProperties1 *)
+    
+    goal wp_goal :
+      let a = shiftfield_F22_lane (global1 L_r_4454) in
+      let a1 = shift_sint321 a 0 in
+      let a2 = shiftfield_F18_lane (global1 P_a_4448) in
+      let a3 = sign_f321 (to_f321 (- 1.0)) in
+      forall t:int -> int, i:int, i1:int, t1:int -> int -> int, t2:int -> int
+       -> int, t3:int -> int -> int.
+       let a4 = a in
+       let a5 = a1 in
+       let a6 = memcpy1 t1 a5 t3 a5 128 in
+       let a7 = shift_sint321 a4 i in
+       let a8 = shift_sint81 a7 0 in
+       let a9 = memcpy1 a6 a8 t2 a8 4 in
+       let a10 = a2 in
+       let a11 = shift_float321 a10 i in
+       let x = to_uint641 (1 +' i) in
+       let m = set1 (set1 t P_a_4448 128) L_r_4454 128 in
+       let a12 = repr_decode321 (read_uint321 a9 (shift_float321 a10 i1)) in
+       let a13 = a3 in
+       L_memcmp1 a6 a9 a7 a11 4 = 0 ->
+       0 <=' i1 ->
+       0 <=' i ->
+       i1 <' x ->
+       i <=' 31 ->
+       i <=' 32 ->
+       x <=' 32 ->
+       framed1 t1 ->
+       linked1 t ->
+       sconst1 t1 ->
+       bytes1 t1 ->
+       is_uint641 i ->
+       P_valid_or_empty1 m a7 4 ->
+       P_valid_read_or_empty1 m a11 4 ->
+       bytes1 a6 ->
+       bytes1 a9 ->
+       not is_NaN_f321 a12 ->
+       (forall i2:int.
+         let a14 = a4 in
+         let a15 = a5 in
+         let a16 = a6 in
+         let a17 = repr_decode321 (read_uint321 a16 (shift_float321 a10 i2)) in
+         0 <=' i2 ->
+         i2 <' i ->
+         not is_NaN_f321 a17 ->
+         read_sint321 a16 (shift_sint321 a14 i2) <' 0 <-> sign_f321 a17 = a13) ->
+       read_sint321 a9 (shift_sint321 a4 i1) <' 0 <-> sign_f321 a12 = a13
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_2_established (Qed)
+[wp:print-generated] 
+  theory WP7
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool1 *)
+    
+    (* use int.Int1 *)
+    
+    (* use int.ComputerDivision1 *)
+    
+    (* use real.RealInfix1 *)
+    
+    (* use frama_c_wp.qed.Qed1 *)
+    
+    (* use map.Map1 *)
+    
+    (* use Axiomatic131 *)
+    
+    (* use A_MemCmp1 *)
+    
+    (* use Globals1 *)
+    
+    (* use MemBytes.PointersProperties1 *)
+    
+    goal wp_goal :
+      let a = shiftfield_F22_lane (global1 L_r_4454) in
+      let a1 = shift_sint321 a 0 in
+      let a2 = shiftfield_F18_lane (global1 P_a_4448) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int,
+       t3:int -> int -> int.
+       let a3 = a in
+       let a4 = a1 in
+       let a5 = memcpy1 t1 a4 t3 a4 128 in
+       let a6 = shift_sint321 a3 i in
+       let a7 = shift_sint81 a6 0 in
+       let a8 = memcpy1 a5 a7 t2 a7 4 in
+       let a9 = a2 in
+       let a10 = shift_float321 a9 i in
+       let m = set1 (set1 t P_a_4448 128) L_r_4454 128 in
+       L_memcmp1 a5 a8 a6 a10 4 = 0 ->
+       0 <=' i ->
+       i <=' 31 ->
+       i <=' 32 ->
+       framed1 t1 ->
+       linked1 t ->
+       sconst1 t1 ->
+       bytes1 t1 ->
+       is_uint641 i ->
+       P_valid_or_empty1 m a6 4 ->
+       P_valid_read_or_empty1 m a10 4 ->
+       bytes1 a5 ->
+       bytes1 a8 ->
+       (forall i1:int.
+         let a11 = a3 in
+         let a12 = a4 in
+         let a13 = a5 in
+         let a14 = repr_decode321 (read_uint321 a13 (shift_float321 a9 i1)) in
+         0 <=' i1 ->
+         i1 <' i ->
+         not is_NaN_f321 a14 ->
+         read_sint321 a13 (shift_sint321 a11 i1) <' 0 <->
+         sign_f321 a14 = sign_f321 (to_f321 (- 1.0))) ->
+       to_uint641 (1 +' i) <=' 32
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_established (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_exits (Qed)
+[wp:print-generated] 
+  theory WP8
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool1 *)
+    
+    (* use int.Int1 *)
+    
+    (* use int.ComputerDivision1 *)
+    
+    (* use real.RealInfix1 *)
+    
+    (* use frama_c_wp.qed.Qed1 *)
+    
+    (* use map.Map1 *)
+    
+    (* use Axiomatic131 *)
+    
+    (* use MemBytes.PointersProperties1 *)
+    
+    (* use Globals1 *)
+    
+    goal wp_goal :
+      let a = shiftfield_F18_lane (global1 P_a_4448) in
+      let a1 = shiftfield_F22_lane (global1 L_r_4454) in
+      let a2 = shift_sint321 a1 0 in
+      let a3 = sign_f321 (to_f321 (- 1.0)) in
+      forall i:int, i1:int, t:int -> int -> int, t1:int -> int -> int.
+       let a4 = a in
+       let a5 = repr_decode321 (read_uint321 t (shift_float321 a4 i)) in
+       let a6 = a1 in
+       let a7 = a2 in
+       let a8 = memcpy1 t a7 t1 a7 128 in
+       let a9 = a3 in
+       0 <=' i1 ->
+       0 <=' i ->
+       32 <=' i1 ->
+       i <=' 31 ->
+       i1 <=' 32 ->
+       framed1 t ->
+       sconst1 t ->
+       bytes1 t ->
+       is_uint641 i1 ->
+       not is_NaN_f321 a5 ->
+       bytes1 a8 ->
+       (forall i2:int.
+         let a10 = a6 in
+         let a11 = a7 in
+         let a12 = a8 in
+         let a13 = repr_decode321 (read_uint321 a12 (shift_float321 a4 i2)) in
+         0 <=' i2 ->
+         i2 <' i1 ->
+         not is_NaN_f321 a13 ->
+         read_sint321 a12 (shift_sint321 a10 i2) <' 0 <-> sign_f321 a13 = a9) ->
+       read_sint321 a8 (shift_sint321 a6 i) <' 0 <-> sign_f321 a5 = a9
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_terminates (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_call_memcpy_requires_separation (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits___riscv_vreinterpret_v_f32m8_i32m8_call_memcpy_requires_separation (Qed)
+[wp:print-generated] 
+  theory WP9
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool1 *)
+    
+    (* use int.Int1 *)
+    
+    (* use int.ComputerDivision1 *)
+    
+    (* use real.RealInfix1 *)
+    
+    (* use frama_c_wp.qed.Qed1 *)
+    
+    (* use map.Map1 *)
+    
+    (* use Axiomatic131 *)
+    
+    (* use MemBytes.PointersProperties1 *)
+    
+    (* use Globals1 *)
+    
+    goal wp_goal :
+      let a = shiftfield_F22_lane (global1 L_r_4454) in
+      let a1 = shift_sint321 a 0 in
+      let a2 = shiftfield_F18_lane (global1 P_a_4448) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int.
+       let a3 = a in
+       let a4 = a1 in
+       let a5 = memcpy1 t1 a4 t2 a4 128 in
+       let a6 = a2 in
+       0 <=' i ->
+       i <=' 31 ->
+       i <=' 32 ->
+       framed1 t1 ->
+       linked1 t ->
+       sconst1 t1 ->
+       bytes1 t1 ->
+       is_uint641 i ->
+       bytes1 a5 ->
+       (forall i1:int.
+         let a7 = a3 in
+         let a8 = a4 in
+         let a9 = a5 in
+         let a10 = repr_decode321 (read_uint321 a9 (shift_float321 a6 i1)) in
+         0 <=' i1 ->
+         i1 <' i ->
+         not is_NaN_f321 a10 ->
+         read_sint321 a9 (shift_sint321 a7 i1) <' 0 <->
+         sign_f321 a10 = sign_f321 (to_f321 (- 1.0))) ->
+       P_valid_read_or_empty1 (set1 (set1 t P_a_4448 128) L_r_4454 128)
+       (shift_float321 a6 i) 4
+    
+  end
+[wp:print-generated] 
+  theory WP10
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool1 *)
+    
+    (* use int.Int1 *)
+    
+    (* use int.ComputerDivision1 *)
+    
+    (* use real.RealInfix1 *)
+    
+    (* use frama_c_wp.qed.Qed1 *)
+    
+    (* use map.Map1 *)
+    
+    (* use Axiomatic131 *)
+    
+    (* use MemBytes.PointersProperties1 *)
+    
+    (* use Globals1 *)
+    
+    goal wp_goal :
+      let a = shiftfield_F22_lane (global1 L_r_4454) in
+      let a1 = shift_sint321 a 0 in
+      let a2 = shiftfield_F18_lane (global1 P_a_4448) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int.
+       let a3 = a in
+       let a4 = a1 in
+       let a5 = memcpy1 t1 a4 t2 a4 128 in
+       let a6 = a2 in
+       0 <=' i ->
+       i <=' 31 ->
+       i <=' 32 ->
+       framed1 t1 ->
+       linked1 t ->
+       sconst1 t1 ->
+       bytes1 t1 ->
+       is_uint641 i ->
+       bytes1 a5 ->
+       (forall i1:int.
+         let a7 = a3 in
+         let a8 = a4 in
+         let a9 = a5 in
+         let a10 = repr_decode321 (read_uint321 a9 (shift_float321 a6 i1)) in
+         0 <=' i1 ->
+         i1 <' i ->
+         not is_NaN_f321 a10 ->
+         read_sint321 a9 (shift_sint321 a7 i1) <' 0 <->
+         sign_f321 a10 = sign_f321 (to_f321 (- 1.0))) ->
+       P_valid_or_empty1 (set1 (set1 t P_a_4448 128) L_r_4454 128)
+       (shift_sint321 a3 i) 4
+    
+  end
+[wp:print-generated] 
+  theory WP11
+    
+    (* use why3.BuiltIn.BuiltIn *)
+    
+    (* use bool.Bool1 *)
+    
+    (* use int.Int1 *)
+    
+    (* use int.ComputerDivision1 *)
+    
+    (* use real.RealInfix1 *)
+    
+    (* use frama_c_wp.qed.Qed1 *)
+    
+    (* use map.Map1 *)
+    
+    (* use Axiomatic131 *)
+    
+    (* use A_MemCmp1 *)
+    
+    (* use Globals1 *)
+    
+    (* use MemBytes.PointersProperties1 *)
+    
+    goal wp_goal :
+      let a = shiftfield_F22_lane (global1 L_r_4454) in
+      let a1 = shift_sint321 a 0 in
+      let a2 = shiftfield_F18_lane (global1 P_a_4448) in
+      let a3 = sign_f321 (to_f321 (- 1.0)) in
+      forall t:int -> int, i:int, t1:int -> int -> int, t2:int -> int -> int,
+       t3:int -> int -> int.
+       let a4 = a in
+       let a5 = a1 in
+       let a6 = memcpy1 t1 a5 t3 a5 128 in
+       let a7 = shift_sint321 a4 i in
+       let a8 = shift_sint81 a7 0 in
+       let a9 = memcpy1 a6 a8 t2 a8 4 in
+       let a10 = a2 in
+       let a11 = shift_float321 a10 i in
+       let x = to_uint641 (1 +' i) in
+       let m = set1 (set1 t P_a_4448 128) L_r_4454 128 in
+       let a12 = a3 in
+       L_memcmp1 a6 a9 a7 a11 4 = 0 ->
+       0 <=' i ->
+       i <=' 31 ->
+       i <=' 32 ->
+       x <=' 32 ->
+       framed1 t1 ->
+       linked1 t ->
+       sconst1 t1 ->
+       bytes1 t1 ->
+       is_uint641 i ->
+       P_valid_or_empty1 m a7 4 ->
+       P_valid_read_or_empty1 m a11 4 ->
+       bytes1 a6 ->
+       bytes1 a9 ->
+       (forall i1:int.
+         let a13 = a4 in
+         let a14 = a5 in
+         let a15 = a6 in
+         let a16 = repr_decode321 (read_uint321 a15 (shift_float321 a10 i1)) in
+         0 <=' i1 ->
+         i1 <' i ->
+         not is_NaN_f321 a16 ->
+         read_sint321 a15 (shift_sint321 a13 i1) <' 0 <-> sign_f321 a16 = a12) ->
+       (forall i1:int.
+         let a13 = a4 in
+         let a14 = a5 in
+         let a15 = a8 in
+         let a16 = a9 in
+         let a17 = repr_decode321 (read_uint321 a16 (shift_float321 a10 i1)) in
+         0 <=' i1 ->
+         i1 <' x ->
+         not is_NaN_f321 a17 ->
+         read_sint321 a16 (shift_sint321 a13 i1) <' 0 <-> sign_f321 a17 = a12) ->
+       i <' x
+    
+  end
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_variant_positive (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_assigns_exit_part2 (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_assigns_exit_part1 (Qed)
+[wp] [Generated] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_assigns_normal (Qed)
+[wp] 34 goals generated
+
+Goal Termination-condition (generated by kernel from "bits.c", line 26) in 'vreinterpretq_s32_f32':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("bits.c", line 25) in 'vreinterpretq_s32_f32':
+Let a = shiftfield_F21_lane(global(L_r_4324)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let a_3 = shiftfield_F16_lane(global(P_a_4318)).
+Let a_4 = sign_f32(to_f32(-1.0)).
+Let a_5 = repr_decode32(read_uint32(mem_0, shift_float32(a_3, i))).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i_1) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 3) /\ (!is_NaN_f32(a_5)).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z.
+      let a_6 = repr_decode32(read_uint32(a_2, shift_float32(a_3, i_2))) in
+      ((0 <= i_2) -> ((i_2 < i_1) -> ((!is_NaN_f32(a_6)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_2)) < 0) <->
+       (sign_f32(a_6) = a_4))))).
+  (* Else *)
+  Have: 4 <= i_1.
+}
+Prove: (read_sint32(a_2, shift_sint32(a, i)) < 0) <-> (sign_f32(a_5) = a_4).
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated by kernel from "bits.c", line 26) in 'vreinterpretq_s32_f32':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 26):
+Prove: true.
+Prover Qed returns Valid (0.84ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 26):
+Let a = shiftfield_F21_lane(global(L_r_4324)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = shift_sint8(a_3, 0).
+Let a_5 = memcpy(a_2, a_4, mem_undef_1, a_4, 4).
+Let a_6 = shiftfield_F16_lane(global(P_a_4318)).
+Let a_7 = shift_float32(a_6, i).
+Let m = alloc_0[P_a_4318 <- 16][L_r_4324 <- 16].
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(a_5).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_8 = repr_decode32(read_uint32(a_2, shift_float32(a_6, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_8)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_8) = sign_f32(to_f32(-1.0))))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(a_2, a_5, a_3, a_7, 4) = 0) /\
+      P_valid_or_empty(m, a_3, 4) /\ P_valid_read_or_empty(m, a_7, 4).
+}
+Prove: to_uint64(1 + i) <= 4.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 26):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 26):
+Let x = to_uint64(1 + i).
+Let a = shiftfield_F21_lane(global(L_r_4324)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = shift_sint8(a_3, 0).
+Let a_5 = memcpy(a_2, a_4, mem_undef_1, a_4, 4).
+Let a_6 = shiftfield_F16_lane(global(P_a_4318)).
+Let a_7 = shift_float32(a_6, i).
+Let m = alloc_0[P_a_4318 <- 16][L_r_4324 <- 16].
+Let a_8 = sign_f32(to_f32(-1.0)).
+Let a_9 = repr_decode32(read_uint32(a_5, shift_float32(a_6, i_1))).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(a_5).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x) /\ (!is_NaN_f32(a_9)).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_2 : Z.
+      let a_10 = repr_decode32(read_uint32(a_2, shift_float32(a_6, i_2))) in
+      ((0 <= i_2) -> ((i_2 < i) -> ((!is_NaN_f32(a_10)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_2)) < 0) <->
+       (sign_f32(a_10) = a_8))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(a_2, a_5, a_3, a_7, 4) = 0) /\
+      P_valid_or_empty(m, a_3, 4) /\ P_valid_read_or_empty(m, a_7, 4).
+  (* Invariant *)
+  Have: x <= 4.
+}
+Prove: (read_sint32(a_5, shift_sint32(a, i_1)) < 0) <->
+    (sign_f32(a_9) = a_8).
+
+------------------------------------------------------------
+
+Goal Loop assigns ("bits.c", line 26) (1/2):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns ("bits.c", line 26) (2/2):
+Call Effect at line 26
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vreinterpretq_s32_f32':
+Effect at line 26
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vreinterpretq_s32_f32' (1/2):
+Effect at line 26
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in 'vreinterpretq_s32_f32' (2/2):
+Call Effect at line 26
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("bits.c", line 26):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("bits.c", line 26):
+Let x = to_uint64(1 + i).
+Let a = shiftfield_F21_lane(global(L_r_4324)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = shift_sint8(a_3, 0).
+Let a_5 = memcpy(a_2, a_4, mem_undef_1, a_4, 4).
+Let a_6 = shiftfield_F16_lane(global(P_a_4318)).
+Let a_7 = sign_f32(to_f32(-1.0)).
+Let a_8 = shift_float32(a_6, i).
+Let m = alloc_0[P_a_4318 <- 16][L_r_4324 <- 16].
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(a_5).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_9 = repr_decode32(read_uint32(a_2, shift_float32(a_6, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_9)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_9) = a_7))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(a_2, a_5, a_3, a_8, 4) = 0) /\
+      P_valid_or_empty(m, a_3, 4) /\ P_valid_read_or_empty(m, a_8, 4).
+  (* Invariant *)
+  Have: x <= 4.
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_9 = repr_decode32(read_uint32(a_5, shift_float32(a_6, i_1))) in
+      ((0 <= i_1) -> ((i_1 < x) -> ((!is_NaN_f32(a_9)) ->
+      ((read_sint32(a_5, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_9) = a_7))))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in 'vreinterpretq_s32_f32' at call 'memcpy' ("bits.c", line 26)
+:
+Let a = shiftfield_F21_lane(global(L_r_4324)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let a_3 = shiftfield_F16_lane(global(P_a_4318)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_4 = repr_decode32(read_uint32(a_2, shift_float32(a_3, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_4)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_4) = sign_f32(to_f32(-1.0))))))).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: P_valid_or_empty(alloc_0[P_a_4318 <- 16][L_r_4324 <- 16],
+         shift_sint32(a, i), 4).
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in 'vreinterpretq_s32_f32' at call 'memcpy' ("bits.c", line 26)
+:
+Let a = shiftfield_F21_lane(global(L_r_4324)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 16).
+Let a_3 = shiftfield_F16_lane(global(P_a_4318)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_4 = repr_decode32(read_uint32(a_2, shift_float32(a_3, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_4)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_4) = sign_f32(to_f32(-1.0))))))).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: P_valid_read_or_empty(alloc_0[P_a_4318 <- 16][L_r_4324 <- 16],
+         shift_float32(a_3, i), 4).
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in 'vreinterpretq_s32_f32' at call 'memcpy' ("bits.c", line 26)
+:
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Termination-condition (generated by kernel from "bits.c", line 49) in '__riscv_vreinterpret_v_f32m8_i32m8':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Post-condition ("bits.c", line 48) in '__riscv_vreinterpret_v_f32m8_i32m8':
+Let a = shiftfield_F22_lane(global(L_r_4454)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 128).
+Let a_3 = shiftfield_F18_lane(global(P_a_4448)).
+Let a_4 = sign_f32(to_f32(-1.0)).
+Let a_5 = repr_decode32(read_uint32(mem_0, shift_float32(a_3, i))).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i_1) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i) /\ (i <= 31) /\ (!is_NaN_f32(a_5)).
+  (* Invariant *)
+  Have: (0 <= i_1) /\ (i_1 <= 32).
+  (* Invariant *)
+  Have: forall i_2 : Z.
+      let a_6 = repr_decode32(read_uint32(a_2, shift_float32(a_3, i_2))) in
+      ((0 <= i_2) -> ((i_2 < i_1) -> ((!is_NaN_f32(a_6)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_2)) < 0) <->
+       (sign_f32(a_6) = a_4))))).
+  (* Else *)
+  Have: 32 <= i_1.
+}
+Prove: (read_sint32(a_2, shift_sint32(a, i)) < 0) <-> (sign_f32(a_5) = a_4).
+
+------------------------------------------------------------
+
+Goal Exit-condition (generated by kernel from "bits.c", line 49) in '__riscv_vreinterpret_v_f32m8_i32m8':
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 49):
+Prove: true.
+Prover Qed returns Valid (0.83ms)
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 49):
+Let a = shiftfield_F22_lane(global(L_r_4454)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 128).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = shift_sint8(a_3, 0).
+Let a_5 = memcpy(a_2, a_4, mem_undef_1, a_4, 4).
+Let a_6 = shiftfield_F18_lane(global(P_a_4448)).
+Let a_7 = shift_float32(a_6, i).
+Let m = alloc_0[P_a_4448 <- 128][L_r_4454 <- 128].
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(a_5).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 32).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_8 = repr_decode32(read_uint32(a_2, shift_float32(a_6, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_8)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_8) = sign_f32(to_f32(-1.0))))))).
+  (* Then *)
+  Have: i <= 31.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(a_2, a_5, a_3, a_7, 4) = 0) /\
+      P_valid_or_empty(m, a_3, 4) /\ P_valid_read_or_empty(m, a_7, 4).
+}
+Prove: to_uint64(1 + i) <= 32.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant ("bits.c", line 49):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant ("bits.c", line 49):
+Let x = to_uint64(1 + i).
+Let a = shiftfield_F22_lane(global(L_r_4454)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 128).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = shift_sint8(a_3, 0).
+Let a_5 = memcpy(a_2, a_4, mem_undef_1, a_4, 4).
+Let a_6 = shiftfield_F18_lane(global(P_a_4448)).
+Let a_7 = shift_float32(a_6, i).
+Let m = alloc_0[P_a_4448 <- 128][L_r_4454 <- 128].
+Let a_8 = sign_f32(to_f32(-1.0)).
+Let a_9 = repr_decode32(read_uint32(a_5, shift_float32(a_6, i_1))).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(a_5).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Goal *)
+  When: (0 <= i_1) /\ (i_1 < x) /\ (!is_NaN_f32(a_9)).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 32).
+  (* Invariant *)
+  Have: forall i_2 : Z.
+      let a_10 = repr_decode32(read_uint32(a_2, shift_float32(a_6, i_2))) in
+      ((0 <= i_2) -> ((i_2 < i) -> ((!is_NaN_f32(a_10)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_2)) < 0) <->
+       (sign_f32(a_10) = a_8))))).
+  (* Then *)
+  Have: i <= 31.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(a_2, a_5, a_3, a_7, 4) = 0) /\
+      P_valid_or_empty(m, a_3, 4) /\ P_valid_read_or_empty(m, a_7, 4).
+  (* Invariant *)
+  Have: x <= 32.
+}
+Prove: (read_sint32(a_5, shift_sint32(a, i_1)) < 0) <->
+    (sign_f32(a_9) = a_8).
+
+------------------------------------------------------------
+
+Goal Loop assigns ("bits.c", line 49) (1/2):
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Loop assigns ("bits.c", line 49) (2/2):
+Call Effect at line 49
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '__riscv_vreinterpret_v_f32m8_i32m8':
+Effect at line 49
+Prove: true.
+Prover Qed returns Valid (1ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '__riscv_vreinterpret_v_f32m8_i32m8' (1/2):
+Effect at line 49
+Prove: true.
+Prover Qed returns Valid (0.97ms)
+
+------------------------------------------------------------
+
+Goal Assigns nothing in '__riscv_vreinterpret_v_f32m8_i32m8' (2/2):
+Call Effect at line 49
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------
+
+Goal Positivity of Loop variant at loop ("bits.c", line 49):
+Prove: true.
+Prover Qed returns Valid (2ms)
+
+------------------------------------------------------------
+
+Goal Decreasing of Loop variant at loop ("bits.c", line 49):
+Let x = to_uint64(1 + i).
+Let a = shiftfield_F22_lane(global(L_r_4454)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 128).
+Let a_3 = shift_sint32(a, i).
+Let a_4 = shift_sint8(a_3, 0).
+Let a_5 = memcpy(a_2, a_4, mem_undef_1, a_4, 4).
+Let a_6 = shiftfield_F18_lane(global(P_a_4448)).
+Let a_7 = sign_f32(to_f32(-1.0)).
+Let a_8 = shift_float32(a_6, i).
+Let m = alloc_0[P_a_4448 <- 128][L_r_4454 <- 128].
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2) /\ bytes(a_5).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 32).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_9 = repr_decode32(read_uint32(a_2, shift_float32(a_6, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_9)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_9) = a_7))))).
+  (* Then *)
+  Have: i <= 31.
+  (* Call 'memcpy' *)
+  Have: (L_memcmp(a_2, a_5, a_3, a_8, 4) = 0) /\
+      P_valid_or_empty(m, a_3, 4) /\ P_valid_read_or_empty(m, a_8, 4).
+  (* Invariant *)
+  Have: x <= 32.
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_9 = repr_decode32(read_uint32(a_5, shift_float32(a_6, i_1))) in
+      ((0 <= i_1) -> ((i_1 < x) -> ((!is_NaN_f32(a_9)) ->
+      ((read_sint32(a_5, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_9) = a_7))))).
+}
+Prove: i < x.
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'valid_dest' in 'memcpy'' in '__riscv_vreinterpret_v_f32m8_i32m8' at call 'memcpy' ("bits.c", line 49)
+:
+Let a = shiftfield_F22_lane(global(L_r_4454)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 128).
+Let a_3 = shiftfield_F18_lane(global(P_a_4448)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 32).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_4 = repr_decode32(read_uint32(a_2, shift_float32(a_3, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_4)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_4) = sign_f32(to_f32(-1.0))))))).
+  (* Then *)
+  Have: i <= 31.
+}
+Prove: P_valid_or_empty(alloc_0[P_a_4448 <- 128][L_r_4454 <- 128],
+         shift_sint32(a, i), 4).
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'valid_src' in 'memcpy'' in '__riscv_vreinterpret_v_f32m8_i32m8' at call 'memcpy' ("bits.c", line 49)
+:
+Let a = shiftfield_F22_lane(global(L_r_4454)).
+Let a_1 = shift_sint32(a, 0).
+Let a_2 = memcpy(mem_0, a_1, mem_undef_0, a_1, 128).
+Let a_3 = shiftfield_F18_lane(global(P_a_4448)).
+Assume {
+  Type: bytes(mem_0) /\ is_uint64(i) /\ bytes(a_2).
+  (* Heap *)
+  Type: framed(mem_0) /\ linked(alloc_0) /\ sconst(mem_0).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 32).
+  (* Invariant *)
+  Have: forall i_1 : Z.
+      let a_4 = repr_decode32(read_uint32(a_2, shift_float32(a_3, i_1))) in
+      ((0 <= i_1) -> ((i_1 < i) -> ((!is_NaN_f32(a_4)) ->
+      ((read_sint32(a_2, shift_sint32(a, i_1)) < 0) <->
+       (sign_f32(a_4) = sign_f32(to_f32(-1.0))))))).
+  (* Then *)
+  Have: i <= 31.
+}
+Prove: P_valid_read_or_empty(alloc_0[P_a_4448 <- 128][L_r_4454 <- 128],
+         shift_float32(a_3, i), 4).
+
+------------------------------------------------------------
+
+Goal Instance of 'Pre-condition 'separation' in 'memcpy'' in '__riscv_vreinterpret_v_f32m8_i32m8' at call 'memcpy' ("bits.c", line 49)
+:
+Prove: true.
+Prover Qed returns Valid
+
+------------------------------------------------------------

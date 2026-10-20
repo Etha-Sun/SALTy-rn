@@ -1,0 +1,88 @@
+{
+  "source_raw": "../v06/attempts/0001/main-report.json",
+  "root_authorization": "Only add stable proof labels, preserve every existing formula and record generated-goal\u2192label mapping.",
+  "mappings": [
+    {
+      "file": "harness.c",
+      "keyword": "assert",
+      "label": "vmem_final_reads",
+      "formula": "\\valid_read(left+k) && \\valid_read(input+k)",
+      "old_goal": "bytes_extensions_acsl-bits_equivalent_assert",
+      "annotation_before": "assert \\valid_read(left+k) && \\valid_read(input+k);",
+      "annotation_after": "assert vmem_final_reads: \\valid_read(left+k) && \\valid_read(input+k);",
+      "formula_before": "\\valid_read(left+k) && \\valid_read(input+k)",
+      "formula_after": "\\valid_read(left+k) && \\valid_read(input+k)",
+      "formula_identical": true
+    },
+    {
+      "file": "harness.c",
+      "keyword": "assert",
+      "label": "vmem_final_input_sep",
+      "formula": "\\separated(input+k,right+(0..n-1))",
+      "old_goal": "bytes_extensions_acsl-bits_equivalent_assert_3",
+      "annotation_before": "assert \\separated(input+k,right+(0..n-1));",
+      "annotation_after": "assert vmem_final_input_sep: \\separated(input+k,right+(0..n-1));",
+      "formula_before": "\\separated(input+k,right+(0..n-1))",
+      "formula_after": "\\separated(input+k,right+(0..n-1))",
+      "formula_identical": true
+    },
+    {
+      "file": "rvv.c",
+      "keyword": "assert",
+      "label": "vmem_rvv_input_read",
+      "formula": "\\valid_read(i_base+k)",
+      "old_goal": "bytes_extensions_acsl-bits_equivalent_assert_43",
+      "annotation_before": "assert \\valid_read(i_base+k);",
+      "annotation_after": "assert vmem_rvv_input_read: \\valid_read(i_base+k);",
+      "formula_before": "\\valid_read(i_base+k)",
+      "formula_after": "\\valid_read(i_base+k)",
+      "formula_identical": true
+    },
+    {
+      "file": "rvv.c",
+      "keyword": "assert",
+      "label": "vmem_rvv_input_sep",
+      "formula": "\\separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1))",
+      "old_goal": "bytes_extensions_acsl-bits_equivalent_assert_44",
+      "annotation_before": "assert \\separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1));",
+      "annotation_after": "assert vmem_rvv_input_sep: \\separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1));",
+      "formula_before": "\\separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1))",
+      "formula_after": "\\separated(i_base+k,o_base+((total-n)..(total-n)+(vl)-1))",
+      "formula_identical": true
+    },
+    {
+      "file": "float_ops.h",
+      "keyword": "requires",
+      "label": "vmem_rvv_load_read",
+      "formula": "\\valid_read(p+(0..vl-1))",
+      "old_goal": "bytes_extensions_acsl-bits_equivalent_call___riscv_vle32_v_f32m8_riscv_vle32_v_f32m8_requires_2",
+      "annotation_before": "requires \\valid_read(p+(0..vl-1));",
+      "annotation_after": "requires vmem_rvv_load_read: \\valid_read(p+(0..vl-1));",
+      "formula_before": "\\valid_read(p+(0..vl-1))",
+      "formula_after": "\\valid_read(p+(0..vl-1))",
+      "formula_identical": true
+    }
+  ],
+  "all_sources_identical_after_removing_new_labels": {
+    "shim.h": true,
+    "base.h": true,
+    "rsum.h": true,
+    "clamp.h": true,
+    "float_ops.h": true,
+    "extensions.h": true,
+    "base.c": true,
+    "float_ops.c": true,
+    "representation.c": true,
+    "mul.c": true,
+    "mulc.c": true,
+    "bits.c": true,
+    "mask.c": true,
+    "sub.c": true,
+    "neon.c": true,
+    "rvv.c": true,
+    "spec.h": true,
+    "harness.c": true,
+    "unit.c": true
+  },
+  "ordinary_C_public_spec_model_driver_unchanged": true
+}

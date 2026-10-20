@@ -1,0 +1,30 @@
+{
+  "root10_revision": "101fc27d738d6bfd934730ef5aec055dca716542",
+  "root10_proof_source": "experiments/integration-review-v1/candidates/gemm-hybrid-v3",
+  "root10_proof_sha256": "387ba148561d01b78b3ab96824ee05b612aa067f8f3d7fc63576e3fcd578a0f2",
+  "deepseek_proof_sha256": "0179a2d674015539a96872dce5325adc7457320690b3b7e2c26d734f7660eecd",
+  "deepseek_pure_declarations": [
+    "ext_neon_min_cong1",
+    "ext_neon_min_cong2",
+    "ext_neon_max_cong1",
+    "ext_neon_max_cong2"
+  ],
+  "changes": [
+    "Copy reviewed DeepSeek pure congruence/representation declarations and check all global lemmas, no assumptions.",
+    "Split each actual NEON two-stage clamp with a proved-obligation min cut before max; existing final clamp/bridge cuts retained."
+  ],
+  "removed_strategy_blocks": [],
+  "ordinary_C_spec_shim_model_driver_unchanged": true,
+  "frozen_sha256": "958b83803a7a3e723af9e068b2e274366953a0fdca9f535b952318d0796568db",
+  "proof_sha256": "5912d50c6e3da1947ec01d2650b620c0f9959fdd1dcb4a499d11128d16e977cb",
+  "complete_kernel": false,
+  "previous_v3_frozen_sha256": "f2503be55695faf6a5b1675cbfcee989436a32d47915fa97b8c601dcfa296aad",
+  "checker_migration": {
+    "from": "tools/shim_c_campaign_v3.py",
+    "to": "tools/shim_c_campaign_v4.py",
+    "reason": "Existing stronger v4 checks all explicit global lemmas separately, retaining source/model/control/body coverage. No tool source or model change."
+  },
+  "frozen_C_spec_shim_driver_model_and_private_checker_items_unchanged": true,
+  "pre_syntax_fix_proof_sha256": "8ccf9013f8bcd8a894579b16a5bf15fbd4b67d3ae8b9d961dd863e2f7f1b7795",
+  "annotation_syntax_fix": "Move new header lemma block inside existing include guard to avoid duplicate registration; split QC4 two assertions into two code annotation comments. No formula/C/spec/model change."
+}

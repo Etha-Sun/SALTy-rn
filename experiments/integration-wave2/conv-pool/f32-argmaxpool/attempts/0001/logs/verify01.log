@@ -1,0 +1,248 @@
+['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5,alt-ergo', '-wp-timeout', '10', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/logs/verify01.json', '-wp-model', 'Typed+float', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/.build/verify01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/.build/verify01/annotated/unit.c', '-wp-skip-fct', '__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32']
+# Actual pinned execution: ['/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/core-float-wave2/model-native-bytes32-v6-fma/frama-c.py', '-machdep', 'gcc_x86_64', '-inline-calls', 'test_neon,test_rvv', '-inline-stmt-contracts', '-remove-inlined', 'test_neon,test_rvv', '-wp', '-wp-rte', '-wp-par', '2', '-wp-prover', 'z3,cvc5', '-wp-timeout', '3', '-wp-memlimit', '1024', '-wp-cache', 'none', '-wp-report-json', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/logs/verify01.json', '-wp-model', 'Bytes', '-warn-special-float', 'none', '-wp-driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/.build/verify01/annotated/complex_fp.driver', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/.build/verify01/annotated/unit.c', '-wp-skip-fct', '__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32', '-wp-share', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share', '-wp-why3-config', '/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf', '-wp-no-why3-detect']
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "z3,cvc5", "-wp-timeout", "3", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/logs/verify01.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/.build/verify01/annotated/complex_fp.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/conv-pool/f32-argmaxpool/attempts/0001/.build/verify01/annotated/unit.c", "-wp-skip-fct", "__riscv_vand_vx_i8m2,__riscv_vfcvt_f_x_v_f32m8,__riscv_vfmerge_vfm_f32m8,__riscv_vfmv_v_f_f32m8,__riscv_vfslide1down_vf_f32m8,__riscv_vfslide1up_vf_f32m8,__riscv_vle32_v_i32m8,__riscv_vle8_v_i8m2,__riscv_vmfne_vv_f32m8_b4,__riscv_vmul_vx_i32m8,__riscv_vsetvl_e32m1,__riscv_vsetvl_e32m2,__riscv_vsetvl_e32m4,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m2,__riscv_vsetvlmax_e32m4,__riscv_vsetvlmax_e32m8,__riscv_vsext_vf2_i16m4,__riscv_vsll_vx_i8m2,__riscv_vsra_vx_i32m8,__riscv_vwmacc_vx_i32m8,arithmetic_shift32,bits_i32,bits_i8,vand_s8,vcltq_f32,vcombine_f32,vcvtq_f32_s32,vdupq_lane_f32,vdupq_n_f32,vextq_f32,vget_high_s16,vget_lane_f32,vget_low_s16,vld1_dup_f32,vld1_f32,vld1_s8,vld1q_dup_f32,vld1q_dup_s32,vld1q_lane_f32,vld1q_s32,vld2_dup_f32,vld2q_dup_f32,vmlal_lane_s16,vmov_n_s8,vmovl_s8,vmovq_n_f32,vmulq_s32,vshl_n_s8,vshrq_n_s32,vst1q_lane_f32,vzip1q_f32,vzip2q_f32", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+[kernel] Parsing unit.c (with preprocessing)
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vle32_v_u32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmerge_vxm_u32m8
+[rte:annot] annotating function __riscv_vmfgt_vv_f32m8_b4
+[rte:annot] annotating function __riscv_vmv_v_x_u32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vse32_v_u32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function next_arg_seed
+[rte:annot] annotating function next_arg_step
+[rte:annot] annotating function next_arg_sub
+[rte:annot] annotating function root32_index_step
+[rte:annot] annotating function vaddq_u32
+[rte:annot] annotating function vbslq_f32
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function vbslq_u32
+[rte:annot] annotating function vcgtq_f32
+[rte:annot] annotating function vdupq_n_u32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_high_u32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vget_low_u32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vld1q_u32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1_lane_u32
+[rte:annot] annotating function vst1_u32
+[rte:annot] annotating function vst1q_f32
+[rte:annot] annotating function vst1q_u32
+[wp] Computing [100 goals...]
+[wp] Computing [200 goals...]
+[wp] neon.c:57: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:31: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] rvv.c:18: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:34: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] neon.c:20: Warning: Missing assigns clause (assigns 'everything' instead)
+[wp] Computing [300 goals...]
+[wp] Computing [400 goals...]
+[wp] Computing [500 goals...]
+[wp] Computing [600 goals...]
+[wp] Computing [700 goals...]
+[wp] Computing [800 goals...]
+[wp] 750 goals scheduled
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vld1q_f32_assert_rte_mem_access (Qed 4ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1q_f32_assert_rte_mem_access (Qed 7ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1q_f32_loop_invariant_2_preserved (Qed 8ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_f32_loop_invariant_2_preserved (Qed 11ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_f32_assert_rte_mem_access (Qed 7ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_lane_f32_ensures (Qed 4ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vld1q_u32_call_memcpy_requires_valid_src (Qed 3ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1q_u32_call_memcpy_requires_valid_dest (Qed 4ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_lane_u32_assert_rte_index_bound_2 (Qed 2ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_lane_u32_assert_rte_index_bound (Qed 2ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_u32_call_memcpy_requires_valid_dest (Qed 2ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_vst1_lane_u32_assert_rte_mem_access (Qed 2ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vle32_v_f32m8_assert_rte_mem_access (Qed 7ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_f32m8_ensures (Qed 8ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_f32m8_loop_invariant_2_preserved (Qed 10ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_f32m8_assert_rte_mem_access (Qed 8ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_f32m8_loop_assigns_part3 (Qed 12ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vle32_v_u32m8_assert_rte_index_bound (Qed 5ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vle32_v_u32m8_assert_rte_mem_access (Qed 5ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vmv_v_x_u32m8_assert_rte_index_bound (Qed 5ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vmerge_vxm_u32m8_assert_rte_index_bound (Qed 6ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_u32m8_assert_rte_mem_access (Qed 4ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_u32m8_assert_rte_index_bound (Qed 5ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_u32m8_loop_invariant_next_arg_u32_prefix_preserved (Qed 8ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_terminates_part3 (Qed 786ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_terminates_part2 (Qed 407ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_riscv_vse32_v_u32m8_loop_assigns_part3 (Qed 8ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_terminates_part4 (Qed 12.7s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_ensures_equal (Qed 4.9s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_terminates_part5 (Qed 1s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access (Qed 1.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_loop_invariant_established (Qed 1.4s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_2 (Qed 1.4s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_11 (Qed 2.0s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_10 (Qed 1s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_9 (Qed 898ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_8 (Qed 2s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_7 (Qed 2.1s) (Z3)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_13 (Qed 4.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_12 (Qed 3s) (CVC5)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Property:
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_19 (Qed 17.6s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_18 (Qed 16s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_14 (Qed 5.6s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_signed_overflow (Qed 30.0s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_20 (Qed 19.1s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_17 (Qed 10.8s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_16 (Qed 8.9s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_15 (Qed 7.4s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_loop_invariant_stage3_group_index_established (Qed 1.4s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_loop_invariant_stage3_group_count_established (Qed 1.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_25 (Qed 4.9s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_24 (Qed 3.7s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_23 (Qed 2.8s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_22 (Qed 1.3s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_21 (Qed 1.4s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_loop_invariant_stage3_group_index_preserved (Qed 11.8s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_27 (Qed 7.8s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_26 (Qed 6.5s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_29 (Qed 10.5s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assert_rte_mem_access_28 (Qed 9s) (CVC5)
+[wp] Warning: Goal Invariant (5/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (5/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (9/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (9/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part05 (Qed 11.5s) (CVC5)
+[wp] Warning: Goal Invariant (15/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (15/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part09 (Qed 11.9s) (CVC5)
+[wp] Warning: Goal Invariant (23/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (23/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (19/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (19/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part15 (Qed 35.9s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part11 (Qed 11.7s) (CVC5)
+[wp] Warning: Goal Invariant (27/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (27/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part23 (Qed 37.7s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part19 (Qed 37s) (CVC5)
+[wp] Warning: Goal Invariant (35/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (35/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (31/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (31/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part27 (Qed 38.6s) (CVC5)
+[wp] Warning: Goal Invariant (43/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (43/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (39/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (39/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part35 (Qed 40.2s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part31 (Qed 39.4s) (CVC5)
+[wp] Warning: Goal Invariant (45/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (45/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (44/45):
+    running prover Z3:4.12.5 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] Warning: Goal Invariant (44/45):
+    running prover CVC5:1.2.1 failed ([Why3 Error] Type mismatch between frama_c_wp.memaddr.MemAddr.addr and int)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part43 (Qed 42.3s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part39 (Qed 41.1s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part45 (Qed 43.2s) (CVC5)
+[wp] [Failure] bytes_complex_fp_fma_acsl-bits_equivalent_loop_assigns_2_part44 (Qed 43.5s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part02 (Qed 1.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part09 (Qed 673ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part08 (Qed 572ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part07 (Qed 463ms) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part16 (Qed 1.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part10 (Qed 967ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part19 (Qed 1.4s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part18 (Qed 1.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part17 (Qed 1.3s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part22 (Qed 1.2s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part21 (Qed 1.4s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_normal_part20 (Qed 1.5s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part005 (Qed 829ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part004 (Qed 719ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part003 (Qed 525ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part002 (Qed 440ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part006 (Qed 838ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part009 (Qed 1.1s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part008 (Qed 1s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part007 (Qed 906ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part013 (Qed 1.7s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part012 (Qed 1.6s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part011 (Qed 892ms) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part010 (Qed 1s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part014 (Qed 1.8s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part017 (Qed 2.9s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part016 (Qed 2.7s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part015 (Qed 1.7s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part021 (Qed 4.3s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part020 (Qed 4.2s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part019 (Qed 2.9s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part018 (Qed 3.3s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part022 (Qed 4.6s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part025 (Qed 7s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part024 (Qed 5.8s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part023 (Qed 4.3s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part029 (Qed 7.2s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part028 (Qed 7.3s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part027 (Qed 5.7s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part026 (Qed 7.4s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part030 (Qed 7.6s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part033 (Qed 9.2s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part032 (Qed 9s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part031 (Qed 7.2s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part037 (Qed 11.7s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part036 (Qed 11.4s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part035 (Qed 8.8s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part034 (Qed 9.4s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part038 (Qed 11.5s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part041 (Qed 14.0s) (CVC5)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part040 (Qed 12.7s) (Z3)
+[wp] [Timeout] bytes_complex_fp_fma_acsl-bits_equivalent_assigns_exit_part039 (Qed 11.0s) (Z3)

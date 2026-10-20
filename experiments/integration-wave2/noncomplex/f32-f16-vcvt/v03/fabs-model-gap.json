@@ -1,0 +1,29 @@
+{
+  "classification": "Frozen external libc contract is too weak for strict signed-zero proof; not a kernel counterexample.",
+  "libc_contract": "experiments/shim-c-v2/model-fma/libc/math.h",
+  "libc_sha256": "297612494f69c018622bdcff7989c72a2d36f69276572ade0cb84ececa71d1e9",
+  "declaration_line": 1432,
+  "finite_postconditions": [
+    "is_finite(result)",
+    "result >= 0.",
+    "result == x || result == -x"
+  ],
+  "logical_witness": {
+    "input": "negative zero",
+    "allowed_return": "negative zero",
+    "all_frozen_finite_posts_hold": true,
+    "desired_intermediate_L_fabsf": "positive zero",
+    "same_float_fails_due_to_sign": true
+  },
+  "pending_goals": [
+    "typed_fma_riscv_vfabs_v_f32m8_loop_invariant_2_preserved",
+    "typed_fma_vabsq_f32_loop_invariant_2_preserved"
+  ],
+  "must_not_do": [
+    "Exclude zero/NaN inputs from public precondition",
+    "Assume a new sign axiom",
+    "Treat unchecked fabs/helper postcondition as proved"
+  ],
+  "future_fix_requires_root_model_review": "Use a qualified exact fabs sign/codec semantics bridge, preserving C and public spec; ordinary proof-only SMT cuts cannot derive a missing frozen contract fact.",
+  "proof_logic_note": "L_bits32 and L_f32of are proof-added uninterpreted logic declarations, not frozen C/spec symbols and not automatically an axiom/spec violation. Their actual memcpy-to-logic body obligations remain open."
+}

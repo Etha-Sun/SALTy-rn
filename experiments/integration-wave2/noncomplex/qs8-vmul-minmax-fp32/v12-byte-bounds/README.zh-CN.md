@@ -1,0 +1,1 @@
+最小proof-only边界候选：仅新增private n范围（caller实际n=0）和循环0<=i<=2/4、variant；不新增bytevalid、功能post、assigns契约。原char-store memoryRTE仍单列，旧everything-frame保留。body与全部两新callerpre分两同proofscope实际查；180s行政限/solver30s1024/par128，原普通C/publicspec/shim/model/driver/checker冻结。

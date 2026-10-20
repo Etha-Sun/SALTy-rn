@@ -1,0 +1,38 @@
+{
+  "root10_revision": "101fc27d738d6bfd934730ef5aec055dca716542",
+  "root10_proof_source": "experiments/shim-c-v2/stage3-proof-next/dwconv/igemm-frame-r3",
+  "root10_proof_sha256": "160cac9fef7db54b8e7355b2f6cfd345c5921e67ad43780222118ceed12a08b4",
+  "deepseek_proof_sha256": "efc55996d60d17286de4ad07be1fb554ecee217e03553cad56a8a4e43b70b90b",
+  "deepseek_pure_declarations": [
+    "ext_neon_min_cong1",
+    "ext_neon_min_cong2",
+    "ext_neon_max_cong1",
+    "ext_neon_max_cong2",
+    "ext_same_sym",
+    "ext_same_weak",
+    "ig_fma_congruence"
+  ],
+  "changes": [
+    "Copy reviewed DeepSeek pure congruence/representation declarations and check all global lemmas, no assumptions.",
+    "Actual NEON clamp min/final cuts, and allow nc/p==0 at genuine do/while exits without restricting wrapper domain."
+  ],
+  "removed_strategy_blocks": [
+    {
+      "file": "fp_primitives.h",
+      "sha256": "954417fb99e54a8fa1892f8bf00c2157725916e6368e72ba12636c30894605af"
+    }
+  ],
+  "ordinary_C_spec_shim_model_driver_unchanged": true,
+  "frozen_sha256": "6acdc73c76adadaf09f25b992839b85354f7d4da97369367d1688e3f2434fad0",
+  "proof_sha256": "a62a38c7a45d8849cf1f4984dab036717a03e0c18f0501a98115ff69d1e84bad",
+  "complete_kernel": false,
+  "previous_v3_frozen_sha256": "68d2a9427257add142d65b3a55f52a4a1f62cf42586c444385a90879d2693913",
+  "checker_migration": {
+    "from": "tools/shim_c_campaign_v3.py",
+    "to": "tools/shim_c_campaign_v4.py",
+    "reason": "Existing stronger v4 checks all explicit global lemmas separately, retaining source/model/control/body coverage. No tool source or model change."
+  },
+  "frozen_C_spec_shim_driver_model_and_private_checker_items_unchanged": true,
+  "pre_syntax_fix_proof_sha256": "6f7b263c45880d0e78756e23317a53f8e465aa1734cc49824aea2eadad59805a",
+  "annotation_syntax_fix": "Move new header lemma block inside existing include guard to avoid duplicate registration; split QC4 two assertions into two code annotation comments. No formula/C/spec/model change."
+}

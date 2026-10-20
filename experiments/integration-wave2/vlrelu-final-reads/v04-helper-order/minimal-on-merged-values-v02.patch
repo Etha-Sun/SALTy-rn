@@ -1,0 +1,38 @@
+--- a/harness.c
++++ b/harness.c
+@@ -3,6 +3,26 @@
+ /*@ lemma hv_count4: \forall integer N;
+     0<=N<=SIZE_MAX/4-3 ==> ((size_t)(4*N))/4==N; */
+ /*@ \wp::proof VmemSMT: hv_count4; */
++
++
++/*@ ghost
++/@ requires read_range_nonempty: n>0;
++   requires read_range_index: 0<=k<n;
++   requires read_range_whole: \valid_read(p+(0..n-1));
++   terminates \true;
++   assigns \nothing;
++   ensures read_range_point: \valid_read(p+k); @/
++void proof_final_read(const float *p,size_t n,size_t k) {}
++*/
++/*@ \wp::strategy ReadRangeSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy ReadRangeAddress:
++    \tactic("Wp.unfold",\ingoal(shift_float32(P,I)),\children(ReadRangeAddress)),
++    \tactic("Wp.unfold",\incontext(shift_float32(P,I)),\children(ReadRangeAddress)),ReadRangeSMT;
++    \wp::strategy ReadRangeValid:
++    \tactic("Wp.valid",\ingoal(valid_rd(M,P,N)),\children(ReadRangeValid)),
++    \tactic("Wp.valid",\incontext(valid_rd(M,P,N)),\children(ReadRangeValid)),ReadRangeAddress;
++    \wp::proof ReadRangeValid: proof_final_read;
++*/
+ 
+ int equivalent(size_t n,const float *input,float *left,float *right,float slope) {
+   struct xnn_f32_lrelu_params params={{slope}};
+@@ -25,6 +45,8 @@
+        loop invariant \forall integer j; 0<=j<k ==> same_value(left[j],right[j]);
+        loop assigns k; loop variant n-k; @/
+     for(;k<n;k++) {
++      proof_final_read(input,n+3,k);
++      proof_final_read(left,n,k);
+       /@ assert vmem_final_reads: \valid_read(left+k) && \valid_read(input+k); @/
+       /@ assert \separated(left+k,right+(0..n-1)); @/
+       /@ assert vmem_final_input_sep: \separated(input+k,right+(0..n-1)); @/
