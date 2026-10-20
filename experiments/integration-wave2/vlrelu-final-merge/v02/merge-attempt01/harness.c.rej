@@ -1,0 +1,28 @@
+--- harness.c
++++ harness.c
+@@ -99,3 +99,25 @@
+     \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+     \wp::proof NExitPrefixPoint: values_neon1_prefix;
+     \wp::proof NExitFinal: values_neon_all; */
++
++/*@ \wp::strategy MainFGSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy MainFGAddress:
++      \tactic("Wp.unfold",\ingoal(A:shift_float32(P,I)),\select(A),
++        \children(MainFGAddress)),MainFGSMT;
++    \wp::strategy MainFGFilter:
++      \tactic("Wp.filter",\children(MainFGAddress)),MainFGAddress;
++    \wp::proof MainFGFilter: mainframe4_store,mainframe4_value,mainframe2_store,mainframe2_value;
++*/
++
++/*@ \wp::proof MainFGSMT: mf4_index_cast,mf2_index_cast,mf4_index,mf2_index;
++    \wp::proof VmemIncluded: mf4_output_read,mf2_output_read;
++    \wp::proof MainFGFilter: mf4_old_point,mf2_old_point,mf4_lanes,mf2_lanes,values_transfer_source,values_transfer_value; */
++
++/*@ \wp::strategy MF2ExactPoint:
++      \tactic("Wp.instance",
++        \ingoal(P_same_float(repr_decode32(read_uint32(M,D)),V[I])),
++        \incontext(Fact:(\forall integer J; 0<=J && J<=N ==>
++          P_same_float(repr_decode32(read_uint32(M,A)),V[J]))),
++        \select(Fact),\param("P1",I),\children(MainFGSMT)),MainFGSMT;
++    \wp::proof MF2ExactPoint: mf2_lanes;
++*/

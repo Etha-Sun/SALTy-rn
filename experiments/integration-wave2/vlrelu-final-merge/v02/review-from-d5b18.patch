@@ -1,0 +1,138 @@
+--- d5b18/extensions.h
++++ final-v02/extensions.h
+@@ -197,4 +197,17 @@
+    ensures values_transfer_result: same_value(r,unary_value(y,t)); @/
+ void proof_values_unary_transfer(float r,float v,float y,float t) {}
+ */
++
++/*@ ghost
++/@ requires mf4_index: j<4;
++   requires mf4_lanes: \forall integer i; 0<=i<4 ==> same_float(p[i],a.lane[i]);
++   terminates \true; assigns \nothing;
++   ensures mf4_point: same_float(p[j],a.lane[j]); @/
++void proof_mainframe_store4_point(const float *p,float32x4_t a,size_t j) {}
++/@ requires mf2_index: j<2;
++   requires mf2_lanes: \forall integer i; 0<=i<2 ==> same_float(p[i],a.lane[i]);
++   terminates \true; assigns \nothing;
++   ensures mf2_point: same_float(p[j],a.lane[j]); @/
++void proof_mainframe_store2_point(const float *p,float32x2_t a,size_t j) {}
++*/
+ #endif
+--- d5b18/harness.c
++++ final-v02/harness.c
+@@ -3,6 +3,26 @@
+ /*@ lemma hv_count4: \forall integer N;
+     0<=N<=SIZE_MAX/4-3 ==> ((size_t)(4*N))/4==N; */
+ /*@ \wp::proof VmemSMT: hv_count4; */
++
++
++/*@ ghost
++/@ requires read_range_nonempty: n>0;
++   requires read_range_index: 0<=k<n;
++   requires read_range_whole: \valid_read(p+(0..n-1));
++   terminates \true;
++   assigns \nothing;
++   ensures read_range_point: \valid_read(p+k); @/
++void proof_final_read(const float *p,size_t n,size_t k) {}
++*/
++/*@ \wp::strategy ReadRangeSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy ReadRangeAddress:
++    \tactic("Wp.unfold",\ingoal(shift_float32(P,I)),\children(ReadRangeAddress)),
++    \tactic("Wp.unfold",\incontext(shift_float32(P,I)),\children(ReadRangeAddress)),ReadRangeSMT;
++    \wp::strategy ReadRangeValid:
++    \tactic("Wp.valid",\ingoal(valid_rd(M,P,N)),\children(ReadRangeValid)),
++    \tactic("Wp.valid",\incontext(valid_rd(M,P,N)),\children(ReadRangeValid)),ReadRangeAddress;
++    \wp::proof ReadRangeValid: proof_final_read;
++*/
+ 
+ int equivalent(size_t n,const float *input,float *left,float *right,float slope) {
+   struct xnn_f32_lrelu_params params={{slope}};
+@@ -25,6 +45,9 @@
+        loop invariant \forall integer j; 0<=j<k ==> same_value(left[j],right[j]);
+        loop assigns k; loop variant n-k; @/
+     for(;k<n;k++) {
++      /@ assert read_range_count: (size_t)(n+3)==n+3; @/
++      proof_final_read(input,n+3,k);
++      proof_final_read(left,n,k);
+       /@ assert vmem_final_reads: \valid_read(left+k) && \valid_read(input+k); @/
+       /@ assert \separated(left+k,right+(0..n-1)); @/
+       /@ assert vmem_final_input_sep: \separated(input+k,right+(0..n-1)); @/
+@@ -99,3 +122,29 @@
+     \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+     \wp::proof NExitPrefixPoint: values_neon1_prefix;
+     \wp::proof NExitFinal: values_neon_all; */
++
++/*@ \wp::strategy MP4Filter:
++    \tactic("Wp.filter",\children(ValuesSMT)),ValuesSMT;
++    \wp::proof MP4Filter: mp4_main_prefix; */
++
++/*@ \wp::strategy MainFGSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy MainFGAddress:
++      \tactic("Wp.unfold",\ingoal(A:shift_float32(P,I)),\select(A),
++        \children(MainFGAddress)),MainFGSMT;
++    \wp::strategy MainFGFilter:
++      \tactic("Wp.filter",\children(MainFGAddress)),MainFGAddress;
++    \wp::proof MainFGFilter: mainframe4_store,mainframe4_value,mainframe2_store,mainframe2_value;
++*/
++
++/*@ \wp::proof MainFGSMT: mf4_index_cast,mf2_index_cast,mf4_index,mf2_index;
++    \wp::proof VmemIncluded: mf4_output_read,mf2_output_read;
++    \wp::proof MainFGFilter: mf4_old_point,mf2_old_point,mf4_lanes,mf2_lanes,values_transfer_source,values_transfer_value; */
++
++/*@ \wp::strategy MF2ExactPoint:
++      \tactic("Wp.instance",
++        \ingoal(P_same_float(repr_decode32(read_uint32(M,D)),V[I])),
++        \incontext(Fact:(\forall integer J; 0<=J && J<=N ==>
++          P_same_float(repr_decode32(read_uint32(M,A)),V[J]))),
++        \select(Fact),\param("P1",I),\children(MainFGSMT)),MainFGSMT;
++    \wp::proof MF2ExactPoint: mf2_lanes;
++*/
+--- d5b18/neon.c
++++ final-v02/neon.c
+@@ -31,7 +31,7 @@
+       loop invariant input==i_base+(total-batch/4);
+       loop invariant output==o_base+(total-batch/4);
+       loop invariant \valid(output+(0..batch/4-1));
+-      loop invariant \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
++      loop invariant mp4_main_prefix: \forall integer j; 0<=j<total-batch/4 ==> same_value(o_base[j],unary_value(i_base[j],proof_slope_entry));
+       loop assigns batch,input,output,o_base[0..total-1]; loop variant batch; */
+   for (; batch >= 4 * sizeof(float); batch -= 4 * sizeof(float)) {
+     //@ ghost const float* proof_input4=input;
+@@ -86,11 +86,16 @@
+         /@ assert \valid_read(o_base+k); @/
+         /@ assert \separated(o_base+k,o_base+((total-batch/4)..(total-batch/4)+(4)-1)); @/
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary4)); @/
++        /@ assert mf4_old_point: same_value(\at(o_base[\at(k,Here)],Unary4),unary_value(\at(i_base[\at(k,Here)],Unary4),proof_slope_entry)); @/
+       } else {
+         /@ assert 0<=k-(total-batch/4)<(4); @/
+-        /@ assert same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
++        /@ assert mf4_index_cast: (size_t)(k-(size_t)(total-(size_t)(batch/4)))==k-(total-batch/4); @/
++        /@ assert mf4_output_read: \valid_read(o_base+k); @/
++        proof_mainframe_store4_point(output,vacc0123,k-(total-batch/4));
++        /@ assert mainframe4_store: same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
++        proof_values_unary_transfer(o_base[k],vacc0123.lane[k-(total-batch/4)],i_base[k],proof_slope_entry);
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      /@ assert mainframe4_value: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 4;
+   }
+@@ -148,11 +153,16 @@
+         /@ assert \valid_read(o_base+k); @/
+         /@ assert \separated(o_base+k,o_base+((total-batch/4)..(total-batch/4)+(2)-1)); @/
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary2)); @/
++        /@ assert mf2_old_point: same_value(\at(o_base[\at(k,Here)],Unary2),unary_value(\at(i_base[\at(k,Here)],Unary2),proof_slope_entry)); @/
+       } else {
+         /@ assert 0<=k-(total-batch/4)<(2); @/
+-        /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
++        /@ assert mf2_index_cast: (size_t)(k-(size_t)(total-(size_t)(batch/4)))==k-(total-batch/4); @/
++        /@ assert mf2_output_read: \valid_read(o_base+k); @/
++        proof_mainframe_store2_point(output,vacc_lo,k-(total-batch/4));
++        /@ assert mainframe2_store: same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
++        proof_values_unary_transfer(o_base[k],vacc_lo.lane[k-(total-batch/4)],i_base[k],proof_slope_entry);
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      /@ assert mainframe2_value: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 2;
+       vacc_lo = vget_high_f32(vacc);

@@ -79,7 +79,7 @@ ghost noninterference 定理，也不是原始 ISA 与 shim 对应的证明。
 
 ## 当前 vlrelu 收尾
 
-最新冻结 proof 为 `merged-values-v02`，SHA256
+旧完整 proof 为 `merged-values-v02`，SHA256
 `d5b18b2b5506dde3de8df80b7b4543ae18334723ed600d2437e04d2f392a13d9`。
 两个独立 depth16 全量检查都得到 **729/735**：主目标708/714、全局引理21/21。
 714个主目标与单独无prover枚举的清单完全匹配，没有遗漏函数/属性。
@@ -92,9 +92,10 @@ depth8完整检查为727/735，额外两条RVV输入内存义务未闭，最终�
 - NEON主4lane输出prefix保持；`vlrelu-mainprefix/v02-filter-depth8`已在同谓词上加稳定名字，
   仅用filter及地址展开，实际2/2+21globals闭合。仍要与其它修订一起全量复验。
 - NEON4/2各一条写回`same_float`和逐点`same_value`，共四项。
-  精确位置、失败策略及新候选在`vlrelu-mainframe/`；这些匿名前件曾被局部focus漏掉，不能由尾部通过推断已闭。
-- harness最终两点读取权限`vmem_final_reads`。小context permission helper的实际body已2/2，
-  正在检查其全部caller前件与原目标；未完成前不计入通过。
+  新 `vlrelu-mainframe/v07-exact-instance` 已在同snapshot关闭全部4项和新依赖：caller64/64、body/frame6/6、globals21/21；root已核对raw及新增6项参数RTE。匿名前件曾被局部focus漏掉，故统一版本必须全量检查。
+- harness最终两点读取权限`vmem_final_reads`。`vlrelu-final-reads/v04-helper-order-callers` 的14项确切依赖已全部通过，含body/frame、6项前件、无wrap cut、原目标和相关range invariant，root已审。
+
+最终统一 proof 在 `vlrelu-final-merge/v02`，SHA `31eda107…cf79457`，已冻结并正执行全新完整检查，depth16/par128/30s1024MiB/admin3600，无function/property子集。三项合并来源实际局部闭合都不自动继承为合并后的通过。Root独立检查单patch零fuzz roundtrip20文件、公spec/shim/driver原字节身份、source guard5740和最终host LLVM IR身份均通过；两名agent还分别独立审查新增ghost helper和前置条件。完整raw与新独立目标清单尚待完成，manifest暂不增加。
 
 普通C token、公开spec、source guard、主版本LLVM identity均通过审计；
 四份model lock的34307个不同文件再次检查无漂移。控制检查通过也不等于模型一致性定理。

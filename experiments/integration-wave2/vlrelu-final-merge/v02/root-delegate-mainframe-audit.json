@@ -1,0 +1,89 @@
+{
+  "audit_type": "read_only_static_merge_preservation",
+  "WP_run": false,
+  "proof_task_frozen_modified": false,
+  "merged_whole_kernel_verified": false,
+  "checks": {
+    "public_spec_byte_identical": true,
+    "all_19_ordinary_C_raw_token_streams_identical": true,
+    "ordinary_C_files_checked": 19,
+    "extensions_including_two_new_and_existing_transfer_helper_contract_body_assigns_identical_to_v07": true,
+    "neon_only_v07_difference_is_mp4_main_prefix_label": true,
+    "all_7_transfer_plus_2_point_call_sites_and_argument_expressions_identical": true,
+    "all_18_private_preconditions_strictly_preserved": true,
+    "all_6_new_parameter_RTE_source_operations_strictly_preserved": true,
+    "all_10_checked_mainframe_cuts_labels_preserved_once": true,
+    "v07_complete_strategy_suffix_byte_identical": true,
+    "original_VmemAddress_and_store_strategies_preserved": true,
+    "review_diff_roundtrips_to_work_in_memory": true,
+    "driver_identical": true
+  },
+  "v07_local_provenance": {
+    "proof_sha256": "d63b30ddcf76553d2a9c9cb4cf680bdf2a55e4dfc1261ad9f41ece317b2c3434",
+    "minimal_delta_sha256": "767a33b43fe1c7420aeab5bbde088fdc45c6d94fdcb16336f9a8c5f88a8f03c3",
+    "caller_preconditions": 18,
+    "transfer_calls": 7,
+    "point_calls": 2,
+    "new_argument_RTE_count": 6,
+    "all_local_raw_valid": true
+  },
+  "merged_inputs_sha256": {
+    "review_patch": "7a17c8ffa8161ea82237223c6cfe671ed2dd5579f3b1e7b1c78c63168210f980",
+    "draft_proof": "31eda1076aa0da512a66fef8b8591d605f84b4c7bebb7f4914bb738a8cf79457",
+    "work_files": {
+      "float_ops.h": "32d6d23bd7f4b246cf8ae7420fbd27bd38349ef70ff869da4669ab0344f33cb4",
+      "unit.c": "2c939441f1e2c8bb9f489974fd61d1e56434d349e618d98becbfd831ceac1e4b",
+      "clamp.h": "44a17f3df71b751f4057b14070862e43f15f330f092bf92c47a89739800582e3",
+      "extensions.h": "e75d5f1c374df9dbe892a4134ab9516903bcf151e688734cf1b78502ce9ecdbc",
+      "rsum.h": "c269c2f4bb99c87827de3da7e397eefc0ff684aff2052ce84f0afaaa42878a3c",
+      "spec.h": "e33d430bafa3c81b07427a1aa09eac9b11ba3d061ff043b0d59e4a99b12179bf",
+      "extensions.driver": "16f1b3262bbccb1a96a96815e04e519e62bb2693a8f5b91795c0006f6262b7e6",
+      "mulc.c": "0efac1d1ab311e166e9fbe3a59a77ec278240083d8746071ef81b8d420f15238",
+      "base.h": "3c79dbe83f5c0f3e069c327e33a374306976db7773002bd02acafe49fae4891a",
+      "rvv.c": "0479154c44d56a34615818923ee8ba5e51635800920610742e687090ef972ebf",
+      "mul.c": "6e4c3a8a9dd878de4103b296fe648ea14edbb92d47cc3374e55e76bfa11ffccd",
+      "bits.c": "e44c648aafda1f8dde4bc52aa215767143446fc8dba6472695e57bbe11802e22",
+      "representation.c": "36833af4b9195b251749aba28e9a607d5d797f0fb166d648f353142a4af8f4ba",
+      "float_ops.c": "608e912c0833dd2ecebb3890ffa27a1f3027c5f23e8f14a0b9e892f85008a4ca",
+      "mask.c": "347a09faaa3c5a412d4460db3d2028fcb256bc962de4f22b178c7acdfc559882",
+      "shim.h": "eea35cc61b40cc41eeaa3445d29bcfcad77c9cf07729a11a9be2fa0122c1d2de",
+      "base.c": "28b6694d3bcbce15743105c3f4d1e3e5a924fd90f86bbd77f7c6fb10a288ae4d",
+      "harness.c": "c4adcb10c5e6e41116f4ae11f00e00e0a5b7f8f55849984d287e4e930c3af36a",
+      "sub.c": "4638a689829883690e94a8b22a07758023c8fde0d439da1b45a7931a8cdd261a",
+      "neon.c": "6f3f080872c89b92e9a5e7b88b6ed69949d42d0782f2bb51eb3198159da69519"
+    }
+  },
+  "ordinary_C_per_file": {
+    "float_ops.h": true,
+    "unit.c": true,
+    "clamp.h": true,
+    "extensions.h": true,
+    "rsum.h": true,
+    "spec.h": true,
+    "mulc.c": true,
+    "base.h": true,
+    "rvv.c": true,
+    "mul.c": true,
+    "bits.c": true,
+    "representation.c": true,
+    "float_ops.c": true,
+    "mask.c": true,
+    "shim.h": true,
+    "base.c": true,
+    "harness.c": true,
+    "sub.c": true,
+    "neon.c": true
+  },
+  "review_patch_roundtrip": {
+    "extensions.h": true,
+    "harness.c": true,
+    "neon.c": true
+  },
+  "risks": [
+    "No merged WP run was performed by this audit. v07 local 64/64+6/6+21/21 are provenance only; they do not establish merged whole-kernel success.",
+    "Merged harness adds permission helper/calls and prefix hint. Their new obligations and all previous helper/caller/frame/RTE/global obligations require fresh merged full verification.",
+    "Late MainFGFilter also selects existing transfer preconditions; source suffix is unchanged, but merged context can affect proof search. Keep original VmemAddress and verify all callers.",
+    "Ordinary-C check here uses the existing secondary raw token guard, ignoring source #line directives; no fresh authoritative Clang/LLVM identity check or freeze was run. Final freeze must restore/check assert source locations and token identity."
+  ],
+  "conclusion": "Static preservation checks pass; eligible for root freeze and fresh complete verification, not a proof result."
+}

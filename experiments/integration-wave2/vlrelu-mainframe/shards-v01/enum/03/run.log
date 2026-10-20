@@ -1,0 +1,125 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v01/enum/03/report.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/unit.c", "-wp-skip-fct", "__riscv_vfabs_v_f32m8,__riscv_vfadd_vf_f32m8,__riscv_vfadd_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfsgnj_vv_f32m8,__riscv_vfsub_vf_f32m8,__riscv_vfsub_vv_f32m8,__riscv_vmfgt_vf_f32m8_b4,__riscv_vmfne_vv_f32m8_b4,__riscv_vor_vx_u32m8,__riscv_vreinterpret_v_f32m8_u32m8,__riscv_vreinterpret_v_u32m8_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,f32_sub,vabsq_f32,vaddq_f32,vcaltq_f32,vld1q_dup_f32,vld1q_s8,vmovq_n_u32,vorrq_u32,vreinterpretq_f32_u32,vsubq_f32", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v01/enum/03/session", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v01/enum/03/output", "-wp-verbose", "2", "-wp-prop", "@ensures,-@requires,-@assigns,-@lemma", "-wp-msg-key", "shell", "-wp-auto-depth", "16", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+# frama-c -wp -wp-rte -wp-model 'Bytes' -wp-timeout 30 [...]
+[kernel] Parsing experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmslt_vx_i32m8_b4
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_i32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function bits_float
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_mul
+[rte:annot] annotating function float_bits
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_final_read
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function proof_mainframe_store2_point
+[rte:annot] annotating function proof_mainframe_store4_point
+[rte:annot] annotating function proof_mask_choice
+[rte:annot] annotating function proof_mul_join
+[rte:annot] annotating function proof_repr_range
+[rte:annot] annotating function proof_repr_reencode
+[rte:annot] annotating function proof_repr_value
+[rte:annot] annotating function proof_sub_join
+[rte:annot] annotating function proof_values_unary_point
+[rte:annot] annotating function proof_values_unary_transfer
+[rte:annot] annotating function vbslq_f32
+[rte:annot] annotating function vcltq_s32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vmovq_n_s32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vreinterpretq_s32_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/neon.c:15: Warning: 
+  Statement specifications not yet supported (skipped).
+[wp] experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/rvv.c:7: Warning: 
+  Statement specifications not yet supported (skipped).
+[wp] Goal bytes_extensions_acsl-bits_riscv_vsetvl_e32m8_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_float_join_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vld1q_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vst1q_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vst1q_f32_ensures_2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_vget_low_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vget_high_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vst1_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vst1_f32_ensures_2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_vst1_lane_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vst1_lane_f32_ensures_2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vle32_v_f32m8_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vse32_v_f32m8_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vse32_v_f32m8_ensures_2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_sub_join_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_mul_join_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vmulq_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_f32_mul_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vfmul_vf_f32m8_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vmerge_vvm_f32m8_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_repr_reencode_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_repr_range_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_repr_value_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_mask_choice_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_float_bits_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_float_bits_ensures_2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_bits_float_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vdupq_n_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vmovq_n_s32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vreinterpretq_s32_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vcltq_s32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vbslq_f32_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_vbslq_f32_ensures_2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_vbslq_f32_ensures_3 : not tried
+[wp] Goal bytes_extensions_acsl-bits_vbslq_f32_ensures_4 : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_riscv_vmslt_vx_i32m8_b4_ensures : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_values_unary_point_ensures_values_point_value : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_values_unary_transfer_ensures_values_transfer_result : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_mainframe_store4_point_ensures_mf4_point : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_mainframe_store2_point_ensures_mf2_point : not tried
+[wp] Goal bytes_extensions_acsl-bits_equivalent_ensures_equal : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_eight_part1 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_eight_part2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_eight_part3 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_eight_part4 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_eight_part5 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_four_part1 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_four_part2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_four_part3 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_four_part4 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_four_part5 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_parts_part1 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_parts_part2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_parts_part3 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_parts_part4 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_parts_part5 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_remaining_part1 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_remaining_part2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_remaining_part3 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_remaining_part4 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_remaining_part5 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_after_two_part1 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_after_two_part2 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_after_two_part3 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_after_two_part4 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_f32_tail_bits_ensures_tail_after_two_part5 : not tried
+[wp] Goal bytes_extensions_acsl-bits_proof_final_read_ensures_read_range_point : not tried

@@ -1,0 +1,62 @@
+--- a/neon.c
++++ b/neon.c
+@@ -92,9 +92,9 @@
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary4)); @/
+       } else {
+         /@ assert 0<=k-(total-batch/4)<(4); @/
+-        /@ assert same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
++        /@ assert mainframe4_store: same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      /@ assert mainframe4_value: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 4;
+   }
+@@ -154,9 +154,9 @@
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary2)); @/
+       } else {
+         /@ assert 0<=k-(total-batch/4)<(2); @/
+-        /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
++        /@ assert mainframe2_store: same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      /@ assert mainframe2_value: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 2;
+       vacc_lo = vget_high_f32(vacc);
+--- a/harness.c
++++ b/harness.c
+@@ -99,3 +99,33 @@
+     \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+     \wp::proof NExitPrefixPoint: values_neon1_prefix;
+     \wp::proof NExitFinal: values_neon_all; */
++
++/*@ \wp::strategy MainFrameSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy MainFrameStore:
++      \tactic("Wp.instance",
++        \ingoal(P_same_float(repr_decode32(read_uint32(M,D)),V[I])),
++        \incontext(Fact:(\forall integer J; 0<=J && J<=N ==>
++          P_same_float(repr_decode32(read_uint32(M,A)),V[J]))),
++        \select(Fact),\param("P1",I),\children(MainFrameSMT)),MainFrameSMT;
++    \wp::strategy MainFrameNewValue:
++      \tactic("Wp.instance",
++        \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,K))),T)),
++        \ingoal(M:memcpy(OM,shift_float32(P,O),UM,D,SZ)),
++        \incontext(P_same_float(repr_decode32(read_uint32(M,shift_float32(P,K))),V[I])),
++        \when(Fact:(\forall integer J; 0<=J && J<=N ==> P_same_value(V[J],L_unary_value(X,S)))),
++        \select(Fact),\param("P1",K-O),\children(MainFrameSMT)),MainFrameSMT;
++    \wp::strategy MainFrameOldValue:
++      \tactic("Wp.instance",
++        \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,K))),T)),
++        \when(Fact:(\forall integer J; 0<=J && J+Q<N ==>
++          P_same_value(repr_decode32(read_uint32(OLD,shift_float32(P,J))),E))),
++        \select(Fact),\param("P1",K),\children(MainFrameNewValue)),MainFrameNewValue;
++    \wp::strategy MainFrameValue:
++      \tactic("Wp.cut",
++        \ingoal(P_same_value(repr_decode32(read_uint32(M,shift_float32(P,K))),T)),
++        \ingoal(M:memcpy(OM,shift_float32(P,O),UM,D,SZ)),
++        \param("case","CASES"),\param("clause",K<O),
++        \children(MainFrameOldValue)),MainFrameOldValue;
++    \wp::proof MainFrameStore: mainframe4_store,mainframe2_store;
++    \wp::proof MainFrameValue: mainframe4_value,mainframe2_value;
++*/

@@ -9,8 +9,9 @@
 - `merged-values-v02-depth8`完整raw为727/735，额外两项内存义务未闭。最终整核继续用depth16；实时`[Valid]`行含终止等辅助消息，不是主目标计数。
 - 六项原缺口中的主4lane prefix，在`vlrelu-mainprefix/v02-filter-depth8`实际2/2+globals21/21通过。只给原谓词命名并加过滤策略，未增加语义假设；root已审。
 - 最终读取权限在`vlrelu-final-reads/v04-helper-order-callers`的exact proof `c4e76461…`闭合。独立窄scope13项加同snapshot的frame1项，合计14/14；含空ghost helper body/frame、六个调用前件、n+3无wrap cut、原point以及四条whole range invariant。globals21/21、模型控制合格。旧195项broad scope超时记录保留，不冒充通过。
-- 未冻结合并草稿在`vlrelu-final-merge/v01`，single proof `01bd477c…`。普通C/spec/shim/driver不变，patch roundtrip通过。尚无正式task/frozen，没有WP或verified准入记录。
-- 剩四项是NEON4/2各一条store-read `same_float`和逐点`same_value`。`vlrelu-mainframe/v06-caller`及同source的`narrow01`正在检查两新point helper与caller；只有全部新增前件/RTE/frame和原目标实际关闭才允许合入。
+- 四个frame/value缺口在 `vlrelu-mainframe/v07-exact-instance` 的同一 proof `d63b30dd…` 实际关闭：caller64/64（36RTE、18privatepre、10assert），helper body/frame6/6，globals21/21，正负控制合格。新增两次transfer调用的6条参数RTE都通过。Root复核raw、命令、artifact SHA和sourceguard；旧v06和未运行v08均不冒充成功。
+- 最终合并 `vlrelu-final-merge/v02` 已冻结为唯一 proof `31eda107…`。只改变proof注释/ghost/helper/策略；实现tokens、public spec/shim/driver不变，GNU patch零fuzz roundtrip20文件。新full session29443正在运行，depth16/par128/pergoal30s1024MiB/admin3600，无function/property子集，不继承局部通过计数。
+- 本检查点的Git提交 `bc0fb840` 已推送 `origin/feat/shim-c`；v07最终证据和v02新full在其之后，尚待下一次提交。
 
 ## 其它本轮补证
 

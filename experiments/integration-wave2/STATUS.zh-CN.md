@@ -7,7 +7,7 @@
 
 | Kernel | 已完成的本轮证据 | 尚未关闭的原因 |
 |---|---|---|
-| f32-vlrelu | depth16两个独立完整raw均 **729/735**（main708/714+global21/21）；输入/模型控制/LLVM及目标清单审计通过；主prefix后续局部2/2+21globals已闭 | 最新完整快照剩6项：主4lane prefix、4/2lane写回值桥/逐点关系共4项、最终read权限。prefix修订尚未整合复验；其余5项仍在补证。depth8 full为727/735，多2条内存未证；第二次depth16 supervisor timeout保留，不称canonical成功 |
+| f32-vlrelu | 旧 depth16 两次完整raw **729/735**；其6项缺口均已在新局部快照闭合：prefix2/2、read依赖14/14、frame/value caller64/64+body6/6；globals21/21与控制合格，root已审 | 合并 v02 已冻结为 single proof `31eda107…`，正执行全新完整128路检查；尚未整核通过或准入。旧第二次supervisor timeout和depth8 full727/735保留，局部数不能拼成整核成功 |
 | f32-vsqrt | 整核 459/476 | 10 条 Typed memcpy/codec、1 条纯 C sqrt 算法与 IEEE sqrt 关系、6 条 caller |
 | f32-vrndne | 整核 1500/1674 | caller 157、helper 17；已关闭 store 和 ghost read 等具体义务，仍缺舍入/位表示与 caller 关系 |
 | f32-vcmul | 整核 388/426；VMLA/VMLS 两项原 helper 缺口关闭，helper body 全部通过 | 38 条 caller；含地址整数转换后的布局/边界和读写 frame |

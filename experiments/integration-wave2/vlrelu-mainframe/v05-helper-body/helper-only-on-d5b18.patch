@@ -1,0 +1,20 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -197,4 +197,17 @@
+    ensures values_transfer_result: same_value(r,unary_value(y,t)); @/
+ void proof_values_unary_transfer(float r,float v,float y,float t) {}
+ */
++
++/*@ ghost
++/@ requires mf4_index: j<4;
++   requires mf4_lanes: \forall integer i; 0<=i<4 ==> same_float(p[i],a.lane[i]);
++   terminates \true; assigns \nothing;
++   ensures mf4_point: same_float(p[j],a.lane[j]); @/
++void proof_mainframe_store4_point(const float *p,float32x4_t a,size_t j) {}
++/@ requires mf2_index: j<2;
++   requires mf2_lanes: \forall integer i; 0<=i<2 ==> same_float(p[i],a.lane[i]);
++   terminates \true; assigns \nothing;
++   ensures mf2_point: same_float(p[j],a.lane[j]); @/
++void proof_mainframe_store2_point(const float *p,float32x2_t a,size_t j) {}
++*/
+ #endif

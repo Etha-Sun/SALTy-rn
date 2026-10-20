@@ -1,0 +1,88 @@
+--- a/extensions.h
++++ b/extensions.h
+@@ -197,4 +197,17 @@
+    ensures values_transfer_result: same_value(r,unary_value(y,t)); @/
+ void proof_values_unary_transfer(float r,float v,float y,float t) {}
+ */
++
++/*@ ghost
++/@ requires mf4_index: j<4;
++   requires mf4_lanes: \forall integer i; 0<=i<4 ==> same_float(p[i],a.lane[i]);
++   terminates \true; assigns \nothing;
++   ensures mf4_point: same_float(p[j],a.lane[j]); @/
++void proof_mainframe_store4_point(const float *p,float32x4_t a,size_t j) {}
++/@ requires mf2_index: j<2;
++   requires mf2_lanes: \forall integer i; 0<=i<2 ==> same_float(p[i],a.lane[i]);
++   terminates \true; assigns \nothing;
++   ensures mf2_point: same_float(p[j],a.lane[j]); @/
++void proof_mainframe_store2_point(const float *p,float32x2_t a,size_t j) {}
++*/
+ #endif
+--- a/neon.c
++++ b/neon.c
+@@ -90,11 +90,16 @@
+         /@ assert \valid_read(o_base+k); @/
+         /@ assert \separated(o_base+k,o_base+((total-batch/4)..(total-batch/4)+(4)-1)); @/
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary4)); @/
++        /@ assert mf4_old_point: same_value(\at(o_base[\at(k,Here)],Unary4),unary_value(\at(i_base[\at(k,Here)],Unary4),proof_slope_entry)); @/
+       } else {
+         /@ assert 0<=k-(total-batch/4)<(4); @/
+-        /@ assert same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
++        /@ assert mf4_index_cast: (size_t)(k-(size_t)(total-(size_t)(batch/4)))==k-(total-batch/4); @/
++        /@ assert mf4_output_read: \valid_read(o_base+k); @/
++        proof_mainframe_store4_point(output,vacc0123,k-(total-batch/4));
++        /@ assert mainframe4_store: same_float(o_base[k],vacc0123.lane[k-(total-batch/4)]); @/
++        proof_values_unary_transfer(o_base[k],vacc0123.lane[k-(total-batch/4)],i_base[k],proof_slope_entry);
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      /@ assert mainframe4_value: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 4;
+   }
+@@ -152,11 +157,16 @@
+         /@ assert \valid_read(o_base+k); @/
+         /@ assert \separated(o_base+k,o_base+((total-batch/4)..(total-batch/4)+(2)-1)); @/
+         /@ assert same_float(o_base[k],\at(o_base[\at(k,Here)],Unary2)); @/
++        /@ assert mf2_old_point: same_value(\at(o_base[\at(k,Here)],Unary2),unary_value(\at(i_base[\at(k,Here)],Unary2),proof_slope_entry)); @/
+       } else {
+         /@ assert 0<=k-(total-batch/4)<(2); @/
+-        /@ assert same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
++        /@ assert mf2_index_cast: (size_t)(k-(size_t)(total-(size_t)(batch/4)))==k-(total-batch/4); @/
++        /@ assert mf2_output_read: \valid_read(o_base+k); @/
++        proof_mainframe_store2_point(output,vacc_lo,k-(total-batch/4));
++        /@ assert mainframe2_store: same_float(o_base[k],vacc_lo.lane[k-(total-batch/4)]); @/
++        proof_values_unary_transfer(o_base[k],vacc_lo.lane[k-(total-batch/4)],i_base[k],proof_slope_entry);
+       }
+-      /@ assert same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
++      /@ assert mainframe2_value: same_value(o_base[k],unary_value(i_base[k],proof_slope_entry)); @/
+     }
+     */ output += 2;
+       vacc_lo = vget_high_f32(vacc);
+--- a/harness.c
++++ b/harness.c
+@@ -99,3 +99,25 @@
+     \wp::proof NTailPrefixBranch: values_neon_tailprefix;
+     \wp::proof NExitPrefixPoint: values_neon1_prefix;
+     \wp::proof NExitFinal: values_neon_all; */
++
++/*@ \wp::strategy MainFGSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy MainFGAddress:
++      \tactic("Wp.unfold",\ingoal(A:shift_float32(P,I)),\select(A),
++        \children(MainFGAddress)),MainFGSMT;
++    \wp::strategy MainFGFilter:
++      \tactic("Wp.filter",\children(MainFGAddress)),MainFGAddress;
++    \wp::proof MainFGFilter: mainframe4_store,mainframe4_value,mainframe2_store,mainframe2_value;
++*/
++
++/*@ \wp::proof MainFGSMT: mf4_index_cast,mf2_index_cast,mf4_index,mf2_index;
++    \wp::proof VmemIncluded: mf4_output_read,mf2_output_read;
++    \wp::proof MainFGFilter: mf4_old_point,mf2_old_point,mf4_lanes,mf2_lanes,values_transfer_source,values_transfer_value; */
++
++/*@ \wp::strategy MF2ExactPoint:
++      \tactic("Wp.instance",
++        \ingoal(P_same_float(repr_decode32(read_uint32(M,D)),V[I])),
++        \incontext(Fact:(\forall integer J; 0<=J && J<=N ==>
++          P_same_float(repr_decode32(read_uint32(M,A)),V[J]))),
++        \select(Fact),\param("P1",I),\children(MainFGSMT)),MainFGSMT;
++    \wp::proof MF2ExactPoint: mf2_lanes;
++*/
