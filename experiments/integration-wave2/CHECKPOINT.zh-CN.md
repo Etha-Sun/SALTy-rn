@@ -1,6 +1,6 @@
 # 2026-10-20 当前整合检查点
 
-工作分支为 `feat/shim-c`。本轮去重处理17个kernel；`verified/manifest.json`仍为原15项，新增整核通过0项。逐项结果在[STATUS](STATUS.zh-CN.md)，不能把不同proof快照的局部计数相加。
+工作分支为 `feat/shim-c`。本轮去重处理17个kernel；`verified/manifest.json`仍为原15项，新增候选整核通过1项（f32-vlrelu已两次770/770，打包canonical未完成前manifest不变）。逐项结果在[STATUS](STATUS.zh-CN.md)，不能把不同proof快照的局部计数相加。
 
 ## VLReLU
 
@@ -10,8 +10,11 @@
 - 六项原缺口中的主4lane prefix，在`vlrelu-mainprefix/v02-filter-depth8`实际2/2+globals21/21通过。只给原谓词命名并加过滤策略，未增加语义假设；root已审。
 - 最终读取权限在`vlrelu-final-reads/v04-helper-order-callers`的exact proof `c4e76461…`闭合。独立窄scope13项加同snapshot的frame1项，合计14/14；含空ghost helper body/frame、六个调用前件、n+3无wrap cut、原point以及四条whole range invariant。globals21/21、模型控制合格。旧195项broad scope超时记录保留，不冒充通过。
 - 四个frame/value缺口在 `vlrelu-mainframe/v07-exact-instance` 的同一 proof `d63b30dd…` 实际关闭：caller64/64（36RTE、18privatepre、10assert），helper body/frame6/6，globals21/21，正负控制合格。新增两次transfer调用的6条参数RTE都通过。Root复核raw、命令、artifact SHA和sourceguard；旧v06和未运行v08均不冒充成功。
-- 最终合并 `vlrelu-final-merge/v02` 已冻结为唯一 proof `31eda107…`。只改变proof注释/ghost/helper/策略；实现tokens、public spec/shim/driver不变，GNU patch零fuzz roundtrip20文件。新full session29443正在运行，depth16/par128/pergoal30s1024MiB/admin3600，无function/property子集，不继承局部通过计数。
-- 本检查点的Git提交 `bc0fb840` 已推送 `origin/feat/shim-c`；v07最终证据和v02新full在其之后，尚待下一次提交。
+- 最终合并 `vlrelu-final-merge/v02` 冻结为唯一 proof `31eda107…`。新full完整 **770/770**（main749/749+global21/21），36个body coverage齐全，model/source posthash、control、LLVM与749独立ID清单均通过。36函数体不是36条义务，其RTE/callpre/frame也在749中。
+- 同proof `v02-independent` 第二次完整 **770/770**，1519.905秒；所有770目标ID与第一份相同，root复核posthash/control/LLVM均通过。第一份1478.463秒。此前d5版本的timeout和失败不改写。
+- `vlrelu-mainframe/shards-v03` 是额外8片实际诊断，749/749无重复遗漏，globals21/21引用相同snapshot，root独审通过。它不替代完整或打包canonical；旧两个CLI负参数调用错误保留，不是模型/证明失败。
+- 新包 `verified/f32-vlrelu` 是23个冻结原文件的逐字复制，加单一 `proof.patch`，frozen SHA `06c50d51…`。两次整核已通过，但manifest尚未准入；`vlrelu-final-merge/v02-canonical` session71394正在对打包源做fresh完整检查，128路/30s1024/admin3600。启动前漏放Gateway要求的draft副本的两次环境错误已记录，未启动WP、不算proof失败；已补齐精确SHA副本后正常运行。
+- Git检查点 `bc0fb840`、`91b5d55a` 均已推送 `origin/feat/shim-c`；完整raw和新包在后者之后，待下一次提交。额度16:22UTC检查为57%，下一轮16:52UTC；低于55%停止新补证、保存收尾，既有有限CPU检查可以完成。
 
 ## 其它本轮补证
 

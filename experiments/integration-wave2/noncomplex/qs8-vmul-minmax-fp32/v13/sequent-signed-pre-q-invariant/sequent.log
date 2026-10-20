@@ -1,0 +1,76 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "128", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/sequent-signed-pre-q-invariant/raw.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vst1_lane_u16,vst1_lane_u32", "-wp-prop", "qstore16_actual_q,qstore32_actual_q", "-wp-print", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:251: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:247: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:271: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:267: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+
+Goal Establishment of Invariant 'qstore16_actual_q' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 249):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:247: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition 'qstore16_index' *)
+  Have: (0 <= n) /\ (n <= 3).
+  (* Pre-condition 'qstore16_signed_dst' *)
+  Have: valid_rw(Malloc_0, shift_sint8(p, 0), 2).
+}
+Prove: valid_rw(Malloc_0, shift_uint8(q, 0), 2).
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'qstore16_actual_q' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 249):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:247: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Establishment of Invariant 'qstore32_actual_q' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 269):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:267: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Assume {
+  Type: is_sint32(n).
+  (* Heap *)
+  Type: (region(p.base) <= 0) /\ linked(Malloc_0).
+  (* Pre-condition 'qstore32_index' *)
+  Have: (0 <= n) /\ (n <= 1).
+  (* Pre-condition 'qstore32_signed_dst' *)
+  Have: valid_rw(Malloc_0, shift_sint8(p, 0), 4).
+}
+Prove: valid_rw(Malloc_0, shift_uint8(q, 0), 4).
+
+------------------------------------------------------------
+
+Goal Preservation of Invariant 'qstore32_actual_q' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 269):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:267: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Prove: true.
+
+------------------------------------------------------------
+[wp:pedantic-assigns] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:247: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u16'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:267: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u32'.
+  Callers assumptions might be imprecise.

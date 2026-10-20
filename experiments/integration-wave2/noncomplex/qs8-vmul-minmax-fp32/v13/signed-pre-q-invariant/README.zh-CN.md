@@ -1,0 +1,1 @@
+仅新增private signed-char destination valid pre和actual unsigned q valid loop invariant，官方valid/address策略。所有新invariant est/preserve及原bodyRTE必须实查，任一新est失败不计原memory关闭。ordinary C/publicspec/shim/model/checker冻结。

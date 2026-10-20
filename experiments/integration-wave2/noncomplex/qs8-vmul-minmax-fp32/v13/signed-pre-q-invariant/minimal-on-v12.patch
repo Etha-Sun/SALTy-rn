@@ -1,0 +1,42 @@
+--- a/integer-qs8-vmul-minmax-fp32.c
++++ b/integer-qs8-vmul-minmax-fp32.c
+@@ -242,9 +242,11 @@
+ */
+ for(size_t i=0;i<8;i++) r.lane[i]=i<4?a.lane[i]:b.lane[i-4]; return r; }
+ /*@ requires qstore16_index: 0<=n<4;
++    requires qstore16_signed_dst: \valid(((signed char*)p)+(0..1));
+     terminates \true; */
+ void vst1_lane_u16(void *p,uint16x4_t a,int n) { unsigned char *q=p; uint16_t x=a.lane[n]; /*@
+     loop invariant 0<=i<=2;
++    loop invariant qstore16_actual_q: \valid(q+(0..1));
+     loop variant 2-i; */
+     for(size_t i=0;i<2;i++)q[i]=(unsigned char)(x>>(8*i)); }
+ /*@
+@@ -260,9 +262,11 @@
+ */
+ for(size_t i=0;i<4;i++) r.lane[i]=x; return r; }
+ /*@ requires qstore32_index: 0<=n<2;
++    requires qstore32_signed_dst: \valid(((signed char*)p)+(0..3));
+     terminates \true; */
+ void vst1_lane_u32(void *p,uint32x2_t a,int n) { unsigned char *q=p; uint32_t x=a.lane[n]; /*@
+     loop invariant 0<=i<=4;
++    loop invariant qstore32_actual_q: \valid(q+(0..3));
+     loop variant 4-i; */
+     for(size_t i=0;i<4;i++)q[i]=(unsigned char)(x>>(8*i)); }
+ /*@
+@@ -562,3 +566,15 @@
+   loop variant vl-i;
+ */
+ for(size_t i=0;i<vl;i++)r.lane[i]=sat32((int64_t)a.lane[i]-b); return r; }
++
++/*@ \wp::strategy QStoreSMT: \prover("cvc5",30),\prover("z3",30);
++    \wp::strategy QStoreAddress:
++      \tactic("Wp.unfold",\ingoal(shift_uint8(P,I)),\children(QStoreAddress)),
++      \tactic("Wp.unfold",\incontext(shift_uint8(P,I)),\children(QStoreAddress)),
++      \tactic("Wp.unfold",\ingoal(shift_sint8(P,I)),\children(QStoreAddress)),
++      \tactic("Wp.unfold",\incontext(shift_sint8(P,I)),\children(QStoreAddress)),QStoreSMT;
++    \wp::strategy QStoreValid:
++      \tactic("Wp.valid",\ingoal(valid_rw(M,P,N)),\children(QStoreValid)),
++      \tactic("Wp.valid",\incontext(valid_rw(M,P,N)),\children(QStoreValid)),QStoreAddress;
++    \wp::proof QStoreValid: vst1_lane_u16,vst1_lane_u32;
++*/

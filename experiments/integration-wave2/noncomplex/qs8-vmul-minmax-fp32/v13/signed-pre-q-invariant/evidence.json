@@ -1,0 +1,181 @@
+{
+  "kernel": "qs8-vmul-minmax-fp32",
+  "baseline": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds",
+  "baseline_proof_sha256": "093b4d1a8a79ddda5c4e77a24c2e9d96cbb774e905e2120c50a0336a32f5d128",
+  "candidate": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant",
+  "caller_candidate": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant-callers",
+  "candidate_proof_sha256": "5d5d962b695e92243a06476d4d11c9cdfdda7afcc2b2585b9ee1d1900f08b830",
+  "same_proof_caller": true,
+  "scope": "Only byte-store helper bodies plus their newly introduced private caller conditions. No full kernel run.",
+  "body_raw": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/logs/verify01.json",
+  "body_passed": 18,
+  "body_total": 20,
+  "pending_body": [
+    {
+      "goal": "typed_fma_vst1_lane_u16_loop_invariant_qstore16_actual_q_established",
+      "property": "vst1_lane_u16_loop_invariant_qstore16_actual_q",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 249,
+      "function": "vst1_lane_u16",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.0071,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "tactics": 2,
+      "timeout": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_loop_invariant_qstore32_actual_q_established",
+      "property": "vst1_lane_u32_loop_invariant_qstore32_actual_q",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 269,
+      "function": "vst1_lane_u32",
+      "smoke": false,
+      "passed": false,
+      "verdict": "timeout",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00773,
+          "success": 0
+        },
+        {
+          "prover": "Z3:4.12.5",
+          "time": 0,
+          "success": 0
+        }
+      ],
+      "tactics": 2,
+      "timeout": 1
+    }
+  ],
+  "conditional_original_RTEs": [
+    {
+      "goal": "typed_fma_vst1_lane_u16_assert_rte_mem_access",
+      "property": "vst1_lane_u16_assert_rte_mem_access",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 251,
+      "function": "vst1_lane_u16",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00472,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.0144,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    },
+    {
+      "goal": "typed_fma_vst1_lane_u32_assert_rte_mem_access",
+      "property": "vst1_lane_u32_assert_rte_mem_access",
+      "file": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c",
+      "line": 271,
+      "function": "vst1_lane_u32",
+      "smoke": false,
+      "passed": true,
+      "verdict": "valid",
+      "provers": [
+        {
+          "prover": "qed",
+          "time": 0.00489,
+          "success": 0
+        },
+        {
+          "prover": "CVC5:1.2.1",
+          "time": 0.0148,
+          "success": 1
+        }
+      ],
+      "proved": 1
+    }
+  ],
+  "net_original_obligations_closed": 0,
+  "qualification": "Diagnostic only; do not merge or count the old memory goals as closed while q-valid invariant establishment is unproved.",
+  "new_preconditions": "Private signed-byte valid output ranges 2/4 bytes; their caller proof checked separately. Public spec unchanged.",
+  "frozen_fields_changed": [
+    "proof_patches",
+    "wp_budget"
+  ],
+  "sourceguard": true,
+  "ordinary_C_spec_shim_model_driver_checker_changed": false,
+  "axioms_or_assume_added": false,
+  "exact_gap": {
+    "source": "unsigned char *q=p; where p:void* is represented as sint8* by frozen Typed model",
+    "typed_warning": "Hide sub-term definition: Cast with incompatible pointers types (source:sint8*) (target:uint8*)",
+    "establish16": {
+      "have": "valid_rw(Malloc_0,shift_sint8(p,0),2)",
+      "goal": "valid_rw(Malloc_0,shift_uint8(q,0),2)"
+    },
+    "establish32": {
+      "have": "valid_rw(Malloc_0,shift_sint8(p,0),4)",
+      "goal": "valid_rw(Malloc_0,shift_uint8(q,0),4)"
+    },
+    "missing": "No relation tying q to p, including base/offset, remains in the exported sequent. Official range/offset unfolding can establish point validity once whole-q validity is assumed, but cannot recover the hidden cast relation.",
+    "evidence": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/sequent-signed-pre-q-invariant/sequent.log",
+    "not_a_C_counterexample": true,
+    "not_a_formal_global_impossibility_claim": true
+  },
+  "negative_history": {
+    "v12_no_dst_pre": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/sequent-v12-byte-bounds/sequent.log",
+    "v11_unsigned_dst_pre_still_unrelated_w_q": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/sequent-v11-byte-stores/sequent.log"
+  },
+  "next_boundary": "A separately qualified model refinement for signed/unsigned character pointer/address and byte aliasing, or a separately approved semantics-preserving shim change, would be needed to address this unsupported cast. Neither was done in this frozen proof pass.",
+  "caller_status": "administrative_timeout; no main raw",
+  "resources": {
+    "single_goal_seconds": 30,
+    "single_goal_mib": 1024,
+    "wp_par": 128,
+    "body_wall_seconds": 360,
+    "caller_wall_seconds": 360
+  },
+  "caller_result": {
+    "state": "timeout",
+    "attempt": "0001"
+  },
+  "caller_raw_exists": false,
+  "caller_sourceguard_passed": true,
+  "caller_new_preconditions_proved": false,
+  "additional_frame_contract_added": false,
+  "additional_ghost_helper_added": false,
+  "recommended_merge": null,
+  "all_this_pass_processes_finished": true,
+  "model_controls": {
+    "signed-pre-q-invariant": {
+      "raw": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant/attempts/0001/logs/verify01-model-control.json",
+      "passed": 3,
+      "total": 4,
+      "unproved": [
+        "typed_fma_shim_control_false_ensures"
+      ],
+      "meaning": "Expected false negative control unproved; not kernel failure."
+    },
+    "signed-pre-q-invariant-callers": {
+      "raw": "experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/signed-pre-q-invariant-callers/attempts/0001/logs/verify01-model-control.json",
+      "passed": 3,
+      "total": 4,
+      "unproved": [
+        "typed_fma_shim_control_false_ensures"
+      ],
+      "meaning": "Expected false negative control unproved; not kernel failure."
+    }
+  }
+}

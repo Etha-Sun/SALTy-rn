@@ -1,0 +1,204 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "128", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/sequent-v11-byte-stores/raw.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vst1_lane_u16,vst1_lane_u32", "-wp-prop", "@assert", "-wp-print", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:249: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:245: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:272: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:268: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 249):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:245: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 249):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:245: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 254):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:245: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:249: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Let a_1 = shift_uint8(q, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 2).
+Let a_3 = (a.F7_lane)[n].
+Assume {
+  Type: IsS7(a) /\ is_uint8_chunk(Mint_0) /\ is_sint32(n) /\ is_uint64(i) /\
+      is_uint16(a_3) /\ is_uint8_chunk(a_2).
+  (* Heap *)
+  Type: linked(Malloc_0).
+  (* Pre-condition 'qstore16_index' *)
+  Have: (0 <= n) /\ (n <= 3).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition 'qstore16_dst' *)
+  Have: valid_rw(Malloc_0, shift_uint8(w, 0), 2).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_uint8(w_1, 0), 2).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      (a_2[shift_uint8(q, i_1)] = to_uint8(lsr(a_3, 8 * i_1))))).
+  (* Then *)
+  Have: i <= 1.
+}
+Prove: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,shift' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 254):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:245: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:249: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Let a_1 = shift_uint8(q, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 2).
+Let a_3 = (a.F7_lane)[n].
+Assume {
+  Type: IsS7(a) /\ is_uint8_chunk(Mint_0) /\ is_sint32(n) /\ is_uint64(i) /\
+      is_uint16(a_3) /\ is_uint8_chunk(a_2).
+  (* Heap *)
+  Type: linked(Malloc_0).
+  (* Pre-condition 'qstore16_index' *)
+  Have: (0 <= n) /\ (n <= 3).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition 'qstore16_dst' *)
+  Have: valid_rw(Malloc_0, shift_uint8(w, 0), 2).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_uint8(w_1, 0), 2).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      (a_2[shift_uint8(q, i_1)] = to_uint8(lsr(a_3, 8 * i_1))))).
+  (* Then *)
+  Have: i <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+}
+Prove: to_uint64(8 * i) <= 31.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 272):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:268: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 272):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:268: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 277):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:268: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:272: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Let a_1 = shift_uint8(q, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+Let a_3 = (a.F11_lane)[n].
+Assume {
+  Type: IsS11(a) /\ is_uint8_chunk(Mint_0) /\ is_sint32(n) /\ is_uint64(i) /\
+      is_uint32(a_3) /\ is_uint8_chunk(a_2).
+  (* Heap *)
+  Type: linked(Malloc_0).
+  (* Pre-condition 'qstore32_index' *)
+  Have: (0 <= n) /\ (n <= 1).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition 'qstore32_dst' *)
+  Have: valid_rw(Malloc_0, shift_uint8(w, 0), 4).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_uint8(w_1, 0), 4).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      (a_2[shift_uint8(q, i_1)] = to_uint8(lsr(a_3, 8 * i_1))))).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,shift' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 277):
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:268: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v11-byte-stores/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:272: warning from Typed Model:
+ - Warning: Hide sub-term definition
+   Reason: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+Let a_1 = shift_uint8(q, 0).
+Let a_2 = memcpy(Mint_0, a_1, Mint_undef_0, a_1, 4).
+Let a_3 = (a.F11_lane)[n].
+Assume {
+  Type: IsS11(a) /\ is_uint8_chunk(Mint_0) /\ is_sint32(n) /\ is_uint64(i) /\
+      is_uint32(a_3) /\ is_uint8_chunk(a_2).
+  (* Heap *)
+  Type: linked(Malloc_0).
+  (* Pre-condition 'qstore32_index' *)
+  Have: (0 <= n) /\ (n <= 1).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition 'qstore32_dst' *)
+  Have: valid_rw(Malloc_0, shift_uint8(w, 0), 4).
+  Warning[Typed Model]: Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+  (Hide sub-term definition).
+  (* Pre-condition *)
+  Have: valid_rw(Malloc_0, shift_uint8(w_1, 0), 4).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Invariant *)
+  Have: forall i_1 : Z. ((0 <= i_1) -> ((i_1 < i) ->
+      (a_2[shift_uint8(q, i_1)] = to_uint8(lsr(a_3, 8 * i_1))))).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+}
+Prove: to_uint64(8 * i) <= 31.
+
+------------------------------------------------------------

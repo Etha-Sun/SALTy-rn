@@ -1,0 +1,24 @@
+{
+  "scope": "Manual root audit of restricted newly introduced ghost effects; no general ghost noninterference theorem",
+  "proof_sha256": "31eda1076aa0da512a66fef8b8591d605f84b4c7bebb7f4914bb738a8cf79457",
+  "reviewed_new_effects": [
+    "Ghost entry scalars and input/product snapshots only initialize ghost locals from ordinary values.",
+    "Point and transfer helper parameters are scalar values; both actual function bodies are empty. Their ensures and assigns-nothing body obligations are independently checked in the v15 raw report.",
+    "New point/transfer calls read ordinary arrays and update no ordinary object. All48 v15 call preconditions are actually checked; array-read RTE and helper frames are included.",
+    "Proof traversal loops change their locally declared ghost counters only; they contain assertions and readonly helper calls. Their loop frames/variants are part of fresh full verification.",
+    "No ghost assignment to input/output/params or ordinary kernel control variable is introduced by this unified proof.",
+    "Ordinary source tokens and host compiler LLVM IR are independently equal; this identity evidence complements the restricted-effect review, it does not prove general ghost noninterference."
+  ],
+  "full_admission_pending": true,
+  "inherited_audit_sha256": "acf06d685416be5f19868d3bb606a7727fc160eb9878f6425fd16cdd04b0bd56",
+  "additional_review": [
+    "Delta is two ghost point assertions and one scalar readonly call to the previously checked empty transfer helper; no ordinary store or control change.",
+    "v19 checked all50 point/transfer call preconditions and both helper ensures/assigns pairs.",
+    "Final21-line CASES hints only split exhaustive cases; all strategy branch leaves have actual checked source scripts; final full replay still required.",
+    "Final merge adds three ghost helpers: proof_final_read and proof_mainframe_store4/2_point. All have actual empty bodies, assigns nothing and trivial termination. Exact source and checked body/frame identities preserved; no opaque assumption.",
+    "Four new ghost call sites pass readonly pointers, vector structs and scalar indices; two existing scalar transfer calls read only ordinary values. No caller output/input or ordinary kernel state is assigned by any new ghost code.",
+    "New loop assertions/casts only state source-derived facts. New private requires and parameter evaluation RTE are explicit goals; whole-kernel full/independent/canonical completion is still required before admission.",
+    "Independent merged scope diagnostics have already checked all105 callpre and77RTE; those partial counts do not themselves establish a complete kernel proof."
+  ],
+  "checked_at": 1792513843.9142306
+}

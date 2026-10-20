@@ -1,0 +1,239 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v03/solve/06/report.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/unit.c", "-wp-skip-fct", "__riscv_vfabs_v_f32m8,__riscv_vfadd_vf_f32m8,__riscv_vfadd_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfsgnj_vv_f32m8,__riscv_vfsub_vf_f32m8,__riscv_vfsub_vv_f32m8,__riscv_vmfgt_vf_f32m8_b4,__riscv_vmfne_vv_f32m8_b4,__riscv_vor_vx_u32m8,__riscv_vreinterpret_v_f32m8_u32m8,__riscv_vreinterpret_v_u32m8_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,f32_sub,vabsq_f32,vaddq_f32,vcaltq_f32,vld1q_dup_f32,vld1q_s8,vmovq_n_u32,vorrq_u32,vreinterpretq_f32_u32,vsubq_f32", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v03/solve/06/session", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v03/solve/06/output", "-wp-verbose", "2", "-wp-prop=@invariant,-@requires,-@assigns,-rte,-@assert,-@lemma", "-wp-msg-key", "shell", "-wp-auto-depth", "16", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+# frama-c -wp -wp-rte -wp-model 'Bytes' -wp-timeout 30 [...]
+[kernel] Parsing experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmslt_vx_i32m8_b4
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_i32m8
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function bits_float
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_mul
+[rte:annot] annotating function float_bits
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_final_read
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function proof_mainframe_store2_point
+[rte:annot] annotating function proof_mainframe_store4_point
+[rte:annot] annotating function proof_mask_choice
+[rte:annot] annotating function proof_mul_join
+[rte:annot] annotating function proof_repr_range
+[rte:annot] annotating function proof_repr_reencode
+[rte:annot] annotating function proof_repr_value
+[rte:annot] annotating function proof_sub_join
+[rte:annot] annotating function proof_values_unary_point
+[rte:annot] annotating function proof_values_unary_transfer
+[rte:annot] annotating function vbslq_f32
+[rte:annot] annotating function vcltq_s32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vmovq_n_s32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vreinterpretq_s32_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/neon.c:15: Warning: 
+  Statement specifications not yet supported (skipped).
+[wp] experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/rvv.c:7: Warning: 
+  Statement specifications not yet supported (skipped).
+[wp] 174 goals scheduled
+[wp] [Valid] bytes_extensions_acsl-bits_vget_high_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_high_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_low_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_low_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1q_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1q_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vld1q_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vld1q_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vle32_v_f32m8_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vle32_v_f32m8_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vse32_v_f32m8_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vse32_v_f32m8_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vmulq_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1q_f32_loop_invariant_preserved (Qed 5ms) (CVC5 924ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vld1q_f32_loop_invariant_2_preserved (Qed 6ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vld1q_f32_loop_invariant_preserved (Qed 4ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vfmul_vf_f32m8_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vmulq_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vle32_v_f32m8_loop_invariant_2_preserved (Qed 9ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vle32_v_f32m8_loop_invariant_preserved (Qed 5ms) (CVC5 997ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_high_f32_loop_invariant_preserved (Qed 4ms) (CVC5 3.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_low_f32_loop_invariant_preserved (Qed 4ms) (CVC5 4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmerge_vvm_f32m8_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmerge_vvm_f32m8_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vfmul_vf_f32m8_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1_f32_loop_invariant_preserved (Qed 5ms) (CVC5 973ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vdupq_n_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vdupq_n_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_high_f32_loop_invariant_2_preserved (Qed 7ms) (CVC5 4.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vget_low_f32_loop_invariant_2_preserved (Qed 5ms) (CVC5 4.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vmovq_n_s32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vmovq_n_s32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vse32_v_f32m8_loop_invariant_preserved (Qed 5ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vcltq_s32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_invariant_preserved (Qed 8ms) (CVC5 945ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vcltq_s32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vmulq_f32_loop_invariant_preserved (Qed 8ms) (CVC5 4.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vfmul_vf_f32m8_loop_invariant_preserved (Qed 10ms) (CVC5 4.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmerge_vvm_f32m8_loop_invariant_preserved (Qed 7ms) (CVC5 4.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_3_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vdupq_n_f32_loop_invariant_preserved (Qed 3ms) (CVC5 4.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_4_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vmovq_n_s32_loop_invariant_2_preserved (Qed 6ms) (CVC5 4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_5_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vfmul_vf_f32m8_loop_invariant_2_preserved (Qed 7ms) (CVC5 4.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vmulq_f32_loop_invariant_2_preserved (Qed 9ms) (CVC5 5.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vmovq_n_s32_loop_invariant_preserved (Qed 5ms) (CVC5 4.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vdupq_n_f32_loop_invariant_2_preserved (Qed 6ms) (CVC5 4.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmslt_vx_i32m8_b4_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmslt_vx_i32m8_b4_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_vcltq_s32_loop_invariant_preserved (Qed 18ms) (CVC5 4.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmerge_vvm_f32m8_loop_invariant_2_preserved (Qed 26ms) (CVC5 6.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_2_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmslt_vx_i32m8_b4_loop_invariant_preserved (Qed 9ms) (CVC5 4.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_preserved (Qed 9ms) (CVC5 1.1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_5_preserved (Qed 39ms) (CVC5 5.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_4_preserved (Qed 39ms) (CVC5 5.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_2_preserved (Qed 29ms) (CVC5 7.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_preserved (Qed 31ms) (CVC5 4.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vcltq_s32_loop_invariant_2_preserved (Qed 28ms) (CVC5 5.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_entry_slopes_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_entry_slopes_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vmslt_vx_i32m8_b4_loop_invariant_2_preserved (Qed 11ms) (CVC5 4.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_vbslq_f32_loop_invariant_3_preserved (Qed 34ms) (CVC5 15.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_3_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_final_whole_sep_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_final_whole_reads_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_preserved (Qed 6.4s) (CVC5 6.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_5_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_final_whole_reads_established (Qed 6s) (CVC5 809ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_6_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_final_whole_sep_established (Qed 5.6s) (CVC5 882ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_6_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params_outer_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_4_established (Qed 101ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_right_values_established (Qed 6.2s) (CVC5 5.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon_current_read_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_mp4_main_prefix_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_left_old_values_preserved (Qed 6.3s) (CVC5 5.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_left_old_values_established (Qed 5.8s) (CVC5 6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon_whole_sep_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon_whole_read_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon_whole_sep_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params_outer_established (Qed 132ms) (CVC5 727ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_7_established (Qed 127ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_5_preserved (Qed 368ms) (CVC5 2.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_2_preserved (Qed 6.1s) (CVC5 6.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params4_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_9_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon_whole_read_established (Qed 88ms) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_3_preserved (Qed 7.1s) (CVC5 6.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params2_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_11_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_8_established (Qed 346ms) (CVC5 777ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_4_preserved (Qed 380ms) (CVC5 8.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon1_prefix_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params1_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_12_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params4_established (Qed 330ms) (CVC5 797ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_9_preserved (Qed 631ms) (CVC5 5.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_8_preserved (Qed 683ms) (CVC5 4.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_15_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_14_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_13_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_10_preserved (Qed 874ms) (CVC5 2.0s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_10_established (Qed 411ms) (CVC5 774ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_17_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_15_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params2_established (Qed 447ms) (CVC5 809ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_11_preserved (Qed 999ms) (CVC5 5.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_current_read_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_slope_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_params1_established (Qed 1.8s) (CVC5 1.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_12_preserved (Qed 2.8s) (CVC5 2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_whole_sep_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_whole_sep_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_whole_read_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_whole_read_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_hv_right_values_preserved (Qed 6.4s) (Z3 1.8s) (Cache miss 2)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_current_read_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_current_read_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_17_preserved (Qed 6.1s) (CVC5 7.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_16_established (Qed 5.4s) (CVC5 1.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_14_preserved (Qed 6.2s) (CVC5 6.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_13_preserved (Qed 6.1s) (CVC5 7.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_read_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_prefix_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_pointer_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_pointer_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_slope_established (Qed 5.3s) (CVC5 864ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_shape_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_sep_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_sep_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_read_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_slope_all_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_slope_all_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_output_prefix_established (Qed 5.8s) (CVC5 5.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_operands_all_preserved (Qed 6.0s) (CVC5 2.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_operands_all_established (Qed 5.6s) (CVC5 2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_inner_read_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_inner_read_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_19_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_output_prefix_preserved (Qed 6.0s) (CVC5 7.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_inner_sep_preserved (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_inner_sep_established (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_sign_all_established (Qed 5.8s) (CVC5 2.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_shape_preserved (Qed 6s) (CVC5 2.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_select_all_preserved (Qed 6.0s) (CVC5 2.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_select_all_established (Qed 5.8s) (CVC5 2.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_18_established (Qed 6.1s) (CVC5 912ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_sign_all_preserved (Qed 6.1s) (CVC5 2.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_18_preserved (Qed 8.2s) (CVC5 2.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_19_preserved (Qed 8.7s) (CVC5 11.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon1_prefix_preserved (Tactic) (Qed 1/2 5.7s) (CVC5 1/2 7.1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_7_preserved (Tactics 2) (Qed 718ms) (CVC5 1.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_rvv_values_prefix_preserved (Tactics 2) (Qed 1/2 16.7s) (CVC5 1/2 3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_mp4_main_prefix_preserved (Tactics 2) (Qed 562ms) (CVC5 6.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_16_preserved (Tactics 3) (Qed 21.6s) (CVC5 2.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_values_neon_current_read_preserved (Tactics 4) (Qed 982ms) (CVC5 3.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vreinterpret_v_f32m8_i32m8_loop_invariant_2_preserved (Tactics 5) (Qed 40ms) (CVC5 4/4 10.7s) (Cache miss 4)
+[wp] [Valid] bytes_extensions_acsl-bits_vreinterpretq_s32_f32_loop_invariant_2_preserved (Tactics 5) (Qed 34ms) (CVC5 4/4 10.6s) (Cache miss 4)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1_f32_loop_invariant_2_preserved (Tactics 4) (Qed 20ms) (CVC5 2/2 11.4s) (Cache miss 2)
+[wp] [Valid] bytes_extensions_acsl-bits_vst1q_f32_loop_invariant_2_preserved (Tactics 4) (Qed 21ms) (CVC5 2/2 11.3s) (Cache miss 2)
+[wp] [Valid] bytes_extensions_acsl-bits_riscv_vse32_v_f32m8_loop_invariant_2_preserved (Tactics 4) (Qed 29ms) (CVC5 2/2 12.2s) (Cache miss 2)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_loop_invariant_vmem_rvv_current_read_preserved (Tactics 7) (Qed 39.9s) (CVC5 6.5s) (Cache miss 1)
+[wp] Proved goals:  174 / 174
+  Qed:            88
+  CVC5:           73
+  Z3:              1
+  Script:         12 (Tactics 43) (Qed 2/23 1'26s) (CVC5 21/23 1'27s) (Cache miss 21)
+[wp] Updated session
+   - 12 new valid scripts

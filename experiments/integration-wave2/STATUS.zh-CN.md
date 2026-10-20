@@ -7,12 +7,12 @@
 
 | Kernel | 已完成的本轮证据 | 尚未关闭的原因 |
 |---|---|---|
-| f32-vlrelu | 旧 depth16 两次完整raw **729/735**；其6项缺口均已在新局部快照闭合：prefix2/2、read依赖14/14、frame/value caller64/64+body6/6；globals21/21与控制合格，root已审 | 合并 v02 已冻结为 single proof `31eda107…`，正执行全新完整128路检查；尚未整核通过或准入。旧第二次supervisor timeout和depth8 full727/735保留，局部数不能拼成整核成功 |
+| f32-vlrelu | 最终合并 v02 完整 **770/770**（main749/749+global21/21），36个body coverage齐全；source/model posthash、control、LLVM和独立目标ID审计均通过。8片诊断另749/749，root独审 | 同proof独立完整重放及打包canonical仍在运行，manifest尚未准入；旧729/735、depth8 727/735及timeout记录均保留 |
 | f32-vsqrt | 整核 459/476 | 10 条 Typed memcpy/codec、1 条纯 C sqrt 算法与 IEEE sqrt 关系、6 条 caller |
 | f32-vrndne | 整核 1500/1674 | caller 157、helper 17；已关闭 store 和 ghost read 等具体义务，仍缺舍入/位表示与 caller 关系 |
 | f32-vcmul | 整核 388/426；VMLA/VMLS 两项原 helper 缺口关闭，helper body 全部通过 | 38 条 caller；含地址整数转换后的布局/边界和读写 frame |
 | f32-f16-vcvt | 较早同轮 v02 整核 942/994；推荐 v04 六函数诊断 93/95；6208 个有限 C 测试通过 | codec、caller；外部 fabsf 契约允许负零，而更强的中间 same_float 契约要求正零，属于抽象不足，尚非 kernel 反例 |
-| qs8-vmul-minmax-fp32 | 整核 v10 为 825/877；9 个 helper 中 11 条原缺口关闭；新增 v12 byte-store 诊断 14/16、新调用前件 2/2，root 核对通过 | v10 的 caller 34、byte store 8、reinterpret 10 为旧完整快照；v12 精确关闭原4条索引义务及全部新增循环义务，两条 byte-store 内存 RTE 仍未证；未重跑整核，不改写旧通过率 |
+| qs8-vmul-minmax-fp32 | 整核 v10 为 825/877；9 个 helper 中 11 条原缺口关闭；新增 v12 byte-store 诊断 14/16、新调用前件 2/2，root 核对通过 | v10 的 caller 34、byte store 8、reinterpret 10 为旧完整快照；v12 精确关闭原4条索引义务及全部新增循环义务，两条 byte-store 内存 RTE 仍未证；未重跑整核，不改写旧通过率。v13 body18/20把两旧RTE转移到两新q-valid建立义务；净关闭0、caller超时，root不采纳；Typed signed/unsigned字符指针地址桥缺失已保存精确公式 |
 | x32-packw-gemm-goi | 新 v07-z3cvc5 控制合格，核心映射诊断 0/2；7560 个有限 C 测试通过 | 通用索引/packed layout 映射证明；整核预算内未产生最终 main raw |
 | x32-transposec | 新 v07-z3cvc5 控制合格，核心映射诊断 0/1；9520 个有限 C 测试通过 | 二维行列与 stride 映射证明；整核预算内未产生最终 main raw |
 | f32-gemm-minmax | global 20/20；修正 entry label 作用域后，入口/布局诊断 9/12 | Typed codec、packed weight 与 frame；整核 1150 秒预算内无最终 main raw |

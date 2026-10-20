@@ -1,0 +1,106 @@
+# Patched WP underlying invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/toolchain-build/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "128", "-wp-prover", "none", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v13/sequent-v12-byte-bounds/raw.json", "-wp-model", "Typed+float", "-warn-special-float", "none", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/unit.c", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-front/why3.conf", "-wp-no-why3-detect", "-wp-fct", "vst1_lane_u16,vst1_lane_u32", "-wp-prop", "@assert", "-wp-print", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/libc -I.", "-cpp-frama-c-compliant", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/shim-c-v2/model-fma/fma.driver"]
+[kernel] Parsing experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function vst1_lane_u16
+[rte:annot] annotating function vst1_lane_u32
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:249: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:246: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:267: Warning: 
+  Missing assigns clause (assigns 'everything' instead)
+[wp] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:264: Warning: 
+  Cast with incompatible pointers types (source: sint8*) (target: uint8*)
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 246):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 246):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 249):
+Assume {
+  Type: is_sint32(n) /\ is_uint64(i).
+  (* Pre-condition 'qstore16_index' *)
+  Have: (0 <= n) /\ (n <= 3).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Then *)
+  Have: i <= 1.
+}
+Prove: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,shift' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 249):
+Assume {
+  Type: is_sint32(n) /\ is_uint64(i).
+  (* Pre-condition 'qstore16_index' *)
+  Have: (0 <= n) /\ (n <= 3).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 2).
+  (* Then *)
+  Have: i <= 1.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+}
+Prove: to_uint64(8 * i) <= 31.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 264):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,index_bound' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 264):
+Prove: true.
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,mem_access' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 267):
+Assume {
+  Type: is_sint32(n) /\ is_uint64(i).
+  (* Pre-condition 'qstore32_index' *)
+  Have: (0 <= n) /\ (n <= 1).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Then *)
+  Have: i <= 3.
+}
+Prove: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+
+------------------------------------------------------------
+
+Goal Assertion 'rte,shift' ("experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c", line 267):
+Assume {
+  Type: is_sint32(n) /\ is_uint64(i).
+  (* Pre-condition 'qstore32_index' *)
+  Have: (0 <= n) /\ (n <= 1).
+  (* Invariant *)
+  Have: (0 <= i) /\ (i <= 4).
+  (* Then *)
+  Have: i <= 3.
+  (* Assertion 'rte,mem_access' *)
+  Have: valid_rw(Malloc_0, shift_uint8(q, i), 1).
+}
+Prove: to_uint64(8 * i) <= 31.
+
+------------------------------------------------------------
+[wp:pedantic-assigns] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:246: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u16'.
+  Callers assumptions might be imprecise.
+[wp:pedantic-assigns] experiments/integration-wave2/noncomplex/qs8-vmul-minmax-fp32/v12-byte-bounds/attempts/0001/.build/verify01/annotated/integer-qs8-vmul-minmax-fp32.c:264: Warning: 
+  No 'assigns' specification for function 'vst1_lane_u32'.
+  Callers assumptions might be imprecise.

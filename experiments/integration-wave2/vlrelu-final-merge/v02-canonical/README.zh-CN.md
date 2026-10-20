@@ -1,0 +1,1 @@
+只对verified/f32-vlrelu中已逐字核对的冻结源/spec/单proof做fresh完整canonical。目录存在不代表manifest准入。所有749main及21global、sourceguard、model-controls、全部body/caller和posthash都通过后再准入。

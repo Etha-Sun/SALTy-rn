@@ -1,0 +1,1 @@
+同proof仅检查新增signed-dst与原index的全部caller前件4项；body桥接即使失败也诚实保留，不假设新q-valid invariant建立。

@@ -1,0 +1,151 @@
+# Experimental native32 byte invocation: ["/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/.build/install/bin/frama-c", "-machdep", "gcc_x86_64", "-inline-calls", "test_neon,test_rvv", "-inline-stmt-contracts", "-remove-inlined", "test_neon,test_rvv", "-wp", "-wp-rte", "-wp-par", "16", "-wp-prover", "tip,z3,cvc5", "-wp-timeout", "30", "-wp-memlimit", "1024", "-wp-cache", "none", "-wp-report-json", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v03/solve/05/report.json", "-wp-model", "Bytes", "-warn-special-float", "none", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/extensions.driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/unit.c", "-wp-skip-fct", "__riscv_vfabs_v_f32m8,__riscv_vfadd_vf_f32m8,__riscv_vfadd_vv_f32m8,__riscv_vfmul_vv_f32m8,__riscv_vfsgnj_vv_f32m8,__riscv_vfsub_vf_f32m8,__riscv_vfsub_vv_f32m8,__riscv_vmfgt_vf_f32m8_b4,__riscv_vmfne_vv_f32m8_b4,__riscv_vor_vx_u32m8,__riscv_vreinterpret_v_f32m8_u32m8,__riscv_vreinterpret_v_u32m8_f32m8,__riscv_vsetvl_e8m2,__riscv_vsetvl_e8m8,__riscv_vsetvlmax_e32m1,__riscv_vsetvlmax_e32m8,f32_add,f32_sub,vabsq_f32,vaddq_f32,vcaltq_f32,vld1q_dup_f32,vld1q_s8,vmovq_n_u32,vorrq_u32,vreinterpretq_f32_u32,vsubq_f32", "-wp-share", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/wp-share", "-wp-why3-config", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/why3.conf", "-wp-no-why3-detect", "-wp-session", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v03/solve/05/session", "-wp-out", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/integration-wave2/vlrelu-mainframe/shards-v03/solve/05/output", "-wp-verbose", "2", "-wp-prop=@assert,-@requires,-@assigns,-rte,-@lemma,-mainframe4_store,-mainframe4_value,-mainframe2_store,-mainframe2_value", "-wp-msg-key", "shell", "-wp-auto-depth", "16", "-wp-driver", "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32-v6-no-pointer-range/acsl-bits.driver", "-cpp-command", "gcc -E -C -I/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence/experiments/codex-kernel-wave1/float-bits/model-native-bytes32/libc -I.", "-cpp-frama-c-compliant"]
+# frama-c -wp -wp-rte -wp-model 'Bytes' -wp-timeout 30 [...]
+[kernel] Parsing experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/unit.c (with preprocessing)
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'neon.c', referenced in a line directive
+[kernel:pp:line-directive] Warning: 
+  ignoring non-existing file 'rvv.c', referenced in a line directive
+[wp] Running WP plugin...
+[wp] Warning: -wp-rte can annotate special float because -warn-special-float is not set
+[wp] Warning: Skipped RTE guards: unaligned pointers (\aligned not supported)
+[wp] Warning: Skipped RTE guards: invalid function pointer calls (\valid_function not supported)
+[rte:annot] annotating function __riscv_vfmul_vf_f32m8
+[rte:annot] annotating function __riscv_vle32_v_f32m8
+[rte:annot] annotating function __riscv_vmerge_vvm_f32m8
+[rte:annot] annotating function __riscv_vmslt_vx_i32m8_b4
+[rte:annot] annotating function __riscv_vreinterpret_v_f32m8_i32m8
+[rte:annot] annotating function __riscv_vse32_v_f32m8
+[rte:annot] annotating function __riscv_vsetvl_e32m8
+[rte:annot] annotating function bits_float
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/string.h:137: Warning: 
+  Neither code nor explicit exits and terminates for function memcpy,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function equivalent
+[kernel:annot:missing-spec] FRAMAC_SHARE/libc/assert.h:20: Warning: 
+  Neither code nor explicit exits and terminates for function __FC_assert,
+  generating default clauses. See -generated-spec-* options for more info.
+[rte:annot] annotating function f32_mul
+[rte:annot] annotating function float_bits
+[rte:annot] annotating function proof_f32_tail_bits
+[rte:annot] annotating function proof_final_read
+[rte:annot] annotating function proof_float_join
+[rte:annot] annotating function proof_mainframe_store2_point
+[rte:annot] annotating function proof_mainframe_store4_point
+[rte:annot] annotating function proof_mask_choice
+[rte:annot] annotating function proof_mul_join
+[rte:annot] annotating function proof_repr_range
+[rte:annot] annotating function proof_repr_reencode
+[rte:annot] annotating function proof_repr_value
+[rte:annot] annotating function proof_sub_join
+[rte:annot] annotating function proof_values_unary_point
+[rte:annot] annotating function proof_values_unary_transfer
+[rte:annot] annotating function vbslq_f32
+[rte:annot] annotating function vcltq_s32
+[rte:annot] annotating function vdupq_n_f32
+[rte:annot] annotating function vget_high_f32
+[rte:annot] annotating function vget_low_f32
+[rte:annot] annotating function vld1q_f32
+[rte:annot] annotating function vmovq_n_s32
+[rte:annot] annotating function vmulq_f32
+[rte:annot] annotating function vreinterpretq_s32_f32
+[rte:annot] annotating function vst1_f32
+[rte:annot] annotating function vst1_lane_f32
+[rte:annot] annotating function vst1q_f32
+[wp] experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/neon.c:15: Warning: 
+  Statement specifications not yet supported (skipped).
+[wp] experiments/integration-wave2/vlrelu-final-merge/v02/attempts/0001/.build/verify01/annotated/rvv.c:7: Warning: 
+  Statement specifications not yet supported (skipped).
+[wp] 86 goals scheduled
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_vmem_final_reads (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_counter_done (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_count_exit (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_3 (Qed 6.5s) (CVC5 875ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_2 (Qed 6.4s) (CVC5 860ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_read_range_count (Qed 6.2s) (CVC5 5.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_right_post (Qed 6s) (CVC5 5.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_left_post (Qed 5.7s) (CVC5 5.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_slope_frame (Qed 5.3s) (CVC5 3.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_count_exact (Qed 19ms) (CVC5 4.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_bits_float_assert_word_copied (Qed 4ms) (CVC5 5.1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_float_bits_assert_copied_value (Qed 4ms) (CVC5 679ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_float_bits_assert_bits_copied (Qed 3ms) (CVC5 4.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_proof_mask_choice_assert_root_mask_word (Qed 1ms) (CVC5 229ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_left_transport (Qed 6.4s) (CVC5 10.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_6 (Qed 376ms) (CVC5 834ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_four_lane_cases (Qed 224ms) (CVC5 763ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_guard_store4 (Qed 355ms) (CVC5 1.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon4 (Qed 301ms) (CVC5 1.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_point_offsets (Qed 209ms) (CVC5 1.1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon4_select (Qed 203ms) (CVC5 3.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon4_operands (Qed 208ms) (CVC5 3.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_harness_all (Qed 5.6s) (CVC5 5.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon4_source_sign (Qed 212ms) (CVC5 3.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_10 (Qed 374ms) (CVC5 1.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_8 (Qed 377ms) (CVC5 4.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_11 (Qed 163ms) (CVC5 1.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_mf4_index_cast (Qed 386ms) (CVC5 4.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_mf4_old_point (Qed 397ms) (CVC5 5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon2 (Qed 400ms) (CVC5 1.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_vector (Qed 346ms) (CVC5 1.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_source_sign (Qed 253ms) (CVC5 3.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_operands (Qed 252ms) (CVC5 3.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_guard_store2 (Qed 442ms) (CVC5 1.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_select (Qed 285ms) (CVC5 3.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_14 (Qed 494ms) (CVC5 931ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_16 (Qed 555ms) (CVC5 1.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_18 (Qed 528ms) (CVC5 1.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_div_cast (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_mf2_old_point (Qed 565ms) (CVC5 6.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_19 (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_mf2_index_cast (Qed 539ms) (CVC5 4.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_high_read (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_extent_cut (Qed 1s) (CVC5 2.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_high_frame (Qed 696ms) (CVC5 824ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon1 (Qed 1.7s) (CVC5 844ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon1_index (Qed)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_24 (Qed 2s) (CVC5 1.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_22 (Qed 2s) (CVC5 890ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_26 (Qed 2.2s) (CVC5 1.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon1_old_point (Qed 2.1s) (CVC5 2.6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_one_extent_cut (Qed 5.1s) (CVC5 2.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_27 (Qed 2s) (CVC5 900ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_hv_guard_store1 (Qed 1.9s) (Z3 903ms) (Cache miss 2)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_rvv_values_result (Qed 5.7s) (CVC5 2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon1_lane (Qed 2.9s) (CVC5 12s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_28 (Qed 5.8s) (CVC5 813ms) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_32 (Qed 6s) (CVC5 2.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_31 (Qed 6s) (CVC5 1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_35 (Qed 6s) (CVC5 6.3s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_33 (Qed 6.5s) (CVC5 8.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_34 (Qed 7.7s) (CVC5 12.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon_tailprefix (Tactic) (Qed 2.0s) (CVC5 2/2 6.3s) (Cache miss 2)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_7 (Tactics 2) (Qed 757ms) (CVC5 4.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_harness_lane (Tactics 2) (Qed 8.7s) (CVC5 5.4s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_mf4_output_read (Tactics 2) (Qed 828ms) (CVC5 5.0s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_15 (Tactics 2) (Qed 1.2s) (CVC5 5.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_mf2_output_read (Tactics 2) (Qed 1.2s) (CVC5 5.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_25 (Tactics 2) (Qed 4.6s) (CVC5 7.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_23 (Tactics 2) (Qed 4.4s) (CVC5 6.5s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_neon_all (Tactics 2) (Qed 10s) (CVC5 3/3 14s) (Cache miss 3)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_30 (Tactics 2) (Qed 15.6s) (CVC5 2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert (Tactics 3) (Qed 21s) (CVC5 5.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_9 (Tactics 3) (Qed 1s) (CVC5 4.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_17 (Tactics 3) (Qed 1.6s) (CVC5 5.0s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_29 (Tactics 3) (Qed 20.1s) (CVC5 7.1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_4 (Tactics 4) (Qed 1s) (CVC5 3.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_12 (Tactics 4) (Qed 1.8s) (CVC5 4.1s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_5 (Tactics 5) (Qed 1.3s) (CVC5 4.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_20 (Tactics 4) (Qed 6.8s) (CVC5 6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_values_tail_high_sep (Tactics 5) (Qed 2.9s) (CVC5 4.7s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_13 (Tactics 5) (Qed 2.1s) (CVC5 4.8s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_21 (Tactics 5) (Qed 8.0s) (CVC5 6.2s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_vmem_final_input_sep (Tactics 7) (Qed 39.6s) (CVC5 6s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_vmem_rvv_input_sep (Tactics 9) (Qed 49.4s) (CVC5 6.9s) (Cache miss 1)
+[wp] [Valid] bytes_extensions_acsl-bits_equivalent_assert_vmem_rvv_input_read (Tactics 9) (Qed 49.0s) (CVC5 6.9s) (Cache miss 1)
+[wp] Proved goals:   86 / 86
+  Qed:             7
+  CVC5:           54
+  Z3:              1
+  Script:         24 (Tactics 88) (Qed 4'14s) (CVC5 27/27 2'19s) (Cache miss 27)
+[wp] Updated session
+   - 24 new valid scripts
