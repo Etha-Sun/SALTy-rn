@@ -52,7 +52,7 @@ def tick():
                 'c-shim-v2 定时心跳：实时额度允许工作。先读 verification/qcp/docs/COORDINATION.zh-CN.md、'
                 'ROADMAP.zh-CN.md 和 .build/quota/state.json（工作树 build/qcp-kernel-framework）。'
                 '继续用户已授权的 VADD 首例；完成后本机只做 leader 审查协调，其他39项交另一服务器。'
-                '每个小步骤前查询实时额度，当前bootstrap低于10%收尾；首次恢复>=90%转leader后低于70%收尾。'
+                '每个小步骤前查询实时额度，当前bootstrap低于10%收尾；首次恢复>=90%转leader后不高于70%收尾。'
                 '暂停时保存checkpoint并结束，不用模型等待。不要重复已有任务或启动第二个重叠runner。'
                 '检查协调PR新消息，仅状态变化回复。真实整核闭合后创建 .build/quota/pilot-complete，'
                 '未完成不能创建。使用中文；无变化不向用户发例行汇报。'

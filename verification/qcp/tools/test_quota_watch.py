@@ -21,7 +21,8 @@ class QuotaStateTests(unittest.TestCase):
             self.assertEqual(state['phase'], 'leader')
             self.assertTrue(state['can_run'])
         self.assertEqual(decide('leader', sample(69))['phase'], 'wait_leader')
-        self.assertTrue(decide('leader', sample(70))['can_run'])
+        self.assertFalse(decide('leader', sample(70))['can_run'])
+        self.assertTrue(decide('leader', sample(71))['can_run'])
 
     def test_secondary_exhausted_and_backend_block(self):
         self.assertFalse(decide('leader', sample(99, secondary=0))['can_run'])

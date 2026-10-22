@@ -105,8 +105,8 @@ def decide(previous, response):
             phase = 'wait_initial' if phase in ('bootstrap', 'wait_initial') else 'wait_leader'
     elif phase == 'bootstrap' and remaining < 10:
         phase, reason = 'wait_initial', 'bootstrap_below_10'
-    elif phase == 'leader' and remaining < 70:
-        phase, reason = 'wait_leader', 'leader_below_70'
+    elif phase == 'leader' and remaining <= 70:
+        phase, reason = 'wait_leader', 'leader_at_or_below_70'
     elif phase in ('wait_initial', 'wait_leader'):
         if remaining >= 90:
             phase = 'leader'
