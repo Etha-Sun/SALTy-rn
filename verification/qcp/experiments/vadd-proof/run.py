@@ -6,8 +6,10 @@ from pathlib import Path
 HERE=Path(__file__).resolve().parent
 ROOT=HERE.parents[1]
 SHARED=ROOT/'shared/vadd'
-OLD=Path('/zp_vegeta/scratch_sb/ycsun/verus')
-STRATEGY=OLD/'.local/qcp/QCP-V2.1.4/linux-binary/StrategyCheck'
+sys.path.insert(0, str(HERE.parents[1] / 'tools'))
+from environment import load_environment
+ENV = load_environment()
+STRATEGY=ENV['strategy']
 records=[]
 def sha(path):return hashlib.sha256(path.read_bytes()).hexdigest()
 def run(cmd,stem):
@@ -21,7 +23,7 @@ try:
  run([sys.executable,HERE/'generate_intrinsics.py'],'generate')
  for source,out in [('intrinsics.c','generated'),('array_read.c','array-generated')]:
   dest=HERE/out;dest.mkdir(exist_ok=True)
-  run(['qcp','--arch=64','--endian=little','--no-float-finite-vc','--input-file='+str(SHARED/source),'--coq-output-dir='+str(dest),'--coq-logic-path=QcpVadd','-slp',SHARED,'QcpVadd','--no-exec-info'],'qcp-'+source)
+  run([ENV['qcp'],'--arch=64','--endian=little','--no-float-finite-vc','--input-file='+str(SHARED/source),'--coq-output-dir='+str(dest),'--coq-logic-path=QcpVadd','-slp',SHARED,'QcpVadd','--no-exec-info'],'qcp-'+source)
   same_goal(dest,Path(source).stem+'_goal.v')
  dest=HERE/'strategy-generated';dest.mkdir(exist_ok=True)
  run([STRATEGY,'--arch=64','--endian=little','--input-file='+str(SHARED/'float_array.strategies'),'--coq-output-dir='+str(dest),'--coq-logic-path=QcpVadd','--no-exec-info'],'strategy-check')

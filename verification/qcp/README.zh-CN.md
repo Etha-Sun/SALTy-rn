@@ -106,10 +106,13 @@ python3 verification/qcp/experiments/nan-bridge/run.py
 
 检查结果分别在 [framework-check.json](audit/framework-check.json)、[vadd proof status](experiments/vadd-proof/status.json)、[NaN bridge status](experiments/nan-bridge/status.json)；整核首次调用的确切失败前件在 [kernel-attempt/result.json](experiments/vadd-proof/kernel-attempt/result.json)。清单检查不会运行40个证明；共享 runner 的 `passed=true` 表示其声明的局部义务已检查，不能覆盖其中仍为 false 的 `kernel_proved`。
 
-当前依赖 Python 3、GCC、`patch`、PATH 中的 `qcp` 与 `qcp-env`，以及旧 workspace 已安装的 QCP 2.1.4 / Coq 8.20.1 和已编译 QCP 库。两个 proof runner 仍读取：
+当前依赖Python 3、GCC、patch、git、QCP 2.1.4和Coq 8.20.1。
+runner通过QCP_HOME和QCP_COQC选择固定版本，核对二进制及库映射SHA；不再读取leader机器的绝对路径或qcp-env。
+安装和版本边界见[环境说明](docs/ENVIRONMENT.zh-CN.md)。推荐用隔离入口保留历史日志：
 
-```text
-/zp_vegeta/scratch_sb/ycsun/verus/research/qcp-shim-vadd/results/coq-flags.json
-```
+~~~sh
+QCP_HOME=/path/to/QCP QCP_COQC=/path/to/coq-8.20.1/bin/coqc python3 verification/qcp/experiments/environment-replay/run.py --name fresh01
+~~~
 
-其中包含旧 workspace 的绝对库路径；StrategyCheck 也取自旧 workspace 的 `.local/qcp/QCP-V2.1.4/linux-binary/`。因此本分支目前是**可在当前配置环境复现的源码包**，还不是新 clone 后无需环境配置即可运行的独立工具发行版。不要把缺少该环境的失败归为 proof failure；迁移时应固定工具/库版本、重新取得路径并重跑相应检查。
+[第二服务器新重放](experiments/environment-replay/README.zh-CN.md)记录了48项基础义务和14个NaN C VC的本机重新检查，整核仍为0/40。
+旧日志中的绝对路径保留为历史provenance，不是当前runner依赖；缺工具、版本或编译库属于环境失败。

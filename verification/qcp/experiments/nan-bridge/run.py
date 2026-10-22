@@ -9,11 +9,14 @@ import shutil
 import struct
 import subprocess
 import tempfile
+import sys
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-WORKSPACE = HERE.parents[5]
-CONFIG = WORKSPACE / 'research/qcp-shim-vadd/results/coq-flags.json'
+sys.path.insert(0, str(HERE.parents[1] / 'tools'))
+from environment import load_environment
+ENV = load_environment()
+
 
 
 def sha(path):
@@ -34,9 +37,9 @@ def main():
     build = HERE / '.build'
     build.mkdir(exist_ok=True)
     run = Path(tempfile.mkdtemp(prefix='replay-', dir=build))
-    config = json.loads(CONFIG.read_text())
+    config = ENV
     records = []
-    records.append(execute(['qcp', '--arch=64', '--endian=little', '--no-float-finite-vc',
+    records.append(execute([ENV['qcp'], '--arch=64', '--endian=little', '--no-float-finite-vc',
         '--input-file=' + str(HERE / 'bridge.c'), '--coq-output-dir=' + str(run),
         '--coq-logic-path=NanBridge', '--no-exec-info'], log=run / 'qcp.log'))
     fresh = run / 'bridge_goal.v'
@@ -48,7 +51,7 @@ def main():
         source = HERE / name
         if name != 'bridge_goal.v' and re.search(r'\b(?:Admitted|admit|Axiom|Parameter)\b', source.read_text()):
             raise RuntimeError('Unchecked declaration in ' + name)
-        cmd = ['qcp-env', 'coqc', *config['flags'][2:], '-Q', str(HERE), 'NanBridge', str(source)]
+        cmd = [ENV['coqc'], *config['flags'], '-Q', str(HERE), 'NanBridge', str(source)]
         records.append(execute(cmd, cwd=config['cwd'], log=run / (source.stem + '-coqc.log')))
     native = run / 'native.c'
     native.write_text((HERE / 'bridge.c').read_text() + '''
@@ -92,7 +95,7 @@ int original_native(float x, float y) {
         target_log = logs / source_log.name
         shutil.copyfile(source_log, target_log)
         record['log'] = str(target_log.relative_to(HERE))
-    binary = Path(shutil.which('qcp')).resolve()
+    binary = Path(ENV['qcp']).resolve()
     status = {'passed': True, 'actual_c_bodies_checked': ['preserve_float', 'check_observation', 'same_lane'],
         'canonical_vcs': 14, 'fresh_generated_goal_matches': True,
         'source_sha256': {name: sha(HERE / name) for name in ['bridge.c', 'BridgeLogic.v', 'ListBridge.v',
@@ -100,7 +103,7 @@ int original_native(float x, float y) {
         'native': {'pairs': len(pairs), 'comparisons_matched': True, 'broken_identity_detected': mutation_detected},
         'commands': records,
         'qcp_binary': {'path': str(binary), 'sha256': sha(binary),
-                       'launcher': 'qcp resolves directly to this binary; no wrapper flags'},
+                       'launcher': 'explicit QCP_HOME binary; no wrapper flags'},
         'upstream_reference': 'https://github.com/QinxiangCao/QualifiedCProgramming',
         'scope': 'The C checker proof assumes same_value(x,y); the copy-rewrite observation theorem holds for arbitrary x,y.',
         'assumptions': 'Pure bridge lemmas and return VCs are closed. Safety/stack VCs retain QCP eval_addr_expr and standard function extensionality.',

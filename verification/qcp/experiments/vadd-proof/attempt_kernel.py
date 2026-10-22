@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """Run the actual lowered upstream NEON body with its unchanged pilot contract."""
-import hashlib,importlib.util,json,subprocess
+import hashlib,importlib.util,json,subprocess,sys
 from pathlib import Path
 HERE=Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parents[1] / 'tools'))
+from environment import load_environment
+ENV = load_environment()
 QCP=HERE.parents[1]
 ROOT=QCP.parents[1]
 spec=importlib.util.spec_from_file_location('lower_vadd',QCP/'tools/lower_vadd.py')
@@ -37,7 +40,7 @@ out=HERE/'kernel-attempt';out.mkdir(exist_ok=True)
 preprocessed=out/'neon_kernel_unit.c'
 preprocess=['gcc','-E','-P','-CC','-nostdinc',str(path),'-o',str(preprocessed)]
 subprocess.run(preprocess,cwd=ROOT,check=True,text=True,capture_output=True,timeout=30)
-cmd=['qcp','--arch=64','--endian=little','--no-float-finite-vc','--input-file='+str(preprocessed),'--coq-output-dir='+str(out),'--coq-logic-path=QcpVadd','-slp',str(QCP/'shared/vadd'),'QcpVadd','--no-exec-info']
+cmd=[ENV['qcp'],'--arch=64','--endian=little','--no-float-finite-vc','--input-file='+str(preprocessed),'--coq-output-dir='+str(out),'--coq-logic-path=QcpVadd','-slp',str(QCP/'shared/vadd'),'QcpVadd','--no-exec-info']
 r=subprocess.run(cmd,cwd=ROOT,text=True,capture_output=True,timeout=120)
 (out/'stdout.log').write_text(r.stdout);(out/'stderr.log').write_text(r.stderr)
 result={'preprocess_command':preprocess,'command':cmd,'source':str(source),'source_sha256':hashlib.sha256(source.read_bytes()).hexdigest(),'lowered_sha256':hashlib.sha256(path.read_bytes()).hexdigest(),'rewrites':rewrites,'qcp_exit_code':r.returncode,'complete_vcs_generated':r.returncode==0 and 'Successfully finished symbolic execution' in r.stdout and 'fatal error:' not in r.stderr,'stderr':r.stderr,'kernel_proved':False,'contract':'Unchanged old-demo NEON kernel contract; disjoint inputs, full binary32 domain, 3 padding cells, byte batch bounded by uint64.'}

@@ -1,0 +1,49 @@
+[1;31mfatal error: [0mCannot derive the precondition of function vld1q_f32 for spec (default) in /srv/home/yuechunsun/tools/lean/build/qcp-worker-local/replays/worker01/tree/.build/environment-replay/worker02/tree/verification/qcp/experiments/vadd-proof/kernel-attempt/neon_kernel_unit.c:99:42
+Function call failed because the caller assertion does not entail the callee Require assertion after substituting actual arguments.
+Function call argument bindings:
+  argument 1: r <- va_695_addr
+  argument 2: p <- input_a_677_pre
+Callee precondition after substituting actual arguments:
+EX x0_698_free x1_699_free x2_700_free x3_701_free 
+PROP[]
+LOCAL[]
+SEP[
+  store(pointer_offset(input_a_677_pre, 0, (Size_of float), float), x0_698_free, float);
+  store(pointer_offset(input_a_677_pre, 1, (Size_of float), float), x1_699_free, float);
+  store(pointer_offset(input_a_677_pre, 2, (Size_of float), float), x2_700_free, float);
+  store(pointer_offset(input_a_677_pre, 3, (Size_of float), float), x3_701_free, float) ]
+
+Caller current assertion:
+EX va_695_addr 
+PROP[
+  batch_680_pre >= (4 * (Size_of float));
+  output_671_pre != 0;
+  input_b_674_pre != 0;
+  input_a_677_pre != 0;
+  (batch_680_pre %% (Size_of float)) == 0;
+  batch_680_pre != 0;
+  0 < batch_680_pre;
+  batch_680_pre <= 18446744073709551603;
+  (batch_680_pre %% 4) == 0;
+  params_668_pre != 0;
+  input_a_677_pre != 0;
+  input_b_674_pre != 0;
+  output_671_pre != 0 ]
+LOCAL[
+  Temp va va_695_addr;
+  Temp params params_669_addr;
+  Temp output output_672_addr;
+  Temp input_b input_b_675_addr;
+  Temp input_a input_a_678_addr;
+  Temp batch batch_681_addr ]
+SEP[
+  UndefStructPredfloat32x4_t (va_695_addr);
+  store(batch_681_addr, batch_680_pre, unsigned int64);
+  store(input_a_678_addr, input_a_677_pre, float*);
+  store(input_b_675_addr, input_b_674_pre, float*);
+  store(output_672_addr, output_671_pre, float*);
+  store(params_669_addr, params_668_pre, struct xnn_f32_default_params*);
+  FloatArray.full (input_a_677_pre, ((batch_680_pre / 4) + 3), A_683_free);
+  FloatArray.full (input_b_674_pre, ((batch_680_pre / 4) + 3), B_682_free);
+  FloatArray.undef_full (output_671_pre, (batch_680_pre / 4)) ]
+
