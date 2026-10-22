@@ -1,0 +1,20 @@
+1 goal
+  
+  p : Z
+  l : list fp32
+  H0, Hp : 4 <= Zlength l
+  x0 : fp32
+  ============================
+  (p + 0 * sizeof ( FLOAT )) # Float |-> Znth 0 l fp32_zero **
+  ((p + 1 * sizeof ( FLOAT )) # Float |-> Znth 1 l fp32_zero **
+   ((p + 2 * sizeof ( FLOAT )) # Float |-> Znth 2 l fp32_zero **
+    (p + 3 * sizeof ( FLOAT )) # Float |-> Znth 3 l fp32_zero))
+  |-- (p + 0 * sizeof ( FLOAT )) # Float |-> Znth 0 l x0 **
+      ((p + 1 * sizeof ( FLOAT )) # Float |-> Znth 1 l x0 **
+       ((p + 2 * sizeof ( FLOAT )) # Float |-> Znth 2 l x0 **
+        (p + 3 * sizeof ( FLOAT )) # Float |-> Znth 3 l x0))
+File "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/proofs/debug.v", line 19, characters 83-87:
+Error:
+ (in proof neon_bridge_strategy2_correctness): Attempt to save an incomplete proof
+(there are remaining open goals).
+

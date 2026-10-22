@@ -1,0 +1,22 @@
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+1 goal
+  
+  p : addr
+  n : Z
+  Hge : 4 <= n
+  Hp : 0 <= 4 <= n
+  ============================
+  store_undef_array_rec
+    (fun (x : addr) (lo : Z) => (x + lo * sizeof ( FLOAT )) # Float |->_) p 0
+    4 (Z.to_nat (4 - 0))
+  |-- (p + 0 * sizeof ( FLOAT )) # Float |->_ **
+      ((p + 1 * sizeof ( FLOAT )) # Float |->_ **
+       ((p + 2 * sizeof ( FLOAT )) # Float |->_ **
+        (p + 3 * sizeof ( FLOAT )) # Float |->_))

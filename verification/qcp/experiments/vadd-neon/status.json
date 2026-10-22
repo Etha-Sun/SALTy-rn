@@ -1,0 +1,140 @@
+{
+  "bridge_checks_passed": true,
+  "full_kernel_proof": false,
+  "checked_generic_lemmas": 4,
+  "checked_strategy_lemmas": 4,
+  "checked_body_vcs": 6,
+  "checked_bodies": [
+    "load_call",
+    "load_local",
+    "store_call"
+  ],
+  "input_domain": "Full QCP fp32, with separation ownership, arbitrary legal array n >= 4; no finite-only restriction.",
+  "kernel_attempt": {
+    "command": [
+      "qcp",
+      "--arch=64",
+      "--endian=little",
+      "--no-float-finite-vc",
+      "--input-file=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/neon_kernel_unit.c",
+      "--coq-output-dir=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results",
+      "--coq-logic-path=QcpNeon",
+      "-slp",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/shared/vadd",
+      "QcpVadd",
+      "-slp",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon",
+      "QcpNeon",
+      "--no-exec-info"
+    ],
+    "preprocess": [
+      "gcc",
+      "-E",
+      "-P",
+      "-CC",
+      "-nostdinc",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/neon_kernel.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/neon_kernel_unit.c"
+    ],
+    "exit_code": 1,
+    "body_skipped": false,
+    "complete_vcs_generated": false,
+    "kernel_proved": false,
+    "source_sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+    "lowered_sha256": "7ee8862d875d3a8bf99d90e49c6d75aac02f225f79380a855d8a1f1e8595c534",
+    "stderr": "\u001b[1;31mfatal error: \u001b[0mSymbolic execution failed: some paths reach the loop without matching any loop invariant case. Add an invariant case for each reachable branch or direct the branch explicitly. in /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/neon_kernel_unit.c:114:2\n"
+  },
+  "limits": [
+    "Only added proof annotations and memory strategies; original kernel/spec/mapper are unchanged.",
+    "Full loop invariant preservation, input-prefix/suffix joining, output-prefix values, and tail composition remain pending.",
+    "The two arithmetic cut facts are independently proved; the complete generated kernel VC set is not yet available.",
+    "Print Assumptions logs include standard QCP layout/address interpretation and Coq/Flocq assumptions, including csimpl address congruence assumptions."
+  ],
+  "commands": [
+    {
+      "command": [
+        "/zp_vegeta/scratch_sb/ycsun/verus/.local/qcp/QCP-V2.1.4/linux-binary/StrategyCheck",
+        "--arch=64",
+        "--endian=little",
+        "--input-file=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/neon_bridge.strategies",
+        "--coq-output-dir=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results",
+        "--coq-logic-path=QcpNeon",
+        "--no-exec-info"
+      ],
+      "exit_code": 0,
+      "log": "results/strategy-generation.log",
+      "log_sha256": "4fd42fd6e98205911bc4ba7a5ebe4ef435f953dd483d77312c0d117df6f4ab52"
+    },
+    {
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/load_call.c",
+        "-o",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/load_call_unit.c"
+      ],
+      "exit_code": 0,
+      "log": "results/preprocess-load-call.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--input-file=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/load_call_unit.c",
+        "--coq-output-dir=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results",
+        "--coq-logic-path=QcpNeon",
+        "-slp",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon",
+        "QcpNeon",
+        "--no-exec-info"
+      ],
+      "exit_code": 0,
+      "log": "results/qcp-load-call.log",
+      "log_sha256": "88299e138bec6b2e9e6a7984c049bee608cc107fd97d50750ea926ea9c4e7a5b"
+    },
+    {
+      "command": [
+        "/home/ycsun/anaconda3/bin/python",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/check.py",
+        "NeonBridge.v",
+        "neon_bridge_strategy_goal.v",
+        "neon_bridge_strategy_proof.v",
+        "load_call_unit_goal.v",
+        "load_call_checked.v"
+      ],
+      "exit_code": 0,
+      "log": "results/coqc-all.log",
+      "log_sha256": "61fc9ed8ffd047302c858889eac4e74263a072c66a60a7eff0d6068474865953"
+    },
+    {
+      "command": [
+        "/home/ycsun/anaconda3/bin/python",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/attempt.py"
+      ],
+      "exit_code": 0,
+      "log": "results/full-kernel-attempt.log",
+      "log_sha256": "3bc767bfc218c61d40a3d5d814524e37ce3919c8e6ea86e5655ef08ecfe84588"
+    }
+  ],
+  "files": {
+    "attempt.py": "625d3d72cd3c794be5589cbd891d4f7b603e15c815b6aafb28ac449ac45e0604",
+    "bridge_def.h": "4e4b1b1ec3b3bd58dbab75458910122578ce711ac3f0859ffdd2f5f75e741b59",
+    "check.py": "0eccf8e9da297966cfb0f6e663229eebfb9d25b74a2984693fe39dca20f347b5",
+    "load_call.c": "c93e512a0ece047a658e948a9f955602415b8b8ad97c4ee95121f6029fa02e08",
+    "neon_bridge.strategies": "37bcb5d2671b7fb1521d7324ecbf08b18afcc90652e59799d6ad299ba8c32284",
+    "neon_kernel.c": "7ee8862d875d3a8bf99d90e49c6d75aac02f225f79380a855d8a1f1e8595c534",
+    "proofs/NeonBridge.v": "cc7e8938b77510acb16b579ad567742ecc3774e03bcc393d676c7a7c4c098043",
+    "proofs/load_call_checked.v": "ba093631f386190b013e2b65884b0e37e48684760b479842dd6f5c5b41887b01",
+    "proofs/load_call_unit_goal.v": "af0d4e8bdfb90f66470c1566f2f3b11dc4945c9b465413ea6b71e980c75ab6ff",
+    "proofs/neon_bridge_strategy_goal.v": "9f4cde0636936899121b1c998f8e5facfaaba895ef862dd95d8005a0b0cda2b7",
+    "proofs/neon_bridge_strategy_proof.v": "6cb6fa8655369945581be01b276e35837df47e579fd93ebb0cf067acfcde85ac",
+    "run.py": "30b821f895116aa109e291c96fd832ffb85b4c309f09f6b98211a4ca3305ffbc"
+  }
+}

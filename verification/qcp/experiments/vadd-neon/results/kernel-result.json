@@ -1,0 +1,35 @@
+{
+  "command": [
+    "qcp",
+    "--arch=64",
+    "--endian=little",
+    "--no-float-finite-vc",
+    "--input-file=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/neon_kernel_unit.c",
+    "--coq-output-dir=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results",
+    "--coq-logic-path=QcpNeon",
+    "-slp",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/shared/vadd",
+    "QcpVadd",
+    "-slp",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon",
+    "QcpNeon",
+    "--no-exec-info"
+  ],
+  "preprocess": [
+    "gcc",
+    "-E",
+    "-P",
+    "-CC",
+    "-nostdinc",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/neon_kernel.c",
+    "-o",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/neon_kernel_unit.c"
+  ],
+  "exit_code": 1,
+  "body_skipped": false,
+  "complete_vcs_generated": false,
+  "kernel_proved": false,
+  "source_sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+  "lowered_sha256": "7ee8862d875d3a8bf99d90e49c6d75aac02f225f79380a855d8a1f1e8595c534",
+  "stderr": "\u001b[1;31mfatal error: \u001b[0mSymbolic execution failed: some paths reach the loop without matching any loop invariant case. Add an invariant case for each reachable branch or direct the branch explicitly. in /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon/results/neon_kernel_unit.c:114:2\n"
+}
