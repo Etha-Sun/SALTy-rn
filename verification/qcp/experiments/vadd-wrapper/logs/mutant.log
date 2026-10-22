@@ -1,0 +1,52 @@
+Program: `/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-wrapper/.build/checked-3am9zrz_/mutant.c`
+Start to parse strategies file comparator
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-comparator/comparator.strategies
+Finish parsing strategies file comparator
+Start to parse strategies file wrapper
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-wrapper/wrapper.strategies
+Finish parsing strategies file wrapper
+Start to parse strategies file common
+File Path: builtin/common.strategies
+Finish parsing strategies file common
+Start to parse strategies file string_literal
+File Path: builtin/string_literal.strategies
+Finish parsing strategies file string_literal
+Start to parse function declaration of function test_neon
+Start to parse function declaration of function test_rvv
+Start to parse function declaration of function compare_outputs
+Function `equivalent`
+[1;31mfatal error: [0mSymbolic execution failed: the return proof obligation at line 53 became inconsistent after solving. The generated postcondition contradicts the current path condition; check the asserted fact, return value, or branch condition. in /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-wrapper/.build/checked-3am9zrz_/mutant.c:53:42
+return proof obligation could not be solved automatically.
+Left/current assertion:
+PROP[
+  retval_526 == 1;
+  n_482_pre == ((n_482_pre * (Size_of float)) / 4);
+  ((n_482_pre * (Size_of float)) %% 4) == 0;
+  0 < (n_482_pre * (Size_of float));
+  (n_482_pre * (Size_of float)) <= 18446744073709551603;
+  params_495_addr != 0;
+  0 < n_482_pre;
+  n_482_pre <= 4611686018427387900;
+  input_a_479_pre != 0;
+  input_b_476_pre != 0;
+  left_473_pre != 0;
+  right_470_pre != 0 ]
+LOCAL[]
+SEP[
+  FloatArray.full (left_473_pre, n_482_pre, vadd_values(((n_482_pre * (Size_of float)) / 4), A_485_free, B_484_free));
+  FloatArray.full (right_470_pre, n_482_pre, vadd_values(((n_482_pre * (Size_of float)) / 4), A_485_free, B_484_free));
+  FloatArray.full (input_a_479_pre, (((n_482_pre * (Size_of float)) / 4) + 3), A_485_free);
+  FloatArray.full (input_b_476_pre, (((n_482_pre * (Size_of float)) / 4) + 3), B_484_free) ]
+
+Right/target assertion(s):
+EX R_487 L_486 
+PROP[
+  0 == 1 ]
+LOCAL[]
+SEP[
+  FloatArray.full (input_a_479_pre, (n_482_pre + 3), A_485_free);
+  FloatArray.full (input_b_476_pre, (n_482_pre + 3), B_484_free);
+  FloatArray.full (left_473_pre, n_482_pre, L_486);
+  FloatArray.full (right_470_pre, n_482_pre, R_487) ]
+
+Reason: the return path is incompatible with the target postcondition after symbolic simplification. For a return path, check the returned value against Ensure; for an Assert path, check whether the asserted proposition contradicts the current path condition.
