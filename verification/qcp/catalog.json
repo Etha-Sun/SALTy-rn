@@ -1,0 +1,3113 @@
+{
+  "schema": 1,
+  "upstream_repository": "keaganchern/SALTy-rn",
+  "upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+  "kernel_count": 40,
+  "intrinsic_extraction": "lexical all branches, comments/strings excluded; not call-closure proof",
+  "csim_reference": {
+    "git_head": "1b5c46253105caee4f22dd003f1b6e49bd955978",
+    "manifest_program_count": 16,
+    "quarantined_program_count": 9,
+    "read_only_reference": "/zp_vegeta/scratch_sb/ycsun/verus/build/verified-output-equivalence",
+    "evidence": [
+      {
+        "path": "verified/manifest.json",
+        "sha256": "750ffd14d40dd9866ea15184ca0bb0416a040f7992fa3103aa83827f2c2d2fb2"
+      },
+      {
+        "path": "docs/shared-shim/HANDOFF.zh-CN.md",
+        "sha256": "2c44ddc30aa9e7f1af262cc2b30a7fdd297ef4ba7e171b19775bbe7a1d514a11"
+      },
+      {
+        "path": "experiments/codex-kernel-wave1/CHECKPOINT.zh-CN.txt",
+        "sha256": "3ded6e8da95beaebcc1f766a5047b50e94e5c86e8c75073c941f46a096dfe7e6"
+      },
+      {
+        "path": "experiments/integration-wave2/CHECKPOINT.zh-CN.md",
+        "sha256": "9368300facf618e76a1ee3ec73b96726731a4475463b7c1a69fe937d4f9450b7"
+      },
+      {
+        "path": "experiments/shared-extension/results.json",
+        "sha256": "93a449bef13449c45301ef74ae3a42221bb88edea7267f0383c9c02a10c2afbf"
+      },
+      {
+        "path": "docs/shared-shim/EXTENSION-RESULTS.zh-CN.txt",
+        "sha256": "394ecd8584c691d7faa1e1703c40a5c99331205dbe26256163f1873857aca811"
+      },
+      {
+        "path": "experiments/shim-c-v2/MODEL-AND-TCB.zh-CN.txt",
+        "sha256": "c477f97653ec97e07652e95f2b39ce0c11f77655bb5a088e5974db55fba3b30e"
+      },
+      {
+        "path": "experiments/codex-kernel-wave1/WAVE2-REVIEW.zh-CN.md",
+        "sha256": "dc50987f8605001ad005578ae10f18d43ee7fb22f6bb95f48abde0fbd6e3b18b"
+      }
+    ],
+    "note": "Latest manifest/integration supersede older handoff and wave1 counts; no historical proof replayed."
+  },
+  "kernels": [
+    {
+      "name": "f32-argmaxpool",
+      "family": "pooling",
+      "difficulty": "间接指针表、NaN、argmax并列选择、有效窗口与输出索引",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-argmaxpool.c",
+          "sha256": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+          "bytes": 7527
+        },
+        "rvv": {
+          "path": "kernels/target/f32-argmaxpool.c",
+          "sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+          "bytes": 5000
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddq_u32",
+          "vbslq_f32",
+          "vbslq_u32",
+          "vcgtq_f32",
+          "vdupq_n_u32",
+          "vget_high_f32",
+          "vget_high_u32",
+          "vget_low_f32",
+          "vget_low_u32",
+          "vld1q_f32",
+          "vld1q_u32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1_lane_u32",
+          "vst1_u32",
+          "vst1q_f32",
+          "vst1q_u32"
+        ],
+        "rvv": [
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vle32_v_u32m8",
+          "__riscv_vmerge_vvm_f32m8",
+          "__riscv_vmerge_vxm_u32m8",
+          "__riscv_vmfgt_vv_f32m8_b4",
+          "__riscv_vmv_v_x_u32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vse32_v_u32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "比较/mask/选择"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-conv-hwc2chw",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-conv-hwc2chw.c",
+          "sha256": "87a57d56fc8836dd5394e59ab113fd6bd7d328023fc68e214ae0b42168eaea58",
+          "bytes": 25725
+        },
+        "rvv": {
+          "path": "kernels/target/f32-conv-hwc2chw.c",
+          "sha256": "dc4b036479e134d3f95bdaed47244a936696ae31d061d26b8478c3a183b1a200",
+          "bytes": 10594
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vfmaq_laneq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_dup_f32",
+          "vld1q_f32",
+          "vld1q_lane_f32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vmovq_n_f32",
+          "vst1_f32",
+          "vst1q_lane_f32",
+          "vzip1q_f32",
+          "vzip2q_f32"
+        ],
+        "rvv": [
+          "__riscv_vadd_vx_i32m1",
+          "__riscv_vadd_vx_u32m1",
+          "__riscv_vfmacc_vf_f32m1",
+          "__riscv_vfmax_vf_f32m1",
+          "__riscv_vfmin_vf_f32m1",
+          "__riscv_vfmv_v_f_f32m1",
+          "__riscv_vid_v_u32m1",
+          "__riscv_vlse32_v_f32m1",
+          "__riscv_vmand_mm_b32",
+          "__riscv_vmerge_vvm_f32m1",
+          "__riscv_vmsge_vx_i32m1_b32",
+          "__riscv_vmslt_vx_i32m1_b32",
+          "__riscv_vmul_vx_u32m1",
+          "__riscv_vreinterpret_v_u32m1_i32m1",
+          "__riscv_vse32_v_f32m1",
+          "__riscv_vsetvl_e32m1",
+          "__riscv_vsub_vx_i32m1"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "missing upper clamp on second row, masked out-of-bounds load, NaN",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-conv-hwc2chw/rvv.c",
+            "sha256": "ad1e5b1bf080182086946e8a770206a0acb85dc4c8497bea06076712008e30ff",
+            "matches_upstream_bytes": false
+          }
+        ],
+        "later_repair": {
+          "description": "odd right edge: skip masked 0*Inf FMA, preserve accumulator",
+          "source": "experiments/codex-kernel-wave1/WAVE2-REVIEW.zh-CN.md"
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-dwconv-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-dwconv-minmax.c",
+          "sha256": "bdb7f141b37fc1f90c29f7ad39b40f34f5c67d44feac1c56529ea995b0fc177e",
+          "bytes": 3291
+        },
+        "rvv": {
+          "path": "kernels/target/f32-dwconv-minmax.c",
+          "sha256": "6141be2793eb0f0d30ab23eb4bc4e36b9b9e027b9ed9627d685876208f7d0864",
+          "bytes": 2117
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddq_f32",
+          "vdupq_n_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vmulq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfadd_vv_f32m4",
+          "__riscv_vfmacc_vv_f32m4",
+          "__riscv_vfmax_vf_f32m4",
+          "__riscv_vfmin_vf_f32m4",
+          "__riscv_vfmul_vv_f32m4",
+          "__riscv_vle32_v_f32m4",
+          "__riscv_vse32_v_f32m4",
+          "__riscv_vsetvl_e32m4"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "fixed four-channel packed weights vs VL layout, NaN",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-dwconv-minmax/rvv.c",
+            "sha256": "05ab39b30b84b05090cd646af0edf83912a057e6a34c75ee5034e8356569ce1f",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-dwconv2d-chw",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-dwconv2d-chw.c",
+          "sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+          "bytes": 10876
+        },
+        "rvv": {
+          "path": "kernels/target/f32-dwconv2d-chw.c",
+          "sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+          "bytes": 5897
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vandq_u32",
+          "vdupq_lane_f32",
+          "vdupq_n_f32",
+          "vextq_f32",
+          "vfmaq_lane_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1_f32",
+          "vld1q_f32",
+          "vld1q_u32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vmovq_n_f32",
+          "vreinterpretq_f32_u32",
+          "vreinterpretq_u32_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmacc_vf_f32m2",
+          "__riscv_vfmax_vf_f32m2",
+          "__riscv_vfmin_vf_f32m2",
+          "__riscv_vfmv_v_f_f32m2",
+          "__riscv_vfslide1down_vf_f32m2",
+          "__riscv_vfslide1up_vf_f32m2",
+          "__riscv_vle32_v_f32m2",
+          "__riscv_vse32_v_f32m2",
+          "__riscv_vsetvl_e32m2"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN propagation",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-dwconv2d-chw/rvv.c",
+            "sha256": "b7655578e41d4a8c28c07668bc0989c139de3e76497e3af87fab2b9d1f7a470c",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-f16-vcvt",
+      "family": "conversion",
+      "difficulty": "signed/unsigned扩展、IEEE舍入、FP16编码与特殊值",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-f16-vcvt.c",
+          "sha256": "41a081db8c9503ca62f077ad790dd92d92f2fe374e554cef8a9baf35dabd2aaa",
+          "bytes": 5309
+        },
+        "rvv": {
+          "path": "kernels/target/f32-f16-vcvt.c",
+          "sha256": "35730ec8f13c282e4b690536c738cce15a455f03eb649395253cf8be4712f851",
+          "bytes": 1823
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vabsq_f32",
+          "vadd_u16",
+          "vaddq_f32",
+          "vaddq_u16",
+          "vaddq_u32",
+          "vand_u16",
+          "vandq_u16",
+          "vandq_u32",
+          "vbsl_u16",
+          "vbslq_u16",
+          "vcgtq_u32",
+          "vcombine_u16",
+          "vdupq_n_f32",
+          "vdupq_n_u16",
+          "vdupq_n_u32",
+          "vext_u16",
+          "vget_low_u16",
+          "vld1q_f32",
+          "vmaxq_u32",
+          "vmovn_u32",
+          "vmulq_f32",
+          "vorr_u16",
+          "vorrq_u16",
+          "vreinterpret_u32_u16",
+          "vreinterpretq_f32_u32",
+          "vreinterpretq_u32_f32",
+          "vshrn_n_u32",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_u16",
+          "vst1q_u16"
+        ],
+        "rvv": [
+          "__riscv_vadd_vv_u16m4",
+          "__riscv_vadd_vx_u32m8",
+          "__riscv_vand_vx_u16m4",
+          "__riscv_vand_vx_u32m8",
+          "__riscv_vfabs_v_f32m8",
+          "__riscv_vfadd_vv_f32m8",
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vmaxu_vx_u32m8",
+          "__riscv_vmerge_vxm_u16m4",
+          "__riscv_vmsgtu_vx_u32m8_b4",
+          "__riscv_vnsrl_wx_u16m4",
+          "__riscv_vor_vv_u16m4",
+          "__riscv_vreinterpret_v_f32m8_u32m8",
+          "__riscv_vreinterpret_v_u32m8_f32m8",
+          "__riscv_vse16_v_u16m4",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-gemm-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-gemm-minmax.c",
+          "sha256": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61",
+          "bytes": 6564
+        },
+        "rvv": {
+          "path": "kernels/target/f32-gemm-minmax.c",
+          "sha256": "9ae2f510ae8991e8dc80606edd0fb4595e02d11dcba6ae57974e7b5ef0b2b4b7",
+          "bytes": 2874
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdupq_lane_f32",
+          "vdupq_n_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1_f32",
+          "vld1q_dup_f32",
+          "vld1q_f32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmacc_vf_f32m4",
+          "__riscv_vfmax_vf_f32m4",
+          "__riscv_vfmin_vf_f32m4",
+          "__riscv_vle32_v_f32m4",
+          "__riscv_vse32_v_f32m4",
+          "__riscv_vsetvl_e32m4"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN clamp restoration; earlier repair, not admitted",
+        "repair_source": "experiments/gemm-repair/README.zh-CN.txt"
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-igemm-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-igemm-minmax.c",
+          "sha256": "e7a1cb0fa88abfc4588d289781c03daf29832466fbdcc88861fc3f6cf2683b6a",
+          "bytes": 2972
+        },
+        "rvv": {
+          "path": "kernels/target/f32-igemm-minmax.c",
+          "sha256": "960f7d27592187438b259058dc694e42c369fb7bf82c7c3d5729fadbe86c42fd",
+          "bytes": 1522
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdupq_lane_f32",
+          "vdupq_n_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1_f32",
+          "vld1q_dup_f32",
+          "vld1q_f32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmacc_vf_f32m4",
+          "__riscv_vfmax_vf_f32m4",
+          "__riscv_vfmin_vf_f32m4",
+          "__riscv_vle32_v_f32m4",
+          "__riscv_vse32_v_f32m4"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN propagation",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-igemm-minmax/rvv.c",
+            "sha256": "551fb621ce3354fc61c0e3229325d654cf1ffe96c8fa7f17a40394bc29398d3a",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-maxpool",
+      "family": "pooling",
+      "difficulty": "间接指针表、NaN、argmax并列选择、有效窗口与输出索引",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-maxpool.c",
+          "sha256": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+          "bytes": 7686
+        },
+        "rvv": {
+          "path": "kernels/target/f32-maxpool.c",
+          "sha256": "0194ef9ea40d42ba0496069edf1afa54073893df273b58d00c91ad95faadc894",
+          "bytes": 4982
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdupq_n_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmax_vf_f32m8",
+          "__riscv_vfmax_vv_f32m8",
+          "__riscv_vfmin_vf_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN propagation",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-maxpool/rvv.c",
+            "sha256": "42f71641eddbba2a5d2b39308f0ef5074554d330ab4607bd9aa19742a8735c51",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-raddstoreexpminusmax",
+      "family": "float-reduction-exp",
+      "difficulty": "exp位算法、精确归约树、单次舍入与累加顺序",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-raddstoreexpminusmax.c",
+          "sha256": "fb265d6a10ab6ada1ce0daf24fa8bf3331ffe45dd70067978ec1a0f641cd0460",
+          "bytes": 3488
+        },
+        "rvv": {
+          "path": "kernels/target/f32-raddstoreexpminusmax.c",
+          "sha256": "9c0ca18ff056bf3974023b5befb37337e539c072140ce17abfda325acabe9064",
+          "bytes": 2494
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vadd_f32",
+          "vaddq_f32",
+          "vaddv_f32",
+          "vaddvq_f32",
+          "vbicq_u32",
+          "vcltq_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_lane_f32",
+          "vget_low_f32",
+          "vld1q_dup_f32",
+          "vld1q_f32",
+          "vmovq_n_f32",
+          "vmulq_f32",
+          "vpadd_f32",
+          "vreinterpret_f32_u64",
+          "vreinterpret_u64_f32",
+          "vreinterpretq_f32_s32",
+          "vreinterpretq_f32_u32",
+          "vreinterpretq_s32_f32",
+          "vreinterpretq_u32_f32",
+          "vshl_n_u64",
+          "vshlq_n_s32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32",
+          "vsubq_f32"
+        ],
+        "rvv": [
+          "__riscv_vfadd_vv_f32m4_tu",
+          "__riscv_vfmacc_vf_f32m4",
+          "__riscv_vfmacc_vv_f32m4",
+          "__riscv_vfmadd_vf_f32m4",
+          "__riscv_vfmerge_vfm_f32m4",
+          "__riscv_vfmul_vv_f32m4",
+          "__riscv_vfmv_f_s_f32m1_f32",
+          "__riscv_vfmv_v_f_f32m1",
+          "__riscv_vfmv_v_f_f32m4",
+          "__riscv_vfredusum_vs_f32m4_f32m1",
+          "__riscv_vfsub_vf_f32m4",
+          "__riscv_vle32_v_f32m4",
+          "__riscv_vmflt_vf_f32m4_b8",
+          "__riscv_vreinterpret_v_f32m4_i32m4",
+          "__riscv_vreinterpret_v_i32m4_f32m4",
+          "__riscv_vse32_v_f32m4",
+          "__riscv_vsetvl_e32m4",
+          "__riscv_vsetvlmax_e32m1",
+          "__riscv_vsetvlmax_e32m4",
+          "__riscv_vsll_vx_i32m4"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "归约/dot顺序",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "reduction order rounding",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-raddstoreexpminusmax/rvv.c",
+            "sha256": "b5230b7b984aad0f560dafac3544023440a841176853c1e374741864a4be1301",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-spmm-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-spmm-minmax.c",
+          "sha256": "b12e3790357f402147418cd26a06882e3203b4b163fa57446cd85d521b4e1c9c",
+          "bytes": 4044
+        },
+        "rvv": {
+          "path": "kernels/target/f32-spmm-minmax.c",
+          "sha256": "cab6e94a897f41826f817466e4d61d0ce7ea9aac2934bfcdfdabe9fecb08864e",
+          "bytes": 1622
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vcombine_f32",
+          "vfma_f32",
+          "vfmaq_f32",
+          "vget_low_f32",
+          "vld1_dup_f32",
+          "vld1_f32",
+          "vld1q_dup_f32",
+          "vld1q_f32",
+          "vld2_dup_f32",
+          "vld2q_dup_f32",
+          "vmax_f32",
+          "vmaxq_f32",
+          "vmin_f32",
+          "vminq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfadd_vv_f32m8",
+          "__riscv_vfmax_vf_f32m8",
+          "__riscv_vfmin_vf_f32m8",
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vfmv_v_f_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "fused vs nonfused order, NaN, nonzero cursor displacement reset",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/f32-spmm-minmax/rvv.c",
+            "sha256": "1da8546421f21874f5aa5f51d41f0a8ea096fbec8c8912e1e1c9ce46a0c3d5f4",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vadd",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vadd.c",
+          "sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+          "bytes": 1143
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vadd.c",
+          "sha256": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593",
+          "bytes": 710
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfadd_vv_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/f32-vadd-v2",
+        "raw_obligations": {
+          "passed": 571,
+          "total": 571
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vadd-v2/neon.c",
+            "sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vadd-v2/rvv.c",
+            "sha256": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "pilot_body_proof_in_progress",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vcmul",
+      "family": "complex-f32",
+      "difficulty": "交错布局、复数乘法次序、尾部地址",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vcmul.c",
+          "sha256": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294",
+          "bytes": 2052
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vcmul.c",
+          "sha256": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486",
+          "bytes": 1470
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmlaq_f32",
+          "vmlsq_f32",
+          "vmulq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfadd_vv_f32m4",
+          "__riscv_vfmul_vv_f32m4",
+          "__riscv_vfsub_vv_f32m4",
+          "__riscv_vle32_v_f32m4",
+          "__riscv_vse32_v_f32m4",
+          "__riscv_vsetvl_e32m4"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vdiv",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vdiv.c",
+          "sha256": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0",
+          "bytes": 1143
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vdiv.c",
+          "sha256": "5637c46cc781ada609567f65a010b3d698a010e090834e36c587873ede1e1f3d",
+          "bytes": 710
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdivq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfdiv_vv_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/f32-vdiv-v2",
+        "raw_obligations": {
+          "passed": 601,
+          "total": 601
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vdiv-v2/neon.c",
+            "sha256": "164726f8a2ec091ab058ee19dbdd943d89d0a0eb7b7a72b5a8aa646f83c53aa0",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vdiv-v2/rvv.c",
+            "sha256": "5637c46cc781ada609567f65a010b3d698a010e090834e36c587873ede1e1f3d",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vlrelu",
+      "family": "unary-f32",
+      "difficulty": "sqrt/round/符号判定及位表示桥；不能排除NaN以简化证明",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vlrelu.c",
+          "sha256": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+          "bytes": 1299
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vlrelu.c",
+          "sha256": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e",
+          "bytes": 818
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vbslq_f32",
+          "vcltq_s32",
+          "vdupq_n_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmovq_n_s32",
+          "vmulq_f32",
+          "vreinterpretq_s32_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vmerge_vvm_f32m8",
+          "__riscv_vmslt_vx_i32m8_b4",
+          "__riscv_vreinterpret_v_f32m8_i32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/f32-vlrelu",
+        "raw_obligations": {
+          "passed": 770,
+          "total": 770
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vlrelu/neon.c",
+            "sha256": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vlrelu/rvv.c",
+            "sha256": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vmax",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vmax.c",
+          "sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+          "bytes": 1143
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vmax.c",
+          "sha256": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6",
+          "bytes": 712
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmaxq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmax_vv_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN propagation",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/float/f32-vmax/rvv.c",
+            "sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+            "matches_upstream_bytes": false
+          }
+        ],
+        "case": "verified/f32-vmax-v2",
+        "raw_obligations": {
+          "passed": 538,
+          "total": 538
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vmax-v2/neon.c",
+            "sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vmax-v2/rvv.c",
+            "sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+            "matches_upstream_bytes": false
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vmin",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vmin.c",
+          "sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+          "bytes": 1143
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vmin.c",
+          "sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e",
+          "bytes": 724
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vminq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmin_vv_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN propagation",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/float/f32-vmin/rvv.c",
+            "sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+            "matches_upstream_bytes": false
+          }
+        ],
+        "case": "verified/f32-vmin-v2",
+        "raw_obligations": {
+          "passed": 536,
+          "total": 536
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vmin-v2/neon.c",
+            "sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vmin-v2/rvv.c",
+            "sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+            "matches_upstream_bytes": false
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vmul",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vmul.c",
+          "sha256": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c",
+          "bytes": 1143
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vmul.c",
+          "sha256": "6f2acd553de265d3b8304d47009bb725dde8118539acf948cbdf0f7de79f235c",
+          "bytes": 715
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmulq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmul_vv_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/f32-vmul-v2",
+        "raw_obligations": {
+          "passed": 585,
+          "total": 585
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vmul-v2/neon.c",
+            "sha256": "260f2fefce97565f686fe95b968688d9be83c9fe8c6724d9cbab30632df8df6c",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vmul-v2/rvv.c",
+            "sha256": "6f2acd553de265d3b8304d47009bb725dde8118539acf948cbdf0f7de79f235c",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vmulc",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vmulc.c",
+          "sha256": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+          "bytes": 1085
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vmulc.c",
+          "sha256": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a",
+          "bytes": 646
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_dup_f32",
+          "vld1q_f32",
+          "vmulq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/f32-vmulc-v2",
+        "raw_obligations": {
+          "passed": 583,
+          "total": 583
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vmulc-v2/neon.c",
+            "sha256": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vmulc-v2/rvv.c",
+            "sha256": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vrndne",
+      "family": "unary-f32",
+      "difficulty": "sqrt/round/符号判定及位表示桥；不能排除NaN以简化证明",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vrndne.c",
+          "sha256": "b02a27bfc9953ba14c6a43c583a566ebf6c41966beebdaa7143042fd4cf319fe",
+          "bytes": 1726
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vrndne.c",
+          "sha256": "29488445db06359d64d9aef2c5477f2fc6ef750733287ca5c75f553f8ea1b530",
+          "bytes": 1604
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vabsq_f32",
+          "vaddq_f32",
+          "vbslq_f32",
+          "vcaltq_f32",
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vmovq_n_u32",
+          "vorrq_u32",
+          "vreinterpretq_f32_u32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32",
+          "vsubq_f32"
+        ],
+        "rvv": [
+          "__riscv_vfabs_v_f32m8",
+          "__riscv_vfadd_vf_f32m8",
+          "__riscv_vfsgnj_vv_f32m8",
+          "__riscv_vfsub_vf_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vmerge_vvm_f32m8",
+          "__riscv_vmfgt_vf_f32m8_b4",
+          "__riscv_vmfne_vv_f32m8_b4",
+          "__riscv_vor_vx_u32m8",
+          "__riscv_vreinterpret_v_f32m8_u32m8",
+          "__riscv_vreinterpret_v_u32m8_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vsqrt",
+      "family": "unary-f32",
+      "difficulty": "sqrt/round/符号判定及位表示桥；不能排除NaN以简化证明",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vsqrt.c",
+          "sha256": "b4970661c787e642b8428f213a4b60bd894f4a63704ffc31ec96087beab4ef3e",
+          "bytes": 904
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vsqrt.c",
+          "sha256": "b09b69f0e4b7de2a839b71c1207f21ac2f024a7aa173e7ca1b4c19cca5b06012",
+          "bytes": 547
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vsqrtq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfsqrt_v_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "f32-vsub",
+      "family": "binary-f32",
+      "difficulty": "数组分解/拼接、tail padding、NaN/零；min/max需保持各ISA不同语义",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/f32-vsub.c",
+          "sha256": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+          "bytes": 1143
+        },
+        "rvv": {
+          "path": "kernels/target/f32-vsub.c",
+          "sha256": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c",
+          "bytes": 729
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vget_high_f32",
+          "vget_low_f32",
+          "vld1q_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32",
+          "vsubq_f32"
+        ],
+        "rvv": [
+          "__riscv_vfsub_vv_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/f32-vsub-v2",
+        "raw_obligations": {
+          "passed": 556,
+          "total": 556
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/f32-vsub-v2/neon.c",
+            "sha256": "35f7b6696edf0f22cad1375a3033484f400cf40a8c26d25c163b3bce8c722e2d",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/f32-vsub-v2/rvv.c",
+            "sha256": "5f343f76accfc791373012fbc3f309c08883d1dc6cd2c59c658a4582739bd18c",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qd8-f32-qc4w-gemm-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qd8-f32-qc4w-gemm-minmax.c",
+          "sha256": "3a234e610298f7998ea073c3c75940beece0ad5d4f5506394465fd902a647b40",
+          "bytes": 16426
+        },
+        "rvv": {
+          "path": "kernels/target/qd8-f32-qc4w-gemm-minmax.c",
+          "sha256": "94971a31dcc1bbf276c4bf024e93f86b618d011b28816342040dc40e1aa22627",
+          "bytes": 3094
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vand_s8",
+          "vcvtq_f32_s32",
+          "vdupq_n_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_high_s16",
+          "vget_low_f32",
+          "vget_low_s16",
+          "vld1_s8",
+          "vld1q_dup_f32",
+          "vld1q_dup_s32",
+          "vld1q_f32",
+          "vld1q_s32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vmlal_lane_s16",
+          "vmlaq_f32",
+          "vmov_n_s8",
+          "vmovl_s8",
+          "vmulq_f32",
+          "vmulq_s32",
+          "vshl_n_s8",
+          "vshrq_n_s32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vand_vx_i8m2",
+          "__riscv_vfcvt_f_x_v_f32m8",
+          "__riscv_vfmacc_vv_f32m8",
+          "__riscv_vfmax_vf_f32m8",
+          "__riscv_vfmin_vf_f32m8",
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle32_v_f32m8",
+          "__riscv_vle32_v_i32m8",
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmul_vx_i32m8",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e32m8",
+          "__riscv_vsext_vf2_i16m4",
+          "__riscv_vsll_vx_i8m2",
+          "__riscv_vsra_vx_i32m8",
+          "__riscv_vwmacc_vx_i32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "NaN propagation",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/complex/cases/qd8-f32-qc4w-gemm-minmax/rvv.c",
+            "sha256": "368e8e19d70f8d5935671c49304954a3c6c027e133e4452e19c5441621913bda",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qd8-f32-qc8w-gemm-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": true,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qd8-f32-qc8w-gemm-minmax.c",
+          "sha256": "07cd24e14b360e03b6dba2bab6f0c5e6f081ac0f78869317094dbd0b8edeed70",
+          "bytes": 8988
+        },
+        "rvv": {
+          "path": "kernels/target/qd8-f32-qc8w-gemm-minmax.c",
+          "sha256": "791969a92b46a0e031bda0cd2128bb9840da32da84c4412d40bc0f3a39b68a4a",
+          "bytes": 2706
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vcvtq_f32_s32",
+          "vdupq_n_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_high_s16",
+          "vget_low_f32",
+          "vget_low_s16",
+          "vld1_s8",
+          "vld1q_dup_f32",
+          "vld1q_dup_s32",
+          "vld1q_f32",
+          "vld1q_s32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vmlal_lane_s16",
+          "vmlaq_f32",
+          "vmovl_s8",
+          "vmulq_f32",
+          "vmulq_s32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfcvt_f_x_v_f32m2",
+          "__riscv_vfmacc_vv_f32m2",
+          "__riscv_vfmax_vf_f32m2",
+          "__riscv_vfmin_vf_f32m2",
+          "__riscv_vfmul_vf_f32m2",
+          "__riscv_vfmv_v_f_f32m2",
+          "__riscv_vle32_v_f32m2",
+          "__riscv_vle32_v_i32m2",
+          "__riscv_vle8_v_i8mf2",
+          "__riscv_vmerge_vvm_f32m2",
+          "__riscv_vmfne_vv_f32m2_b16",
+          "__riscv_vmul_vx_i32m2",
+          "__riscv_vse32_v_f32m2",
+          "__riscv_vsetvl_e32m2",
+          "__riscv_vsext_vf2_i16m1",
+          "__riscv_vwmacc_vx_i32m2"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qd8-f32-qc8w-igemm-minmax",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": true,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qd8-f32-qc8w-igemm-minmax.c",
+          "sha256": "4547988ffad20dcf9a94335805d7901d6732aa659c2fbe2dc490d8c90a44bfc8",
+          "bytes": 9537
+        },
+        "rvv": {
+          "path": "kernels/target/qd8-f32-qc8w-igemm-minmax.c",
+          "sha256": "b7919e3cb68dfcc01bf47f1dabdf384c35105471a787b32dae90dc5fcf6920dc",
+          "bytes": 2988
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vcvtq_f32_s32",
+          "vdupq_n_f32",
+          "vfmaq_f32",
+          "vget_high_f32",
+          "vget_high_s16",
+          "vget_low_f32",
+          "vget_low_s16",
+          "vld1_s8",
+          "vld1q_dup_f32",
+          "vld1q_dup_s32",
+          "vld1q_f32",
+          "vld1q_s32",
+          "vmaxq_f32",
+          "vminq_f32",
+          "vmlal_lane_s16",
+          "vmlaq_f32",
+          "vmovl_s8",
+          "vmulq_f32",
+          "vmulq_s32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfcvt_f_x_v_f32m2",
+          "__riscv_vfmacc_vv_f32m2",
+          "__riscv_vfmax_vf_f32m2",
+          "__riscv_vfmin_vf_f32m2",
+          "__riscv_vfmul_vf_f32m2",
+          "__riscv_vfmv_v_f_f32m2",
+          "__riscv_vle32_v_f32m2",
+          "__riscv_vle32_v_i32m2",
+          "__riscv_vle8_v_i8mf2",
+          "__riscv_vmerge_vvm_f32m2",
+          "__riscv_vmfne_vv_f32m2_b16",
+          "__riscv_vmul_vx_i32m2",
+          "__riscv_vse32_v_f32m2",
+          "__riscv_vsetvl_e32m2",
+          "__riscv_vsext_vf2_i16m1",
+          "__riscv_vwmacc_vx_i32m2"
+        ]
+      },
+      "shared_capabilities": [
+        "FMA/融合次序",
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-f32-vcvt",
+      "family": "conversion",
+      "difficulty": "signed/unsigned扩展、IEEE舍入、FP16编码与特殊值",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-f32-vcvt.c",
+          "sha256": "d8dbc84351f0154858b2bd940ea42a1e3031ec75a03640a4842a164e219a4063",
+          "bytes": 1903
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-f32-vcvt.c",
+          "sha256": "407dd1c3b927c122de70ce9709cb8aa419d70c7aec219996baa0132723f7534a",
+          "bytes": 866
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddw_s8",
+          "vcvtq_f32_s32",
+          "vdupq_n_f32",
+          "vdupq_n_s16",
+          "vget_high_f32",
+          "vget_high_s16",
+          "vget_low_f32",
+          "vget_low_s16",
+          "vld1_s8",
+          "vmovl_s16",
+          "vmulq_f32",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vfcvt_f_x_v_f32m8",
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i16m4",
+          "__riscv_vsext_vf2_i32m8",
+          "__riscv_vsub_vx_i16m4"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/qs8-f32-vcvt",
+        "raw_obligations": {
+          "passed": 957,
+          "total": 957
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/qs8-f32-vcvt/neon.c",
+            "sha256": "d8dbc84351f0154858b2bd940ea42a1e3031ec75a03640a4842a164e219a4063",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/qs8-f32-vcvt/rvv.c",
+            "sha256": "407dd1c3b927c122de70ce9709cb8aa419d70c7aec219996baa0132723f7534a",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-qc8w-gemm-minmax-fp32",
+      "family": "matrix-convolution",
+      "difficulty": "packed/indirect/sparse布局、FMA精确次序、嵌套循环与边界mask",
+      "upstream_added_target": true,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-qc8w-gemm-minmax-fp32.c",
+          "sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+          "bytes": 9453
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-qc8w-gemm-minmax-fp32.c",
+          "sha256": "b10761e010732308b2771c714f18455c9e2705ce95dd3d4e6e783aed337bebaf",
+          "bytes": 2177
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddq_f32",
+          "vcombine_s16",
+          "vcvtq_f32_s32",
+          "vdup_n_s8",
+          "vdupq_n_f32",
+          "vdupq_n_s32",
+          "vext_s8",
+          "vget_high_s16",
+          "vget_low_s16",
+          "vld1_s8",
+          "vld1q_f32",
+          "vld1q_s32",
+          "vmax_s8",
+          "vmin_s8",
+          "vmlal_lane_s16",
+          "vmovl_s8",
+          "vmulq_f32",
+          "vqmovn_high_s32",
+          "vqmovn_s16",
+          "vqmovn_s32",
+          "vqsubq_s32",
+          "vreinterpret_u16_s8",
+          "vreinterpret_u32_s8",
+          "vreinterpretq_s32_f32",
+          "vst1_lane_s8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_s8"
+        ],
+        "rvv": [
+          "__riscv_vfadd_vf_f32m2",
+          "__riscv_vfcvt_f_x_v_f32m2",
+          "__riscv_vfmul_vv_f32m2",
+          "__riscv_vle32_v_f32m2",
+          "__riscv_vle32_v_i32m2",
+          "__riscv_vle8_v_i8mf2",
+          "__riscv_vmax_vx_i8mf2",
+          "__riscv_vmin_vx_i8mf2",
+          "__riscv_vnclip_wx_i16m1",
+          "__riscv_vnclip_wx_i8mf2",
+          "__riscv_vreinterpret_v_f32m2_i32m2",
+          "__riscv_vse8_v_i8mf2",
+          "__riscv_vsetvl_e32m2",
+          "__riscv_vsext_vf2_i16m1",
+          "__riscv_vssub_vx_i32m2",
+          "__riscv_vwmacc_vx_i32m2"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-rdsum",
+      "family": "integer-reduction",
+      "difficulty": "整数wrap、分组归约、多行stride与前缀和不变量",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-rdsum.c",
+          "sha256": "63798158b69457fe965a29a3b3371fa3dd7785c13182b75aa4b9c09704dd4d20",
+          "bytes": 8207
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-rdsum.c",
+          "sha256": "338f2b3574d4f206854e67bbe7fe26eba69e699c063171ae1df9654d49e112e4",
+          "bytes": 3225
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vadd_s32",
+          "vaddq_s32",
+          "vaddw_s16",
+          "vaddw_s8",
+          "vdupq_n_s32",
+          "vextq_s32",
+          "vget_high_s16",
+          "vget_low_s16",
+          "vget_low_s32",
+          "vgetq_lane_s32",
+          "vld1_s32",
+          "vld1_s8",
+          "vld1q_s32",
+          "vmovq_n_s16",
+          "vst1_s32",
+          "vst1q_s32"
+        ],
+        "rvv": [
+          "__riscv_vadd_vv_i32m8",
+          "__riscv_vle32_v_i32m8",
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmv_v_x_i16m4",
+          "__riscv_vmv_v_x_i32m8",
+          "__riscv_vse32_v_i32m8",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vwadd_wv_i16m4",
+          "__riscv_vwadd_wv_i32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-rsum",
+      "family": "integer-reduction",
+      "difficulty": "整数wrap、分组归约、多行stride与前缀和不变量",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-rsum.c",
+          "sha256": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+          "bytes": 1847
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-rsum.c",
+          "sha256": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+          "bytes": 1175
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vadd_s32",
+          "vaddvq_s32",
+          "vget_high_s32",
+          "vget_lane_s32",
+          "vget_low_s32",
+          "vld1q_s8",
+          "vmovq_n_s16",
+          "vmovq_n_s32",
+          "vmulq_s8",
+          "vpadalq_s16",
+          "vpadalq_s8",
+          "vpadd_s32"
+        ],
+        "rvv": [
+          "__riscv_vadd_vv_i32m8_tu",
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmv_v_x_i32m1",
+          "__riscv_vmv_v_x_i32m8",
+          "__riscv_vmv_x_s_i32m1_i32",
+          "__riscv_vredsum_vs_i32m8_i32m1",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsetvlmax_e32m1",
+          "__riscv_vsetvlmax_e32m8",
+          "__riscv_vsext_vf4_i32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "归约/dot顺序",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/qs8-rsum",
+        "raw_obligations": {
+          "passed": 579,
+          "total": 579
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/qs8-rsum/neon.c",
+            "sha256": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/qs8-rsum/rvv.c",
+            "sha256": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-vadd-minmax",
+      "family": "quantized-elementwise",
+      "difficulty": "饱和、移位编码、VXRM、窄化、magic-bias和参数合法域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-vadd-minmax.c",
+          "sha256": "01a0bdcc9344c5f095a47a79ce0d346bd44e937ceceefd1f12e275f9091456f3",
+          "bytes": 5167
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-vadd-minmax.c",
+          "sha256": "1e8af584a849673c663f114ba74cc436dbd4eb33819113a80424d67bc0abddb1",
+          "bytes": 1891
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vcombine_s16",
+          "vcombine_s8",
+          "vdup_n_s8",
+          "vdupq_n_s16",
+          "vdupq_n_s32",
+          "vdupq_n_s8",
+          "vext_s8",
+          "vget_high_s16",
+          "vget_low_s16",
+          "vget_low_s8",
+          "vld1_s8",
+          "vmax_s8",
+          "vmaxq_s8",
+          "vmin_s8",
+          "vminq_s8",
+          "vmlaq_s32",
+          "vmovl_s16",
+          "vmulq_s32",
+          "vqaddq_s16",
+          "vqmovn_s16",
+          "vqmovn_s32",
+          "vreinterpret_u16_s8",
+          "vreinterpret_u32_s8",
+          "vrshlq_s32",
+          "vst1_lane_s8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_s8",
+          "vst1q_s8",
+          "vsubl_s8"
+        ],
+        "rvv": [
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmacc_vx_i32m8",
+          "__riscv_vmax_vx_i8m2",
+          "__riscv_vmin_vx_i8m2",
+          "__riscv_vmul_vx_i32m8",
+          "__riscv_vnclip_wx_i16m4",
+          "__riscv_vnclip_wx_i8m2",
+          "__riscv_vsadd_vx_i16m4",
+          "__riscv_vse8_v_i8m2",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i32m8",
+          "__riscv_vssra_vx_i32m8",
+          "__riscv_vwsub_vx_i16m4"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "negative/large shift encoding",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/integer/qs8-vadd-minmax/rvv.c",
+            "sha256": "31352fa6135514ca25a4ae7de2664f9d520e78fdc145cf44dc26352e0ad6ac93",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-vcvt",
+      "family": "quantized-elementwise",
+      "difficulty": "饱和、移位编码、VXRM、窄化、magic-bias和参数合法域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-vcvt.c",
+          "sha256": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+          "bytes": 1807
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-vcvt.c",
+          "sha256": "19da29a3dd0c32ac1a44ad5cec73b0e25d81ecd765a60e9a01e6a128c21f4b76",
+          "bytes": 1362
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdupq_n_s16",
+          "vext_s8",
+          "vld1_s8",
+          "vqaddq_s16",
+          "vqmovn_s16",
+          "vqrdmulhq_s16",
+          "vreinterpret_u16_s8",
+          "vreinterpret_u32_s8",
+          "vshlq_n_s16",
+          "vst1_lane_s8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_s8",
+          "vsubw_s8"
+        ],
+        "rvv": [
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vnclip_wx_i16m4",
+          "__riscv_vnclip_wx_i8m2",
+          "__riscv_vrsub_vx_i16m4",
+          "__riscv_vsadd_vx_i16m4",
+          "__riscv_vse8_v_i8m2",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i16m4",
+          "__riscv_vsll_vx_i16m4",
+          "__riscv_vsll_vx_i32m8",
+          "__riscv_vwmul_vx_i32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "saturating high multiply narrowing",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/integer/qs8-vcvt/rvv.c",
+            "sha256": "d1335e78123b25f763ce828db0a7801868632cd25e6588c45acb56f0b2e50074",
+            "matches_upstream_bytes": false
+          }
+        ],
+        "case": "verified/qs8-vcvt-bytes-v4",
+        "raw_obligations": {
+          "passed": 1220,
+          "total": 1220
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/qs8-vcvt-bytes-v4/neon.c",
+            "sha256": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/qs8-vcvt-bytes-v4/rvv.c",
+            "sha256": "d1335e78123b25f763ce828db0a7801868632cd25e6588c45acb56f0b2e50074",
+            "matches_upstream_bytes": false
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-vlrelu",
+      "family": "quantized-elementwise",
+      "difficulty": "饱和、移位编码、VXRM、窄化、magic-bias和参数合法域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-vlrelu.c",
+          "sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+          "bytes": 2278
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-vlrelu.c",
+          "sha256": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+          "bytes": 1508
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vbslq_s16",
+          "vcltq_s16",
+          "vdupq_n_s16",
+          "vext_s8",
+          "vld1_s8",
+          "vmovq_n_s16",
+          "vqaddq_s16",
+          "vqmovn_s16",
+          "vqrdmulhq_s16",
+          "vreinterpret_u16_s8",
+          "vreinterpret_u32_s8",
+          "vshlq_n_s16",
+          "vst1_lane_s8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_s8",
+          "vsubw_s8"
+        ],
+        "rvv": [
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmerge_vxm_i16m4",
+          "__riscv_vmslt_vx_i16m4_b4",
+          "__riscv_vmv_v_x_i16m4",
+          "__riscv_vnclip_wx_i16m4",
+          "__riscv_vnclip_wx_i8m2",
+          "__riscv_vrsub_vx_i16m4",
+          "__riscv_vsadd_vx_i16m4",
+          "__riscv_vse8_v_i8m2",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i16m4",
+          "__riscv_vsll_vx_i16m4",
+          "__riscv_vwmul_vv_i32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "比较/mask/选择",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/qs8-vlrelu-bytes-v4",
+        "raw_obligations": {
+          "passed": 1547,
+          "total": 1547
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/qs8-vlrelu-bytes-v4/neon.c",
+            "sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/qs8-vlrelu-bytes-v4/rvv.c",
+            "sha256": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qs8-vmul-minmax-fp32",
+      "family": "quantized-elementwise",
+      "difficulty": "饱和、移位编码、VXRM、窄化、magic-bias和参数合法域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qs8-vmul-minmax-fp32.c",
+          "sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+          "bytes": 4860
+        },
+        "rvv": {
+          "path": "kernels/target/qs8-vmul-minmax-fp32.c",
+          "sha256": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528",
+          "bytes": 1783
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddq_f32",
+          "vcombine_s16",
+          "vcvtq_f32_s32",
+          "vdup_n_s8",
+          "vdupq_n_f32",
+          "vdupq_n_s32",
+          "vext_s8",
+          "vget_high_s16",
+          "vget_low_s16",
+          "vld1_s8",
+          "vmax_s8",
+          "vmin_s8",
+          "vmull_s16",
+          "vmulq_f32",
+          "vqmovn_high_s32",
+          "vqmovn_s16",
+          "vqmovn_s32",
+          "vqsubq_s32",
+          "vreinterpret_u16_s8",
+          "vreinterpret_u32_s8",
+          "vreinterpretq_s32_f32",
+          "vst1_lane_s8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_s8",
+          "vsubl_s8"
+        ],
+        "rvv": [
+          "__riscv_vadd_vx_i32m8",
+          "__riscv_vfcvt_f_x_v_f32m8",
+          "__riscv_vfcvt_x_f_v_i32m8",
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle8_v_i8m2",
+          "__riscv_vmax_vx_i8m2",
+          "__riscv_vmin_vx_i8m2",
+          "__riscv_vnclip_wx_i16m4",
+          "__riscv_vnclip_wx_i8m2",
+          "__riscv_vse8_v_i8m2",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i16m4",
+          "__riscv_vsub_vx_i16m4",
+          "__riscv_vwmul_vv_i32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "浮点算术/minmax/sqrt",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "magic-bias bit algorithm vs numeric float conversion",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/rvv.c",
+            "sha256": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qu8-f32-vcvt",
+      "family": "conversion",
+      "difficulty": "signed/unsigned扩展、IEEE舍入、FP16编码与特殊值",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qu8-f32-vcvt.c",
+          "sha256": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1",
+          "bytes": 2006
+        },
+        "rvv": {
+          "path": "kernels/target/qu8-f32-vcvt.c",
+          "sha256": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720",
+          "bytes": 978
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vaddw_u8",
+          "vcvtq_f32_s32",
+          "vdupq_n_f32",
+          "vdupq_n_s16",
+          "vget_high_f32",
+          "vget_high_s16",
+          "vget_low_f32",
+          "vget_low_s16",
+          "vld1_u8",
+          "vmovl_s16",
+          "vmulq_f32",
+          "vreinterpretq_s16_u16",
+          "vreinterpretq_u16_s16",
+          "vst1_f32",
+          "vst1_lane_f32",
+          "vst1q_f32"
+        ],
+        "rvv": [
+          "__riscv_vadd_vx_u16m4",
+          "__riscv_vfcvt_f_x_v_f32m8",
+          "__riscv_vfmul_vf_f32m8",
+          "__riscv_vle8_v_u8m2",
+          "__riscv_vreinterpret_v_u16m4_i16m4",
+          "__riscv_vse32_v_f32m8",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i32m8",
+          "__riscv_vzext_vf2_u16m4"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "数值转换/舍入",
+        "整数算术/位运算",
+        "浮点算术/minmax/sqrt"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/qu8-f32-vcvt",
+        "raw_obligations": {
+          "passed": 994,
+          "total": 994
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/qu8-f32-vcvt/neon.c",
+            "sha256": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/qu8-f32-vcvt/rvv.c",
+            "sha256": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qu8-rdsum",
+      "family": "integer-reduction",
+      "difficulty": "整数wrap、分组归约、多行stride与前缀和不变量",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qu8-rdsum.c",
+          "sha256": "513063b3667ea19323f67b1c8076e6aa34be3a475adaf7e22e9cd1c8701f6054",
+          "bytes": 10935
+        },
+        "rvv": {
+          "path": "kernels/target/qu8-rdsum.c",
+          "sha256": "98ed75dac4eb23270fae1b67c8760e2acafb0577450ed83c2e21b0651f3a98e5",
+          "bytes": 3420
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vadd_u32",
+          "vaddq_u32",
+          "vaddw_u16",
+          "vaddw_u8",
+          "vdupq_n_u32",
+          "vextq_u32",
+          "vget_high_u16",
+          "vget_low_u16",
+          "vget_low_u32",
+          "vget_low_u8",
+          "vgetq_lane_u32",
+          "vld1_u32",
+          "vld1_u8",
+          "vld1q_u32",
+          "vld1q_u8",
+          "vmovq_n_u16",
+          "vst1_u32",
+          "vst1q_u32"
+        ],
+        "rvv": [
+          "__riscv_vadd_vv_u32m8",
+          "__riscv_vle32_v_u32m8",
+          "__riscv_vle8_v_u8m2",
+          "__riscv_vmv_v_x_u16m4",
+          "__riscv_vmv_v_x_u32m8",
+          "__riscv_vse32_v_u32m8",
+          "__riscv_vsetvl_e32m8",
+          "__riscv_vwaddu_wv_u16m4",
+          "__riscv_vwaddu_wv_u32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qu8-rsum",
+      "family": "integer-reduction",
+      "difficulty": "整数wrap、分组归约、多行stride与前缀和不变量",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qu8-rsum.c",
+          "sha256": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+          "bytes": 1863
+        },
+        "rvv": {
+          "path": "kernels/target/qu8-rsum.c",
+          "sha256": "f44a9addcab95a4f9c57e3c65818c05b332d3a6aa9a3fc59ce1fc4cc3943e494",
+          "bytes": 1148
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vadd_u32",
+          "vaddvq_u32",
+          "vget_high_u32",
+          "vget_lane_u32",
+          "vget_low_u32",
+          "vld1q_u8",
+          "vmovq_n_u16",
+          "vmovq_n_u32",
+          "vmulq_u8",
+          "vpadalq_u16",
+          "vpadalq_u8",
+          "vpadd_u32"
+        ],
+        "rvv": [
+          "__riscv_vadd_vv_u32m8_tu",
+          "__riscv_vle8_v_u8m2",
+          "__riscv_vmv_v_x_u32m1",
+          "__riscv_vmv_v_x_u32m8",
+          "__riscv_vmv_x_s_u32m1_u32",
+          "__riscv_vredsum_vs_u32m8_u32m1",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsetvlmax_e32m1",
+          "__riscv_vsetvlmax_e32m8",
+          "__riscv_vzext_vf4_u32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "归约/dot顺序",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/qu8-rsum",
+        "raw_obligations": {
+          "passed": 567,
+          "total": 567
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/qu8-rsum/neon.c",
+            "sha256": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/qu8-rsum/rvv.c",
+            "sha256": "f44a9addcab95a4f9c57e3c65818c05b332d3a6aa9a3fc59ce1fc4cc3943e494",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "qu8-vadd-minmax",
+      "family": "quantized-elementwise",
+      "difficulty": "饱和、移位编码、VXRM、窄化、magic-bias和参数合法域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/qu8-vadd-minmax.c",
+          "sha256": "7f6435954cc0ac4ab31881da9ff8b16f04abdfc8da0c1a945b15b64f3bcb2294",
+          "bytes": 4048
+        },
+        "rvv": {
+          "path": "kernels/target/qu8-vadd-minmax.c",
+          "sha256": "e211e5fc712d38ea90776aff23bcdfe72ecec23aa08b5999683b483adfb2bbc9",
+          "bytes": 2612
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vcombine_s16",
+          "vdup_n_u8",
+          "vdupq_n_s16",
+          "vdupq_n_s32",
+          "vext_u8",
+          "vget_high_s16",
+          "vget_low_s16",
+          "vld1_u8",
+          "vmax_u8",
+          "vmin_u8",
+          "vmlaq_s32",
+          "vmovl_s16",
+          "vmulq_s32",
+          "vqaddq_s16",
+          "vqmovn_s32",
+          "vqmovun_s16",
+          "vreinterpret_u16_u8",
+          "vreinterpret_u32_u8",
+          "vreinterpretq_s16_u16",
+          "vrshlq_s32",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_lane_u8",
+          "vst1_u8",
+          "vsubl_u8"
+        ],
+        "rvv": [
+          "__riscv_vle8_v_u8m2",
+          "__riscv_vmacc_vx_i32m8",
+          "__riscv_vmax_vx_i16m4",
+          "__riscv_vmaxu_vx_u8m2",
+          "__riscv_vminu_vx_u8m2",
+          "__riscv_vmul_vx_i32m8",
+          "__riscv_vnclip_wx_i16m4",
+          "__riscv_vnclipu_wx_u8m2",
+          "__riscv_vreinterpret_v_i16m4_u16m4",
+          "__riscv_vreinterpret_v_u16m4_i16m4",
+          "__riscv_vsadd_vx_i16m4",
+          "__riscv_vse8_v_u8m2",
+          "__riscv_vsetvl_e8m2",
+          "__riscv_vsext_vf2_i32m8",
+          "__riscv_vsll_vx_i32m8",
+          "__riscv_vssra_vx_i32m8",
+          "__riscv_vwsubu_vx_u16m4"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算",
+        "移位/饱和/窄化"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": "large shift encoding",
+        "repair_source": "experiments/shared-extension/results.json",
+        "repair_candidates": [
+          {
+            "path": "experiments/shared-extension/integer/qu8-vadd-minmax/rvv.c",
+            "sha256": "227963c8f5436eaa8ac63d5c5cf58e53915794962e42d8f3ccb0371461d82014",
+            "matches_upstream_bytes": false
+          }
+        ]
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "s8-vclamp",
+      "family": "integer-clamp",
+      "difficulty": "signed/unsigned min/max与tail读写",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/s8-vclamp.c",
+          "sha256": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+          "bytes": 2027
+        },
+        "rvv": {
+          "path": "kernels/target/s8-vclamp.c",
+          "sha256": "109360a580298b5e412f3808356668b6511f40b5c9441967c2f060a03fc2ea4e",
+          "bytes": 699
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdupq_n_s8",
+          "vext_s8",
+          "vget_low_s8",
+          "vld1_s8",
+          "vld1q_s8",
+          "vmax_s8",
+          "vmaxq_s8",
+          "vmin_s8",
+          "vminq_s8",
+          "vreinterpret_u16_s8",
+          "vreinterpret_u32_s8",
+          "vst1_lane_s8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_s8",
+          "vst1q_s8"
+        ],
+        "rvv": [
+          "__riscv_vle8_v_i8m8",
+          "__riscv_vmax_vx_i8m8",
+          "__riscv_vmin_vx_i8m8",
+          "__riscv_vse8_v_i8m8",
+          "__riscv_vsetvl_e8m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "case": "verified/s8-vclamp",
+        "raw_obligations": {
+          "passed": 688,
+          "total": 688
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/s8-vclamp/neon.c",
+            "sha256": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/s8-vclamp/rvv.c",
+            "sha256": "109360a580298b5e412f3808356668b6511f40b5c9441967c2f060a03fc2ea4e",
+            "matches_upstream_bytes": true
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "u8-vclamp",
+      "family": "integer-clamp",
+      "difficulty": "signed/unsigned min/max与tail读写",
+      "upstream_added_target": true,
+      "files": {
+        "neon": {
+          "path": "kernels/source/u8-vclamp.c",
+          "sha256": "e52c7c97805aec65922f07f19c7496015596e375b17306258f9e5f4805528f57",
+          "bytes": 2040
+        },
+        "rvv": {
+          "path": "kernels/target/u8-vclamp.c",
+          "sha256": "018e3ba729c18c674b29a40ae7ab04ddd2e10ea59b032f5e9fd794a36681665f",
+          "bytes": 1137
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdupq_n_u8",
+          "vext_u8",
+          "vget_low_u8",
+          "vld1_u8",
+          "vld1q_u8",
+          "vmax_u8",
+          "vmaxq_u8",
+          "vmin_u8",
+          "vminq_u8",
+          "vreinterpret_u16_u8",
+          "vreinterpret_u32_u8",
+          "vst1_lane_u16",
+          "vst1_lane_u32",
+          "vst1_lane_u8",
+          "vst1_u8",
+          "vst1q_u8"
+        ],
+        "rvv": [
+          "__riscv_vle8_v_u8m8",
+          "__riscv_vmaxu_vx_u8m8",
+          "__riscv_vminu_vx_u8m8",
+          "__riscv_vse8_v_u8m8",
+          "__riscv_vsetvl_e8m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "位重解释/表示桥",
+        "内存load/store及lane范围",
+        "整数算术/位运算"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "proved_under_declared_c_model",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null,
+        "implementation_note": "CSim supplied its own missing-target implementation; different from the new upstream target.",
+        "case": "verified/u8-vclamp-v3",
+        "raw_obligations": {
+          "passed": 688,
+          "total": 688
+        },
+        "source_identity": {
+          "neon": {
+            "path": "verified/u8-vclamp-v3/neon.c",
+            "sha256": "e52c7c97805aec65922f07f19c7496015596e375b17306258f9e5f4805528f57",
+            "matches_upstream_bytes": true
+          },
+          "rvv": {
+            "path": "verified/u8-vclamp-v3/rvv.c",
+            "sha256": "293667db57d7f2f22b197b23195ed31d6185d67bb14cf608ace658a32d36678d",
+            "matches_upstream_bytes": false
+          }
+        }
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "x32-packw-gemm-goi",
+      "family": "layout",
+      "difficulty": "segment/strided访问、tuple、二维置换和输出有效区域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/x32-packw-gemm-goi.c",
+          "sha256": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+          "bytes": 2204
+        },
+        "rvv": {
+          "path": "kernels/target/x32-packw-gemm-goi.c",
+          "sha256": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+          "bytes": 2362
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vdup_n_u32",
+          "vld1_lane_u32",
+          "vld1_u32",
+          "vld2_lane_u32",
+          "vmov_n_u32",
+          "vst1_u32"
+        ],
+        "rvv": [
+          "__riscv_vcreate_v_u32m4x2",
+          "__riscv_vle32_v_u32m1",
+          "__riscv_vle32_v_u32m4",
+          "__riscv_vmv_v_x_u32m1",
+          "__riscv_vse32_v_u32m1",
+          "__riscv_vsetvl_e32m4",
+          "__riscv_vsse32_v_u32m4",
+          "__riscv_vsseg2e32_v_u32m4x2"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围",
+        "整数算术/位运算"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    },
+    {
+      "name": "x32-transposec",
+      "family": "layout",
+      "difficulty": "segment/strided访问、tuple、二维置换和输出有效区域",
+      "upstream_added_target": false,
+      "files": {
+        "neon": {
+          "path": "kernels/source/x32-transposec.c",
+          "sha256": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a",
+          "bytes": 2212
+        },
+        "rvv": {
+          "path": "kernels/target/x32-transposec.c",
+          "sha256": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f",
+          "bytes": 859
+        }
+      },
+      "intrinsics": {
+        "neon": [
+          "vld1_u32",
+          "vmov_n_u32",
+          "vst1_lane_u32",
+          "vst1_u32",
+          "vzip_u32"
+        ],
+        "rvv": [
+          "__riscv_vle32_v_u32m8",
+          "__riscv_vsetvl_e32m8",
+          "__riscv_vsse32_v_u32m8"
+        ]
+      },
+      "shared_capabilities": [
+        "VL调度与容量",
+        "lane排列/广播/扩展",
+        "内存load/store及lane范围"
+      ],
+      "csim_reference": {
+        "whole_kernel_status": "not_admitted_in_current_manifest",
+        "evidence_is_historical_not_qcp": true,
+        "target_repair": null,
+        "repair_source": null
+      },
+      "qcp": {
+        "whole_kernel_proved": false,
+        "status": "inventoried_not_verified",
+        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+      }
+    }
+  ]
+}

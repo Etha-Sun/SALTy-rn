@@ -1,0 +1,58 @@
+{
+  "timestamp_utc": "2026-10-22T09:34:57.900983+00:00",
+  "passed": true,
+  "checks": [
+    {
+      "name": "inventory",
+      "exit_code": 0,
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/tools/inventory.py",
+        "--check"
+      ],
+      "log": "audit/integration/inventory.log"
+    },
+    {
+      "name": "native",
+      "exit_code": 0,
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/tools/check.py"
+      ],
+      "log": "audit/integration/native.log"
+    },
+    {
+      "name": "vadd-foundation",
+      "exit_code": 0,
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-proof/run.py"
+      ],
+      "log": "audit/integration/vadd-foundation.log"
+    },
+    {
+      "name": "nan-bridge",
+      "exit_code": 0,
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/nan-bridge/run.py"
+      ],
+      "log": "audit/integration/nan-bridge.log"
+    }
+  ],
+  "counts": {
+    "catalog_pairs": 40,
+    "vadd_foundation_obligations": 48,
+    "nan_bridge_c_vcs": 14,
+    "nan_bridge_native_pairs": 5264,
+    "vadd_native_cases": 430,
+    "vadd_equivalent_calls": 860
+  },
+  "full_kernel": {
+    "proved": 0,
+    "total": 40,
+    "status": "0/40",
+    "scope": "Original bodies, lowering, actual shim bodies and comparator dependency closure remain unfinished."
+  },
+  "interpretation": "Passing integration replays inventory, finite native regression and checked local obligations; it does not establish complete kernel correctness."
+}

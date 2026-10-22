@@ -1,0 +1,82 @@
+{
+  "preprocess_command": [
+    "gcc",
+    "-E",
+    "-P",
+    "-CC",
+    "-nostdinc",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-proof/neon_kernel.c",
+    "-o",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-proof/kernel-attempt/neon_kernel_unit.c"
+  ],
+  "command": [
+    "qcp",
+    "--arch=64",
+    "--endian=little",
+    "--no-float-finite-vc",
+    "--input-file=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-proof/kernel-attempt/neon_kernel_unit.c",
+    "--coq-output-dir=/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-proof/kernel-attempt",
+    "--coq-logic-path=QcpVadd",
+    "-slp",
+    "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/shared/vadd",
+    "QcpVadd",
+    "--no-exec-info"
+  ],
+  "source": "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/kernels/source/f32-vadd.c",
+  "source_sha256": "f7f8f8ffaca807aaa9839ba199fb93bac5cf79700c6c5d2f847731b0ab33eeb5",
+  "lowered_sha256": "c0e15051f7dda826aa1c131c1cc54fe1ff9882cdb0c3075d692b1aa909d4a45a",
+  "rewrites": [
+    {
+      "kind": "vector-initializer",
+      "type": "float32x4_t",
+      "variable": "va",
+      "call": "vld1q_f32"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "float32x4_t",
+      "variable": "vb",
+      "call": "vld1q_f32"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "float32x4_t",
+      "variable": "vacc",
+      "call": "vaddq_f32"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "float32x4_t",
+      "variable": "va",
+      "call": "vld1q_f32"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "float32x4_t",
+      "variable": "vb",
+      "call": "vld1q_f32"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "float32x4_t",
+      "variable": "vacc",
+      "call": "vaddq_f32"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "float32x2_t",
+      "variable": "vacc_lo",
+      "call": "vget_low_f32"
+    },
+    {
+      "kind": "vector-assignment",
+      "variable": "vacc_lo",
+      "call": "vget_high_f32"
+    }
+  ],
+  "qcp_exit_code": 1,
+  "complete_vcs_generated": false,
+  "stderr": "\u001b[1;31mfatal error: \u001b[0mCannot derive the precondition of function vld1q_f32 for spec (default) in /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-proof/kernel-attempt/neon_kernel_unit.c:99:42\nFunction call failed because the caller assertion does not entail the callee Require assertion after substituting actual arguments.\nFunction call argument bindings:\n  argument 1: r <- va_695_addr\n  argument 2: p <- input_a_677_pre\nCallee precondition after substituting actual arguments:\nEX x0_698_free x1_699_free x2_700_free x3_701_free \nPROP[]\nLOCAL[]\nSEP[\n  store(pointer_offset(input_a_677_pre, 0, (Size_of float), float), x0_698_free, float);\n  store(pointer_offset(input_a_677_pre, 1, (Size_of float), float), x1_699_free, float);\n  store(pointer_offset(input_a_677_pre, 2, (Size_of float), float), x2_700_free, float);\n  store(pointer_offset(input_a_677_pre, 3, (Size_of float), float), x3_701_free, float) ]\n\nCaller current assertion:\nEX va_695_addr \nPROP[\n  batch_680_pre >= (4 * (Size_of float));\n  output_671_pre != 0;\n  input_b_674_pre != 0;\n  input_a_677_pre != 0;\n  (batch_680_pre %% (Size_of float)) == 0;\n  batch_680_pre != 0;\n  0 < batch_680_pre;\n  batch_680_pre <= 18446744073709551603;\n  (batch_680_pre %% 4) == 0;\n  params_668_pre != 0;\n  input_a_677_pre != 0;\n  input_b_674_pre != 0;\n  output_671_pre != 0 ]\nLOCAL[\n  Temp va va_695_addr;\n  Temp params params_669_addr;\n  Temp output output_672_addr;\n  Temp input_b input_b_675_addr;\n  Temp input_a input_a_678_addr;\n  Temp batch batch_681_addr ]\nSEP[\n  UndefStructPredfloat32x4_t (va_695_addr);\n  store(batch_681_addr, batch_680_pre, unsigned int64);\n  store(input_a_678_addr, input_a_677_pre, float*);\n  store(input_b_675_addr, input_b_674_pre, float*);\n  store(output_672_addr, output_671_pre, float*);\n  store(params_669_addr, params_668_pre, struct xnn_f32_default_params*);\n  FloatArray.full (input_a_677_pre, ((batch_680_pre / 4) + 3), A_683_free);\n  FloatArray.full (input_b_674_pre, ((batch_680_pre / 4) + 3), B_682_free);\n  FloatArray.undef_full (output_671_pre, (batch_680_pre / 4)) ]\n\n",
+  "kernel_proved": false,
+  "contract": "Unchanged old-demo NEON kernel contract; disjoint inputs, full binary32 domain, 3 padding cells, byte batch bounded by uint64."
+}

@@ -1,0 +1,63 @@
+{
+  "time_utc": "2026-10-22T09:33:54.565926+00:00",
+  "native_cases": 430,
+  "equivalent_calls": 860,
+  "kernel_executions": 1720,
+  "native_and_lowered_match": true,
+  "mismatched_output_rejected": true,
+  "integrity_negative_controls": [
+    "ordinary_write",
+    "false_precondition",
+    "hidden_import",
+    "line_splice_comment",
+    "trigraph_splice",
+    "operator_token",
+    "kernels/source/f32-vadd.c",
+    "verification/qcp/cases/f32-vadd/spec.h",
+    "verification/qcp/cases/f32-vadd/mapper.c"
+  ],
+  "commands": [
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-shared",
+      "-fPIC",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-frounding-math",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/.build/f32-vadd/native_unit.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/.build/f32-vadd/native.so"
+    ],
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-shared",
+      "-fPIC",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-frounding-math",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/.build/f32-vadd/lowered_unit.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/.build/f32-vadd/lowered.so"
+    ],
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-shared",
+      "-fPIC",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-frounding-math",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/.build/f32-vadd/mismatch.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/.build/f32-vadd/mismatch.so"
+    ]
+  ],
+  "prepared_manifest_sha256": "f3051c772282c4af69aeba188069f61faa28b448086b4e5546b5efe60afe55b6",
+  "full_kernel_proof": false,
+  "scope": "Finite native regression and source integrity only"
+}
