@@ -1,0 +1,18 @@
+#ifndef ${guard}
+#define ${guard}
+#include "../../shared/runtime/shim.h"
+/* QCP proof frontend imports these predicates from the checked shared library. */
+/*@ Extern Coq (FloatArray::full : Z -> Z -> list fp32 -> Assertion)
+               (FloatArray::undef_full : Z -> Z -> Assertion) */
+int equivalent(size_t n, const float *input_a, const float *input_b,
+               float *left, float *right)
+/*@ With (A: list fp32) (B: list fp32)
+    Require 0 < n && n <= ${max_n} &&
+            input_a != 0 && input_b != 0 && left != 0 && right != 0 &&
+            FloatArray::full(input_a,n+${padding},A) * FloatArray::full(input_b,n+${padding},B) *
+            FloatArray::undef_full(left,n) * FloatArray::undef_full(right,n)
+    Ensure exists (L: list fp32) (R: list fp32), __return == 1 &&
+           FloatArray::full(input_a,n+${padding},A) * FloatArray::full(input_b,n+${padding},B) *
+           FloatArray::full(left,n,L) * FloatArray::full(right,n,R) */
+;
+#endif

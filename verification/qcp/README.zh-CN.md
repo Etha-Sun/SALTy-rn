@@ -17,7 +17,7 @@ vadd 的前置条件用自然语言表达就是：`n>0` 且乘四不溢出；A�
 
 比较规则是“数值相等，或双方都是 NaN”，所以 ±0 相等，NaN payload 与浮点异常标志不作为输出观察。初始模型固定 LP64、小端、RNE、VLEN=128；RVV e32m8 容量为32，VL 取 `min(remaining,32)`。这不是任意 VLEN 的证明。本版本主动选择输入互斥；旧 CSim vadd 允许 A/B 相互别名，不能说两者已覆盖同一个完整输入域。
 
-小型生成器的职责是填入已审定模板并处理明确的 intrinsic/调用模式，不替人猜测 padding、packed layout、别名或舍入语义。当前 `case.py prepare` 已实现固定 vadd 的确定性 lowering；公开 `spec.h` 与 `mapper.c` 仍是已冻结的审定文件。**面向全部40种 kernel 的半自动 spec 生成器尚未实现**；新增接口族应先审查一个模板，再让工具填参数，遇到未知模式停止并要求补模板。
+小型生成器的职责是填入已审定模板并处理明确的 intrinsic/调用模式，不替人猜测 padding、packed layout、别名或舍入语义。当前 `case.py prepare` 已实现固定 vadd 的确定性 lowering；`generate_review.py` 从 `interface.json` 与两个短模板生成 `spec.h` / `mapper.c` 候选，`--check` 已确认与冻结的 VADD 审定文件逐字一致。工具检查接口族、签名、原始路径、观察及内存模式，不能推断 padding 是否合理，也不证明契约成立。**面向全部40种 kernel 的半自动 spec 生成器尚未实现**；新增接口族应先审查一个模板，再让工具填参数，遇到未知模式停止并要求补模板。
 
 ## 实现边界与审查顺序
 
@@ -113,3 +113,12 @@ python3 verification/qcp/experiments/nan-bridge/run.py
 ```
 
 其中包含旧 workspace 的绝对库路径；StrategyCheck 也取自旧 workspace 的 `.local/qcp/QCP-V2.1.4/linux-binary/`。因此本分支目前是**可在当前配置环境复现的源码包**，还不是新 clone 后无需环境配置即可运行的独立工具发行版。不要把缺少该环境的失败归为 proof failure；迁移时应固定工具/库版本、重新取得路径并重跑相应检查。
+
+## 简单的公开接口生成
+
+```sh
+python3 verification/qcp/tools/generate_review.py --check
+python3 verification/qcp/tools/generate_review.py
+```
+
+第一条只检查审定结果，第二条只写 `.build/f32-vadd/review-candidate/`，不会覆盖冻结文件。两个短模板在 `templates/binary-f32/`。目前只支持已经明确审查的双输入float、byte batch、dummy params、分离输入及 number-or-both-NaN 观察模式。新增接口族采用另一份明确模板；参数含义、padding/布局和观察标准仍由人审查。生成器本身属于单独审查的共享工具，冻结文件哈希仍是实际case的准入检查。
