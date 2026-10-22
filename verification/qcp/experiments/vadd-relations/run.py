@@ -16,7 +16,7 @@ def main():
     paths = ['-Q', str(QCP / 'experiments/nan-bridge'), 'NanBridge',
              '-Q', str(QCP / 'shared/vadd'), 'QcpVadd']
     sources = [QCP / 'experiments/nan-bridge/BridgeLogic.v',
-               QCP / 'shared/vadd/VaddBits.v', HERE / 'ResultBridge.v']
+               QCP / 'shared/vadd/VaddBits.v', HERE / 'ResultBridge.v', HERE / 'VaddSegments.v']
     records = []
     for source in sources:
         if re.search(r'\b(?:Admitted|admit|Axiom|Parameter)\b', source.read_text()):
@@ -30,11 +30,11 @@ def main():
                         'command': command, 'exit_code': result.returncode, 'log': log.name})
         if result.returncode:
             raise RuntimeError(result.stdout + result.stderr)
-    status = {'passed': True, 'pure_lemmas': 3, 'c_vcs': 0,
+    status = {'passed': True, 'pure_lemmas': 9, 'c_vcs': 0,
               'records': records, 'scope': 'If both kernel results equal vadd_values, their lists satisfy Forall2 same_value, including NaNs. Kernel contracts are still to be proved.',
               'full_kernel_proof': False}
     (HERE / 'status.json').write_text(json.dumps(status, indent=2) + '\n')
-    print(json.dumps({'passed': True, 'pure_lemmas': 3, 'full_kernel_proof': False}))
+    print(json.dumps({'passed': True, 'pure_lemmas': 9, 'full_kernel_proof': False}))
 
 
 if __name__ == '__main__':

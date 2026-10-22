@@ -120,23 +120,27 @@ def decide(previous, response):
 
 
 def poll(state_dir):
-    path = state_dir / 'state.json'
-    previous = json.loads(path.read_text()).get('phase') if path.exists() else 'bootstrap'
-    error = None
-    try:
-        response = read_quota()
-    except (OSError, RuntimeError, ValueError) as exc:
-        error = str(exc) if isinstance(exc, RuntimeError) else type(exc).__name__
-        response = {}  # Preserve no credentials, raw responses or backend errors.
-    state = decide(previous, response if isinstance(response, dict) else {})
-    state['read_error'] = error
-    state['checked_at_unix'] = int(time.time())
+    import fcntl
     state_dir.mkdir(parents=True, exist_ok=True)
-    temporary = path.with_suffix('.tmp')
-    temporary.write_text(json.dumps(state, indent=2) + '\n')
-    temporary.replace(path)
-    print(json.dumps(state, ensure_ascii=False), flush=True)
-    return state
+    with (state_dir / 'quota.lock').open('w') as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        path = state_dir / 'state.json'
+        previous = json.loads(path.read_text()).get('phase') if path.exists() else 'bootstrap'
+        error = None
+        try:
+            response = read_quota()
+        except (OSError, RuntimeError, ValueError) as exc:
+            error = str(exc) if isinstance(exc, RuntimeError) else type(exc).__name__
+            response = {}  # Preserve no credentials, raw responses or backend errors.
+        state = decide(previous, response if isinstance(response, dict) else {})
+        state['read_error'] = error
+        state['checked_at_unix'] = int(time.time())
+        state_dir.mkdir(parents=True, exist_ok=True)
+        temporary = path.with_suffix('.tmp')
+        temporary.write_text(json.dumps(state, indent=2) + '\n')
+        temporary.replace(path)
+        print(json.dumps(state, ensure_ascii=False), flush=True)
+        return state
 
 
 def main():
