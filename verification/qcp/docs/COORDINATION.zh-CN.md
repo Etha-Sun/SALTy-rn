@@ -4,6 +4,8 @@
 [最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳已停止，当前用户授权的
 暂停阈值为剩余额度<=60%；下文70%两阶段表保留为历史说明，不作为当前启动授权。
 worker使用自己已部署的心跳、thread和额度设置，每30分钟读取协调板并跟进新检查点。
+当前VADD整理入口为 `verification/qcp/vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
+用户已接受适合证明的比较函数和wrapper；旧mapper内联形式不再是新入口的验收要求。
 
 集成分支为 `Etha-Sun/SALTy-rn:c-shim-v2`，上游基线 `be16280c7812a7459c26c3ce82a47339a3d07718`。本机工作树为 `build/qcp-kernel-framework`；旧 `build/verified-output-equivalence` 只读参考。GitHub 仓库关闭了 Issues，因此使用一条专门的 draft PR 作协调板；地址登记在本目录的 `coordination.json`。该 PR 仅承载任务状态，不作为功能合并入口。
 

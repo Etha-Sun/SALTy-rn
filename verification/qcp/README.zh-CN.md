@@ -1,5 +1,11 @@
 # CSim → QCP：小型 kernel 验证框架
 
+当前 VADD 审核入口已整理为 [vadd/spec.c](vadd/spec.c)：比较函数、`equivalent` 及其前后置条件集中在一个文件；
+两个未修改的原始 C 文件放在 `vadd/impl/`，本地 Coq 依赖、shim 和检查脚本放在 `vadd/proof/`。
+目录和复查命令见 [VADD 说明](vadd/README.zh-CN.md)。用户已接受适合证明的 comparator/wrapper 形式，
+因此该入口不再要求转换回旧 mapper 的内联比较循环。下面关于固定 mapper 和 0/40 的记录属于旧验收口径；
+当前模块化 C-shim 证明以新入口的检查记录为准，硬件 ISA 与 shim 的对应仍单独报告。
+
 新增原调用形式的VADD试验：[入口与范围](experiments/byvalue-vadd/README.zh-CN.md)。
 两侧原kernel仅插入证明注释，load/add按值返回，store在shim宏内部借用向量地址。
 NEON118个kernel VC、RVV45个循环/helper VC已分别通过完整模块检查；新入口复用旧模型

@@ -8,17 +8,20 @@
 
 本指令更新此前的交接：新的优先路线是保留原kernel的C调用、赋值和控制流，只改shim、加证明注释。旧pointer/out调用改写路线保留为历史参考，不要默认把kernel再改写一遍。
 
+审核结构已按用户新要求整理到 `verification/qcp/vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；Coq、shim 与运行脚本集中在 `proof/`。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。
+新目录已实际完成87个本地Coq模块的全量fresh编译、21模块审核入口检查、430个原始C/native回归与负对照；C-shim模块化等价性记为1/40，真实ISA对应另列。独立重放时以新目录为优先入口。
+
 一、同步并理解当前成果
 
 1. git fetch origin，核对 origin/c-shim-v2 已包含上述完整SHA；后续基于其最新已发布提交工作。已有worker分支先保存工作，再用正常merge等保留历史的方式吸收集成进度，不强推、不覆盖别人改动；没有工作分支才创建 codex/worker-<task>。不要直接推c-shim-v2或自行merge PR。
-2. 先读 verification/qcp/CHECKPOINT.zh-CN.md，以及：
+2. 先读 verification/qcp/vadd/README.zh-CN.md、spec.c、proof/review-status.json 和 proof/status.json（具体通过范围以实际记录为准），再读 verification/qcp/CHECKPOINT.zh-CN.md，以及：
    - experiments/byvalue-vadd/README.zh-CN.md、replay-status.json、replay.py；
    - experiments/byvalue-rvv/README.zh-CN.md、replay-status.json；
    - docs/ROADMAP.zh-CN.md、docs/COORDINATION.zh-CN.md、docs/CSIM-REPAIRS.zh-CN.md、docs/coordination.json；
    - catalog.json 与你当前任务、环境PR的最新评论。
 3. 最新已实际通过：NEON原调用形式118个kernel C VC、26个shim C VC；RVV原调用形式45个循环/helper C VC、11个按值外壳VC（正式load/add用8个）；已有equivalent调用方9个C VC；NEON430组native对照。统一入口6阶段全部退出0：
    python3 verification/qcp/experiments/byvalue-vadd/replay.py
-4. 这是既定QCP/C shim下的模块化部分正确性。旧依赖闭包尚未全量重放，原公开mapper的内联比较到helper的程序对应仍未证明；真实ISA对应、终止性、任意VLEN都不在已完成范围。完整跨ISA验收仍为0/40，不能把局部VC数相加当作整核计数。
+4. 这是既定QCP/C shim下的模块化部分正确性。新 proof/check.py 从空输出目录重建87个本地Coq模块，不读取旧实验.vo；审核spec是真实输入，全局声明骨架和kernel token/契约均有检查。C-shim等价性与真实ISA对应分开计数；真实ISA对应、终止性、任意VLEN都不在已完成范围，不把局部VC数相加当作整核计数。
 
 二、优先复用的实现与已知边界
 
@@ -27,13 +30,13 @@
 - 当前store宏只支持局部向量左值，不能无条件处理store(p,add(a,b))等一般表达式。重复输入add(a,a)、mask/tuple、位重解释、不同元素类型及VL配置都需实际检查，不能从VADD推断所有kernel已兼容。
 - 纯按值store在QCP生成的循环资源中出现同地址written与undef重复。失败记录已保留；不要利用矛盾前件强行闭合证明。优先复用已通过的宏方案；要扩展其模式时先给最小正反例。
 - 复用 shared/vadd、vadd-rvv 的具体primitive、数组拆拼、循环模型、FastFrame，以及新byvalue目录中的复制/地址归一化策略。96字段的盲目entailer/setoid重写曾很慢；已有FastFrame直接构造分离合取证明。先归一化typed aggregate地址，并在必要时恢复纯条件的andp结合方式。
-- wrapper/spec生成继续采用小模板与简单模式匹配，未知模式明确拒绝。不做通用编译器、DSL或复杂插件架构。人工审查面仍以原test_neon/test_rvv、interface.json、spec.h、mapper.c为主；共享shim/宏/模型需另行审查一次。
+- wrapper/spec生成继续采用小模板与简单模式匹配，未知模式明确拒绝。不做通用编译器、DSL或复杂插件架构。人工审查面采用新的impl原始文件与spec.c；比较函数、wrapper及其前后置条件放在同一个审核文件。共享shim/宏/模型需另行审查一次。
 - equivalent必须真实调用两侧并比较输出，post核心为return==1，不能写恒return1。输入域、padding、允许alias和写入frame必须完整。
 
 三、你的接续任务
 
 A. 优先收尾现有环境PR #2。读取leader两条REVIEW，处理显式Dune/in-place布局选择、与固定HEAD比较并检测staged/untracked的Coq源变化、release归档的源清单/构建来源。覆盖新byvalue重放入口，但不要批量重写其C/proof。当前runner仍依赖leader路径与已配置QCP/Coq；环境失败不能记为proof失败。版本/工具与库源哈希必须准确，不能用一份.vo哈希替代依赖闭包证明。
-B. 环境可用后，独立重放最新VADD统一入口，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；未解决旧依赖/mapper边界时不授予整核成功。
+B. 环境可用后，独立重放新 `python3 verification/qcp/vadd/proof/check.py`（支持--config）及native.py，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；旧mapper转换不再是新入口的验收要求，真实ISA对应仍单独列明。
 C. 主实施范围仍为其余39个kernel；VADD case和leader的byvalue试点目录默认只读。继续你已CLAIM的M1-packed/FMA等独立任务，不必等leader再开工。按ROADMAP推进，优先u8-vclamp与新三个矩阵target：qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32；同时规划f32-gemm-minmax。先明确packed布局/单位、整数wrap、FMA单次舍入、NaN/minmax及tail，再证明实际完整循环。
 D. 在独立case/共享候选目录实施。共享库改动单独小PR；每个kernel单独PR，base=c-shim-v2。新case先给原始来源SHA、简单可审查的spec/mapper，再给primitive真实body、内外循环和实际比较器的证明闭包。CSim修复先重放反例，作为独立repaired版本，不能静默修改原版。
 

@@ -1,5 +1,18 @@
 # VADD 当前 checkpoint（2026-10-22）
 
+## 2026-10-22：impl / spec / proof 分离
+
+当前审核入口为 [vadd/spec.c](vadd/spec.c)，集中比较函数、`equivalent` 和前后置条件。
+`vadd/impl/testNEON.c`、`testRVV.c` 逐字保留原实现；全部本地Coq、shim与检查脚本位于 `vadd/proof/`。
+用户明确接受适合证明的比较函数/wrapper形式，因此新入口不再以旧mapper内联循环的转换对应为验收条件。
+
+`python3 verification/qcp/vadd/proof/check.py` 已实际通过：从空输出目录重新生成11个C单元的VC、
+检查策略，并重新编译全部87个本地Coq模块，不读取旧实验.vo。审核入口单独21个模块也已通过；
+原始C与新spec直接链接的430个native回归通过，额外宏及return0负对照被拒绝。
+当前源与完整检查输入一致的记录见 `vadd/proof/source-audit.json`。
+可计为当前C-shim语义、既定前置条件下的模块化等价性1/40；真实ISA对应、终止性等仍单独列明。
+以下旧mapper门槛与未重放依赖的记录保留其历史含义，不覆盖这个新入口的结果。
+
 ## 2026-10-22：保留原调用形式的新路径
 
 用户授权本轮继续试验，实时 quota <=60% 时收尾暂停；此前70%的等待规则不用于本轮，
