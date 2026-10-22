@@ -2,6 +2,8 @@
 
 本目录为 `c-shim-v2` 工作分支准备，固定基线是 Keagan 上游 `be16280c7812a7459c26c3ce82a47339a3d07718`。目标沿用 CSim 的审查方式：每个 case 只让人审查原始 NEON/RVV 两个函数、`interface.json`、`spec.h` 和 `mapper.c`；共用的 intrinsic 实现、内存与浮点模型、表示转换工具单独按版本审查。
 
+后续已检查进展和恢复入口见 [当前 checkpoint](CHECKPOINT.zh-CN.md)。下面48项等计数保留初始基线范围；新增模块独立报告，不重复相加。
+
 当前已经有可重复的原始/转换后 native 差分、共享 intrinsic 的实际 C body 证明和 NaN 比较桥。**QCP 整核完成数仍为 0/40**。40 对清单是接入范围，不能解释为 40 个 mapper、规格或证明已经完成。后续工作见 [ROADMAP](docs/ROADMAP.zh-CN.md)，任务分工及交接见 [协作约定](docs/COORDINATION.zh-CN.md)。
 
 ## 给使用者的小接口
@@ -74,9 +76,9 @@ QCP 支持 struct，并非完全禁止 struct。这里遇到的问题是旧 SIMD
 
 ## vadd 距离整核闭合还差什么
 
-当前真实 NEON kernel 尝试在首次 `vld1q_f32` 调用前停止：已有 `FloatArray.full` 与局部未初始化向量资源，尚不能自动推出 load 所需的连续4个 float cell 及目标字段所有权。已有的任意索引单 cell 读取策略不等于四 cell block 桥已经完成。
+初始真实 NEON kernel 尝试在首次 `vld1q_f32` 调用前停止：已有 `FloatArray.full` 与局部未初始化向量资源，尚不能自动推出 load 所需的连续4个 float cell 及目标字段所有权。后续已在 `experiments/vadd-neon` 完成四 cell block 与局部 struct 桥，实际符号执行已推进到循环与tail；整核不变量仍未证明。
 
-接下来需要闭合四项：
+初始四项接线义务如下；比较循环和RVV load等局部进展以当前checkpoint为准：
 
 1. 连续4 cell 与局部 flat struct 资源的拆分、传入及恢复，将已证 `qcp_vadd_block4` 真正接进原始 NEON 循环与 tail。
 2. RVV 完整32 lane 的 load/add/store；当前已证 `qcp_rvv_add_lane32` 只是单 lane helper，不能代替向量整体实现。

@@ -1,0 +1,84 @@
+[1;31mfatal error: [0mCannot derive the precondition of function vst1_lane_f32 for spec (default) in /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-neon-loop/results/neon_loop_unit.c:146:38
+Function call failed because the caller assertion does not entail the callee Require assertion after substituting actual arguments.
+Function call argument bindings:
+  argument 1: p <- pointer_offset(output_971_value, 2, (Size_of float), float)
+  argument 2: a <- vacc_lo_1114_addr
+  argument 3: lane <- 0
+Callee precondition after substituting actual arguments:
+EX z_1158_free 
+PROP[
+  0 == 1;
+  fp32_bits_equal_369(z_1158_free, fp32_add((fp32_slice(k_975, ((((k_975 * 4) + 12) / 4) + 3), A_685_free)[3]), (fp32_slice(k_975, ((((k_975 * 4) + 12) / 4) + 3), B_684_free)[3]))) ]
+LOCAL[]
+SEP[]
+
+Caller current assertion:
+EX output_971_value input_b_972_value input_a_973_value batch_974_value k_975 
+PROP[
+  batch_974_value != 0;
+  batch_974_value < (4 * (Size_of float));
+  0 <= k_975;
+  ((k_975 * 4) + batch_974_value) == batch_682_pre;
+  (batch_974_value %% 4) == 0;
+  0 <= batch_974_value;
+  batch_974_value <= batch_682_pre;
+  k_975 <= (batch_682_pre / 4);
+  batch_974_value == 12;
+  params_670_pre != 0;
+  input_a_973_value == pointer_offset(input_a_679_pre, k_975, (Size_of float), float);
+  input_b_972_value == pointer_offset(input_b_676_pre, k_975, (Size_of float), float);
+  output_971_value == pointer_offset(output_673_pre, k_975, (Size_of float), float);
+  input_a_973_value != 0;
+  input_b_972_value != 0;
+  output_971_value != 0;
+  batch_974_value < 16;
+  1 <= (batch_974_value / 4);
+  (batch_974_value & (2 * (Size_of float))) != 0;
+  (batch_974_value & (1 * (Size_of float))) != 0 ]
+LOCAL[
+  Temp vacc vacc_1078_addr;
+  Temp va va_1036_addr;
+  Temp output output_674_addr;
+  Temp input_b input_b_677_addr;
+  Temp input_a input_a_680_addr;
+  Temp params params_671_addr;
+  Temp batch batch_683_addr;
+  Temp vb vb_1057_addr;
+  Temp vacc_lo vacc_lo_1114_addr ]
+SEP[
+  store(&(vacc_1078_addr->s0), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[0]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[0])), float);
+  store(&(vacc_1078_addr->s1), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[1]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[1])), float);
+  store(&(vacc_1078_addr->s2), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[2]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[2])), float);
+  store(&(vacc_1078_addr->s3), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[3]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[3])), float);
+  store(&(vacc_lo_1114_addr->s0), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[2]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[2])), float);
+  store(&(vacc_lo_1114_addr->s1), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[3]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[3])), float);
+  store(pointer_offset(output_971_value, 0, (Size_of float), float), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[0]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[0])), float);
+  store(pointer_offset(output_971_value, 1, (Size_of float), float), fp32_add((fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[1]), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[1])), float);
+  FloatArray.undef_seg (output_971_value, 2, (batch_974_value / 4));
+  store(&(va_1036_addr->s0), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[0]), float);
+  store(&(va_1036_addr->s1), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[1]), float);
+  store(&(va_1036_addr->s2), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[2]), float);
+  store(&(va_1036_addr->s3), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[3]), float);
+  store(&(vb_1057_addr->s0), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[0]), float);
+  store(&(vb_1057_addr->s1), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[1]), float);
+  store(&(vb_1057_addr->s2), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[2]), float);
+  store(&(vb_1057_addr->s3), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[3]), float);
+  store(pointer_offset(input_b_972_value, 0, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[0]), float);
+  store(pointer_offset(input_b_972_value, 1, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[1]), float);
+  store(pointer_offset(input_b_972_value, 2, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[2]), float);
+  store(pointer_offset(input_b_972_value, 3, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)[3]), float);
+  FloatArray.seg (input_b_972_value, 4, ((batch_974_value / 4) + 3), fp32_slice(4, ((batch_974_value / 4) + 3), fp32_slice(k_975, ((batch_682_pre / 4) + 3), B_684_free)));
+  store(pointer_offset(input_a_973_value, 0, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[0]), float);
+  store(pointer_offset(input_a_973_value, 1, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[1]), float);
+  store(pointer_offset(input_a_973_value, 2, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[2]), float);
+  store(pointer_offset(input_a_973_value, 3, (Size_of float), float), (fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)[3]), float);
+  FloatArray.seg (input_a_973_value, 4, ((batch_974_value / 4) + 3), fp32_slice(4, ((batch_974_value / 4) + 3), fp32_slice(k_975, ((batch_682_pre / 4) + 3), A_685_free)));
+  store(batch_683_addr, batch_974_value, unsigned int64);
+  store(params_671_addr, params_670_pre, struct xnn_f32_default_params*);
+  store(input_a_680_addr, input_a_973_value, float*);
+  store(input_b_677_addr, input_b_972_value, float*);
+  store(output_674_addr, pointer_offset(output_971_value, 2, (Size_of float), float), float*);
+  FloatArray.full (input_a_679_pre, k_975, fp32_slice(0, k_975, A_685_free));
+  FloatArray.full (input_b_676_pre, k_975, fp32_slice(0, k_975, B_684_free));
+  FloatArray.full (output_673_pre, k_975, vadd_values(k_975, A_685_free, B_684_free)) ]
+

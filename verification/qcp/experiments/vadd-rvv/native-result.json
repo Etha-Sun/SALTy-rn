@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "vl_values": 33,
+  "cases": 396,
+  "load_and_add_bitwise_match": true,
+  "inactive_positive_zero": true,
+  "input_frame_preserved": true,
+  "commands": [
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-shared",
+      "-fPIC",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/shared/runtime/float_ops.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/.build/original.so"
+    ],
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-shared",
+      "-fPIC",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/rvv_add.c",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/rvv_load.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/.build/adapted.so"
+    ]
+  ],
+  "scope": "Finite native evidence; not a proof of general lowering or ISA correspondence."
+}
