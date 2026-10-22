@@ -16,7 +16,7 @@
 
 ```text
 TYPE: CLAIM | BLOCKED | READY_FOR_REVIEW | REVIEW | RELEASE
-TASK: M1-fma（使用ROADMAP中的任务ID）
+TASK: M1-packed（使用ROADMAP中的任务ID）
 OWNER: worker-server / leader-local
 BASE: 完整commit SHA
 HEAD: 分支及完整commit SHA
@@ -44,6 +44,8 @@ GitHub 是异步协调，不共享进程、内存、凭据或额度。两台服�
 
 监控通过 Codex app-server 的 `account/rateLimits/read` 查询，不为查询本身启动模型 turn。接口见[官方文档](https://learn.chatgpt.com/docs/app-server#6-rate-limits-chatgpt)。本机工具、状态与实际部署结果见 `coordination.json` 及 `.build/quota/`。暂停为协作式：保存代码、精简日志、checkpoint和下一步；不在 Coq 写文件或 Git 操作中间强杀进程。正在运行的任务仍应主动在小步骤边界检查额度，30分钟定时器不能保证精确在阈值瞬间停下。
 
+`tools/heartbeat.py` 和 `coordination.json.local_thread` 是leader专用。worker应配置自己的本机thread、任务prompt和定时器，不能原样运行leader的唤醒器，也不能把其配置覆盖回集成分支。
+
 第二服务器不沿用本机70%的保留阈值；它先确认自身额度与用户设置。默认不要把未知额度当无限额度。查询可用时可按10%暂停、90%恢复运行，或遵循该服务器已有更严格设置。
 
 ## 可移植性与交付
@@ -51,3 +53,9 @@ GitHub 是异步协调，不共享进程、内存、凭据或额度。两台服�
 新分支不会携带旧worktree、vendor、QCP/Coq安装和绝对路径依赖。worker 首项任务是将现有 runner 的工具路径变为一个小环境入口，固定版本/哈希，完成实际重放；不能把“环境未装好”记为证明失败。CSim历史修复清单已经保存在catalog及docs；需要原文件时从 `feat/shim-c` 或其已记录commit获取，并核对hash。旧工作树未提交文件不能假定已上传。
 
 详细实施顺序见 [ROADMAP](ROADMAP.zh-CN.md)。可直接给另一台服务器的启动指令见 [SECOND-SERVER-PROMPT](SECOND-SERVER-PROMPT.zh-CN.md)。
+
+## 本机运行入口
+
+`python3 verification/qcp/tools/quota_watch.py --once` 只查询一次；`tools/heartbeat.py` 再检查 GitHub 变化并在允许时向现有 Codex thread 排队。用户级 `c-shim-v2-heartbeat.timer` 每30分钟调用后者。用 `systemctl --user status c-shim-v2-heartbeat.timer` 查看，`systemctl --user stop c-shim-v2-heartbeat.timer` 停止。当前采用 transient timer，主机重启后需要重新部署；不保证离线或重启后的自动恢复。
+
+成功排队写 `.build/quota/wakeup-pending` 防重；被唤醒的 agent 应在本次工作收尾后删除它，再结束 turn。运行时不要删除，否则下一心跳可能重复排队。若进程异常退出留下标记，由维护者先核实没有在途任务，再删除标记。`pilot-complete` 仅在完整VADD验收后创建，之后只对恢复或GitHub变化唤醒。

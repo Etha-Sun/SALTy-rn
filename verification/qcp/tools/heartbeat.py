@@ -21,7 +21,9 @@ def tick():
         record = STATE / 'heartbeat.json'
         old = json.loads(record.read_text()) if record.exists() else {}
         result = {'quota_checked_at': quota['checked_at_unix'], 'can_run': quota['can_run'],
-                  'phase': quota['phase'], 'queued': False}
+                  'phase': quota['phase'], 'queued': False,
+                  'github_digest': old.get('github_digest'),
+                  'retry_pending': old.get('retry_pending', False)}
         # Waiting is query-only: do not spend a model turn to report unchanged limits.
         if not quota['can_run']:
             record.write_text(json.dumps(result, indent=2) + '\n')
@@ -33,14 +35,19 @@ def tick():
                 responses = [subprocess.check_output(cmd, cwd=ROOT, timeout=45) for cmd in [
                     ['gh', 'pr', 'view', pr, '--json', 'body,comments,updatedAt'],
                     ['gh', 'pr', 'list', '--repo', config['repository'], '--base',
-                     config['integration_branch'], '--json', 'number,headRefOid,updatedAt,isDraft']]]
+                     config['integration_branch'], '--json', 'number,headRefName,updatedAt,isDraft']]]
                 digest = hashlib.sha256(b'\n'.join(responses)).hexdigest()
             except (subprocess.SubprocessError, OSError):
                 result['github_read_failed'] = True
-        result['github_digest'] = digest or old.get('github_digest')
+        result['observed_github_digest'] = digest
         pilot_pending = not (STATE / 'pilot-complete').exists()
         changed = digest is not None and digest != old.get('github_digest')
-        if pilot_pending or changed or not old.get('can_run'):
+        pending = STATE / 'wakeup-pending'
+        result['wakeup_pending'] = pending.exists()
+        if pending.exists():
+            record.write_text(json.dumps(result, indent=2) + '\n')
+            return result
+        if pilot_pending or changed or not old.get('can_run') or result['retry_pending']:
             message = (
                 'c-shim-v2 定时心跳：实时额度允许工作。先读 verification/qcp/docs/COORDINATION.zh-CN.md、'
                 'ROADMAP.zh-CN.md 和 .build/quota/state.json（工作树 build/qcp-kernel-framework）。'
@@ -48,11 +55,19 @@ def tick():
                 '每个小步骤前查询实时额度，当前bootstrap低于10%收尾；首次恢复>=90%转leader后低于70%收尾。'
                 '暂停时保存checkpoint并结束，不用模型等待。不要重复已有任务或启动第二个重叠runner。'
                 '检查协调PR新消息，仅状态变化回复。真实整核闭合后创建 .build/quota/pilot-complete，'
-                '未完成不能创建。使用中文；无变化不向用户发例行汇报。')
+                '未完成不能创建。使用中文；无变化不向用户发例行汇报。'
+                '本次turn期间保留唤醒pending标记，不要收到消息就删除；本turn结束前（包括额度不足收尾）'
+                '删除标记，以便下一次心跳继续分块工作。标记绝对路径：' + str(pending))
             completed = subprocess.run(['codex', 'queue', '--thread', config['local_thread'],
                                         '--message', message], cwd=ROOT, capture_output=True, timeout=60)
             result['queued'] = completed.returncode == 0
             result['queue_exit_code'] = completed.returncode
+            result['retry_pending'] = not result['queued']
+            if result['queued']:
+                pending.write_text(json.dumps({'thread': config['local_thread'],
+                    'queued_at_unix': quota['checked_at_unix']}) + '\n')
+                result['wakeup_pending'] = True
+                result['github_digest'] = digest or old.get('github_digest')
         record.write_text(json.dumps(result, indent=2) + '\n')
         print(json.dumps(result), flush=True)
         return result

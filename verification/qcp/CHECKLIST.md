@@ -10,3 +10,9 @@
 - [x] NaN issue is bridged without weakening input/observation, or precisely reported.
 - [x] CSim kernel repairs and tool/model repairs are distinguished; originals retained.
 - [x] Full-kernel success cannot be inferred from local proof or native pass.
+
+- [x] c-shim-v2 published; dedicated draft PR available for cross-server coordination.
+- [x] Full 40-kernel roadmap and second-server prompt published.
+- [x] Live quota query and two-stage threshold tests pass; user timer deployed.
+- [ ] VADD complete kernel dependency closure (explicitly pending).
+- [ ] Second server started by user with its own credentials and heartbeat.
