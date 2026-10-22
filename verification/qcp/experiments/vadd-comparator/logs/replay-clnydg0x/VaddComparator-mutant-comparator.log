@@ -1,0 +1,41 @@
+Program: `/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-comparator/.build/replay-clnydg0x/mutant/comparator.c`
+Start to parse strategies file comparator
+File Path: /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-comparator/comparator.strategies
+Finish parsing strategies file comparator
+Start to parse strategies file common
+File Path: builtin/common.strategies
+Finish parsing strategies file common
+Start to parse strategies file string_literal
+File Path: builtin/string_literal.strategies
+Finish parsing strategies file string_literal
+Start to parse function declaration of function qcp_vadd_read
+Start to parse function declaration of function same_lane
+Function `compare_outputs`
+[1;31mfatal error: [0mSymbolic execution failed: the return proof obligation at line 29 became inconsistent after solving. The generated postcondition contradicts the current path condition; check the asserted fact, return value, or branch condition. in /zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-comparator/.build/replay-clnydg0x/mutant/comparator.c:29:9
+return proof obligation could not be solved automatically.
+Left/current assertion:
+PROP[
+  i_433_value >= n_411_pre;
+  0 < n_411_pre;
+  n_411_pre <= 4611686018427387900;
+  0 <= i_433_value;
+  i_433_value <= n_411_pre;
+  Zlength(fp32_10, L_414_free) == n_411_pre;
+  outputs_related_373(L_414_free, R_413_free);
+  0 < n_411_pre;
+  n_411_pre <= 4611686018427387900;
+  outputs_related_373(L_414_free, R_413_free) ]
+LOCAL[]
+SEP[
+  FloatArray.full (left_408_pre, n_411_pre, L_414_free);
+  FloatArray.full (right_405_pre, n_411_pre, R_413_free) ]
+
+Right/target assertion(s):
+PROP[
+  0 == 1 ]
+LOCAL[]
+SEP[
+  FloatArray.full (left_408_pre, n_411_pre, L_414_free);
+  FloatArray.full (right_405_pre, n_411_pre, R_413_free) ]
+
+Reason: the return path is incompatible with the target postcondition after symbolic simplification. For a return path, check the returned value against Ensure; for an Assert path, check whether the asserted proposition contradicts the current path condition.
