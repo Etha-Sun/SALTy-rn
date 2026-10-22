@@ -9,20 +9,21 @@
 | 输出模型关系与分块 | 9个纯Coq引理：NaN-aware反身性、共同模型到关系、长度/前缀分块/索引等 | `experiments/vadd-relations/run.py` |
 | 实际比较循环 | 12个loop VC+4策略；另重查read2、NaN链14、旧数组策略2；51native控制 | `experiments/vadd-comparator/run.py` |
 | NEON块与局部struct | 4通用引理+4策略+6实际调用VC，共14项 | `experiments/vadd-neon/run.py` |
-| NEON尾部资源 | 3通用/纯引理+3策略，共6项；整核循环仍未检查 | `experiments/vadd-neon-loop/check.py` |
-| RVV完整32lane load | 100个C VC+3策略，VL=0..32，只要求vl个可读cell；396native load/add对照 | `experiments/vadd-rvv/run.py` |
+| NEON循环与尾部 | 完整101个kernel VC及5个lane0 VC；26证明文件顺序重放通过，源码/预处理绑定与3个变异负对照通过。旧tail6记录保留 | `experiments/vadd-neon-loop/run_full.py` |
+| wrapper条件式组合 | 9个caller VC+1策略；只证明给定callee合同下的组合，两个kernel body与adapter仍为依赖 | `experiments/vadd-wrapper/run.py` |
+| RVV完整32lane primitives | load100、add101、store75个C VC；数组3、store5策略；396load/add及396store native对照 | `experiments/vadd-rvv/run.py --add --store` |
 
-RVV add已生成101个VC，但最后完整编译在180秒预算内未完成；保持pending。store未开始。Native add通过不能代替body证明。
+RVV primitive整套重放已通过并发布于`140851d4`。输入域包含全部fp32；load/store只要求VL个有效cell，VL=0允许数据指针为NULL，但完整向量对象仍由调用者拥有。旧180秒add超时保存在history，不以新结果覆盖历史。
 
 ## 下一步，按此继续
 
-1. NEON：`vadd-neon-loop` 最新固定状态在 `checkpoint-tail6.json`。循环不变量已经写出，实际符号执行进入尾部；此前停在 `vst1_lane_f32` 的逻辑参数z实例化。root最后做了单独的 `attempt.py --bind-lane` 尝试，只添加 `where z = vacc_lo.s0`，结果在 `results-bound-lane/`，不覆盖旧失败记录。该尝试仍exit1，不能推出lane store前置条件；诊断中出现lane=0却需要0==1的分支，显式绑定z尚未解决。先定位契约分支/策略匹配，再处理loop初始化/维护、输入prefix重组、输出模型拼接及tail后件。可复用 `VaddSegments.v` 的三个模型引理。
-2. RVV：先优化add的frame消去（最后记录在 `partial_solve_wit_16` 附近），实际coqc exit0后再标成功。然后证明仅要求vl个可写cell的store，以及原始RVV loop。不把范围加强到始终32个有效cell。
+1. NEON：完整101个VC已由checked Module实现并编译；26证明文件已顺序重放，QCP重新生成同一goal；实际C、头文件、策略和预处理输入已绑定，宏替换、Inv修改、反斜杠换行3个负对照均被拒绝。检查点为`vadd-neon-loop/checkpoint-full101.json`。literal lane0使用同一实际C body的专门契约，并另证5个VC，没有把该body作为extern假设。保留旧首次load和lane实例化失败记录。
+2. RVV：load/add/store已完成。继续原始RVV循环不变量与资源拼接、共同vadd_values模型后件；`RvvResultBridge.v`已证明完整32lane结果的有效前缀等于共同模型，`RvvLoopMemory.v`已提供输入分割/恢复与输出拼接，`RvvLoopResult.v`已证明有效chunk模型拼接。未完成loop不计完整kernel。
 3. 最终接线：两侧kernel建立共同vadd_values → 已证关系桥 → 已证比较循环 → 公开equivalent返回1。仍需原始mapper到helper形式、向量按值到pointer/out的对应证明/明确边界。ISA→C shim对应另列，不因C proof通过而自动成立。
 4. 生成器保持小型模板程序。其余39项交第二服务器，按docs/ROADMAP及协调PR分工；本机先完成VADD。
 
 ## 保存与暂停
 
-本轮已按用户额度规则停止新增证明，进入wait_initial；前台会话按1800秒间隔查询实时额度，>=90%后恢复为leader模式，之后低于70%再等待。没有使用context百分比或旧session日志代替实时额度。备用用户定时器仍存在；前台活动期间保留 `.build/quota/wakeup-pending` 防止重复唤醒。
+本轮按用户额度规则进入wait_initial后，前台实际完成14轮1800秒等待与实时查询，随后确认额度恢复100%，已恢复leader模式；之后低于70%再保存并等待。没有使用context百分比或旧session日志代替实时额度。备用用户定时器仍存在；前台活动期间保留 `.build/quota/wakeup-pending` 防止重复唤醒。
 
 所有checked成果应以各目录status/命令日志/hash为准，生成的自动Admitted模板不进入检查链。循环探索的中间VC、源码含Qed或编译超时均不表示完整kernel正确性。旧CSim修复仍只读参考，不静默替换原始代码。

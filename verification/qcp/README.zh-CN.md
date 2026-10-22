@@ -50,7 +50,7 @@ audit/               清单、完整性与 native 检查记录
 
 QCP 支持 struct，并非完全禁止 struct。这里遇到的问题是旧 SIMD shim 广泛使用的“带 lane 数组的向量 struct、按值参数和返回”组合，以及对应的资源所有权表示。初始兼容方案把向量表示成固定数量的标量字段，输入使用 `const struct *`，输出使用显式 `struct *` 参数，保持 lane 次序及原始控制流。
 
-这个方案已有 NEON primitive 的实际 C 证明，但不能说任意 struct 程序都已兼容，也不能把按值到指针的源码改写当作自动成立的语义等价。局部 struct 的未初始化资源如何拆给 callee、多个 cell 如何组成向量 load 前件，仍需实际证明。实现细节见 [共享 vadd 接口](shared/vadd/README.zh-CN.md)。
+这个方案已有 NEON primitive 的实际 C 证明，但不能说任意 struct 程序都已兼容，也不能把按值到指针的源码改写当作自动成立的语义等价。局部 struct 未初始化资源的拆分、连续四个cell到load前件的桥已在NEON组件中检查；完整循环的资源拼接继续单独证明。实现细节见 [共享 vadd 接口](shared/vadd/README.zh-CN.md)。
 
 还应区分两个当前产物：
 
@@ -58,7 +58,9 @@ QCP 支持 struct，并非完全禁止 struct。这里遇到的问题是旧 SIMD
 |---|---|
 | `.build/f32-vadd/native_unit.c` | 引用公开 mapper 和未改动原函数，使用 native runtime 执行回归。 |
 | `.build/f32-vadd/lowered_unit.c` | 使用转换后表示的 native 差分 artifact；**不是携带公开 spec 的 QCP 整核验证输入**。它的 native 通过不表示 `spec.h` 已在该程序上得到证明。 |
-| `experiments/vadd-proof/kernel-attempt/neon_kernel_unit.c` | 独立 QCP 整核接线尝试，确实附带 kernel 合同并调用已证共享接口；当前尚未生成完整 VC 集。 |
+| `experiments/vadd-proof/kernel-attempt/neon_kernel_unit.c` | 保存初始load失败记录的历史输入，不代表最新整核尝试。 |
+| `experiments/vadd-neon-loop/` | 最新原始NEON循环证明输入；完整101个kernel VC及5个lane0 VC已检查；26证明文件顺序重放和源码绑定负对照通过。 |
+| `experiments/vadd-wrapper/wrapper.c` | 从冻结spec/mapper准备的条件式调用方；9个VC及1条策略已检查，两侧kernel body与adapter仍是显式依赖。 |
 
 ## 已建立的证据
 
@@ -76,14 +78,15 @@ QCP 支持 struct，并非完全禁止 struct。这里遇到的问题是旧 SIMD
 
 ## vadd 距离整核闭合还差什么
 
-初始真实 NEON kernel 尝试在首次 `vld1q_f32` 调用前停止：已有 `FloatArray.full` 与局部未初始化向量资源，尚不能自动推出 load 所需的连续4个 float cell 及目标字段所有权。后续已在 `experiments/vadd-neon` 完成四 cell block 与局部 struct 桥，实际符号执行已推进到循环与tail；整核不变量仍未证明。
+NEON循环与尾部的101个VC已组成checked模块并编译；RVV load100、add101、store75个C VC已整套重放通过。这些结果及日志分别记录在`vadd-neon-loop`和`vadd-rvv`。早期首次load失败与add超时记录仍保留，不代表最新状态。
 
-初始四项接线义务如下；比较循环和RVV load等局部进展以当前checkpoint为准：
+剩余接线义务：
 
-1. 连续4 cell 与局部 flat struct 资源的拆分、传入及恢复，将已证 `qcp_vadd_block4` 真正接进原始 NEON 循环与 tail。
-2. RVV 完整32 lane 的 load/add/store；当前已证 `qcp_rvv_add_lane32` 只是单 lane helper，不能代替向量整体实现。
-3. NEON/RVV 循环不变量、batch 与指针推进、输出前缀/剩余区间和尾部路径。
-4. 原 mapper、lowering、已证 shim、NaN 比较桥及公开 `Ensure __return==1` 的最终依赖闭包，并将四层边界分别记入状态。
+1. 完成RVV原始循环的不变量、batch与指针推进、输入恢复和输出前缀模型后件。
+2. 核对两侧实际body的已证合同与wrapper调用合同、共享依赖及源码身份链。
+3. 原mapper到helper比较形式、按值向量到pointer/out表示的对应仍需明确证明或保留为转换信任边界；ISA到C shim对应单独报告。
+
+条件式wrapper已有9个caller VC和1条策略通过，但不能据此跳过上述依赖。最新结果以[checkpoint](CHECKPOINT.zh-CN.md)及各组件实际重放记录为准。
 
 因此可以逐步扩充共享 intrinsic 支持来减少逐 kernel 的重复劳动；但“只加 intrinsic 就兼容并证明所有 kernel”目前没有证据。量化、矩阵、间接指针、布局与归约族还需要各自的接口模板和不变量。需求清单及旧 CSim 修复来源分别见 [40 kernel 清单](docs/INVENTORY.zh-CN.md) 和 [CSim 参考审计](docs/CSIM-REPAIRS.zh-CN.md)，历史通过记录没有转计成本次 QCP 结果。
 
