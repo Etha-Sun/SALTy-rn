@@ -12,14 +12,15 @@
 | NEON循环与尾部 | 完整101个kernel VC及5个lane0 VC；26证明文件顺序重放通过，源码/预处理绑定与3个变异负对照通过。旧tail6记录保留 | `experiments/vadd-neon-loop/run_full.py` |
 | wrapper条件式组合 | 9个caller VC+1策略；只证明给定callee合同下的组合，两个kernel body与adapter仍为依赖 | `experiments/vadd-wrapper/run.py` |
 | RVV完整32lane primitives | load100、add101、store75个C VC；数组3、store5策略；396load/add及396store native对照 | `experiments/vadd-rvv/run.py --add --store` |
+| RVV循环、尾部与调用组合 | 37个test_rvv+5个helper VC，2循环策略；另9个chunk调用VC。完整模块及20步统一重放通过，含新模型依赖显式编译 | `experiments/vadd-rvv/run_loop.py` |
 
 RVV primitive整套重放已通过并发布于`140851d4`。输入域包含全部fp32；load/store只要求VL个有效cell，VL=0允许数据指针为NULL，但完整向量对象仍由调用者拥有。旧180秒add超时保存在history，不以新结果覆盖历史。
 
 ## 下一步，按此继续
 
 1. NEON：完整101个VC已由checked Module实现并编译；26证明文件已顺序重放，QCP重新生成同一goal；实际C、头文件、策略和预处理输入已绑定，宏替换、Inv修改、反斜杠换行3个负对照均被拒绝。检查点为`vadd-neon-loop/checkpoint-full101.json`。literal lane0使用同一实际C body的专门契约，并另证5个VC，没有把该body作为extern假设。保留旧首次load和lane实例化失败记录。
-2. RVV：load/add/store已完成。继续原始RVV循环不变量与资源拼接、共同vadd_values模型后件；`RvvResultBridge.v`已证明完整32lane结果的有效前缀等于共同模型，`RvvLoopMemory.v`已提供输入分割/恢复与输出拼接，`RvvLoopResult.v`已证明有效chunk模型拼接。未完成loop不计完整kernel。
-3. 最终接线：两侧kernel建立共同vadd_values → 已证关系桥 → 已证比较循环 → 公开equivalent返回1。仍需原始mapper到helper形式、向量按值到pointer/out的对应证明/明确边界。ISA→C shim对应另列，不因C proof通过而自动成立。
+2. RVV：原始控制流的37个kernel与5个helper VC已组成完整checked模块；2条loop策略、9个chunk调用VC也已检查。20步统一重放已通过，包括RvvLoopMemory/Result/Model依赖按顺序编译。普通C未改；两处Assert保留活跃locals与原pre推出的事实，删除丢失局部vector资源的末尾cut。最小struct drop/keep复现已发布于`05ee3243`；保留失败日志，不以崩溃推断程序不等。FastFrame用分离合取规则直接构造字段重排证明，避免96cell通用tactic超时。
+3. 最终接线：两侧lowered C body已证明共同vadd_values；关系桥、实际比较循环与公开equivalent调用方也分别检查。独立审查确认两侧body的调用合同与wrapper一致。下一步建立单一依赖闭包重放入口与汇总准入记录；当前tools/verify.py仍只重放初始四项。原始mapper到helper形式、向量按值到pointer/out的程序转换对应仍是未闭合边界；ISA→C shim对应另列，不因C proof通过而自动成立。
 4. 生成器保持小型模板程序。其余39项交第二服务器，按docs/ROADMAP及协调PR分工；本机先完成VADD。
 
 ## 保存与暂停

@@ -29,3 +29,13 @@ Store 的真实 C body 已检查：`qcp_rvv_get32` 实际 switch 读取32字段�
 `native_store_check.py` 另跑396个 case（全部33种 VL），将实际 store 与原 runtime 逐 bit 比较，涵盖NaN/Inf/±0、前后canary、输入vector不变、VL0空指针。结果在 `native-store-result.json`。完整 VADD kernel、mapper/比较器接线、通用表示转换及实际 ISA 关系仍未证明。
 
 `Print Assumptions` 保留 QCP 布局/地址模型参数与标准 Coq/Flocq 经典实数及外延性假设，没有新增 axiom/Admitted。当前 load/add/store 证明是 C 表示层的 primitive body 证明，不是完整跨 ISA kernel 结论。
+
+## 原始 RVV 循环的 C 表示证明
+
+[LOOP.zh-CN.md](LOOP.zh-CN.md) 给出独立的原始控制流接线与重放方法：完整 unit 为37个 test_rvv VC +5个真实 helper VC，共42个；另有2条新策略与独立 chunk9 组合检查。公开输入域及 n+3 frame 保持，全部浮点域保留。该包描述 QCP C 表示层的部分正确性，完整跨 ISA 等价与全局 kernel inventory 的验收仍有独立边界。
+
+```sh
+python3 verification/qcp/experiments/vadd-rvv/run_loop.py
+```
+
+`loop-status.json` / `loop-logs/` 保存独立实际结果；primitive 的 `status.json` 仍只表示该文件声明的 primitive 范围。

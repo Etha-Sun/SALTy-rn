@@ -52,7 +52,11 @@ QCP 支持 struct，并非完全禁止 struct。这里遇到的问题是旧 SIMD
 
 这个方案已有 NEON primitive 的实际 C 证明，但不能说任意 struct 程序都已兼容，也不能把按值到指针的源码改写当作自动成立的语义等价。局部 struct 未初始化资源的拆分、连续四个cell到load前件的桥已在NEON组件中检查；完整循环的资源拼接继续单独证明。实现细节见 [共享 vadd 接口](shared/vadd/README.zh-CN.md)。
 
-还应区分两个当前产物：
+VADD适配还验证了两条后续case可复用的规则：`Assert`/`Inv`必须保留后续需要的数值界、活跃局部变量等式和内存资源；局部向量离开作用域前不能被中间断言遗忘。当前QCP对后一情形有可重复的崩溃，见[最小struct对照](experiments/vadd-rvv/loop-investigation/README.zh-CN.md)。正式RVV输入通过删除多余中间cut、把资源重组留给Coq证明来避开它，普通C与公开前置条件保持不变。
+
+资源证明不必展开浮点运算来重排字段。先将相同字段断言视作抽象资源，再用分离合取的结合、交换与单调性构造证明，可避免通用tactic在96个字段上超时。这属于证明实现的优化，不改变字段值或浮点模型。
+
+还应区分以下当前产物：
 
 | 产物 | 当前用途 |
 |---|---|
@@ -82,9 +86,8 @@ NEON循环与尾部的101个VC已组成checked模块并编译；RVV load100、ad
 
 剩余接线义务：
 
-1. 完成RVV原始循环的不变量、batch与指针推进、输入恢复和输出前缀模型后件。
-2. 核对两侧实际body的已证合同与wrapper调用合同、共享依赖及源码身份链。
-3. 原mapper到helper比较形式、按值向量到pointer/out表示的对应仍需明确证明或保留为转换信任边界；ISA到C shim对应单独报告。
+1. 完成两侧body、wrapper调用合同、共享依赖及源码身份链的统一准入记录。RVV原始循环的37个kernel与5个helper VC已组成完整模块，包含新模型依赖的20步重放已全部通过。
+2. 原mapper到helper比较形式、按值向量到pointer/out表示的对应仍需明确证明或保留为转换信任边界；ISA到C shim对应单独报告。
 
 条件式wrapper已有9个caller VC和1条策略通过，但不能据此跳过上述依赖。最新结果以[checkpoint](CHECKPOINT.zh-CN.md)及各组件实际重放记录为准。
 

@@ -1,0 +1,13 @@
+From QcpRvv32 Require Import rvv_loop_unit_goal rvv_loop_pure_checked
+ rvv_loop_calls_checked rvv_loop_memory_checked rvv_arrays_strategy_proof
+ rvv_store_strategy_proof rvv_loop_strategy_proof.
+Module CheckedRvvLoop : VC_Correct.
+Include CheckedRvvArray.
+Include CheckedRvvStoreStrategy.
+Include CheckedRvvLoopStrategy.
+Include CheckedRvvLoopPure.
+Include CheckedRvvLoopCalls.
+Include CheckedRvvLoopMemory.
+End CheckedRvvLoop.
+Print Assumptions CheckedRvvLoop.proof_of_test_rvv_entail_wit_4.
+Print Assumptions CheckedRvvLoop.proof_of_test_rvv_partial_solve_wit_9.

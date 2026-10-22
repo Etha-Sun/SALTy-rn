@@ -1,0 +1,27 @@
+{
+  "original": "kernels/target/f32-vadd.c",
+  "original_sha256": "6497d442136719b18ff5233adc6091a140c45973c84658431b7986f32acee593",
+  "reviewed_lowering_sha256": "193c9c212ee811d7f1b816734f13cd195704773f74cd2dfb72999592a2804958",
+  "changes": [
+    {
+      "kind": "vector-initializer",
+      "type": "vfloat32m8_t",
+      "variable": "va",
+      "call": "__riscv_vle32_v_f32m8"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "vfloat32m8_t",
+      "variable": "vb",
+      "call": "__riscv_vle32_v_f32m8"
+    },
+    {
+      "kind": "vector-initializer",
+      "type": "vfloat32m8_t",
+      "variable": "vacc",
+      "call": "__riscv_vfadd_vv_f32m8"
+    }
+  ],
+  "ordinary_tokens_equal_after_annotations": true,
+  "full_kernel_proved": false
+}
