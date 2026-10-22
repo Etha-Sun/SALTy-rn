@@ -1,0 +1,36 @@
+{
+  "passed": true,
+  "vl_values": 33,
+  "cases": 396,
+  "prefix_bitwise_match": true,
+  "input_vector_preserved": true,
+  "output_canaries_preserved": true,
+  "vl_zero_null_pointer": true,
+  "commands": [
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-shared",
+      "-fPIC",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/shared/runtime/float_ops.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/.build/original-store.so"
+    ],
+    [
+      "gcc",
+      "-std=c11",
+      "-O0",
+      "-fno-fast-math",
+      "-ffp-contract=off",
+      "-shared",
+      "-fPIC",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/rvv_store.c",
+      "-o",
+      "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-rvv/.build/adapted-store.so"
+    ]
+  ],
+  "scope": "Finite differential evidence for the QCP C representation, not a general lowering or ISA proof."
+}

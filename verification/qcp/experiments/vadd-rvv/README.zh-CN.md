@@ -1,4 +1,4 @@
-# RVV32 vadd primitive：已检查的完整 load
+# RVV32 vadd primitive：已检查的完整 load/add/store
 
 独立 namespace 为 `QcpRvv32`，只复用 `shared/vadd` 已有模型，不修改冻结 case 或旧证明。`generate.py` 生成固定32字段的 C 表示与合同，不是通用 C 转换器。
 
@@ -18,10 +18,14 @@ runner 重新生成源代码、StrategyCheck 和 QCP 目标，逐字核对已审
 
 ## Add 与 store 的准确边界
 
-`rvv_add.c` 也已生成完整32字段实际实现，含 f32_add 和 lane helper 的真实定义；合同逐 lane 为 `vadd_active_add(i,vl,xi,yi)`，允许全部 fp32 输入。已生成101个 VC，但当前完整 module 的 coqc 尚未闭合；状态必须保持 pending，不能按 native 通过计作形式证明成功。
+`rvv_add.c` 含完整32字段实际实现、f32_add 和 lane helper 真实定义；合同逐 lane 为 `vadd_active_add(i,vl,xi,yi)`，允许全部 fp32 输入。**101个 C VC 已在完整 module 中通过 coqc（14.55秒）**，重新生成的目标与审定目标逐字一致。调用框架义务的左右空间断言完全相同，直接按断言语义保留 frame，避免通用 entailer 反复展开浮点值。当前证据为 `add-proof-result.json` / `add-timing.log`，原180秒超时证据保存在 `history/add-timeout-180s.*`，不将超时解释为语义反例。
 
-其证明脚本为 `rvv_add_checked.v`。主要时间消耗在96个 heap cell 的64个调用前件/框架义务：通用 entailer 随上下文增长较慢。初始检查超时并非已确认的语义反例。可用 `run.py --add` 要求同时完整检查 add；独立当前结果见 `add-proof-result.json` 和 `add-timing.log`。只有完整编译 exit0 并核对源/目标后，才能更新 add_proved。
+```sh
+python3 verification/qcp/experiments/vadd-rvv/run.py --add --store
+```
 
-Store 尚未实施。下一阶段应使用仅 VL 个可写 cell 的前置及分段/mixed-array 资源来证明写入前缀和外部 frame；不能为简化证明要求32个目的 cell，进而误称覆盖原始 tail 输入域。完整 VADD kernel、mapper/比较器接线、通用表示转换及实际 ISA 关系仍未证明。
+Store 的真实 C body 已检查：`qcp_rvv_get32` 实际 switch 读取32字段，`qcp_rvv_store_next` 实际执行 `p[i]=value`，`__riscv_vse32_v_f32m8` 的真实 for 循环逐个写入前缀。完整 module **75个 C VC + 5条资源策略**通过 coqc（完整 C module 15.52秒）。前置只要求 `FloatArray.undef_full(p,vl)`；不要求32个目的 cell。循环不变量保留 `[0,i)` 已写段和 `[i,vl)` 未初始化段，退出时得到精确 `rvv_take(vl,L)`，输入vector所有字段保持。VL=0 不解引用 p，任意外部 frame 由分离逻辑保留。
 
-`Print Assumptions` 保留 QCP 布局/地址模型参数与标准 Coq/Flocq 经典实数及外延性假设，没有新增 axiom/Admitted。当前 full load 证明是 C 表示层的 primitive body 证明，不是完整跨 ISA kernel 结论。
+`native_store_check.py` 另跑396个 case（全部33种 VL），将实际 store 与原 runtime 逐 bit 比较，涵盖NaN/Inf/±0、前后canary、输入vector不变、VL0空指针。结果在 `native-store-result.json`。完整 VADD kernel、mapper/比较器接线、通用表示转换及实际 ISA 关系仍未证明。
+
+`Print Assumptions` 保留 QCP 布局/地址模型参数与标准 Coq/Flocq 经典实数及外延性假设，没有新增 axiom/Admitted。当前 load/add/store 证明是 C 表示层的 primitive body 证明，不是完整跨 ISA kernel 结论。
