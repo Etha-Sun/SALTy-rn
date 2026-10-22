@@ -1,0 +1,104 @@
+{
+  "passed": true,
+  "neon_kernel_c_vcs": 118,
+  "neon_shim_c_vcs": 26,
+  "rvv_c_vcs": 45,
+  "rvv_value_wrapper_c_vcs": 11,
+  "conditional_equivalent_caller_c_vcs": 9,
+  "native_neon_cases": 430,
+  "original_kernel_tokens_preserved": true,
+  "callee_contracts_match_existing_caller": true,
+  "full_old_dependency_closure_replayed": false,
+  "original_public_mapper_to_helper_correspondence_proved": false,
+  "cross_isa_end_to_end_acceptance": false,
+  "records": [
+    {
+      "label": "neon-shim",
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/byvalue-vadd/run.py",
+        "--stage",
+        "shim"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 12.236411125981249
+    },
+    {
+      "label": "neon-generate",
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/byvalue-vadd/run.py",
+        "--stage",
+        "neon",
+        "--timeout",
+        "180"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 142.63871597591788
+    },
+    {
+      "label": "neon-proof",
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/byvalue-vadd/compile.py",
+        "neon_unit_goal.v",
+        "neon_reused.v",
+        "neon_adapted.v",
+        "neon_pure_tail.v",
+        "neon_copy_checked.v",
+        "neon_load_calls.v",
+        "neon_store_calls.v",
+        "neon_full_checked.v"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 220.2355501250131
+    },
+    {
+      "label": "neon-native",
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/byvalue-vadd/native.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 0.2154018289875239
+    },
+    {
+      "label": "rvv-replay",
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/byvalue-rvv/run.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 190.72095746395644
+    },
+    {
+      "label": "wrapper-replay",
+      "command": [
+        "/home/ycsun/anaconda3/bin/python3",
+        "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/experiments/vadd-wrapper/run.py"
+      ],
+      "exit_code": 0,
+      "elapsed_seconds": 50.55875647999346
+    }
+  ],
+  "local_sources_sha256": {
+    "neon.c": "2e20b655f905bdb1971cd9112c38b6d24fef23f230c2c7870dd7d90820bcd624",
+    "run.py": "49a8aa6102a0f7e863e74db3d6bc147bc8af152856635f36a6d8b7cecb287ac8",
+    "neon_adapted.v": "56189c4c69f4796a767661aa4c3a0412c89373b30d083fc9adb30ef556edc978",
+    "replay.py": "9a7a0754dd9e5d99f44f5ec1b93249a06646498a4531a9d4ad272c1bd3a5368e",
+    "neon_full_checked.v": "4789ff95f94264c2e0c6043478eb6bc3bf6e82968be6cfe12251a47f72b26bdf",
+    "neon_copy_checked.v": "775c26adea47214895e7a77bb20b71bfde80e6331035320e00ed612645b90b50",
+    "shim.h": "ff910af3f01c09f997fa456af5598eff9bf57859a9a73535e89649090b77d068",
+    "generate.py": "1f454f0297dafdf230b0e13395e1e042be94aed07f536f514c06218028229fc3",
+    "neon_reused.v": "3bae842a87ec5f6903e2866ab0074de84d14cdba79adb342f3551daefb4c47d0",
+    "compile.py": "4a6e68878e0035b2d6d2246f7e29aa55508f9e5ee054188e7e3ce9314955c476",
+    "neon_store_calls.v": "c28acba5aef0264fd8c7f76e89a127171edf47f3e85d4b621e1696df5ed4fb2f",
+    "neon_load_calls.v": "f9fb1519153ed1090280b490b1f345aa9d6afc9823aae5d4ca505cddb494fb77",
+    "shim_checked.v": "2e404c0f0366adc91b3bdf40da55319a58c1afc77da2ec384f83a7327fe9927b",
+    "native.py": "259346abd4fb4a46de6f7605d1f531c3661d32c2d8aa170ec37b4a6c4955d129",
+    "shim.c": "6932a285a44ad4c1788d1df6ebdc11ec4cf08aa6a8e2af72e17661507fa153a4",
+    "neon_pure_tail.v": "6800fc277da0a49903a005e9311b26f4fa82f370505a01d6f818209a64d58e47"
+  },
+  "rvv_replay_sha256": "f15783d69248339e78b1fca092199aa38eb41a28723ed504e0b9fe6755c1a116",
+  "proof_status_sha256": "9817cc8fa1c56d898768a0af1529f32eb5622197b43f4e1f9cf898c4adf7ee1a"
+}

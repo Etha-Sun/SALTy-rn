@@ -1,0 +1,16 @@
+Axioms:
+CNotation.sizeof_union_type : String.string -> BinNums.Z
+CNotation.sizeof_struct_type : String.string -> BinNums.Z
+CNotation.sizeof_enum_type : String.string -> BinNums.Z
+CNotation.sizeof_alias_type : String.string -> BinNums.Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+PropExtensionality.propositional_extensionality :
+  forall P Q : Prop, P <-> Q -> P = Q
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P

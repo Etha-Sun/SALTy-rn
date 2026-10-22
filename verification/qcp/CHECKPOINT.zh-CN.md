@@ -1,5 +1,27 @@
 # VADD 当前 checkpoint（2026-10-22）
 
+## 2026-10-22：保留原调用形式的新路径
+
+用户授权本轮继续试验，实时 quota <=60% 时收尾暂停；此前70%的等待规则不用于本轮，
+没有恢复后台自动等待。原始两侧 kernel、公开 spec.h/mapper.c 和冻结输入仍未修改。
+
+已独立通过：NEON 原 C token 路径的118个完整kernel VC与26个shim VC；
+RVV 原 C token 路径的45个完整循环/helper VC与11个按值外壳VC。
+旧 equivalent 的9个条件式 caller VC已重新检查，两侧kernel合同与其声明一致。
+NEON新实现430个native case与原实现一致。新入口和边界见
+[按值VADD说明](experiments/byvalue-vadd/README.zh-CN.md)；统一重放入口为
+`experiments/byvalue-vadd/replay.py`，完整重放结果单独写入该目录的replay-status.json。
+
+load/add保留按值接口；store通过shim宏内部借用局部向量地址，原kernel调用无需改写。
+纯按值store出现重复输出资源，失败对照保留，不作为成功证据。
+新路径消除了原kernel到pointer/out副本的转换义务；没有把旧依赖闭包或旧公开mapper
+到helper形式的对应算作本轮已验证。因此全库端到端接受记录仍保持0/40。
+
+统一入口本轮完整重放通过：所有6个阶段退出码为0；NEON目标重新生成后，8个新Coq模块按序重新检查。
+最后实时quota为64%，未触发60%暂停阈值；本轮试验已收尾，不启动其他kernel。
+
+下面各条保留此前pointer/out路线的历史记录，不能与新路径的VC数直接相加。
+
 完整QCP kernel仍为 **0/40**。以下是不同组件的检查范围，存在重复依赖，不能将数字直接相加。原始kernel、公开spec.h、mapper.c和冻结输入均未修改。
 
 | 组件 | 已检查范围 | 入口 |

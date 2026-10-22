@@ -1,5 +1,10 @@
 # CSim → QCP：小型 kernel 验证框架
 
+新增原调用形式的VADD试验：[入口与范围](experiments/byvalue-vadd/README.zh-CN.md)。
+两侧原kernel仅插入证明注释，load/add按值返回，store在shim宏内部借用向量地址。
+NEON118个kernel VC、RVV45个循环/helper VC已分别通过完整模块检查；新入口复用旧模型
+与证明，端到端接受边界仍见[检查点](CHECKPOINT.zh-CN.md)。以下旧lowering路径保留作历史参考。
+
 本目录为 `c-shim-v2` 工作分支准备，固定基线是 Keagan 上游 `be16280c7812a7459c26c3ce82a47339a3d07718`。目标沿用 CSim 的审查方式：每个 case 只让人审查原始 NEON/RVV 两个函数、`interface.json`、`spec.h` 和 `mapper.c`；共用的 intrinsic 实现、内存与浮点模型、表示转换工具单独按版本审查。
 
 后续已检查进展和恢复入口见 [当前 checkpoint](CHECKPOINT.zh-CN.md)。下面48项等计数保留初始基线范围；新增模块独立报告，不重复相加。

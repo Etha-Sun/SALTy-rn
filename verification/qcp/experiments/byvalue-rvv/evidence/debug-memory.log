@@ -1,0 +1,25 @@
+1 goal
+  
+  output_pre, input_b_pre, input_a_pre, batch_pre : Z
+  B, A : list fp32
+  n_2, vl : Z
+  PreH1 : 0 < batch_pre ÷ 4
+  PreH2 : batch_pre ÷ 4 <= 4611686018427387900
+  PreH3 : 0 <= n_2
+  PreH4 : n_2 <= batch_pre ÷ 4
+  PreH5 : Zlength A = batch_pre ÷ 4 + 3
+  PreH6 : Zlength B = batch_pre ÷ 4 + 3
+  PreH10 : 0 < n_2
+  PreH11 : 0 < vl
+  PreH12 : vl <= 32
+  PreH13 : vl <= n_2
+  PreH14 : vl = vadd_vl n_2
+  HAlen :
+    Zlength (sublist (batch_pre ÷ 4 - n_2) (batch_pre ÷ 4 - n_2 + vl) A) = vl
+  HBlen :
+    Zlength (sublist (batch_pre ÷ 4 - n_2) (batch_pre ÷ 4 - n_2 + vl) B) = vl
+  ============================
+  FloatArray.undef_seg output_pre (batch_pre ÷ 4 - n_2 + vl) (batch_pre ÷ 4) **
+  FloatArray.undef_full (output_pre + (batch_pre ÷ 4 - n_2) * 4) vl
+  |-- FloatArray.undef_seg output_pre (batch_pre ÷ 4 - n_2 + vl)
+        (batch_pre ÷ 4)
