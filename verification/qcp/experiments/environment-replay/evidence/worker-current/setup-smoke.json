@@ -1,0 +1,84 @@
+{
+  "passed": true,
+  "scope": "Real external import/config/tool forwarding smoke only; no VADD or GEMM replay",
+  "records": [
+    {
+      "label": "entry-real-import",
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/candidate/verification/qcp/tools/setup_package_environment.py",
+        "--case",
+        "f32-vadd",
+        "--out",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/runs/smoke01/prepared",
+        "--check"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 6.6144430849235505
+    },
+    {
+      "label": "forward-version",
+      "command": [
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/runs/smoke01/prepared/bin/qcp-env",
+        "coqc",
+        "--version"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.1308232711162418
+    },
+    {
+      "label": "reject-command",
+      "command": [
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/runs/smoke01/prepared/bin/qcp-env",
+        "sh",
+        "-c",
+        "exit 0"
+      ],
+      "exit": 1,
+      "expected_exit": 1,
+      "seconds": 0.019932492868974805
+    },
+    {
+      "label": "reject-case",
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/candidate/verification/qcp/tools/setup_package_environment.py",
+        "--case",
+        "unknown",
+        "--out",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/runs/smoke01/invalid-case"
+      ],
+      "exit": 2,
+      "expected_exit": 2,
+      "seconds": 0.046586011070758104
+    },
+    {
+      "label": "reject-layout",
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/candidate/verification/qcp/tools/setup_package_environment.py",
+        "--layout",
+        "unknown",
+        "--out",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/environment-current-base/runs/smoke01/invalid-layout"
+      ],
+      "exit": 2,
+      "expected_exit": 2,
+      "seconds": 0.046403886983171105
+    }
+  ],
+  "actual_import_exit": 0,
+  "private_VADD87_flags_byte_identical": true,
+  "cwd_comparison": "repository roots intentionally relocated; each config cwd equals its own source root",
+  "tools_identical_to_accepted_private_run": true,
+  "unknown_case_layout_command_rejected": true,
+  "old_tested_code_bytes_preserved": true,
+  "new_C_VCs": 0,
+  "proof_checker_started": false,
+  "Dune_real_build_tested": false,
+  "source_to_vo_established": false,
+  "entry_sha256": "9e1ea22d480581a2b63df6d62abb45b5b0e8078994fce92752a42ed89a7b2d33",
+  "patch_sha256": "26b6939d4bf82225954890bde3a7d76f104f097dfb9f5ce5a8a8208fec3744b3"
+}
