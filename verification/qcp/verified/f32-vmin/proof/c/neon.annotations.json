@@ -1,0 +1,11 @@
+{
+  "invariant": "/*@ Inv Assert exists (k:Z),\nfp32_length(A) == batch@pre/4+3 && fp32_length(B) == batch@pre/4+3 &&\n0 <= k && k*4 + batch == batch@pre && batch % 4 == 0 &&\n0 <= batch && batch <= batch@pre && k <= batch@pre/4 &&\n(batch == 0 ||\n (batch == 4 && batch/4 == 1) ||\n (batch == 8 && batch/4 == 2) ||\n (batch == 12 && batch/4 == 3) ||\n (16 <= batch && 4 <= batch/4)) &&\nparams == params@pre && params != 0 &&\ninput_a == input_a@pre + k && input_b == input_b@pre + k && output == output@pre + k &&\ninput_a != 0 && input_b != 0 && output != 0 &&\n\nFloatArray::full(input_a@pre,k,fp32_slice(0,k,A)) *\nFloatArray::full(input_a,batch/4+3,fp32_slice(k,batch@pre/4+3,A)) *\nFloatArray::full(input_b@pre,k,fp32_slice(0,k,B)) *\nFloatArray::full(input_b,batch/4+3,fp32_slice(k,batch@pre/4+3,B)) *\nFloatArray::full(output@pre,k,mm_arm_values(k,A,B)) * FloatArray::undef_full(output,batch/4) */",
+  "where": {
+    "vminq_f32(va, vb)": "a = &va, b = &vb",
+    "vst1q_f32(output, vacc)": "a = &vacc",
+    "vget_low_f32(vacc)": "a = &vacc",
+    "vget_high_f32(vacc)": "a = &vacc",
+    "vst1_f32(output, vacc_lo)": "a = &vacc_lo",
+    "vst1_lane_f32(output, vacc_lo, 0)": "a = &vacc_lo"
+  }
+}

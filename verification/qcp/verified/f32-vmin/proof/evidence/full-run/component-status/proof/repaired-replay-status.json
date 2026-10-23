@@ -1,0 +1,466 @@
+{
+  "status": "repaired_native_checked",
+  "variant": "repaired",
+  "kernel": "f32-vmin",
+  "replay_passed": true,
+  "fresh_utc": "2026-10-23T08:28:25.240424+00:00",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn",
+  "records": [
+    {
+      "label": "patch-exact-application",
+      "command": [
+        "patch",
+        "--batch",
+        "--fuzz=0",
+        "-p1",
+        "-i",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/proof/repair.patch"
+      ],
+      "cwd": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn/patch-audit",
+      "exit_code": 0,
+      "seconds": 0.005013576941564679,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn/patch-exact-application.log",
+      "log_sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "label": "build",
+      "command": [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-omit-frame-pointer",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/shim/runtime.h",
+        "-DCASE_MINIMUM",
+        "-DREPAIRED_VARIANT",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/shim/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/impl/testRVV.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn/replay"
+      ],
+      "cwd": "/srv/home/yuechunsun/tools/qcp-simple-kernels",
+      "exit_code": 0,
+      "seconds": 3.5293273739516735,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn/build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "replay",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn/replay"
+      ],
+      "cwd": "/srv/home/yuechunsun/tools/qcp-simple-kernels",
+      "exit_code": 0,
+      "seconds": 0.012206426123157144,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/.build/native-repaired-haqwqewn/replay.log",
+      "log_sha256": "fad3495b8cd1140a370ccb53305e950a931bbdbeff1d605fb6d3f9868ffd2a3d"
+    }
+  ],
+  "scope": "Finite native C-shim replay, not Arm/RVV hardware execution or formal kernel correctness.",
+  "complete_qcp_kernel_proofs": 0,
+  "observation": "Numerical equality or both NaN; payload and zero sign ignored publicly, known-bit oracle checks zero sign separately.",
+  "originals": {
+    "neon": {
+      "path": "kernels/source/f32-vmin.c",
+      "copy": "impl/testNEON.c",
+      "sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1"
+    },
+    "rvv": {
+      "path": "kernels/target/f32-vmin.c",
+      "copy": "impl/testRVV.c",
+      "sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e"
+    }
+  },
+  "host": {
+    "platform": "Linux-5.15.0-198-generic-x86_64-with-glibc2.35",
+    "machine": "x86_64"
+  },
+  "repair": {
+    "schema": 1,
+    "kernel": "f32-vmin",
+    "implementation_variant": "repaired",
+    "version": "frama-c-nan-propagation-v1",
+    "user_authorization": "User explicitly requested modifying impl to fix the bug and retaining only the repair record and relevant counterexamples; no separate repaired-case directory.",
+    "implementation": "impl/testRVV.c",
+    "original_upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "original_rvv_path": "kernels/target/f32-vmin.c",
+    "original_rvv_sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e",
+    "repaired_rvv_sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+    "patch": "proof/repair.patch",
+    "patch_sha256": "c170cd7925a11ec21067145e1ad384d7577aabdb72c515d8d496efdda68c935f",
+    "historical_repair": {
+      "branch": "feat/shim-c",
+      "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+      "path": "verified/f32-vmin/rvv.c",
+      "sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+      "byte_identical": true
+    },
+    "change": "Keep the original RVV min/max intrinsic; detect each input NaN, compute a quiet NaN using RVV addition, then merge this result for either NaN input.",
+    "observation": "Numerical equality or both NaN. NaN payload/sign and floating exception flags/traps are not observed.",
+    "boundaries": [
+      "This is a repair of the RVV implementation, not a change to either architecture min/max intrinsic semantics.",
+      "The unconditional extra addition can set different floating exception flags.",
+      "Exact Arm NaN payload/sign propagation is not reproduced by canonical RVV NaNs.",
+      "Native regression is not a completed QCP or hardware theorem."
+    ],
+    "original_counterexample_evidence": {
+      "path": "proof/history/original-121-case-replay-status.json",
+      "sha256": "c2288a4e26abd2e473da97f26b7396d1ec921ad9743f080a52baa75a7a4c5d26",
+      "cases": 121,
+      "counterexamples": 44
+    }
+  },
+  "patch_exact_application_checked": true,
+  "selected_sources": {
+    "neon": {
+      "path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/impl/testNEON.c",
+      "sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1"
+    },
+    "rvv": {
+      "path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vmin/impl/testRVV.c",
+      "sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f"
+    }
+  },
+  "compiler": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "cases": 275,
+  "counterexamples": [],
+  "representative_results": [
+    {
+      "kind": "case",
+      "pattern": "left-qnan-positive",
+      "n": 1,
+      "input_a_bits": "7fc12345",
+      "input_b_bits": "3f800000",
+      "neon_output_bits": "7fc12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "right-qnan-positive",
+      "n": 1,
+      "input_a_bits": "3f800000",
+      "input_b_bits": "7fc12345",
+      "neon_output_bits": "7fc12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "left-negative-qnan",
+      "n": 1,
+      "input_a_bits": "ffc23456",
+      "input_b_bits": "c0000000",
+      "neon_output_bits": "ffc23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "right-negative-qnan",
+      "n": 1,
+      "input_a_bits": "c0000000",
+      "input_b_bits": "ffc23456",
+      "neon_output_bits": "ffc23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "finite-order",
+      "n": 1,
+      "input_a_bits": "c0000000",
+      "input_b_bits": "3f800000",
+      "neon_output_bits": "c0000000",
+      "rvv_output_bits": "c0000000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "finite-reverse",
+      "n": 1,
+      "input_a_bits": "3f800000",
+      "input_b_bits": "c0000000",
+      "neon_output_bits": "c0000000",
+      "rvv_output_bits": "c0000000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "signed-zero",
+      "n": 1,
+      "input_a_bits": "80000000",
+      "input_b_bits": "00000000",
+      "neon_output_bits": "80000000",
+      "rvv_output_bits": "80000000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "reverse-signed-zero",
+      "n": 1,
+      "input_a_bits": "00000000",
+      "input_b_bits": "80000000",
+      "neon_output_bits": "80000000",
+      "rvv_output_bits": "80000000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "both-qnan",
+      "n": 1,
+      "input_a_bits": "7fc12345",
+      "input_b_bits": "ffc23456",
+      "neon_output_bits": "7fc12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "infinities",
+      "n": 1,
+      "input_a_bits": "ff800000",
+      "input_b_bits": "7f800000",
+      "neon_output_bits": "ff800000",
+      "rvv_output_bits": "ff800000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "subnormal",
+      "n": 1,
+      "input_a_bits": "00000001",
+      "input_b_bits": "80000001",
+      "neon_output_bits": "80000001",
+      "rvv_output_bits": "80000001",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "left-snan-positive",
+      "n": 1,
+      "input_a_bits": "7fa12345",
+      "input_b_bits": "3f800000",
+      "neon_output_bits": "7fe12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "right-snan-positive",
+      "n": 1,
+      "input_a_bits": "3f800000",
+      "input_b_bits": "7fa12345",
+      "neon_output_bits": "7fe12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "left-snan-negative",
+      "n": 1,
+      "input_a_bits": "ffa23456",
+      "input_b_bits": "c0000000",
+      "neon_output_bits": "ffe23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "right-snan-negative",
+      "n": 1,
+      "input_a_bits": "c0000000",
+      "input_b_bits": "ffa23456",
+      "neon_output_bits": "ffe23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "snan-before-qnan",
+      "n": 1,
+      "input_a_bits": "7fa12345",
+      "input_b_bits": "ffc23456",
+      "neon_output_bits": "7fe12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "qnan-before-snan",
+      "n": 1,
+      "input_a_bits": "ffc23456",
+      "input_b_bits": "7fa12345",
+      "neon_output_bits": "7fe12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "qnan-positive-inf",
+      "n": 1,
+      "input_a_bits": "7fc12345",
+      "input_b_bits": "7f800000",
+      "neon_output_bits": "7fc12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "positive-inf-qnan",
+      "n": 1,
+      "input_a_bits": "7f800000",
+      "input_b_bits": "7fc12345",
+      "neon_output_bits": "7fc12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "qnan-negative-inf",
+      "n": 1,
+      "input_a_bits": "ffc23456",
+      "input_b_bits": "ff800000",
+      "neon_output_bits": "ffc23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "negative-inf-qnan",
+      "n": 1,
+      "input_a_bits": "ff800000",
+      "input_b_bits": "ffc23456",
+      "neon_output_bits": "ffc23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "qnan-zero",
+      "n": 1,
+      "input_a_bits": "7fc12345",
+      "input_b_bits": "00000000",
+      "neon_output_bits": "7fc12345",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "negative-zero-qnan",
+      "n": 1,
+      "input_a_bits": "80000000",
+      "input_b_bits": "ffc23456",
+      "neon_output_bits": "ffc23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "both-snan",
+      "n": 1,
+      "input_a_bits": "ffa23456",
+      "input_b_bits": "7fa12345",
+      "neon_output_bits": "ffe23456",
+      "rvv_output_bits": "7fc00000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    },
+    {
+      "kind": "case",
+      "pattern": "finite-positive-inf",
+      "n": 1,
+      "input_a_bits": "3f800000",
+      "input_b_bits": "7f800000",
+      "neon_output_bits": "3f800000",
+      "rvv_output_bits": "3f800000",
+      "equivalent_return": 1,
+      "all_lanes_match_known_oracle": true,
+      "frame_preserved": true
+    }
+  ],
+  "primitive_checks": 2211,
+  "asan_ubsan_checked": true,
+  "wrong_result_rejected": true,
+  "input_and_padding_frame_preserved": true,
+  "output_prefix_suffix_frame_preserved": true,
+  "params_frame_preserved": true,
+  "input_hashes": {
+    "spec.c": "e23b6f5465ab12583aa999b0fa1588c7b64d50a794d7ec61a4dedd44c49c1a92",
+    "shim/runtime.h": "b295e2052a9638440fd1cea46c0f3fd81d569d8c136320227b4690bc69e71632",
+    "shim/harness.c": "6a343eaf6456b7a9b4a35035fa3b5085544c279508a98f073157da8a5f810c41",
+    "impl/testNEON.c": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1",
+    "impl/testRVV.c": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+    "proof/semantics.json": "752b35a3c0f8d389ea79a679e73f7c19986f2af06f66758ff3a3d1126320185b",
+    "proof/originals.json": "7b208616357cac889a57c378319c855bbbb53a105af1367d6546253e0749060f",
+    "proof/repair.json": "31abc643cc17e54d7779ff5f239a91951f3e87cc18054ea6cccbc2a743ec2e14",
+    "proof/repair.patch": "c170cd7925a11ec21067145e1ad384d7577aabdb72c515d8d496efdda68c935f",
+    "proof/replay.py": "971b94fbf7d5276b18a810adb7c12c214a0b5c435e2628001dbbf6a2fc8e0fbf"
+  },
+  "execution_concurrency": 1,
+  "actual_hardware_executed": false,
+  "oracle": "Independent literal expected output bits for both original and repaired variants, including sNaN/qNaN/Inf/zeros.",
+  "limits": [
+    "No complete QCP proof or hardware execution",
+    "NaN payload/sign differ and are outside requested observation",
+    "Unconditional RVV addition can change exception flags; flags/traps remain outside observation"
+  ]
+}

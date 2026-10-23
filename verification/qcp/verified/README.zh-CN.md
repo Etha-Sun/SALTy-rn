@@ -8,7 +8,7 @@
 运行某个 case：
 
 ```bash
-python3 verification/qcp/verified/f32-vadd/proof/check.py --jobs 32
+python3 verification/qcp/verified/f32-vadd/proof/check.py --jobs 16
 ```
 
 候选保留在 ../candidates；必须完整检查实际 kernel、shim、比较器、wrapper 与 Coq 依赖后才能入库。

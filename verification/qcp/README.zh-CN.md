@@ -1,6 +1,6 @@
-当前 **7/40**（VADD、VSUB、VMUL、VDIV、VMULC、VLRELU、VCMUL，公开契约下的 C-shim 模块化部分正确性）。
+当前 **8/40**（VADD、VSUB、VMUL、VDIV、VMULC、VLRELU、VCMUL、VMIN修复版，公开契约下的 C-shim 模块化部分正确性）。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
-原始 [VCMUL](verified/f32-vcmul/README.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
+原始 [VCMUL](verified/f32-vcmul/README.md) 和 [VMIN修复版](verified/f32-vmin/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
 
 2026-10-23 集成了环境 PR #5、GEMM 模型 PR #6、前端复现 PR #7 和 u8 尾存储 PR #8。
 独立重放与本次 GEMM 推进见 [集成记录](audit/integration-20261023/README.zh-CN.md)。

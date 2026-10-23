@@ -28,12 +28,12 @@
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **7/40**；前一项 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **8/40**；前一项 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 正在运行的全案输入必须冻结：
 
 - VCMUL 已通过：`verification/qcp/verified/f32-vcmul/.build/full-_e5udkje`，原始实现，旧批次 jobs4；11 C 单元/629 字段，123 本地源 + 最终门禁。完整 661 项 Assumptions 已归档。
-- FMin：`verification/qcp/candidates/f32-vmin/.build/full-xlbp0zhc`，修复版，jobs16；12 C 单元/1188 字段，140 本地源 + 最终门禁。
+- FMin 已通过：`verification/qcp/verified/f32-vmin/.build/full-xlbp0zhc`，RVV 修复版，jobs16；12 C 单元/1188 字段，140 本地源 + 最终门禁。1216 项 Assumptions 已归档。
 - FMax：所有组件通过，root 已启动 full jobs16；具体目录及分工读最新 STATE 和 `.build/team-handoff.json`。
 
 恢复时检查真实进程和 run/status.json，不因历史 `passed`、单项 Qed 或模块比例推断全案完成；超时/环境错误与反例分开。

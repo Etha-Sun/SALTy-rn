@@ -1,0 +1,1494 @@
+{
+  "schema": 2,
+  "kernel": "f32-vmin",
+  "variant": "repaired",
+  "whole_kernel_proved": true,
+  "originals": {
+    "kernel": "f32-vmin",
+    "upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "files": {
+      "neon": {
+        "path": "kernels/source/f32-vmin.c",
+        "copy": "impl/testNEON.c",
+        "sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1"
+      },
+      "rvv": {
+        "path": "kernels/target/f32-vmin.c",
+        "copy": "impl/testRVV.c",
+        "sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e"
+      }
+    }
+  },
+  "repair": {
+    "schema": 1,
+    "kernel": "f32-vmin",
+    "implementation_variant": "repaired",
+    "version": "frama-c-nan-propagation-v1",
+    "user_authorization": "User explicitly requested modifying impl to fix the bug and retaining only the repair record and relevant counterexamples; no separate repaired-case directory.",
+    "implementation": "impl/testRVV.c",
+    "original_upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "original_rvv_path": "kernels/target/f32-vmin.c",
+    "original_rvv_sha256": "76fd6aefcbf9f82bf36ead665072d3a24285c1dc63e87ec17e66efa8af39949e",
+    "repaired_rvv_sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+    "patch": "proof/repair.patch",
+    "patch_sha256": "c170cd7925a11ec21067145e1ad384d7577aabdb72c515d8d496efdda68c935f",
+    "historical_repair": {
+      "branch": "feat/shim-c",
+      "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+      "path": "verified/f32-vmin/rvv.c",
+      "sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f",
+      "byte_identical": true
+    },
+    "change": "Keep the original RVV min/max intrinsic; detect each input NaN, compute a quiet NaN using RVV addition, then merge this result for either NaN input.",
+    "observation": "Numerical equality or both NaN. NaN payload/sign and floating exception flags/traps are not observed.",
+    "boundaries": [
+      "This is a repair of the RVV implementation, not a change to either architecture min/max intrinsic semantics.",
+      "The unconditional extra addition can set different floating exception flags.",
+      "Exact Arm NaN payload/sign propagation is not reproduced by canonical RVV NaNs.",
+      "Native regression is not a completed QCP or hardware theorem."
+    ],
+    "original_counterexample_evidence": {
+      "path": "proof/history/original-121-case-replay-status.json",
+      "sha256": "c2288a4e26abd2e473da97f26b7396d1ec921ad9743f080a52baa75a7a4c5d26",
+      "cases": 121,
+      "counterexamples": 44
+    }
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "03824949a66ab6db1429bd078d10d1bc2d75706aa1b756c547f9a7ff541c77cb"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "sha256": "20aa966862f32fad6a2db472037217ef19d0521ce61e4590098a1d4a0e846048"
+    },
+    {
+      "path": "impl/testNEON.c",
+      "sha256": "e7c9e8d03d5bd59bcb91167285c54565a571a406eae8fb9554e86a639a1e7be1"
+    },
+    {
+      "path": "impl/testRVV.c",
+      "sha256": "1ced2ed27e53c16b97d914c6ce0190b4526bb105299e8573f822336c8e01261f"
+    },
+    {
+      "path": "proof/assumption-audit.json",
+      "sha256": "454baab0842634737e9613697555ef230c3270e963eb69aa42bb2966ebe7678d"
+    },
+    {
+      "path": "proof/audit_relocation.py",
+      "sha256": "17ff0b68561c05287798f4ad5c04c101f514639c51ef97824b72c06df40fbdef"
+    },
+    {
+      "path": "proof/bit-helper-provenance.json",
+      "sha256": "f70c619adade2b2cf73331615daf763717fb8bcf93c60bc0b68f8f45eee55e3f"
+    },
+    {
+      "path": "proof/c/neon.annotations.json",
+      "sha256": "bdc73bd9b02bc0f6d2e26ce031204c594d5f5a045e8e638573b120ef7059cf62"
+    },
+    {
+      "path": "proof/c/rvv.annotations.json",
+      "sha256": "4d931925b839ca6c25ce85505a1427dae8c41c8fe903d57181f3818e09c9f432"
+    },
+    {
+      "path": "proof/c/rvv_fmin.strategies",
+      "sha256": "0ce918544ecee87597b3f37d15986e31ce95bfd00e41567b3f7954bd7c2efbc2"
+    },
+    {
+      "path": "proof/c/wrapper.annotations.json",
+      "sha256": "5db926a5b94b71b44e60556ce8ecc7093c40625ebc35480b024af72bdb4eed7e"
+    },
+    {
+      "path": "proof/check_formal_primitives.py",
+      "sha256": "6e113401e9b95211711f23db78e83d95f1eb22b9186e9770f64a363c72575479"
+    },
+    {
+      "path": "proof/check_full.py",
+      "sha256": "5f7aead6cfbd7fb05bfb628c253d99bc5d4c51d86fcad64474f7ac0c2b48fbc4"
+    },
+    {
+      "path": "proof/check_memory.py",
+      "sha256": "af8fead745bd383f3ee43a9c62fa95d15ec8d5227c1b25b5577e3059f8e18da2"
+    },
+    {
+      "path": "proof/check_models.py",
+      "sha256": "e76557daa0fad83bc786b88cbfd3201c2ad4dcd8fe527ea2ae7fab37d8e27b76"
+    },
+    {
+      "path": "proof/check_neon.py",
+      "sha256": "0dc62542f19a411a9925902866260b43dadf43b3250e09000b22b1dea0562728"
+    },
+    {
+      "path": "proof/check_rvv.py",
+      "sha256": "e71c571adb229f53d6530b698db349571a968760173f9e15777ac9673e99e6ff"
+    },
+    {
+      "path": "proof/check_scalar_native.py",
+      "sha256": "6760bf7e4ba18974d40f04730924222d03002b7ce38edfcff05e344bd933faa6"
+    },
+    {
+      "path": "proof/check_self_compare.py",
+      "sha256": "91b7fef6f7d298060be97a9be047c39dc87bb461a239e1b82ef2f916b4af54de"
+    },
+    {
+      "path": "proof/check_vectors.py",
+      "sha256": "f5f284b2cc0ab082e26aaa29a13896dd0206eef491edea82f88721fa93c1cc4b"
+    },
+    {
+      "path": "proof/check_wrapper.py",
+      "sha256": "e14709955d422a45a169f8f0e74b7c0dde31806ce76c384eb1b49cab7be427d6"
+    },
+    {
+      "path": "proof/coq/Bits.v",
+      "sha256": "6a1212a585c087bde1ee41ec322d6f96ea221de99e90ad343893c2db37c83849"
+    },
+    {
+      "path": "proof/coq/BitsChecked.v",
+      "sha256": "e206d3c599c210e695787124a0fe9c67925b47144dcdf12595b4546c3accafc5"
+    },
+    {
+      "path": "proof/coq/BorrowChecked.v",
+      "sha256": "a03ec35d05cd8fd635ca2dafbe3e023eb2f67af0169c8a19f221350288a0e916"
+    },
+    {
+      "path": "proof/coq/Model.v",
+      "sha256": "098aecc08a6c36d7912fa2e010fcec51839bf7bc6b3272c81aeb0ab74c21cab1"
+    },
+    {
+      "path": "proof/coq/NanFacts.v",
+      "sha256": "e6b8244c7cee03b7c847e8009d94cacf03f97cae03368e770897836723e6f7ae"
+    },
+    {
+      "path": "proof/coq/NeonBranches.v",
+      "sha256": "acb585eda78d8cc087ecc8b285d5ebc157c6c1b54c964fe06d44b99d07196de1"
+    },
+    {
+      "path": "proof/coq/NeonCalls.v",
+      "sha256": "871cecfdc8a037c69da211ddd8ed0ad23d9f79ecc50f8c767456e982f7b89c04"
+    },
+    {
+      "path": "proof/coq/NeonChecked.v",
+      "sha256": "c634d9aecc67fca5afb4b1195ee64376198f57248743199fdea56d684f32e04c"
+    },
+    {
+      "path": "proof/coq/NeonLoop.v",
+      "sha256": "7275b70f122a24e30c8ca1d367c23332e0b63818d7cbea0477d416c7dfaba5b6"
+    },
+    {
+      "path": "proof/coq/NeonMemory.v",
+      "sha256": "f1b3dbe500e905cc262cfe29446862af2958dce9fcddfcb743a6cdebc112d7fd"
+    },
+    {
+      "path": "proof/coq/NeonMemoryHelpers.v",
+      "sha256": "a4724bcbde72fa99e945713ee26c6dc699ce17633dbdc745b4171a44a0650b0c"
+    },
+    {
+      "path": "proof/coq/NeonPure.v",
+      "sha256": "3069605e8117ef92839255da2789c0eea41f538b1a7ba4dbda959bcea8aa12fc"
+    },
+    {
+      "path": "proof/coq/NeonReturns.v",
+      "sha256": "49c28c06114aceebea51c2369f0da611c48041bcb9599a600360642bc19624cb"
+    },
+    {
+      "path": "proof/coq/NeonSupport.v",
+      "sha256": "35aec64568e442f6de9130823e026820e3e7841c39302aa5e0fa0375307828e7"
+    },
+    {
+      "path": "proof/coq/Observation.v",
+      "sha256": "a459d5a30eb655ca4bf83b415deb6f6e35dac6a4f85f8845d806b616702dfd1f"
+    },
+    {
+      "path": "proof/coq/ProgramModel.v",
+      "sha256": "d20af3431020d29fe132f14f55e138b7da8a0f3271964cd847696954248cedd2"
+    },
+    {
+      "path": "proof/coq/RvvCalls.v",
+      "sha256": "26f40d1bbe1448c4f6e7857c8a2f64f73183365cdc1b9e392b5bc5f69f5c5a39"
+    },
+    {
+      "path": "proof/coq/RvvChecked.v",
+      "sha256": "fc75896dd70dad120b8948014c6aac12e8f9db657d77029c49d3bb2b72d27595"
+    },
+    {
+      "path": "proof/coq/RvvListSupport.v",
+      "sha256": "445b923db9324ab9520a6aa7ae0347cc5e83e0bcc227d8e50773aaf73c9e5150"
+    },
+    {
+      "path": "proof/coq/RvvMemory.v",
+      "sha256": "240289ab2f1ffafeac6e2a91e82a26291daf0f49d5bc7524b8c1dab8757f3d37"
+    },
+    {
+      "path": "proof/coq/RvvResult.v",
+      "sha256": "70f295e8e481dcf604451db4eed18ffa9b94e76c0df90193f16f0632d4283c96"
+    },
+    {
+      "path": "proof/coq/RvvStrategy.v",
+      "sha256": "811a0c7157725e09495b5d0c17d35af6187e4673298f30fc81d31d8e86ebb779"
+    },
+    {
+      "path": "proof/coq/ScalarChecked.v",
+      "sha256": "8fe1372220bd8ac8e76d62cb16556ea9ccd9c263f936ac5650dd834fceaeb1cf"
+    },
+    {
+      "path": "proof/coq/SelfChecked.v",
+      "sha256": "d69eea9e23c1d35c588e453de84663cd5231f9b5d21721aa9bb4014ba1080b13"
+    },
+    {
+      "path": "proof/coq/Types.v",
+      "sha256": "d44302861bc2a76d3d8226594e3fcbf6990ab51edb3bd649bb2c4306ba26cb54"
+    },
+    {
+      "path": "proof/coq/VectorAddChecked.v",
+      "sha256": "1c9603c19e2e01fb680b0d30ce5b22fcaea0cbfc22ea3449eec8c6855828c49a"
+    },
+    {
+      "path": "proof/coq/VectorChecked.v",
+      "sha256": "51c1a70425b6244690c5457a9000d8f573a3e3353bac604378e1f91bc4067e69"
+    },
+    {
+      "path": "proof/coq/VectorFastFrame.v",
+      "sha256": "8424b7b64ba1c698a29402c9af987e3adbfc9df41a940910ede17ccf7bc78348"
+    },
+    {
+      "path": "proof/coq/VectorMergeChecked.v",
+      "sha256": "9c562315825146fa55df6b1471f903196231ed4824e75493c19ab12a6fce299b"
+    },
+    {
+      "path": "proof/coq/VectorMinChecked.v",
+      "sha256": "70a1f3ef221a411e71df03da08e15d8c8b047e4edc5c4c4ce3c8fb0cd47882a6"
+    },
+    {
+      "path": "proof/coq/VectorModel.v",
+      "sha256": "3acda1f3b6065cced91b18ecee1da64bbeefec2f373df388fc9a39f3c58d086a"
+    },
+    {
+      "path": "proof/coq/VectorNeonChecked.v",
+      "sha256": "da0755c9f6477679e9ddd2ceb5a050bc22eb714e342fe2befd5661ccf9eb50bb"
+    },
+    {
+      "path": "proof/coq/VectorScalarChecked.v",
+      "sha256": "3550d0b071a593a11913a650a50d33618628c8d34fce0390c03b1e8f704e95d1"
+    },
+    {
+      "path": "proof/coq/WrapperCalls.v",
+      "sha256": "3ee666790354312d68964f9babe843a0fa22a9f63950e6ae170f26155aa5499d"
+    },
+    {
+      "path": "proof/coq/WrapperChecked.v",
+      "sha256": "59a104b93da6bb207dc383e22ebf4cd2d390d4b1850517b0040d4f9bc9dd9efc"
+    },
+    {
+      "path": "proof/coq/WrapperHelpers.v",
+      "sha256": "a0461393b0cd24e349d67831bc4f7e55a4670c52eb04676d5c4904b6e2154ded"
+    },
+    {
+      "path": "proof/coq/memory_rvv_load_checked.v",
+      "sha256": "fc4876581d8095d995ec93af319e204de3e200c5892713dc86ae1f9846e2d9ae"
+    },
+    {
+      "path": "proof/coq/memory_rvv_store_checked.v",
+      "sha256": "7e5aed22cae311ba0c0f0666930714db1129a8e474885db89e9c431880d65d0d"
+    },
+    {
+      "path": "proof/coq/rvv_control_checked.v",
+      "sha256": "c93ef7df83e9498e4df9987da7d1eb7820d8eb132454fddc83fc7b947b8020ef"
+    },
+    {
+      "path": "proof/coq/rvv_fmin_strategy_proof.v",
+      "sha256": "d5a92d0ee0015705c8c05309dc9961a2bcd6ecef8cc49b2c659a8b28e9a88c55"
+    },
+    {
+      "path": "proof/evidence/candidate-history/manifest-absence.json",
+      "sha256": "c61a483db875168937397a69be711f36a2cf77ab123131384c02cbca2dfaa817"
+    },
+    {
+      "path": "proof/evidence/candidate-history/status.json",
+      "sha256": "c9be49d6af85161e64c4003dc43223b412750d3bb4a2d849de7a428a2c4385a2"
+    },
+    {
+      "path": "proof/evidence/full-run/FinalCaseCheck.log",
+      "sha256": "b45a97ff8472c0c7f15a7408c28e4a28342d8f2bf7842617c5a04cf0f1489f2d"
+    },
+    {
+      "path": "proof/evidence/full-run/FinalCaseCheck.v",
+      "sha256": "2570efed471106fe821193602a82b798c6ca367535b28cb45a7f7d5762f6d5eb"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/formal-primitives-status.json",
+      "sha256": "f320e00338f77bcb910a1852ed9633a8da4120abbb06e4f598d2c3f7d15c4d18"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/history/original-121-case-replay-status.json",
+      "sha256": "c2288a4e26abd2e473da97f26b7396d1ec921ad9743f080a52baa75a7a4c5d26"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/memory-proof-status.json",
+      "sha256": "3c1c9a6ef270df8d074939116fecc8ae327e1a3d7deebc4d4f094fdbfc61b1c2"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/models-status.json",
+      "sha256": "40ede44100d2b24d981b59914416bee970701771991b44bca6bdeb2995adbc9d"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/neon-proof-status.json",
+      "sha256": "4be693e9ad5b89282c5d93d24a0938270dcbc5fb15d902767ad3b4dc50d439dd"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/repaired-replay-status.json",
+      "sha256": "741190d3e17e5568d71f2ca8b09e699948b6e8c051e6276ed6a7b7364ef194c4"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/rvv-proof-status.json",
+      "sha256": "ec2452d7ace2b0671edcfa27d122c0a018842eb7574f911ec3ced8dabbcc63af"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/scalar-native-status.json",
+      "sha256": "cc1af23f1dc0f3b884d7b70d11f721ec699858bd0a3e4eb73a539f887e76723b"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/self-compare-status.json",
+      "sha256": "174dd89847f53b9ceca2d532c23eec49b79825fc286f4f9c063cd7c00d266ace"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/vector-status.json",
+      "sha256": "10d09e4031c16a0b297868146b5e0edd5bd485865c4994f0ca92bf8cc0443ef4"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/wrapper-proof-status.json",
+      "sha256": "38196ec245f84bd79837841d4fd1c8921404d0691a6a39605ebd6b16e1345b58"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_adapted.log",
+      "sha256": "9403d63da511e6b74beb009dd13a81c524599b6225d0d0b6353edda7de62bd6b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_copy_checked.log",
+      "sha256": "640269ec70f47f4fee84695c2f6c62080acc91f49997b1b967c6e7caca15934c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_full_checked.log",
+      "sha256": "d9ac6e63b5127a2a0455801a75fdf4966dba7b7fcd13dd610f1fc2c508696fec"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_load_calls.log",
+      "sha256": "046bb77c2043ee8a9b58628ec4e631b925c1c7216f2a2008a99abd2f16dd15b0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_pure_tail.log",
+      "sha256": "7822ae858332b31904a95f1742e6ab3a248db32a13c1fe9aef5cada3987c0597"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_reused.log",
+      "sha256": "3148fa888b903d889bb834a50d93a25bd64169a5bdfc6dba237286e8bf184612"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_store_calls.log",
+      "sha256": "0aa115f5ccbb001f7a7b6650a8e8c3a29ebd58ad684fe966d528a3e813179278"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_unit_goal.log",
+      "sha256": "c305bb16c1ff8665217fa5b850a34bc712b5c8c23b2730795d197d00221e0f8a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-shim_checked.log",
+      "sha256": "d3b331260c4336c69bb06b5c782c27bf5ecbc5fe4f600550441d9a8f81a50324"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-shim_unit_goal.log",
+      "sha256": "7db15fd8d1f66b50aa066b0eba3651e56c3a9ef4b17c1687cb693c6aa521fd64"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-Layout.log",
+      "sha256": "9fb9e46628123f3f06691dad92a309f6008b5c70789e43edc7bcabd52992544e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-MacroKernelCalls.log",
+      "sha256": "74e8a5a3b5c30f542932427366ce92764efc40e077ee046fa16524f3be6bbfd3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-MacroKernelChecked.log",
+      "sha256": "d453d72e29335c2e05668e2d01f3dbe5ca7aca4a8f2af057295d3f38689dba9d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-MacroKernelMemory.log",
+      "sha256": "4c1e8398d690961d317c912bd987a8095ed5361e214a5f522f7467be3d5af8d8"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-macro_unit_goal.log",
+      "sha256": "0a84a072e154f3862ca6d90e10363f532d498a7358a2fdb74d9c1811e0364a37"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-shim_checked.log",
+      "sha256": "55d5e454b0f0b6aab2908b79f949b21872ce26123db10166e58e2261b8a4af07"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-shim_goal.log",
+      "sha256": "816d4c9d44e8a575711287d5ea3517db3fefea5fb7225ece6710e2959f543343"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-Bits.log",
+      "sha256": "ca96f953c662a9263ed24b55e5e427e4149bcf3761c32400039553e1f39ab00d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-BitsChecked.log",
+      "sha256": "8b5fb0f769a4c514c46c3d81a9c285f315be65b89deed4eb20b9e6e3427040d5"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-BorrowChecked.log",
+      "sha256": "6ce8f73f9d8c24d799718f523850972a9ae1cd5abe8360a2c4013abaeccfd1be"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-Model.log",
+      "sha256": "b05cac9c7b0a8a37443e633d13d1df38d8d2edc946d395456cec15046d27c828"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NanFacts.log",
+      "sha256": "22b8e4f5cd80c060903dba87b421580b7afcf9b738a05ebd32ea22b59a60b77f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonBranches.log",
+      "sha256": "bfa65afb37d50987a74a6fe4f6360892c57070030a9e4e148d02804a052e4ac0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonCalls.log",
+      "sha256": "52a77c0c708c02686cf597e748b77194a6100f00c895822c9b6209f7f4c5652d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonChecked.log",
+      "sha256": "9176062b534b6b3f527d3b3c4b1f95ff6530230409f2361c896740e64fc7edb1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonLoop.log",
+      "sha256": "3063878d12949101089ff5e08004cad05c99377d899e64aeb765e2ad09fd0def"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonMemory.log",
+      "sha256": "a476bb442a9a2c2750f62f1b61347c5dfa95e43c969f93bd1578e39a554fe7df"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonMemoryHelpers.log",
+      "sha256": "da6ca716a2e8dde005088da2231b4e23693cc284f91ea21a85d93c52f4515a52"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonPure.log",
+      "sha256": "37489b8f37acbc544c7ec1155cea7ea12c64ebab28bede8a56ed1f3a84c471cf"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonReturns.log",
+      "sha256": "774f7121bca654c3371ea9603ecc5841065202bd8c4806c58be9511180220d09"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-NeonSupport.log",
+      "sha256": "2c02217c5a924843dc0e4a439055d697d08832dd2a98452df4e0179faccd0b6c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-Observation.log",
+      "sha256": "9bdca63924cc42b022158d5fef1e7c4d4f0bfb28eec76b2ee04f16a7079da2cd"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-ProgramModel.log",
+      "sha256": "5cfb67bbd3047f5c43971e619f0fb2fbe184fcdadd972fcc9e6a83fd64683bb6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-RvvCalls.log",
+      "sha256": "4a4a7566814c30d9370f6b8882450e69c3ad6d2338b13ba05a30198b40cf157f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-RvvChecked.log",
+      "sha256": "fe0163c7edd5baa197c52eb27b96ace74742043834918058f8f27f58442d72e1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-RvvListSupport.log",
+      "sha256": "f585e7c921b4bed0e7a176062e77c77251b08c986bcd00a057998b2514f8c6b6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-RvvMemory.log",
+      "sha256": "3be6849a0437d55cf3c585a38dd387f7a183e3885cc5ba6b747994462f176eee"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-RvvResult.log",
+      "sha256": "449cf1cae3651f0524f732237bf6d35ef313088dd3d3b2e9c31049bb87c4fecc"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-RvvStrategy.log",
+      "sha256": "4ab9f60a51cc5010911596572773d594c6199292975a43c13815efae89094283"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-ScalarChecked.log",
+      "sha256": "9b683a7cc95ba642b68248a00bd6d06bbd6b78247faf325cc3d77f3dae178a74"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-SelfChecked.log",
+      "sha256": "9b256bbfce38b53f55e98f3cd4a3ef182f5605240d9b4030092b9271030872f4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-Types.log",
+      "sha256": "f4732d5ab412ece19b580dae6453726c796deae57d5caf52f1faaca7743f5446"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorAddChecked.log",
+      "sha256": "2d0e18781ef41e4650a245f4932d0735519c53405409ddedc82579e195aca4d3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorChecked.log",
+      "sha256": "13f1a74606ed17631d5c874b95360662ead66227e4e037a54f34058115d0d68c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorFastFrame.log",
+      "sha256": "1bb1294274c5893c77b5bfd1eeb33dface131751a9746fc42ebe95f324f87ec6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorMergeChecked.log",
+      "sha256": "23d769bd27c6de1628d5840665907c635ab965d8b0207b25f9d4f3561f31b6de"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorMinChecked.log",
+      "sha256": "0acb1b77588a19735e4879f883f59d79cb69d0c2cf939d61bb436fceb1b20802"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorModel.log",
+      "sha256": "7f51b82eb3b35deab084383e792115280fc1ad5fd13ac5b1edfc95a35c44f07e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorNeonChecked.log",
+      "sha256": "459f5e937856362532c0d96ada4e951948dff1948b72eb6242c5c486b738bbaf"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-VectorScalarChecked.log",
+      "sha256": "98f4f0573a478bc762b1a94f915e5f13ab06e7aaf7e2439487dccd0517d5f2d5"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-WrapperCalls.log",
+      "sha256": "ace8012ea7d8ee850b6fff8a65387392766618ffc0103108eab328d1c98d36fe"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-WrapperChecked.log",
+      "sha256": "71cd9a34d6aae398ed72b10b7eaf6b733bbfb3cca3441ea70d09ac0cb6a73bef"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-WrapperHelpers.log",
+      "sha256": "f4489da9f262cfa8e682d546d23f9b0f31395d8c0c3699ea24826ab8bd036caf"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-bits-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-bits-qcp.log",
+      "sha256": "461505f1e8b6b0b2d6b9761f6ff46c7d32bed8ff6a7352d00dcbeb7821d0ca27"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-bits_goal.log",
+      "sha256": "8c8b931b693ca96210c6da7ef6168743355881826959cf373a438b0a6bdb68bf"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-borrow_compare-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-borrow_compare-qcp.log",
+      "sha256": "08bce4aa90052271c7f61a5a1f3e1d2f2ba74f6009bcd61bfb156751545cd3dc"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-borrow_compare_goal.log",
+      "sha256": "5bfe245ff8f90bdc3db099ce5e9cf1cbcbf3b1f98884ea3a9f28384a974edd04"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_neon-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_neon-qcp.log",
+      "sha256": "84655ffef737b7e637cad05ae5ae41e5976b94bfbd3e1269f7fe4066aeb14e99"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_neon_goal.log",
+      "sha256": "3abc4313352e54fa7eca98368e655e958df89677ae6a37afacba426ef007c1b7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_load-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_load-qcp.log",
+      "sha256": "f2015a744d8025e549fb8f5b6e3c33a86893450265a3bd0f89de6b28aa0fd7b3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_load_checked.log",
+      "sha256": "96afc79934393e00455d083389325e32e41f8481cfc8ac202fe086a312683636"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_load_goal.log",
+      "sha256": "382c00dc922b8f37e82fca4685fd4e66561e1fc748162a33db101a3f6be1d104"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_store-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_store-qcp.log",
+      "sha256": "8598ee5ec4966699094e8e5823ac04efcc921becb046562ad167124978280ad0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_store_checked.log",
+      "sha256": "6f3183680c651c3988aabfbd21f57e35a15d983d046bf424a2df5bc230f22b11"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-memory_rvv_store_goal.log",
+      "sha256": "9ff9282131f4b23bfd89b11c4baa0f21c307e8ad8aabd87c1cac6b2d7cd012ea"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-neon_unit-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-neon_unit-original-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-neon_unit-qcp.log",
+      "sha256": "e1245a90393156b2f6a615324284d70252f64c18b1d0887d80c02199f7a9acfb"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-neon_unit_goal.log",
+      "sha256": "7e291e62c10c77f48bded11d73c9ad4c837dfd1413ad66252b3ccacf0b4b7243"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_control-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_control-qcp.log",
+      "sha256": "500c599331f9dbcbe2b6ae4c58a1ae724f7e2eb59b079d7488a382c126dbdc5d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_control_checked.log",
+      "sha256": "62b54b9b4983233b2b68b0cb3e70edf8805ad69d68bfb87580b220c085a18ce5"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_control_goal.log",
+      "sha256": "dd3ca0fd1f8930dac6d8a1431870b38e5f22fabe451a50f5bc3a0ef9e544bb8c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_fmin_strategy_goal.log",
+      "sha256": "eede42d145a0e56a0f0869f1f7ea9f0cf48cc382fc557a8f0fd73e9d783af52e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_fmin_strategy_proof.log",
+      "sha256": "a948b18569442a48b8d509b1b7d6d98e53066e5cb82526e83c197f5cf67fd8d6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_unit-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_unit-original-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_unit-qcp.log",
+      "sha256": "9ce31fbbdc6c5989b430fe449dc9f9b274dd1968fd5e0de592de87c5a7a98002"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-rvv_unit_goal.log",
+      "sha256": "813e9c1a816a48904cec1f4e49188c2c5c89afc593f7d3597dbd08682c87e4fa"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-scalar_primitives-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-scalar_primitives-qcp.log",
+      "sha256": "2915d9129b7b94761f114e5d19daefc62bd3ed34d5260d76eb48e61878f04509"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-scalar_primitives_goal.log",
+      "sha256": "f406109e09bfdfb335e0be4319eb52cc9544497df4ee4cea34dff7d56abbff94"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-self_compare-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-self_compare-qcp.log",
+      "sha256": "1252743837aeaf9c2ad1d88c88ed1f8ef501a2939bd1e9a00f634951f017ba4d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-self_compare_goal.log",
+      "sha256": "e32e71c7ee77336fdd60ca226ba1596dd80cb34c6c13c608612629b0cce41ff1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-vector_primitives-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-vector_primitives-qcp.log",
+      "sha256": "c1af9f486f36bd23030829b3f56d388c714c06c26027db86a7979419fc16e747"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-vector_primitives_goal.log",
+      "sha256": "9e143b4d4fda5222963ae5aab8ae963eaa17c0fbcfe87069a678b7119340f28e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-wrapper_unit-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-wrapper_unit-original-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-wrapper_unit-qcp.log",
+      "sha256": "2ae1785167d34d24f98a2c3f523bcc8abfe68f9c82569e2cb8cc2114fce3a1a3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMin-wrapper_unit_goal.log",
+      "sha256": "f0415643d4e3230dd051312e23e9b42736b346f066257f1bcc49dd6947238b71"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FinalCaseCheck.log",
+      "sha256": "b45a97ff8472c0c7f15a7408c28e4a28342d8f2bf7842617c5a04cf0f1489f2d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-BridgeLogic.log",
+      "sha256": "52dfb5788a9f2d44749f3797bd7c448a4ca98f259cbf3456177899e28d645d11"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-ListBridge.log",
+      "sha256": "5c61bcba86a8b9bd7e5ceff86a6de974cf231fe0c424586f433de2b5dc0e5254"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-bridge_checked.log",
+      "sha256": "4c321a519cce1a652c7d638603d9c713b48b11e54e48e696b44d3e076f72aae0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-bridge_goal.log",
+      "sha256": "b679e2ff253532d223be1c3f076c9c08fcb6522ee3e39b91a079df97ebbf186d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeon-NeonBridge.log",
+      "sha256": "9918d40c3cffa65c769fa0dcdeff933f16adc4b2eaa6c1644e207b864e2b1d0b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeon-neon_bridge_strategy_goal.log",
+      "sha256": "8eb228c17709c7391aed047a5ac70bba9be55e28b3dce8bebd7b6416234f269d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeon-neon_bridge_strategy_proof.log",
+      "sha256": "6725abc437d0fb13c684a98e5979ae236fb0d756d225d07b2fa44e1c362c3571"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-InvariantFacts.log",
+      "sha256": "6953016e7696a854ecd166483a2df0e282f64f260e41cbbce5e21294dacde93a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-LoopMemory.log",
+      "sha256": "8398cee1c919094bab263525f9249b73bc3c8339fb3e5d8e3582cd407c450a5b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-NeonLoopBridge.log",
+      "sha256": "83e9f99c351543cda45092c03a9f18b153d19685e41d1c35af342e1639a3318b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-TailMemory.log",
+      "sha256": "b1fe544fb92ed4b1c55b6b4301e0054e89a7f83ce8d6790f3b7ffa301f7dfe43"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_branch_checked.log",
+      "sha256": "892ee23bd7cae8fe3144dd3df00cbc8427bdc8706471ff7fbdc3300f4f1f73f9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_branch_impossible_checked.log",
+      "sha256": "1f6194ad2e063b736ca53126bdf230c57b983002229db65c8b58497e05aceb9b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_branch_more_checked.log",
+      "sha256": "e2f72bceb63ac472b89cdd6f21e783a216d0ba72ca2161c433f6adcea69f5a5b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_checked.log",
+      "sha256": "33dce76250cbed4f4fae4734877959b77f365835af0aa7a577c7b5ee25d188b9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_mid_checked.log",
+      "sha256": "2684fdd00020145249e54006e457e937c128ea032636284bd7f9172f74c1b865"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_more_checked.log",
+      "sha256": "1e747bbdd4139d52744dcf2243acb9bc9e811be21ebaa7d05eccef6d747d9694"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_reassign_checked.log",
+      "sha256": "89e43b611ee9ab053f4c573709982426aeeb2327bfef40eec00735d8039bdd08"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_struct_checked.log",
+      "sha256": "45f923df5cedc9c1cb2cfce354508cb02a6678fcd5dd716ca827b4a10edf566d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_tail_checked.log",
+      "sha256": "7d4d46a20c8506ef30ad9b45ba776fd6993469359b5eb43491c31799b3a906ab"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_full_checked.log",
+      "sha256": "c8768d8aac57beb99a70cfac159b53581cfe3f566e8edae2ea5acc176a96ac63"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_init_checked.log",
+      "sha256": "320c9c65ec9d4810768f8bb0e7c9398d0425991077d93dc86c087fc92d547e2a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_init_lemmas.log",
+      "sha256": "a4af88cb4dd3bd1102f0e77c5fad49762f0c9a447fb6a1462bc5993506728535"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_loop_unit_goal.log",
+      "sha256": "340189f798ef1e50a28b62d238af9a3854ed3d640fd8b105c62355051f4ec0a0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_return_tail_checked.log",
+      "sha256": "789f99738e634b97521e6ee1eac9566d0e1c5865b0a54dc7cc128ef92f238bd7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_return_zero_checked.log",
+      "sha256": "369a3e84f49696b76d18b3536fba0b751f949917c092774a4158942a3f35650e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_safety_extra_checked.log",
+      "sha256": "53c6305f27cc09064ca11c1d6a1dcd0e5e4b9db66ae933f26c755184989edf56"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_simple_checked.log",
+      "sha256": "65597284b67d4a845aca14b67b33912dba3a328eda33b1e622d85baa76867aa3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_tail_models.log",
+      "sha256": "27d06154692327994698a21a31f6d459b8f506397c0185c119188e16a844d133"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_tail_strategy_goal.log",
+      "sha256": "a6b9e749cf70780e0d34c4dd1c63361390338c0c0a09c294c4824e352b3d13d0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_tail_strategy_proof.log",
+      "sha256": "77d58c2820fa0c3ec6924c973c3353e597dabdc459fb366a8a8d6e0f6eee19f3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-FastFrame.log",
+      "sha256": "6119382bee6c86ca1c8c1067ff40632b2106b5fa725cb9cdcb6347d0d8926ea9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLayout.log",
+      "sha256": "aef86754c33b4cecbcf92f30c8066cac3caaef18d564fcd1d868f2f72374f04f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLogic.log",
+      "sha256": "f9c81303ac07a0be5b730b366ea9d309a9ab206258939cbc21b710b0a037be06"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLoopMemory.log",
+      "sha256": "187c9998333687c6ba95ba65309af52b5ab23e4ca24098560291715619f1df18"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLoopModel.log",
+      "sha256": "1c751d7c0a5da20f52bd2cbe21669ba7e999b67fd651edadf25b53f7958de999"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLoopResult.log",
+      "sha256": "f702d9307a9c4e419fd3790cde13d5a72b17a00ac71ca99c91f1732c9b0f23ec"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvResultBridge.log",
+      "sha256": "a8c67d851f92a756f421c49e9100e016f35c43a071de9ed5f0303b5273166855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvStoreModel.log",
+      "sha256": "8e3d19a083cf9a8ce50a923d783006d1bdfc30727595b38da7995acae023e6e4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_add_checked.log",
+      "sha256": "86881ed59729c315da0515f733889b2d5ae09c160ac0368c45d013e4673e47c7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_add_goal.log",
+      "sha256": "689f2ebb06f6bfac9e211433b0f2c1858a2bbc45d115765af5002ffabffa01cd"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_arrays_strategy_goal.log",
+      "sha256": "06f9911dbb81c7473a8ae9e91afb829b71f6187e2fc978029dd47ec2d206ae50"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_arrays_strategy_proof.log",
+      "sha256": "633b4a9eb8247371ad06bf57732b43ef3677739f41c33d0ef409c6303466711a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_load_checked.log",
+      "sha256": "60db79b0ebbadce03b95942b7836271f93673ebbbe0641eec2da36ff0cbc3119"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_load_goal.log",
+      "sha256": "08af16588ebe6d83c1ad8289d35903ccca6f107df8dd04d94dabc7b930612c24"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_pure_checked.log",
+      "sha256": "83a3e603a2ce31d6f1b940fcf913dcfbe53a496352aa850ccd86f9ee88c0c05b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_strategy_goal.log",
+      "sha256": "896fdc47560fb192347675296c067772868f05c89ef2d56dd782ff21da4412e1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_strategy_proof.log",
+      "sha256": "1fa7c4ffd7e8c3ab7fe3a2144fb86685f679478e46812f9b214c6cc742a69a74"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_unit_goal.log",
+      "sha256": "2ed0135543b88d5fbbf6b6e66b54cbe2e9998d1af5e414504da47c31fdf99fa3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_checked.log",
+      "sha256": "96c9dd8cff3e734b128e06a3628e8e52a11efd06b84f8d712fc9a70173b27a00"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_goal.log",
+      "sha256": "a4867da4ebb97044997888d32bb7ab89bb340a3c8658c13d1e6a3b2d65fb2f84"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_strategy_goal.log",
+      "sha256": "a7febadcb763292de610c180064362f17e21a66406bd7e553102390f6057961b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_strategy_proof.log",
+      "sha256": "ca71abcc276964ad4cfc189826f2bc9ef88128a5ca1e393d4b4fb5796a33d1f8"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-VaddBits.log",
+      "sha256": "55988de0040b3a897f04108a1213ae6437767d1c13f793f1c6c8e0f8b7890c4c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-array_read_checked.log",
+      "sha256": "025f08ba8455b3cdbb80b08a5e10baf469c7b5372986fd28da12dcacb4acf58c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-array_read_goal.log",
+      "sha256": "e2196a63a9c8863ec4611744b307d2eafbd4ae1a1693f51be8e6497f7123c847"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-float_array_strategy_goal.log",
+      "sha256": "71ef4871f0d836249a376a3516a1c79313405e7182a154a0f573a51708b75c26"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-float_array_strategy_proof.log",
+      "sha256": "ed317de8fd9866b4fc3033186123d500a4dfd0230dc7d984702f90728d427262"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-ComparatorLogic.log",
+      "sha256": "8e048fa870d5b938d8e6eb8e5945c2aa9c8cd3cd7a95e7636f9cfc112dac7e99"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_checked.log",
+      "sha256": "cc877749d376892fdf50b5440d9d9dcd2256580ce2c046f32f2f1a28f31e3f6b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_goal.log",
+      "sha256": "365c57a8b1e89ffb6f28c4eb31b0ed168ac875ab3a36399ba4e9097109e2a4f8"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_strategy_goal.log",
+      "sha256": "8033d90ac45a3c5d8daf5fbf1eedecd55179973b2bd513c5b8957b49320cf00f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_strategy_proof.log",
+      "sha256": "ddb03416376dd195c67c893511436fbccb6007b60210989269666c20db43c32f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-WrapperLogic.log",
+      "sha256": "d4d4837ce78a4bb993942695f0eff317a28a11855a70801e01508233cdda8ed7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_checked.log",
+      "sha256": "2c4323319100fa1c48a01b26873f9b1f846eaf69f76dd10b581343a5abded9f8"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_goal.log",
+      "sha256": "97b795c0cfe57d8cbf3ddb3632c0ec8e1929a4614aac5fc55daf2120615c848f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_strategy_goal.log",
+      "sha256": "9927c44534565bbc1ca6c34ca1b5767d71df819b05137e7a376758dff7c68c65"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_strategy_proof.log",
+      "sha256": "913f78e2625893efd10e4dd9d2b02705a874cc0f1f3e624abc08dec1e57fcb38"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/patch-exact-application.log",
+      "sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/public-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/relations-ResultBridge.log",
+      "sha256": "d3843165d5c4b6ace72048cb0a15e713d3e04e45493653084a04bc48e02454ee"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/relations-VaddSegments.log",
+      "sha256": "b0b89efec34ea55a2968f0cdd93c356995a869b91854d733ffe1e25caf7556c4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-FMin-rvv_fmin.log",
+      "sha256": "2c1d3dcf78c0758df4943c46335277231031bd190a79175047b80934dc871dad"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpNeon-neon_bridge.log",
+      "sha256": "1da98398f2512253fcfaa5440a7e7ba327f259f9cf4aa920e59b48e4c735ff75"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpNeonLoop-neon_tail.log",
+      "sha256": "8fa7206f25a4e75c685de8e6ac32894b477ac3ec0c72f6979fee90bebba167f4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpRvv32-rvv_arrays.log",
+      "sha256": "1fac58405ad617951c7035142c29a02c36bc762c10bb88235b967af471926339"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpRvv32-rvv_loop.log",
+      "sha256": "a88784c4d9a9b8274639ebf4b5260a8402cfe7611fde2923f35702717a48ebe3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpRvv32-rvv_store.log",
+      "sha256": "3b8b16529c86c67c1a1b254c47709ebaf20a44f27968829bde4d6b704d597e69"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpVadd-float_array.log",
+      "sha256": "7353848c5f4415c0d69cbc1501152b2eb9535cec7cb57b2932c44345a122ce36"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-VaddComparator-comparator.log",
+      "sha256": "2a49f42ea9420f20420d19ab33c5f274b0fe8167b109855bfb8d1626e6caff46"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-VaddWrapper-wrapper.log",
+      "sha256": "3f435d2c3a55a56319267c7acc7e3e28a2bd667f01377b0d5b215da213526fb9"
+    },
+    {
+      "path": "proof/evidence/full-run/repair-identity.patch.log",
+      "sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "path": "proof/evidence/full-run/status.json",
+      "sha256": "8135c638cd53cc599f50898e72788f2932ab7e2deafb0d4e3d79397426ee0516"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/FMin-rvv_fmin/rvv_fmin_strategy_goal.v",
+      "sha256": "490202149c5d1e437ca626eb421b687239d8038e553173df04e859c5d91ac356"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpNeon-neon_bridge/neon_bridge_strategy_goal.v",
+      "sha256": "9f4cde0636936899121b1c998f8e5facfaaba895ef862dd95d8005a0b0cda2b7"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpNeonLoop-neon_tail/neon_tail_strategy_goal.v",
+      "sha256": "7b2fe6e87cf3d104134d85a6d29c2329956dadd382ae3dd945d56cf6c1158d42"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpRvv32-rvv_arrays/rvv_arrays_strategy_goal.v",
+      "sha256": "b832305946933b087d164aaee144406d636833a62c57b4ebbe97b3c478537261"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpRvv32-rvv_loop/rvv_loop_strategy_goal.v",
+      "sha256": "47e78c348374e4fec292ac75ff740f990a31829db3d88d8d2d339af74a933089"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpRvv32-rvv_store/rvv_store_strategy_goal.v",
+      "sha256": "a9269307bef646bd20ca10a0e75cd7383920bf1e5d18d8e0f49875152a647a0d"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpVadd-float_array/float_array_strategy_goal.v",
+      "sha256": "e7152efd9dae1521e929e1f42b21ba5aee925295d91d945c7458b08344c42f28"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/VaddComparator-comparator/comparator_strategy_goal.v",
+      "sha256": "51776ee6e3eaf689e5dc021a84c82419223e230e444578e787dfd798f85cf5d3"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/VaddWrapper-wrapper/wrapper_strategy_goal.v",
+      "sha256": "cf753e4857ec18410aff47706bf6f0e635719e185eb5921657e24092609f7018"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-bits/expanded.c",
+      "sha256": "f695ad4c9f32811bbba5e611f84c41618a12512f489b6da3e31386e0cc220b27"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-bits/goal.v",
+      "sha256": "78393edc4aaed144f00b97f06b7e441f5db0671e7e371a9eab89f1915b6dfb1e"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-borrow_compare/expanded.c",
+      "sha256": "ce14ac11598e8f40f455718a544ad8ba59f8342499fd9a19dc6073a8b0b72cba"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-borrow_compare/goal.v",
+      "sha256": "ea315a947753f2c919e761447cd18a3dcf226b0f847ee68d287b036a21f2fb0e"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-memory_neon/expanded.c",
+      "sha256": "44f5fdf97ca0b380aab9bf771d5eba7fd226fce621490080ea6a2949fe63f9a2"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-memory_neon/goal.v",
+      "sha256": "aeed316742c1f778622498d0d8337fdcf2975661ba4187ab57f9ebf9a9fbec5e"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-memory_rvv_load/expanded.c",
+      "sha256": "620e9d2aa6b6013e395d254b8da76fd92dcef8e8ec42ec6c307c46504db1aadb"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-memory_rvv_load/goal.v",
+      "sha256": "6b913af4b56b423b091201faaaf016fcf0416a9442278ead5a5cda6869d96281"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-memory_rvv_store/expanded.c",
+      "sha256": "9fd7f8775c54abe58a17dd5909794c8e7956c03f8415a7d6f40379e9cbc4b004"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-memory_rvv_store/goal.v",
+      "sha256": "d6c8231a6d7845a53e472f6da39c864844c1c1db0a4edaa78441c2209d01f403"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-neon_unit/expanded.c",
+      "sha256": "5580771b26145a7eb5819e0205c73f8a3b1322cb1f7e0bd7b7bba1f71e4ec795"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-neon_unit/goal.v",
+      "sha256": "feefb95241c9dcd7521a02cccd3f0c58644410054a440349ea4bc431d7a00eaf"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-rvv_control/expanded.c",
+      "sha256": "55765a7a21f4deeb267ed45d84720be12c42cc80080a60bcc8593bd3da090b24"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-rvv_control/goal.v",
+      "sha256": "72eb99c27d095260992770147121e27599338acf30acea1a04d0b92cd8c682ea"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-rvv_unit/expanded.c",
+      "sha256": "779ad28cd9a71e19e5c3ae93156c903ba34eca36b2761444e35170152ffe337d"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-rvv_unit/goal.v",
+      "sha256": "43461a882a20a13a2788e03d7a98a6a49d044eb975abd61d7809b503e39113c8"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-scalar_primitives/expanded.c",
+      "sha256": "ec0ee95fc2c341609d5c3f3b7ac8a5af50fb0dd2f8fea784db2d7af6dd68fb3e"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-scalar_primitives/goal.v",
+      "sha256": "13ec6572bb208b60b75cede0ac5708de20d9e582865143230530b842cde4530f"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-self_compare/expanded.c",
+      "sha256": "9b2e53bf3f6e9a0a83f3ba204c1b39d55e6853083098d87f83d7b19a12cee08e"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-self_compare/goal.v",
+      "sha256": "4319278e45c1c5b1dc076ef401ef17168f426c4a00e89185a41ace39f189d9e3"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-vector_primitives/expanded.c",
+      "sha256": "6ad9d4a3a32d3f1b13af76b681d62952510d8763d3f458de6b3f6576e3a1fcf3"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-vector_primitives/goal.v",
+      "sha256": "d237826fe650e36970c985c2c8be8ff659c0dd4998db9f3ab1e3d8e5f2347266"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-wrapper_unit/expanded.c",
+      "sha256": "aab0e6bfcea584d9c0c19cf5659126ae18515da80f4a972b866d6d5dbf46b7ec"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMin-wrapper_unit/goal.v",
+      "sha256": "b527a7f1821d9ee5e1036c147cca5e61c47b3186ba74bea098e1de9e039d8923"
+    },
+    {
+      "path": "proof/evidence/pre-relocation/manifest.json",
+      "sha256": "1052abd8436a437b27fe23b639b5bd202f919c3b7c0f4e061c654625ad6089e3"
+    },
+    {
+      "path": "proof/evidence/pre-relocation/relocation-identity.json",
+      "sha256": "b34843d4fa201632a861513f87ff3dac575b5e9d0d98c3b25b5a93abefb5464a"
+    },
+    {
+      "path": "proof/evidence/pre-relocation/status.json",
+      "sha256": "73581b2114c25c299db40ebf241bc44603f53e6de54a57e3d8bd91c932cb50d5"
+    },
+    {
+      "path": "proof/formal-primitives-status.json",
+      "sha256": "f320e00338f77bcb910a1852ed9633a8da4120abbb06e4f598d2c3f7d15c4d18"
+    },
+    {
+      "path": "proof/frozen-full-handoff.json",
+      "sha256": "d941f51e65727c996139b3871b00628f77ed098ec5d98933114cc4be4568d636"
+    },
+    {
+      "path": "proof/full-status.json",
+      "sha256": "8135c638cd53cc599f50898e72788f2932ab7e2deafb0d4e3d79397426ee0516"
+    },
+    {
+      "path": "proof/generate_neon.py",
+      "sha256": "1cbe9c4da06d7f9745728e57b97c61c74bca415a71db2858e5a7c7fa0b28023f"
+    },
+    {
+      "path": "proof/generate_rvv.py",
+      "sha256": "35370094e82efd348e2b471b1d42a1363f1d47f32446703986d2e0cc352a4b59"
+    },
+    {
+      "path": "proof/generate_scalar_proof.py",
+      "sha256": "5f315b0dcdad25aedd7fac8aaefa9bff7f78f9bbd95b9275ed4717d5e6a94476"
+    },
+    {
+      "path": "proof/generate_vector_proofs.py",
+      "sha256": "064ae41ca7d46de1e259ee216e0883c14904a21b6d8ab302d45929ba8543d98d"
+    },
+    {
+      "path": "proof/generate_vectors.py",
+      "sha256": "f2d5b6c4cf6369379e56251824fa74b0c4ad872bd7a37cb2b0f16ee62e33edd5"
+    },
+    {
+      "path": "proof/generate_wrapper.py",
+      "sha256": "c3f79256180ac71fe86e48aef33f5d2a54516eee0be11a6d23c622f6f089cfd3"
+    },
+    {
+      "path": "proof/history/README-before-full.zh-CN.md",
+      "sha256": "a418141fb8b535395e5abc37445d056a791276633d8850c1ef518226d1fe1ef8"
+    },
+    {
+      "path": "proof/history/neon-goal-name-resolution.json",
+      "sha256": "67c93b62598e07021e3b6760670438dc8f70df998895c0f1d19eb2fadc9af7f7"
+    },
+    {
+      "path": "proof/history/original-121-case-replay-status.json",
+      "sha256": "c2288a4e26abd2e473da97f26b7396d1ec921ad9743f080a52baa75a7a4c5d26"
+    },
+    {
+      "path": "proof/history/original-121-case-replay.py",
+      "sha256": "f5d9551d6060a61656f2458f0ff98859812b809af093c785f96e1acb9ccbfebb"
+    },
+    {
+      "path": "proof/history/original-121-case-semantics.json",
+      "sha256": "e1dcfa4d680f7c6adf54de6d162cadd281cff375cbaabf2059f446fb9c603d90"
+    },
+    {
+      "path": "proof/history/original-121-case-status.json",
+      "sha256": "af42146f20250dad67074af7a6cdb5c5ac303b703ceeb23b8ff810210a97d465"
+    },
+    {
+      "path": "proof/memory-proof-status.json",
+      "sha256": "3c1c9a6ef270df8d074939116fecc8ae327e1a3d7deebc4d4f094fdbfc61b1c2"
+    },
+    {
+      "path": "proof/models-status.json",
+      "sha256": "40ede44100d2b24d981b59914416bee970701771991b44bca6bdeb2995adbc9d"
+    },
+    {
+      "path": "proof/neon-generation-status.json",
+      "sha256": "62dc313ebac3d99f3298f85e81a4db2b86fa6178c18bf9c7aacf587ca007cca5"
+    },
+    {
+      "path": "proof/neon-proof-status.json",
+      "sha256": "4be693e9ad5b89282c5d93d24a0938270dcbc5fb15d902767ad3b4dc50d439dd"
+    },
+    {
+      "path": "proof/original-replay-status.json",
+      "sha256": "85935f64d80158b04e7ab58125c74b8e69665a6ea77163411f639b76e48905c4"
+    },
+    {
+      "path": "proof/originals.json",
+      "sha256": "7b208616357cac889a57c378319c855bbbb53a105af1367d6546253e0749060f"
+    },
+    {
+      "path": "proof/record_status.py",
+      "sha256": "e99bdeb905128d8c4e1f244285c98e533ede3b2d280e86cefeab710a8cf7f9cc"
+    },
+    {
+      "path": "proof/relocation-identity.json",
+      "sha256": "cc331a140b0c0d4b6cea4a8cc6b58ee1e0f8e3975084f363814f19ea4f0fb833"
+    },
+    {
+      "path": "proof/repair-identity.json",
+      "sha256": "041e4134ab24b84ba9bed3ca244e0ca97f3cc38f7af2b088dde97a58436fa01a"
+    },
+    {
+      "path": "proof/repair.json",
+      "sha256": "31abc643cc17e54d7779ff5f239a91951f3e87cc18054ea6cccbc2a743ec2e14"
+    },
+    {
+      "path": "proof/repair.patch",
+      "sha256": "c170cd7925a11ec21067145e1ad384d7577aabdb72c515d8d496efdda68c935f"
+    },
+    {
+      "path": "proof/repaired-replay-status.json",
+      "sha256": "f533be48b3919ff1e6b11e1d66fc396f4d820f07f1fca2a6a1a08d25788e8dd2"
+    },
+    {
+      "path": "proof/replay-status.json",
+      "sha256": "f533be48b3919ff1e6b11e1d66fc396f4d820f07f1fca2a6a1a08d25788e8dd2"
+    },
+    {
+      "path": "proof/replay.py",
+      "sha256": "971b94fbf7d5276b18a810adb7c12c214a0b5c435e2628001dbbf6a2fc8e0fbf"
+    },
+    {
+      "path": "proof/rvv-generation-history.json",
+      "sha256": "3ef1c47770f61d2b69d4f8ff48a43ec96c74c4c2f1c0a207403f23e80b11ed75"
+    },
+    {
+      "path": "proof/rvv-generation-status.json",
+      "sha256": "d10db861a81b12e8aac48e3637ca1d02ee7afa19377d1f9d124e7de03b96d5a2"
+    },
+    {
+      "path": "proof/rvv-memory-provenance.json",
+      "sha256": "7152cb28b92c04dcf5bf2d0768f7db246a86e428ab9e9352f9081541781286c0"
+    },
+    {
+      "path": "proof/rvv-proof-status.json",
+      "sha256": "ec2452d7ace2b0671edcfa27d122c0a018842eb7574f911ec3ced8dabbcc63af"
+    },
+    {
+      "path": "proof/scalar-native-status.json",
+      "sha256": "cc1af23f1dc0f3b884d7b70d11f721ec699858bd0a3e4eb73a539f887e76723b"
+    },
+    {
+      "path": "proof/self-compare-status.json",
+      "sha256": "174dd89847f53b9ceca2d532c23eec49b79825fc286f4f9c063cd7c00d266ace"
+    },
+    {
+      "path": "proof/semantics.json",
+      "sha256": "752b35a3c0f8d389ea79a679e73f7c19986f2af06f66758ff3a3d1126320185b"
+    },
+    {
+      "path": "proof/spec-migration.json",
+      "sha256": "710ef0129b01dc7d9bcc3e7c4312c11eb113595a33820e5418d4985bf4d7e08b"
+    },
+    {
+      "path": "proof/vector-status.json",
+      "sha256": "10d09e4031c16a0b297868146b5e0edd5bd485865c4994f0ca92bf8cc0443ef4"
+    },
+    {
+      "path": "proof/wrapper-generation-status.json",
+      "sha256": "c51e9f737b56904997af1d5ce27150e8cb5a14fbda5617ea09026b08c40ab44e"
+    },
+    {
+      "path": "proof/wrapper-proof-status.json",
+      "sha256": "38196ec245f84bd79837841d4fd1c8921404d0691a6a39605ebd6b16e1345b58"
+    },
+    {
+      "path": "shim/bits.c",
+      "sha256": "cfa1967f9dac0f951b230636c62bb9c442eb7926c2c49c6fa65f4fac43394ef2"
+    },
+    {
+      "path": "shim/bits.h",
+      "sha256": "8097aa2b2bca23f4255c315c3ce7b8bd2a99eea7e7fb41b0acaa083080b9610a"
+    },
+    {
+      "path": "shim/borrow_compare.c",
+      "sha256": "8319e203579aada6abd94a433cdac21d942e7e34bf51834f8ced221466d42fe9"
+    },
+    {
+      "path": "shim/borrow_compare.h",
+      "sha256": "dc5859ecd73c719661326ae690e24e2469e6cdf513d08ae1c677f05456cd8356"
+    },
+    {
+      "path": "shim/formal_model.h",
+      "sha256": "8150cd41927ada120a12e917339eb8b5021155375b2749f9a3c384d4e0d58d28"
+    },
+    {
+      "path": "shim/formal_scalar.h",
+      "sha256": "dcf6703b1ba32bd5e2af69cc6aa4c5bfbae72eb26eaf34cf4f809777c23c5336"
+    },
+    {
+      "path": "shim/formal_types.h",
+      "sha256": "249187ff0212ab0a095b6d1938b2e34f5f522fec47b55c64da3363ce0990fbc0"
+    },
+    {
+      "path": "shim/formal_vector_model.h",
+      "sha256": "4d36c700b6f334db69609ca62396f641836e4401cad985c996485d62b86efc9d"
+    },
+    {
+      "path": "shim/harness.c",
+      "sha256": "6a343eaf6456b7a9b4a35035fa3b5085544c279508a98f073157da8a5f810c41"
+    },
+    {
+      "path": "shim/memory_neon.c",
+      "sha256": "bc575c46f8a62c41ab8a53a8e0210f2291350a9beedd243f5e660638bf7c82a2"
+    },
+    {
+      "path": "shim/memory_neon.h",
+      "sha256": "eddb9336d00b4d37ca07d9f904bf24b22cb37b6487ee7a278fdbc8b67bdcc3c9"
+    },
+    {
+      "path": "shim/memory_rvv.h",
+      "sha256": "3b0fef19d4d0267248c054dd083324b2238d3f0b885b4e2cf2d89e688b8c6c40"
+    },
+    {
+      "path": "shim/memory_rvv_load.c",
+      "sha256": "fd19531b59d5b687b7170d44979596d3a938541dfe607c76ba56d0b5acf0155b"
+    },
+    {
+      "path": "shim/memory_rvv_store.c",
+      "sha256": "8d63146d5cd0666607d13beff24646b5d9e71a2cd3ca2336483b33cf3c84ef32"
+    },
+    {
+      "path": "shim/neon_frontend.h",
+      "sha256": "ac921261a646b6f23f0153388d00e077e893f641bc6ce0d28756e038cd669f9b"
+    },
+    {
+      "path": "shim/program_model.h",
+      "sha256": "e644646fa5d869911fef151e3d672e3ad923108db46a97bf57a180e8b1700989"
+    },
+    {
+      "path": "shim/runtime.h",
+      "sha256": "b295e2052a9638440fd1cea46c0f3fd81d569d8c136320227b4690bc69e71632"
+    },
+    {
+      "path": "shim/rvv_control.c",
+      "sha256": "aae56ca9b1fa34f458c312aa60e80a80c6f91a63c9a319f6abb4986b77cfd310"
+    },
+    {
+      "path": "shim/rvv_frontend.h",
+      "sha256": "78b2615dfe210e90228981cc78dd6db7d8b931219344824e3ca6ccb801f5b920"
+    },
+    {
+      "path": "shim/scalar_primitives.c",
+      "sha256": "d0877cc15a239fa9db4c63583a99ab6590c51dfd455b0a397963da885d33ed4f"
+    },
+    {
+      "path": "shim/self_compare.c",
+      "sha256": "f02d7cda8c68e603f153fb259ca8001a8e6448f5a319d4365fed3bc00560973d"
+    },
+    {
+      "path": "shim/self_compare.h",
+      "sha256": "caedfae85dfdf4ef8fc5b018402a5ac0f700098b51966283f08851c4d66fcc34"
+    },
+    {
+      "path": "shim/vector_primitives.c",
+      "sha256": "dbee90a79d8fba0160ad1b101c6a6511e70b84373a26d5fc2afe05a745c8d459"
+    },
+    {
+      "path": "shim/vector_primitives.h",
+      "sha256": "7d90372578c4fc713e0d12b0e1e80edc311078f5bb0dca28410911c0f72715fd"
+    },
+    {
+      "path": "spec.c",
+      "sha256": "e23b6f5465ab12583aa999b0fa1588c7b64d50a794d7ec61a4dedd44c49c1a92"
+    }
+  ],
+  "full_evidence": "proof/full-status.json",
+  "full_evidence_sha256": "8135c638cd53cc599f50898e72788f2932ab7e2deafb0d4e3d79397426ee0516",
+  "generated_source_policy": "Archived CPP and goal snapshots bind identities; every full replay regenerates actual C targets and compiles all required ordinary Coq source afresh."
+}

@@ -1,0 +1,76 @@
+{
+  "schema": 1,
+  "kernel": "f32-vmin",
+  "status": "in-progress",
+  "implementation_variant": "repaired",
+  "implementation_status": "repaired_native_checked",
+  "whole_kernel_proved": false,
+  "qcp_c_vcs_proved": 0,
+  "scope": "User-authorized direct RVV implementation repair with original counterexamples retained; native C-shim regression only, no completed QCP proof or hardware execution.",
+  "known_prior_frama_c_issue": true,
+  "repair_record": "repair.json",
+  "repair_record_sha256": "31abc643cc17e54d7779ff5f239a91951f3e87cc18054ea6cccbc2a743ec2e14",
+  "native_replay_passed": true,
+  "cases": 275,
+  "counterexample_count": 0,
+  "primitive_checks": 2211,
+  "asan_ubsan_checked": true,
+  "patch_exact_application_checked": true,
+  "wrong_result_rejected": true,
+  "minimal_original_counterexample": {
+    "kind": "case",
+    "pattern": "left-qnan-positive",
+    "n": 1,
+    "input_a_bits": "7fc12345",
+    "input_b_bits": "3f800000",
+    "neon_output_bits": "7fc12345",
+    "rvv_output_bits": "3f800000",
+    "equivalent_return": 0,
+    "all_lanes_match_known_oracle": true,
+    "frame_preserved": true
+  },
+  "same_input_after_repair": {
+    "kind": "case",
+    "pattern": "left-qnan-positive",
+    "n": 1,
+    "input_a_bits": "7fc12345",
+    "input_b_bits": "3f800000",
+    "neon_output_bits": "7fc12345",
+    "rvv_output_bits": "7fc00000",
+    "equivalent_return": 1,
+    "all_lanes_match_known_oracle": true,
+    "frame_preserved": true
+  },
+  "original_variant": {
+    "status": "counterexample",
+    "cases": 275,
+    "counterexamples": 154,
+    "evidence": "original-replay-status.json",
+    "sha256": "85935f64d80158b04e7ab58125c74b8e69665a6ea77163411f639b76e48905c4"
+  },
+  "historical_original_evidence": {
+    "cases": 121,
+    "counterexamples": 44,
+    "evidence": "history/original-121-case-replay-status.json",
+    "sha256": "c2288a4e26abd2e473da97f26b7396d1ec921ad9743f080a52baa75a7a4c5d26",
+    "preserved_without_modification": true
+  },
+  "repaired_variant": {
+    "status": "repaired_native_checked",
+    "cases": 275,
+    "counterexamples": 0,
+    "evidence": "repaired-replay-status.json",
+    "sha256": "36dee88fa95403c721cba30bfa9aea670bb614e08c71a9ffa8bfa9ce2943cd16"
+  },
+  "replay_status": "replay-status.json",
+  "replay_status_sha256": "36dee88fa95403c721cba30bfa9aea670bb614e08c71a9ffa8bfa9ce2943cd16",
+  "originals": "originals.json",
+  "semantics": "semantics.json",
+  "repaired_variant_used": true,
+  "limitations": [
+    "No complete QCP proof",
+    "No real Arm/RVV execution",
+    "NaN payload/sign and floating exception flags/traps are outside the observation",
+    "The added unconditional RVV addition may change exception flags"
+  ]
+}

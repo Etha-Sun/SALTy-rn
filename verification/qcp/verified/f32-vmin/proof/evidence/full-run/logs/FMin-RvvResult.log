@@ -1,0 +1,73 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.278 secs (0.162u,0.114s)
+Chars 41 - 84 [From~QcpRvv32~Require~Import~R...] 3.559 secs (3.061u,0.486s)
+Chars 85 - 138 [From~FMin~Require~Import~Progr...] 0.75 secs (0.534u,0.215s)
+Chars 139 - 174 [From~AUXLib~Require~Import~Lis...] 0. secs (0.u,0.s)
+Chars 175 - 196 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 197 - 222 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 224 - 402 [Definition~mm_result_lane~(vl~...] 0. secs (0.u,0.s)
+Chars 403 - 505 [Definition~mm_result32~(vl~:~Z...] 0. secs (0.u,0.s)
+Chars 507 - 627 [Lemma~nth_map_seq_bounded~{T}~...] 0. secs (0.u,0.s)
+Chars 628 - 634 [Proof.] 0. secs (0.u,0.s)
+Chars 636 - 658 [(intros~f~count~i~d~Hi).] 0. secs (0.u,0.s)
+Chars 660 - 740 [(rewrite~nth_indep~with~(d'~:=...] 0.002 secs (0.002u,0.s)
+Chars 742 - 758 [(rewrite~map_nth).] 0. secs (0.u,0.s)
+Chars 759 - 782 [(rewrite~seq_nth~by~lia).] 0. secs (0.u,0.s)
+Chars 783 - 796 [(f_equal;~lia).] 0. secs (0.u,0.s)
+Chars 797 - 801 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 803 - 970 [Lemma~mm_result_prefix~:~~~for...] 0. secs (0.u,0.s)
+Chars 971 - 977 [Proof.] 0. secs (0.u,0.s)
+Chars 979 - 1003 [(intros~vl~a~b~Hvl~Ha~Hb).] 0. secs (0.u,0.s)
+Chars 1005 - 1055 [(apply~nth_ext~with~(d~:=~fp32...] 0. secs (0.u,0.s)
+Chars 1057 - 1058 [-] 0. secs (0.u,0.s)
+Chars 1059 - 1088 [(unfold~rvv_take,~mm_result32).] 0. secs (0.u,0.s)
+Chars 1089 - 1135 [(rewrite~length_firstn,~length...] 0.001 secs (0.001u,0.s)
+Chars 1139 - 1164 [(rewrite~Nat.min_l~by~lia).] 0.001 secs (0.001u,0.s)
+Chars 1168 - 1234 [(pose~proof~(mm_rvv_values_len...] 0. secs (0.u,0.s)
+Chars 1238 - 1270 [(rewrite~Zlength_correct~in~Hl...] 0. secs (0.u,0.s)
+Chars 1271 - 1275 [lia.] 0.001 secs (0.001u,0.s)
+Chars 1277 - 1278 [-] 0. secs (0.u,0.s)
+Chars 1279 - 1291 [(intros~i~Hi).] 0. secs (0.u,0.s)
+Chars 1292 - 1326 [(unfold~rvv_take,~mm_result32~...] 0. secs (0.u,0.s)
+Chars 1330 - 1382 [(rewrite~length_firstn,~length...] 0.001 secs (0.001u,0.s)
+Chars 1386 - 1412 [(rewrite~nth_firstn~by~lia).] 0.002 secs (0.002u,0.s)
+Chars 1413 - 1448 [(rewrite~nth_map_seq_bounded~b...] 0.002 secs (0.002u,0.s)
+Chars 1452 - 1474 [(unfold~mm_result_lane).] 0. secs (0.u,0.s)
+Chars 1478 - 1517 [(rewrite~mm_repaired_active_la...] 0.001 secs (0.001u,0.s)
+Chars 1521 - 1543 [(unfold~rvv_read_value).] 0. secs (0.u,0.s)
+Chars 1547 - 1613 [(assert~(Hlt~:~(Z.of_nat~i~<?~...] 0.001 secs (0.001u,0.s)
+Chars 1617 - 1629 [(rewrite~Hlt).] 0. secs (0.u,0.s)
+Chars 1633 - 1739 [(pose~proof~~~(mm_rvv_values_n...] 0.001 secs (0.001u,0.s)
+Chars 1743 - 1763 [(unfold~Znth~in~Hnth).] 0. secs (0.u,0.s)
+Chars 1764 - 1789 [(rewrite~Nat2Z.id~in~Hnth).] 0. secs (0.u,0.s)
+Chars 1790 - 1820 [(unfold~Znth;~rewrite~Nat2Z.id).] 0. secs (0.u,0.s)
+Chars 1821 - 1842 [(symmetry;~exact~Hnth).] 0. secs (0.u,0.s)
+Chars 1843 - 1847 [Qed.] 0.012 secs (0.012u,0.s)
+Closed under the global context
+Chars 1849 - 1887 [Print~Assumptions~nth_map_seq_...] 0.252 secs (0.2u,0.051s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1888 - 1923 [Print~Assumptions~mm_result_pr...] 1.222 secs (1.154u,0.064s)
+Chars 1925 - 3114 [Definition~mm_result_packed~(v...] 0.006 secs (0.006u,0.s)
+Chars 3116 - 3295 [Lemma~mm_packed_result_prefix~...] 0. secs (0.u,0.s)
+Chars 3296 - 3302 [Proof.] 0. secs (0.u,0.s)
+Chars 3303 - 3326 [exact~mm_result_prefix.] 0. secs (0.u,0.s)
+Chars 3327 - 3331 [Qed.] 0. secs (0.u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 3332 - 3374 [Print~Assumptions~mm_packed_re...] 0.801 secs (0.789u,0.007s)

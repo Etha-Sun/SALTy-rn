@@ -1,0 +1,18 @@
+{
+  "compare_outputs": [
+    {
+      "before": "while (i < n)",
+      "text": "/*@ Inv n == n@pre && left == left@pre && right == right@pre &&\n          0 < n && n <= 4611686018427387900 && 0 <= i && i <= n &&\n          Zlength(L) == n && outputs_related(L,R) &&\n          FloatArray::full(left,n,L) * FloatArray::full(right,n,R) */"
+    }
+  ],
+  "equivalent": [
+    {
+      "before": "test_neon(4*n,",
+      "text": "/*@ Assert n == (4*n)/4 && (4*n)%4 == 0 &&\n 0 < 4*n && 4*n <= 18446744073709551603 && params != 0 &&\n n == n@pre && input_a == input_a@pre && input_b == input_b@pre &&\n left == left@pre && right == right@pre && params == params@pre &&\n 0 < n && n <= 4611686018427387900 &&\n input_a != 0 && input_b != 0 && left != 0 && right != 0 &&\n store(&(params->_),char,pv) * FloatArray::full(input_a,n+3,A) *\n FloatArray::full(input_b,n+3,B) * FloatArray::undef_full(left,n) * FloatArray::undef_full(right,n) */"
+    },
+    {
+      "before": "return compare_outputs(n, left, right);",
+      "text": "/*@ Assert n == n@pre && input_a == input_a@pre && input_b == input_b@pre &&\n left == left@pre && right == right@pre && params == params@pre &&\n 0 < n && n <= 4611686018427387900 &&\n outputs_related(mm_arm_values(n,A,B),mm_rvv_values(n,A,B)) &&\n store(&(params->_),char,pv) * FloatArray::full(input_a,n+3,A) *\n FloatArray::full(input_b,n+3,B) * FloatArray::full(left,n,mm_arm_values(n,A,B)) *\n FloatArray::full(right,n,mm_rvv_values(n,A,B)) */"
+    }
+  ]
+}

@@ -1,0 +1,121 @@
+{
+  "scope": "Executable reference semantics for original and repaired C-shim regression; no formal ISA correspondence or complete QCP proof.",
+  "status_on_successful_replay": "repaired_native_checked (current impl); counterexample (original variant)",
+  "configuration": {
+    "data_model": "LP64, little-endian, IEEE binary32",
+    "arm": "AArch64 Advanced SIMD FMIN/FMAX; FPCR.DN=0,FZ=0,AH=0,RMode=RNE, traps disabled",
+    "rvv": {
+      "version": "V1.0 / scalar F2.2",
+      "VLEN": 128,
+      "SEW": 32,
+      "LMUL": 8,
+      "VLMAX": 32,
+      "vl": "min(AVL,32)",
+      "vstart": 0,
+      "tail": "all-ones agnostic destination choice"
+    },
+    "flags": "Floating exception flags/traps are unobserved and not emulated."
+  },
+  "references": [
+    {
+      "title": "Arm ACLE intrinsic-to-instruction mapping",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "title": "Official Arm A-profile ISA reference, FMIN/FMAX",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85"
+    },
+    {
+      "title": "RISC-V V1.0 vfmin/vfmax",
+      "url": "https://docs.riscv.org/reference/isa/v20240411/unpriv/v-st-ext.html"
+    },
+    {
+      "title": "RISC-V F2.2 FMIN/FMAX NaN and zero rules",
+      "url": "https://docs.riscv.org/reference/isa/v20240411/unpriv/f-st-ext.html"
+    }
+  ],
+  "arm_minmax": {
+    "intrinsics": [
+      "vminq_f32",
+      "vmaxq_f32"
+    ],
+    "instructions": [
+      "FMIN Vd.4S,Vn.4S,Vm.4S",
+      "FMAX Vd.4S,Vn.4S,Vm.4S"
+    ],
+    "semantics": "Propagate a NaN when either input is NaN. With DN=0 signaling NaNs are quieted; signaling operands precede quiet operands, then operand order. For numeric inputs select numerical min/max; -0 precedes +0.",
+    "source": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+    "status": "runtime-only; formal proof pending"
+  },
+  "rvv_minmax": {
+    "intrinsics": [
+      "__riscv_vfmin_vv_f32m8",
+      "__riscv_vfmax_vv_f32m8"
+    ],
+    "semantics": "minimumNumber/maximumNumber on active lanes; exactly one NaN selects the numeric operand, both NaN select canonical 0x7fc00000. -0 precedes +0. Signaling-NaN invalid flag is outside observations.",
+    "sources": [
+      "https://docs.riscv.org/reference/isa/v20240411/unpriv/v-st-ext.html",
+      "https://docs.riscv.org/reference/isa/v20240411/unpriv/f-st-ext.html"
+    ],
+    "status": "runtime-only; formal proof pending"
+  },
+  "data_movement": {
+    "NEON": "vld1q reads exactly four raw float representations; vget_low/high chooses lanes 0..1/2..3; stores write exactly four, two, or one lane.",
+    "RVV": "vle/vse read/write exactly vl consecutive float representations. Inactive memory is untouched.",
+    "layout": "By-value structs with uint32_t arrays, four NEON or 32 RVV lanes; no native-hardware ABI or formal-layout claim.",
+    "status": "runtime-only; formal proof pending"
+  },
+  "oracle": "Independent literal known-bit answer table for each architecture and operation. Numeric ordering in the shim is implemented by integer ordering keys rather than host fmin/fmax; expected answers do not call that logic.",
+  "valid_domain": "Positive n; each input has n+3 readable floats; each output has n writable floats; readable params; separate objects and no overlap. Counterexamples use quiet NaNs and finite operands within this domain.",
+  "provenance": "Original source/target pinned at be16280c7812a7459c26c3ce82a47339a3d07718. Current impl/testRVV.c reuses the historical Frama-C repair byte-for-byte; see repair.json.",
+  "proof_count": {
+    "complete_qcp_kernel_proofs_for_this_case": 0,
+    "affects_shared_verified_count": false
+  },
+  "limitations": [
+    "C-shim replay rather than Arm/RVV hardware execution",
+    "No formal refinement of runtime intrinsic definitions to ISA",
+    "Finite checks do not prove universal correctness",
+    "Spec is an executable requested observation, not a completed QCP verification package"
+  ],
+  "original_counterexample": {
+    "n": 1,
+    "input_a_bits": "7fc12345",
+    "input_b_bits": "3f800000",
+    "arm_output_bits": "7fc12345",
+    "rvv_output_bits": "3f800000",
+    "requested_relation": false,
+    "reverse_operands_also_diverge": true,
+    "reason": "One output is NaN and the other is the finite value 1.0; this fails numerical-equality-or-both-NaN even when NaN payload and zero sign are ignored."
+  },
+  "repair": {
+    "record": "proof/repair.json",
+    "patch": "proof/repair.patch",
+    "current_variant": "repaired",
+    "algorithm": "Keep the original RVV min/max intrinsic; detect each input NaN, compute a quiet NaN using RVV addition, then merge this result for either NaN input.",
+    "observation": "Numerical equality or both NaN. NaN payload/sign and floating exception flags/traps are not observed.",
+    "extra_instructions": [
+      {
+        "name": "__riscv_vmfne_vv_f32m8_b4",
+        "semantics": "Active lane is true for unordered (either NaN) or numerically unequal inputs; signed zeros compare equal.",
+        "source": "https://docs.riscv.org/reference/isa/v20240411/unpriv/v-st-ext.html"
+      },
+      {
+        "name": "__riscv_vfadd_vv_f32m8",
+        "semantics": "Active binary32 RNE addition, gradual underflow, canonical quiet NaN for NaN inputs or invalid operations. Exception flags are unobserved.",
+        "source": "https://docs.riscv.org/reference/isa/v20240411/unpriv/f-st-ext.html"
+      },
+      {
+        "name": "__riscv_vmerge_vvm_f32m8",
+        "semantics": "An active true mask selects the second data operand; false selects the first.",
+        "source": "https://docs.riscv.org/reference/isa/v20240411/unpriv/v-st-ext.html"
+      }
+    ],
+    "limitations": [
+      "This is a repair of the RVV implementation, not a change to either architecture min/max intrinsic semantics.",
+      "The unconditional extra addition can set different floating exception flags.",
+      "Exact Arm NaN payload/sign propagation is not reproduced by canonical RVV NaNs.",
+      "Native regression is not a completed QCP or hardware theorem."
+    ]
+  }
+}
