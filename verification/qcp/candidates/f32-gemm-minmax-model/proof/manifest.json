@@ -1,0 +1,543 @@
+{
+  "schema": 1,
+  "BASE": "3cf03900827fa82bdeae670714b9c8ee220a9fee",
+  "case": "verification/qcp/candidates/f32-gemm-minmax-model",
+  "status": "model-capability-candidate-not-verified-kernel",
+  "environment_dependency": {
+    "PR": "https://github.com/Etha-Sun/SALTy-rn/pull/5",
+    "commit": "c9bf8376c57420eb94f5982598431810337776bb",
+    "tool": "verification/qcp/tools/environment.py",
+    "sha256": "9dc61cf596824d4dd622267393d74528455f34ea5e9ade6da6682bd33926e485"
+  },
+  "roots": [
+    "GemmSpec.FmaModel",
+    "GemmSpec.IntrinsicModel",
+    "GemmRepair.ClampRepair",
+    "GemmRepair.Observation",
+    "GemmKernelBridge.ScheduleBridge",
+    "GemmFullBridge.OutputBridge",
+    "GemmFullNeonBridge.NeonSchedule",
+    "GemmFullRvvBridge.RvvSchedule",
+    "GemmPanelCell.PanelCell",
+    "FullDomainNeon.FullNeonModel",
+    "FullDomainNeon.NeonStoreState",
+    "FullDomainRvv.FullState",
+    "FullDomainRvv.FullModel",
+    "FullDomainRvv.MachineDomain",
+    "FullDomainRvv.ActiveVector",
+    "FullDomainRvv.RowValues",
+    "FullDomainMemory.InitialState",
+    "FullDomainMemory.ChunkState",
+    "FullDomainMemory.RowWindows",
+    "FullDomainMemory.OutputFinish",
+    "FullDomainMemory.WrittenAddress",
+    "FullDomainCaller.FullCallerLogic",
+    "FullDomainConsequence.FullConsequence",
+    "LeaderAutomation.FastFrame"
+  ],
+  "modules": [
+    {
+      "module": "FullDomainBinding.ContractFinish",
+      "namespace": "FullDomainBinding",
+      "name": "ContractFinish.v",
+      "package_source": "proof/coq/FullDomainBinding/ContractFinish.v",
+      "reused_repository_source": null,
+      "source_sha256": "1d21809a0aea61f432a60ffd5a3d296da3251d1e15533b1891f4a297d832114f",
+      "project_imports": [
+        "FullDomainCaller.CallContractBridge",
+        "FullDomainRvv.FullState",
+        "FullDomainRvv.MachineDomain"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-binding-review/runs/contract03/ContractFinish.v"
+    },
+    {
+      "module": "FullDomainCaller.CallContractBridge",
+      "namespace": "FullDomainCaller",
+      "name": "CallContractBridge.v",
+      "package_source": "proof/coq/FullDomainCaller/CallContractBridge.v",
+      "reused_repository_source": null,
+      "source_sha256": "fc5e7a0ebabd1dff5a3fd5793dd9ef0f0c3dfe5023004e79cc3b387c71c7db33",
+      "project_imports": [
+        "FullDomainRvv.FullState",
+        "FullDomainRvv.MachineDomain"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-component-gate/runs/joint05/caller-models/CallContractBridge.v"
+    },
+    {
+      "module": "FullDomainCaller.FullCallerLogic",
+      "namespace": "FullDomainCaller",
+      "name": "FullCallerLogic.v",
+      "package_source": "proof/coq/FullDomainCaller/FullCallerLogic.v",
+      "reused_repository_source": null,
+      "source_sha256": "b774dc36a5bda9bec141c8b17472757159b0825bbd42e4ddc11cbf08b475de68",
+      "project_imports": [
+        "VaddComparator.ComparatorLogic",
+        "ResultBridge",
+        "FullDomainMemory.OutputFinish",
+        "FullDomainRvv.FullState",
+        "FullDomainRvv.MachineDomain"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-component-gate/runs/joint05/caller-models/FullCallerLogic.v"
+    },
+    {
+      "module": "FullDomainConsequence.FullConsequence",
+      "namespace": "FullDomainConsequence",
+      "name": "FullConsequence.v",
+      "package_source": "proof/coq/FullDomainConsequence/FullConsequence.v",
+      "reused_repository_source": null,
+      "source_sha256": "837834d80348f7404a63949ae86c041ae4d00319ef827e879aa430ab4d795742",
+      "project_imports": [
+        "FullDomainBinding.ContractFinish",
+        "FullDomainCaller.CallContractBridge",
+        "FullDomainRvv.FullState",
+        "FullDomainRvv.MachineDomain"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-binding-review/runs/consequence02/FullConsequence.v"
+    },
+    {
+      "module": "FullDomainMemory.ChunkState",
+      "namespace": "FullDomainMemory",
+      "name": "ChunkState.v",
+      "package_source": "proof/coq/FullDomainMemory/ChunkState.v",
+      "reused_repository_source": null,
+      "source_sha256": "f2ec18d8ca12c82724779877584431d23c86b934a80f25ed74cbee187f2a335a",
+      "project_imports": [
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-memory/ChunkState.v"
+    },
+    {
+      "module": "FullDomainMemory.InitialState",
+      "namespace": "FullDomainMemory",
+      "name": "InitialState.v",
+      "package_source": "proof/coq/FullDomainMemory/InitialState.v",
+      "reused_repository_source": null,
+      "source_sha256": "51ca1d436fb8119ee33b70675b79d8749035ad6d85d121525f907ed93e870a93",
+      "project_imports": [
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-memory/InitialState.v"
+    },
+    {
+      "module": "FullDomainMemory.OutputFinish",
+      "namespace": "FullDomainMemory",
+      "name": "OutputFinish.v",
+      "package_source": "proof/coq/FullDomainMemory/OutputFinish.v",
+      "reused_repository_source": null,
+      "source_sha256": "ec934c5f1b1c2e4717e225d6290aae2092422791cc5e10d97091f6e1c4c7659d",
+      "project_imports": [
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-memory/OutputFinish.v"
+    },
+    {
+      "module": "FullDomainMemory.RowWindows",
+      "namespace": "FullDomainMemory",
+      "name": "RowWindows.v",
+      "package_source": "proof/coq/FullDomainMemory/RowWindows.v",
+      "reused_repository_source": null,
+      "source_sha256": "c4b757070611b1053e6a8722e90dca646c397b53950d49bf7f82b3ca1e644493",
+      "project_imports": [
+        "FullDomainMemory.ChunkState",
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-memory/RowWindows.v"
+    },
+    {
+      "module": "FullDomainMemory.WrittenAddress",
+      "namespace": "FullDomainMemory",
+      "name": "WrittenAddress.v",
+      "package_source": "proof/coq/FullDomainMemory/WrittenAddress.v",
+      "reused_repository_source": null,
+      "source_sha256": "9a253f44c6ac36aad6a467502c5130a6f8337a9bd0870e5d2f1a305f84a075f0",
+      "project_imports": [
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-memory/WrittenAddress.v"
+    },
+    {
+      "module": "FullDomainNeon.FullNeonModel",
+      "namespace": "FullDomainNeon",
+      "name": "FullNeonModel.v",
+      "package_source": "proof/coq/FullDomainNeon/FullNeonModel.v",
+      "reused_repository_source": null,
+      "source_sha256": "3ff6715909353d63e79de491e7a5c35b7dd9d8d96234ed8227adc2fcc3ae0703",
+      "project_imports": [
+        "GemmFullBridge.OutputBridge",
+        "FullDomainRvv.FullModel",
+        "GemmNeon.KernelModel",
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel",
+        "GemmKernelBridge.ScheduleBridge"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-neon/FullNeonModel.v"
+    },
+    {
+      "module": "FullDomainNeon.NeonStoreState",
+      "namespace": "FullDomainNeon",
+      "name": "NeonStoreState.v",
+      "package_source": "proof/coq/FullDomainNeon/NeonStoreState.v",
+      "reused_repository_source": null,
+      "source_sha256": "0a185d204a66ad99e2b5b74fe52fa3cfb4bb1e15017c7de19627b1c8f6449758",
+      "project_imports": [
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-neon/NeonStoreState.v"
+    },
+    {
+      "module": "FullDomainRvv.ActiveVector",
+      "namespace": "FullDomainRvv",
+      "name": "ActiveVector.v",
+      "package_source": "proof/coq/FullDomainRvv/ActiveVector.v",
+      "reused_repository_source": null,
+      "source_sha256": "1da600ef9ef0306845e4f87e0d34b976d807d8b5199846f8ca89f3744af65c89",
+      "project_imports": [
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-rvv/ActiveVector.v"
+    },
+    {
+      "module": "FullDomainRvv.FullModel",
+      "namespace": "FullDomainRvv",
+      "name": "FullModel.v",
+      "package_source": "proof/coq/FullDomainRvv/FullModel.v",
+      "reused_repository_source": null,
+      "source_sha256": "3576cecc65131a1afccba36c7f9f7c283e464804158225ca50e1570cb7aa6ec5",
+      "project_imports": [],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-rvv/FullModel.v"
+    },
+    {
+      "module": "FullDomainRvv.FullState",
+      "namespace": "FullDomainRvv",
+      "name": "FullState.v",
+      "package_source": "proof/coq/FullDomainRvv/FullState.v",
+      "reused_repository_source": null,
+      "source_sha256": "fba6b66c0c4ef90dc321ab01458e4a2923f0252b49483e87b2cbd89c2780d960",
+      "project_imports": [
+        "FullDomainRvv.FullModel",
+        "GemmRvv.Model",
+        "GemmRvv.SLBounds"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-rvv/FullState.v"
+    },
+    {
+      "module": "FullDomainRvv.MachineDomain",
+      "namespace": "FullDomainRvv",
+      "name": "MachineDomain.v",
+      "package_source": "proof/coq/FullDomainRvv/MachineDomain.v",
+      "reused_repository_source": null,
+      "source_sha256": "97b3f0463afbd5dad4671adf3b45c288028485860c1158986bef08d418cf5730",
+      "project_imports": [
+        "FullDomainRvv.FullModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-rvv/MachineDomain.v"
+    },
+    {
+      "module": "FullDomainRvv.RowValues",
+      "namespace": "FullDomainRvv",
+      "name": "RowValues.v",
+      "package_source": "proof/coq/FullDomainRvv/RowValues.v",
+      "reused_repository_source": null,
+      "source_sha256": "c6fec99aa5bb1725e7d2043b966e83220c0db1084a8fd068d51e55790253b8c8",
+      "project_imports": [
+        "FullDomainRvv.ActiveVector",
+        "FullDomainRvv.FullState"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-rvv/RowValues.v"
+    },
+    {
+      "module": "GemmFullBridge.OutputBridge",
+      "namespace": "GemmFullBridge",
+      "name": "OutputBridge.v",
+      "package_source": "proof/coq/GemmFullBridge/OutputBridge.v",
+      "reused_repository_source": null,
+      "source_sha256": "8d2ecd8a889f5008484f7368eba667dd660e3e61170a334700c34130a90403c0",
+      "project_imports": [
+        "GemmRepair.ClampRepair",
+        "GemmRepair.Observation",
+        "GemmNeon.KernelModel",
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel",
+        "GemmKernelBridge.ScheduleBridge"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-bridge/runs/fresh03/OutputBridge.v"
+    },
+    {
+      "module": "GemmFullNeonBridge.NeonSchedule",
+      "namespace": "GemmFullNeonBridge",
+      "name": "NeonSchedule.v",
+      "package_source": "proof/coq/GemmFullNeonBridge/NeonSchedule.v",
+      "reused_repository_source": null,
+      "source_sha256": "4f2b6a0195a90854a2c23a11148981363b1e8a83c76ac7d23e675bb9c5b325c6",
+      "project_imports": [
+        "GemmFullBridge.OutputBridge",
+        "FullDomainNeon.FullNeonModel",
+        "GemmNeon.KernelModel",
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel",
+        "GemmKernelBridge.ScheduleBridge"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-bridge/runs/neon-schedule01/NeonSchedule.v"
+    },
+    {
+      "module": "GemmFullRvvBridge.RvvSchedule",
+      "namespace": "GemmFullRvvBridge",
+      "name": "RvvSchedule.v",
+      "package_source": "proof/coq/GemmFullRvvBridge/RvvSchedule.v",
+      "reused_repository_source": null,
+      "source_sha256": "8a463f32b6566f2c79d54e763f785349c8e25231d9f2dd0d0ac02cf2a9d74654",
+      "project_imports": [
+        "GemmFullBridge.OutputBridge",
+        "FullDomainRvv.FullState",
+        "GemmNeon.KernelModel",
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel",
+        "GemmKernelBridge.ScheduleBridge"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-bridge/runs/rvv-schedule03/RvvSchedule.v"
+    },
+    {
+      "module": "GemmKernelBridge.ScheduleBridge",
+      "namespace": "GemmKernelBridge",
+      "name": "ScheduleBridge.v",
+      "package_source": "proof/coq/GemmKernelBridge/ScheduleBridge.v",
+      "reused_repository_source": null,
+      "source_sha256": "2e32fdb149973e6006f8bc182848253512ed6e872f5300f6250bc76e849ece2c",
+      "project_imports": [
+        "GemmNeon.KernelModel",
+        "GemmRvv.Model",
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-runs/model-bridge03/ScheduleBridge.v"
+    },
+    {
+      "module": "GemmNeon.KernelModel",
+      "namespace": "GemmNeon",
+      "name": "KernelModel.v",
+      "package_source": "proof/coq/GemmNeon/KernelModel.v",
+      "reused_repository_source": null,
+      "source_sha256": "7f5848d1722560f3ccabdb6db23b2d5a44ed0458a6db0c06a2692c62c1360085",
+      "project_imports": [
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/neon-qcp/KernelModel.v"
+    },
+    {
+      "module": "GemmPanelCell.PanelCell",
+      "namespace": "GemmPanelCell",
+      "name": "PanelCell.v",
+      "package_source": "proof/coq/GemmPanelCell/PanelCell.v",
+      "reused_repository_source": null,
+      "source_sha256": "851f788a895d8e2684266656f4d517b5bb466162e48488763e30a759522a60b4",
+      "project_imports": [
+        "FullDomainRvv.FullState",
+        "GemmSpec.IntrinsicModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-bridge/runs/panel-cell01/PanelCell.v"
+    },
+    {
+      "module": "GemmRepair.ClampRepair",
+      "namespace": "GemmRepair",
+      "name": "ClampRepair.v",
+      "package_source": "proof/coq/GemmRepair/ClampRepair.v",
+      "reused_repository_source": null,
+      "source_sha256": "f2699ca84bfee3c72aa387b370509ee8ffa48e33d87dd711fd59e966acc2041a",
+      "project_imports": [
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/model-repair/runs/fresh03/ClampRepair.v"
+    },
+    {
+      "module": "GemmRepair.Observation",
+      "namespace": "GemmRepair",
+      "name": "Observation.v",
+      "package_source": "proof/coq/GemmRepair/Observation.v",
+      "reused_repository_source": null,
+      "source_sha256": "37aeb803651e3154f17ead354bf1506ea8154ee9872d506827a0c145d2bb041e",
+      "project_imports": [
+        "GemmRepair.ClampRepair",
+        "GemmSpec.IntrinsicModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/model-repair/runs/fresh03/Observation.v"
+    },
+    {
+      "module": "GemmRvv.Model",
+      "namespace": "GemmRvv",
+      "name": "Model.v",
+      "package_source": "proof/coq/GemmRvv/Model.v",
+      "reused_repository_source": null,
+      "source_sha256": "9075c1e7cca2066b080b620644f659adb1e95c053f68fdb92d1254cac141b075",
+      "project_imports": [
+        "GemmSpec.FmaModel",
+        "GemmSpec.IntrinsicModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/rvv-qcp/Model.v"
+    },
+    {
+      "module": "GemmRvv.SLBounds",
+      "namespace": "GemmRvv",
+      "name": "SLBounds.v",
+      "package_source": "proof/coq/GemmRvv/SLBounds.v",
+      "reused_repository_source": null,
+      "source_sha256": "e1cdb4e365353230e8b0622a54c8a2b0b12568751d6f1260515d8c7397055896",
+      "project_imports": [
+        "GemmRvv.Model"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/rvv-qcp/SLBounds.v"
+    },
+    {
+      "module": "GemmSpec.FmaModel",
+      "namespace": "GemmSpec",
+      "name": "FmaModel.v",
+      "package_source": "proof/coq/GemmSpec/FmaModel.v",
+      "reused_repository_source": null,
+      "source_sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153",
+      "project_imports": [],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-runs/fresh01/FmaModel.v"
+    },
+    {
+      "module": "GemmSpec.IntrinsicModel",
+      "namespace": "GemmSpec",
+      "name": "IntrinsicModel.v",
+      "package_source": "proof/coq/GemmSpec/IntrinsicModel.v",
+      "reused_repository_source": null,
+      "source_sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a",
+      "project_imports": [
+        "GemmSpec.FmaModel"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-runs/fresh01/IntrinsicModel.v"
+    },
+    {
+      "module": "NanBridge.BridgeLogic",
+      "namespace": "NanBridge",
+      "name": "BridgeLogic.v",
+      "package_source": null,
+      "reused_repository_source": "verification/qcp/verified/f32-vadd/proof/coq/NanBridge/BridgeLogic.v",
+      "source_sha256": "8474ccdad394b796a5c13009e0c925ec1f6ce2155d71ce1780faa4f54a10b59d",
+      "project_imports": [],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/runs/fresh01/deps/NanBridge/BridgeLogic.v"
+    },
+    {
+      "module": "NanBridge.ListBridge",
+      "namespace": "NanBridge",
+      "name": "ListBridge.v",
+      "package_source": null,
+      "reused_repository_source": "verification/qcp/verified/f32-vadd/proof/coq/NanBridge/ListBridge.v",
+      "source_sha256": "f464a12080ffea42b8dab7ccca982e67288770eff5eed69d2d0c466eb4a08dc9",
+      "project_imports": [],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/runs/fresh01/deps/NanBridge/ListBridge.v"
+    },
+    {
+      "module": "QcpVadd.VaddBits",
+      "namespace": "QcpVadd",
+      "name": "VaddBits.v",
+      "package_source": null,
+      "reused_repository_source": "verification/qcp/verified/f32-vadd/proof/coq/QcpVadd/VaddBits.v",
+      "source_sha256": "462ccfc07d3d2c1b3f0eb83684298a5d49183d2fa4545537ab15f7f2b5a3e482",
+      "project_imports": [],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/runs/fresh01/deps/QcpVadd/VaddBits.v"
+    },
+    {
+      "module": "ResultBridge",
+      "namespace": "",
+      "name": "ResultBridge.v",
+      "package_source": null,
+      "reused_repository_source": "verification/qcp/verified/f32-vadd/proof/coq/relations/ResultBridge.v",
+      "source_sha256": "46cd1e0f99452e021205991eca38cae11b658ba689b188837d00d443978d15db",
+      "project_imports": [
+        "NanBridge.BridgeLogic",
+        "QcpVadd.VaddBits"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/runs/fresh01/deps/relations/ResultBridge.v"
+    },
+    {
+      "module": "VaddComparator.ComparatorLogic",
+      "namespace": "VaddComparator",
+      "name": "ComparatorLogic.v",
+      "package_source": null,
+      "reused_repository_source": "verification/qcp/verified/f32-vadd/proof/coq/VaddComparator/ComparatorLogic.v",
+      "source_sha256": "2b3a64fa4a88378ea74507682afdb6f768084b09227647671dddac7a6822dd17",
+      "project_imports": [
+        "NanBridge.BridgeLogic",
+        "NanBridge.ListBridge"
+      ],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/runs/fresh01/deps/VaddComparator/ComparatorLogic.v"
+    },
+    {
+      "module": "LeaderAutomation.FastFrame",
+      "namespace": "LeaderAutomation",
+      "name": "FastFrame.v",
+      "package_source": "proof/coq/LeaderAutomation/FastFrame.v",
+      "reused_repository_source": null,
+      "source_sha256": "8424b7b64ba1c698a29402c9af987e3adbfc9df41a940910ede17ccf7bc78348",
+      "project_imports": [],
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/leader-automation/FastFrame.v",
+      "upstream_same_bytes": "verification/qcp/verified/f32-vmulc/proof/coq/FastFrame.v"
+    }
+  ],
+  "module_count": 34,
+  "reused_foundation_modules": 5,
+  "review_files": [
+    {
+      "path": "impl/testNEON.c",
+      "sha256": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/original/neon.c",
+      "copied_verbatim": true
+    },
+    {
+      "path": "impl/testRVV.c",
+      "sha256": "9ae2f510ae8991e8dc80606edd0fb4595e02d11dcba6ae57974e7b5ef0b2b4b7",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/original/rvv.c",
+      "copied_verbatim": true
+    },
+    {
+      "path": "repaired/rvv.c",
+      "sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/repaired/rvv.c",
+      "copied_verbatim": true
+    },
+    {
+      "path": "repaired/rvv.patch",
+      "sha256": "b528e308677fd0b86ccec56537b70354c3751c974edfa0f3c6042f5a23c17173",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/repaired/rvv.patch",
+      "copied_verbatim": true
+    },
+    {
+      "path": "repair.json",
+      "sha256": "4603a52fd4351df911b63d5ce74412671e23974651081f5031a86cec8ee727ab",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/repair.json",
+      "copied_verbatim": true
+    },
+    {
+      "path": "review/full-domain-caller/spec.c",
+      "sha256": "b73e91879aeea02a70c02d184dc1a1b3e9587d0e045fc41e998cd7ba3b82e746",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-caller/spec.c",
+      "copied_verbatim": true
+    },
+    {
+      "path": "review/full-domain-caller/contracts.h",
+      "sha256": "ece0441a1948199a4e866d37f9a002f90e1328294dcdc0587ee22339c6b7fc7f",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-caller/contracts.h",
+      "copied_verbatim": true
+    },
+    {
+      "path": "review/caller-qcp/deps/VaddComparator/comparator_def.h",
+      "sha256": "faff5100ece4b802cbac482282f307b66aeca3df48da5b6a94ab6d021f025a74",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/deps/VaddComparator/comparator_def.h",
+      "copied_verbatim": true
+    },
+    {
+      "path": "review/caller-qcp/deps/QcpVadd/float_array_def.h",
+      "sha256": "2264b99db0dfc783fe2375cac4ed7d85bc43e3ee38e561b30aa186c31d0ae418",
+      "original_source": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/caller-qcp/deps/QcpVadd/float_array_def.h",
+      "copied_verbatim": true
+    }
+  ],
+  "C_VCs_in_this_package": 0,
+  "local_850_C_candidate_closure_shipped": false,
+  "raw_C_or_ISA_equivalence_proved": false,
+  "all_original_C_sources_preserved": true
+}
