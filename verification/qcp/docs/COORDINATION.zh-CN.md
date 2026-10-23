@@ -1,6 +1,6 @@
 # 双服务器协作约定
 
-2026-10-23 当前更正：独立worker的u8-vclamp已整合；qs8-vcvt因unsignedlong在QCP arch64被降为32位而native64位，撤回全64域准入并移至candidates，保留全部历史。当前有效16/40。不要从另一工作树的旧17名单恢复该撤回项；修类型并完整fresh门禁后再恢复。其他相关候选QLR/ADD同步更正，禁止缩域。
+2026-10-23 当前更正：U8原始整案已收录；QS8转换的旧 UInt32/native64 错误准入撤回后，现已完成明确unsigned64类型的全案fresh重新验证并恢复verified。八个实际sizeof字段进入26单元/1672 C字段+15策略的统一门禁，240次普通Coq、1687最终Print全部通过，不复用旧32位C对象。当前有效17/40；先fetch最新清单，禁止用其他工作树的旧32位证书覆盖新验收。相关QLR/ADD继续同样的64位重验，不缩域。
 
 用户最新目标为至少21个完整verified kernel。新批次默认16并发、每进程16GiB，时限按任务设置，实际并行批次按服务器可用资源调度；修复主动参考Frama-C和Arcadia-y，保留原因/补丁/反例，无需等待批准。工作恢复入口为本worker的MEMORY.md和私有checkpoint；只在完整验收后更新正式数量。
 
@@ -10,7 +10,7 @@
 [最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳仍停止。用户最新明确取消额度百分比停止限制，
 不再按50%/60%/70%阈值暂停；下文旧额度规则仅保留历史含义。
 worker使用自己已部署的心跳、thread和额度设置，每30分钟读取协调板并跟进新检查点。
-当前16个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
+当前17个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
 用户已接受适合证明的比较函数和wrapper；旧mapper内联形式不再是新入口的验收要求。
 
 集成分支为 `Etha-Sun/SALTy-rn:c-shim-v2`，上游基线 `be16280c7812a7459c26c3ce82a47339a3d07718`。本机工作树为 `build/qcp-kernel-framework`；旧 `build/verified-output-equivalence` 只读参考。GitHub 仓库关闭了 Issues，因此使用一条专门的 draft PR 作协调板；地址登记在本目录的 `coordination.json`。该 PR 仅承载任务状态，不作为功能合并入口。

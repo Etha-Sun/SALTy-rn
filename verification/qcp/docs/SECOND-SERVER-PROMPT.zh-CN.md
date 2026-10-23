@@ -214,4 +214,6 @@ OPEN: spec问题 / proof缺口 / 工具限制 / 环境失败 / 实际反例，�
 
 本次最新正式清单为16/40，新增f32-vrndne原始两侧：28实际C/1560字段/71body，30策略字段，232普通Coq，1590最终假设核对，仅既有14项继承假设；全FP32数值或双NaN观察、固定VLEN128，具体内存和终止/ISA边界见对应README，旧native限额与新capped publication证据分开。目标至少21；零件不能代替完整门禁。
 
-最新审计更正：u8-vclamp完整包已独立核对整合；qs8-vcvt旧结果不能覆盖所称64位长度域（native unsignedlong为8字节、QCP UINT为4），已撤回并移至candidates，原证书/sizeof诊断/Coq反证保留。当前有效16/40=15项保留结果+新U8；其他工作树显示的17包含本次撤回项。新case及重验应显式64类型并actual sizeof/符号性核对，不能缩n来假装闭合。
+最新审计更正：u8-vclamp完整包已独立核对整合；qs8-vcvt旧结果不能覆盖所称64位长度域（native unsignedlong为8字节、QCP UINT为4），已撤回并移至candidates，原证书/sizeof诊断/Coq反证保留。当前有效17/40=15项保留结果+新U8；其他工作树显示的17包含本次撤回项。新case及重验应显式64类型并actual sizeof/符号性核对，不能缩n来假装闭合。
+
+2026-10-23 类型宽度验收更新：QS8转换旧32位降低证书已撤回并留档；明确unsigned64类型的全案fresh26单元/1672 C字段+15策略、240普通Coq与1687最终假设审计已通过并恢复verified，当前17/40。QLR/ADD仍须其各自完整64位门禁。

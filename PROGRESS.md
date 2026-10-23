@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**16/40**。新目标：**至少 21/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**17/40**。新目标：**至少 21/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 - f32-vadd
 - f32-vsub
@@ -17,6 +17,7 @@
 - qu8-rsum（NEON语法兼容版）
 - qs8-rsum（两侧模32溢出修复版）
 - f32-vrndne（两侧原始实现）
+- qs8-vcvt（修复版，完整64位重新验收）
 - [u8-vclamp](verification/qcp/verified/u8-vclamp/README.md)（两侧原始实现，可选 AVL128 版同计一项）
 
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
@@ -25,7 +26,7 @@
 
 - QU8→FP32：完整验证通过；继续 signed/unsigned rsum。
 - FP32 取整已完成；继续 FP32→FP16。
-- QS8 转换因 QCP/native 类型宽度不符退回重验；继续 QS8 激活与 QS8/QU8 加法。
+- QS8 转换已修正类型并完成全64位重新验收；继续 QS8 激活与 QS8/QU8 加法。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
@@ -33,6 +34,8 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 历史修复与原反例（PR 已关闭，后续直接提交）：[vmin PR #3](https://github.com/Etha-Sun/SALTy-rn/pull/3)、[vmax PR #4](https://github.com/Etha-Sun/SALTy-rn/pull/4)。
 
 ## 大进展
+
+- 2026-10-23（洛杉矶）：QS8 转换修正类型后，完整64位门禁重新通过并收录；有效 **17/40**。
 
 - 2026-10-23（洛杉矶）：收录其他 worker 完成的 U8 clamp；撤回 QS8 转换的错误64位长度域准入，修正类型后重验。当前有效 **16/40**。
 
