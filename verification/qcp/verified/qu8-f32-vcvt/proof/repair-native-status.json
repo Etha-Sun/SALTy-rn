@@ -1,0 +1,90 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Actual original INT32_MIN UB counterexample and repaired array-C-shim/public-wrapper finite UBSan oracle/frame/negative-control regression. Not formal ISA or full proof.",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-ubsan-zydon820",
+  "original_ubsan_exit_code": 1,
+  "repaired_ubsan_exit_code": 0,
+  "ubsan_output": "passed cases=215340 active_lanes_per_side=4518100 failures=0; actual public equivalent/comparator controls; original-vs-compatible RVV bitexact controls; repaired-neon/original-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+  "records": [
+    {
+      "label": "compile-repaired",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-ubsan-zydon820/repaired"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5524918278679252,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-original",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DQCP_ORIGINAL_NEON",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-ubsan-zydon820/original"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4609799839090556,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-boundary",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-ubsan-zydon820/original",
+        "boundary"
+      ],
+      "exit_code": 1,
+      "seconds": 0.0026928780134767294,
+      "log_sha256": "72176c4cd45ce0d17d81db8438ede11ea56c23876501ef999b126c5366d773a4"
+    },
+    {
+      "label": "repaired-boundary",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-ubsan-zydon820/repaired",
+        "boundary"
+      ],
+      "exit_code": 0,
+      "seconds": 0.002717978088185191,
+      "log_sha256": "753578f60d79a570ab2a69069b298cdf42b0bfc512a0d18f9f1038db6610b074"
+    },
+    {
+      "label": "repaired-regression",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-ubsan-zydon820/repaired"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2877605468966067,
+      "log_sha256": "90b0947894d7f3c6a480870a4b0c99e81a4f8e7bb66f25c8804bb2e166e292e3"
+    }
+  ],
+  "input_sha256": {
+    "shim/harness.c": "7e1bd4c39a0d0457200adc085fcaaa88285db8a7ecd8b826875c7be1efb06923",
+    "shim/runtime.h": "e619c8e3e7775a040115072804fb12496f27d503008f0da753cd6e9f49d7836e",
+    "impl/testNEON.c": "da698cee5deb0616434bbfdc318e089e3ef04ac4b93bd863ab427ead22b60f4d",
+    "impl/testRVV.c": "7864038253ce929a827f097979f5add85c46156978e232227443ffefd27f599d",
+    "spec.c": "79cbea42c069993cee4971516eff9d6d82888224bd32d56dcaf19a84d92393fb",
+    "proof/original/testNEON.c": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1",
+    "proof/repair.patch": "e02600bb6031ad7f30cb7099924c301c1450c3fbf8b3cb475691ed24659204eb"
+  }
+}

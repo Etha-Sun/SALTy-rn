@@ -1,0 +1,29 @@
+{
+  "kernel": "qu8-f32-vcvt",
+  "variant": "repaired-neon-compatible-rvv",
+  "reason": "Original signed unary minus overflows at INT32_MIN before intended int16 narrowing; use uint32 modular negation followed by same int16 narrowing, retaining full int32 domain and16bit wrap.",
+  "original_neon_sha256": "eaeb29597359201f0e2e13a964c0e883f08af9120ae4ee95360a96cadfbe8fd1",
+  "repaired_neon_sha256": "da698cee5deb0616434bbfdc318e089e3ef04ac4b93bd863ab427ead22b60f4d",
+  "patch_sha256": "e02600bb6031ad7f30cb7099924c301c1450c3fbf8b3cb475691ed24659204eb",
+  "counterexample": {
+    "batch": 1,
+    "input": 0,
+    "zero_point": -2147483648,
+    "scale_bits": "3f800000",
+    "kind": "C signed negation overflow",
+    "ubsan_run_pending": false,
+    "ubsan_output": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/../proof/original/testNEON.c:21:51: runtime error: negation of -2147483648 cannot be represented in type 'int'; cast to an unsigned type to negate this value to itself\n",
+    "ubsan_log_sha256": "72176c4cd45ce0d17d81db8438ede11ea56c23876501ef999b126c5366d773a4"
+  },
+  "whole_kernel_verified": false,
+  "original_rvv_sha256": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720",
+  "repaired_rvv_sha256": "7864038253ce929a827f097979f5add85c46156978e232227443ffefd27f599d",
+  "rvv_patch": "proof/repair-rvv.patch",
+  "rvv_patch_sha256": "7bb61d857144c456b6ef6a9154ec04f589c13e48c7dea60672e5d51e39a94452",
+  "rvv_reason": "Original defined comma-step for syntax is unsupported by pinned QCP2.1.4 parser. Keep original as tool-gap; compatibility version moves batch-=vl,input+=vl,output+=vl in exact order to body end. Body has no break/continue/return/goto; vl assigned once before use and stable during step. No claimed original RVV semantic counterexample.",
+  "patch": "proof/repair-neon.patch",
+  "neon_patch": "proof/repair-neon.patch",
+  "neon_patch_sha256": "e02600bb6031ad7f30cb7099924c301c1450c3fbf8b3cb475691ed24659204eb",
+  "combined_patch": "proof/repair.patch",
+  "combined_patch_sha256": "936e562ca147589311b31913e0fb5930a2d463ef9bad0b01d7acb7a0eb2f086b"
+}

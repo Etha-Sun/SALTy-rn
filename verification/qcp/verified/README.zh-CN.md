@@ -1,5 +1,7 @@
 # 已验证的 kernel
 
+当前 **12/40**，目标至少 **21/40**。最新新增 [qu8-f32-vcvt](qu8-f32-vcvt/README.zh-CN.md) 修复／兼容版。
+
 本目录只收录完整 C-shim 模块化等价性检查通过的 kernel；清单见 manifest.json。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。
 程序前置条件、输出观察关系和硬件参数以各 case 的 spec 与 README 为准。

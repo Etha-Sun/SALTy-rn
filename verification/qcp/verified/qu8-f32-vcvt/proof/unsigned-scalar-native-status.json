@@ -1,0 +1,50 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Independent finite exhaustive unsigned16 arithmetic/sign interpretation oracle over actual scalar helper C; valid carry fault negative control rejected. Not formal proof.",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/unsigned-scalar-native-dz0quio7",
+  "records": [
+    {
+      "variant": "good",
+      "exit_code": 0,
+      "output": "unsigned actual scalar exhaustive checks=16842753 failures=0; all65536 input residues/all256 unsigned byte operands/allINT_MIN residues; negative wrap control separate\n",
+      "compile_command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/unsigned_oracle.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/unsigned-scalar-native-dz0quio7/good"
+      ]
+    },
+    {
+      "variant": "wrong",
+      "exit_code": 1,
+      "output": "",
+      "compile_command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DQU8_WRONG_WRAP",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/unsigned_oracle.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/unsigned-scalar-native-dz0quio7/wrong"
+      ]
+    }
+  ],
+  "source_sha256": {
+    "shim/unsigned_oracle.c": "a6e3a84d0540bfb9cf1945ec06bb38777136a844618cf567fa499ca9b4212977",
+    "shim/scalar_primitives.c": "dfaa5f533e579c9b68bc4dff13c933737aaccbb860b5817632266ea1ce6ea370",
+    "shim/unsigned_scalar.c": "9550526ea651b8fa7a4f42e9b5054854df55ea153b41dccaa0ae6dbef7e1754a"
+  }
+}

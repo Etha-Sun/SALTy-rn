@@ -1,0 +1,80 @@
+{
+  "scope": "Model specification; current full-case admission is recorded separately in proof/status.json",
+  "implementation_variant": {
+    "neon": "repaired-signed-negation-UB",
+    "rvv": "compatibility-refactored-comma-for-step"
+  },
+  "repair": "NEON uint32 negation before original signed16 narrowing covers INT32_MIN; RVV defined comma-step original is a QCP syntax tool-gap, with compatibility source moving exact ordered step to body end. Each original/hash/patch retained; no original RVV semantic counterexample invented.",
+  "public_preconditions": {
+    "n": "0<n<=4611686018427387903, so 4*n fits uint64",
+    "input": "n+7 readable initialized unsigned bytes",
+    "outputs": "two disjoint n-float writable arrays, initially uninitialized permitted",
+    "params": "separate preserved int32 zero_point and fp32 scale cells",
+    "zero_point_domain": "all int32 values",
+    "scale_domain": "all binary32 values including all NaNs/Inf/signed zeros"
+  },
+  "lane_semantics": {
+    "neon": "uint16(seed_signed16) + unsigned8 input, modulo2^16, then signed16 reinterpret, sign extension, exact int→binary32 and fp32 multiply by actual scale",
+    "rvv": "zero-extend unsigned8 to uint16, add uint16 modular negated raw zero point modulo2^16, signed16 reinterpret/sign extension, exact int→binary32 then multiply by actual scale",
+    "equality": "UnsignedModel.cvt_unsigned_delta/cvt_unsigned_addw plus Model.cvt_delta_equiv/lane_equiv, UnsignedProgramFacts actual active-chain equality; structural bit equality internally, public numeric or bothNaN only at final observation",
+    "tool_cast_boundary": "Actual variable-only checked narrow16/u16 helpers; arithmetic helpers invoke those real checked callees. uint16 seed-expression target was actually generated and proved; no discarded cast treated as identity."
+  },
+  "machine_model": {
+    "size_t_bits": 64,
+    "int_bits": 32,
+    "short_bits": 16,
+    "byte_order": "little",
+    "signed_narrowing": "explicit two's complement wrap model",
+    "floating_format": "IEEE binary32",
+    "rounding": "round-to-nearest ties-to-even",
+    "rvv": {
+      "VLEN": 128,
+      "configurations": [
+        "SEW8/LMUL2",
+        "SEW16/LMUL4",
+        "SEW32/LMUL8"
+      ],
+      "VLMAX": 32,
+      "vl": "min(AVL,32)",
+      "inactive_lanes": "declared scalar representative; not a hardware tail-policy refinement claim"
+    },
+    "unsigned_char_bits": 8
+  },
+  "observation": "Forall2 same_value: numeric equality or both NaN; NaN payload/sign and floating flags/traps excluded",
+  "formal_source_boundary": "Actual repaired NEON/compatible RVV + actual scalar-field helper bodies and public wrapper; original RVV preserved as tool-gap, no ISA/compiler/physical ABI refinement theorem.",
+  "non_claims": [
+    "hardware ISA equivalence",
+    "physical ABI/layout refinement",
+    "standalone termination theorem",
+    "native testing as formal verification"
+  ],
+  "inherited_assumptions": "QCP C memory/type/address model and Coq/Flocq classical/extensionality dependencies must remain visible in final Print Assumptions audit",
+  "official_semantics_sources": [
+    {
+      "source": "Arm ACLE Advanced SIMD Intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/",
+      "items": [
+        "vaddw_u8: UADDW, uint16 accumulator + zero-extended uint8 operand, low16 result",
+        "vreinterpretq_u16_s16 / vreinterpretq_s16_u16: register bits preserved, signed/unsigned lane interpretation differs",
+        "vmovl_s16 / vcvtq_f32_s32 / vmulq_f32: signed extension, conversion, then separate multiply"
+      ],
+      "audit": "Source-reviewed; no machine ISA correspondence proof claimed."
+    },
+    {
+      "source": "RISC-V V ratified1.0 specification",
+      "url": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "sections": [
+        "Vector Integer Arithmetic Instructions: integer operations wrap unless stated otherwise",
+        "Vector Integer Extension: vzext.vf2 zero-extends half-SEW source",
+        "Vector Integer Add/Subtract: vadd.vx low-SEW result",
+        "Vector Floating-point conversion and multiplication; active-lane memory access"
+      ],
+      "audit": "Source-reviewed; fixedVLEN128/SEW8m2→16m4→32m8 C representative, no hardware tail-policy/refinement claim."
+    }
+  ],
+  "compatibility_bridge": {
+    "source_audit": "proof/rvv-compatibility-source-audit.json",
+    "pure_transition_proof": "proof/coq/ForStepBridge.v",
+    "scope": "Two closed pure ordered-step/state-bound lemmas plus strict source-pattern/body-control audit; not a complete original-C semantics proof. Complete QCP proof targets modified actual implementation."
+  }
+}

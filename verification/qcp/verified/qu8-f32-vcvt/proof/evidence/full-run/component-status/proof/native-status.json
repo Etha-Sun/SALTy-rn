@@ -1,0 +1,134 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-final-80erfbog",
+  "scope": "Finite independent array-C-shim actual modified kernels/public wrapper, full-int32/all-fp32 oracle/frame/negative-control and original-vs-compatible RVV bit controls. Actual scalar-field closure is separately exercised by formal-native-status. Not formal proof or ISA refinement.",
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/harness.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.013037450145930052,
+      "log_sha256": "72bd0468c2f07acfe81d2787fabea687bf2f9423d5f57de19176336834789927"
+    },
+    {
+      "label": "compile-ubsan",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-final-80erfbog/native-ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.47623336291871965,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime-ubsan",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-final-80erfbog/native-ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2872863169759512,
+      "log_sha256": "5530e6bfe0b98fff797e5951cabdff80fac7a9e95a3bfdacc9eb60993b9cc07c"
+    },
+    {
+      "label": "compile-asan",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=address",
+        "-fno-omit-frame-pointer",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-final-80erfbog/native-asan"
+      ],
+      "exit_code": 0,
+      "seconds": 1.009454176062718,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime-asan-cgroup",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "--setenv=ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-final-80erfbog/cgroup-launch.py",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-f32-vcvt/.build/native-final-80erfbog/native-asan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.7513656159862876,
+      "log_sha256": "9448df43f2e60773d2b9599176a3fb6976e679b907b198d503482ca23eb90815"
+    }
+  ],
+  "ubsan_output": "passed cases=215340 active_lanes_per_side=4518100 failures=0; actual public equivalent/comparator controls; original-vs-compatible RVV bitexact controls; repaired-neon/compatible-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+  "asan_output": "actual_memory_max=17179869184\npassed cases=215340 active_lanes_per_side=4518100 failures=0; actual public equivalent/comparator controls; original-vs-compatible RVV bitexact controls; repaired-neon/compatible-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+  "current_sources_sha256": {
+    "impl/testRVV.c": "7864038253ce929a827f097979f5add85c46156978e232227443ffefd27f599d",
+    "../../verified/f32-vadd/contracts/VaddWrapper/wrapper_def.h": "80ab06f425476b7a195dc1097b43b299a1ff00378453a20b7ee9f2e44ee16835",
+    "spec.c": "79cbea42c069993cee4971516eff9d6d82888224bd32d56dcaf19a84d92393fb",
+    "shim/runtime.h": "e619c8e3e7775a040115072804fb12496f27d503008f0da753cd6e9f49d7836e",
+    "../../shared/c-shim/f32/QcpVadd/float_array_def.h": "2264b99db0dfc783fe2375cac4ed7d85bc43e3ee38e561b30aa186c31d0ae418",
+    "../../verified/f32-vadd/contracts/VaddComparator/comparator_def.h": "6ec1853a1e7fd63f9e17cada5aad5b5f9bd438d2dc0dafec5b290f1cf9cb1af2",
+    "proof/original/testRVV.c": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720",
+    "impl/testNEON.c": "da698cee5deb0616434bbfdc318e089e3ef04ac4b93bd863ab427ead22b60f4d",
+    "shim/harness.c": "ab23ace634d3cbfbb7cd1fea666754baf3649c48620e1ab7cbc0d83fbe015e39"
+  },
+  "input_sha256": {
+    "impl/testRVV.c": "7864038253ce929a827f097979f5add85c46156978e232227443ffefd27f599d",
+    "../../verified/f32-vadd/contracts/VaddWrapper/wrapper_def.h": "80ab06f425476b7a195dc1097b43b299a1ff00378453a20b7ee9f2e44ee16835",
+    "spec.c": "79cbea42c069993cee4971516eff9d6d82888224bd32d56dcaf19a84d92393fb",
+    "shim/runtime.h": "e619c8e3e7775a040115072804fb12496f27d503008f0da753cd6e9f49d7836e",
+    "../../shared/c-shim/f32/QcpVadd/float_array_def.h": "2264b99db0dfc783fe2375cac4ed7d85bc43e3ee38e561b30aa186c31d0ae418",
+    "../../verified/f32-vadd/contracts/VaddComparator/comparator_def.h": "6ec1853a1e7fd63f9e17cada5aad5b5f9bd438d2dc0dafec5b290f1cf9cb1af2",
+    "proof/original/testRVV.c": "9b46b2e5c245b3305d75e5228f8891b45709665356206e8481d51dd63164b720",
+    "impl/testNEON.c": "da698cee5deb0616434bbfdc318e089e3ef04ac4b93bd863ab427ead22b60f4d",
+    "shim/harness.c": "ab23ace634d3cbfbb7cd1fea666754baf3649c48620e1ab7cbc0d83fbe015e39"
+  },
+  "recursive_input_count": 9,
+  "input_identity_unchanged": true,
+  "asan_actual_memory_max": 17179869184,
+  "per_process_memory_GiB": 16
+}

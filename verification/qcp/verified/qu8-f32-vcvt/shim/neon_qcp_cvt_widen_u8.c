@@ -1,0 +1,8 @@
+#include "neon_unsigned.h"
+int16x8_t qcp_cvt_widen_u8(int16x8_t a,uint8x8_t b)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z) Require -32768<=a0 && a0<=32767 && -32768<=a1 && a1<=32767 && -32768<=a2 && a2<=32767 && -32768<=a3 && a3<=32767 && -32768<=a4 && a4<=32767 && -32768<=a5 && a5<=32767 && -32768<=a6 && a6<=32767 && -32768<=a7 && a7<=32767 && 0<=b0 && b0<=255 && 0<=b1 && b1<=255 && 0<=b2 && b2<=255 && 0<=b3 && b3<=255 && 0<=b4 && b4<=255 && 0<=b5 && b5<=255 && 0<=b6 && b6<=255 && 0<=b7 && b7<=255 && store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7) * store(&(b.s0),unsigned char,b0) * store(&(b.s1),unsigned char,b1) * store(&(b.s2),unsigned char,b2) * store(&(b.s3),unsigned char,b3) * store(&(b.s4),unsigned char,b4) * store(&(b.s5),unsigned char,b5) * store(&(b.s6),unsigned char,b6) * store(&(b.s7),unsigned char,b7) Ensure store(&(__return.s0),short,cvt_addw(a0,b0)) * store(&(__return.s1),short,cvt_addw(a1,b1)) * store(&(__return.s2),short,cvt_addw(a2,b2)) * store(&(__return.s3),short,cvt_addw(a3,b3)) * store(&(__return.s4),short,cvt_addw(a4,b4)) * store(&(__return.s5),short,cvt_addw(a5,b5)) * store(&(__return.s6),short,cvt_addw(a6,b6)) * store(&(__return.s7),short,cvt_addw(a7,b7)) */
+{ uint16x8_t ua=vreinterpretq_u16_s16(a) /*@ where a=&a */;
+ uint16x8_t sum=vaddw_u8(ua,b) /*@ where a=&ua,b=&b */;
+ int16x8_t result=vreinterpretq_s16_u16(sum) /*@ where a=&sum */;
+ return result;
+}

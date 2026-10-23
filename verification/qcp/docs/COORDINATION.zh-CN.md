@@ -1,6 +1,6 @@
 # 双服务器协作约定
 
-用户最新目标为至少11个完整verified kernel。新批次默认16并发、每进程16GiB，时限按任务设置，实际并行批次按服务器可用资源调度；修复主动参考Frama-C和Arcadia-y，保留原因/补丁/反例，无需等待批准。工作恢复入口为本worker的MEMORY.md和私有checkpoint；只在完整验收后更新正式数量。
+用户最新目标为至少21个完整verified kernel。新批次默认16并发、每进程16GiB，时限按任务设置，实际并行批次按服务器可用资源调度；修复主动参考Frama-C和Arcadia-y，保留原因/补丁/反例，无需等待批准。工作恢复入口为本worker的MEMORY.md和私有checkpoint；只在完整验收后更新正式数量。
 
 2026-10-23 用户更新：完整验证通过后先 fetch 最新 `c-shim-v2`，直接 commit 并正常 push 到 `verification/qcp/verified/`，同步清单与证据，不再开功能 PR。仍禁止强推和覆盖其他 worker 成果。允许参考 Frama-C 直接修复本案 `impl/`，保留原始身份、精确 patch、修复说明和反例，明确证明的是修复版。本段取代旧的必须 PR、禁止直接更新集成分支及必须另建修复目录的发布约定。
 
@@ -8,7 +8,7 @@
 [最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳仍停止。用户最新明确取消额度百分比停止限制，
 不再按50%/60%/70%阈值暂停；下文旧额度规则仅保留历史含义。
 worker使用自己已部署的心跳、thread和额度设置，每30分钟读取协调板并跟进新检查点。
-当前九个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
+当前十二个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
 用户已接受适合证明的比较函数和wrapper；旧mapper内联形式不再是新入口的验收要求。
 
 集成分支为 `Etha-Sun/SALTy-rn:c-shim-v2`，上游基线 `be16280c7812a7459c26c3ce82a47339a3d07718`。本机工作树为 `build/qcp-kernel-framework`；旧 `build/verified-output-equivalence` 只读参考。GitHub 仓库关闭了 Issues，因此使用一条专门的 draft PR 作协调板；地址登记在本目录的 `coordination.json`。该 PR 仅承载任务状态，不作为功能合并入口。

@@ -7,7 +7,7 @@
 
 ## 用户当前要求
 
-- 目标：至少 **11 个完整 verified kernel**。从简单到难，积极并行推进。
+- 目标：从当前 12/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
 - 新验证批次默认 **16 并发、每进程 16 GiB**，按复杂度设置有限时限；结合服务器可用内存和其他 worker 的实际占用安排多个批次。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -19,16 +19,16 @@
 - 我们的主工作树：`/srv/home/yuechunsun/tools/qcp-simple-kernels`，分支 `codex/worker-simple-kernels`。
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
-- `neon_kernel_resume`：QS8 全案已通过并发布，所有 verifier/metadata writer 已结束。
-- `minmax_repair_finish`：S8 全案已通过并发布，所有 verifier 已结束。
-- `rvv_kernel_resume`：QS8 两侧函数证明完成；后续 kernel 的只读评估已保存。
-- root：两案验收、归档、迁移审计和发布完成；当前 11/40，本轮目标已达成。
+- `neon_kernel_resume`：独占 f32-vrndne 全案。
+- `minmax_repair_finish`：独占 qs8-vcvt，之后 qs8-vlrelu、qs8-vadd-minmax、qu8-vadd-minmax。
+- `rvv_kernel_resume`：独占 qu8-rsum 全案；qu8-f32-vcvt 已完整发布。
+- root：qs8-rsum、qs8/qu8-rdsum；统一归档、发布、progress/memory。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **11/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **12/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 
@@ -52,12 +52,18 @@ S8/QS8 使用新的 `.build/prepare_integer_publication.py <kernel>`；它另存
 Arcadia 只读来源：`refs/remotes/arcadia-y/verification`，固定 `4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca`。
 它的 `verification/REPAIRS.md` 和 Lean 规格可供参考；其 S8Clamp Entry 有 ordered 条件，不得把该结论解释为覆盖无序 bounds 的 QCP 证明。
 
-后续优先只读评估 `qu8-f32-vcvt`，具体见 `.build/next-simple-kernel-assessment.json`。旧 Frama-C `feat/shim-c@0f11c9ad` 的该案规格排除了 `INT32_MIN` 零点，不能把历史 994/994 解释为全 int32 域；若沿用当前全域目标，应修复 NEON 同类求负溢出，并补 unsigned-byte 运算的真实 C 函数体。
+QU8→FP32 已完成；其全 int32 零点域保留，没有沿用旧 Frama-C 排除 `INT32_MIN` 的条件。NEON 求负 UB 已修复，RVV 逗号 for-step 为显式兼容改写；二者的原件、独立／组合补丁及原反例或工具缺口证据全部保留。
 
 QS8 全案证据：`verification/qcp/verified/qs8-f32-vcvt/.build/full-adz1c3m4`，26 实际 C 单元/1337 字段、49 函数体、30 策略字段、631 普通 Coq 模块；1367 项最终假设报告已核为既有 14 项继承假设。完整证书 SHA256 `e4413308b1b41def5a57ce37f819be15164332b7253b3373451af6b021ef36ac`。修复、原反例、首次辅助模板失败与修复历史均保留。
 
 S8 全案证据：`verification/qcp/verified/s8-vclamp/.build/full-r8b58urd`，12 实际 C 单元/2060 字段、41 函数体、16 策略字段、249 普通 Coq 模块；2076 项最终假设报告已核对通过。完整证书 SHA256 `45f3dd5b2088152a2f0f8d666f212025df282cfb56e369e309867f67c44e9124`。两侧原件、RVV 修复补丁及原始 6420 个有限回归差异保留。
 
-本轮 10+ 目标已达成。后续继续沿用 16 并发/每进程16GiB、有限任务时限、主动 repair、全案通过后 fetch/直接提交 c-shim-v2 的约定。
+上一轮 10+ 目标已达成；本轮已收到继续到至少 21/40 的指令。后续继续沿用 16 并发/每进程16GiB、有限任务时限、主动 repair、全案通过后 fetch/直接提交 c-shim-v2 的约定。
 
-本轮直接发布提交：QS8 `598bf3976f1a4f20dd36c536b851706026ce6c75`；S8 `3d40082c1aeae15894d0926929eb793cbb5b5768`。两案迁移与发布后的源码/CPP 身份审计通过，并分别完成有限 UBSan 回归；这些发布审计不算第二次形式化证明。公有 manifest 的全部源和原始证明日志均已显式入 Git，不含 `.build` 或 `.vo`。当前没有待完成的本轮验证任务；下一项只读评估尚未领取。
+本轮直接发布提交：QS8 `598bf3976f1a4f20dd36c536b851706026ce6c75`；S8 `3d40082c1aeae15894d0926929eb793cbb5b5768`。两案迁移与发布后的源码/CPP 身份审计通过，并分别完成有限 UBSan 回归；这些发布审计不算第二次形式化证明。公有 manifest 的全部源和原始证明日志均已显式入 Git，不含 `.build` 或 `.vo`。上一轮两案已完成；新一轮已领取上述十项非 GEMM 路径，按实际难度调整推进顺序，不增加未通过的计数。
+
+本轮恢复策略：先读 `.build/memory/GOAL_POLICY.json` 与最新 STATE。新目标至少21，默认16并发/每进程16GiB，核对可用内存后可同时运行多个批次；旧prompt的全局32与必须PR要求均由最新用户政策替代。原先qu8只读评估已转为实际任务；不能继续引用上一轮“无活动任务”的历史状态。
+
+QU8→FP32 全案证据：`verification/qcp/verified/qu8-f32-vcvt/.build/full-kb8mmn44`；31 个实际 C 单元、1476 个 C 字段、61 个函数体，10 组策略／30 字段；646 个本地源加最终门禁共647次普通Coq，1506 项最终假设核对均通过，仍为既有14项继承假设。完整证书 SHA256 `4d07d60a3b0b43357ac87e2bea08baada92c2313cb4cfcbbea089c8ce07643d4`。发布身份审计再次核对全部31个CPP、647个编译源和完整归档，62个递归C输入的UBSan回归通过；发布审计不是第二次形式化证明。
+
+当前 RSUM 分工：root 的 QS8 已完成495个vector/scalar字段、169个byte字段、40个基础scalar字段及9个VL/assert字段；两侧真实函数目标126/46已生成，循环尚待完成。QU8 RSUM由rvv subagent继续。组件不计verified；目标21尚未完成。

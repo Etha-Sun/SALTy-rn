@@ -1,0 +1,22 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -13,7 +13,7 @@
+   const float scale = params->scalar.scale;
+ 
+   size_t vl;
+-  for (; batch > 0; batch -= vl, input += vl, output += vl) {
++  for (; batch > 0; ) {
+     vl = __riscv_vsetvl_e8m2(batch);
+ 
+     vuint8m2_t vx = __riscv_vle8_v_u8m2(input, vl);
+@@ -28,5 +28,9 @@
+     vy = __riscv_vfmul_vf_f32m8(vy, scale, vl);
+ 
+     __riscv_vse32_v_f32m8(output, vy, vl);
++
++    batch -= vl;
++    input += vl;
++    output += vl;
+   }
+ }
+\ No newline at end of file
