@@ -17,7 +17,7 @@
 
 先读协调板最新CLAIM，再发布自己的OWNER/BASE/HEAD/PATHS。已有worker正在做GEMM和环境修复时，保留其任务，其他agent并行领取简单kernel。不要因leader不回复而停止无冲突工作。
 
-## 2. 现状：6/40，接受范围必须准确
+## 2. 现状：7/40，接受范围必须准确
 
 权威机器清单为 `verification/qcp/verified/manifest.json`，已有：
 
@@ -26,6 +26,7 @@
 | f32-vadd、f32-vsub、f32-vmul、f32-vdiv | 每案11个实际C单元、8组策略、87个普通本地Coq模块及FinalCheck通过；每案native430例 |
 | f32-vmulc | 12个实际C单元、605个C VC；87个fresh共享依赖模块+23个本案普通模块，另两个gate；最终12个VC_Correct绑定通过；native430例 |
 | f32-vlrelu | 原始两侧C保持；14个实际C验证单元、958个单元VC字段（含公共assert重复校验）、123个普通依赖/本案模块及FinalCaseCheck，共124个fresh编译模块；native2872例 |
+| f32-vcmul | 原始两侧C保持；11个实际C单元、629个单元VC字段、32策略字段，123本地源及FinalCaseCheck共124次fresh普通Coq；native468例 |
 
 这些是公开契约下的 **C-shim模块化部分正确性**。真实ISA到shim的形式对应、任意VLEN、完整程序终止性尚未证明，不得用“无条件原始机器代码正确”描述。记录继承的QCP/Coq/Flocq假设；“没有新增公理”不等于“整个项目无公理”。
 
@@ -127,9 +128,9 @@ catalog已记录旧CSim中4个与当前上游target不同的已收录版本：u8
 
 | 组 | 完整kernel集合 | 数量 |
 |---|---|---:|
-| 已通过 | f32-vadd、f32-vsub、f32-vmul、f32-vdiv、f32-vmulc | 5 |
+| 已通过 | f32-vadd、f32-vsub、f32-vmul、f32-vdiv、f32-vmulc、f32-vlrelu、f32-vcmul | 7 |
 | byte/整数邻近接口 | s8-vclamp、u8-vclamp、qs8-f32-vcvt、qu8-f32-vcvt、qs8-vcvt、qs8-vlrelu | 6 |
-| 其余float逐元素/复数/转换 | f32-vmin、f32-vmax、f32-vlrelu、f32-vrndne、f32-vsqrt、f32-vcmul、f32-f16-vcvt | 7 |
+| 其余float逐元素/转换 | f32-vmin、f32-vmax、f32-vrndne、f32-vsqrt、f32-f16-vcvt | 5 |
 | 整数归约与量化 | qs8-rsum、qu8-rsum、qs8-rdsum、qu8-rdsum、qs8-vadd-minmax、qu8-vadd-minmax、qs8-vmul-minmax-fp32 | 7 |
 | 布局 | x32-packw-gemm-goi、x32-transposec | 2 |
 | 矩阵/卷积 | f32-gemm-minmax、f32-igemm-minmax、f32-spmm-minmax、f32-conv-hwc2chw、f32-dwconv-minmax、f32-dwconv2d-chw、qd8-f32-qc4w-gemm-minmax、qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32 | 10 |
@@ -172,13 +173,13 @@ catalog已记录旧CSim中4个与当前上游target不同的已收录版本：u8
 先在隔离工作树或输出目录重放VADD，保留旧状态；当前标准入口支持：
 
 ```sh
-python3 verification/qcp/verified/f32-vadd/proof/check.py --config /your/coq-flags.json --jobs 32
+python3 verification/qcp/verified/f32-vadd/proof/check.py --config /your/coq-flags.json --jobs 16
 python3 verification/qcp/verified/f32-vadd/proof/native.py
 ```
 
 前四个case支持上述check入口。VMULC有分组件生成/检查与统一check_full.py，读取其README.md、脚本参数及full-status中的真实命令；这些脚本仍含leader路径/默认配置，需做最小环境移植，不能假定全部支持--config或新clone一次运行即成功。移植保留公开C/spec/Coq源，若工具/模型变动则显式记录并重放。不要篡改旧lock/hash把新环境冒充原环境。
 
-验证器总并发上限32，可以按kernel/模块拆并行；不是每个agent各起32。先核实内存并设置合理作业上限，32个作业不表示随时有32个可并行Coq依赖。旧worker声称已探测32×16GiB配置仍需核对本机实际状态，不假定另一台server也有相同资源。一次检查通过后，仅因新变更、失败或明确未决疑点再扩大/重复检查。
+用户最新要求目标至少11个完整verified kernel，从简单到难推进；新验证批次默认16并发、每进程16GiB，按任务设置有限时限，并根据本机实际可用内存和其他worker占用安排独立批次。可拆分独立证明模块以缩短关键路径；依赖未就绪时不为凑并发重复启动相同任务。现有长任务保持冻结，保留实际资源/源/结果记录。实现修复可主动参考Frama-C和Arcadia-y，保留原因、原身份、补丁和反例，无需再等批准。一次检查通过后，仅因新变更、失败或明确未决疑点再扩大/重复检查。
 
 用户最新已明确取消人为额度百分比停止线；不再因旧50%/60%/70%阈值暂停验证、交接或审核。实际服务不可用时如实记录，不伪造继续执行。不要使用leader thread/凭据/额度；若记录quota必须是真实查询结果，不可用时明确不可查询，不编造百分比。已有心跳保留且避免重复部署；每30分钟读取协调板、集成checkpoint及相关PR，无变化保持安静，有领取/阻塞/结果/新评审才留言。未经本机授权不另造常驻后台任务；不假定leader会定时回复。
 

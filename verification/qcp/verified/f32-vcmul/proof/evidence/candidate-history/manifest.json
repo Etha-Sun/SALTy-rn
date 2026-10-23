@@ -1,0 +1,135 @@
+{
+  "schema": 1,
+  "kernel": "f32-vcmul",
+  "variant": "original",
+  "whole_kernel_proved": false,
+  "originals": {
+    "kernel": "f32-vcmul",
+    "upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "files": {
+      "neon": {
+        "path": "kernels/source/f32-vcmul.c",
+        "copy": "impl/testNEON.c",
+        "sha256": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294"
+      },
+      "rvv": {
+        "path": "kernels/target/f32-vcmul.c",
+        "copy": "impl/testRVV.c",
+        "sha256": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486"
+      }
+    }
+  },
+  "source_inventory_sha256": {
+    "impl/testNEON.c": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294",
+    "impl/testRVV.c": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486",
+    "shim/model_def.h": "068308eeebdb9cb84a7c454ab5377b0c5dcadda59667e592c8be38d91117832d",
+    "shim/neon_base.h": "ef09d5d46a9da553710b6498867dc31e971027712b00881b8d533d30454aed2f",
+    "shim/neon_frontend.h": "9af29501eacb389ab21d725ff87ee73cffa49c6a00ee4f6df6c6b402589af6c2",
+    "shim/primitives.c": "97a2a88e11bb1901f35c27b3011b98b9769ccfe3eee28206efbb0c9c6b78b750",
+    "shim/primitives.h": "3a198e19c76a2e5aaee954c07f1fc1d411cef2a1f102bafd31c0ee85a591a0fb",
+    "shim/runtime/harness.c": "c5cf43fd07bd5fc76943150c4195719c4c7c2b125d0d62435b5ad3f8508c1d08",
+    "shim/runtime/intrinsics.h": "18525b3f64948416afddd90ae2ad99ec569f46049baf469988e3880094dda2d7",
+    "shim/rvv_frontend.h": "cb5b415f40ddf27d70052a8a2f93126eee922609e45ac693c5b70cccf89f8bf1",
+    "shim/rvv_memory.c": "8cfa33dcd51ee2a65c12fc1880949be30bffbaed827215652e6b31e152906db5",
+    "shim/rvv_memory.h": "8089d44bda60d635d411590582997bcf12d5316348d63c3b2c95566a4362caac",
+    "shim/rvv_memory_def.h": "12d1099645f622f29ed5a03c5daf7d94696f7f877799f9246d1e6c4e69db6145",
+    "shim/rvv_store.c": "22c311cf53b5f8b1d4fab22258b7d3866c6605ced48ce712af1cc40a2ebf2170",
+    "shim/rvv_store.h": "415ed40fecf293287058f3a36e53917069bafe720568dbc902c2f79e2f51638f",
+    "shim/rvv_store_def.h": "0f02bae98020ed045b1d77457453ab30d666d3d1e7358a222d84c7b3adf14899",
+    "shim/types.h": "f06176059f315afbaaa402e84170c698cfb314c047a039c45af1a2fd66565f30",
+    "shim/window_def.h": "6a6a8b2c69f1b483f5eab4351cc3d8a72152142dfb26148bd8cde7dabcb96740",
+    "shim/window_load.c": "50ab55974576055f76d108422aae62a0e894652b6dd98122ad471a6ede18f5ba",
+    "shim/window_load.h": "a6b3a6f2118f61a1e80a7dd51ef31e8528e36d5c731122b569632f81bb486ad9",
+    "proof/coq/ComplexModel.v": "c7c9c21715da86f94c4be4b5d8bbe733ba9442fe54c07b09f221da226e01db17",
+    "proof/coq/FastFrame.v": "4b0ef4a281d757432f999e576ebc218329d50dbcb7c12aa4795953f2dcd3e01e",
+    "proof/coq/Model.v": "3d6345d685c85646eb48b03218e0161835d184cad6d368bb61dbd2e22fd8b054",
+    "proof/coq/NeonCalls.v": "cec19dfa9b4ca3ef54ca7f071a1b007fa75048ce610803698351fd8714fea85e",
+    "proof/coq/NeonPure.v": "8895922979fe3f886c86696b06a7822ab25bef22058e6547aa20f0a711f1bc40",
+    "proof/coq/NeonStrategy.v": "9395426218ff086ecc73c6c17ae694e5986f0dceae15cc1c0c9715692d6f0a0c",
+    "proof/coq/PrimitiveGate.v": "c70955c95d21ace20fcd620b0f486e186c1dcc0a70b06a5bf2b43ea2066b04b1",
+    "proof/coq/PrimitivesChecked.v": "cdcd03d101bff006794f44e4dff5ffb6f2e55128e8fe71571339ad746cbf19f0",
+    "proof/coq/RvvMemoryChecked.v": "56c9214a15d376895ab330d1ffb565f8fb7ae6f41b01b466ef71aea018046d52",
+    "proof/coq/RvvMemoryGate.v": "1d240771f47e45ff64a74582222ac1407c8738f7a3b20c21dda1b5a93a68a342",
+    "proof/coq/RvvMemoryModel.v": "c1c84be552f5f119af0b0ff74878f6b7c49b20da4a9fb78dd69aaedc6606d96f",
+    "proof/coq/RvvStoreChecked.v": "652241588984234266fd64a553329c6aaefb04b3fa0cf7f3181094be79b4bb09",
+    "proof/coq/RvvStoreGate.v": "2a58e2b879cbc305c4adb17226d53c0e9786abc15ed39fc154e59d159f3544c1",
+    "proof/coq/RvvStoreModel.v": "c5aedd2f32a04d390f2fbea96a6eb419cc972b961abf1a7d7f7b4c269a2bb2dd",
+    "proof/coq/WindowChecked.v": "77f5b398f38ac96d106ce9e49bd0162a9a1d422d971124101bd73707aac0554a",
+    "proof/coq/WindowGate.v": "fca9c302d0055edf6839b467aec70ba76be14447d601f33ba4a4954a96bc5a41",
+    "proof/coq/WindowMemory.v": "f458724c6c73d870327d47892716ba273685d62f9b626a0292ed246a6273e869",
+    "proof/coq/neon_vcmul_strategy_proof.v": "a792c3ad5ef4d6a6a82f0901002217b120d3fc89bdb7e40063b91fe282934434",
+    "proof/coq/vcmul_store_strategy_proof.v": "e21d8ecaca05181cb0340c97b453cb67ac709f7f0324840d5ea2aa8ed84278ce",
+    "proof/c/neon.annotations.json": "1de97df5f094c9580da46e031648d5559b08bca8504ed6b35410af4b1f16fbb5",
+    "proof/c/neon_vcmul.strategies": "c1a334e59fa2e1b7d6c66874a8668784274ef0eb0f3e4e8d90540990be24f5d9",
+    "proof/c/rvv.annotations.json": "faec37d2fa8feec5a4f1480bd2c94b6c2bb4c6b365c134c2dd8d9cc68e104bc5",
+    "proof/c/vcmul_store.strategies": "03c49486005aa69fbd6d5f0b33fdf383b55f53ab5f604273efd65069f8c62010",
+    "spec.c": "350b8287f86738abb7d54a0312b407efa80b57dd5e47d57c7d68b559473f4815",
+    "proof/originals.json": "1d86fb6094cb43d3ad31e2d95eeb4cd09e394c6eb580a294f76255be8d128344",
+    "proof/semantics.json": "f1db6f251e8ef53bf8f5bed5ee904cbaa93c80fa069d03b29b1265e0d01c3f3a",
+    "proof/check_math.py": "94e991be7a350d0cffb3848b79521a168390aeb63a5fc206b3753766d3663a28",
+    "proof/check_neon_kernel.py": "d9f9afedf3782d1e91c7edeb673461908dde4383dc1ab1a6ba6b2ccfe675909c",
+    "proof/check_primitives.py": "5c013e22d01867495ddcf41462c9f0066146b3c941c78a39f93c906c07e65656",
+    "proof/check_rvv_memory.py": "6420d296878461cb945e12d6b1290ff7cefbd702f50fdd943dead91699bebbb7",
+    "proof/check_rvv_store.py": "0edb3b39f0ecb0bf92e6238d04cdd00e17989d01b3afe55e1b5992e147706529",
+    "proof/check_window.py": "d8ff8d5c73a3a93a6b9b0ef5cc4b4cb6173151b912672cb678f19aa80bc17d03",
+    "proof/generate_neon.py": "d0f0adb87041259af1f652f69cb7e22bfe914282522d0dadf85be68044544971",
+    "proof/generate_primitive_proof.py": "a72de2ff3a1e847bb866c41ab864f6e0d99d9658377a90e4e89beca7d2c55a3e",
+    "proof/generate_rvv.py": "7ec5583cf584d26a37bd1020058ce50f2c9797d7338104dcf4206d45cdcbcea9",
+    "proof/native.py": "4aa05a659b8d2bc9c9416944918d6e30899c3145e318ec9fd41e9613ec315dab",
+    "proof/native_rvv_memory.py": "84f32cfa0f5ef0cfad4c69cd85f15fddf76cbe2d6d914f0c4f996b2dca857f24",
+    "proof/native_rvv_store.py": "23713d5b244ab6aace93a6f8f8a587e4187cabf9a07be84b4af281d392c12038",
+    "proof/native_window.py": "d8bf07ee837fa4c17d587caa47ff2b547a51320bb26167e2dcd95b0206080a1d",
+    "proof/record_status.py": "a34a59f6d17fff8183fce2ae29f9967c25640e9972ec1b08f559110fc6951dd5"
+  },
+  "component_evidence": {
+    "primitive": {
+      "evidence": "proof/evidence/primitive-status.json",
+      "sha256": "57436bd1720df568079bb106a5f4a137a2e046732fd0ccd327e66f470f94d96e"
+    },
+    "native": {
+      "evidence": "proof/evidence/native-status.json",
+      "sha256": "ec3f26caf5e15ac18c4bbeb146803e51506c379c044876e6382ebdc4efa0a417"
+    },
+    "math": {
+      "evidence": "proof/evidence/math-status.json",
+      "sha256": "c6054d4e33a752fa85fcf105cd3bd3922d2c89c799c3cb6a236379db142f6dcd"
+    },
+    "window": {
+      "evidence": "proof/evidence/window-status.json",
+      "sha256": "80a140c382ca69b7cdde870a5e5b27c4ae04fd1e9644438cf8a78013fec4fa43"
+    },
+    "window-native": {
+      "evidence": "proof/evidence/window-native-status.json",
+      "sha256": "e21774a749d34261b70cebf907a83a8d29ff824c6e84574f6214ca8568a2add8"
+    },
+    "neon-strategy": {
+      "evidence": "proof/evidence/neon-strategy-status.json",
+      "sha256": "a2e3ce41d02944c581cd2ebaf7afd989aaee2cdc1d6e1476e1720d803e43664b"
+    },
+    "rvv-memory": {
+      "evidence": "proof/evidence/rvv-memory-status.json",
+      "sha256": "8a256299bb28fcda31a3393a0df4ea21ff7ed96ebb359ecee669561343bac105"
+    },
+    "rvv-memory-native": {
+      "evidence": "proof/evidence/rvv-memory-native-status.json",
+      "sha256": "0373136530f50bfa28e8ee8a438da8d2ec6d96436140066413ef9680042afe29"
+    },
+    "rvv-store": {
+      "evidence": "proof/evidence/rvv-store-status.json",
+      "sha256": "6da912b62b1dbe25c899723f2b44b067dbe588ed4a04febc22ebcecf4132cd58"
+    },
+    "rvv-store-native": {
+      "evidence": "proof/evidence/rvv-store-native-status.json",
+      "sha256": "3ad077effd3061d33935941ffe9038035fbe6f5224083d4f464e0e84ea0d8158"
+    },
+    "neon-generation": {
+      "evidence": "proof/evidence/neon-generation-status.json",
+      "sha256": "7218c9585736bdee60a760baff075c3c8997d75208ef00053c505fafa71001e3"
+    }
+  },
+  "remaining": [
+    "Original NEON 210 generated C VCs require complete ordinary Coq proof",
+    "Original RVV m4 complete kernel and arbitrary-VL chunk/prefix proof",
+    "Public helper/caller and complete unified fresh call-closure gate"
+  ]
+}

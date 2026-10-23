@@ -1,0 +1,16 @@
+From VCMul Require Import window_load_goal WindowChecked.
+Module Gate : window_load_goal.VC_Correct := WindowChecked.CheckedWindow.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_safety_wit_1.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_safety_wit_2.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_safety_wit_3.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_safety_wit_4.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_1.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_2.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_3.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_4.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_5.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_6.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_7.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_entail_wit_8.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_return_wit_1.
+Print Assumptions Gate.proof_of_qcp_vcmul_load4_partial_solve_wit_1.

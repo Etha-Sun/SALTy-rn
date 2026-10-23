@@ -1,0 +1,127 @@
+{
+  "kernel": "f32-vcmul",
+  "scope": "Original planar complex multiply C-shim candidate; no complete kernel, ISA refinement or termination theorem.",
+  "configuration": {
+    "data_model": "LP64, little-endian, binary32",
+    "rounding": "RNE",
+    "underflow": "gradual",
+    "arm": "FPCR.DN=0,FZ=0,AH=0; vmla/vmls are separate rounded multiply then add/sub",
+    "rvv": {
+      "VLEN": 128,
+      "SEW": 32,
+      "LMUL": 4,
+      "VLMAX": 16,
+      "vl": "min(AVL,16)",
+      "vstart": 0,
+      "tail_runtime": "all-ones agnostic choice",
+      "tail_formal": "positive zero refinement for unobserved inactive fields"
+    },
+    "exceptions": "flags/traps unobserved; no exception-state equivalence claim"
+  },
+  "references": [
+    {
+      "title": "Arm ACLE Neon intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "checked_entries": [
+        "vmlaq_f32: result = vadd(a, vmul(b, c))",
+        "vmlsq_f32: result = vsub(a, vmul(b, c))"
+      ],
+      "version_url": "https://github.com/ARM-software/acle/commit/aef52c2b0944bf652443c1acd867dbb893af8dd0"
+    },
+    {
+      "title": "Arm learning path multiply-add rounding explanation",
+      "url": "https://learn.arm.com/learning-paths/cross-platform/vectorization-friendly-data-layout/a-more-complex-problem-manual-simd/"
+    },
+    {
+      "title": "RISC-V V1.0 floating-point operations and vsetvl",
+      "url": "https://docs.riscv.org/reference/isa/v20240411/unpriv/v-st-ext.html"
+    },
+    {
+      "title": "RISC-V F2.2 binary32 rounding and canonical NaN",
+      "url": "https://docs.riscv.org/reference/isa/v20240411/unpriv/f-st-ext.html"
+    }
+  ],
+  "planar_layout": {
+    "input": "real[0..n), imag[n..2n), then three readable padding floats; two separate input objects",
+    "output": "real[0..n), imag[n..2n); two separate writable output objects",
+    "tail": "Original NEON reads a full four-lane tail. Real tail can cross into imag; imag tail requires three padding elements. No input/padding writes allowed."
+  },
+  "arithmetic": {
+    "real": "round32(round32(ar*br)-round32(ai*bi))",
+    "imag": "round32(round32(ar*bi)+round32(ai*br))",
+    "fma": "Not substituted: vmlaq/vmlsq ACLE semantics explicitly compose ordinary mul and add/sub; runtime uses -ffp-contract=off and a fused-result negative control."
+  },
+  "observation": "Numerical equality or both NaN, for all 2*n output lanes; native oracle additionally checks exact non-NaN bits including zero sign.",
+  "nan_semantics": {
+    "runtime_arm": "NaN operand payload propagation and quieting, signaling inputs before quiet inputs; default positive NaN on invalid numeric operation",
+    "runtime_rvv": "Canonical quiet NaN for NaN arithmetic inputs or invalid numeric operations",
+    "formal": "Inherited QCP fp32_mul/add/sub use fixed NaN handler (sign=false,payload=1); this is not exact Arm propagation or RVV canonical bits. No intermediate reinterpret, sign test or branch observes NaN bits in these original kernels. Output-only observation/refinement bridge remains to be formalized."
+  },
+  "primitives": [
+    {
+      "group": "NEON mul/mla/mls",
+      "names": [
+        "vmulq_f32",
+        "vmlaq_f32",
+        "vmlsq_f32"
+      ],
+      "layout": "four fixed float scalar fields; by-value arguments and return",
+      "formal_model": "Model.v: fp32_mul, vcmul_mla, vcmul_mls",
+      "c_body": "shim/primitives.c",
+      "status": "C body checked in the actual 14-function / 179-VC primitive gate; ISA correspondence not checked",
+      "proof_evidence": "proof/primitive-status.json"
+    },
+    {
+      "group": "RVV m4 mul/add/sub",
+      "names": [
+        "__riscv_vfmul_vv_f32m4",
+        "__riscv_vfadd_vv_f32m4",
+        "__riscv_vfsub_vv_f32m4"
+      ],
+      "layout": "16 fixed float scalar fields; by-value arguments and return, active indices i<vl",
+      "formal_model": "Model.v: vcmul_active_mul/add/sub",
+      "c_body": "shim/primitives.c",
+      "status": "C body checked in the actual 14-function / 179-VC primitive gate; ISA correspondence not checked",
+      "proof_evidence": "proof/primitive-status.json"
+    },
+    {
+      "group": "data movement",
+      "names": [
+        "vld1q_f32",
+        "vget_low_f32",
+        "vget_high_f32",
+        "vst1q_f32",
+        "vst1_f32",
+        "vst1_lane_f32",
+        "__riscv_vle32_v_f32m4",
+        "__riscv_vse32_v_f32m4"
+      ],
+      "runtime": "copies exact representations; RVV loads/stores exactly vl active floats",
+      "status": "runtime only for this candidate; full C-body dependency closure pending"
+    }
+  ],
+  "boundary": "Native uint32 lane-array structs differ from formal scalar-field structs. Finite native checks do not prove universal behavior or either ISA/layout correspondence.",
+  "primitive_body_evidence": {
+    "functions": 14,
+    "c_vcs": 179,
+    "status": "proof/primitive-status.json",
+    "scope": "Full primitive C-call closure only; load/store and original kernel bodies are separate"
+  },
+  "negative_controls": {
+    "source_mutation": "Valid C comment changes rejected against pinned hashes",
+    "wrong_result": "Public comparator rejects known unequal finite outputs",
+    "fused_substitution": "Explicit fmaf control rejected by two-rounding scalar oracle on finite valid input",
+    "shared_wrong_multiply": "Both architecture runtimes deliberately share a zero-producing multiply only in a fault-injection build; they agree with each other but are rejected by the independent oracle."
+  },
+  "window_load_capability": {
+    "intrinsic": "vld1q_f32",
+    "adapter": "qcp_vcmul_load4",
+    "actual_body": "shim/window_load.c",
+    "contract": "Reads exactly four consecutive fp32 representations at a proven in-bounds index, preserving the complete enclosing FloatArray resource; scalar-field vector by value. Logical context adds no restriction to the public kernel domain.",
+    "proof": "proof/window-status.json",
+    "status": "Actual 14 C VCs and typed VC_Correct gate checked; no new strategy axioms",
+    "runtime_body_check": "proof/window-native-status.json: 2278 actual C calls / 9112 bit comparisons against independent memcpy including signaling NaNs and signed zero",
+    "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+  }
+}

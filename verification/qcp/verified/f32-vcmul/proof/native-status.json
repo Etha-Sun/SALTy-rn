@@ -1,0 +1,186 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq",
+  "records": [
+    {
+      "command": [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-omit-frame-pointer",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-DQCP_VCMUL_RUNTIME",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/shim/runtime/intrinsics.h",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/shim/runtime/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/impl/testRVV.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq/native"
+      ],
+      "label": "build",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.3153543299995363,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq/native"
+      ],
+      "label": "native",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.021308627910912037,
+      "log_sha256": "429cbd608a24356d87166918db71c8f11ea34b68fbb5078ecfc904e027ed69d0"
+    },
+    {
+      "command": [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-omit-frame-pointer",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-DQCP_VCMUL_RUNTIME",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/shim/runtime/intrinsics.h",
+        "-DVCMUL_FUSED_NEGATIVE_CONTROL",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/shim/runtime/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/impl/testRVV.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq/fused"
+      ],
+      "label": "fused-build",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.1703345358837396,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq/fused",
+        "--fused-control"
+      ],
+      "label": "fused-control",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.010700925020501018,
+      "log_sha256": "96ac18651c91105c171449b236c9af069f3f1ff025f5939841cb89ff4e973e84"
+    },
+    {
+      "command": [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-omit-frame-pointer",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-DQCP_VCMUL_RUNTIME",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/shim/runtime/intrinsics.h",
+        "-DVCMUL_WRONG_SHARED_MUL",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/shim/runtime/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/impl/testRVV.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq/wrong-shared-model"
+      ],
+      "label": "shared-wrong-model-build",
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.3461441569961607,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vcmul/.build/native-i6tr_ewq/wrong-shared-model",
+        "--shared-model-control"
+      ],
+      "label": "shared-wrong-model-control",
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.009379399940371513,
+      "log_sha256": "086cbe73dedab8bd437f7bbd63edc9408207380c2c13eb2a196ffd8372234e6f"
+    }
+  ],
+  "scope": "Finite native C-shim regression only; no complete kernel theorem or hardware execution.",
+  "configuration": {
+    "VLEN": 128,
+    "SEW": 32,
+    "LMUL": 4,
+    "VLMAX": 16,
+    "vl": "min(AVL,16)",
+    "rounding": "RNE",
+    "gradual_underflow": true
+  },
+  "observation": "Numerical equality or both NaN; independent oracle additionally checks exact non-NaN bits including zero sign.",
+  "boundary": "Runtime array structs are distinct from formal scalar-field structs; no formal ABI or ISA correspondence proved.",
+  "input_hashes": {
+    "spec.c": "350b8287f86738abb7d54a0312b407efa80b57dd5e47d57c7d68b559473f4815",
+    "proof/originals.json": "1d86fb6094cb43d3ad31e2d95eeb4cd09e394c6eb580a294f76255be8d128344",
+    "proof/semantics.json": "6efb089e178e5c2a3c2b0c1db0c1e13eccac99494ea7ac2de63d84cebc4e7f35",
+    "proof/native.py": "4aa05a659b8d2bc9c9416944918d6e30899c3145e318ec9fd41e9613ec315dab",
+    "impl/testNEON.c": "7423e0c197640edfd66522ce2909e9e3e22571ee23c015b7feea32651b661294",
+    "impl/testRVV.c": "cc6c77956d0bbcc16d0ab84f78cc35c195634e25b6c02b9f2fd465b8c3c13486",
+    "shim/runtime/intrinsics.h": "18525b3f64948416afddd90ae2ad99ec569f46049baf469988e3880094dda2d7",
+    "shim/runtime/harness.c": "c5cf43fd07bd5fc76943150c4195719c4c7c2b125d0d62435b5ad3f8508c1d08"
+  },
+  "compiler": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "cases": 468,
+  "output_lanes_per_side": 41592,
+  "known_two_rounding_result_checked": true,
+  "wrong_result_rejected": true,
+  "source_mutation_controls": [
+    {
+      "side": "neon",
+      "rejected": true,
+      "reason": "Original source identity mismatch: neon"
+    },
+    {
+      "side": "rvv",
+      "rejected": true,
+      "reason": "Original source identity mismatch: rvv"
+    }
+  ],
+  "fused_substitution_rejected": true,
+  "shared_wrong_multiply_rejected_by_oracle": true,
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "input_and_padding_frame_preserved": true,
+  "params_frame_preserved": true,
+  "output_prefix_suffix_frame_preserved": true,
+  "input_allocation_floats": "exactly 2*n+3 per input",
+  "output_observation_count": "all 2*n outputs per side",
+  "oracle": "Independent scalar: each finite product exact in binary64 and rounded to binary32 before scalar binary64 addition/subtraction and final binary32 rounding; both-NaN accepted.",
+  "execution_concurrency": 1
+}

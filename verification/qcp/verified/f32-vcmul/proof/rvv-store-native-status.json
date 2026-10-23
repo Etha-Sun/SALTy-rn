@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Real C get16/store helper finite regression; exact bits and output/input frame",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-store-native-7jmkzsw3",
+  "records": [
+    {
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/shim/rvv_store.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-store-native-7jmkzsw3/driver.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-store-native-7jmkzsw3/native"
+      ],
+      "label": "build",
+      "exit_code": 0,
+      "seconds": 0.13793025887571275,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-store-native-7jmkzsw3/native"
+      ],
+      "label": "native",
+      "exit_code": 0,
+      "seconds": 0.010429490124806762,
+      "log_sha256": "e4b60ec1f44ba4b3bb41a3f9165c2a0fcfd7cbeac5ca00cc27a0458715f25440"
+    }
+  ],
+  "input_hashes": {
+    "shim/rvv_store.c": "22c311cf53b5f8b1d4fab22258b7d3866c6605ced48ce712af1cc40a2ebf2170",
+    "shim/rvv_store.h": "415ed40fecf293287058f3a36e53917069bafe720568dbc902c2f79e2f51638f",
+    "shim/rvv_store_def.h": "0f02bae98020ed045b1d77457453ab30d666d3d1e7358a222d84c7b3adf14899",
+    "shim/types.h": "f06176059f315afbaaa402e84170c698cfb314c047a039c45af1a2fd66565f30",
+    "proof/native_rvv_store.py": "23713d5b244ab6aace93a6f8f8a587e4187cabf9a07be84b4af281d392c12038"
+  },
+  "calls": 21633,
+  "lanes": 250112,
+  "input_frame_checked": true,
+  "output_frame_checked": true,
+  "zero_vl_null_checked": true,
+  "oracle": "Every active output is an independent original uint32 bit pattern; later outputs retain separate literal sentinels. All 16 getter indices and every VL 0..16 are tested.",
+  "asan_ubsan_checked": true
+}

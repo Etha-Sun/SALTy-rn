@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite real-C load4 bit regression only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/window-native-11nbalte",
+  "records": [
+    {
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/shim/window_load.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/window-native-11nbalte/driver.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/window-native-11nbalte/native"
+      ],
+      "label": "build",
+      "exit_code": 0,
+      "seconds": 0.3068559570237994,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/window-native-11nbalte/native"
+      ],
+      "label": "native",
+      "exit_code": 0,
+      "seconds": 0.0203173840418458,
+      "log_sha256": "6730071de65b21fb28e70f0d33243ceb0ad2f9906246f3d087c8b3925ed3a156"
+    }
+  ],
+  "input_hashes": {
+    "shim/window_load.c": "50ab55974576055f76d108422aae62a0e894652b6dd98122ad471a6ede18f5ba",
+    "shim/window_load.h": "a6b3a6f2118f61a1e80a7dd51ef31e8528e36d5c731122b569632f81bb486ad9",
+    "shim/window_def.h": "6a6a8b2c69f1b483f5eab4351cc3d8a72152142dfb26148bd8cde7dabcb96740",
+    "shim/types.h": "f06176059f315afbaaa402e84170c698cfb314c047a039c45af1a2fd66565f30",
+    "proof/native_window.py": "d8bf07ee837fa4c17d587caa47ff2b547a51320bb26167e2dcd95b0206080a1d"
+  },
+  "calls": 2278,
+  "lanes": 9112,
+  "input_frame_checked": true,
+  "oracle": "Independent memcpy from original uint32 source bits; exact NaN/sign/payload and signed-zero checks",
+  "asan_ubsan_checked": true
+}

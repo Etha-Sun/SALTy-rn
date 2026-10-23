@@ -1,0 +1,29 @@
+#include "../../shim/model_def.h"
+id: 1
+priority: core(0)
+right: FloatArray::full(?p,?length,complex_real_prefix(?count,?n,?a,?b)) at 0
+check: infer(length == 0);
+       infer(count == 0);
+action: right_erase(0);
+
+id: 2
+priority: core(0)
+right: FloatArray::full(?p,?length,complex_imag_prefix(?count,?n,?a,?b)) at 0
+check: infer(length == 0);
+       infer(count == 0);
+action: right_erase(0);
+
+id: 3
+priority: core(0)
+left: FloatArray::full(?p,?k,complex_real_prefix(k,?n,?a,?b)) at 0
+      FloatArray::full(?q,k,complex_imag_prefix(k,n,a,b)) at 1
+right: FloatArray::full(?r,?count,vcmul_values(?total,a,b)) at 2
+check: infer(p == r);
+       infer(q == pointer_offset(p,k,float));
+       infer(k == n);
+       infer(total == n);
+       infer(count == 2*k);
+       infer(0 <= n);
+action: left_erase(0);
+        left_erase(1);
+        right_erase(2);

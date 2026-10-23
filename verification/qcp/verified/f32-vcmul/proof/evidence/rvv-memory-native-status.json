@@ -1,0 +1,53 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Real C load16/VL helper finite regression; zero inactive fields describe this C shim, not hardware",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-memory-native-fz7lzhwt",
+  "records": [
+    {
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/shim/rvv_memory.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-memory-native-fz7lzhwt/driver.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-memory-native-fz7lzhwt/native"
+      ],
+      "label": "build",
+      "exit_code": 0,
+      "seconds": 0.15258771018125117,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-vcmul/.build/rvv-memory-native-fz7lzhwt/native"
+      ],
+      "label": "native",
+      "exit_code": 0,
+      "seconds": 0.015546092065051198,
+      "log_sha256": "e0adf7e909602321aeb58489d105830b49d89e5008049ba94789d2e55b28a324"
+    }
+  ],
+  "input_hashes": {
+    "shim/rvv_memory.c": "8cfa33dcd51ee2a65c12fc1880949be30bffbaed827215652e6b31e152906db5",
+    "shim/rvv_memory.h": "8089d44bda60d635d411590582997bcf12d5316348d63c3b2c95566a4362caac",
+    "shim/rvv_memory_def.h": "12d1099645f622f29ed5a03c5daf7d94696f7f877799f9246d1e6c4e69db6145",
+    "shim/types.h": "f06176059f315afbaaa402e84170c698cfb314c047a039c45af1a2fd66565f30",
+    "proof/native_rvv_memory.py": "84f32cfa0f5ef0cfad4c69cd85f15fddf76cbe2d6d914f0c4f996b2dca857f24"
+  },
+  "calls": 7107,
+  "lanes": 113712,
+  "vl_checks": 9,
+  "input_frame_checked": true,
+  "zero_vl_null_checked": true,
+  "oracle": "Active lanes are exact original uint32 bits; inactive lanes are literal positive zero. VL answers are a separate fixed boundary table.",
+  "asan_ubsan_checked": true
+}

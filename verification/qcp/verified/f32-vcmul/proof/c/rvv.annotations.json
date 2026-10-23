@@ -1,0 +1,70 @@
+[
+  {
+    "before": "  while (n > 0)",
+    "text": "/*@ Inv Assert exists (k:Z),\nfp32_length(A)==batch@pre/2+3 && fp32_length(B)==batch@pre/2+3 &&\n0<batch@pre && batch@pre<=9223372036854775788 && batch@pre%4==0 &&\nbatch==batch@pre && 0<=k && 0<=n && n<=batch@pre/4 && k+n==batch@pre/4 &&\ninput_a==input_a@pre && input_b==input_b@pre && output==output@pre && params==params@pre &&\ninput_a!=0 && input_b!=0 && output!=0 && params!=0 &&\nar==input_a@pre+k && ai==input_a@pre+batch@pre/4+k &&\nbr==input_b@pre+k && bi==input_b@pre+batch@pre/4+k &&\nout_r==output@pre+k && out_i==output@pre+batch@pre/4+k &&\nar!=0 && ai!=0 && br!=0 && bi!=0 && out_r!=0 && out_i!=0 &&\nFloatArray::full(input_a@pre,batch@pre/2+3,A) *\nFloatArray::full(input_b@pre,batch@pre/2+3,B) *\nstore(&(params->_),char,p) *\nFloatArray::full(output@pre,k,complex_real_prefix(k,batch@pre/4,A,B)) *\nFloatArray::undef_full(out_r,n) *\nFloatArray::full(output@pre+batch@pre/4,k,complex_imag_prefix(k,batch@pre/4,A,B)) *\nFloatArray::undef_full(out_i,n) */"
+  },
+  {
+    "before": "    vfloat32m4_t var =",
+    "text": "/*@ Assert exists (k:Z),\nfp32_length(A)==batch@pre/2+3 && fp32_length(B)==batch@pre/2+3 &&\n0<batch@pre && batch@pre<=9223372036854775788 && batch@pre%4==0 &&\nbatch==batch@pre && 0<=k && 0<=n && n<=batch@pre/4 && k+n==batch@pre/4 &&\ninput_a==input_a@pre && input_b==input_b@pre && output==output@pre && params==params@pre &&\ninput_a!=0 && input_b!=0 && output!=0 && params!=0 &&\nar==input_a@pre+k && ai==input_a@pre+batch@pre/4+k &&\nbr==input_b@pre+k && bi==input_b@pre+batch@pre/4+k &&\nout_r==output@pre+k && out_i==output@pre+batch@pre/4+k &&\nar!=0 && ai!=0 && br!=0 && bi!=0 && out_r!=0 && out_i!=0 && n>0 && 0<vl && vl<=n && vl<=16 && vl==vcmul_vl16(n) &&\nFloatArray::full(input_a@pre,batch@pre/2+3,A) *\nFloatArray::full(input_b@pre,batch@pre/2+3,B) *\nstore(&(params->_),char,p) *\nFloatArray::full(output@pre,k,complex_real_prefix(k,batch@pre/4,A,B)) *\nFloatArray::undef_full(out_r,vl) *\nFloatArray::undef_full(out_r+vl,n-vl) *\nFloatArray::full(output@pre+batch@pre/4,k,complex_imag_prefix(k,batch@pre/4,A,B)) *\nFloatArray::undef_full(out_i,vl) *\nFloatArray::undef_full(out_i+vl,n-vl) */"
+  },
+  {
+    "after": "__riscv_vle32_v_f32m4(ar, vl)",
+    "occurrences": 1,
+    "text": "/*@ where base=input_a,count=batch/2+3,idx=batch/4-n,L=A */"
+  },
+  {
+    "after": "__riscv_vle32_v_f32m4(ai, vl)",
+    "occurrences": 1,
+    "text": "/*@ where base=input_a,count=batch/2+3,idx=batch/4+batch/4-n,L=A */"
+  },
+  {
+    "after": "__riscv_vle32_v_f32m4(br, vl)",
+    "occurrences": 1,
+    "text": "/*@ where base=input_b,count=batch/2+3,idx=batch/4-n,L=B */"
+  },
+  {
+    "after": "__riscv_vle32_v_f32m4(bi, vl)",
+    "occurrences": 1,
+    "text": "/*@ where base=input_b,count=batch/2+3,idx=batch/4+batch/4-n,L=B */"
+  },
+  {
+    "after": "__riscv_vfmul_vv_f32m4(var, vbr, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&var,b=&vbr */"
+  },
+  {
+    "after": "__riscv_vfmul_vv_f32m4(var, vbi, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&var,b=&vbi */"
+  },
+  {
+    "after": "__riscv_vfmul_vv_f32m4(vai, vbi, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vai,b=&vbi */"
+  },
+  {
+    "after": "__riscv_vfsub_vv_f32m4(vaccr, temp_r, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr,b=&temp_r */"
+  },
+  {
+    "after": "__riscv_vfmul_vv_f32m4(vai, vbr, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vai,b=&vbr */"
+  },
+  {
+    "after": "__riscv_vfadd_vv_f32m4(vacci, temp_i, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci,b=&temp_i */"
+  },
+  {
+    "after": "__riscv_vse32_v_f32m4(out_r, vaccr, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr */"
+  },
+  {
+    "after": "__riscv_vse32_v_f32m4(out_i, vacci, vl)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci */"
+  }
+]

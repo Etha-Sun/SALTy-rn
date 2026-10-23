@@ -1,0 +1,96 @@
+[
+  {
+    "before": "  for (;",
+    "text": "/*@ Inv Assert exists (k:Z),\nfp32_length(A)==batch@pre/2+3 && fp32_length(B)==batch@pre/2+3 &&\n0<batch@pre && batch@pre<=9223372036854775788 && batch@pre%4==0 &&\n0<=k && k*4+batch==batch@pre && 0<=batch && batch<=batch@pre && batch%4==0 && k<=batch@pre/4 &&\nbatch@pre/4-k==batch/4 &&\n(batch==0 || (batch==4 && batch/4==1) || (batch==8 && batch/4==2) ||\n (batch==12 && batch/4==3) || (16<=batch && 4<=batch/4)) &&\ninput_a==input_a@pre && input_b==input_b@pre && output==output@pre && params==params@pre &&\ninput_a!=0 && input_b!=0 && output!=0 && params!=0 &&\nar==input_a@pre+k && ai==input_a@pre+batch@pre/4+k &&\nbr==input_b@pre+k && bi==input_b@pre+batch@pre/4+k &&\nor==output@pre+k && oi==output@pre+batch@pre/4+k &&\nar!=0 && ai!=0 && br!=0 && bi!=0 && or!=0 && oi!=0 &&\nFloatArray::full(input_a@pre,batch@pre/2+3,A) *\nFloatArray::full(input_b@pre,batch@pre/2+3,B) *\nstore(&(params->_),char,p) *\nFloatArray::full(output@pre,k,complex_real_prefix(k,batch@pre/4,A,B)) *\nFloatArray::undef_full(or,batch@pre/4-k) *\nFloatArray::full(output@pre+batch@pre/4,k,complex_imag_prefix(k,batch@pre/4,A,B)) *\nFloatArray::undef_full(oi,batch@pre/4-k) */"
+  },
+  {
+    "after": "vld1q_f32(ar)",
+    "occurrences": 2,
+    "text": "/*@ where base=input_a,n=batch@pre/2+3,idx=(batch@pre-batch)/4,L=A */"
+  },
+  {
+    "after": "vld1q_f32(ai)",
+    "occurrences": 2,
+    "text": "/*@ where base=input_a,n=batch@pre/2+3,idx=batch@pre/4+(batch@pre-batch)/4,L=A */"
+  },
+  {
+    "after": "vld1q_f32(br)",
+    "occurrences": 2,
+    "text": "/*@ where base=input_b,n=batch@pre/2+3,idx=(batch@pre-batch)/4,L=B */"
+  },
+  {
+    "after": "vld1q_f32(bi)",
+    "occurrences": 2,
+    "text": "/*@ where base=input_b,n=batch@pre/2+3,idx=batch@pre/4+(batch@pre-batch)/4,L=B */"
+  },
+  {
+    "after": "vmulq_f32(var, vbr)",
+    "occurrences": 2,
+    "text": "/*@ where a=&var,b=&vbr */"
+  },
+  {
+    "after": "vmulq_f32(var, vbi)",
+    "occurrences": 2,
+    "text": "/*@ where a=&var,b=&vbi */"
+  },
+  {
+    "after": "vmlsq_f32(vaccr, vai, vbi)",
+    "occurrences": 2,
+    "text": "/*@ where a=&vaccr,b=&vai,c=&vbi */"
+  },
+  {
+    "after": "vmlaq_f32(vacci, vai, vbr)",
+    "occurrences": 2,
+    "text": "/*@ where a=&vacci,b=&vai,c=&vbr */"
+  },
+  {
+    "after": "vst1q_f32(or, vaccr)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr */"
+  },
+  {
+    "after": "vst1q_f32(oi, vacci)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci */"
+  },
+  {
+    "after": "vget_low_f32(vaccr)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr */"
+  },
+  {
+    "after": "vget_low_f32(vacci)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci */"
+  },
+  {
+    "after": "vget_high_f32(vaccr)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr */"
+  },
+  {
+    "after": "vget_high_f32(vacci)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci */"
+  },
+  {
+    "after": "vst1_f32(or, vaccr_lo)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr_lo */"
+  },
+  {
+    "after": "vst1_f32(oi, vacci_lo)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci_lo */"
+  },
+  {
+    "after": "vst1_lane_f32(or, vaccr_lo, 0)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vaccr_lo */"
+  },
+  {
+    "after": "vst1_lane_f32(oi, vacci_lo, 0)",
+    "occurrences": 1,
+    "text": "/*@ where a=&vacci_lo */"
+  }
+]

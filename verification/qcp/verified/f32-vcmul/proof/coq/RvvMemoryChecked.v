@@ -1,0 +1,209 @@
+From Coq Require Import ZArith Lia.
+From VCMul Require Import Model FastFrame WindowMemory RvvMemoryModel rvv_memory_goal.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Ltac memory_frame :=
+ unfold same_fp32 in *;subst;
+ unfold UndefStructPredvfloat32m4_t;
+ rewrite ?local_field_address;
+ repeat progress rewrite <- logic_equiv_andp_assoc;
+ first [apply _derivable1_andp_intros;
+ [unfold derivable1,andp,coq_prop;intros;repeat first[assumption|split|reflexivity];lia
+ |opaque_leaves;sepcon_assoc_change;fast_cancel]
+ |opaque_leaves;sepcon_assoc_change;fast_cancel].
+Ltac memory_pure :=
+ intros;try change Int.max_signed with 2147483647 in *;
+ try change Int.min_signed with (-2147483648) in *;
+ unfold derivable1,andp,coq_prop;intros;repeat first[assumption|split|reflexivity];lia.
+Module CheckedMemory : VC_Correct.
+Lemma proof_of_qcp_vcmul_read_lane_entail_wit_1 : qcp_vcmul_read_lane_entail_wit_1.
+Proof. unfold qcp_vcmul_read_lane_entail_wit_1; left;intros vl i pp xs idx count base d Hact Hi Himax Hvl Hvlmax Hidx Hcount Hp;
+ subst pp;rewrite ?sizeof_float;
+ replace (base+4*idx+i*4) with (base+(idx+i)*4) by lia;
+ sep_apply_l_atomic (window_extract base (idx+i) count xs d);
+ [dump_pre_spatial;lia|memory_frame]. Qed.
+Lemma proof_of_qcp_vcmul_read_lane_entail_wit_2 : qcp_vcmul_read_lane_entail_wit_2.
+Proof. unfold qcp_vcmul_read_lane_entail_wit_2; left;intros vl i pp xs idx count base d Hi Himax Hvl Hvlmax Hact Hidx Hcount Hp;
+ subst pp;rewrite ?sizeof_float;
+ replace (base+4*idx+i*4) with (base+(idx+i)*4) by lia;
+ sep_apply_l_atomic (window_restore base (idx+i) count xs d);
+ [dump_pre_spatial;lia|memory_frame]. Qed.
+Lemma proof_of_qcp_vcmul_read_lane_return_wit_1 : qcp_vcmul_read_lane_return_wit_1.
+Proof. unfold qcp_vcmul_read_lane_return_wit_1; left;intros;apply _derivable1_andp_intros;
+ [unfold derivable1,coq_prop;intros;apply vcmul_read_inactive;lia|apply derivable1_refl]. Qed.
+Lemma proof_of_qcp_vcmul_read_lane_return_wit_2 : qcp_vcmul_read_lane_return_wit_2.
+Proof. unfold qcp_vcmul_read_lane_return_wit_2; left;intros vl i pp xs idx count base d Hi Himax Hvl Hvlmax Hact Hidx Hcount Hp;
+ prop_apply (FloatArray.full_Zlength base count xs);Intros_p Hlen;
+ apply _derivable1_andp_intros;
+ [unfold derivable1,coq_prop;intros;apply vcmul_read_active;[lia|rewrite Hlen;lia]
+ |apply derivable1_refl]. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_1 : qcp_vcmul_load16_safety_wit_1.
+Proof. unfold qcp_vcmul_load16_safety_wit_1; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_2 : qcp_vcmul_load16_safety_wit_2.
+Proof. unfold qcp_vcmul_load16_safety_wit_2; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_3 : qcp_vcmul_load16_safety_wit_3.
+Proof. unfold qcp_vcmul_load16_safety_wit_3; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_4 : qcp_vcmul_load16_safety_wit_4.
+Proof. unfold qcp_vcmul_load16_safety_wit_4; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_5 : qcp_vcmul_load16_safety_wit_5.
+Proof. unfold qcp_vcmul_load16_safety_wit_5; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_6 : qcp_vcmul_load16_safety_wit_6.
+Proof. unfold qcp_vcmul_load16_safety_wit_6; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_7 : qcp_vcmul_load16_safety_wit_7.
+Proof. unfold qcp_vcmul_load16_safety_wit_7; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_8 : qcp_vcmul_load16_safety_wit_8.
+Proof. unfold qcp_vcmul_load16_safety_wit_8; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_9 : qcp_vcmul_load16_safety_wit_9.
+Proof. unfold qcp_vcmul_load16_safety_wit_9; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_10 : qcp_vcmul_load16_safety_wit_10.
+Proof. unfold qcp_vcmul_load16_safety_wit_10; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_11 : qcp_vcmul_load16_safety_wit_11.
+Proof. unfold qcp_vcmul_load16_safety_wit_11; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_12 : qcp_vcmul_load16_safety_wit_12.
+Proof. unfold qcp_vcmul_load16_safety_wit_12; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_13 : qcp_vcmul_load16_safety_wit_13.
+Proof. unfold qcp_vcmul_load16_safety_wit_13; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_14 : qcp_vcmul_load16_safety_wit_14.
+Proof. unfold qcp_vcmul_load16_safety_wit_14; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_15 : qcp_vcmul_load16_safety_wit_15.
+Proof. unfold qcp_vcmul_load16_safety_wit_15; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_safety_wit_16 : qcp_vcmul_load16_safety_wit_16.
+Proof. unfold qcp_vcmul_load16_safety_wit_16; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_return_wit_1 : qcp_vcmul_load16_return_wit_1.
+Proof. unfold qcp_vcmul_load16_return_wit_1; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_1_pure : qcp_vcmul_load16_partial_solve_wit_1_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_1_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_1 : qcp_vcmul_load16_partial_solve_wit_1.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_1, qcp_vcmul_load16_partial_solve_wit_1_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_2_pure : qcp_vcmul_load16_partial_solve_wit_2_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_2_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_2 : qcp_vcmul_load16_partial_solve_wit_2.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_2, qcp_vcmul_load16_partial_solve_wit_2_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_3_pure : qcp_vcmul_load16_partial_solve_wit_3_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_3_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_3 : qcp_vcmul_load16_partial_solve_wit_3.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_3, qcp_vcmul_load16_partial_solve_wit_3_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_4_pure : qcp_vcmul_load16_partial_solve_wit_4_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_4_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_4 : qcp_vcmul_load16_partial_solve_wit_4.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_4, qcp_vcmul_load16_partial_solve_wit_4_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_5_pure : qcp_vcmul_load16_partial_solve_wit_5_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_5_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_5 : qcp_vcmul_load16_partial_solve_wit_5.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_5, qcp_vcmul_load16_partial_solve_wit_5_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_6_pure : qcp_vcmul_load16_partial_solve_wit_6_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_6_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_6 : qcp_vcmul_load16_partial_solve_wit_6.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_6, qcp_vcmul_load16_partial_solve_wit_6_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_7_pure : qcp_vcmul_load16_partial_solve_wit_7_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_7_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_7 : qcp_vcmul_load16_partial_solve_wit_7.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_7, qcp_vcmul_load16_partial_solve_wit_7_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_8_pure : qcp_vcmul_load16_partial_solve_wit_8_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_8_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_8 : qcp_vcmul_load16_partial_solve_wit_8.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_8, qcp_vcmul_load16_partial_solve_wit_8_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_9_pure : qcp_vcmul_load16_partial_solve_wit_9_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_9_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_9 : qcp_vcmul_load16_partial_solve_wit_9.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_9, qcp_vcmul_load16_partial_solve_wit_9_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_10_pure : qcp_vcmul_load16_partial_solve_wit_10_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_10_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_10 : qcp_vcmul_load16_partial_solve_wit_10.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_10, qcp_vcmul_load16_partial_solve_wit_10_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_11_pure : qcp_vcmul_load16_partial_solve_wit_11_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_11_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_11 : qcp_vcmul_load16_partial_solve_wit_11.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_11, qcp_vcmul_load16_partial_solve_wit_11_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_12_pure : qcp_vcmul_load16_partial_solve_wit_12_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_12_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_12 : qcp_vcmul_load16_partial_solve_wit_12.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_12, qcp_vcmul_load16_partial_solve_wit_12_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_13_pure : qcp_vcmul_load16_partial_solve_wit_13_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_13_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_13 : qcp_vcmul_load16_partial_solve_wit_13.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_13, qcp_vcmul_load16_partial_solve_wit_13_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_14_pure : qcp_vcmul_load16_partial_solve_wit_14_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_14_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_14 : qcp_vcmul_load16_partial_solve_wit_14.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_14, qcp_vcmul_load16_partial_solve_wit_14_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_15_pure : qcp_vcmul_load16_partial_solve_wit_15_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_15_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_15 : qcp_vcmul_load16_partial_solve_wit_15.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_15, qcp_vcmul_load16_partial_solve_wit_15_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_16_pure : qcp_vcmul_load16_partial_solve_wit_16_pure.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_16_pure; memory_pure. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_16 : qcp_vcmul_load16_partial_solve_wit_16.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_16, qcp_vcmul_load16_partial_solve_wit_16_aux; try left;intros;memory_frame. Qed.
+Lemma proof_of_qcp_vcmul_load16_partial_solve_wit_17 : qcp_vcmul_load16_partial_solve_wit_17.
+Proof. unfold qcp_vcmul_load16_partial_solve_wit_17; try left;intros;memory_frame. Qed.
+Lemma proof_of___riscv_vsetvl_e32m4_safety_wit_1 : __riscv_vsetvl_e32m4_safety_wit_1.
+Proof. unfold __riscv_vsetvl_e32m4_safety_wit_1; memory_pure. Qed.
+Lemma proof_of___riscv_vsetvl_e32m4_safety_wit_2 : __riscv_vsetvl_e32m4_safety_wit_2.
+Proof. unfold __riscv_vsetvl_e32m4_safety_wit_2; memory_pure. Qed.
+Lemma proof_of___riscv_vsetvl_e32m4_return_wit_1 : __riscv_vsetvl_e32m4_return_wit_1.
+Proof. unfold __riscv_vsetvl_e32m4_return_wit_1; left;intros;unfold vcmul_vl16;
+ first [rewrite Z.min_l by lia|rewrite Z.min_r by lia];entailer!. Qed.
+Lemma proof_of___riscv_vsetvl_e32m4_return_wit_2 : __riscv_vsetvl_e32m4_return_wit_2.
+Proof. unfold __riscv_vsetvl_e32m4_return_wit_2; left;intros;unfold vcmul_vl16;
+ first [rewrite Z.min_l by lia|rewrite Z.min_r by lia];entailer!. Qed.
+End CheckedMemory.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_read_lane_entail_wit_1.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_read_lane_entail_wit_2.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_read_lane_return_wit_1.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_read_lane_return_wit_2.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_1.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_2.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_3.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_4.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_5.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_6.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_7.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_8.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_9.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_10.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_11.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_12.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_13.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_14.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_15.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_safety_wit_16.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_return_wit_1.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_1_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_1.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_2_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_2.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_3_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_3.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_4_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_4.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_5_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_5.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_6_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_6.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_7_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_7.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_8_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_8.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_9_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_9.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_10_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_10.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_11_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_11.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_12_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_12.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_13_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_13.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_14_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_14.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_15_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_15.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_16_pure.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_16.
+Print Assumptions CheckedMemory.proof_of_qcp_vcmul_load16_partial_solve_wit_17.
+Print Assumptions CheckedMemory.proof_of___riscv_vsetvl_e32m4_safety_wit_1.
+Print Assumptions CheckedMemory.proof_of___riscv_vsetvl_e32m4_safety_wit_2.
+Print Assumptions CheckedMemory.proof_of___riscv_vsetvl_e32m4_return_wit_1.
+Print Assumptions CheckedMemory.proof_of___riscv_vsetvl_e32m4_return_wit_2.
