@@ -71,6 +71,9 @@ python3 verification/qcp/vadd/proof/native.py
 后续 kernel 采用同样的 `impl/`、`spec.c`、`proof/` 审核边界；
 公共 intrinsic 模型应复用，当前整理不宣称通用规格生成器已经支持全部 kernel。
 
+通用内存tactic的可运行原型及逐项分类见 [proof/automation](proof/automation/README.zh-CN.md)。
+同一个tactic已替代验证39个既有内存VC；主证明保留为基线，自动化试验独立检查。
+
 结论范围是所列前置条件下、当前 C shim 语义中的部分正确性；
 固定 LP64、小端、binary32/RNE、RVV VLEN=128/e32m8、容量 32。
 硬件 intrinsic 与 shim 的对应、终止性、浮点异常标志不在该证明结论内。
