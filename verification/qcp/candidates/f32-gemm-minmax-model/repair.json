@@ -1,0 +1,68 @@
+{
+  "classification": "real original kernel non-equivalence in chosen C/intrinsic model",
+  "repair_status": "isolated RVV copy; scalar repair mathematics proved; complete C kernels not proved",
+  "counterexample": {
+    "mr": 1,
+    "nc": 1,
+    "K": 1,
+    "kc_bytes": 4,
+    "A_hex": [
+      "7fc00000",
+      "00000000",
+      "00000000",
+      "00000000"
+    ],
+    "packed_W_hex": [
+      "00000000",
+      "00000000",
+      "00000000",
+      "00000000",
+      "00000000",
+      "00000000",
+      "00000000",
+      "00000000",
+      "3f800000",
+      "3f800000",
+      "3f800000",
+      "3f800000",
+      "3f800000",
+      "3f800000",
+      "3f800000",
+      "3f800000"
+    ],
+    "lo_hex": "bf800000",
+    "hi_hex": "3f800000",
+    "original_NEON_output_hex": "7fc00000",
+    "original_RVV_output_hex": "3f800000",
+    "original_equivalent_return": 0,
+    "repaired_RVV_output_hex": "7fc00000",
+    "repaired_equivalent_return": 1
+  },
+  "original_source_sha256": {
+    "rvv.c": "9ae2f510ae8991e8dc80606edd0fb4595e02d11dcba6ae57974e7b5ef0b2b4b7",
+    "neon.c": "b8f827cb5936e5333a0144d793e541730bf3e33ca538d46d42c92f86b9751c61"
+  },
+  "repaired_source_sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+  "patch": "repaired/rvv.patch",
+  "description": "repair.md",
+  "regression": {
+    "counterexample_and_repaired_12": "build/qcp-worker-local/gemm-intrinsic-spec-runs/repair-replay01/result.json",
+    "geometry_2700": "build/qcp-worker-local/gemm-intrinsic-spec-runs/repair-geometry01/geometry-result.json",
+    "formal_proof": false
+  },
+  "formal_model_repair": {
+    "universal_theorem": "repaired_clamp_matches_neon",
+    "matching_observation_theorem": "repaired_clamp_any_nan_numeric_observation",
+    "fresh_compilation": "model-repair/runs/fresh03/result.json",
+    "C_VCs": 0,
+    "intrinsic_C_body_proved": false,
+    "ISA_correspondence_proved": false
+  },
+  "remaining": [
+    "C kernel memory/loops/alias output VC closure",
+    "source-to-lowered correspondence",
+    "full mr/nc domain rather than first mr1/nc8 subcase",
+    "top-level actual equivalent dependency closure",
+    "intrinsic-spec review and independent ISA-to-C correspondence"
+  ]
+}

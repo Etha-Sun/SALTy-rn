@@ -1,0 +1,321 @@
+{
+  "scope": "Mathematical/value/SL model, not intrinsic C implementation or ISA theorem",
+  "source_ledger_SHA256": "18740626ce8860add68804ed0006529a7b791fcc356791fe5931bcf8d43fff4b",
+  "model_module_manifest": "proof/manifest.json",
+  "domain": {
+    "mr": "1..4",
+    "nc": "arbitrary positive with machine_capacity",
+    "K": "arbitrary positive with kc=4*K and machine_capacity",
+    "strides_bytes": {
+      "a_stride": "kc",
+      "cm_stride": "4*nc",
+      "cn_stride": 32
+    },
+    "packed_W": "ceil(nc/8) panels, each [8 f32 bias][K*8 f32 weight], including full padded NR8 panel",
+    "A": "4*K initialized fp32 cells",
+    "C": "4*nc writable fp32 slots, initialization not required; output relation only active mr*nc; unused physical rows retained as undef resource",
+    "alias": "logical absent rows alias min(row,mr-1); one physical owner, repeat writes handled, no four-row-independent precondition",
+    "fp32": "all modeled binary32 values including NaN, Inf, subnormal and signed zero; no finite-only or lo<=hi requirement"
+  },
+  "observation": {
+    "public_outputs": "active output numerical equality or both NaN; +0/-0 equal",
+    "not_observed": [
+      "NaN payload/sign/quieting policy",
+      "exception flags",
+      "other FP status/control state",
+      "inactive vector lanes",
+      "unused physical output rows"
+    ],
+    "internal_bit_same": "Coq fp32 value equality, stronger than public observation; does not mean fp32_eq(NaN,NaN)",
+    "rounding_and_modes": "mathematical fused round-to-nearest ties-to-even, no flush; current NEON value reference AH=0; physical environment correspondence not proved"
+  },
+  "register_model": {
+    "slots": 8,
+    "meaning": "only kernel-accessible prefix, not assertion physical VLMAX=8",
+    "vl": "1..8; request<=8 => returned request",
+    "tail_policy": "inactive slots unconstrained, never assume zero or undisturbed; no inactive output store",
+    "hardware_VLEN": "no general hardware VLEN or arbitrary AVL theorem; legacy native/reference VLEN128 e32m4 capacity16 documentation does not turn this 8-slot interface into a hardware proof"
+  },
+  "spec_only_intrinsics": [
+    {
+      "original_name": "__riscv_vsetvl_e32m4",
+      "actual_qcp_name_or_macro": "__riscv_vsetvl_e32m4(size_t n)",
+      "interface_mode": "scalar by value",
+      "Coq_value_model": "integer equality return=n",
+      "active_effect": "return requested n in this restricted request range",
+      "memory_contract": "emp -> emp",
+      "vl_domain": "1 <= n <= 8, return=n",
+      "inactive_lanes": "not applicable",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "rvv_original_kernel",
+        "legacy_intrinsics_ledger"
+      ],
+      "extra_restriction": "Kernel requests min(remaining nc,8). This does not define general AVL selection or prove a physical VLEN configuration."
+    },
+    {
+      "original_name": "__riscv_vle32_v_f32m4",
+      "actual_qcp_name_or_macro": "__riscv_vle32_v_f32m4(const float*p,size_t vl)",
+      "interface_mode": "memory pointer input; struct returned by value",
+      "Coq_value_model": "rvv_at(L,i), active8(vl,...)",
+      "active_effect": "z_i=L[i] for i<vl",
+      "memory_contract": "FloatArray.full(p,vl,L) preserved; return owns all 8 struct fields",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "rvv_original_kernel",
+        "legacy_intrinsics_ledger"
+      ],
+      "extra_restriction": null
+    },
+    {
+      "original_name": "__riscv_vfmacc_vf_f32m4",
+      "actual_qcp_name_or_macro": "__riscv_vfmacc_vf_f32m4(vfloat32m4_t a,float scalar,vfloat32m4_t b,size_t vl)",
+      "interface_mode": "two vectors and scalar by value, struct return; where a=&vaccN,b=&vb",
+      "Coq_value_model": "GemmSpec.FmaModel.fma_rne = Flocq Binary.Bfma 24 128 mode_NE",
+      "active_effect": "z_i=fma_rne(scalar,b_i,a_i), one fused RNE rounding",
+      "memory_contract": "By-value parameter fields consumed by callee contract; caller copy/frame follows QCP by-value mechanism. Four consecutive uses of vb are covered by actual kernel VCs.",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "fma_model_source"
+      ],
+      "extra_restriction": "Not fp32_mul then fp32_add, and not fp64 intermediate. No software FMA body or ISA-to-Flocq theorem."
+    },
+    {
+      "original_name": "__riscv_vfmin_vf_f32m4",
+      "actual_qcp_name_or_macro": "__riscv_vfmin_vf_f32m4(vfloat32m4_t a,float scalar,size_t vl)",
+      "interface_mode": "vector/scalar by value; where a=&vaccN",
+      "Coq_value_model": "GemmSpec.IntrinsicModel.fp32_min_number",
+      "active_effect": "z_i=min_number(a_i,scalar); single NaN selects number, double NaN chosen canonical, signed-zero policy explicit",
+      "memory_contract": "8 by-value input fields; return owns 8 fields",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "riscv_F22",
+        "riscv_vector_minmax"
+      ],
+      "extra_restriction": null
+    },
+    {
+      "original_name": "__riscv_vfmax_vf_f32m4",
+      "actual_qcp_name_or_macro": "__riscv_vfmax_vf_f32m4(vfloat32m4_t a,float scalar,size_t vl)",
+      "interface_mode": "vector/scalar by value; where a=&vaccN",
+      "Coq_value_model": "GemmSpec.IntrinsicModel.fp32_max_number",
+      "active_effect": "z_i=max_number(a_i,scalar); single NaN selects number, double NaN chosen canonical, signed-zero policy explicit",
+      "memory_contract": "8 by-value input fields; return owns 8 fields",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "riscv_F22",
+        "riscv_vector_minmax"
+      ],
+      "extra_restriction": null
+    },
+    {
+      "original_name": "__riscv_vfmv_v_f_f32m4",
+      "actual_qcp_name_or_macro": "__riscv_vfmv_v_f_f32m4(float scalar,size_t vl)",
+      "interface_mode": "scalar by value; struct return",
+      "Coq_value_model": "active8(vl,z...,scalar repeated 8 times)",
+      "active_effect": "z_i=scalar for i<vl",
+      "memory_contract": "emp -> owns 8 returned fields",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "repaired_kernel"
+      ],
+      "extra_restriction": null
+    },
+    {
+      "original_name": "__riscv_vmfne_vv_f32m4_b8",
+      "actual_qcp_name_or_macro": "macro qcp_nanmask(&(a),&(b),vl)",
+      "interface_mode": "single-owner readonly pointer borrow for actual self/lvalue pattern; mask struct return",
+      "Coq_value_model": "GemmRvv.Model.rvv_nanth x = if Binary.is_nan x then 1 else 0; mask8",
+      "active_effect": "mask_i=is_nan(a_i) for i<vl, because actual arguments are identical",
+      "memory_contract": "Require a==b; own each of a->s0..s7 exactly once; preserve all these fields; return owns 8 int mask fields",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "repaired_kernel"
+      ],
+      "extra_restriction": "Only eight registered vmfne(vaccN,vaccN,vl) call occurrences accepted. General two-distinct-vector unequal comparison is not modeled by this API. Unknown expressions/non-self reject; no duplicate sep owner."
+    },
+    {
+      "original_name": "__riscv_vfmerge_vfm_f32m4",
+      "actual_qcp_name_or_macro": "__riscv_vfmerge_vfm_f32m4(vfloat32m4_t a,float scalar,vbool8_t mask,size_t vl)",
+      "interface_mode": "vector and mask by value; where a=&vaccN,mask=&nanN",
+      "Coq_value_model": "GemmRvv.Model.rvv_merge x scalar m = if m==0 then x else scalar",
+      "active_effect": "z_i=(mask_i==0 ? a_i : scalar) for i<vl",
+      "memory_contract": "By-value input vector/mask fields, 8 fields returned; actual supported masks from selfmask",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "unconstrained valid fp32/mask values; never observed or stored",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "repaired_kernel"
+      ],
+      "extra_restriction": null
+    },
+    {
+      "original_name": "__riscv_vse32_v_f32m4",
+      "actual_qcp_name_or_macro": "macro qcp_store((p),&(a),vl)",
+      "interface_mode": "output memory pointer plus readonly local-vector pointer borrow",
+      "Coq_value_model": "FloatArray.full(p,vl,sublist(0,vl,[x0;...;x7]))",
+      "active_effect": "write exactly active destination prefix",
+      "memory_contract": "Require FloatArray.undef_full(p,vl); preserve 8 borrowed vector fields. Output frame/alias ownership supplied by checked panel/store proofs.",
+      "vl_domain": "1 <= vl <= 8",
+      "inactive_lanes": "no write outside destination[0:vl]",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "rvv_original_kernel"
+      ],
+      "extra_restriction": null
+    },
+    {
+      "original_name": "__builtin_nanf",
+      "actual_qcp_name_or_macro": "macro qcp_nanf()",
+      "interface_mode": "zero-argument scalar producer; payload argument ignored by this fixed pattern",
+      "Coq_value_model": "GemmSpec.IntrinsicModel.canonical_qnan = fp32_of_bits 0x7fc00000",
+      "active_effect": "return chosen canonical quiet NaN",
+      "memory_contract": "emp -> emp",
+      "vl_domain": "scalar producer, no VL argument; only literal empty payload string used",
+      "inactive_lanes": "not applicable",
+      "body_status": "spec_only_no_checked_intrinsic_C_body",
+      "ISA_correspondence": "not_proved",
+      "source_reference_ids": [
+        "legacy_intrinsics_ledger",
+        "repaired_kernel"
+      ],
+      "extra_restriction": "Only __builtin_nanf(\"\") occurs. This is not a verified general builtin payload parser."
+    }
+  ],
+  "C_helper_reference_only": [
+    {
+      "name": "qcp_identity",
+      "original_use": "Two bound self-NaN checks introduced for QCP frontend compatibility",
+      "body": "return x;",
+      "contract": "Require emp; Ensure bit_same(return,x) && emp; bit_same is Coq value equality, not IEEE fp32_eq(x,x)",
+      "proof_status": "actual body has one checked C VC in full03; not an unproved extern",
+      "proof_evidence": [
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-rvv-source-review/runs/byvalue-full03/unit_goal.v",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/full-domain-proof-reuse/runs/rvv-original03-prepared01/checks/qcp_identity_return_wit_1/result.json"
+      ],
+      "body_present_in_current_unit": true,
+      "IEEE_source_to_identity_compare_correspondence": "Not packaged as a complete source-refinement theorem; six explicit changes remain listed.",
+      "scope_in_this_model_package": "C body certificate not included; existing local body checks are references only"
+    },
+    {
+      "name": "qcp_assert",
+      "original_use": "assert(condition) macro",
+      "body": "return;",
+      "contract": "Require condition != 0 && emp; Ensure emp",
+      "proof_status": "actual body checked separately; current unit has declaration whose contract matches checked body",
+      "proof_evidence": [
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/rvv-qcp/assert_support.c",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/rvv-qcp/AssertChecked.v",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/rvv-qcp/runs/assertcheck02/result.json"
+      ],
+      "body_present_in_current_unit": false,
+      "failure_path": "The proof covers calls satisfying nonzero condition. No claim to implement abort behavior for failing standard-C assert.",
+      "scope_in_this_model_package": "C body certificate not included; existing local body checks are references only"
+    }
+  ],
+  "official_and_source_references": [
+    {
+      "id": "legacy_intrinsics_ledger",
+      "path": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/intrinsics.json",
+      "sha256": "32c399949dec7212019789aa49e4c78e4c48438814b8a7740369a18d74b68cc5",
+      "status": "earlier review ledger; subcase progress text is historical, not current source-review03 proof status; no ISA theorem"
+    },
+    {
+      "id": "rvv_original_kernel",
+      "path": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/original/rvv.c",
+      "sha256": "9ae2f510ae8991e8dc80606edd0fb4595e02d11dcba6ae57974e7b5ef0b2b4b7",
+      "status": "original preserved; NaN clamp counterexample exists"
+    },
+    {
+      "id": "repaired_kernel",
+      "path": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/repaired/rvv.c",
+      "sha256": "b74472bb9b787da06d6f55981cdeb1475e8d7e392250f8c76ca9dff2a1724162",
+      "status": "separate NaN repair, original unchanged"
+    },
+    {
+      "id": "fma_model_source",
+      "path": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/gemm-intrinsic-spec-candidate/rvv-qcp/models/FmaModel.v",
+      "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153",
+      "status": "total mathematical FMA definition, not intrinsic body or ISA proof"
+    },
+    {
+      "id": "arm_acle",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version_observed": "aef52c2",
+      "sections": [
+        "vminq_f32",
+        "vmaxq_f32",
+        "vfmaq_f32"
+      ],
+      "status": "reused official documentation audit record from 2026-10-22; not freshly fetched for this ledger; no machine-checked ISA correspondence"
+    },
+    {
+      "id": "arm_pdf_5",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "section": "FMIN (vector), printed page 1384",
+      "local_cache_sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "status": "reused official documentation audit record from 2026-10-22; not freshly fetched for this ledger; no machine-checked ISA correspondence"
+    },
+    {
+      "id": "arm_pdf_6",
+      "url": "https://documentation-service.arm.com/static/644c18cbaa78c007af74fa2c?token=",
+      "section": "C314, page 131, AH distinction for FMIN/FMAX",
+      "status": "reused official documentation audit record from 2026-10-22; not freshly fetched for this ledger; no machine-checked ISA correspondence"
+    },
+    {
+      "id": "riscv_F22",
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/f-st-ext.html",
+      "version": "F2.2, ISA v20260120",
+      "section": "20.1.6",
+      "status": "reused official documentation audit record from 2026-10-22; not freshly fetched for this ledger; no machine-checked ISA correspondence"
+    },
+    {
+      "id": "riscv_vector_minmax",
+      "url": "https://github.com/riscv/riscv-isa-manual/blob/main/src/unpriv/vector-common.adoc",
+      "section": "Vector Floating-Point MIN/MAX Instructions",
+      "version": "mutable main read during audit",
+      "status": "reused official documentation audit record from 2026-10-22; not freshly fetched for this ledger; no machine-checked ISA correspondence"
+    }
+  ],
+  "NEON_and_RVV_NaN_semantics_distinct": true,
+  "fma_model": "GemmSpec.FmaModel.fma_rne uses Flocq Bfma RNE; fused schedule order preserved without float associativity",
+  "intrinsic_C_body_proofs_in_this_package": 0,
+  "ISA_correspondence_proofs_in_this_package": 0,
+  "finite_only_or_NaN_exclusion": false,
+  "source_to_model_refinement_open": true,
+  "limitations": [
+    "No checked C implementation for any of the ten intrinsic contracts; slice load/store body proof is not used to close their full contracts.",
+    "No ISA-to-C/model refinement theorem. Official documentation is review evidence.",
+    "No complete original/repaired C to six-change compatibility refinement theorem; CPP/token reconstruction is provenance only.",
+    "No standalone termination theorem.",
+    "Existing QCP/SL/layout/Flocq/classical dependencies remain in Print Assumptions; no new axioms or Admitted introduced."
+  ]
+}

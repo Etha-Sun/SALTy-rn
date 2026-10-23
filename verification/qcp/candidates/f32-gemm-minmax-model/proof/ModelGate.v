@@ -1,0 +1,45 @@
+From GemmSpec Require Import FmaModel IntrinsicModel.
+From GemmRepair Require Import ClampRepair Observation.
+From GemmFullBridge Require Import OutputBridge.
+From GemmFullNeonBridge Require Import NeonSchedule.
+From GemmFullRvvBridge Require Import RvvSchedule.
+From FullDomainNeon Require Import FullNeonModel NeonStoreState.
+From FullDomainRvv Require Import FullState MachineDomain ActiveVector RowValues.
+From FullDomainMemory Require Import InitialState ChunkState RowWindows OutputFinish WrittenAddress.
+From FullDomainCaller Require Import FullCallerLogic CallContractBridge.
+From FullDomainConsequence Require Import FullConsequence.
+From LeaderAutomation Require Import FastFrame.
+
+Check all_dimensions_canonical_models_match.
+Check all_dimensions_any_nan_models_observed.
+Check full_domain_operand_indices_in_bounds.
+Check fulln_acc_finishes_at_neon_cell.
+Check full_cell_is_neon_cell.
+Check initial_output_state.
+Check completed_output_state.
+Check two_completed_output_states.
+Check caller_pre_to_neon_body_pre.
+Check neon_body_post_to_caller_post.
+Check caller_pre_to_rvv_body_pre.
+Check rvv_body_post_to_caller_post.
+
+Print Assumptions all_dimensions_canonical_models_match.
+Print Assumptions all_dimensions_any_nan_models_observed.
+Print Assumptions full_domain_operand_indices_in_bounds.
+Print Assumptions fulln_acc_finishes_at_neon_cell.
+Print Assumptions full_cell_is_neon_cell.
+Print Assumptions initial_output_state.
+Print Assumptions completed_output_state.
+Print Assumptions two_completed_output_states.
+Print Assumptions caller_pre_to_neon_body_pre.
+Print Assumptions neon_body_post_to_caller_post.
+Print Assumptions caller_pre_to_rvv_body_pre.
+Print Assumptions rvv_body_post_to_caller_post.
+Print Assumptions repaired_clamp_matches_neon.
+Print Assumptions pair_schedule_matches_scalar.
+Print Assumptions fused_rounding_witness.
+Print Assumptions original_clamp_nan_difference.
+Print Assumptions neon_phase_start.
+Print Assumptions neon_phase_end.
+Print Assumptions fulln_acc_step.
+Print Assumptions rvv_pull_through.

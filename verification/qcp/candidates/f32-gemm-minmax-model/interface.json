@@ -1,0 +1,88 @@
+{
+  "case": "f32-gemm-minmax-model",
+  "status": "model-capability-candidate",
+  "model_sources": "proof/manifest.json",
+  "model_replay": "proof/check.py",
+  "original_implementations": {
+    "NEON": "impl/testNEON.c",
+    "RVV": "impl/testRVV.c"
+  },
+  "positive_model_target": "Original NEON mathematical schedule versus independent NaN-repaired RVV mathematical schedule",
+  "independent_repair": {
+    "source": "repaired/rvv.c",
+    "patch": "repaired/rvv.patch",
+    "counterexample": "repair.json"
+  },
+  "C_review_entry": {
+    "source": "review/full-domain-caller/spec.c",
+    "contracts": "review/full-domain-caller/contracts.h",
+    "source_sha256": "b73e91879aeea02a70c02d184dc1a1b3e9587d0e045fc41e998cd7ba3b82e746",
+    "purpose": "Actual unique public caller and contracts, copied for human review; not compiled or body-proved by this model package",
+    "entry": "int equivalent(size_t mr, size_t nc, size_t kc, const float *a, const float *w, float *left, float *right, const struct xnn_f32_minmax_params *params)"
+  },
+  "unit_convention": {
+    "kc": "positive byte count, divisible by sizeof(float)=4",
+    "K": "kc/4 scalar depth elements; K is derived, not an argument",
+    "nc": "number of output columns",
+    "mr": "number of active rows, 1..4",
+    "params": "pointer to initialized scalar.min/scalar.max floats; lo/hi are logical ghost values, not entry arguments"
+  },
+  "strides_bytes": {
+    "a_stride": "kc",
+    "cm_stride": "4*nc",
+    "cn_stride": 32,
+    "exposed_as_public_args": false,
+    "scope": "standard contiguous rows; arbitrary overlapping row strides are outside this public interface"
+  },
+  "memory": {
+    "a": "initialized 4*K float cells, including physical inactive rows",
+    "w": "initialized ceil(nc/8)*8*(K+1) float cells, each panel 8 biases then K groups of 8 weights; last packed panel includes all padding",
+    "left_right": "each owns writable FloatArray::undef_full(...,4*nc), separated from one another, A/W and params resources; output initialization not required",
+    "params": "initialized two float fields, scalar.min and scalar.max",
+    "active_return": "each active mr*nc prefix is initialized full output and compared",
+    "unused_return": "suffix [mr*nc,4*nc) retains undef permissions; no formal value-preservation assertion for unspecified inactive output contents",
+    "input_return": "same initialized A/W lists and params field values are restored",
+    "alignment": "inherited from the actual FloatArray/store predicates and C pointer model; no extra alignment predicate is introduced here"
+  },
+  "machine_capacity": {
+    "definition": "proof/coq/FullDomainRvv/MachineDomain.v",
+    "note": "The original pure capacity and SL resource conditions remain; refer to actual C review and Coq definitions."
+  },
+  "observation": {
+    "post_core": "return==1",
+    "range": "active row-major mr*nc cells",
+    "equality": "fp32 numeric equality OR both NaN",
+    "signed_zero": "+0 and -0 compare equal",
+    "NaN_sign_payload": "not observed",
+    "exception_flags": "not observed",
+    "lo_hi": "arbitrary fp32; no finite-only or lo<=hi restriction",
+    "rounding_model": "fused RNE, no-flush mathematical intrinsic model; ISA correspondence unproved"
+  },
+  "memory_model_boundary": "QCP underlying memory is byte-based; FloatArray/store_float are typed assertions over it. This package proves the explicit f32 layout/SL lemmas, not arbitrary bytecast or mixed quantized-kernel equivalence.",
+  "fresh_model_scope": {
+    "local_Coq_modules": 34,
+    "same_hash_verified_foundations_freshly_recompiled": 5,
+    "model_gate": "proof/ModelGate.v",
+    "C_VCs": 0,
+    "intrinsic_C_body_checked_here": false,
+    "raw_C_kernel_checked_here": false,
+    "source_refinement_or_ISA_proved_here": false,
+    "local_850_C_candidate_certificates_included": false
+  },
+  "local_C_candidate_reference_only": {
+    "scope": "Separate local adapted-C evidence; not submitted, replayed or closed by this package",
+    "NEON21_C_VCs": 459,
+    "RVV03_C_VCs": 391,
+    "caller_C_VCs_separate": 44,
+    "original_C_correspondence": "open: NEON outer do-to-while, RVV four postincrement splits and two identity calls",
+    "reference_interface_SHA256": "e6f4435f06c533b565a5ea35d1d148a99a9c7454956322356459e55abc89ce7d",
+    "reference_public_spec_SHA256": "b73e91879aeea02a70c02d184dc1a1b3e9587d0e045fc41e998cd7ba3b82e746",
+    "do_not_count_as_this_package_proof": true
+  },
+  "dependency": {
+    "PR": "https://github.com/Etha-Sun/SALTy-rn/pull/5",
+    "commit": "c9bf8376c57420eb94f5982598431810337776bb",
+    "tool": "verification/qcp/tools/environment.py",
+    "sha256": "9dc61cf596824d4dd622267393d74528455f34ea5e9ade6da6682bd33926e485"
+  }
+}
