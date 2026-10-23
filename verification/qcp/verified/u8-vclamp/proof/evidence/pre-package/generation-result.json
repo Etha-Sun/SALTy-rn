@@ -1,0 +1,1236 @@
+{
+  "passed": true,
+  "units": [
+    {
+      "passed": true,
+      "unit": {
+        "name": "neon",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/runs/full10",
+        "source": "full_neon.c",
+        "expected": "FullU8/full10_goal.v",
+        "logic": "FullU8",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/runs/full10/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon/full_neon.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.016880027949810028
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon",
+            "--coq-logic-path=FullU8",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 135.9695463781245
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.009379924042150378
+        },
+        {
+          "stage": "strategy_u8_copy",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon/u8_copy.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/neon",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.0038424809463322163
+        }
+      ],
+      "error": null,
+      "C_VCs": 400,
+      "actual_source_hashes": {
+        "neon_shim.c": "9ab10a7eae791eb548e76d221d39edfe227bacb64cd4c70bac52a0bae80ef7b7",
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "probe.c": "a4b406df16a2decf6a78717f03ee0a4c604b5324c9d21c1e66150d2af2ff1c57",
+        "full_neon_shim.c": "a3fa1acdf01bc9c99c5f9102e372192ba10ba21cabfb8d2c9dcf02ee4e82eaea",
+        "u8_copy.h": "a39e55842abd9b3dc60eab6eb5cda430ac06563929bb0003334e1bafc4352c3e",
+        "tail.c": "54889da617e2308514906b31e8425d8384b4dd7a01f16934a50b3c550c7e8fa3",
+        "full_neon.c": "ab1d697a529bcdebc8bd003fc089df18de0377e93ff5df8a6f333f410c03ae7a",
+        "unit.c": "8ab03b2a010f2dd2c984a44e8aeca0ee356f46389343b5c0766bb0dc5984454a",
+        "le_store.c": "093f796b266fed595df36c820ae533578f5d1f0d05ea4390102d727766be64b4"
+      },
+      "CPP_sha256": "8ab03b2a010f2dd2c984a44e8aeca0ee356f46389343b5c0766bb0dc5984454a",
+      "expected_goal_sha256": "4157c46f08b3d5903811f7d73d80712ccb32fa07d6a32511a86671f228d96c27",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        },
+        {
+          "name": "u8_copy",
+          "goal_sha256": "16345f3bb55cb8af5d799b7039538bea5bc2f634a9d2e72751a05bd76950366f"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "rvv_original",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/src",
+        "source": "kernel.c",
+        "expected": "U8PackedKernel/unit_goal.v",
+        "logic": "FullU8",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/runs/kernel01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original/kernel.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.019260140834376216
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original",
+            "--coq-logic-path=FullU8",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 69.11763034109026
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.007979226997122169
+        },
+        {
+          "stage": "strategy_packed_copy",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original/packed_copy.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_original",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.0035594659857451916
+        }
+      ],
+      "error": null,
+      "C_VCs": 54,
+      "actual_source_hashes": {
+        "body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "kernel.c": "5814bc75c7184e4aa724615e885aa8d8e428409ac954843a1b21ee11e3d164ec",
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+        "body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "body___riscv_vminu_vx_u8m8.c": "589b639ddf8b8044200056318a4131ad7c0741fdb59625bdafbbcd92db578eb5",
+        "body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+        "body___riscv_vmaxu_vx_u8m8.c": "71a2b72f65ca766b74b65195566b2db6f95351e23b79958f84881602d1f84c3d",
+        "body___riscv_vsetvl_e8m8.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d",
+        "packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+        "body___riscv_vle8_v_u8m8.c": "99757ba8cd18304b9f20f86583d40380deca1816c031c45fbb3538d25f6b7b5f",
+        "body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92"
+      },
+      "CPP_sha256": "3c95fa509eeba20376c2718559d7bd1a5f5dca131eaded6780f20c8f046ff45a",
+      "expected_goal_sha256": "299f45fa2efa3b1a498fa68ef46e97484fabaf64c522c39372e1456fc3d48c91",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        },
+        {
+          "name": "packed_copy",
+          "goal_sha256": "99ea56482587086496198d7b4ee1a76b50e578af244caecaf0d9e0c858ac9114"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "rvv_repaired",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-rvv-repaired-v1/src",
+        "source": "kernel.c",
+        "expected": "RvvRepair/unit_goal.v",
+        "logic": "FullU8",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-rvv-repaired-v1/runs/generate01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired/kernel.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.01623140904121101
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired",
+            "--coq-logic-path=FullU8",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 137.9759311438538
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.0077602548990398645
+        },
+        {
+          "stage": "strategy_packed_copy",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired/packed_copy.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/rvv_repaired",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.007739613996818662
+        }
+      ],
+      "error": null,
+      "C_VCs": 88,
+      "actual_source_hashes": {
+        "body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "kernel.c": "0d55f0cc7831cdd7407a0a3a3be82720027b3c756ab39d3c1b389a6115dd712f",
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+        "body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "body___riscv_vminu_vx_u8m8.c": "589b639ddf8b8044200056318a4131ad7c0741fdb59625bdafbbcd92db578eb5",
+        "body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+        "body___riscv_vmaxu_vx_u8m8.c": "71a2b72f65ca766b74b65195566b2db6f95351e23b79958f84881602d1f84c3d",
+        "body___riscv_vsetvl_e8m8.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d",
+        "packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+        "body___riscv_vle8_v_u8m8.c": "99757ba8cd18304b9f20f86583d40380deca1816c031c45fbb3538d25f6b7b5f",
+        "body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92"
+      },
+      "CPP_sha256": "e1f0b2363523ccdb9a58b4ca8eb52ec8cdd8e922b49a57d73085b9e032bb4acc",
+      "expected_goal_sha256": "5001ac6144baa1522b393bd6c0f40a55c7ce4fd6b4c9863e0f00205c4918ec79",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        },
+        {
+          "name": "packed_copy",
+          "goal_sha256": "99ea56482587086496198d7b4ee1a76b50e578af244caecaf0d9e0c858ac9114"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "public",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-rvv-repaired-v1",
+        "source": "public/mapper.c",
+        "expected": "U8Public/public_unit_goal.v",
+        "logic": "U8Public",
+        "slp": true,
+        "cpp_expected": null
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/public/public/mapper.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/public/public_unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.00810287008062005
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/public/public_unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/public",
+            "--coq-logic-path=U8Public",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/public/src",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.3649299810640514
+        }
+      ],
+      "error": null,
+      "C_VCs": 11,
+      "actual_source_hashes": {
+        "src/body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "src/kernel.c": "0d55f0cc7831cdd7407a0a3a3be82720027b3c756ab39d3c1b389a6115dd712f",
+        "src/arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "src/body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "src/packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+        "src/body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "src/body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "src/body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "src/body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "src/body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "src/body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "src/body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "src/body___riscv_vminu_vx_u8m8.c": "589b639ddf8b8044200056318a4131ad7c0741fdb59625bdafbbcd92db578eb5",
+        "src/body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "src/body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "src/body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "src/packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+        "src/body___riscv_vmaxu_vx_u8m8.c": "71a2b72f65ca766b74b65195566b2db6f95351e23b79958f84881602d1f84c3d",
+        "src/body___riscv_vsetvl_e8m8.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d",
+        "src/packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+        "src/body___riscv_vle8_v_u8m8.c": "99757ba8cd18304b9f20f86583d40380deca1816c031c45fbb3538d25f6b7b5f",
+        "src/body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92",
+        "public/spec.h": "150ee66af1e8d287b6852664c26553dabf05cc503a1cce65f7c337a3678f888c",
+        "public/mapper.c": "7f307bf406c9d0259afa81c569b8d50486d9ed4d09bd170f8b0989028116c622",
+        "public/case_types.h": "4c73b2748c9de48a78dea9f1990e6401f3f6f2d0e778ac4ea9e7aad95b2c1b93"
+      },
+      "CPP_sha256": "a29df9aee5ddbf359c718ad3d696ed0fe11a4b88c155d2f2c1ffbdd18b120b77",
+      "expected_goal_sha256": "42a37ef81951d70c1cd5f9c706b51fb89fb0c6de685177c28522a9483b6e7120",
+      "strategy_matches": [],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "codec",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/fresh01",
+        "source": "codec.c",
+        "expected": "PackedCodecVC/unit_goal.v",
+        "logic": "PackedCodecVC",
+        "slp": false,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/fresh01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/codec/codec.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/codec/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.010091145988553762
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/codec/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/codec",
+            "--coq-logic-path=PackedCodecVC"
+          ],
+          "exit": 0,
+          "seconds": 0.03223807690665126
+        }
+      ],
+      "error": null,
+      "C_VCs": 3,
+      "actual_source_hashes": {
+        "codec.c": "c14044d3f0e4cfc98ac80f4d2b1d97facf6f701a7ea983759ed29f1e70c98b7a",
+        "unit.c": "186e1d3a15bfa1184cf1cb271b1acc32545aec92704171d4662a3bc98ebb4267"
+      },
+      "CPP_sha256": "186e1d3a15bfa1184cf1cb271b1acc32545aec92704171d4662a3bc98ebb4267",
+      "expected_goal_sha256": "23c3c7a86fe337d62f070ac539613300443e2fc5567f6a386d0e5eb88abef54e",
+      "strategy_matches": [],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "active",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/active01",
+        "source": "active.c",
+        "expected": "ActiveCodecVC/unit_goal.v",
+        "logic": "ActiveCodecVC",
+        "slp": false,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/active01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/active/active.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/active/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.02031542593613267
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/active/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/active",
+            "--coq-logic-path=ActiveCodecVC"
+          ],
+          "exit": 0,
+          "seconds": 0.8660248620435596
+        }
+      ],
+      "error": null,
+      "C_VCs": 72,
+      "actual_source_hashes": {
+        "body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "active.c": "c6642d4c54e72411ed544814b1275dce75820e2423d4bfb495bd5850077706fc",
+        "unit.c": "84fcc998655dc804b9593aad1ed6a07548414f8558f090c82145a90504ff9f18",
+        "body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92"
+      },
+      "CPP_sha256": "84fcc998655dc804b9593aad1ed6a07548414f8558f090c82145a90504ff9f18",
+      "expected_goal_sha256": "bdbf51cc0f2c0691002533e1913957e21158a5038d6912c1179998b478db7e0a",
+      "strategy_matches": [],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "vl",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/policy01",
+        "source": "unit.c",
+        "expected": "VLCodecVC/unit_goal.v",
+        "logic": "VLCodecVC",
+        "slp": false,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/policy01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vl/input.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vl/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.013245815178379416
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vl/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vl",
+            "--coq-logic-path=VLCodecVC"
+          ],
+          "exit": 0,
+          "seconds": 0.06780200498178601
+        }
+      ],
+      "error": null,
+      "C_VCs": 4,
+      "actual_source_hashes": {
+        "input.c": "2b386910627427b869880fe2b9323904d484b597b1626bdd15d83e6607af2dfb",
+        "unit.c": "2b386910627427b869880fe2b9323904d484b597b1626bdd15d83e6607af2dfb",
+        "body-original.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d"
+      },
+      "CPP_sha256": "2b386910627427b869880fe2b9323904d484b597b1626bdd15d83e6607af2dfb",
+      "expected_goal_sha256": "e3499a3b2056f4ded2938d7d71b40f94080f218b5a1c30928f8652b301f55a22",
+      "strategy_matches": [],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "memory",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/memory01",
+        "source": "memory.c",
+        "expected": "MemoryCodecVC/unit_goal.v",
+        "logic": "MemoryCodecVC",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/memory01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory/memory.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.01418039295822382
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory",
+            "--coq-logic-path=MemoryCodecVC",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.2151651019230485
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/memory",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.009685638826340437
+        }
+      ],
+      "error": null,
+      "C_VCs": 22,
+      "actual_source_hashes": {
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "unit.c": "30aeac7943c637b69ae90ed6da262685b3f5a63d96e0c425c80d59d07a41b80f",
+        "memory.c": "bf4ad83f61f9d1b1efcd9078720ad6c5eb1a5fe254229b47993514548a30bc58"
+      },
+      "CPP_sha256": "30aeac7943c637b69ae90ed6da262685b3f5a63d96e0c425c80d59d07a41b80f",
+      "expected_goal_sha256": "d0db890ef83179cf145da5e53f32e9d0abd61b37a5cf9f021c61b97cd4a581ed",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "getters",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/getters01",
+        "source": "getters.c",
+        "expected": "GettersCodecVC/unit_goal.v",
+        "logic": "GettersCodecVC",
+        "slp": false,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/getters01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/getters/getters.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/getters/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.017655496019870043
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/getters/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/getters",
+            "--coq-logic-path=GettersCodecVC"
+          ],
+          "exit": 0,
+          "seconds": 5.347229146864265
+        }
+      ],
+      "error": null,
+      "C_VCs": 72,
+      "actual_source_hashes": {
+        "getters.c": "de667741426f9c9f3f58f008d036266db7c24627375ab1d6ce220be20817a1dd",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "unit.c": "38e855271e1a154715af7f2ae90d16dcd62322bf85a73de12e87756fa5e66d9a"
+      },
+      "CPP_sha256": "38e855271e1a154715af7f2ae90d16dcd62322bf85a73de12e87756fa5e66d9a",
+      "expected_goal_sha256": "6549044451ec72d8b1305b716cff73d476d8a83ab3890480ae974e40321d177e",
+      "strategy_matches": [],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "store",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/store01",
+        "source": "store.c",
+        "expected": "StoreCodecVC/unit_goal.v",
+        "logic": "StoreCodecVC",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/codec-proof/runs/store01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store/store.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.05558537901379168
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store",
+            "--coq-logic-path=StoreCodecVC",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 1.7002264650072902
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/store",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.00786609505303204
+        }
+      ],
+      "error": null,
+      "C_VCs": 7,
+      "actual_source_hashes": {
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "store.c": "1d4dfa6e1b4f0ef0e39be8cd4c83fa5fc3a4e8bcaa289a83f440df3186d5b74a",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "unit.c": "513036b9cabe00ba57dee4de4f9746832f2e38603cdcefe94c0b56ce38774927"
+      },
+      "CPP_sha256": "513036b9cabe00ba57dee4de4f9746832f2e38603cdcefe94c0b56ce38774927",
+      "expected_goal_sha256": "4824abfb48dbc9b8068ebe9df61e59e0eddb30e7ed77b4d6042f277904ec3d37",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "vle",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/vector-body-proof/src",
+        "source": "vle.c",
+        "expected": "VectorVle/unit_goal.v",
+        "logic": "FullU8",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/vector-body-proof/runs/vle01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle/vle.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.00813249102793634
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle",
+            "--coq-logic-path=FullU8",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 36.63723980798386
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.007939816918224096
+        },
+        {
+          "stage": "strategy_packed_copy",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle/packed_copy.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vle",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.007831716211512685
+        }
+      ],
+      "error": null,
+      "C_VCs": 98,
+      "actual_source_hashes": {
+        "body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "kernel.c": "5814bc75c7184e4aa724615e885aa8d8e428409ac954843a1b21ee11e3d164ec",
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "vmax.c": "48a88255b6611803196bc20f617baab32a53b6fd496810df5046d91418a70b3a",
+        "packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+        "body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "vmin.c": "5bef129a6133874ec8fe5d8133853b4d3493292dbe314bc4f5bfd313a7292aa4",
+        "body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "vle.c": "6379908161fdb1ed38783aed0bb7ef9d1d53335554faeb4212d1a225408aafbc",
+        "body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "body___riscv_vminu_vx_u8m8.c": "589b639ddf8b8044200056318a4131ad7c0741fdb59625bdafbbcd92db578eb5",
+        "body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+        "body___riscv_vmaxu_vx_u8m8.c": "71a2b72f65ca766b74b65195566b2db6f95351e23b79958f84881602d1f84c3d",
+        "body___riscv_vsetvl_e8m8.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d",
+        "packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+        "body___riscv_vle8_v_u8m8.c": "99757ba8cd18304b9f20f86583d40380deca1816c031c45fbb3538d25f6b7b5f",
+        "body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92"
+      },
+      "CPP_sha256": "3bb998227b7743a2ec5fab73a76e21e91fa91389212ba908211296b28596f4b9",
+      "expected_goal_sha256": "7a9df19d6e7c71c75785071f78f36a45721e031130f959ff3fc82b6f55ef5340",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        },
+        {
+          "name": "packed_copy",
+          "goal_sha256": "99ea56482587086496198d7b4ee1a76b50e578af244caecaf0d9e0c858ac9114"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "vmin",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/vector-body-proof/src",
+        "source": "vmin.c",
+        "expected": "VectorVmin/unit_goal.v",
+        "logic": "FullU8",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/vector-body-proof/runs/vmin01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin/vmin.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.01801323494873941
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin",
+            "--coq-logic-path=FullU8",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 35.73764465004206
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.014622302958741784
+        },
+        {
+          "stage": "strategy_packed_copy",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin/packed_copy.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmin",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.003846801118925214
+        }
+      ],
+      "error": null,
+      "C_VCs": 98,
+      "actual_source_hashes": {
+        "body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "kernel.c": "5814bc75c7184e4aa724615e885aa8d8e428409ac954843a1b21ee11e3d164ec",
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "vmax.c": "48a88255b6611803196bc20f617baab32a53b6fd496810df5046d91418a70b3a",
+        "packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+        "body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "vmin.c": "5bef129a6133874ec8fe5d8133853b4d3493292dbe314bc4f5bfd313a7292aa4",
+        "body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "vle.c": "6379908161fdb1ed38783aed0bb7ef9d1d53335554faeb4212d1a225408aafbc",
+        "body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "body___riscv_vminu_vx_u8m8.c": "589b639ddf8b8044200056318a4131ad7c0741fdb59625bdafbbcd92db578eb5",
+        "body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+        "body___riscv_vmaxu_vx_u8m8.c": "71a2b72f65ca766b74b65195566b2db6f95351e23b79958f84881602d1f84c3d",
+        "body___riscv_vsetvl_e8m8.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d",
+        "packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+        "body___riscv_vle8_v_u8m8.c": "99757ba8cd18304b9f20f86583d40380deca1816c031c45fbb3538d25f6b7b5f",
+        "body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92"
+      },
+      "CPP_sha256": "2be772a4724c73a2ae6fbf3c051a3d9f6aba8ab50878b266fb0ddb609ce8d25b",
+      "expected_goal_sha256": "1537c7a9f9cad8cfe38d382a763d4d9bcfe9275fcdfc483f4fe7023756911897",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        },
+        {
+          "name": "packed_copy",
+          "goal_sha256": "99ea56482587086496198d7b4ee1a76b50e578af244caecaf0d9e0c858ac9114"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    },
+    {
+      "passed": true,
+      "unit": {
+        "name": "vmax",
+        "root": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/vector-body-proof/src",
+        "source": "vmax.c",
+        "expected": "VectorVmax/unit_goal.v",
+        "logic": "FullU8",
+        "slp": true,
+        "cpp_expected": "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-full-original-candidate/packed32-rvv/vector-body-proof/runs/vmax01/unit.c"
+      },
+      "records": [
+        {
+          "stage": "cpp",
+          "command": [
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax/vmax.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax/unit.c"
+          ],
+          "exit": 0,
+          "seconds": 0.01648078695870936
+        },
+        {
+          "stage": "qcp",
+          "command": [
+            "prlimit",
+            "--as=17179869184",
+            "--stack=67108864",
+            "--cpu=900",
+            "--",
+            "/tmp/qcp214-src/linux-binary/symexec",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--no-record-strategies",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax/unit.c",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax",
+            "--coq-logic-path=FullU8",
+            "-slp",
+            "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax",
+            "FullU8"
+          ],
+          "exit": 0,
+          "seconds": 36.18704373110086
+        },
+        {
+          "stage": "strategy_arrays",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax/arrays.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.007923337863758206
+        },
+        {
+          "stage": "strategy_packed_copy",
+          "command": [
+            "/tmp/qcp214-src/linux-binary/StrategyCheck",
+            "--arch=64",
+            "--endian=little",
+            "--input-file=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax/packed_copy.strategies",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/u8-whole-kernel-replay/runs/generate01/vmax",
+            "--coq-logic-path=FullU8"
+          ],
+          "exit": 0,
+          "seconds": 0.006688074907287955
+        }
+      ],
+      "error": null,
+      "C_VCs": 98,
+      "actual_source_hashes": {
+        "body_qcp_word_min.c": "9d018e17dbd17a13e2b0668ce6d2b8e18fa8b3c1e428fbd77acfbdf469fb9058",
+        "kernel.c": "5814bc75c7184e4aa724615e885aa8d8e428409ac954843a1b21ee11e3d164ec",
+        "arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+        "body_qcp_u8_min.c": "3db78a82ceebbb3190614e9be1a2e21ab2fc02d55a739bd377bc52d25419b2ce",
+        "vmax.c": "48a88255b6611803196bc20f617baab32a53b6fd496810df5046d91418a70b3a",
+        "packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+        "body_qcp_active_min.c": "4fb2f54e109af86360090484a0492ff148335d961be6838beb7729173ad6c906",
+        "body_qcp_pack4.c": "8f6ec1ac63c11fb9458ae51658fb641c698158647505da498c6c9117ae82ae82",
+        "vmin.c": "5bef129a6133874ec8fe5d8133853b4d3493292dbe314bc4f5bfd313a7292aa4",
+        "body_qcp_word_max.c": "b26c2b47e6e8f395b8661dd386f86f0bf3dbd752039227c0ae6c4388777784be",
+        "body_qcp_word_byte.c": "7326c47408c4b6763ea25874e1a7993732d35b33b20add34d056187777c6e443",
+        "body_qcp_get_byte.c": "2fbd7d407bfb89b82cfb71c7438444fdb3bfa5eae5ffee4500bcd3a5de795704",
+        "body_qcp_rvv_store.c": "4628e2d85a4d74002a99e6efdc4486c7638caee064473da7d09e423ce896bf43",
+        "vle.c": "6379908161fdb1ed38783aed0bb7ef9d1d53335554faeb4212d1a225408aafbc",
+        "body_qcp_load_lane.c": "165f07108ca574d767cd1c955e164b9038296d08f99cc3427cda91b502f62f2c",
+        "body___riscv_vminu_vx_u8m8.c": "589b639ddf8b8044200056318a4131ad7c0741fdb59625bdafbbcd92db578eb5",
+        "body_qcp_u8_max.c": "d004162d5fd756c6e3e749de02b47a4dbfe79eaac89cc5025fedac18d26248ba",
+        "body_qcp_get_word.c": "39814efd1bd45e094e80422c43ba30b1687754335a4c9bea22a8b95ee1b06999",
+        "body_qcp_load_word.c": "9000a8e959412cafe5dda7b2d9b246bdc0ba63196bcd6fdd085ba2becb632dc4",
+        "packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+        "body___riscv_vmaxu_vx_u8m8.c": "71a2b72f65ca766b74b65195566b2db6f95351e23b79958f84881602d1f84c3d",
+        "body___riscv_vsetvl_e8m8.c": "23a109f1e56c7244ddef5da12015e8060cab90e957ccd88330f0b76e22436d5d",
+        "packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+        "body___riscv_vle8_v_u8m8.c": "99757ba8cd18304b9f20f86583d40380deca1816c031c45fbb3538d25f6b7b5f",
+        "body_qcp_active_max.c": "9e019f702b6334ff7ed7a723a3cfd9d8611ef7ce38eeb6f91c496459a0ce5b92"
+      },
+      "CPP_sha256": "fae0ac2ecf76fd4c4cae6f86e1eda9828c8c9cb5ae113b27b78eff1303447098",
+      "expected_goal_sha256": "7544fd05847454b487f4cb2ac3f7705a78cd61adc34cbf0dd9e6df27715f93d0",
+      "strategy_matches": [
+        {
+          "name": "arrays",
+          "goal_sha256": "1115aa5bacb765afb7413f8299df72ad61ab059d545d1d0e188d5e3883220d7c"
+        },
+        {
+          "name": "packed_copy",
+          "goal_sha256": "99ea56482587086496198d7b4ee1a76b50e578af244caecaf0d9e0c858ac9114"
+        }
+      ],
+      "fresh_raw_goal_byte_identical": true,
+      "proof_status": "generation is not itself a Coq proof"
+    }
+  ],
+  "actual_C_units": 13,
+  "original_case_C_VCs": 939,
+  "repaired_case_C_VCs": 973,
+  "counts_not_additive": true,
+  "old_generated_goals_used_as_output": false,
+  "max_generators": 2,
+  "AS_GiB_per_process": 16
+}

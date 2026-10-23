@@ -1,0 +1,17 @@
+From U8ArrayProof Require Import AllChecked.
+From U8Public Require Import public_unit_goal CallerChecked.
+Module Checked <: U8Public.public_unit_goal.VC_Correct.
+Include U8ArrayProof.AllChecked.Checked.
+Include U8Public.CallerChecked.CheckedCaller.
+End Checked.
+Print Assumptions Checked.proof_of_equivalent_safety_wit_1.
+Print Assumptions Checked.proof_of_equivalent_safety_wit_2.
+Print Assumptions Checked.proof_of_equivalent_entail_wit_1.
+Print Assumptions Checked.proof_of_equivalent_entail_wit_2.
+Print Assumptions Checked.proof_of_equivalent_return_wit_1.
+Print Assumptions Checked.proof_of_equivalent_partial_solve_wit_1_pure.
+Print Assumptions Checked.proof_of_equivalent_partial_solve_wit_1.
+Print Assumptions Checked.proof_of_equivalent_partial_solve_wit_2_pure.
+Print Assumptions Checked.proof_of_equivalent_partial_solve_wit_2.
+Print Assumptions Checked.proof_of_equivalent_partial_solve_wit_3.
+Print Assumptions Checked.proof_of_equivalent_partial_solve_wit_4.

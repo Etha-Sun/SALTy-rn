@@ -1,6 +1,6 @@
 # 已验证的 kernel
 
-当前 **16/40**，目标至少 **21/40**。最新新增 [f32-vrndne](f32-vrndne/README.zh-CN.md) 两侧原始实现。
+当前 **16/40**，目标至少 **21/40**。最新新增 [u8-vclamp](u8-vclamp/README.md) 两侧原始实现。
 
 本目录只收录完整 C-shim 模块化等价性检查通过的 kernel；清单见 manifest.json。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。
@@ -14,3 +14,5 @@ python3 verification/qcp/verified/f32-vadd/proof/check.py --jobs 16
 ```
 
 候选保留在 ../candidates；必须完整检查实际 kernel、shim、比较器、wrapper 与 Coq 依赖后才能入库。
+
+QS8转换旧模型把native64位size_t降成32位，已退回[候选](../candidates/qs8-vcvt/README.md)，不计当前verified；当前16包括新U8且不包括该撤回项。

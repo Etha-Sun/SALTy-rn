@@ -1,0 +1,60 @@
+From FullU8 Require Import arrays_strategy_goal.
+From U8ArrayProof Require Import Strategy1 Strategy4 Strategy40 Strategy101 Strategy102 Strategy103 Strategy105 Strategy106 Strategy107 Strategy108 Strategy150 Strategy151 Strategy200 Strategy201 Strategy202 Strategy203 Strategy204 Strategy205 Strategy220 Strategy221 Strategy104 Strategy2 Strategy3 Strategy11 Strategy12 Strategy14 Strategy18 Strategy26.
+Module Checked : arrays_Strategy_Correct.
+ Definition arrays_strategy1_correctness := Strategy1.arrays_strategy1_correctness.
+ Definition arrays_strategy4_correctness := Strategy4.arrays_strategy4_correctness.
+ Definition arrays_strategy40_correctness := Strategy40.arrays_strategy40_correctness.
+ Definition arrays_strategy101_correctness := Strategy101.arrays_strategy101_correctness.
+ Definition arrays_strategy102_correctness := Strategy102.arrays_strategy102_correctness.
+ Definition arrays_strategy103_correctness := Strategy103.arrays_strategy103_correctness.
+ Definition arrays_strategy105_correctness := Strategy105.arrays_strategy105_correctness.
+ Definition arrays_strategy106_correctness := Strategy106.arrays_strategy106_correctness.
+ Definition arrays_strategy107_correctness := Strategy107.arrays_strategy107_correctness.
+ Definition arrays_strategy108_correctness := Strategy108.arrays_strategy108_correctness.
+ Definition arrays_strategy150_correctness := Strategy150.arrays_strategy150_correctness.
+ Definition arrays_strategy151_correctness := Strategy151.arrays_strategy151_correctness.
+ Definition arrays_strategy200_correctness := Strategy200.arrays_strategy200_correctness.
+ Definition arrays_strategy201_correctness := Strategy201.arrays_strategy201_correctness.
+ Definition arrays_strategy202_correctness := Strategy202.arrays_strategy202_correctness.
+ Definition arrays_strategy203_correctness := Strategy203.arrays_strategy203_correctness.
+ Definition arrays_strategy204_correctness := Strategy204.arrays_strategy204_correctness.
+ Definition arrays_strategy205_correctness := Strategy205.arrays_strategy205_correctness.
+ Definition arrays_strategy220_correctness := Strategy220.arrays_strategy220_correctness.
+ Definition arrays_strategy221_correctness := Strategy221.arrays_strategy221_correctness.
+ Definition arrays_strategy104_correctness := Strategy104.arrays_strategy104_correctness.
+ Definition arrays_strategy2_correctness := Strategy2.arrays_strategy2_correctness.
+ Definition arrays_strategy3_correctness := Strategy3.arrays_strategy3_correctness.
+ Definition arrays_strategy11_correctness := Strategy11.arrays_strategy11_correctness.
+ Definition arrays_strategy12_correctness := Strategy12.arrays_strategy12_correctness.
+ Definition arrays_strategy14_correctness := Strategy14.arrays_strategy14_correctness.
+ Definition arrays_strategy18_correctness := Strategy18.arrays_strategy18_correctness.
+ Definition arrays_strategy26_correctness := Strategy26.arrays_strategy26_correctness.
+End Checked.
+Print Assumptions Checked.arrays_strategy1_correctness.
+Print Assumptions Checked.arrays_strategy4_correctness.
+Print Assumptions Checked.arrays_strategy40_correctness.
+Print Assumptions Checked.arrays_strategy101_correctness.
+Print Assumptions Checked.arrays_strategy102_correctness.
+Print Assumptions Checked.arrays_strategy103_correctness.
+Print Assumptions Checked.arrays_strategy105_correctness.
+Print Assumptions Checked.arrays_strategy106_correctness.
+Print Assumptions Checked.arrays_strategy107_correctness.
+Print Assumptions Checked.arrays_strategy108_correctness.
+Print Assumptions Checked.arrays_strategy150_correctness.
+Print Assumptions Checked.arrays_strategy151_correctness.
+Print Assumptions Checked.arrays_strategy200_correctness.
+Print Assumptions Checked.arrays_strategy201_correctness.
+Print Assumptions Checked.arrays_strategy202_correctness.
+Print Assumptions Checked.arrays_strategy203_correctness.
+Print Assumptions Checked.arrays_strategy204_correctness.
+Print Assumptions Checked.arrays_strategy205_correctness.
+Print Assumptions Checked.arrays_strategy220_correctness.
+Print Assumptions Checked.arrays_strategy221_correctness.
+Print Assumptions Checked.arrays_strategy104_correctness.
+Print Assumptions Checked.arrays_strategy2_correctness.
+Print Assumptions Checked.arrays_strategy3_correctness.
+Print Assumptions Checked.arrays_strategy11_correctness.
+Print Assumptions Checked.arrays_strategy12_correctness.
+Print Assumptions Checked.arrays_strategy14_correctness.
+Print Assumptions Checked.arrays_strategy18_correctness.
+Print Assumptions Checked.arrays_strategy26_correctness.

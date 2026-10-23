@@ -1,0 +1,97 @@
+{
+  "impl": "impl/testNEON.c",
+  "function": "test_neon",
+  "frontend": "shim/neon/kernel_frontend.h",
+  "source_sha256": "e52c7c97805aec65922f07f19c7496015596e375b17306258f9e5f4805528f57",
+  "contract_before_token": 23,
+  "annotations": [
+    {
+      "before_token": 89,
+      "text": "/*@ Inv Zlength(A) == batch@pre+7 && 0 <= batch && batch <= batch@pre &&\n input == input@pre+(batch@pre-batch) && output == output@pre+(batch@pre-batch) && params == params@pre &&\n \n (batch@pre-batch) <= u8_prefix_n(batch@pre) && (batch@pre-batch) % 64 == 0 &&\n UCharArray::seg(input@pre,0,(batch@pre-batch),sublist(0,(batch@pre-batch),A)) *\n UCharArray::full(input,batch+7,sublist((batch@pre-batch),batch@pre+7,A)) * UCharArray::undef_full(output,batch) * data_at(&(params->scalar.min),unsigned int,lo) * data_at(&(params->scalar.max),unsigned int,hi) * UCharArray::seg(output@pre,0,(batch@pre-batch),u8_prefix_list(u8_bound(lo),u8_bound(hi),sublist(0,(batch@pre-batch),A))) * store(&(voutput_max.low.s0),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s1),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s2),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s3),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s4),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s5),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s6),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s7),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s0),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s1),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s2),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s3),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s4),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s5),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s6),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s7),unsigned char,u8_bound(hi)) * store(&(voutput_min.low.s0),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s1),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s2),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s3),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s4),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s5),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s6),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s7),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s0),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s1),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s2),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s3),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s4),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s5),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s6),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s7),unsigned char,u8_bound(lo)) */"
+    },
+    {
+      "before_token": 110,
+      "text": "/*@ where n=batch+7-0 */"
+    },
+    {
+      "before_token": 123,
+      "text": "/*@ where n=batch+7-16 */"
+    },
+    {
+      "before_token": 136,
+      "text": "/*@ where n=batch+7-32 */"
+    },
+    {
+      "before_token": 149,
+      "text": "/*@ where n=batch+7-48 */"
+    },
+    {
+      "before_token": 163,
+      "text": "/*@ where a=&vacc0,b=&voutput_min */"
+    },
+    {
+      "before_token": 172,
+      "text": "/*@ where a=&vacc1,b=&voutput_min */"
+    },
+    {
+      "before_token": 181,
+      "text": "/*@ where a=&vacc2,b=&voutput_min */"
+    },
+    {
+      "before_token": 190,
+      "text": "/*@ where a=&vacc3,b=&voutput_min */"
+    },
+    {
+      "before_token": 199,
+      "text": "/*@ where a=&vacc0,b=&voutput_max */"
+    },
+    {
+      "before_token": 208,
+      "text": "/*@ where a=&vacc1,b=&voutput_max */"
+    },
+    {
+      "before_token": 217,
+      "text": "/*@ where a=&vacc2,b=&voutput_max */"
+    },
+    {
+      "before_token": 226,
+      "text": "/*@ where a=&vacc3,b=&voutput_max */"
+    },
+    {
+      "before_token": 276,
+      "text": "/*@ Inv Zlength(A) == batch@pre+7 && 0 <= batch && batch <= batch@pre &&\n input == input@pre+(batch@pre-batch) && output == output@pre+(batch@pre-batch) && params == params@pre &&\n \n batch < 64 && u8_prefix_n(batch@pre) <= (batch@pre-batch) && (batch@pre-batch) <= batch@pre &&\n UCharArray::seg(input@pre,0,(batch@pre-batch),sublist(0,(batch@pre-batch),A)) *\n UCharArray::full(input,batch+7,sublist((batch@pre-batch),batch@pre+7,A)) * UCharArray::undef_full(output,batch) * data_at(&(params->scalar.min),unsigned int,lo) * data_at(&(params->scalar.max),unsigned int,hi) * UCharArray::seg(output@pre,0,(batch@pre-batch),app(u8_prefix_list(u8_bound(lo),u8_bound(hi),sublist(0,u8_prefix_n(batch@pre),A)),u8_suffix_list(u8_bound(lo),u8_bound(hi),sublist(u8_prefix_n(batch@pre),(batch@pre-batch),A)))) * store(&(voutput_max.low.s0),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s1),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s2),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s3),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s4),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s5),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s6),unsigned char,u8_bound(hi)) * store(&(voutput_max.low.s7),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s0),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s1),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s2),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s3),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s4),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s5),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s6),unsigned char,u8_bound(hi)) * store(&(voutput_max.high.s7),unsigned char,u8_bound(hi)) * store(&(voutput_min.low.s0),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s1),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s2),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s3),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s4),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s5),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s6),unsigned char,u8_bound(lo)) * store(&(voutput_min.low.s7),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s0),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s1),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s2),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s3),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s4),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s5),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s6),unsigned char,u8_bound(lo)) * store(&(voutput_min.high.s7),unsigned char,u8_bound(lo)) */"
+    },
+    {
+      "before_token": 297,
+      "text": "/*@ where n=batch+7 */"
+    },
+    {
+      "before_token": 314,
+      "text": "/*@ where a=&vacc,b=&voutput_max.low */"
+    },
+    {
+      "before_token": 326,
+      "text": "/*@ where a=&vacc,b=&voutput_min.low */"
+    },
+    {
+      "before_token": 356,
+      "text": "/*@ where n=batch+7 */"
+    },
+    {
+      "before_token": 373,
+      "text": "/*@ where a=&vacc,b=&voutput_max.low */"
+    },
+    {
+      "before_token": 385,
+      "text": "/*@ where a=&vacc,b=&voutput_min.low */"
+    },
+    {
+      "before_token": 405,
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 445,
+      "text": "/*@ where a=&vacc */"
+    }
+  ]
+}

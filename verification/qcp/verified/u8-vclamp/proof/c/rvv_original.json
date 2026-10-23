@@ -1,0 +1,41 @@
+{
+  "impl": "impl/testRVV.c",
+  "function": "test_rvv",
+  "frontend": "shim/rvv/kernel_frontend.h",
+  "source_sha256": "018e3ba729c18c674b29a40ae7ab04ddd2e10ea59b032f5e9fd794a36681665f",
+  "contract_before_token": 21,
+  "annotations": [
+    {
+      "before_token": 100,
+      "text": "/*@ Inv Zlength(A) == batch@pre+7 && 0 <= batch64 && batch64 == u8_prefix_n(batch@pre)-(batch@pre-batch) && 0 <= (batch@pre-batch) && (batch@pre-batch) <= u8_prefix_n(batch@pre) &&\n 0 <= batch && batch <= batch@pre &&\n input == input@pre+(batch@pre-batch) && output == output@pre+(batch@pre-batch) &&\n params == params@pre && voutput_min == u8_bound(lo) && voutput_max == u8_bound(hi) &&\n UCharArray::seg(input@pre,0,(batch@pre-batch),sublist(0,(batch@pre-batch),A)) *\n UCharArray::full(input,batch+7,sublist((batch@pre-batch),batch@pre+7,A)) *\n UCharArray::undef_full(output,batch) * data_at(&(params->scalar.min),unsigned int,lo) * data_at(&(params->scalar.max),unsigned int,hi) * UCharArray::seg(output@pre,0,(batch@pre-batch),u8_prefix_list(u8_bound(lo),u8_bound(hi),sublist(0,(batch@pre-batch),A))) */"
+    },
+    {
+      "before_token": 124,
+      "text": "/*@ where n=batch+7 */"
+    },
+    {
+      "before_token": 135,
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 146,
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 177,
+      "text": "/*@ Inv Zlength(A) == batch@pre+7 && batch64 == 0 && u8_prefix_n(batch@pre) <= (batch@pre-batch) && (batch@pre-batch) <= batch@pre &&\n 0 <= batch && batch <= batch@pre &&\n input == input@pre+(batch@pre-batch) && output == output@pre+(batch@pre-batch) &&\n params == params@pre && voutput_min == u8_bound(lo) && voutput_max == u8_bound(hi) &&\n UCharArray::seg(input@pre,0,(batch@pre-batch),sublist(0,(batch@pre-batch),A)) *\n UCharArray::full(input,batch+7,sublist((batch@pre-batch),batch@pre+7,A)) *\n UCharArray::undef_full(output,batch) * data_at(&(params->scalar.min),unsigned int,lo) * data_at(&(params->scalar.max),unsigned int,hi) *\n UCharArray::seg(output@pre,0,(batch@pre-batch),app(u8_prefix_list(u8_bound(lo),u8_bound(hi),sublist(0,u8_prefix_n(batch@pre),A)),u8_suffix_list(u8_bound(lo),u8_bound(hi),sublist(u8_prefix_n(batch@pre),(batch@pre-batch),A)))) */"
+    },
+    {
+      "before_token": 201,
+      "text": "/*@ where n=batch+7 */"
+    },
+    {
+      "before_token": 212,
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 223,
+      "text": "/*@ where a=&vacc */"
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # 双服务器协作约定
 
+2026-10-23 当前更正：独立worker的u8-vclamp已整合；qs8-vcvt因unsignedlong在QCP arch64被降为32位而native64位，撤回全64域准入并移至candidates，保留全部历史。当前有效16/40。不要从另一工作树的旧17名单恢复该撤回项；修类型并完整fresh门禁后再恢复。其他相关候选QLR/ADD同步更正，禁止缩域。
+
 用户最新目标为至少21个完整verified kernel。新批次默认16并发、每进程16GiB，时限按任务设置，实际并行批次按服务器可用资源调度；修复主动参考Frama-C和Arcadia-y，保留原因/补丁/反例，无需等待批准。工作恢复入口为本worker的MEMORY.md和私有checkpoint；只在完整验收后更新正式数量。
 
 2026-10-23 用户更新：完整验证通过后先 fetch 最新 `c-shim-v2`，直接 commit 并正常 push 到 `verification/qcp/verified/`，同步清单与证据，不再开功能 PR。仍禁止强推和覆盖其他 worker 成果。允许参考 Frama-C 直接修复本案 `impl/`，保留原始身份、精确 patch、修复说明和反例，明确证明的是修复版。本段取代旧的必须 PR、禁止直接更新集成分支及必须另建修复目录的发布约定。

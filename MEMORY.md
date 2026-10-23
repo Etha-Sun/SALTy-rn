@@ -1,5 +1,7 @@
 # QCP 工作记忆入口
 
+重要更正：`qs8-vcvt` 的旧全64位长度域准入已撤销，退回 `verification/qcp/candidates/qs8-vcvt/`。实际 probe 证实 `unsigned long size_t` 被 QCP 解析为 UInt32/4字节，而 native LP64为8字节。旧C/Coq/证书未删除，但不能作为当前全64位证明；修正显式64类型并完整重放后才可恢复计数。禁止把 n 缩到32来维持通过。新增其他worker的 `u8-vclamp`，当前有效仍16/40。
+
 先读本文件，再读 [PROGRESS.md](PROGRESS.md) 和 [.build/memory/STATE.json](.build/memory/STATE.json)。
 机器状态由 `python3 .build/memory/checkpoint.py` 刷新；重要变化另加 `--event '简单说明'`。
 旧状态保留在 `.build/memory/history/`，事件只追加到 `.build/memory/events.jsonl`。
@@ -22,7 +24,7 @@
 - `neon_kernel_resume`：f32-vrndne 已交付并正式收录，独占 f32-f16-vcvt。
 - `minmax_repair_finish`：qs8-vcvt 全案已交付；独占后续 qs8-vadd-minmax、qu8-vadd-minmax。
 - `rvv_kernel_resume`：完成两项 rsum 后，独占 qs8-rdsum、qu8-rdsum；qu8-f32-vcvt 已完整发布。
-- root：qs8-vlrelu；统一归档、发布、progress/memory。
+- root：qs8-vcvt 类型宽度修复、qs8-vlrelu；统一归档、发布、progress/memory。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
@@ -70,7 +72,7 @@ QU8→FP32 全案证据：`verification/qcp/verified/qu8-f32-vcvt/.build/full-kb
 
 QU8→FP32 在无私有旧缓存的已配置环境重放前，先运行 `python3 verification/qcp/verified/qu8-f32-vcvt/proof/restore_dependency_receipts.py`。它只按冻结审计中的SHA恢复一份历史UnsignedModel源码／普通编译日志，不恢复.vo，不重放旧证明；随后完整runner仍重新生成并编译所有当前目标。原发布证书保存在pre-replay-support历史中，全案证明本身不变。
 
-QS8→QS8 转换修复版本次正式收录 `verification/qcp/verified/qs8-vcvt/`：25实际C单元/1664字段/64函数体，5策略组15字段，237实际依赖源+Final共238次普通Coq，1679项最终报告只含既有14项继承假设。全案SHA256 `e89ddf39a1d24fa195d990d51428ebd008efc1822e063d0b5a8722f02f1c62f9`。修复INT32_MIN求负和RVV先倍增32位溢出；原件、精确零fuzz补丁、原语义反例都保留。旧ByValue尾部适配产生的重复内存前件已拒绝，新borrowed-copy实际C/13VC和6数组桥均 checked，未把不可满足前件当通过。发布另在干净工作树独立编译真实字段C闭包，两个前端各27496次公开调用/1998725输出元素，双侧共错的临时scalar负控由独立128bit oracle拒绝。发布审计不是第二次形式化证明。
+QS8→QS8 转换修复版本次正式收录 `verification/qcp/candidates/qs8-vcvt/`：25实际C单元/1664字段/64函数体，5策略组15字段，237实际依赖源+Final共238次普通Coq，1679项最终报告只含既有14项继承假设。全案SHA256 `e89ddf39a1d24fa195d990d51428ebd008efc1822e063d0b5a8722f02f1c62f9`。修复INT32_MIN求负和RVV先倍增32位溢出；原件、精确零fuzz补丁、原语义反例都保留。旧ByValue尾部适配产生的重复内存前件已拒绝，新borrowed-copy实际C/13VC和6数组桥均 checked，未把不可满足前件当通过。发布另在干净工作树独立编译真实字段C闭包，两个前端各27496次公开调用/1998725输出元素，双侧共错的临时scalar负控由独立128bit oracle拒绝。发布审计不是第二次形式化证明。
 
 Root 新建 qs8-vlrelu 独立命名空间 Qs8Lrelu：原两侧正/负 multiplier 的4项INT32_MIN UB反例已复现，保留全4个raw int32参数域；GNU精确补丁修复两侧取负。当前仅源码蓝图、数学/有限native阶段，尚无完整kernel证明，不计数。参考157个具体helper源码均须重新生成目标、从源编译；未复用旧对象或验收信用。
 
@@ -79,3 +81,5 @@ QU8-RSUM 本次收录 `verification/qcp/verified/qu8-rsum/`：21实际C单元/89
 QS8-RSUM 本次收录 `verification/qcp/verified/qs8-rsum/`：21实际C单元/890字段/34函数体、2策略字段、256次普通Coq、892项最终Print、既有14项继承假设及463个外部依赖身份核对通过。全案SHA256 `aae7d4ade922424b268900966a775c9a271eba890e6206ec8e2699cf7f585362`。具体全域/内存与repair边界见case中文README；当前两侧模32溢出修复版，不把parser兼容失败虚构成语义反例。独立clean publication对21实际单元/35递归输入再做990用例/每侧1075860 lane的16GiB UBSan检查，并将两侧首输出同时翻转，确认两侧仍相同而独立scalar oracle拒绝。发布重查不算第二次形式证明，旧路径归档脚本失败和旧writer均保留。
 
 F32-VRNDNE 本次收录 `verification/qcp/verified/f32-vrndne/`：28实际C单元/1560字段/71body，10组策略30字段，231本地源+Final共232次普通Coq，1590项最终假设仅既有14项。原始实现/全FP32/RNE/3个float padding/固定VLEN128 e32m8 VLMAX32/nullable且unused params，观察关系为数值相等或两侧均NaN；不额外声称ISA/ABI、终止性或对抽象RNE规格的全域精化。全案SHA `84a792232793d615668c55b909446f8c38151663e29f83c88ad4ce15d20cc9a1`。干净目录再核28 CPP/232 compiled源/71body，52原生输入重编，UBSan16GiB地址空间与ASan真实16GiB cgroup各6300用例/378600元素；双侧同错仍相等而独立nearbyintf oracle拒绝。旧native无可核16GiB记录，补充证据明确独立。最初ASan负控因early return泄漏未过，保留失败；只在私有负控harness加free/flush后实际通过，没有改冻结程序或证明。
+
+U8-vclamp 由独立worker完成，root核对458份实际普通编译源、archive/log身份、13实时CPP/17 RVV helper绑定及当前锁定输入，重做迁移检查与封存。原版939C字段，可选controller版本973C字段，共31策略字段，不相加、不重复计kernel。该case明确报告16个既有框架依赖（较此前14个多LE_dot_field_congr和addr_of_arrow_field，均来自原QCP地址/field模型），不是新加项目axiom。接口采用显式unsignedlonglong size_t。当前15项有效旧结果+新U8共16；旧QS8转换是撤回项，不可重复算成17。

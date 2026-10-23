@@ -1,0 +1,772 @@
+{
+  "passed": true,
+  "scope": "C source and call/contract audit; Coq replay required separately",
+  "exact_helper_definitions_and_contracts": 17,
+  "helper_C_VCs": 474,
+  "exact_RVV_external_declarations": 87,
+  "public_callee_contracts_match_both_cases": true,
+  "contract_normalization": "whitespace and existing data_at/store alias only",
+  "units": [
+    {
+      "unit": "neon",
+      "CPP_sha256": "8ab03b2a010f2dd2c984a44e8aeca0ee356f46389343b5c0766bb0dc5984454a",
+      "goal_sha256": "4157c46f08b3d5903811f7d73d80712ccb32fa07d6a32511a86671f228d96c27",
+      "functions": {
+        "qcp_u8_store_word32": {
+          "calls": [],
+          "C_VCs": 8
+        },
+        "qcp_u8_store_word16": {
+          "calls": [],
+          "C_VCs": 4
+        },
+        "qcp_u8_store_byte": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_u8_pack16": {
+          "calls": [],
+          "C_VCs": 4
+        },
+        "qcp_u8_pack32": {
+          "calls": [],
+          "C_VCs": 1
+        },
+        "vreinterpret_u32_u8": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_store_u32_0": {
+          "calls": [
+            "qcp_u8_pack32",
+            "qcp_u8_store_word32"
+          ],
+          "C_VCs": 5
+        },
+        "vreinterpret_u16_u8": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_store_u16_0": {
+          "calls": [
+            "qcp_u8_pack16",
+            "qcp_u8_store_word16"
+          ],
+          "C_VCs": 5
+        },
+        "qcp_u8_min": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_u8_max": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "vld1_u8": {
+          "calls": [],
+          "C_VCs": 18
+        },
+        "vmin_u8": {
+          "calls": [
+            "qcp_u8_min"
+          ],
+          "C_VCs": 18
+        },
+        "vmax_u8": {
+          "calls": [
+            "qcp_u8_max"
+          ],
+          "C_VCs": 18
+        },
+        "qcp_store8": {
+          "calls": [],
+          "C_VCs": 14
+        },
+        "vld1q_u8": {
+          "calls": [],
+          "C_VCs": 34
+        },
+        "vminq_u8": {
+          "calls": [
+            "qcp_u8_min"
+          ],
+          "C_VCs": 34
+        },
+        "vmaxq_u8": {
+          "calls": [
+            "qcp_u8_max"
+          ],
+          "C_VCs": 34
+        },
+        "qcp_store16": {
+          "calls": [],
+          "C_VCs": 30
+        },
+        "qcp_self_ext2": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_self_ext4": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "vdupq_n_u8": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_store_byte": {
+          "calls": [],
+          "C_VCs": 1
+        },
+        "qcp_array_store32_0": {
+          "calls": [
+            "qcp_store_u32_0"
+          ],
+          "C_VCs": 2
+        },
+        "qcp_array_store16_0": {
+          "calls": [
+            "qcp_store_u16_0"
+          ],
+          "C_VCs": 2
+        },
+        "qcp_array_store8_0": {
+          "calls": [
+            "qcp_store_byte"
+          ],
+          "C_VCs": 2
+        },
+        "qcp_assert": {
+          "calls": [],
+          "C_VCs": 4
+        },
+        "test_neon": {
+          "calls": [
+            "qcp_array_store16_0",
+            "qcp_array_store32_0",
+            "qcp_array_store8_0",
+            "qcp_assert",
+            "qcp_self_ext2",
+            "qcp_self_ext4",
+            "qcp_store16",
+            "qcp_store8",
+            "vdupq_n_u8",
+            "vld1_u8",
+            "vld1q_u8",
+            "vmax_u8",
+            "vmaxq_u8",
+            "vmin_u8",
+            "vminq_u8",
+            "vreinterpret_u16_u8",
+            "vreinterpret_u32_u8"
+          ],
+          "C_VCs": 146
+        }
+      },
+      "C_VCs": 400,
+      "exact_callee_declarations": []
+    },
+    {
+      "unit": "rvv_original",
+      "CPP_sha256": "3c95fa509eeba20376c2718559d7bd1a5f5dca131eaded6780f20c8f046ff45a",
+      "goal_sha256": "299f45fa2efa3b1a498fa68ef46e97484fabaf64c522c39372e1456fc3d48c91",
+      "functions": {
+        "qcp_assert": {
+          "calls": [],
+          "C_VCs": 4
+        },
+        "test_rvv": {
+          "calls": [
+            "__riscv_vle8_v_u8m8",
+            "__riscv_vmaxu_vx_u8m8",
+            "__riscv_vminu_vx_u8m8",
+            "__riscv_vsetvl_e8m8",
+            "qcp_assert",
+            "qcp_rvv_store"
+          ],
+          "C_VCs": 50
+        }
+      },
+      "C_VCs": 54,
+      "exact_callee_declarations": [
+        "qcp_u8_min",
+        "qcp_active_min",
+        "qcp_u8_max",
+        "qcp_active_max",
+        "qcp_pack4",
+        "qcp_word_byte",
+        "__riscv_vsetvl_e8m8",
+        "qcp_load_lane",
+        "qcp_load_word",
+        "qcp_word_min",
+        "qcp_word_max",
+        "__riscv_vle8_v_u8m8",
+        "__riscv_vminu_vx_u8m8",
+        "__riscv_vmaxu_vx_u8m8",
+        "qcp_get_word",
+        "qcp_get_byte",
+        "qcp_rvv_store"
+      ]
+    },
+    {
+      "unit": "rvv_repaired",
+      "CPP_sha256": "e1f0b2363523ccdb9a58b4ca8eb52ec8cdd8e922b49a57d73085b9e032bb4acc",
+      "goal_sha256": "5001ac6144baa1522b393bd6c0f40a55c7ce4fd6b4c9863e0f00205c4918ec79",
+      "functions": {
+        "qcp_assert": {
+          "calls": [],
+          "C_VCs": 4
+        },
+        "test_rvv": {
+          "calls": [
+            "__riscv_vle8_v_u8m8",
+            "__riscv_vmaxu_vx_u8m8",
+            "__riscv_vminu_vx_u8m8",
+            "__riscv_vsetvl_e8m8",
+            "qcp_assert",
+            "qcp_rvv_store"
+          ],
+          "C_VCs": 84
+        }
+      },
+      "C_VCs": 88,
+      "exact_callee_declarations": [
+        "qcp_u8_min",
+        "qcp_active_min",
+        "qcp_u8_max",
+        "qcp_active_max",
+        "qcp_pack4",
+        "qcp_word_byte",
+        "__riscv_vsetvl_e8m8",
+        "qcp_load_lane",
+        "qcp_load_word",
+        "qcp_word_min",
+        "qcp_word_max",
+        "__riscv_vle8_v_u8m8",
+        "__riscv_vminu_vx_u8m8",
+        "__riscv_vmaxu_vx_u8m8",
+        "qcp_get_word",
+        "qcp_get_byte",
+        "qcp_rvv_store"
+      ]
+    },
+    {
+      "unit": "public",
+      "CPP_sha256": "a29df9aee5ddbf359c718ad3d696ed0fe11a4b88c155d2f2c1ffbdd18b120b77",
+      "goal_sha256": "42a37ef81951d70c1cd5f9c706b51fb89fb0c6de685177c28522a9483b6e7120",
+      "functions": {
+        "equivalent": {
+          "calls": [
+            "test_neon",
+            "test_rvv"
+          ],
+          "C_VCs": 11
+        }
+      },
+      "C_VCs": 11,
+      "exact_callee_declarations": []
+    },
+    {
+      "unit": "codec",
+      "CPP_sha256": "186e1d3a15bfa1184cf1cb271b1acc32545aec92704171d4662a3bc98ebb4267",
+      "goal_sha256": "23c3c7a86fe337d62f070ac539613300443e2fc5567f6a386d0e5eb88abef54e",
+      "functions": {
+        "qcp_pack4": {
+          "calls": [],
+          "C_VCs": 1
+        },
+        "qcp_word_byte": {
+          "calls": [],
+          "C_VCs": 2
+        }
+      },
+      "C_VCs": 3,
+      "exact_callee_declarations": []
+    },
+    {
+      "unit": "active",
+      "CPP_sha256": "84fcc998655dc804b9593aad1ed6a07548414f8558f090c82145a90504ff9f18",
+      "goal_sha256": "bdbf51cc0f2c0691002533e1913957e21158a5038d6912c1179998b478db7e0a",
+      "functions": {
+        "qcp_u8_min": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_u8_max": {
+          "calls": [],
+          "C_VCs": 2
+        },
+        "qcp_active_min": {
+          "calls": [
+            "qcp_u8_min"
+          ],
+          "C_VCs": 3
+        },
+        "qcp_active_max": {
+          "calls": [
+            "qcp_u8_max"
+          ],
+          "C_VCs": 3
+        },
+        "qcp_word_min": {
+          "calls": [
+            "qcp_active_min",
+            "qcp_pack4",
+            "qcp_word_byte"
+          ],
+          "C_VCs": 31
+        },
+        "qcp_word_max": {
+          "calls": [
+            "qcp_active_max",
+            "qcp_pack4",
+            "qcp_word_byte"
+          ],
+          "C_VCs": 31
+        }
+      },
+      "C_VCs": 72,
+      "exact_callee_declarations": [
+        "qcp_pack4",
+        "qcp_word_byte"
+      ]
+    },
+    {
+      "unit": "vl",
+      "CPP_sha256": "2b386910627427b869880fe2b9323904d484b597b1626bdd15d83e6607af2dfb",
+      "goal_sha256": "e3499a3b2056f4ded2938d7d71b40f94080f218b5a1c30928f8652b301f55a22",
+      "functions": {
+        "__riscv_vsetvl_e8m8": {
+          "calls": [],
+          "C_VCs": 4
+        }
+      },
+      "C_VCs": 4,
+      "exact_callee_declarations": []
+    },
+    {
+      "unit": "memory",
+      "CPP_sha256": "30aeac7943c637b69ae90ed6da262685b3f5a63d96e0c425c80d59d07a41b80f",
+      "goal_sha256": "d0db890ef83179cf145da5e53f32e9d0abd61b37a5cf9f021c61b97cd4a581ed",
+      "functions": {
+        "qcp_load_lane": {
+          "calls": [],
+          "C_VCs": 4
+        },
+        "qcp_load_word": {
+          "calls": [
+            "qcp_load_lane",
+            "qcp_pack4"
+          ],
+          "C_VCs": 18
+        }
+      },
+      "C_VCs": 22,
+      "exact_callee_declarations": [
+        "qcp_pack4"
+      ]
+    },
+    {
+      "unit": "getters",
+      "CPP_sha256": "38e855271e1a154715af7f2ae90d16dcd62322bf85a73de12e87756fa5e66d9a",
+      "goal_sha256": "6549044451ec72d8b1305b716cff73d476d8a83ab3890480ae974e40321d177e",
+      "functions": {
+        "qcp_get_word": {
+          "calls": [],
+          "C_VCs": 63
+        },
+        "qcp_get_byte": {
+          "calls": [
+            "qcp_get_word",
+            "qcp_word_byte"
+          ],
+          "C_VCs": 9
+        }
+      },
+      "C_VCs": 72,
+      "exact_callee_declarations": [
+        "qcp_word_byte"
+      ]
+    },
+    {
+      "unit": "store",
+      "CPP_sha256": "513036b9cabe00ba57dee4de4f9746832f2e38603cdcefe94c0b56ce38774927",
+      "goal_sha256": "4824abfb48dbc9b8068ebe9df61e59e0eddb30e7ed77b4d6042f277904ec3d37",
+      "functions": {
+        "qcp_rvv_store": {
+          "calls": [
+            "qcp_get_byte"
+          ],
+          "C_VCs": 7
+        }
+      },
+      "C_VCs": 7,
+      "exact_callee_declarations": [
+        "qcp_get_byte"
+      ]
+    },
+    {
+      "unit": "vle",
+      "CPP_sha256": "3bb998227b7743a2ec5fab73a76e21e91fa91389212ba908211296b28596f4b9",
+      "goal_sha256": "7a9df19d6e7c71c75785071f78f36a45721e031130f959ff3fc82b6f55ef5340",
+      "functions": {
+        "__riscv_vle8_v_u8m8": {
+          "calls": [
+            "qcp_load_word"
+          ],
+          "C_VCs": 98
+        }
+      },
+      "C_VCs": 98,
+      "exact_callee_declarations": [
+        "qcp_u8_min",
+        "qcp_active_min",
+        "qcp_u8_max",
+        "qcp_active_max",
+        "qcp_pack4",
+        "qcp_word_byte",
+        "__riscv_vsetvl_e8m8",
+        "qcp_load_lane",
+        "qcp_load_word",
+        "qcp_word_min",
+        "qcp_word_max",
+        "__riscv_vminu_vx_u8m8",
+        "__riscv_vmaxu_vx_u8m8",
+        "qcp_get_word",
+        "qcp_get_byte",
+        "qcp_rvv_store"
+      ]
+    },
+    {
+      "unit": "vmin",
+      "CPP_sha256": "2be772a4724c73a2ae6fbf3c051a3d9f6aba8ab50878b266fb0ddb609ce8d25b",
+      "goal_sha256": "1537c7a9f9cad8cfe38d382a763d4d9bcfe9275fcdfc483f4fe7023756911897",
+      "functions": {
+        "__riscv_vminu_vx_u8m8": {
+          "calls": [
+            "qcp_word_min"
+          ],
+          "C_VCs": 98
+        }
+      },
+      "C_VCs": 98,
+      "exact_callee_declarations": [
+        "qcp_u8_min",
+        "qcp_active_min",
+        "qcp_u8_max",
+        "qcp_active_max",
+        "qcp_pack4",
+        "qcp_word_byte",
+        "__riscv_vsetvl_e8m8",
+        "qcp_load_lane",
+        "qcp_load_word",
+        "qcp_word_min",
+        "qcp_word_max",
+        "__riscv_vle8_v_u8m8",
+        "__riscv_vmaxu_vx_u8m8",
+        "qcp_get_word",
+        "qcp_get_byte",
+        "qcp_rvv_store"
+      ]
+    },
+    {
+      "unit": "vmax",
+      "CPP_sha256": "fae0ac2ecf76fd4c4cae6f86e1eda9828c8c9cb5ae113b27b78eff1303447098",
+      "goal_sha256": "7544fd05847454b487f4cb2ac3f7705a78cd61adc34cbf0dd9e6df27715f93d0",
+      "functions": {
+        "__riscv_vmaxu_vx_u8m8": {
+          "calls": [
+            "qcp_word_max"
+          ],
+          "C_VCs": 98
+        }
+      },
+      "C_VCs": 98,
+      "exact_callee_declarations": [
+        "qcp_u8_min",
+        "qcp_active_min",
+        "qcp_u8_max",
+        "qcp_active_max",
+        "qcp_pack4",
+        "qcp_word_byte",
+        "__riscv_vsetvl_e8m8",
+        "qcp_load_lane",
+        "qcp_load_word",
+        "qcp_word_min",
+        "qcp_word_max",
+        "__riscv_vle8_v_u8m8",
+        "__riscv_vminu_vx_u8m8",
+        "qcp_get_word",
+        "qcp_get_byte",
+        "qcp_rvv_store"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "rvv": "rvv_original",
+      "C_units": 12,
+      "C_bodies": 48,
+      "C_VCs": 939,
+      "no_unproved_C_callee": true,
+      "no_external_contract_cycle": true,
+      "call_graph": {
+        "vle:__riscv_vle8_v_u8m8": [
+          "memory:qcp_load_word"
+        ],
+        "public:equivalent": [
+          "neon:test_neon",
+          "rvv_original:test_rvv"
+        ],
+        "memory:qcp_load_lane": [],
+        "memory:qcp_load_word": [
+          "memory:qcp_load_lane",
+          "codec:qcp_pack4"
+        ],
+        "getters:qcp_get_word": [],
+        "getters:qcp_get_byte": [
+          "getters:qcp_get_word",
+          "codec:qcp_word_byte"
+        ],
+        "codec:qcp_pack4": [],
+        "codec:qcp_word_byte": [],
+        "rvv_original:qcp_assert": [],
+        "rvv_original:test_rvv": [
+          "vle:__riscv_vle8_v_u8m8",
+          "vmax:__riscv_vmaxu_vx_u8m8",
+          "vmin:__riscv_vminu_vx_u8m8",
+          "vl:__riscv_vsetvl_e8m8",
+          "rvv_original:qcp_assert",
+          "store:qcp_rvv_store"
+        ],
+        "vmin:__riscv_vminu_vx_u8m8": [
+          "active:qcp_word_min"
+        ],
+        "vmax:__riscv_vmaxu_vx_u8m8": [
+          "active:qcp_word_max"
+        ],
+        "vl:__riscv_vsetvl_e8m8": [],
+        "neon:qcp_u8_store_word32": [],
+        "neon:qcp_u8_store_word16": [],
+        "neon:qcp_u8_store_byte": [],
+        "neon:qcp_u8_pack16": [],
+        "neon:qcp_u8_pack32": [],
+        "neon:vreinterpret_u32_u8": [],
+        "neon:qcp_store_u32_0": [
+          "neon:qcp_u8_pack32",
+          "neon:qcp_u8_store_word32"
+        ],
+        "neon:vreinterpret_u16_u8": [],
+        "neon:qcp_store_u16_0": [
+          "neon:qcp_u8_pack16",
+          "neon:qcp_u8_store_word16"
+        ],
+        "neon:qcp_u8_min": [],
+        "neon:qcp_u8_max": [],
+        "neon:vld1_u8": [],
+        "neon:vmin_u8": [
+          "neon:qcp_u8_min"
+        ],
+        "neon:vmax_u8": [
+          "neon:qcp_u8_max"
+        ],
+        "neon:qcp_store8": [],
+        "neon:vld1q_u8": [],
+        "neon:vminq_u8": [
+          "neon:qcp_u8_min"
+        ],
+        "neon:vmaxq_u8": [
+          "neon:qcp_u8_max"
+        ],
+        "neon:qcp_store16": [],
+        "neon:qcp_self_ext2": [],
+        "neon:qcp_self_ext4": [],
+        "neon:vdupq_n_u8": [],
+        "neon:qcp_store_byte": [],
+        "neon:qcp_array_store32_0": [
+          "neon:qcp_store_u32_0"
+        ],
+        "neon:qcp_array_store16_0": [
+          "neon:qcp_store_u16_0"
+        ],
+        "neon:qcp_array_store8_0": [
+          "neon:qcp_store_byte"
+        ],
+        "neon:qcp_assert": [],
+        "neon:test_neon": [
+          "neon:qcp_array_store16_0",
+          "neon:qcp_array_store32_0",
+          "neon:qcp_array_store8_0",
+          "neon:qcp_assert",
+          "neon:qcp_self_ext2",
+          "neon:qcp_self_ext4",
+          "neon:qcp_store16",
+          "neon:qcp_store8",
+          "neon:vdupq_n_u8",
+          "neon:vld1_u8",
+          "neon:vld1q_u8",
+          "neon:vmax_u8",
+          "neon:vmaxq_u8",
+          "neon:vmin_u8",
+          "neon:vminq_u8",
+          "neon:vreinterpret_u16_u8",
+          "neon:vreinterpret_u32_u8"
+        ],
+        "store:qcp_rvv_store": [
+          "getters:qcp_get_byte"
+        ],
+        "active:qcp_u8_min": [],
+        "active:qcp_u8_max": [],
+        "active:qcp_active_min": [
+          "active:qcp_u8_min"
+        ],
+        "active:qcp_active_max": [
+          "active:qcp_u8_max"
+        ],
+        "active:qcp_word_min": [
+          "active:qcp_active_min",
+          "codec:qcp_pack4",
+          "codec:qcp_word_byte"
+        ],
+        "active:qcp_word_max": [
+          "active:qcp_active_max",
+          "codec:qcp_pack4",
+          "codec:qcp_word_byte"
+        ]
+      }
+    },
+    {
+      "rvv": "rvv_repaired",
+      "C_units": 12,
+      "C_bodies": 48,
+      "C_VCs": 973,
+      "no_unproved_C_callee": true,
+      "no_external_contract_cycle": true,
+      "call_graph": {
+        "vle:__riscv_vle8_v_u8m8": [
+          "memory:qcp_load_word"
+        ],
+        "public:equivalent": [
+          "neon:test_neon",
+          "rvv_repaired:test_rvv"
+        ],
+        "memory:qcp_load_lane": [],
+        "memory:qcp_load_word": [
+          "memory:qcp_load_lane",
+          "codec:qcp_pack4"
+        ],
+        "getters:qcp_get_word": [],
+        "getters:qcp_get_byte": [
+          "getters:qcp_get_word",
+          "codec:qcp_word_byte"
+        ],
+        "codec:qcp_pack4": [],
+        "codec:qcp_word_byte": [],
+        "vmin:__riscv_vminu_vx_u8m8": [
+          "active:qcp_word_min"
+        ],
+        "vmax:__riscv_vmaxu_vx_u8m8": [
+          "active:qcp_word_max"
+        ],
+        "vl:__riscv_vsetvl_e8m8": [],
+        "neon:qcp_u8_store_word32": [],
+        "neon:qcp_u8_store_word16": [],
+        "neon:qcp_u8_store_byte": [],
+        "neon:qcp_u8_pack16": [],
+        "neon:qcp_u8_pack32": [],
+        "neon:vreinterpret_u32_u8": [],
+        "neon:qcp_store_u32_0": [
+          "neon:qcp_u8_pack32",
+          "neon:qcp_u8_store_word32"
+        ],
+        "neon:vreinterpret_u16_u8": [],
+        "neon:qcp_store_u16_0": [
+          "neon:qcp_u8_pack16",
+          "neon:qcp_u8_store_word16"
+        ],
+        "neon:qcp_u8_min": [],
+        "neon:qcp_u8_max": [],
+        "neon:vld1_u8": [],
+        "neon:vmin_u8": [
+          "neon:qcp_u8_min"
+        ],
+        "neon:vmax_u8": [
+          "neon:qcp_u8_max"
+        ],
+        "neon:qcp_store8": [],
+        "neon:vld1q_u8": [],
+        "neon:vminq_u8": [
+          "neon:qcp_u8_min"
+        ],
+        "neon:vmaxq_u8": [
+          "neon:qcp_u8_max"
+        ],
+        "neon:qcp_store16": [],
+        "neon:qcp_self_ext2": [],
+        "neon:qcp_self_ext4": [],
+        "neon:vdupq_n_u8": [],
+        "neon:qcp_store_byte": [],
+        "neon:qcp_array_store32_0": [
+          "neon:qcp_store_u32_0"
+        ],
+        "neon:qcp_array_store16_0": [
+          "neon:qcp_store_u16_0"
+        ],
+        "neon:qcp_array_store8_0": [
+          "neon:qcp_store_byte"
+        ],
+        "neon:qcp_assert": [],
+        "neon:test_neon": [
+          "neon:qcp_array_store16_0",
+          "neon:qcp_array_store32_0",
+          "neon:qcp_array_store8_0",
+          "neon:qcp_assert",
+          "neon:qcp_self_ext2",
+          "neon:qcp_self_ext4",
+          "neon:qcp_store16",
+          "neon:qcp_store8",
+          "neon:vdupq_n_u8",
+          "neon:vld1_u8",
+          "neon:vld1q_u8",
+          "neon:vmax_u8",
+          "neon:vmaxq_u8",
+          "neon:vmin_u8",
+          "neon:vminq_u8",
+          "neon:vreinterpret_u16_u8",
+          "neon:vreinterpret_u32_u8"
+        ],
+        "rvv_repaired:qcp_assert": [],
+        "rvv_repaired:test_rvv": [
+          "vle:__riscv_vle8_v_u8m8",
+          "vmax:__riscv_vmaxu_vx_u8m8",
+          "vmin:__riscv_vminu_vx_u8m8",
+          "vl:__riscv_vsetvl_e8m8",
+          "rvv_repaired:qcp_assert",
+          "store:qcp_rvv_store"
+        ],
+        "store:qcp_rvv_store": [
+          "getters:qcp_get_byte"
+        ],
+        "active:qcp_u8_min": [],
+        "active:qcp_u8_max": [],
+        "active:qcp_active_min": [
+          "active:qcp_u8_min"
+        ],
+        "active:qcp_active_max": [
+          "active:qcp_u8_max"
+        ],
+        "active:qcp_word_min": [
+          "active:qcp_active_min",
+          "codec:qcp_pack4",
+          "codec:qcp_word_byte"
+        ],
+        "active:qcp_word_max": [
+          "active:qcp_active_max",
+          "codec:qcp_pack4",
+          "codec:qcp_word_byte"
+        ]
+      }
+    }
+  ],
+  "counts_not_additive": true
+}

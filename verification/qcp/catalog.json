@@ -2373,12 +2373,12 @@
         }
       },
       "qcp": {
-        "whole_kernel_proved": true,
-        "status": "proved",
-        "status_scope": "Complete actual C-shim closure and public observation caller; partial correctness under explicit memory and fixed-configuration contracts.",
+        "whole_kernel_proved": false,
+        "status": "needs_reverification",
+        "status_scope": "QCP32/native64 size_t mismatch; full64 scope withdrawn pending complete corrected replay",
         "implementation_variant": "repaired",
-        "case": "verified/qs8-vcvt",
-        "status_evidence": "verification/qcp/verified/qs8-vcvt/proof/status.json"
+        "case": "candidates/qs8-vcvt",
+        "status_evidence": "verification/qcp/candidates/qs8-vcvt/proof/status.json"
       }
     },
     {
@@ -3058,9 +3058,20 @@
         }
       },
       "qcp": {
-        "whole_kernel_proved": false,
-        "status": "inventoried_not_verified",
-        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+        "whole_kernel_proved": true,
+        "status": "proved",
+        "status_scope": "Complete original C-shim modular equivalence / partial correctness under the public byte-memory contract; fixed VLEN128/e8m8 and selected min(AVL,128), both original phases retained.",
+        "implementation_variant": "original",
+        "case": "verified/u8-vclamp",
+        "status_evidence": "verification/qcp/verified/u8-vclamp/proof/status.json",
+        "optional_variants": [
+          {
+            "name": "RVV AVL<=128",
+            "implementation": "verification/qcp/verified/u8-vclamp/impl/variants/testRVV.avl128.c",
+            "whole_kernel_proved": true,
+            "additional_kernel_count": 0
+          }
+        ]
       }
     },
     {

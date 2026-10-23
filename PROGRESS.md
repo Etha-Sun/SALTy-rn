@@ -14,10 +14,10 @@
 - qs8-f32-vcvt（NEON 修复版）
 - s8-vclamp（RVV 修复版）
 - qu8-f32-vcvt（NEON 修复、RVV 兼容版）
-- qs8-vcvt（两侧修复版）
 - qu8-rsum（NEON语法兼容版）
 - qs8-rsum（两侧模32溢出修复版）
 - f32-vrndne（两侧原始实现）
+- [u8-vclamp](verification/qcp/verified/u8-vclamp/README.md)（两侧原始实现，可选 AVL128 版同计一项）
 
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
@@ -25,7 +25,7 @@
 
 - QU8→FP32：完整验证通过；继续 signed/unsigned rsum。
 - FP32 取整已完成；继续 FP32→FP16。
-- QS8 转换已完成；继续 QS8 激活与 QS8/QU8 加法修复验证。
+- QS8 转换因 QCP/native 类型宽度不符退回重验；继续 QS8 激活与 QS8/QU8 加法。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
@@ -33,6 +33,8 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 历史修复与原反例（PR 已关闭，后续直接提交）：[vmin PR #3](https://github.com/Etha-Sun/SALTy-rn/pull/3)、[vmax PR #4](https://github.com/Etha-Sun/SALTy-rn/pull/4)。
 
 ## 大进展
+
+- 2026-10-23（洛杉矶）：收录其他 worker 完成的 U8 clamp；撤回 QS8 转换的错误64位长度域准入，修正类型后重验。当前有效 **16/40**。
 
 - 2026-10-23（洛杉矶）：FP32 取整原始实现完整验收并纳入本次直接提交；已验证 **16/40**。
 
@@ -42,9 +44,9 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 
 - 2026-10-23（洛杉矶）：QS8 转换修复版完整验证并纳入本次直接提交；已验证 **13/40**。
 
-- 2026-10-23（洛杉矶）：修复了证明汇总文件的覆盖错误，增加完整接口检查；当时当时已验证仍为 12/40。
+- 2026-10-23（洛杉矶）：修复了证明汇总文件的覆盖错误，增加完整接口检查；当时已验证仍为 12/40。
 
-- 2026-10-23（洛杉矶）：qs8-rsum 两侧证明已汇总通过，准备最后复验；当时当时已验证仍为 12/40。
+- 2026-10-23（洛杉矶）：qs8-rsum 两侧证明已汇总通过，准备最后复验；当时已验证仍为 12/40。
 
 - 2026-10-22：VADD 旧结果重放通过；min/max 沿用 Frama-C 修复，保留原反例。
 - 2026-10-23：VLReLU 完整验证通过，直接提交 `bf106ba7`；当时 **6/40**。

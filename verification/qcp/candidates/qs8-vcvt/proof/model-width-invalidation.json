@@ -1,0 +1,19 @@
+{
+  "valid_full64_proof": false,
+  "kind": "frontend_scalar_type_width_mismatch",
+  "discovered_utc": "2026-10-23T21:41:53.058724+00:00",
+  "actual_public_header": "shim/scalar.h",
+  "declaration": "typedef unsigned long size_t;",
+  "native_LP64_bytes": 8,
+  "actual_QCP_arch64_lowering": "UINT",
+  "actual_QCP_bytes": 4,
+  "proof_evidence": "proof/evidence/invalidated-word-width/RejectWrongWordWidth.v",
+  "ordinary_proof_log": "proof/evidence/invalidated-word-width/ordinary-width-rejection.log",
+  "prior_status_sha256": "79b74f394cb1a7fdca19bd114c8b28935971c87c26de6746d7787a717260a292",
+  "prior_full_status_sha256": "e89ddf39a1d24fa195d990d51428ebd008efc1822e063d0b5a8722f02f1c62f9",
+  "prior_full_status_preserved_unchanged": true,
+  "reason": "Existing ordinary Coq proof checks the generated 32-bit size_t C-shim, so it does not establish the declared full64-length native program scope. Do not restrict n to32 to retain admission.",
+  "next": "Use an explicit supported64-bit type, independently prove type widths, regenerate all affected C goals/contracts/strategies and replay complete actual-C/source/assumption gate before readmission.",
+  "not_a_kernel_numerical_counterexample": true,
+  "old_Coq_result_meaning": "Historical result under the old lowered model only; not a current verified kernel."
+}

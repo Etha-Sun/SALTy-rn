@@ -1,0 +1,4547 @@
+Require Import Coq.ZArith.ZArith.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Strings.String.
+Require Import Coq.Strings.Ascii.
+Require Import Coq.Lists.List.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Classes.Morphisms.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Sorting.Permutation.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
+Require Import SetsClass.SetsClass. Import SetsNotation.
+From SimpleC.SL Require Import Mem SeparationLogic.
+Require Import Logic.LogicGenerator.demo932.Interface.
+Local Open Scope Z_scope.
+Local Open Scope sets.
+Local Open Scope string_scope.
+Local Open Scope list.
+Import Snaive_C_Rules64.
+Require Import FullU8.Packed32Layout.
+Require Import FullU8.U8Logic FullU8.U8KernelLogic.
+Require Import FullU8.Packed32Model.
+Local Open Scope sac.
+From FullU8 Require Import packed_copy_strategy_goal.
+From FullU8 Require Import packed_copy_strategy_proof.
+From FullU8 Require Import arrays_strategy_goal.
+From FullU8 Require Import arrays_strategy_proof.
+
+(*----- Function qcp_assert -----*)
+
+Definition qcp_assert_safety_wit_1 := 
+forall (c_pre: Z) ,
+  ((( &( "c" ) )) # Int  |-> c_pre)
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition qcp_assert_entail_wit_1 := 
+  TT && emp 
+|--
+  TT && emp 
+.
+
+Definition qcp_assert_entail_wit_2 := 
+forall (c_pre: Z) (PreH1 : (c_pre = 0)) ,
+  TT && emp 
+|--
+  TT && emp 
+.
+
+Definition qcp_assert_return_wit_1 := 
+forall (c_pre: Z) (PreH1 : (c_pre <> 0)) ,
+  TT && emp 
+|--
+  “ (c_pre <> 0) ”
+  &&  emp
+.
+
+(*----- Function test_rvv -----*)
+
+Definition test_rvv_safety_wit_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (0 < batch_pre)) (PreH2 : (batch_pre <= 18446744073709551608)) (PreH3 : (input_pre <> 0)) (PreH4 : (output_pre <> 0)) (PreH5 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition test_rvv_safety_wit_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (batch_pre = 0)) (PreH2 : (0 < batch_pre)) (PreH3 : (batch_pre <= 18446744073709551608)) (PreH4 : (input_pre <> 0)) (PreH5 : (output_pre <> 0)) (PreH6 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ False ”
+.
+
+Definition test_rvv_safety_wit_3 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (batch_pre <> 0)) (PreH3 : (0 < batch_pre)) (PreH4 : (batch_pre <= 18446744073709551608)) (PreH5 : (input_pre <> 0)) (PreH6 : (output_pre <> 0)) (PreH7 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (sizeof(UCHAR) <> 0) ”
+.
+
+Definition test_rvv_safety_wit_4 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (batch_pre <> 0)) (PreH3 : (0 < batch_pre)) (PreH4 : (batch_pre <= 18446744073709551608)) (PreH5 : (input_pre <> 0)) (PreH6 : (output_pre <> 0)) (PreH7 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition test_rvv_safety_wit_5 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (0 <> 0)) (PreH2 : ((batch_pre % ( sizeof(UCHAR) ) ) <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (batch_pre <> 0)) (PreH5 : (0 < batch_pre)) (PreH6 : (batch_pre <= 18446744073709551608)) (PreH7 : (input_pre <> 0)) (PreH8 : (output_pre <> 0)) (PreH9 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ False ”
+.
+
+Definition test_rvv_safety_wit_6 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH3 : (1 <> 0)) (PreH4 : (batch_pre <> 0)) (PreH5 : (0 < batch_pre)) (PreH6 : (batch_pre <= 18446744073709551608)) (PreH7 : (input_pre <> 0)) (PreH8 : (output_pre <> 0)) (PreH9 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition test_rvv_safety_wit_7 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (input_pre = 0)) (PreH2 : (1 <> 0)) (PreH3 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH4 : (1 <> 0)) (PreH5 : (batch_pre <> 0)) (PreH6 : (0 < batch_pre)) (PreH7 : (batch_pre <= 18446744073709551608)) (PreH8 : (input_pre <> 0)) (PreH9 : (output_pre <> 0)) (PreH10 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ False ”
+.
+
+Definition test_rvv_safety_wit_8 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (input_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH5 : (1 <> 0)) (PreH6 : (batch_pre <> 0)) (PreH7 : (0 < batch_pre)) (PreH8 : (batch_pre <= 18446744073709551608)) (PreH9 : (input_pre <> 0)) (PreH10 : (output_pre <> 0)) (PreH11 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition test_rvv_safety_wit_9 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (output_pre = 0)) (PreH2 : (1 <> 0)) (PreH3 : (input_pre <> 0)) (PreH4 : (1 <> 0)) (PreH5 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH6 : (1 <> 0)) (PreH7 : (batch_pre <> 0)) (PreH8 : (0 < batch_pre)) (PreH9 : (batch_pre <= 18446744073709551608)) (PreH10 : (input_pre <> 0)) (PreH11 : (output_pre <> 0)) (PreH12 : (params_pre <> 0)) ,
+  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ False ”
+.
+
+Definition test_rvv_safety_wit_10 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((( &( "batch64" ) )) # UInt64  |->_)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> (unsigned_last_nbits (hi) (8)))
+  **  ((( &( "voutput_min" ) )) # UChar  |-> (unsigned_last_nbits (lo) (8)))
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_pre)
+  **  ((( &( "input" ) )) # Ptr  |-> input_pre)
+  **  ((( &( "output" ) )) # Ptr  |-> output_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (63 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 63) ”
+.
+
+Definition test_rvv_safety_wit_11 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH2 : (0 <= batch64)) (PreH3 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH4 : (0 <= (batch_pre - batch ))) (PreH5 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH6 : (0 <= batch)) (PreH7 : (batch <= batch_pre)) (PreH8 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH9 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (voutput_min = (u8_bound (lo)))) (PreH11 : (voutput_max = (u8_bound (hi)))) (PreH12 : (1 <> 0)) (PreH13 : (output_pre <> 0)) (PreH14 : (1 <> 0)) (PreH15 : (input_pre <> 0)) (PreH16 : (1 <> 0)) (PreH17 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH18 : (1 <> 0)) (PreH19 : (batch_pre <> 0)) (PreH20 : (0 < batch_pre)) (PreH21 : (batch_pre <= 18446744073709551608)) (PreH22 : (input_pre <> 0)) (PreH23 : (output_pre <> 0)) (PreH24 : (params_pre <> 0)) ,
+  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition test_rvv_safety_wit_12 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (PreH1 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH2 : (batch64_2 = 0)) (PreH3 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH4 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH5 : (0 <= batch_2)) (PreH6 : (batch_2 <= batch_pre)) (PreH7 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH8 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH9 : (voutput_min_2 = (u8_bound (lo)))) (PreH10 : (voutput_max_2 = (u8_bound (hi)))) (PreH11 : (batch64 <= 0)) (PreH12 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH13 : (0 <= batch64)) (PreH14 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH15 : (0 <= (batch_pre - batch ))) (PreH16 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH17 : (0 <= batch)) (PreH18 : (batch <= batch_pre)) (PreH19 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH20 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH21 : (voutput_min = (u8_bound (lo)))) (PreH22 : (voutput_max = (u8_bound (hi)))) (PreH23 : (1 <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (1 <> 0)) (PreH26 : (input_pre <> 0)) (PreH27 : (1 <> 0)) (PreH28 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH29 : (1 <> 0)) (PreH30 : (batch_pre <> 0)) (PreH31 : (0 < batch_pre)) (PreH32 : (batch_pre <= 18446744073709551608)) (PreH33 : (input_pre <> 0)) (PreH34 : (output_pre <> 0)) (PreH35 : (params_pre <> 0)) ,
+  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.full input_2 (batch_2 + 7 ) (sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 <= INT_MAX) ” 
+  &&  “ ((INT_MIN) <= 0) ”
+.
+
+Definition test_rvv_entail_wit_1 := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= (Z.land batch_pre (Z.lnot 63))) ” 
+  &&  “ ((Z.land batch_pre (Z.lnot 63)) = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_pre ) )) ” 
+  &&  “ (0 <= (batch_pre - batch_pre )) ” 
+  &&  “ ((batch_pre - batch_pre ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch_pre) ” 
+  &&  “ (batch_pre <= batch_pre) ” 
+  &&  “ (input_pre = (input_pre + ((batch_pre - batch_pre ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_pre = (output_pre + ((batch_pre - batch_pre ) * sizeof(UCHAR)))) ” 
+  &&  “ ((unsigned_last_nbits (lo) (8)) = (u8_bound (lo))) ” 
+  &&  “ ((unsigned_last_nbits (hi) (8)) = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - batch_pre ) (sublist (0) ((batch_pre - batch_pre )) (A)) )
+  **  (UCharArray.full input_pre (batch_pre + 7 ) (sublist ((batch_pre - batch_pre )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_pre ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch_pre )) (A)))) )
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  TT && emp 
+|--
+  “ ((unsigned_last_nbits (hi) (8)) = (u8_bound (hi))) ” 
+  &&  “ ((unsigned_last_nbits (lo) (8)) = (u8_bound (lo))) ” 
+  &&  “ ((batch_pre - batch_pre ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ ((Z.land batch_pre (Z.lnot 63)) = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_pre ) )) ” 
+  &&  “ (0 <= (Z.land batch_pre (Z.lnot 63))) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ ((sublist (0) ((batch_pre - batch_pre )) (A)) = (@nil Z)) ” 
+  &&  “ ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch_pre )) (A)))) = (@nil Z)) ” 
+  &&  “ (A = (sublist ((batch_pre - batch_pre )) ((batch_pre + 7 )) (A))) ”
+  &&  emp
+).
+
+Definition test_rvv_entail_wit_1_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((unsigned_last_nbits (hi) (8)) = (u8_bound (hi)))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (lo: Z) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((unsigned_last_nbits (lo) (8)) = (u8_bound (lo)))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_3 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((batch_pre - batch_pre ) <= (u8_prefix_n (batch_pre)))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_4 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((Z.land batch_pre (Z.lnot 63)) = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_pre ) ))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_5 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  (0 <= (Z.land batch_pre (Z.lnot 63)))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_6 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((Zlength (A)) = (batch_pre + 7 ))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_7 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((sublist (0) ((batch_pre - batch_pre )) (A)) = (@nil Z))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_8 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch_pre )) (A)))) = (@nil Z))
+.
+
+Definition test_rvv_entail_wit_1_split_goal_9 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (A: (@list Z)) (PreH1 : (1 <> 0)) (PreH2 : (output_pre <> 0)) (PreH3 : (1 <> 0)) (PreH4 : (input_pre <> 0)) (PreH5 : (1 <> 0)) (PreH6 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH7 : (1 <> 0)) (PreH8 : (batch_pre <> 0)) (PreH9 : (0 < batch_pre)) (PreH10 : (batch_pre <= 18446744073709551608)) (PreH11 : (input_pre <> 0)) (PreH12 : (output_pre <> 0)) (PreH13 : (params_pre <> 0)) ,
+  (A = (sublist ((batch_pre - batch_pre )) ((batch_pre + 7 )) (A)))
+.
+
+Definition test_rvv_entail_wit_2 := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.undef_full (output + (retval * sizeof(UCHAR))) (batch - retval ) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= (batch64 - retval )) ” 
+  &&  “ ((batch64 - retval ) = ((u8_prefix_n (batch_pre)) - (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) )) ” 
+  &&  “ (0 <= (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) ” 
+  &&  “ ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= (unsigned_last_nbits ((batch - retval )) (64))) ” 
+  &&  “ ((unsigned_last_nbits ((batch - retval )) (64)) <= batch_pre) ” 
+  &&  “ ((input + (retval * sizeof(UCHAR))) = (input_pre + ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) * sizeof(UCHAR)))) ” 
+  &&  “ ((output + (retval * sizeof(UCHAR))) = (output_pre + ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) (sublist (0) ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) (A)) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((unsigned_last_nbits ((batch - retval )) (64)) + 7 ) (sublist ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full (output + (retval * sizeof(UCHAR))) (unsigned_last_nbits ((batch - retval )) (64)) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) (A)))) )
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((output + (retval * sizeof(UCHAR))) = (output_pre + ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) * sizeof(UCHAR)))) ” 
+  &&  “ ((input + (retval * sizeof(UCHAR))) = (input_pre + ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) * sizeof(UCHAR)))) ” 
+  &&  “ ((unsigned_last_nbits ((batch - retval )) (64)) <= batch_pre) ” 
+  &&  “ (0 <= (unsigned_last_nbits ((batch - retval )) (64))) ” 
+  &&  “ ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) ” 
+  &&  “ ((batch64 - retval ) = ((u8_prefix_n (batch_pre)) - (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) )) ” 
+  &&  “ ((batch - retval ) = (unsigned_last_nbits ((batch - retval )) (64))) ” 
+  &&  “ (((batch + 7 ) - retval ) = ((unsigned_last_nbits ((batch - retval )) (64)) + 7 )) ” 
+  &&  “ ((sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) = (sublist ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) ((batch_pre + 7 )) (A))) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) (sublist (0) ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) (A)))) )
+).
+
+Definition test_rvv_entail_wit_2_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((output + (retval * sizeof(UCHAR))) = (output_pre + ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) * sizeof(UCHAR)))) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((input + (retval * sizeof(UCHAR))) = (input_pre + ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) * sizeof(UCHAR)))) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_3 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((unsigned_last_nbits ((batch - retval )) (64)) <= batch_pre) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_4 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= (unsigned_last_nbits ((batch - retval )) (64))) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_5 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) <= (u8_prefix_n (batch_pre))) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_6 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_7 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((batch64 - retval ) = ((u8_prefix_n (batch_pre)) - (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) )) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_8 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((batch - retval ) = (unsigned_last_nbits ((batch - retval )) (64))) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_9 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (((batch + 7 ) - retval ) = ((unsigned_last_nbits ((batch - retval )) (64)) + 7 )) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_10 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) = (sublist ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) ((batch_pre + 7 )) (A))) ”
+.
+
+Definition test_rvv_entail_wit_2_split_goal_spatial := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.full output retval (sublist (0) (retval) ((vec_bytes ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30))) ((cons ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  (UCharArray.seg input_pre 0 (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) (sublist (0) ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - (unsigned_last_nbits ((batch - retval )) (64)) )) (A)))) )
+.
+
+Definition test_rvv_entail_wit_3 := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : (batch64 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (0 <= batch64)) (PreH4 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH5 : (0 <= (batch_pre - batch ))) (PreH6 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH7 : (0 <= batch)) (PreH8 : (batch <= batch_pre)) (PreH9 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH11 : (voutput_min = (u8_bound (lo)))) (PreH12 : (voutput_max = (u8_bound (hi)))) (PreH13 : (1 <> 0)) (PreH14 : (output_pre <> 0)) (PreH15 : (1 <> 0)) (PreH16 : (input_pre <> 0)) (PreH17 : (1 <> 0)) (PreH18 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH19 : (1 <> 0)) (PreH20 : (batch_pre <> 0)) (PreH21 : (0 < batch_pre)) (PreH22 : (batch_pre <= 18446744073709551608)) (PreH23 : (input_pre <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (params_pre <> 0)) ,
+  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= batch_pre) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : (batch64 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (0 <= batch64)) (PreH4 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH5 : (0 <= (batch_pre - batch ))) (PreH6 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH7 : (0 <= batch)) (PreH8 : (batch <= batch_pre)) (PreH9 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH11 : (voutput_min = (u8_bound (lo)))) (PreH12 : (voutput_max = (u8_bound (hi)))) (PreH13 : (1 <> 0)) (PreH14 : (output_pre <> 0)) (PreH15 : (1 <> 0)) (PreH16 : (input_pre <> 0)) (PreH17 : (1 <> 0)) (PreH18 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH19 : (1 <> 0)) (PreH20 : (batch_pre <> 0)) (PreH21 : (0 < batch_pre)) (PreH22 : (batch_pre <= 18446744073709551608)) (PreH23 : (input_pre <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (params_pre <> 0)) ,
+  TT && emp 
+|--
+  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch )) ” 
+  &&  “ ((u8_prefix_list (voutput_min) (voutput_max) ((sublist (0) ((batch_pre - batch )) (A)))) = (app ((u8_prefix_list (voutput_min) (voutput_max) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list (voutput_min) (voutput_max) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A))))))) ”
+  &&  emp
+).
+
+Definition test_rvv_entail_wit_3_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : (batch64 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (0 <= batch64)) (PreH4 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH5 : (0 <= (batch_pre - batch ))) (PreH6 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH7 : (0 <= batch)) (PreH8 : (batch <= batch_pre)) (PreH9 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH11 : (voutput_min = (u8_bound (lo)))) (PreH12 : (voutput_max = (u8_bound (hi)))) (PreH13 : (1 <> 0)) (PreH14 : (output_pre <> 0)) (PreH15 : (1 <> 0)) (PreH16 : (input_pre <> 0)) (PreH17 : (1 <> 0)) (PreH18 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH19 : (1 <> 0)) (PreH20 : (batch_pre <> 0)) (PreH21 : (0 < batch_pre)) (PreH22 : (batch_pre <= 18446744073709551608)) (PreH23 : (input_pre <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (params_pre <> 0)) ,
+  ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))
+.
+
+Definition test_rvv_entail_wit_3_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : (batch64 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (0 <= batch64)) (PreH4 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH5 : (0 <= (batch_pre - batch ))) (PreH6 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH7 : (0 <= batch)) (PreH8 : (batch <= batch_pre)) (PreH9 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH11 : (voutput_min = (u8_bound (lo)))) (PreH12 : (voutput_max = (u8_bound (hi)))) (PreH13 : (1 <> 0)) (PreH14 : (output_pre <> 0)) (PreH15 : (1 <> 0)) (PreH16 : (input_pre <> 0)) (PreH17 : (1 <> 0)) (PreH18 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH19 : (1 <> 0)) (PreH20 : (batch_pre <> 0)) (PreH21 : (0 < batch_pre)) (PreH22 : (batch_pre <= 18446744073709551608)) (PreH23 : (input_pre <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (params_pre <> 0)) ,
+  ((u8_prefix_list (voutput_min) (voutput_max) ((sublist (0) ((batch_pre - batch )) (A)))) = (app ((u8_prefix_list (voutput_min) (voutput_max) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list (voutput_min) (voutput_max) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))))
+.
+
+Definition test_rvv_entail_wit_4 := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.full output_2 retval (sublist (0) (retval) ((vec_bytes ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.undef_full (output_2 + (retval * sizeof(UCHAR))) (batch_2 - retval ) )
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - (batch_2 - retval ) )) ” 
+  &&  “ ((batch_pre - (batch_2 - retval ) ) <= batch_pre) ” 
+  &&  “ (0 <= (batch_2 - retval )) ” 
+  &&  “ ((batch_2 - retval ) <= batch_pre) ” 
+  &&  “ ((input_2 + (retval * sizeof(UCHAR))) = (input_pre + ((batch_pre - (batch_2 - retval ) ) * sizeof(UCHAR)))) ” 
+  &&  “ ((output_2 + (retval * sizeof(UCHAR))) = (output_pre + ((batch_pre - (batch_2 - retval ) ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - (batch_2 - retval ) ) (sublist (0) ((batch_pre - (batch_2 - retval ) )) (A)) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 - retval ) + 7 ) (sublist ((batch_pre - (batch_2 - retval ) )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full (output_2 + (retval * sizeof(UCHAR))) (batch_2 - retval ) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - (batch_2 - retval ) ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - (batch_2 - retval ) )) (A)))))) )
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.full output_2 retval (sublist (0) (retval) ((vec_bytes ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ ((output_2 + (retval * sizeof(UCHAR))) = (output_pre + ((batch_pre - (batch_2 - retval ) ) * sizeof(UCHAR)))) ” 
+  &&  “ ((input_2 + (retval * sizeof(UCHAR))) = (input_pre + ((batch_pre - (batch_2 - retval ) ) * sizeof(UCHAR)))) ” 
+  &&  “ ((sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) = (sublist ((batch_pre - (batch_2 - retval ) )) ((batch_pre + 7 )) (A))) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - (batch_2 - retval ) ) (sublist (0) ((batch_pre - (batch_2 - retval ) )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - (batch_2 - retval ) ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - (batch_2 - retval ) )) (A)))))) )
+).
+
+Definition test_rvv_entail_wit_4_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.full output_2 retval (sublist (0) (retval) ((vec_bytes ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ ((output_2 + (retval * sizeof(UCHAR))) = (output_pre + ((batch_pre - (batch_2 - retval ) ) * sizeof(UCHAR)))) ”
+.
+
+Definition test_rvv_entail_wit_4_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.full output_2 retval (sublist (0) (retval) ((vec_bytes ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ ((input_2 + (retval * sizeof(UCHAR))) = (input_pre + ((batch_pre - (batch_2 - retval ) ) * sizeof(UCHAR)))) ”
+.
+
+Definition test_rvv_entail_wit_4_split_goal_3 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.full output_2 retval (sublist (0) (retval) ((vec_bytes ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ ((sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) = (sublist ((batch_pre - (batch_2 - retval ) )) ((batch_pre + 7 )) (A))) ”
+.
+
+Definition test_rvv_entail_wit_4_split_goal_spatial := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.full output_2 retval (sublist (0) (retval) ((vec_bytes ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30))) ((cons ((word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31))) ((@nil Z))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))) )
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  (UCharArray.seg input_pre 0 (batch_pre - (batch_2 - retval ) ) (sublist (0) ((batch_pre - (batch_2 - retval ) )) (A)) )
+  **  (UCharArray.seg output_pre 0 (batch_pre - (batch_2 - retval ) ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - (batch_2 - retval ) )) (A)))))) )
+.
+
+Definition test_rvv_return_wit_1 := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (PreH1 : (batch_2 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (batch64_2 = 0)) (PreH4 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH5 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH6 : (0 <= batch_2)) (PreH7 : (batch_2 <= batch_pre)) (PreH8 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH9 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH10 : (voutput_min_2 = (u8_bound (lo)))) (PreH11 : (voutput_max_2 = (u8_bound (hi)))) (PreH12 : (batch64 <= 0)) (PreH13 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH14 : (0 <= batch64)) (PreH15 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH16 : (0 <= (batch_pre - batch ))) (PreH17 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH18 : (0 <= batch)) (PreH19 : (batch <= batch_pre)) (PreH20 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH21 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH22 : (voutput_min = (u8_bound (lo)))) (PreH23 : (voutput_max = (u8_bound (hi)))) (PreH24 : (1 <> 0)) (PreH25 : (output_pre <> 0)) (PreH26 : (1 <> 0)) (PreH27 : (input_pre <> 0)) (PreH28 : (1 <> 0)) (PreH29 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH30 : (1 <> 0)) (PreH31 : (batch_pre <> 0)) (PreH32 : (0 < batch_pre)) (PreH33 : (batch_pre <= 18446744073709551608)) (PreH34 : (input_pre <> 0)) (PreH35 : (output_pre <> 0)) (PreH36 : (params_pre <> 0)) ,
+  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.full input_2 (batch_2 + 7 ) (sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.full output_pre batch_pre (u8_phase_all (batch_pre) ((u8_bound (lo))) ((u8_bound (hi))) (A)) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (PreH1 : (batch_2 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (batch64_2 = 0)) (PreH4 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH5 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH6 : (0 <= batch_2)) (PreH7 : (batch_2 <= batch_pre)) (PreH8 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH9 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH10 : (voutput_min_2 = (u8_bound (lo)))) (PreH11 : (voutput_max_2 = (u8_bound (hi)))) (PreH12 : (batch64 <= 0)) (PreH13 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH14 : (0 <= batch64)) (PreH15 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH16 : (0 <= (batch_pre - batch ))) (PreH17 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH18 : (0 <= batch)) (PreH19 : (batch <= batch_pre)) (PreH20 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH21 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH22 : (voutput_min = (u8_bound (lo)))) (PreH23 : (voutput_max = (u8_bound (hi)))) (PreH24 : (1 <> 0)) (PreH25 : (output_pre <> 0)) (PreH26 : (1 <> 0)) (PreH27 : (input_pre <> 0)) (PreH28 : (1 <> 0)) (PreH29 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH30 : (1 <> 0)) (PreH31 : (batch_pre <> 0)) (PreH32 : (0 < batch_pre)) (PreH33 : (batch_pre <= 18446744073709551608)) (PreH34 : (input_pre <> 0)) (PreH35 : (output_pre <> 0)) (PreH36 : (params_pre <> 0)) ,
+  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.full input_2 (batch_2 + 7 ) (sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.full output_pre batch_pre (u8_phase_all (batch_pre) ((u8_bound (lo))) ((u8_bound (hi))) (A)) )
+).
+
+Definition test_rvv_return_wit_1_split_goal_spatial := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (PreH1 : (batch_2 <= 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (batch64_2 = 0)) (PreH4 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH5 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH6 : (0 <= batch_2)) (PreH7 : (batch_2 <= batch_pre)) (PreH8 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH9 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH10 : (voutput_min_2 = (u8_bound (lo)))) (PreH11 : (voutput_max_2 = (u8_bound (hi)))) (PreH12 : (batch64 <= 0)) (PreH13 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH14 : (0 <= batch64)) (PreH15 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH16 : (0 <= (batch_pre - batch ))) (PreH17 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH18 : (0 <= batch)) (PreH19 : (batch <= batch_pre)) (PreH20 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH21 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH22 : (voutput_min = (u8_bound (lo)))) (PreH23 : (voutput_max = (u8_bound (hi)))) (PreH24 : (1 <> 0)) (PreH25 : (output_pre <> 0)) (PreH26 : (1 <> 0)) (PreH27 : (input_pre <> 0)) (PreH28 : (1 <> 0)) (PreH29 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH30 : (1 <> 0)) (PreH31 : (batch_pre <> 0)) (PreH32 : (0 < batch_pre)) (PreH33 : (batch_pre <= 18446744073709551608)) (PreH34 : (input_pre <> 0)) (PreH35 : (output_pre <> 0)) (PreH36 : (params_pre <> 0)) ,
+  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.full input_2 (batch_2 + 7 ) (sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.full output_pre batch_pre (u8_phase_all (batch_pre) ((u8_bound (lo))) ((u8_bound (hi))) (A)) )
+.
+
+Definition test_rvv_partial_solve_wit_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (batch_pre <> 0)) (PreH2 : (0 < batch_pre)) (PreH3 : (batch_pre <= 18446744073709551608)) (PreH4 : (input_pre <> 0)) (PreH5 : (output_pre <> 0)) (PreH6 : (params_pre <> 0)) ,
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+.
+
+Definition test_rvv_partial_solve_wit_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : ((batch_pre % ( sizeof(UCHAR) ) ) <> 0)) (PreH2 : (1 <> 0)) (PreH3 : (batch_pre <> 0)) (PreH4 : (0 < batch_pre)) (PreH5 : (batch_pre <= 18446744073709551608)) (PreH6 : (input_pre <> 0)) (PreH7 : (output_pre <> 0)) (PreH8 : (params_pre <> 0)) ,
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ ((batch_pre % ( sizeof(UCHAR) ) ) <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+.
+
+Definition test_rvv_partial_solve_wit_3 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH2 : (1 <> 0)) (PreH3 : (batch_pre <> 0)) (PreH4 : (0 < batch_pre)) (PreH5 : (batch_pre <= 18446744073709551608)) (PreH6 : (input_pre <> 0)) (PreH7 : (output_pre <> 0)) (PreH8 : (params_pre <> 0)) ,
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+.
+
+Definition test_rvv_partial_solve_wit_4 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (input_pre <> 0)) (PreH2 : (1 <> 0)) (PreH3 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH4 : (1 <> 0)) (PreH5 : (batch_pre <> 0)) (PreH6 : (0 < batch_pre)) (PreH7 : (batch_pre <= 18446744073709551608)) (PreH8 : (input_pre <> 0)) (PreH9 : (output_pre <> 0)) (PreH10 : (params_pre <> 0)) ,
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+.
+
+Definition test_rvv_partial_solve_wit_5 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (PreH1 : (output_pre <> 0)) (PreH2 : (1 <> 0)) (PreH3 : (input_pre <> 0)) (PreH4 : (1 <> 0)) (PreH5 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH6 : (1 <> 0)) (PreH7 : (batch_pre <> 0)) (PreH8 : (0 < batch_pre)) (PreH9 : (batch_pre <= 18446744073709551608)) (PreH10 : (input_pre <> 0)) (PreH11 : (output_pre <> 0)) (PreH12 : (params_pre <> 0)) ,
+  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+|--
+  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input_pre (batch_pre + 7 ) A )
+  **  (UCharArray.undef_full output_pre batch_pre )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+.
+
+Definition test_rvv_partial_solve_wit_6_pure := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : (batch64 > 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (0 <= batch64)) (PreH4 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH5 : (0 <= (batch_pre - batch ))) (PreH6 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH7 : (0 <= batch)) (PreH8 : (batch <= batch_pre)) (PreH9 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH11 : (voutput_min = (u8_bound (lo)))) (PreH12 : (voutput_max = (u8_bound (hi)))) (PreH13 : (1 <> 0)) (PreH14 : (output_pre <> 0)) (PreH15 : (1 <> 0)) (PreH16 : (input_pre <> 0)) (PreH17 : (1 <> 0)) (PreH18 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH19 : (1 <> 0)) (PreH20 : (batch_pre <> 0)) (PreH21 : (0 < batch_pre)) (PreH22 : (batch_pre <= 18446744073709551608)) (PreH23 : (input_pre <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (params_pre <> 0)) ,
+  ((( &( "vl" ) )) # UInt64  |->_)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < batch64) ” 
+  &&  “ (batch64 <= UINT64_MAX) ”
+.
+
+Definition test_rvv_partial_solve_wit_6_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (PreH1 : (batch64 > 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (0 <= batch64)) (PreH4 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH5 : (0 <= (batch_pre - batch ))) (PreH6 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH7 : (0 <= batch)) (PreH8 : (batch <= batch_pre)) (PreH9 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH11 : (voutput_min = (u8_bound (lo)))) (PreH12 : (voutput_max = (u8_bound (hi)))) (PreH13 : (1 <> 0)) (PreH14 : (output_pre <> 0)) (PreH15 : (1 <> 0)) (PreH16 : (input_pre <> 0)) (PreH17 : (1 <> 0)) (PreH18 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH19 : (1 <> 0)) (PreH20 : (batch_pre <> 0)) (PreH21 : (0 < batch_pre)) (PreH22 : (batch_pre <= 18446744073709551608)) (PreH23 : (input_pre <> 0)) (PreH24 : (output_pre <> 0)) (PreH25 : (params_pre <> 0)) ,
+  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < batch64) ” 
+  &&  “ (batch64 <= UINT64_MAX) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_6 := test_rvv_partial_solve_wit_6_pure -> test_rvv_partial_solve_wit_6_aux.
+
+Definition test_rvv_partial_solve_wit_7_pure := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ ((batch + 7 ) <= UINT64_MAX) ” 
+  &&  “ (retval <= (batch + 7 )) ”
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : (hi >= 0)) (PreH10 : (lo >= 0)) (PreH11 : (retval = (u8_vl (batch64)))) (PreH12 : (0 < retval)) (PreH13 : (retval <= 128)) (PreH14 : (retval <= batch64)) (PreH15 : (batch64 > 0)) (PreH16 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH17 : (0 <= batch64)) (PreH18 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH19 : (0 <= (batch_pre - batch ))) (PreH20 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH21 : (0 <= batch)) (PreH22 : (batch <= batch_pre)) (PreH23 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH24 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (voutput_min = (u8_bound (lo)))) (PreH26 : (voutput_max = (u8_bound (hi)))) (PreH27 : (1 <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (1 <> 0)) (PreH30 : (input_pre <> 0)) (PreH31 : (1 <> 0)) (PreH32 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH33 : (1 <> 0)) (PreH34 : (batch_pre <> 0)) (PreH35 : (0 < batch_pre)) (PreH36 : (batch_pre <= 18446744073709551608)) (PreH37 : (input_pre <> 0)) (PreH38 : (output_pre <> 0)) (PreH39 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval <= (batch + 7 )) ”
+).
+
+Definition test_rvv_partial_solve_wit_7_pure_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : (hi >= 0)) (PreH10 : (lo >= 0)) (PreH11 : (retval = (u8_vl (batch64)))) (PreH12 : (0 < retval)) (PreH13 : (retval <= 128)) (PreH14 : (retval <= batch64)) (PreH15 : (batch64 > 0)) (PreH16 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH17 : (0 <= batch64)) (PreH18 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH19 : (0 <= (batch_pre - batch ))) (PreH20 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH21 : (0 <= batch)) (PreH22 : (batch <= batch_pre)) (PreH23 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH24 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (voutput_min = (u8_bound (lo)))) (PreH26 : (voutput_max = (u8_bound (hi)))) (PreH27 : (1 <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (1 <> 0)) (PreH30 : (input_pre <> 0)) (PreH31 : (1 <> 0)) (PreH32 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH33 : (1 <> 0)) (PreH34 : (batch_pre <> 0)) (PreH35 : (0 < batch_pre)) (PreH36 : (batch_pre <= 18446744073709551608)) (PreH37 : (input_pre <> 0)) (PreH38 : (output_pre <> 0)) (PreH39 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval <= (batch + 7 )) ”
+.
+
+Definition test_rvv_partial_solve_wit_7_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ ((batch + 7 ) <= UINT64_MAX) ” 
+  &&  “ (retval <= (batch + 7 )) ” 
+  &&  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_7 := test_rvv_partial_solve_wit_7_pure -> test_rvv_partial_solve_wit_7_aux.
+
+Definition test_rvv_partial_solve_wit_8 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (retval_2: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_9_pure := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_min <= 255) ” 
+  &&  “ (0 <= voutput_min) ”
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)) >= 0)) (PreH44 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)) >= 0)) (PreH45 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)) >= 0)) (PreH46 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)) >= 0)) (PreH47 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)) >= 0)) (PreH48 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)) >= 0)) (PreH49 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)) >= 0)) (PreH50 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)) >= 0)) (PreH51 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)) >= 0)) (PreH52 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)) >= 0)) (PreH53 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)) >= 0)) (PreH54 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)) >= 0)) (PreH55 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)) >= 0)) (PreH56 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)) >= 0)) (PreH57 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)) >= 0)) (PreH58 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)) >= 0)) (PreH59 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)) >= 0)) (PreH60 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)) >= 0)) (PreH61 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)) >= 0)) (PreH62 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)) >= 0)) (PreH63 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)) >= 0)) (PreH64 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)) >= 0)) (PreH65 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)) >= 0)) (PreH66 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)) >= 0)) (PreH67 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)) >= 0)) (PreH68 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)) >= 0)) (PreH69 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)) >= 0)) (PreH70 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)) >= 0)) (PreH71 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)) >= 0)) (PreH72 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)) >= 0)) (PreH73 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)) >= 0)) (PreH74 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= voutput_min) ” 
+  &&  “ (voutput_min <= 255) ”
+).
+
+Definition test_rvv_partial_solve_wit_9_pure_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)) >= 0)) (PreH44 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)) >= 0)) (PreH45 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)) >= 0)) (PreH46 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)) >= 0)) (PreH47 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)) >= 0)) (PreH48 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)) >= 0)) (PreH49 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)) >= 0)) (PreH50 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)) >= 0)) (PreH51 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)) >= 0)) (PreH52 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)) >= 0)) (PreH53 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)) >= 0)) (PreH54 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)) >= 0)) (PreH55 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)) >= 0)) (PreH56 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)) >= 0)) (PreH57 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)) >= 0)) (PreH58 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)) >= 0)) (PreH59 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)) >= 0)) (PreH60 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)) >= 0)) (PreH61 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)) >= 0)) (PreH62 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)) >= 0)) (PreH63 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)) >= 0)) (PreH64 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)) >= 0)) (PreH65 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)) >= 0)) (PreH66 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)) >= 0)) (PreH67 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)) >= 0)) (PreH68 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)) >= 0)) (PreH69 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)) >= 0)) (PreH70 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)) >= 0)) (PreH71 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)) >= 0)) (PreH72 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)) >= 0)) (PreH73 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)) >= 0)) (PreH74 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= voutput_min) ”
+.
+
+Definition test_rvv_partial_solve_wit_9_pure_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)) >= 0)) (PreH44 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)) >= 0)) (PreH45 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)) >= 0)) (PreH46 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)) >= 0)) (PreH47 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)) >= 0)) (PreH48 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)) >= 0)) (PreH49 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)) >= 0)) (PreH50 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)) >= 0)) (PreH51 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)) >= 0)) (PreH52 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)) >= 0)) (PreH53 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)) >= 0)) (PreH54 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)) >= 0)) (PreH55 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)) >= 0)) (PreH56 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)) >= 0)) (PreH57 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)) >= 0)) (PreH58 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)) >= 0)) (PreH59 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)) >= 0)) (PreH60 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)) >= 0)) (PreH61 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)) >= 0)) (PreH62 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)) >= 0)) (PreH63 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)) >= 0)) (PreH64 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)) >= 0)) (PreH65 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)) >= 0)) (PreH66 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)) >= 0)) (PreH67 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)) >= 0)) (PreH68 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)) >= 0)) (PreH69 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)) >= 0)) (PreH70 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)) >= 0)) (PreH71 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)) >= 0)) (PreH72 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)) >= 0)) (PreH73 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)) >= 0)) (PreH74 : ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (voutput_min <= 255) ”
+.
+
+Definition test_rvv_partial_solve_wit_9_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_min <= 255) ” 
+  &&  “ (0 <= voutput_min) ” 
+  &&  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_9 := test_rvv_partial_solve_wit_9_pure -> test_rvv_partial_solve_wit_9_aux.
+
+Definition test_rvv_partial_solve_wit_10 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (retval_2: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_11_pure := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_max <= 255) ” 
+  &&  “ (0 <= voutput_max) ”
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)) >= 0)) (PreH44 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)) >= 0)) (PreH45 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)) >= 0)) (PreH46 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)) >= 0)) (PreH47 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)) >= 0)) (PreH48 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)) >= 0)) (PreH49 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)) >= 0)) (PreH50 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)) >= 0)) (PreH51 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)) >= 0)) (PreH52 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)) >= 0)) (PreH53 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)) >= 0)) (PreH54 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)) >= 0)) (PreH55 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)) >= 0)) (PreH56 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)) >= 0)) (PreH57 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)) >= 0)) (PreH58 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)) >= 0)) (PreH59 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)) >= 0)) (PreH60 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)) >= 0)) (PreH61 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)) >= 0)) (PreH62 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)) >= 0)) (PreH63 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)) >= 0)) (PreH64 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)) >= 0)) (PreH65 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)) >= 0)) (PreH66 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)) >= 0)) (PreH67 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)) >= 0)) (PreH68 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)) >= 0)) (PreH69 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)) >= 0)) (PreH70 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)) >= 0)) (PreH71 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)) >= 0)) (PreH72 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)) >= 0)) (PreH73 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)) >= 0)) (PreH74 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= voutput_max) ” 
+  &&  “ (voutput_max <= 255) ”
+).
+
+Definition test_rvv_partial_solve_wit_11_pure_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)) >= 0)) (PreH44 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)) >= 0)) (PreH45 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)) >= 0)) (PreH46 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)) >= 0)) (PreH47 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)) >= 0)) (PreH48 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)) >= 0)) (PreH49 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)) >= 0)) (PreH50 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)) >= 0)) (PreH51 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)) >= 0)) (PreH52 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)) >= 0)) (PreH53 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)) >= 0)) (PreH54 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)) >= 0)) (PreH55 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)) >= 0)) (PreH56 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)) >= 0)) (PreH57 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)) >= 0)) (PreH58 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)) >= 0)) (PreH59 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)) >= 0)) (PreH60 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)) >= 0)) (PreH61 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)) >= 0)) (PreH62 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)) >= 0)) (PreH63 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)) >= 0)) (PreH64 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)) >= 0)) (PreH65 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)) >= 0)) (PreH66 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)) >= 0)) (PreH67 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)) >= 0)) (PreH68 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)) >= 0)) (PreH69 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)) >= 0)) (PreH70 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)) >= 0)) (PreH71 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)) >= 0)) (PreH72 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)) >= 0)) (PreH73 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)) >= 0)) (PreH74 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 <= voutput_max) ”
+.
+
+Definition test_rvv_partial_solve_wit_11_pure_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)) >= 0)) (PreH44 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)) >= 0)) (PreH45 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)) >= 0)) (PreH46 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)) >= 0)) (PreH47 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)) >= 0)) (PreH48 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)) >= 0)) (PreH49 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)) >= 0)) (PreH50 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)) >= 0)) (PreH51 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)) >= 0)) (PreH52 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)) >= 0)) (PreH53 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)) >= 0)) (PreH54 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)) >= 0)) (PreH55 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)) >= 0)) (PreH56 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)) >= 0)) (PreH57 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)) >= 0)) (PreH58 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)) >= 0)) (PreH59 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)) >= 0)) (PreH60 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)) >= 0)) (PreH61 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)) >= 0)) (PreH62 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)) >= 0)) (PreH63 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)) >= 0)) (PreH64 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)) >= 0)) (PreH65 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)) >= 0)) (PreH66 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)) >= 0)) (PreH67 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)) >= 0)) (PreH68 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)) >= 0)) (PreH69 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)) >= 0)) (PreH70 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)) >= 0)) (PreH71 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)) >= 0)) (PreH72 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)) >= 0)) (PreH73 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)) >= 0)) (PreH74 : ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (voutput_max <= 255) ”
+.
+
+Definition test_rvv_partial_solve_wit_11_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_max <= 255) ” 
+  &&  “ (0 <= voutput_max) ” 
+  &&  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_11 := test_rvv_partial_solve_wit_11_pure -> test_rvv_partial_solve_wit_11_aux.
+
+Definition test_rvv_partial_solve_wit_12 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (retval_2: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_13 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "qcp_tmp" ) ) )
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_14_pure := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (batch <= UINT64_MAX) ” 
+  &&  “ (retval <= batch) ”
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)) >= 0)) (PreH44 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)) >= 0)) (PreH45 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)) >= 0)) (PreH46 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)) >= 0)) (PreH47 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)) >= 0)) (PreH48 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)) >= 0)) (PreH49 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)) >= 0)) (PreH50 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)) >= 0)) (PreH51 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)) >= 0)) (PreH52 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)) >= 0)) (PreH53 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)) >= 0)) (PreH54 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)) >= 0)) (PreH55 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)) >= 0)) (PreH56 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)) >= 0)) (PreH57 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)) >= 0)) (PreH58 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)) >= 0)) (PreH59 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)) >= 0)) (PreH60 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)) >= 0)) (PreH61 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)) >= 0)) (PreH62 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)) >= 0)) (PreH63 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)) >= 0)) (PreH64 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)) >= 0)) (PreH65 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)) >= 0)) (PreH66 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)) >= 0)) (PreH67 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)) >= 0)) (PreH68 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)) >= 0)) (PreH69 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)) >= 0)) (PreH70 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)) >= 0)) (PreH71 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)) >= 0)) (PreH72 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)) >= 0)) (PreH73 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)) >= 0)) (PreH74 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval <= batch) ”
+).
+
+Definition test_rvv_partial_solve_wit_14_pure_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (batch <= UINT64_MAX)) (PreH2 : (batch64 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch >= 0)) (PreH5 : (batch64 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)) >= 0)) (PreH44 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)) >= 0)) (PreH45 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)) >= 0)) (PreH46 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)) >= 0)) (PreH47 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)) >= 0)) (PreH48 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)) >= 0)) (PreH49 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)) >= 0)) (PreH50 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)) >= 0)) (PreH51 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)) >= 0)) (PreH52 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)) >= 0)) (PreH53 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)) >= 0)) (PreH54 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)) >= 0)) (PreH55 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)) >= 0)) (PreH56 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)) >= 0)) (PreH57 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)) >= 0)) (PreH58 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)) >= 0)) (PreH59 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)) >= 0)) (PreH60 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)) >= 0)) (PreH61 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)) >= 0)) (PreH62 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)) >= 0)) (PreH63 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)) >= 0)) (PreH64 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)) >= 0)) (PreH65 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)) >= 0)) (PreH66 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)) >= 0)) (PreH67 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)) >= 0)) (PreH68 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)) >= 0)) (PreH69 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)) >= 0)) (PreH70 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)) >= 0)) (PreH71 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)) >= 0)) (PreH72 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)) >= 0)) (PreH73 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)) >= 0)) (PreH74 : ((word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch64)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch64)) (PreH79 : (batch64 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (0 <= batch64)) (PreH82 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH83 : (0 <= (batch_pre - batch ))) (PreH84 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH85 : (0 <= batch)) (PreH86 : (batch <= batch_pre)) (PreH87 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH88 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH89 : (voutput_min = (u8_bound (lo)))) (PreH90 : (voutput_max = (u8_bound (hi)))) (PreH91 : (1 <> 0)) (PreH92 : (output_pre <> 0)) (PreH93 : (1 <> 0)) (PreH94 : (input_pre <> 0)) (PreH95 : (1 <> 0)) (PreH96 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH97 : (1 <> 0)) (PreH98 : (batch_pre <> 0)) (PreH99 : (0 < batch_pre)) (PreH100 : (batch_pre <= 18446744073709551608)) (PreH101 : (input_pre <> 0)) (PreH102 : (output_pre <> 0)) (PreH103 : (params_pre <> 0)) ,
+  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input)
+  **  ((( &( "output" ) )) # Ptr  |-> output)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (retval <= batch) ”
+.
+
+Definition test_rvv_partial_solve_wit_14_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch64)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch64)) (PreH5 : (batch64 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (0 <= batch64)) (PreH8 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH9 : (0 <= (batch_pre - batch ))) (PreH10 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH11 : (0 <= batch)) (PreH12 : (batch <= batch_pre)) (PreH13 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH15 : (voutput_min = (u8_bound (lo)))) (PreH16 : (voutput_max = (u8_bound (hi)))) (PreH17 : (1 <> 0)) (PreH18 : (output_pre <> 0)) (PreH19 : (1 <> 0)) (PreH20 : (input_pre <> 0)) (PreH21 : (1 <> 0)) (PreH22 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH23 : (1 <> 0)) (PreH24 : (batch_pre <> 0)) (PreH25 : (0 < batch_pre)) (PreH26 : (batch_pre <= 18446744073709551608)) (PreH27 : (input_pre <> 0)) (PreH28 : (output_pre <> 0)) (PreH29 : (params_pre <> 0)) ,
+  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (batch <= UINT64_MAX) ” 
+  &&  “ (retval <= batch) ” 
+  &&  “ (retval = (u8_vl (batch64))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch64) ” 
+  &&  “ (batch64 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  (UCharArray.undef_seg output 0 batch )
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_min) (retval) (31))) (voutput_max) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_min) (retval) (30))) (voutput_max) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_min) (retval) (29))) (voutput_max) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_min) (retval) (28))) (voutput_max) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_min) (retval) (27))) (voutput_max) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_min) (retval) (26))) (voutput_max) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_min) (retval) (25))) (voutput_max) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_min) (retval) (24))) (voutput_max) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_min) (retval) (23))) (voutput_max) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_min) (retval) (22))) (voutput_max) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_min) (retval) (21))) (voutput_max) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_min) (retval) (20))) (voutput_max) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_min) (retval) (19))) (voutput_max) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_min) (retval) (18))) (voutput_max) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_min) (retval) (17))) (voutput_max) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_min) (retval) (16))) (voutput_max) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_min) (retval) (15))) (voutput_max) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_min) (retval) (14))) (voutput_max) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_min) (retval) (13))) (voutput_max) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_min) (retval) (12))) (voutput_max) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_min) (retval) (11))) (voutput_max) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_min) (retval) (10))) (voutput_max) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_min) (retval) (9))) (voutput_max) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_min) (retval) (8))) (voutput_max) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_min) (retval) (7))) (voutput_max) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_min) (retval) (6))) (voutput_max) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_min) (retval) (5))) (voutput_max) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_min) (retval) (4))) (voutput_max) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_min) (retval) (3))) (voutput_max) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_min) (retval) (2))) (voutput_max) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_min) (retval) (1))) (voutput_max) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_max ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_min) (retval) (0))) (voutput_max) (retval) (0)))
+  **  (UCharArray.seg input 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((batch_pre - batch )) (A)))) )
+.
+
+Definition test_rvv_partial_solve_wit_14 := test_rvv_partial_solve_wit_14_pure -> test_rvv_partial_solve_wit_14_aux.
+
+Definition test_rvv_partial_solve_wit_15_pure := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch_2: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch: Z) (batch64_2: Z) (PreH1 : (batch > 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (batch64_2 = 0)) (PreH4 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))) (PreH5 : ((batch_pre - batch ) <= batch_pre)) (PreH6 : (0 <= batch)) (PreH7 : (batch <= batch_pre)) (PreH8 : (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH9 : (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (voutput_min_2 = (u8_bound (lo)))) (PreH11 : (voutput_max_2 = (u8_bound (hi)))) (PreH12 : (batch64 <= 0)) (PreH13 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH14 : (0 <= batch64)) (PreH15 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) ))) (PreH16 : (0 <= (batch_pre - batch_2 ))) (PreH17 : ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre)))) (PreH18 : (0 <= batch_2)) (PreH19 : (batch_2 <= batch_pre)) (PreH20 : (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH21 : (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH22 : (voutput_min = (u8_bound (lo)))) (PreH23 : (voutput_max = (u8_bound (hi)))) (PreH24 : (1 <> 0)) (PreH25 : (output_pre <> 0)) (PreH26 : (1 <> 0)) (PreH27 : (input_pre <> 0)) (PreH28 : (1 <> 0)) (PreH29 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH30 : (1 <> 0)) (PreH31 : (batch_pre <> 0)) (PreH32 : (0 < batch_pre)) (PreH33 : (batch_pre <= 18446744073709551608)) (PreH34 : (input_pre <> 0)) (PreH35 : (output_pre <> 0)) (PreH36 : (params_pre <> 0)) ,
+  ((( &( "vl" ) )) # UInt64  |->_)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input_2 (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+|--
+  “ (0 < batch) ” 
+  &&  “ (batch <= UINT64_MAX) ”
+.
+
+Definition test_rvv_partial_solve_wit_15_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch_2: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch: Z) (batch64_2: Z) (PreH1 : (batch > 0)) (PreH2 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH3 : (batch64_2 = 0)) (PreH4 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))) (PreH5 : ((batch_pre - batch ) <= batch_pre)) (PreH6 : (0 <= batch)) (PreH7 : (batch <= batch_pre)) (PreH8 : (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH9 : (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH10 : (voutput_min_2 = (u8_bound (lo)))) (PreH11 : (voutput_max_2 = (u8_bound (hi)))) (PreH12 : (batch64 <= 0)) (PreH13 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH14 : (0 <= batch64)) (PreH15 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) ))) (PreH16 : (0 <= (batch_pre - batch_2 ))) (PreH17 : ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre)))) (PreH18 : (0 <= batch_2)) (PreH19 : (batch_2 <= batch_pre)) (PreH20 : (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH21 : (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH22 : (voutput_min = (u8_bound (lo)))) (PreH23 : (voutput_max = (u8_bound (hi)))) (PreH24 : (1 <> 0)) (PreH25 : (output_pre <> 0)) (PreH26 : (1 <> 0)) (PreH27 : (input_pre <> 0)) (PreH28 : (1 <> 0)) (PreH29 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH30 : (1 <> 0)) (PreH31 : (batch_pre <> 0)) (PreH32 : (0 < batch_pre)) (PreH33 : (batch_pre <= 18446744073709551608)) (PreH34 : (input_pre <> 0)) (PreH35 : (output_pre <> 0)) (PreH36 : (params_pre <> 0)) ,
+  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input_2 (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+|--
+  “ (0 < batch) ” 
+  &&  “ (batch <= UINT64_MAX) ” 
+  &&  “ (batch > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= batch_pre) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) )) ” 
+  &&  “ (0 <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input_2 (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_15 := test_rvv_partial_solve_wit_15_pure -> test_rvv_partial_solve_wit_15_aux.
+
+Definition test_rvv_partial_solve_wit_16_pure := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch_2: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch)) (PreH5 : (batch > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))) (PreH9 : ((batch_pre - batch ) <= batch_pre)) (PreH10 : (0 <= batch)) (PreH11 : (batch <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) ))) (PreH20 : (0 <= (batch_pre - batch_2 ))) (PreH21 : ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch_2)) (PreH23 : (batch_2 <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input_2 (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= (batch + 7 )) ” 
+  &&  “ ((batch + 7 ) <= UINT64_MAX) ”
+.
+
+Definition test_rvv_partial_solve_wit_16_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch_2: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch)) (PreH5 : (batch > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))) (PreH9 : ((batch_pre - batch ) <= batch_pre)) (PreH10 : (0 <= batch)) (PreH11 : (batch <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) ))) (PreH20 : (0 <= (batch_pre - batch_2 ))) (PreH21 : ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch_2)) (PreH23 : (batch_2 <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.full input_2 (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= (batch + 7 )) ” 
+  &&  “ ((batch + 7 ) <= UINT64_MAX) ” 
+  &&  “ (retval = (u8_vl (batch))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch) ” 
+  &&  “ (batch > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= batch_pre) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) )) ” 
+  &&  “ (0 <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  (UCharArray.full input_2 (batch + 7 ) (sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)) )
+  **  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_16 := test_rvv_partial_solve_wit_16_pure -> test_rvv_partial_solve_wit_16_aux.
+
+Definition test_rvv_partial_solve_wit_17 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (retval_2: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (retval = (u8_vl (batch_2))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch_2) ” 
+  &&  “ (batch_2 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= batch_pre) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_18_pure := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max_2: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max_2 = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_max <= 255) ” 
+  &&  “ (0 <= voutput_max) ”
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max_2: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (batch_2 <= UINT64_MAX)) (PreH2 : (batch64_2 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch_2 >= 0)) (PreH5 : (batch64_2 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)) >= 0)) (PreH44 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)) >= 0)) (PreH45 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)) >= 0)) (PreH46 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)) >= 0)) (PreH47 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)) >= 0)) (PreH48 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)) >= 0)) (PreH49 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)) >= 0)) (PreH50 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)) >= 0)) (PreH51 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)) >= 0)) (PreH52 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)) >= 0)) (PreH53 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)) >= 0)) (PreH54 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)) >= 0)) (PreH55 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)) >= 0)) (PreH56 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)) >= 0)) (PreH57 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)) >= 0)) (PreH58 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)) >= 0)) (PreH59 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)) >= 0)) (PreH60 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)) >= 0)) (PreH61 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)) >= 0)) (PreH62 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)) >= 0)) (PreH63 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)) >= 0)) (PreH64 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)) >= 0)) (PreH65 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)) >= 0)) (PreH66 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)) >= 0)) (PreH67 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)) >= 0)) (PreH68 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)) >= 0)) (PreH69 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)) >= 0)) (PreH70 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)) >= 0)) (PreH71 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)) >= 0)) (PreH72 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)) >= 0)) (PreH73 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)) >= 0)) (PreH74 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch_2)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch_2)) (PreH79 : (batch_2 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (batch64_2 = 0)) (PreH82 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH83 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH84 : (0 <= batch_2)) (PreH85 : (batch_2 <= batch_pre)) (PreH86 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH87 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH88 : (voutput_min_2 = (u8_bound (lo)))) (PreH89 : (voutput_max = (u8_bound (hi)))) (PreH90 : (batch64 <= 0)) (PreH91 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH92 : (0 <= batch64)) (PreH93 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH94 : (0 <= (batch_pre - batch ))) (PreH95 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH96 : (0 <= batch)) (PreH97 : (batch <= batch_pre)) (PreH98 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH99 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH100 : (voutput_min = (u8_bound (lo)))) (PreH101 : (voutput_max_2 = (u8_bound (hi)))) (PreH102 : (1 <> 0)) (PreH103 : (output_pre <> 0)) (PreH104 : (1 <> 0)) (PreH105 : (input_pre <> 0)) (PreH106 : (1 <> 0)) (PreH107 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH108 : (1 <> 0)) (PreH109 : (batch_pre <> 0)) (PreH110 : (0 < batch_pre)) (PreH111 : (batch_pre <= 18446744073709551608)) (PreH112 : (input_pre <> 0)) (PreH113 : (output_pre <> 0)) (PreH114 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 <= voutput_max) ” 
+  &&  “ (voutput_max <= 255) ”
+).
+
+Definition test_rvv_partial_solve_wit_18_pure_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max_2: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (batch_2 <= UINT64_MAX)) (PreH2 : (batch64_2 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch_2 >= 0)) (PreH5 : (batch64_2 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)) >= 0)) (PreH44 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)) >= 0)) (PreH45 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)) >= 0)) (PreH46 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)) >= 0)) (PreH47 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)) >= 0)) (PreH48 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)) >= 0)) (PreH49 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)) >= 0)) (PreH50 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)) >= 0)) (PreH51 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)) >= 0)) (PreH52 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)) >= 0)) (PreH53 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)) >= 0)) (PreH54 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)) >= 0)) (PreH55 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)) >= 0)) (PreH56 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)) >= 0)) (PreH57 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)) >= 0)) (PreH58 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)) >= 0)) (PreH59 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)) >= 0)) (PreH60 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)) >= 0)) (PreH61 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)) >= 0)) (PreH62 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)) >= 0)) (PreH63 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)) >= 0)) (PreH64 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)) >= 0)) (PreH65 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)) >= 0)) (PreH66 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)) >= 0)) (PreH67 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)) >= 0)) (PreH68 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)) >= 0)) (PreH69 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)) >= 0)) (PreH70 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)) >= 0)) (PreH71 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)) >= 0)) (PreH72 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)) >= 0)) (PreH73 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)) >= 0)) (PreH74 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch_2)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch_2)) (PreH79 : (batch_2 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (batch64_2 = 0)) (PreH82 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH83 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH84 : (0 <= batch_2)) (PreH85 : (batch_2 <= batch_pre)) (PreH86 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH87 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH88 : (voutput_min_2 = (u8_bound (lo)))) (PreH89 : (voutput_max = (u8_bound (hi)))) (PreH90 : (batch64 <= 0)) (PreH91 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH92 : (0 <= batch64)) (PreH93 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH94 : (0 <= (batch_pre - batch ))) (PreH95 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH96 : (0 <= batch)) (PreH97 : (batch <= batch_pre)) (PreH98 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH99 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH100 : (voutput_min = (u8_bound (lo)))) (PreH101 : (voutput_max_2 = (u8_bound (hi)))) (PreH102 : (1 <> 0)) (PreH103 : (output_pre <> 0)) (PreH104 : (1 <> 0)) (PreH105 : (input_pre <> 0)) (PreH106 : (1 <> 0)) (PreH107 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH108 : (1 <> 0)) (PreH109 : (batch_pre <> 0)) (PreH110 : (0 < batch_pre)) (PreH111 : (batch_pre <= 18446744073709551608)) (PreH112 : (input_pre <> 0)) (PreH113 : (output_pre <> 0)) (PreH114 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 <= voutput_max) ”
+.
+
+Definition test_rvv_partial_solve_wit_18_pure_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max_2: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (batch_2 <= UINT64_MAX)) (PreH2 : (batch64_2 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch_2 >= 0)) (PreH5 : (batch64_2 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)) >= 0)) (PreH44 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)) >= 0)) (PreH45 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)) >= 0)) (PreH46 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)) >= 0)) (PreH47 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)) >= 0)) (PreH48 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)) >= 0)) (PreH49 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)) >= 0)) (PreH50 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)) >= 0)) (PreH51 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)) >= 0)) (PreH52 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)) >= 0)) (PreH53 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)) >= 0)) (PreH54 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)) >= 0)) (PreH55 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)) >= 0)) (PreH56 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)) >= 0)) (PreH57 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)) >= 0)) (PreH58 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)) >= 0)) (PreH59 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)) >= 0)) (PreH60 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)) >= 0)) (PreH61 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)) >= 0)) (PreH62 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)) >= 0)) (PreH63 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)) >= 0)) (PreH64 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)) >= 0)) (PreH65 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)) >= 0)) (PreH66 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)) >= 0)) (PreH67 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)) >= 0)) (PreH68 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)) >= 0)) (PreH69 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)) >= 0)) (PreH70 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)) >= 0)) (PreH71 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)) >= 0)) (PreH72 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)) >= 0)) (PreH73 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)) >= 0)) (PreH74 : ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch_2)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch_2)) (PreH79 : (batch_2 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (batch64_2 = 0)) (PreH82 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH83 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH84 : (0 <= batch_2)) (PreH85 : (batch_2 <= batch_pre)) (PreH86 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH87 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH88 : (voutput_min_2 = (u8_bound (lo)))) (PreH89 : (voutput_max = (u8_bound (hi)))) (PreH90 : (batch64 <= 0)) (PreH91 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH92 : (0 <= batch64)) (PreH93 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH94 : (0 <= (batch_pre - batch ))) (PreH95 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH96 : (0 <= batch)) (PreH97 : (batch <= batch_pre)) (PreH98 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH99 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH100 : (voutput_min = (u8_bound (lo)))) (PreH101 : (voutput_max_2 = (u8_bound (hi)))) (PreH102 : (1 <> 0)) (PreH103 : (output_pre <> 0)) (PreH104 : (1 <> 0)) (PreH105 : (input_pre <> 0)) (PreH106 : (1 <> 0)) (PreH107 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH108 : (1 <> 0)) (PreH109 : (batch_pre <> 0)) (PreH110 : (0 < batch_pre)) (PreH111 : (batch_pre <= 18446744073709551608)) (PreH112 : (input_pre <> 0)) (PreH113 : (output_pre <> 0)) (PreH114 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (voutput_max <= 255) ”
+.
+
+Definition test_rvv_partial_solve_wit_18_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max_2: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max_2 = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_max <= 255) ” 
+  &&  “ (0 <= voutput_max) ” 
+  &&  “ (retval = (u8_vl (batch_2))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch_2) ” 
+  &&  “ (batch_2 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= batch_pre) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_18 := test_rvv_partial_solve_wit_18_pure -> test_rvv_partial_solve_wit_18_aux.
+
+Definition test_rvv_partial_solve_wit_19 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (retval_2: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (retval = (u8_vl (batch_2))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch_2) ” 
+  &&  “ (batch_2 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= batch_pre) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_20_pure := 
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min_2: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min_2 = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_min <= 255) ” 
+  &&  “ (0 <= voutput_min) ”
+) \/
+(
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min_2: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (batch_2 <= UINT64_MAX)) (PreH2 : (batch64_2 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch_2 >= 0)) (PreH5 : (batch64_2 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)) >= 0)) (PreH44 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)) >= 0)) (PreH45 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)) >= 0)) (PreH46 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)) >= 0)) (PreH47 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)) >= 0)) (PreH48 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)) >= 0)) (PreH49 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)) >= 0)) (PreH50 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)) >= 0)) (PreH51 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)) >= 0)) (PreH52 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)) >= 0)) (PreH53 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)) >= 0)) (PreH54 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)) >= 0)) (PreH55 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)) >= 0)) (PreH56 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)) >= 0)) (PreH57 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)) >= 0)) (PreH58 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)) >= 0)) (PreH59 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)) >= 0)) (PreH60 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)) >= 0)) (PreH61 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)) >= 0)) (PreH62 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)) >= 0)) (PreH63 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)) >= 0)) (PreH64 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)) >= 0)) (PreH65 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)) >= 0)) (PreH66 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)) >= 0)) (PreH67 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)) >= 0)) (PreH68 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)) >= 0)) (PreH69 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)) >= 0)) (PreH70 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)) >= 0)) (PreH71 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)) >= 0)) (PreH72 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)) >= 0)) (PreH73 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)) >= 0)) (PreH74 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch_2)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch_2)) (PreH79 : (batch_2 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (batch64_2 = 0)) (PreH82 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH83 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH84 : (0 <= batch_2)) (PreH85 : (batch_2 <= batch_pre)) (PreH86 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH87 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH88 : (voutput_min = (u8_bound (lo)))) (PreH89 : (voutput_max_2 = (u8_bound (hi)))) (PreH90 : (batch64 <= 0)) (PreH91 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH92 : (0 <= batch64)) (PreH93 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH94 : (0 <= (batch_pre - batch ))) (PreH95 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH96 : (0 <= batch)) (PreH97 : (batch <= batch_pre)) (PreH98 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH99 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH100 : (voutput_min_2 = (u8_bound (lo)))) (PreH101 : (voutput_max = (u8_bound (hi)))) (PreH102 : (1 <> 0)) (PreH103 : (output_pre <> 0)) (PreH104 : (1 <> 0)) (PreH105 : (input_pre <> 0)) (PreH106 : (1 <> 0)) (PreH107 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH108 : (1 <> 0)) (PreH109 : (batch_pre <> 0)) (PreH110 : (0 < batch_pre)) (PreH111 : (batch_pre <= 18446744073709551608)) (PreH112 : (input_pre <> 0)) (PreH113 : (output_pre <> 0)) (PreH114 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 <= voutput_min) ” 
+  &&  “ (voutput_min <= 255) ”
+).
+
+Definition test_rvv_partial_solve_wit_20_pure_split_goal_1 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min_2: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (batch_2 <= UINT64_MAX)) (PreH2 : (batch64_2 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch_2 >= 0)) (PreH5 : (batch64_2 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)) >= 0)) (PreH44 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)) >= 0)) (PreH45 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)) >= 0)) (PreH46 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)) >= 0)) (PreH47 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)) >= 0)) (PreH48 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)) >= 0)) (PreH49 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)) >= 0)) (PreH50 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)) >= 0)) (PreH51 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)) >= 0)) (PreH52 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)) >= 0)) (PreH53 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)) >= 0)) (PreH54 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)) >= 0)) (PreH55 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)) >= 0)) (PreH56 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)) >= 0)) (PreH57 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)) >= 0)) (PreH58 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)) >= 0)) (PreH59 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)) >= 0)) (PreH60 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)) >= 0)) (PreH61 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)) >= 0)) (PreH62 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)) >= 0)) (PreH63 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)) >= 0)) (PreH64 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)) >= 0)) (PreH65 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)) >= 0)) (PreH66 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)) >= 0)) (PreH67 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)) >= 0)) (PreH68 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)) >= 0)) (PreH69 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)) >= 0)) (PreH70 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)) >= 0)) (PreH71 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)) >= 0)) (PreH72 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)) >= 0)) (PreH73 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)) >= 0)) (PreH74 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch_2)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch_2)) (PreH79 : (batch_2 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (batch64_2 = 0)) (PreH82 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH83 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH84 : (0 <= batch_2)) (PreH85 : (batch_2 <= batch_pre)) (PreH86 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH87 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH88 : (voutput_min = (u8_bound (lo)))) (PreH89 : (voutput_max_2 = (u8_bound (hi)))) (PreH90 : (batch64 <= 0)) (PreH91 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH92 : (0 <= batch64)) (PreH93 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH94 : (0 <= (batch_pre - batch ))) (PreH95 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH96 : (0 <= batch)) (PreH97 : (batch <= batch_pre)) (PreH98 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH99 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH100 : (voutput_min_2 = (u8_bound (lo)))) (PreH101 : (voutput_max = (u8_bound (hi)))) (PreH102 : (1 <> 0)) (PreH103 : (output_pre <> 0)) (PreH104 : (1 <> 0)) (PreH105 : (input_pre <> 0)) (PreH106 : (1 <> 0)) (PreH107 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH108 : (1 <> 0)) (PreH109 : (batch_pre <> 0)) (PreH110 : (0 < batch_pre)) (PreH111 : (batch_pre <= 18446744073709551608)) (PreH112 : (input_pre <> 0)) (PreH113 : (output_pre <> 0)) (PreH114 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 <= voutput_min) ”
+.
+
+Definition test_rvv_partial_solve_wit_20_pure_split_goal_2 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min_2: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (batch_2 <= UINT64_MAX)) (PreH2 : (batch64_2 <= UINT64_MAX)) (PreH3 : (retval <= UINT64_MAX)) (PreH4 : (batch_2 >= 0)) (PreH5 : (batch64_2 >= 0)) (PreH6 : (retval >= 0)) (PreH7 : (hi <= UINT_MAX)) (PreH8 : (lo <= UINT_MAX)) (PreH9 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)) <= UINT_MAX)) (PreH10 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)) <= UINT_MAX)) (PreH11 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)) <= UINT_MAX)) (PreH12 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)) <= UINT_MAX)) (PreH13 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)) <= UINT_MAX)) (PreH14 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)) <= UINT_MAX)) (PreH15 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)) <= UINT_MAX)) (PreH16 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)) <= UINT_MAX)) (PreH17 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)) <= UINT_MAX)) (PreH18 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)) <= UINT_MAX)) (PreH19 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)) <= UINT_MAX)) (PreH20 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)) <= UINT_MAX)) (PreH21 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)) <= UINT_MAX)) (PreH22 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)) <= UINT_MAX)) (PreH23 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)) <= UINT_MAX)) (PreH24 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)) <= UINT_MAX)) (PreH25 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)) <= UINT_MAX)) (PreH26 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)) <= UINT_MAX)) (PreH27 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)) <= UINT_MAX)) (PreH28 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)) <= UINT_MAX)) (PreH29 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)) <= UINT_MAX)) (PreH30 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)) <= UINT_MAX)) (PreH31 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)) <= UINT_MAX)) (PreH32 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)) <= UINT_MAX)) (PreH33 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)) <= UINT_MAX)) (PreH34 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)) <= UINT_MAX)) (PreH35 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)) <= UINT_MAX)) (PreH36 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)) <= UINT_MAX)) (PreH37 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)) <= UINT_MAX)) (PreH38 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)) <= UINT_MAX)) (PreH39 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)) <= UINT_MAX)) (PreH40 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)) <= UINT_MAX)) (PreH41 : (hi >= 0)) (PreH42 : (lo >= 0)) (PreH43 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)) >= 0)) (PreH44 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)) >= 0)) (PreH45 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)) >= 0)) (PreH46 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)) >= 0)) (PreH47 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)) >= 0)) (PreH48 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)) >= 0)) (PreH49 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)) >= 0)) (PreH50 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)) >= 0)) (PreH51 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)) >= 0)) (PreH52 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)) >= 0)) (PreH53 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)) >= 0)) (PreH54 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)) >= 0)) (PreH55 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)) >= 0)) (PreH56 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)) >= 0)) (PreH57 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)) >= 0)) (PreH58 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)) >= 0)) (PreH59 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)) >= 0)) (PreH60 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)) >= 0)) (PreH61 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)) >= 0)) (PreH62 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)) >= 0)) (PreH63 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)) >= 0)) (PreH64 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)) >= 0)) (PreH65 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)) >= 0)) (PreH66 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)) >= 0)) (PreH67 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)) >= 0)) (PreH68 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)) >= 0)) (PreH69 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)) >= 0)) (PreH70 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)) >= 0)) (PreH71 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)) >= 0)) (PreH72 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)) >= 0)) (PreH73 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)) >= 0)) (PreH74 : ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)) >= 0)) (PreH75 : (retval = (u8_vl (batch_2)))) (PreH76 : (0 < retval)) (PreH77 : (retval <= 128)) (PreH78 : (retval <= batch_2)) (PreH79 : (batch_2 > 0)) (PreH80 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH81 : (batch64_2 = 0)) (PreH82 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH83 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH84 : (0 <= batch_2)) (PreH85 : (batch_2 <= batch_pre)) (PreH86 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH87 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH88 : (voutput_min = (u8_bound (lo)))) (PreH89 : (voutput_max_2 = (u8_bound (hi)))) (PreH90 : (batch64 <= 0)) (PreH91 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH92 : (0 <= batch64)) (PreH93 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH94 : (0 <= (batch_pre - batch ))) (PreH95 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH96 : (0 <= batch)) (PreH97 : (batch <= batch_pre)) (PreH98 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH99 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH100 : (voutput_min_2 = (u8_bound (lo)))) (PreH101 : (voutput_max = (u8_bound (hi)))) (PreH102 : (1 <> 0)) (PreH103 : (output_pre <> 0)) (PreH104 : (1 <> 0)) (PreH105 : (input_pre <> 0)) (PreH106 : (1 <> 0)) (PreH107 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH108 : (1 <> 0)) (PreH109 : (batch_pre <> 0)) (PreH110 : (0 < batch_pre)) (PreH111 : (batch_pre <= 18446744073709551608)) (PreH112 : (input_pre <> 0)) (PreH113 : (output_pre <> 0)) (PreH114 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch_2)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (voutput_min <= 255) ”
+.
+
+Definition test_rvv_partial_solve_wit_20_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min_2: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min_2 = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (voutput_min <= 255) ” 
+  &&  “ (0 <= voutput_min) ” 
+  &&  “ (retval = (u8_vl (batch_2))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch_2) ” 
+  &&  “ (batch_2 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= batch_pre) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_20 := test_rvv_partial_solve_wit_20_pure -> test_rvv_partial_solve_wit_20_aux.
+
+Definition test_rvv_partial_solve_wit_21 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (retval_2: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "vacc" ) ) )
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (retval = (u8_vl (batch_2))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch_2) ” 
+  &&  “ (batch_2 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= batch_pre) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&((retval_2)  # "vuint8m8_t" ->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_22 := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch_2: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch_2)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch_2)) (PreH5 : (batch_2 > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 ))) (PreH9 : ((batch_pre - batch_2 ) <= batch_pre)) (PreH10 : (0 <= batch_2)) (PreH11 : (batch_2 <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) ))) (PreH20 : (0 <= (batch_pre - batch ))) (PreH21 : ((batch_pre - batch ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch)) (PreH23 : (batch <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  (UndefStructPredvuint8m8_t ( &( "qcp_tmp" ) ) )
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+|--
+  “ (retval = (u8_vl (batch_2))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch_2) ” 
+  &&  “ (batch_2 > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= batch_pre) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch ) )) ” 
+  &&  “ (0 <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |->_)
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch_2 + 7 ) - retval ) (sublist (retval) ((batch_2 + 7 )) ((sublist ((batch_pre - batch_2 )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch_2 ) (sublist (0) ((batch_pre - batch_2 )) (A)) )
+  **  (UCharArray.undef_full output_2 batch_2 )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch_2 ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch_2 )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_23_pure := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch_2: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch)) (PreH5 : (batch > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))) (PreH9 : ((batch_pre - batch ) <= batch_pre)) (PreH10 : (0 <= batch)) (PreH11 : (batch <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) ))) (PreH20 : (0 <= (batch_pre - batch_2 ))) (PreH21 : ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch_2)) (PreH23 : (batch_2 <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  ((( &( "vl" ) )) # UInt64  |-> retval)
+  **  ((( &( "batch64" ) )) # UInt64  |-> batch64_2)
+  **  ((( &( "batch" ) )) # UInt64  |-> batch)
+  **  ((( &( "input" ) )) # Ptr  |-> input_2)
+  **  ((( &( "output" ) )) # Ptr  |-> output_2)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "voutput_min" ) )) # UChar  |-> voutput_min_2)
+  **  ((( &( "voutput_max" ) )) # UChar  |-> voutput_max_2)
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch) ” 
+  &&  “ (batch <= UINT64_MAX) ”
+.
+
+Definition test_rvv_partial_solve_wit_23_aux := 
+forall (params_pre: Z) (output_pre: Z) (input_pre: Z) (batch_pre: Z) (hi: Z) (lo: Z) (A: (@list Z)) (voutput_max: Z) (voutput_min: Z) (output: Z) (input: Z) (batch_2: Z) (batch64: Z) (voutput_max_2: Z) (voutput_min_2: Z) (output_2: Z) (input_2: Z) (batch: Z) (batch64_2: Z) (retval: Z) (PreH1 : (retval = (u8_vl (batch)))) (PreH2 : (0 < retval)) (PreH3 : (retval <= 128)) (PreH4 : (retval <= batch)) (PreH5 : (batch > 0)) (PreH6 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH7 : (batch64_2 = 0)) (PreH8 : ((u8_prefix_n (batch_pre)) <= (batch_pre - batch ))) (PreH9 : ((batch_pre - batch ) <= batch_pre)) (PreH10 : (0 <= batch)) (PreH11 : (batch <= batch_pre)) (PreH12 : (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH13 : (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR))))) (PreH14 : (voutput_min_2 = (u8_bound (lo)))) (PreH15 : (voutput_max_2 = (u8_bound (hi)))) (PreH16 : (batch64 <= 0)) (PreH17 : ((Zlength (A)) = (batch_pre + 7 ))) (PreH18 : (0 <= batch64)) (PreH19 : (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) ))) (PreH20 : (0 <= (batch_pre - batch_2 ))) (PreH21 : ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre)))) (PreH22 : (0 <= batch_2)) (PreH23 : (batch_2 <= batch_pre)) (PreH24 : (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH25 : (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR))))) (PreH26 : (voutput_min = (u8_bound (lo)))) (PreH27 : (voutput_max = (u8_bound (hi)))) (PreH28 : (1 <> 0)) (PreH29 : (output_pre <> 0)) (PreH30 : (1 <> 0)) (PreH31 : (input_pre <> 0)) (PreH32 : (1 <> 0)) (PreH33 : ((batch_pre % ( sizeof(UCHAR) ) ) = 0)) (PreH34 : (1 <> 0)) (PreH35 : (batch_pre <> 0)) (PreH36 : (0 < batch_pre)) (PreH37 : (batch_pre <= 18446744073709551608)) (PreH38 : (input_pre <> 0)) (PreH39 : (output_pre <> 0)) (PreH40 : (params_pre <> 0)) ,
+  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  (UCharArray.undef_full output_2 batch )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+|--
+  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch) ” 
+  &&  “ (batch <= UINT64_MAX) ” 
+  &&  “ (retval = (u8_vl (batch))) ” 
+  &&  “ (0 < retval) ” 
+  &&  “ (retval <= 128) ” 
+  &&  “ (retval <= batch) ” 
+  &&  “ (batch > 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (batch64_2 = 0) ” 
+  &&  “ ((u8_prefix_n (batch_pre)) <= (batch_pre - batch )) ” 
+  &&  “ ((batch_pre - batch ) <= batch_pre) ” 
+  &&  “ (0 <= batch) ” 
+  &&  “ (batch <= batch_pre) ” 
+  &&  “ (input_2 = (input_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (output_2 = (output_pre + ((batch_pre - batch ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min_2 = (u8_bound (lo))) ” 
+  &&  “ (voutput_max_2 = (u8_bound (hi))) ” 
+  &&  “ (batch64 <= 0) ” 
+  &&  “ ((Zlength (A)) = (batch_pre + 7 )) ” 
+  &&  “ (0 <= batch64) ” 
+  &&  “ (batch64 = ((u8_prefix_n (batch_pre)) - (batch_pre - batch_2 ) )) ” 
+  &&  “ (0 <= (batch_pre - batch_2 )) ” 
+  &&  “ ((batch_pre - batch_2 ) <= (u8_prefix_n (batch_pre))) ” 
+  &&  “ (0 <= batch_2) ” 
+  &&  “ (batch_2 <= batch_pre) ” 
+  &&  “ (input = (input_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (output = (output_pre + ((batch_pre - batch_2 ) * sizeof(UCHAR)))) ” 
+  &&  “ (voutput_min = (u8_bound (lo))) ” 
+  &&  “ (voutput_max = (u8_bound (hi))) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ ((batch_pre % ( sizeof(UCHAR) ) ) = 0) ” 
+  &&  “ (1 <> 0) ” 
+  &&  “ (batch_pre <> 0) ” 
+  &&  “ (0 < batch_pre) ” 
+  &&  “ (batch_pre <= 18446744073709551608) ” 
+  &&  “ (input_pre <> 0) ” 
+  &&  “ (output_pre <> 0) ” 
+  &&  “ (params_pre <> 0) ”
+  &&  ((&(( &( "qcp_tmp" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "qcp_tmp" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  (UCharArray.undef_seg output_2 0 batch )
+  **  ((&(( &( "vacc" ) )->ₛ "w31")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (31))) (voutput_max_2) (retval) (31))) (voutput_min_2) (retval) (31)))
+  **  ((&(( &( "vacc" ) )->ₛ "w30")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (30))) (voutput_max_2) (retval) (30))) (voutput_min_2) (retval) (30)))
+  **  ((&(( &( "vacc" ) )->ₛ "w29")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (29))) (voutput_max_2) (retval) (29))) (voutput_min_2) (retval) (29)))
+  **  ((&(( &( "vacc" ) )->ₛ "w28")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (28))) (voutput_max_2) (retval) (28))) (voutput_min_2) (retval) (28)))
+  **  ((&(( &( "vacc" ) )->ₛ "w27")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (27))) (voutput_max_2) (retval) (27))) (voutput_min_2) (retval) (27)))
+  **  ((&(( &( "vacc" ) )->ₛ "w26")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (26))) (voutput_max_2) (retval) (26))) (voutput_min_2) (retval) (26)))
+  **  ((&(( &( "vacc" ) )->ₛ "w25")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (25))) (voutput_max_2) (retval) (25))) (voutput_min_2) (retval) (25)))
+  **  ((&(( &( "vacc" ) )->ₛ "w24")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (24))) (voutput_max_2) (retval) (24))) (voutput_min_2) (retval) (24)))
+  **  ((&(( &( "vacc" ) )->ₛ "w23")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (23))) (voutput_max_2) (retval) (23))) (voutput_min_2) (retval) (23)))
+  **  ((&(( &( "vacc" ) )->ₛ "w22")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (22))) (voutput_max_2) (retval) (22))) (voutput_min_2) (retval) (22)))
+  **  ((&(( &( "vacc" ) )->ₛ "w21")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (21))) (voutput_max_2) (retval) (21))) (voutput_min_2) (retval) (21)))
+  **  ((&(( &( "vacc" ) )->ₛ "w20")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (20))) (voutput_max_2) (retval) (20))) (voutput_min_2) (retval) (20)))
+  **  ((&(( &( "vacc" ) )->ₛ "w19")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (19))) (voutput_max_2) (retval) (19))) (voutput_min_2) (retval) (19)))
+  **  ((&(( &( "vacc" ) )->ₛ "w18")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (18))) (voutput_max_2) (retval) (18))) (voutput_min_2) (retval) (18)))
+  **  ((&(( &( "vacc" ) )->ₛ "w17")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (17))) (voutput_max_2) (retval) (17))) (voutput_min_2) (retval) (17)))
+  **  ((&(( &( "vacc" ) )->ₛ "w16")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (16))) (voutput_max_2) (retval) (16))) (voutput_min_2) (retval) (16)))
+  **  ((&(( &( "vacc" ) )->ₛ "w15")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (15))) (voutput_max_2) (retval) (15))) (voutput_min_2) (retval) (15)))
+  **  ((&(( &( "vacc" ) )->ₛ "w14")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (14))) (voutput_max_2) (retval) (14))) (voutput_min_2) (retval) (14)))
+  **  ((&(( &( "vacc" ) )->ₛ "w13")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (13))) (voutput_max_2) (retval) (13))) (voutput_min_2) (retval) (13)))
+  **  ((&(( &( "vacc" ) )->ₛ "w12")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (12))) (voutput_max_2) (retval) (12))) (voutput_min_2) (retval) (12)))
+  **  ((&(( &( "vacc" ) )->ₛ "w11")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (11))) (voutput_max_2) (retval) (11))) (voutput_min_2) (retval) (11)))
+  **  ((&(( &( "vacc" ) )->ₛ "w10")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (10))) (voutput_max_2) (retval) (10))) (voutput_min_2) (retval) (10)))
+  **  ((&(( &( "vacc" ) )->ₛ "w9")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (9))) (voutput_max_2) (retval) (9))) (voutput_min_2) (retval) (9)))
+  **  ((&(( &( "vacc" ) )->ₛ "w8")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (8))) (voutput_max_2) (retval) (8))) (voutput_min_2) (retval) (8)))
+  **  ((&(( &( "vacc" ) )->ₛ "w7")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (7))) (voutput_max_2) (retval) (7))) (voutput_min_2) (retval) (7)))
+  **  ((&(( &( "vacc" ) )->ₛ "w6")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (6))) (voutput_max_2) (retval) (6))) (voutput_min_2) (retval) (6)))
+  **  ((&(( &( "vacc" ) )->ₛ "w5")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (5))) (voutput_max_2) (retval) (5))) (voutput_min_2) (retval) (5)))
+  **  ((&(( &( "vacc" ) )->ₛ "w4")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (4))) (voutput_max_2) (retval) (4))) (voutput_min_2) (retval) (4)))
+  **  ((&(( &( "vacc" ) )->ₛ "w3")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (3))) (voutput_max_2) (retval) (3))) (voutput_min_2) (retval) (3)))
+  **  ((&(( &( "vacc" ) )->ₛ "w2")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (2))) (voutput_max_2) (retval) (2))) (voutput_min_2) (retval) (2)))
+  **  ((&(( &( "vacc" ) )->ₛ "w1")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (1))) (voutput_max_2) (retval) (1))) (voutput_min_2) (retval) (1)))
+  **  ((&(( &( "vacc" ) )->ₛ "w0")) # UInt  |-> (word_max ((word_min ((word_load ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A))) (retval) (0))) (voutput_max_2) (retval) (0))) (voutput_min_2) (retval) (0)))
+  **  (UCharArray.seg input_2 0 retval (sublist (0) (retval) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.full (input_2 + (retval * sizeof(UCHAR))) ((batch + 7 ) - retval ) (sublist (retval) ((batch + 7 )) ((sublist ((batch_pre - batch )) ((batch_pre + 7 )) (A)))) )
+  **  (UCharArray.seg input_pre 0 (batch_pre - batch ) (sublist (0) ((batch_pre - batch )) (A)) )
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "min")) # UInt  |-> lo)
+  **  ((&((params_pre)  # "xnn_u8_minmax_params" ->ₛ "scalar" .ₛ "max")) # UInt  |-> hi)
+  **  (UCharArray.seg output_pre 0 (batch_pre - batch ) (app ((u8_prefix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist (0) ((u8_prefix_n (batch_pre))) (A))))) ((u8_suffix_list ((u8_bound (lo))) ((u8_bound (hi))) ((sublist ((u8_prefix_n (batch_pre))) ((batch_pre - batch )) (A)))))) )
+.
+
+Definition test_rvv_partial_solve_wit_23 := test_rvv_partial_solve_wit_23_pure -> test_rvv_partial_solve_wit_23_aux.
+
+Module Type VC_Correct.
+
+Include packed_copy_Strategy_Correct.
+Include arrays_Strategy_Correct.
+
+Axiom proof_of_qcp_assert_safety_wit_1 : qcp_assert_safety_wit_1.
+Axiom proof_of_qcp_assert_entail_wit_1 : qcp_assert_entail_wit_1.
+Axiom proof_of_qcp_assert_entail_wit_2 : qcp_assert_entail_wit_2.
+Axiom proof_of_qcp_assert_return_wit_1 : qcp_assert_return_wit_1.
+Axiom proof_of_test_rvv_safety_wit_1 : test_rvv_safety_wit_1.
+Axiom proof_of_test_rvv_safety_wit_2 : test_rvv_safety_wit_2.
+Axiom proof_of_test_rvv_safety_wit_3 : test_rvv_safety_wit_3.
+Axiom proof_of_test_rvv_safety_wit_4 : test_rvv_safety_wit_4.
+Axiom proof_of_test_rvv_safety_wit_5 : test_rvv_safety_wit_5.
+Axiom proof_of_test_rvv_safety_wit_6 : test_rvv_safety_wit_6.
+Axiom proof_of_test_rvv_safety_wit_7 : test_rvv_safety_wit_7.
+Axiom proof_of_test_rvv_safety_wit_8 : test_rvv_safety_wit_8.
+Axiom proof_of_test_rvv_safety_wit_9 : test_rvv_safety_wit_9.
+Axiom proof_of_test_rvv_safety_wit_10 : test_rvv_safety_wit_10.
+Axiom proof_of_test_rvv_safety_wit_11 : test_rvv_safety_wit_11.
+Axiom proof_of_test_rvv_safety_wit_12 : test_rvv_safety_wit_12.
+Axiom proof_of_test_rvv_entail_wit_1 : test_rvv_entail_wit_1.
+Axiom proof_of_test_rvv_entail_wit_2 : test_rvv_entail_wit_2.
+Axiom proof_of_test_rvv_entail_wit_3 : test_rvv_entail_wit_3.
+Axiom proof_of_test_rvv_entail_wit_4 : test_rvv_entail_wit_4.
+Axiom proof_of_test_rvv_return_wit_1 : test_rvv_return_wit_1.
+Axiom proof_of_test_rvv_partial_solve_wit_1 : test_rvv_partial_solve_wit_1.
+Axiom proof_of_test_rvv_partial_solve_wit_2 : test_rvv_partial_solve_wit_2.
+Axiom proof_of_test_rvv_partial_solve_wit_3 : test_rvv_partial_solve_wit_3.
+Axiom proof_of_test_rvv_partial_solve_wit_4 : test_rvv_partial_solve_wit_4.
+Axiom proof_of_test_rvv_partial_solve_wit_5 : test_rvv_partial_solve_wit_5.
+Axiom proof_of_test_rvv_partial_solve_wit_6_pure : test_rvv_partial_solve_wit_6_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_6 : test_rvv_partial_solve_wit_6.
+Axiom proof_of_test_rvv_partial_solve_wit_7_pure : test_rvv_partial_solve_wit_7_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_7 : test_rvv_partial_solve_wit_7.
+Axiom proof_of_test_rvv_partial_solve_wit_8 : test_rvv_partial_solve_wit_8.
+Axiom proof_of_test_rvv_partial_solve_wit_9_pure : test_rvv_partial_solve_wit_9_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_9 : test_rvv_partial_solve_wit_9.
+Axiom proof_of_test_rvv_partial_solve_wit_10 : test_rvv_partial_solve_wit_10.
+Axiom proof_of_test_rvv_partial_solve_wit_11_pure : test_rvv_partial_solve_wit_11_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_11 : test_rvv_partial_solve_wit_11.
+Axiom proof_of_test_rvv_partial_solve_wit_12 : test_rvv_partial_solve_wit_12.
+Axiom proof_of_test_rvv_partial_solve_wit_13 : test_rvv_partial_solve_wit_13.
+Axiom proof_of_test_rvv_partial_solve_wit_14_pure : test_rvv_partial_solve_wit_14_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_14 : test_rvv_partial_solve_wit_14.
+Axiom proof_of_test_rvv_partial_solve_wit_15_pure : test_rvv_partial_solve_wit_15_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_15 : test_rvv_partial_solve_wit_15.
+Axiom proof_of_test_rvv_partial_solve_wit_16_pure : test_rvv_partial_solve_wit_16_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_16 : test_rvv_partial_solve_wit_16.
+Axiom proof_of_test_rvv_partial_solve_wit_17 : test_rvv_partial_solve_wit_17.
+Axiom proof_of_test_rvv_partial_solve_wit_18_pure : test_rvv_partial_solve_wit_18_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_18 : test_rvv_partial_solve_wit_18.
+Axiom proof_of_test_rvv_partial_solve_wit_19 : test_rvv_partial_solve_wit_19.
+Axiom proof_of_test_rvv_partial_solve_wit_20_pure : test_rvv_partial_solve_wit_20_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_20 : test_rvv_partial_solve_wit_20.
+Axiom proof_of_test_rvv_partial_solve_wit_21 : test_rvv_partial_solve_wit_21.
+Axiom proof_of_test_rvv_partial_solve_wit_22 : test_rvv_partial_solve_wit_22.
+Axiom proof_of_test_rvv_partial_solve_wit_23_pure : test_rvv_partial_solve_wit_23_pure.
+Axiom proof_of_test_rvv_partial_solve_wit_23 : test_rvv_partial_solve_wit_23.
+
+End VC_Correct.

@@ -2,7 +2,7 @@
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
 
-此前新增 [QU8→FP32 修复／兼容版](verified/qu8-f32-vcvt/README.zh-CN.md) 通过完整统一门禁；当前目标至少21个。新增 [QS8 转换修复版](verified/qs8-vcvt/README.md) 已通过完整门禁及发布身份检查。
+此前新增 [QU8→FP32 修复／兼容版](verified/qu8-f32-vcvt/README.zh-CN.md) 通过完整统一门禁；当前目标至少21个。QS8 转换的历史准入因类型宽度审计已撤销，见 candidates/qs8-vcvt/。
 
 2026-10-23 集成了环境 PR #5、GEMM 模型 PR #6、前端复现 PR #7 和 u8 尾存储 PR #8。
 独立重放与本次 GEMM 推进见 [集成记录](audit/integration-20261023/README.zh-CN.md)。
@@ -157,3 +157,5 @@ python3 verification/qcp/tools/generate_review.py
 新增 [QS8 求和两侧模32溢出修复版](verified/qs8-rsum/README.zh-CN.md)，完整门禁和独立发布核对通过。
 
 新增 [FP32 取整原始实现](verified/f32-vrndne/README.zh-CN.md)，完整门禁及独立发布核对通过。
+
+新增 [u8-vclamp](verified/u8-vclamp/README.md)，与 s8-vclamp 是两项。QS8转换因模型/native size_t宽度不符[退回重验](candidates/qs8-vcvt/README.md)，当前有效16/40；历史通过记录不等于当前准入。

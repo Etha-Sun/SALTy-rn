@@ -1,0 +1,295 @@
+{
+  "passed": true,
+  "records": [
+    {
+      "label": "compile-repaired",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Dqcp_assert=rvv_assert",
+        "-D__riscv_vsetvl_e8m8=monitored_vsetvl",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/rvv_repaired/raw.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/repaired.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.06546575692482293,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-original",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Dqcp_assert=rvv_assert",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/rvv_original/raw.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/original.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.0656521210912615,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-balanced",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Dqcp_assert=original_assert",
+        "-Dtest_rvv=test_original",
+        "-D__riscv_vsetvl_e8m8=balanced_vsetvl",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/rvv_original/raw.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/balanced.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.06557963998056948,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-wrong",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Dqcp_assert=rvv_assert",
+        "-D__riscv_vsetvl_e8m8=monitored_vsetvl",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/rvv_repaired/wrong.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/wrong.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.06500847707502544,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-caller",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/public/public_unit.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/caller.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.07440863689407706,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-packed",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/rvv_original/packed_impl.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/packed.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.21639945590868592,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "compile-neon",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-Dqcp_assert=neon_assert",
+        "-Dqcp_u8_min=neon_min",
+        "-Dqcp_u8_max=neon_max",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/neon/raw.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/neon.o"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.46735374396666884,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "link-repaired",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DEXPECT_CAPPED_AVL",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/packed.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/balanced.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/caller.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/repaired.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/repaired-test"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.3331585400737822,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-repaired",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/repaired-test"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 2.469840240897611,
+      "log_sha256": "f104044338215cf97102a1bc6418f5368574da9136046d0bc2d70ee60ce638c3"
+    },
+    {
+      "label": "link-original",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/packed.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/balanced.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/caller.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/original.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/original-test"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.2225118330679834,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-original",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/original-test"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 2.5361580830067396,
+      "log_sha256": "7fe9c5faef5d867970ff58044ec27e1a70fa1d22168b66b7005e04cc8f679752"
+    },
+    {
+      "label": "link-negative",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DEXPECT_CAPPED_AVL",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/packed.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/balanced.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/caller.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/wrong.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/negative"
+      ],
+      "exit": 0,
+      "expected_exit": 0,
+      "seconds": 0.16482942108996212,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-negative",
+      "command": [
+        "env",
+        "ASAN_OPTIONS=detect_leaks=0",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/u8-vclamp/.build/root-native-xq5v74qv/native/negative"
+      ],
+      "exit": 2,
+      "expected_exit": 2,
+      "seconds": 0.008086720947176218,
+      "log_sha256": "9c1ca37b5d34dd05935703c577ec9118865168827beb7150e4fb05e69bba3adf"
+    }
+  ],
+  "cases_per_variant": 65536,
+  "positive_variants": [
+    "original",
+    "repaired"
+  ],
+  "wrong_phase_negative_control_rejected": true,
+  "ASan_UBSan": true,
+  "independent_scalar_oracle": true,
+  "alternate_legal_VL_policy": true,
+  "formal_proof": false,
+  "source_sha256": {
+    "harness.c": "78058e3c92b7df17c8d5640f15453a5653b82b28bccd8d8e7dfda1e144c37dc1",
+    "neon/arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+    "neon/full_neon_shim.c": "a3fa1acdf01bc9c99c5f9102e372192ba10ba21cabfb8d2c9dcf02ee4e82eaea",
+    "neon/u8_copy.h": "a39e55842abd9b3dc60eab6eb5cda430ac06563929bb0003334e1bafc4352c3e",
+    "neon/tail.c": "54889da617e2308514906b31e8425d8384b4dd7a01f16934a50b3c550c7e8fa3",
+    "neon/raw.c": "aa730901745170a5646f6408145bc4182cfbf1c77b038f24ce7510e1e2c914a2",
+    "neon/unit.c": "2acaa024a13f14ed43304620357f83518eaee134c70ba6c0a7349ffeb2b99fb9",
+    "neon/kernel_frontend.h": "c6bd15cac89f6255f894d754cc858c22073234267c00ced76719ae3be8742382",
+    "neon/le_store.c": "093f796b266fed595df36c820ae533578f5d1f0d05ea4390102d727766be64b4",
+    "rvv_original/arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+    "rvv_original/packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+    "rvv_original/raw.c": "3e1536550e9f636d40478935115ef3fac47e9106996d9955ffe4c54cef4f5421",
+    "rvv_original/packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+    "rvv_original/packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+    "rvv_original/unit.c": "adfa383a699bb107f79047b51478f8dd22c2080649452eb8bc08b63c1d58541b",
+    "rvv_original/kernel_frontend.h": "911f05480b24fbfff9ae6d84a38b0aa35c25222147ff79c4e57c5cd6ebdad5d1",
+    "public/public_unit.c": "a29df9aee5ddbf359c718ad3d696ed0fe11a4b88c155d2f2c1ffbdd18b120b77",
+    "public/arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+    "public/full_neon_shim.c": "a3fa1acdf01bc9c99c5f9102e372192ba10ba21cabfb8d2c9dcf02ee4e82eaea",
+    "public/u8_copy.h": "a39e55842abd9b3dc60eab6eb5cda430ac06563929bb0003334e1bafc4352c3e",
+    "public/tail.c": "54889da617e2308514906b31e8425d8384b4dd7a01f16934a50b3c550c7e8fa3",
+    "public/kernel_frontend.h": "c6bd15cac89f6255f894d754cc858c22073234267c00ced76719ae3be8742382",
+    "public/le_store.c": "093f796b266fed595df36c820ae533578f5d1f0d05ea4390102d727766be64b4",
+    "rvv_repaired/arrays.h": "47a45852ee6851af08664ba5fabffc0a2dceac281e3c59aa19903a1fe1e036bc",
+    "rvv_repaired/packed.h": "b6d82c758826097ac19684727bad3558f04273a92aba19a9030f42ad638b1fc5",
+    "rvv_repaired/wrong.c": "6c26404343d40ab99c2032d333faaae48297c1c03738a4e567e431ec5744f171",
+    "rvv_repaired/raw.c": "78d9cfb4262251723d185e668e7299d696b6a05b4c94786535f7e8b2cf656a24",
+    "rvv_repaired/packed_impl.c": "c37c5c7f1afe7e95dc811de26c459ad59338dc3f90c1df04d47f82a13607a7b3",
+    "rvv_repaired/packed_copy.h": "96dc6b0259f345e2697d033cab79b808e6a25d66d20498a723d1ac9cb70ee03b",
+    "rvv_repaired/unit.c": "0d4e4836cf086763f9a78d7de14d7630d9e306c3a5ac4e6dc6964f38832ed9bb",
+    "rvv_repaired/kernel_frontend.h": "911f05480b24fbfff9ae6d84a38b0aa35c25222147ff79c4e57c5cd6ebdad5d1"
+  }
+}

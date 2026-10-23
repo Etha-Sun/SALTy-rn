@@ -1,0 +1,228 @@
+#include "arrays.h"
+id : 1
+priority : core(0)
+left : UCharArray::undef_full(?p,?n) at 0
+right : undef_data_at(?q,U8) at 1
+check : infer(q == p); infer(0 < n);
+action : left_erase(0); left_add(undef_data_at(p,U8)); left_add(UCharArray::undef_seg(p,1,n));
+id : 2
+priority : core(1)
+left : UCharArray::full(?p,?n,?l) at 0
+right : store(?p+(?i*sizeof(U8)),U8,?v) at 1
+check : infer(0 <= i); infer(i < n);
+action : right_erase(1); left_erase(0); left_add(UCharArray::missing_i(p,i,0,n,l)); right_add(v == l[i]);
+id : 3
+priority : post(1)
+left : UCharArray::missing_i(?p,?i,0,?n,?l) at 0 store(p+i*sizeof(U8),U8,l[i]) at 1
+check : infer(0 <= i); infer(i < n);
+action : left_erase(1); left_erase(0); left_add(UCharArray::full(p,n,l));
+id : 4
+priority : core(0)
+right : UCharArray::full(?p,0,?l) at 0
+action : right_erase(0); right_add(l == nil{Z});
+id : 11
+priority : core(2)
+right : UCharArray::full(?p,1,?l) at 0
+action : right_erase(0); right_add(Zlength{Z}(l)==1);
+ right_add(store(p+0,U8,l[0]));
+id : 12
+priority : core(2)
+right : UCharArray::full(?p,2,?l) at 0
+action : right_erase(0); right_add(Zlength{Z}(l)==2);
+ right_add(store(p+0,U8,l[0]));
+ right_add(store(p+1,U8,l[1]));
+id : 14
+priority : core(2)
+right : UCharArray::full(?p,4,?l) at 0
+action : right_erase(0); right_add(Zlength{Z}(l)==4);
+ right_add(store(p+0,U8,l[0]));
+ right_add(store(p+1,U8,l[1]));
+ right_add(store(p+2,U8,l[2]));
+ right_add(store(p+3,U8,l[3]));
+id : 18
+priority : core(2)
+right : UCharArray::full(?p,8,?l) at 0
+action : right_erase(0); right_add(Zlength{Z}(l)==8);
+ right_add(store(p+0,U8,l[0]));
+ right_add(store(p+1,U8,l[1]));
+ right_add(store(p+2,U8,l[2]));
+ right_add(store(p+3,U8,l[3]));
+ right_add(store(p+4,U8,l[4]));
+ right_add(store(p+5,U8,l[5]));
+ right_add(store(p+6,U8,l[6]));
+ right_add(store(p+7,U8,l[7]));
+id : 26
+priority : core(2)
+right : UCharArray::full(?p,16,?l) at 0
+action : right_erase(0); right_add(Zlength{Z}(l)==16);
+ right_add(store(p+0,U8,l[0]));
+ right_add(store(p+1,U8,l[1]));
+ right_add(store(p+2,U8,l[2]));
+ right_add(store(p+3,U8,l[3]));
+ right_add(store(p+4,U8,l[4]));
+ right_add(store(p+5,U8,l[5]));
+ right_add(store(p+6,U8,l[6]));
+ right_add(store(p+7,U8,l[7]));
+ right_add(store(p+8,U8,l[8]));
+ right_add(store(p+9,U8,l[9]));
+ right_add(store(p+10,U8,l[10]));
+ right_add(store(p+11,U8,l[11]));
+ right_add(store(p+12,U8,l[12]));
+ right_add(store(p+13,U8,l[13]));
+ right_add(store(p+14,U8,l[14]));
+ right_add(store(p+15,U8,l[15]));
+
+id : 40
+priority : core(0)
+right : UCharArray::undef_seg(?p,0,?n) at 0
+action : right_erase(0);right_add(UCharArray::undef_full(p,n));
+
+id : 101
+priority : core(0)
+right : UCharArray::seg(?p,?lo,?hi,?l) at 0
+check : infer(lo == hi);
+action : right_erase(0);
+         right_add(l == nil{Z});
+id : 102
+priority : core(0)
+left : UCharArray::full(?p,?n,?l1) at 0
+right : UCharArray::full(pointer_offset(p,?i,U8),n,?l2) at 1
+check : infer(i == 0);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l1 == l2);
+id : 103
+priority : core(0)
+left : UCharArray::undef_full(?p,?n) at 0
+right : UCharArray::undef_full(pointer_offset(p,?i,U8),n) at 1
+check : infer(i == 0);
+action : left_erase(0);
+         right_erase(1);
+id : 104
+priority : post(0)
+left : UCharArray::undef_full(pointer_offset(?p,?i,U8),?n) at 0
+check : infer(i == 0);
+action : left_erase(0);
+         left_add(UCharArray::undef_full(p,n));
+id : 105
+priority : core(0)
+left : UCharArray::full(?q,?n1,?l1) at 0
+right : UCharArray::full(?p,?n2,?l2) at 1
+check : infer(q == p);
+        infer(n1 == n2);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l1 == l2);
+id : 106
+priority : core(0)
+left : UCharArray::undef_full(?q,?n1) at 0
+right : UCharArray::undef_full(?p,?n2) at 1
+check : infer(q == p);
+        infer(n1 == n2);
+action : left_erase(0);
+         right_erase(1);
+id : 107
+priority : core(0)
+left : UCharArray::seg(?q,?lo1,?hi1,?l1) at 0
+right : UCharArray::seg(?p,?lo2,?hi2,?l2) at 1
+check : infer(q == p);
+        infer(lo1 == lo2);
+        infer(hi1 == hi2);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l1 == l2);
+id : 108
+priority : core(0)
+left : UCharArray::seg(?p,0,?hi1,?l1) at 0
+right : UCharArray::seg(p,0,?hi2,?l2) at 1
+check : infer(hi1 == hi2);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l1 == l2);
+id : 150
+priority : core(0)
+left : UCharArray::undef_full(?q,?n1) at 0
+right : UCharArray::undef_full(?p,?n2) at 1
+check : infer(q == p);
+action : left_erase(0);right_erase(1);right_add(n1 == n2);
+id : 151
+priority : core(0)
+left : UCharArray::full(?q,?n1,?l1) at 0
+right : UCharArray::full(?p,?n2,?l2) at 1
+check : infer(q == p);
+action : left_erase(0);right_erase(1);right_add(n1 == n2);right_add(l1 == l2);
+
+id : 200
+priority : core(0)
+left : UCharArray::undef_seg(?p,0,?n) at 0
+right : undef_data_at(p+(?i*sizeof(U8)),U8) at 1
+check : infer(4 <= n); infer(0 <= i); infer(i < 4);
+action : left_erase(0);
+left_add(undef_data_at(p+0*sizeof(U8),U8));
+left_add(undef_data_at(p+1*sizeof(U8),U8));
+left_add(undef_data_at(p+2*sizeof(U8),U8));
+left_add(undef_data_at(p+3*sizeof(U8),U8));
+left_add(UCharArray::undef_seg(p,4,n));
+
+id : 201
+priority : core(0)
+left : UCharArray::undef_seg(?p,0,?n) at 0
+right : undef_data_at(p+(?i*sizeof(U8)),U8) at 1
+check : infer(2 <= n); infer(0 <= i); infer(i < 2);
+action : left_erase(0);
+left_add(undef_data_at(p+0*sizeof(U8),U8));
+left_add(undef_data_at(p+1*sizeof(U8),U8));
+left_add(UCharArray::undef_seg(p,2,n));
+
+id : 202
+priority : core(0)
+left : UCharArray::undef_seg(?p,0,?n) at 0
+right : undef_data_at(p+(?i*sizeof(U8)),U8) at 1
+check : infer(1 <= n); infer(0 <= i); infer(i < 1);
+action : left_erase(0);
+left_add(undef_data_at(p+0*sizeof(U8),U8));
+left_add(UCharArray::undef_seg(p,1,n));
+
+id : 203
+priority : core(0)
+left : UCharArray::undef_full(?p,?n) at 0
+right : undef_data_at(p+(?i*sizeof(U8)),U8) at 1
+check : infer(4 <= n); infer(0 <= i); infer(i < 4);
+action : left_erase(0);
+left_add(undef_data_at(p+0*sizeof(U8),U8));
+left_add(undef_data_at(p+1*sizeof(U8),U8));
+left_add(undef_data_at(p+2*sizeof(U8),U8));
+left_add(undef_data_at(p+3*sizeof(U8),U8));
+left_add(UCharArray::undef_seg(p,4,n));
+
+id : 204
+priority : core(0)
+left : UCharArray::undef_full(?p,?n) at 0
+right : undef_data_at(p+(?i*sizeof(U8)),U8) at 1
+check : infer(2 <= n); infer(0 <= i); infer(i < 2);
+action : left_erase(0);
+left_add(undef_data_at(p+0*sizeof(U8),U8));
+left_add(undef_data_at(p+1*sizeof(U8),U8));
+left_add(UCharArray::undef_seg(p,2,n));
+
+id : 205
+priority : core(0)
+left : UCharArray::undef_full(?p,?n) at 0
+right : undef_data_at(p+(?i*sizeof(U8)),U8) at 1
+check : infer(1 <= n); infer(0 <= i); infer(i < 1);
+action : left_erase(0);
+left_add(undef_data_at(p+0*sizeof(U8),U8));
+left_add(UCharArray::undef_seg(p,1,n));
+
+id : 220
+priority : core(0)
+left : UCharArray::undef_seg(?p,?lo,?hi) at 0
+right : UCharArray::undef_full(?q,?n) at 1
+check : infer(q == pointer_offset(p,lo,U8));
+action : left_erase(0);right_erase(1);right_add(n == hi-lo);
+id : 221
+priority : core(0)
+left : UCharArray::undef_seg(?p,0,?n) at 0
+right : undef_data_at(?q,U8) at 1
+check : infer(q == p); infer(0 < n);
+action : left_erase(0);left_add(undef_data_at(p,U8));left_add(UCharArray::undef_seg(p,1,n));
