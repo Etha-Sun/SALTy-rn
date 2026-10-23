@@ -1,0 +1,105 @@
+{
+  "passed": true,
+  "scope": "Native actual repaired NEON and unchanged RVV C kernels, scalar array shim only; formal helper/kernel and ISA closure not claimed",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g",
+  "records": [
+    {
+      "label": "original-build",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-sanitize-recover=all",
+        "-fsanitize=undefined",
+        "-DQCP_ORIGINAL_NEON",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g/original"
+      ],
+      "exit_code": 0,
+      "seconds": 0.46561415307223797
+    },
+    {
+      "label": "original-int32-min",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g/original",
+        "--ub"
+      ],
+      "exit_code": 1,
+      "seconds": 0.06452837702818215
+    },
+    {
+      "label": "repaired-build",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-sanitize-recover=all",
+        "-fsanitize=undefined",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g/repaired"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3650252551306039
+    },
+    {
+      "label": "repaired-int32-min",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g/repaired",
+        "--ub"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0044431909918785095
+    },
+    {
+      "label": "repaired-regression",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g/repaired"
+      ],
+      "exit_code": 0,
+      "seconds": 0.26568576297722757
+    }
+  ],
+  "original_ub_reproduced": true,
+  "original_ubsan_output": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/../proof/original/testNEON.c:21:51: runtime error: negation of -2147483648 cannot be represented in type 'int'; cast to an unsigned type to negate this value to itself\n",
+  "current_sources_sha256": {
+    "impl/testNEON.c": "6005fdaf2b46371336b368385a0eb9b5888f853daa4cfb7d8780316c39af9ed7",
+    "impl/testRVV.c": "407dd1c3b927c122de70ce9709cb8aa419d70c7aec219996baa0132723f7534a",
+    "shim/runtime.h": "c9171be9757a27746657197d4bda99e62dd04ef97aaefdea803525deba12f93a",
+    "shim/harness.c": "4d52dfde1589dee808fea093bbf03e1df0601a393cbbf1f507b4ce0152ee5ce4"
+  },
+  "regression_output": "passed cases=215340 active_lanes_per_side=4486728 failures=0; repaired-neon/original-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+  "address_sanitizer": {
+    "passed": true,
+    "run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-repair-ocgl4b5g/asan-status.json",
+    "actual_MemoryMax_bytes": 17179869184,
+    "ExecMainStatus": 0,
+    "regression_output": "passed cases=215340 active_lanes_per_side=4486728 failures=0; repaired-neon/original-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+    "virtual_address_note": "Native ASan uses a user cgroup16GiB resident cap; its shadow virtual mapping is not constrained with RLIMIT_AS."
+  },
+  "whole_kernel_verified": false
+}

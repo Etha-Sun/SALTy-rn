@@ -1,0 +1,71 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Native exact selected scalar-field actual C helper closure + actual same formal kernel frontends and public equivalent; no hardware ABI/ISA refinement claim",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/formal-native-lemj20lr",
+  "commands": [
+    [
+      "prlimit",
+      "--as=17179869184:17179869184",
+      "--",
+      "gcc",
+      "-std=c11",
+      "-O1",
+      "-g",
+      "-frounding-math",
+      "-ffp-contract=off",
+      "-fsanitize=undefined",
+      "-fno-sanitize-recover=all",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/formal_native.c",
+      "-lm",
+      "-o",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/formal-native-lemj20lr/oracle"
+    ],
+    [
+      "prlimit",
+      "--as=17179869184:17179869184",
+      "--",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/formal-native-lemj20lr/oracle"
+    ]
+  ],
+  "output": "selected actual scalar-field C closure + exact kernel frontends + public equivalent passed cases=157086 lanes_per_side=2315452 failures=0; all65536 zero-point residues, INT32 endpoints and NaN/Inf/signed-zero scales; frame/guards and comparator controls\n",
+  "source_sha256": "6e0abb742a83156c2ccb86293025b8bc2d568282ba49cd6f5546ce1111547acb",
+  "address_sanitizer": {
+    "passed": true,
+    "commands": [
+      [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/formal_native.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/formal-native-lemj20lr/asan"
+      ],
+      [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "--unit=qcp-qs8-formal-native-2666354",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/formal-native-lemj20lr/asan_exec.py"
+      ]
+    ],
+    "output": "{\"actual_cgroup\": \"/user.slice/user-2069.slice/user@2069.service/app.slice/qcp-qs8-formal-native-2666354.service\", \"memory_max\": \"17179869184\"}\nselected actual scalar-field C closure + exact kernel frontends + public equivalent passed cases=157086 lanes_per_side=2315452 failures=0; all65536 zero-point residues, INT32 endpoints and NaN/Inf/signed-zero scales; frame/guards and comparator controls\n",
+    "actual_MemoryMax_bytes": 17179869184
+  }
+}

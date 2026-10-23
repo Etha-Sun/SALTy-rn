@@ -1,0 +1,19 @@
+{
+  "kernel": "qs8-f32-vcvt",
+  "variant": "repaired-neon",
+  "reason": "Original unary minus of signed int32 zero_point is undefined at INT32_MIN before the intended int16 narrowing; replace with uint32 modulo negation followed by the same int16 narrowing. This preserves the existing 16-bit wrap ordering and covers all int32 zero points.",
+  "original_neon_sha256": "d8dbc84351f0154858b2bd940ea42a1e3031ec75a03640a4842a164e219a4063",
+  "repaired_neon_sha256": "6005fdaf2b46371336b368385a0eb9b5888f853daa4cfb7d8780316c39af9ed7",
+  "unchanged_rvv_sha256": "407dd1c3b927c122de70ce9709cb8aa419d70c7aec219996baa0132723f7534a",
+  "patch_sha256": "2c81545ccbb2155cec19b51b0ec479703d76c6696a014e5986dae77bcd847185",
+  "configuration": "LP64 little-endian two-complement signed integer narrowing, IEEE binary32 RNE; NaN/Inf/+-0 scales included; floating flags and traps unobserved",
+  "counterexample": {
+    "batch": 1,
+    "input": 0,
+    "zero_point": -2147483648,
+    "scale_bits": "3f800000",
+    "kind": "C signed integer overflow at original unary minus",
+    "ubsan_run_pending": true
+  },
+  "whole_kernel_verified": false
+}

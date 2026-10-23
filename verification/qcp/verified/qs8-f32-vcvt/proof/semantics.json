@@ -1,0 +1,52 @@
+{
+  "scope": "Model specification; current full-case admission is recorded separately in proof/status.json",
+  "implementation_variant": {
+    "neon": "repaired",
+    "rvv": "original"
+  },
+  "repair": "unsigned 32-bit subtraction before the original signed16 narrowing; original INT32_MIN unary-negation UB retained as counterexample",
+  "public_preconditions": {
+    "n": "0<n<=4611686018427387903, so 4*n fits uint64",
+    "input": "n+7 readable initialized signed bytes",
+    "outputs": "two disjoint n-float writable arrays, initially uninitialized permitted",
+    "params": "separate preserved int32 zero_point and fp32 scale cells",
+    "zero_point_domain": "all int32 values",
+    "scale_domain": "all binary32 values including all NaNs/Inf/signed zeros"
+  },
+  "lane_semantics": {
+    "neon": "wrap_s16(wrap_s16(-zero_point)+input_byte), then signed16-to-binary32, then fp32 multiply by scale",
+    "rvv": "wrap_s16(input_byte-wrap_s16(zero_point)), then signed16-to-binary32, then fp32 multiply by scale",
+    "equality": "cvt_delta_equiv and cvt_lane_equiv prove equality for arbitrary mathematical inputs, including the complete public domain",
+    "tool_cast_boundary": "actual narrow16 C helper body returns a cast of a single variable; arithmetic helpers call that checked body. Original expression-return cast capability failures retained separately, not treated as sound cast proofs"
+  },
+  "machine_model": {
+    "size_t_bits": 64,
+    "int_bits": 32,
+    "short_bits": 16,
+    "signed_char_bits": 8,
+    "byte_order": "little",
+    "signed_narrowing": "explicit two's complement wrap model",
+    "floating_format": "IEEE binary32",
+    "rounding": "round-to-nearest ties-to-even",
+    "rvv": {
+      "VLEN": 128,
+      "configurations": [
+        "SEW8/LMUL2",
+        "SEW16/LMUL4",
+        "SEW32/LMUL8"
+      ],
+      "VLMAX": 32,
+      "vl": "min(AVL,32)",
+      "inactive_lanes": "declared scalar representative; not a hardware tail-policy refinement claim"
+    }
+  },
+  "observation": "Forall2 same_value: numeric equality or both NaN; NaN payload/sign and floating flags/traps excluded",
+  "formal_source_boundary": "actual original/repaired C bodies plus declared scalar-field C intrinsics, exact typed generated VC interfaces, all callees require actual checked C bodies",
+  "non_claims": [
+    "hardware ISA equivalence",
+    "physical ABI/layout refinement",
+    "standalone termination theorem",
+    "native testing as formal verification"
+  ],
+  "inherited_assumptions": "QCP C memory/type/address model and Coq/Flocq classical/extensionality dependencies must remain visible in final Print Assumptions audit"
+}

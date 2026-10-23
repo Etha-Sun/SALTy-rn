@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/composed-native-83o1k32k",
+  "commands": [
+    [
+      "prlimit",
+      "--as=17179869184:17179869184",
+      "--",
+      "gcc",
+      "-std=c11",
+      "-O1",
+      "-fno-inline",
+      "-fsanitize=undefined",
+      "-fno-sanitize-recover=all",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/composed_oracle.c",
+      "-o",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/composed-native-83o1k32k/oracle"
+    ],
+    [
+      "prlimit",
+      "--as=17179869184:17179869184",
+      "--",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/composed-native-83o1k32k/oracle"
+    ]
+  ],
+  "output": "actual selected nested macros passed checks=131072 failures=0; all65536 short residues, all8 lanes, argument evaluation exactly once\n",
+  "sources_sha256": {
+    "shim/composed_oracle.c": "89fdc59a36d1cd38728f9693094536056add51cd4e46796026b79d9b7341076b",
+    "shim/neon_frontend.h": "8d5fe4df8c7e0647d55c099ba50dbe92011d603b884939116159fc752b9341d1",
+    "shim/neon_qcp_cvt_movlow.c": "99543a04aa5c5e519fcdc6420d4155ba95754f631bb52cffedab8805b0ffccaa",
+    "shim/neon_qcp_cvt_movhigh.c": "b2ea9df18c0bc719ccee5c04041c4c2c9959363401360cf4a05d642ea7619c00"
+  }
+}

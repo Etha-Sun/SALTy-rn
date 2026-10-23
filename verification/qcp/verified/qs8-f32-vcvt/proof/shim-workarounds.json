@@ -1,0 +1,29 @@
+{
+  "whole_kernel_verified": false,
+  "require_domain_unchanged": true,
+  "records": [
+    {
+      "kind": "QCP2.1.4 arithmetic short cast omitted in symbolic return",
+      "diagnostic": "capabilities/short-expression-cast/status.json",
+      "actual_C_helper": "shim/scalar_primitives.c",
+      "source_sha256": "e7ce702af94bb5a546da9809e5a832233d923a3a244770c1b5edea25aad339db",
+      "method": "Actual addw/sub16 bodies call separately proved real qcp_cvt_narrow16 callee. No input bound strengthened; signed16 wrap retained.",
+      "ordinary_checked_evidence": "scalar-status.json",
+      "native_selected_C_evidence": "selected-scalar-native-status.json"
+    },
+    {
+      "kind": "Nested byvalue aggregate anonymous-address inference limitation",
+      "failed_run": ".build/neon-kernel-o57y4m5v",
+      "frontend": "shim/neon_frontend.h",
+      "frontend_sha256": "8d5fe4df8c7e0647d55c099ba50dbe92011d603b884939116159fc752b9341d1",
+      "helpers": [
+        "shim/neon_qcp_cvt_movlow.c",
+        "shim/neon_qcp_cvt_movhigh.c"
+      ],
+      "contract_header": "shim/neon_composed.h",
+      "method": "Token-shape macro maps only original vmovl_s16(vget_low/high_s16(a)) composition to real C helper. Each helper evaluates its input once, executes original get_low/high_s16 once into named local t, executes original vmovl_s16(t) once. All component bodies/contracts remain in actual C closure. Original impl raw C unchanged; annotated/original same frontend CPP tokens equal.",
+      "ordinary_checked_evidence": "neon-composed-status.json",
+      "actual_C_VCs": 14
+    }
+  ]
+}

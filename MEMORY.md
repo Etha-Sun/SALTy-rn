@@ -19,18 +19,18 @@
 - 我们的主工作树：`/srv/home/yuechunsun/tools/qcp-simple-kernels`，分支 `codex/worker-simple-kernels`。
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
-- `neon_kernel_resume`：s8-clamp 128-lane RVV 实际 C/body/kernel 支援；字节尾部支持已闭合。
-- `minmax_repair_finish`：监控冻结的 FMin 全案重放；推进 s8-clamp。
-- `rvv_kernel_resume`：独立 qs8-f32-vcvt；FMax full 已通过并交 root 发布。
+- `neon_kernel_resume`：QS8 全案重放已通过，交 root 归档发布。
+- `minmax_repair_finish`：S8 完整重放，覆盖全部实际 C、策略和 Coq 模块。
+- `rvv_kernel_resume`：QS8 两侧函数证明完成；后续 kernel 的只读评估已保存。
 - root：验收、record_status/audit、发布、progress/memory、Arcadia 修复来源审查。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **9/40**；前一项 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **10/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
-正在运行的全案输入必须冻结：
+已通过的全案证据（保持源和历史记录不变）：
 
 - VCMUL 已通过：`verification/qcp/verified/f32-vcmul/.build/full-_e5udkje`，原始实现，旧批次 jobs4；11 C 单元/629 字段，123 本地源 + 最终门禁。完整 661 项 Assumptions 已归档。
 - FMin 已通过：`verification/qcp/verified/f32-vmin/.build/full-xlbp0zhc`，RVV 修复版，jobs16；12 C 单元/1188 字段，140 本地源 + 最终门禁。1216 项 Assumptions 已归档。
@@ -41,10 +41,17 @@
 VADD 已完成的独立依赖重放：`verification/qcp/verified/f32-vadd/.build/full-1f5wequq/coq`。
 所有编译在私有 `.build/.../jobs/`，不写共享库、工具链或其他 worker 的缓存。
 
+QS8 完整验收已通过并收录 verified，修复了原 NEON 的 INT32_MIN 求负 UB。S8 修复无序 bounds 的 bulk/tail 顺序差异，正在完成全案最终门禁。QS8 的表达式 short cast 存在已记录 QCP 窄化丢失问题，真实 narrow callee 模块化实现已通过；不能改 wrap 模型或加和差范围前提。具体组件/run 读最新 STATE。
+
 全案真正通过后：先由 root 运行该 case `proof/record_status.py`，检查最终全部 Print Assumptions；归档完整目标/CPP/日志/组件状态。
 然后执行 `proof/audit_relocation.py`，移动到 verified 后重新核对 live CPP/已编译源身份并跑 native。
 `.build/prepare_direct_case.py <kernel>` 可在已 fetch 且干净的发布工作树准备复制/身份/native/清单更新；它不会 commit/push。
+S8/QS8 使用新的 `.build/prepare_integer_publication.py <kernel>`；它另存原始证书，核对完整证明身份，并做当前源码闭包的有限 UBSan 回归。发布审计不算第二次形式化证明。
 审查具体结果，再普通 commit/push，确认远端 SHA，更新 PROGRESS 和 checkpoint。
 
 Arcadia 只读来源：`refs/remotes/arcadia-y/verification`，固定 `4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca`。
 它的 `verification/REPAIRS.md` 和 Lean 规格可供参考；其 S8Clamp Entry 有 ordered 条件，不得把该结论解释为覆盖无序 bounds 的 QCP 证明。
+
+后续优先只读评估 `qu8-f32-vcvt`，具体见 `.build/next-simple-kernel-assessment.json`。旧 Frama-C `feat/shim-c@0f11c9ad` 的该案规格排除了 `INT32_MIN` 零点，不能把历史 994/994 解释为全 int32 域；若沿用当前全域目标，应修复 NEON 同类求负溢出，并补 unsigned-byte 运算的真实 C 函数体。
+
+QS8 全案证据：`verification/qcp/verified/qs8-f32-vcvt/.build/full-adz1c3m4`，26 实际 C 单元/1337 字段、49 函数体、30 策略字段、631 普通 Coq 模块；1367 项最终假设报告已核为既有 14 项继承假设。完整证书 SHA256 `e4413308b1b41def5a57ce37f819be15164332b7253b3373451af6b021ef36ac`。修复、原反例、首次辅助模板失败与修复历史均保留。

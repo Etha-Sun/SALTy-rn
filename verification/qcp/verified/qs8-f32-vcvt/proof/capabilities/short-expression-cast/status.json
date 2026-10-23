@@ -1,0 +1,34 @@
+{
+  "scope": "QCP2.1.4 lowering diagnostic, not a proved C VC or kernel",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/short-expression-cast-7o2qbzif",
+  "probe_source_sha256": "02a2e573fce011289fca8af4142a1e7df65429802cfef5abba1d4cd95b0f01f2",
+  "generated_goal_sha256": "069d3eee293e89f978dd0da015f2adfe8819291b21d676a3822df1507b31e168",
+  "native_command": [
+    "prlimit",
+    "--as=17179869184:17179869184",
+    "--",
+    "gcc",
+    "-std=c11",
+    "-O1",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/short-expression-cast-7o2qbzif/native.c",
+    "-o",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/short-expression-cast-7o2qbzif/native"
+  ],
+  "native_exit_code": 0,
+  "native_output": "expression=-32768 temporary=-32768 expected=-32768\n",
+  "valid_counterexample": {
+    "a": 32767,
+    "b": 1,
+    "actual_C_result": -32768,
+    "generated_return_symbolic_value": 32768
+  },
+  "failure": "Both arithmetic-expression and local-temporary versions generate a+b in the return target, omitting the explicit signed16 cast. Their advertised wrapping target is false at valid typed inputs. No lemma claiming these goals has been accepted.",
+  "actual_helper_workaround": "Use a separately checked real C qcp_cvt_narrow16(int32_t) callee for arithmetic results; preserve its actual body and contract in the final C closure.",
+  "whole_kernel_verified": false,
+  "preserved_target_file": "generated-targets.v.txt",
+  "public_native_reproducer": "native_counterexample.c",
+  "selected_actual_helper": "../../../shim/scalar_primitives.c",
+  "selected_helper_note": "The final addw/sub16 bodies call the real separately checked qcp_cvt_narrow16(int32_t) body. The false expression/temporary goals are diagnostic only and never imported or counted as completed C targets."
+}

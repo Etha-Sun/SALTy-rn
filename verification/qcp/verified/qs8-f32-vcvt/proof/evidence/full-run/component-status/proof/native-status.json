@@ -1,0 +1,92 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Native repaired/original kernels plus actual public spec equivalent/comparator; scalar array runtime only, formal/ISA closure not claimed",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-public-j52rd99_",
+  "records": [
+    {
+      "label": "ubsan-build",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-sanitize-recover=all",
+        "-fsanitize=undefined",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-public-j52rd99_/ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3879240551032126
+    },
+    {
+      "label": "ubsan-regression",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-public-j52rd99_/ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.21642910107038915
+    },
+    {
+      "label": "asan-build",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-sanitize-recover=all",
+        "-fsanitize=address,undefined",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-public-j52rd99_/asan"
+      ],
+      "exit_code": 0,
+      "seconds": 1.7192779248580337
+    },
+    {
+      "label": "asan-regression",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "--unit=qcp-qs8-native-public-2639857",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-f32-vcvt/.build/native-public-j52rd99_/exec_asan.py"
+      ],
+      "exit_code": 0,
+      "seconds": 1.2248533801175654
+    }
+  ],
+  "current_sources_sha256": {
+    "impl/testNEON.c": "6005fdaf2b46371336b368385a0eb9b5888f853daa4cfb7d8780316c39af9ed7",
+    "impl/testRVV.c": "407dd1c3b927c122de70ce9709cb8aa419d70c7aec219996baa0132723f7534a",
+    "shim/runtime.h": "c9171be9757a27746657197d4bda99e62dd04ef97aaefdea803525deba12f93a",
+    "shim/harness.c": "7ff99f959ebe6a4b3cd4a7659b7bbc727f4f4f09b14b70275a49cd7fe3fd8d78",
+    "spec.c": "32551bd94813352818b7a505200609ebd834cfc69bd8c46ac2f0a38bf758efe3"
+  },
+  "ubsan_output": "passed cases=215340 active_lanes_per_side=4486728 failures=0; actual public equivalent/comparator controls; repaired-neon/original-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+  "asan_output": "{\"actual_cgroup\": \"/user.slice/user-2069.slice/user@2069.service/app.slice/qcp-qs8-native-public-2639857.service\", \"memory_max\": \"17179869184\"}\npassed cases=215340 active_lanes_per_side=4486728 failures=0; actual public equivalent/comparator controls; repaired-neon/original-rvv; all65536 zero-point residues; NaN/Inf/signed-zero scales\n",
+  "previous_original_ub_and_repair_record": "history/native-before-public-wrapper.json"
+}
