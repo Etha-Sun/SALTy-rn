@@ -1,0 +1,21 @@
+--- proof/check_neon_kernel.py (before)
++++ proof/check_neon_kernel.py (after)
+@@ -5,6 +5,7 @@
+ import hashlib
+ import json
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import re
+ import shutil
+ import subprocess
+@@ -32,8 +33,8 @@
+     assert generation['generation_passed']
+     assert generation['original_source_sha256'] == sha(CASE / 'impl/testNEON.c')
+     assert generation['public_spec_sha256'] == sha(CASE / 'spec.c')
+-    generated = Path(generation['run_directory'])
+-    run = args.run_dir.resolve() if args.run_dir else Path(tempfile.mkdtemp(prefix='neon-kernel-proof-', dir=CASE / '.build'))
++    generated = artifact_path(generation['run_directory'])
++    run = artifact_path(args.run_dir).resolve() if args.run_dir else Path(tempfile.mkdtemp(prefix='neon-kernel-proof-', dir=CASE / '.build'))
+     coq = run / 'coq'
+     coq.mkdir(exist_ok=True)
+     cfg = json.loads(args.config.read_text())

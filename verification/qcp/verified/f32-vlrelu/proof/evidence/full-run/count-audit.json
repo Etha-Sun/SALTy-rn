@@ -1,0 +1,43 @@
+{
+  "scope": "Count audit of actual unit goal fields, not unique semantic obligations or new kernels",
+  "actual_c_units": 14,
+  "c_vc_fields_across_units": 958,
+  "unit_counts": {
+    "ByValue/shim_unit": 26,
+    "ByvalueRvv/shim": 11,
+    "QcpRvv32/rvv_load": 100,
+    "QcpRvv32/rvv_add": 101,
+    "QcpRvv32/rvv_store": 75,
+    "VLRelu/bits": 19,
+    "VLRelu/neon_primitives": 61,
+    "VLRelu/rvv_primitives": 347,
+    "VLRelu/neon": 135,
+    "VLRelu/rvv": 47,
+    "VLRelu.read/array_read": 2,
+    "VLRelu.bridge/bridge": 14,
+    "VLRelu.comparator/comparator": 12,
+    "VLRelu.wrapper/wrapper": 8
+  },
+  "duplicates": [
+    {
+      "c_function": "qcp_assert",
+      "c_body_occurrences": 2,
+      "same_signature_and_contract": true,
+      "goal_definition_examples": [
+        {
+          "unit": "ByValue/shim_unit",
+          "definition": "Definition qcp_assert_return_wit_1 := \nforall (condition_pre: Z) (PreH1 : (condition_pre <> 0)) ,\n  TT && emp \n|--\n  TT && emp \n.\n",
+          "normalized_sha256": "62e2f977de0a74773d825ec4420f64fd6738acee6fe033cb955a9577583c6fa5"
+        },
+        {
+          "unit": "VLRelu/rvv",
+          "definition": "Definition qcp_assert_return_wit_1 := \nforall (condition_pre: Z) (PreH1 : (condition_pre <> 0)) ,\n  TT && emp \n|--\n  TT && emp \n.\n\n(*----- Function __riscv_vsetvl_e32m8 -----*)\n",
+          "normalized_sha256": "62e2f977de0a74773d825ec4420f64fd6738acee6fe033cb955a9577583c6fa5"
+        }
+      ],
+      "same_goal_definition_ignoring_comments_whitespace": true
+    }
+  ],
+  "plain_vc_name_count": 957,
+  "not_claimed": "Plain VC-name deduplication is not a count of semantically unique obligations. Shared helpers/dependencies are replayed, not new verified kernels."
+}

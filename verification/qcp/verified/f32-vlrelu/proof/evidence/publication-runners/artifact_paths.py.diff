@@ -1,0 +1,30 @@
+--- artifact_paths.py.before
++++ artifact_paths.py
+@@ -1,14 +1,21 @@
+-"""Locate this case's pre-promotion artifacts without rewriting execution records."""
++"""Resolve recorded artifact locations without rewriting historical records."""
++import json
+ from pathlib import Path
+ 
+ CASE = Path(__file__).resolve().parent.parent
+ ROOT = next(p for p in CASE.parents if (p / '.git').exists())
+-OLD_CASE = ROOT / 'verification/qcp/candidates/f32-vlrelu'
+ 
+ 
+ def artifact_path(value):
+     path = Path(value)
+-    try:
+-        return CASE / path.relative_to(OLD_CASE)
+-    except ValueError:
+-        return path
++    prefixes = [ROOT / 'verification/qcp/candidates/f32-vlrelu']
++    report = CASE / 'proof/relocation-audit.json'
++    if report.exists():
++        relocation = json.loads(report.read_text())
++        prefixes += [Path(relocation[k]) for k in ['old_case', 'new_case']]
++    for prefix in prefixes:
++        try:
++            return CASE / path.relative_to(prefix)
++        except ValueError:
++            continue
++    return path

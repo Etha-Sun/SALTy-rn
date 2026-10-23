@@ -1,0 +1,9 @@
+From VLRelu Require Import rvv_primitives_goal RvvPrimitiveScalar RvvPrimitiveMul RvvPrimitiveReinterpret RvvPrimitiveMask RvvPrimitiveMerge.
+Module CheckedRvvPrimitives : rvv_primitives_goal.VC_Correct.
+Include CheckedRvvScalar.
+Include CheckedRvvMul.
+Include CheckedRvvReinterpret.
+Include CheckedRvvMask.
+Include CheckedRvvMerge.
+End CheckedRvvPrimitives.
+Print Assumptions CheckedRvvPrimitives.proof_of_qcp_rvv_signed_bits_return_wit_1.

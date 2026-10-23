@@ -1,5 +1,7 @@
 # 给另一台服务器 agent 的完整接续 prompt
 
+2026-10-23 用户更新：完整验证通过后先 fetch，直接提交并正常 push 到 `c-shim-v2` 的 `verified/`，不再通过功能 PR 发布。可参考 Frama-C 修改本案 `impl/` 后证明修复版，保留修复记录和反例；不必另建修复版目录。下文以本次更新后的规则为准，证明标准不降低。
+
 你是 SALTy-rn 的 QCP kernel 验证实施负责人。请直接接续现有 verified 框架，实际验证更多 kernel，目标是逐项处理完整40项。不要重新搭另一套框架，也不要为了凑40/40而改变原程序、intrinsic语义或输出关系。若原版本不等价，交付反例与独立修复候选，而不是伪造证明。
 
 ## 1. 仓库、基线与工作方式
@@ -11,11 +13,11 @@
 - 原始40对代码及来源：`kernels/source/*.c`、`kernels/target/*.c`；固定上游 `be16280c7812a7459c26c3ce82a47339a3d07718`，逐项身份见 `verification/qcp/catalog.json`。该上游补齐四个target，完整清单为40，不能再按37项统计。
 - leader原工作树为 `/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework`；这是来源路径，不要求你的服务器使用同一绝对路径。
 
-先保存你已有分支、未提交文件、工作树和已领取任务，再fetch最新集成分支；用正常merge等保留历史的方式同步。新任务使用 `codex/worker-<task>`；不要直接推集成分支、强推、自动merge或覆盖其他agent的工作。可以在自己任务分支提交和push，按kernel或独立共享能力开PR，base=`c-shim-v2`。
+先保护已有分支、未提交文件、工作树和已领取任务，再 fetch 最新集成分支。开发使用隔离的 `codex/worker-<task>` 分支或工作树；完整准入通过后，在最新 `c-shim-v2` 基础上直接 commit 并正常 push，提交到 `verification/qcp/verified/`，同步更新 manifest、catalog 和证据。不再开功能 PR；不强推、不覆盖其他 agent 的工作。未完成的 case 保留在 `candidates/`。
 
 先读协调板最新CLAIM，再发布自己的OWNER/BASE/HEAD/PATHS。已有worker正在做GEMM和环境修复时，保留其任务，其他agent并行领取简单kernel。不要因leader不回复而停止无冲突工作。
 
-## 2. 现状：5/40，接受范围必须准确
+## 2. 现状：6/40，接受范围必须准确
 
 权威机器清单为 `verification/qcp/verified/manifest.json`，已有：
 
@@ -23,6 +25,7 @@
 |---|---|
 | f32-vadd、f32-vsub、f32-vmul、f32-vdiv | 每案11个实际C单元、8组策略、87个普通本地Coq模块及FinalCheck通过；每案native430例 |
 | f32-vmulc | 12个实际C单元、605个C VC；87个fresh共享依赖模块+23个本案普通模块，另两个gate；最终12个VC_Correct绑定通过；native430例 |
+| f32-vlrelu | 原始两侧C保持；14个实际C验证单元、958个单元VC字段（含公共assert重复校验）、123个普通依赖/本案模块及FinalCaseCheck，共124个fresh编译模块；native2872例 |
 
 这些是公开契约下的 **C-shim模块化部分正确性**。真实ISA到shim的形式对应、任意VLEN、完整程序终止性尚未证明，不得用“无条件原始机器代码正确”描述。记录继承的QCP/Coq/Flocq假设；“没有新增公理”不等于“整个项目无公理”。
 
@@ -30,7 +33,7 @@ VMULC关键证据：`verified/f32-vmulc/proof/status.json` → `full-status.json
 
 `candidates/f32-vsqrt`仍未验证：模型编译与native156例通过，但当前QCP缺checked sqrt原语/实现；仅声明外部sqrtf合同能产生VC，不能消除实现义务。
 
-旧Frama-C/CSim有效清单为16项，另有隔离旧结果；这些只能供参考，不能转记为QCP通过。上述五个此前也有Frama-C结果，本次为独立QCP检查。CSim引用路径、模型修复和原版/修复版差异见 `catalog.json`、`docs/CSIM-REPAIRS.zh-CN.md`。
+旧Frama-C/CSim有效清单为16项，另有隔离旧结果；这些只能供参考，不能转记为QCP通过。最初五项此前也有Frama-C结果，本次为独立QCP检查。CSim引用路径、模型修复和原版/修复版差异见 `catalog.json`、`docs/CSIM-REPAIRS.zh-CN.md`。
 
 ## 3. 必须沿用的目录与人工审核入口
 
@@ -39,8 +42,8 @@ VMULC关键证据：`verified/f32-vmulc/proof/status.json` → `full-status.json
 ```text
 <kernel>/
   impl/
-    testNEON.c              原始NEON文件，逐字保留
-    testRVV.c               原始RVV文件，逐字保留
+    testNEON.c              原始或明确记录修复后的NEON实现
+    testRVV.c               原始或明确记录修复后的RVV实现
   spec.c                    唯一公开函数与kernel契约入口
   contracts/                可选：短逻辑绑定头；不复制spec里的函数合同
   shim/                     本案公开的类型、intrinsic实现/合同、调用适配
@@ -118,7 +121,7 @@ pointer-store的真实C函数体和合同都已检查。原kernel仍调用原sto
 
 catalog已记录旧CSim中4个与当前上游target不同的已收录版本：u8-vclamp、f32-vmin、f32-vmax、qs8-vcvt。尤其旧u8-vclamp-v3是在旧空target基础上另写，新上游u8 target须独立验证。其它NaN/FMA/layout/shift等反例与修复见CSIM-REPAIRS文档。
 
-原版本实际不等价时：保存输入、输出、模型/硬件条件及来源，标明 `counterexample`；修复候选另立 `<name>-repaired-<version>`、保留patch及原始文件，单独证明。不得覆盖原target或把修复版的通过计成原版40项全通过。
+原版本实际不等价或需修复才能验证时，先参考已有 Frama-C 修改，保留原始身份、反例、条件和来源。按用户最新授权可以直接修改本案 `impl/`，在 repair 记录中保存原始/修复 SHA、精确 patch、原因与观察范围，并标记当前变体为 `repaired`；不必另立目录。上游 `kernels/source/`、`kernels/target/` 的原始锁定文件保留。完整证明修复版后才能入库，不能把修复版称为原版证明。工具超时或环境失败不自动等于程序反例。
 
 当前建议按能力分组推进；可并行，不必等GEMM才能证明简单kernel：
 
@@ -183,7 +186,7 @@ python3 verification/qcp/verified/f32-vadd/proof/native.py
 
 用户已同意：先按case继续证明，最后统一抽到共享文件夹，集中审核shim。到共享化阶段，按类型/内存/VL、具体intrinsic、数值/位模型、调用适配组织；每个原语保留来源、合同和证明状态。不能仅按同名或C文本相同合并：相同Extern/Import在不同case可能绑定不同Coq运算模型。抽取后核对绑定、实际验证输入及所有受影响kernel的完整门禁，再更新manifest。不能假定挪文件不改变语义。
 
-每个PR交付：原始身份、公开spec/shim及语义来源、生成器/annotations、Coq证明与真正最终gate、实际命令和新结果、依赖/工具/模型hash、失败及修复来源、剩余边界。不要提交巨大日志、.vo、编译器/solver二进制或认证资料。环境修改与kernel证明分开PR；无合并授权不自行merge。
+每次直接提交交付：原始身份、公开spec/shim及语义来源、生成器/annotations、Coq证明与真正最终gate、实际命令和新结果、依赖/工具/模型hash、失败及修复来源、剩余边界。不要提交巨大日志、.vo、编译器/solver二进制或认证资料。环境修改与 kernel 证明分开提交；通过完整门禁的 kernel 在 fetch 后直接提交到 `c-shim-v2` 的 `verified/`，不再开功能 PR。
 
 协调留言格式：
 

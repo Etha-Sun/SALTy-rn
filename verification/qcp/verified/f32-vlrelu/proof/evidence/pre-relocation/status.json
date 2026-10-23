@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "kernel": "f32-vlrelu",
+  "status": "in-progress",
+  "passed": false,
+  "whole_kernel_proved": false,
+  "whole_kernel_verified": false,
+  "scope": "Completed primitive C-body capability and conditional caller; paired kernel unfinished",
+  "primitive_closure": {
+    "passed": true,
+    "checked_c_units": 3,
+    "checked_c_functions": 20,
+    "checked_c_vcs": 427,
+    "vc_correct_passed": true,
+    "fresh_local_coq_modules": 16
+  },
+  "conditional_public_c_vcs": 36,
+  "native_cases": 2872,
+  "components": {
+    "primitive-closure": {
+      "evidence": "proof/evidence/primitive-closure-status.json",
+      "sha256": "29e8b55b15c3909177a4fa49af542302e11135323e0b145d0942a74ce95dbb8b",
+      "passed": true,
+      "scope": "Primitive C-body call closure only; resumed interrupted local build"
+    },
+    "wrapper-proof": {
+      "evidence": "proof/evidence/wrapper-proof-status.json",
+      "sha256": "20372671d3fcd9fcbab3243e383d7b960dfa8a33fd4fa43e34bbb847695800b5",
+      "passed": true,
+      "scope": "Public helper/caller actual C VC interfaces; conditional on kernel contracts"
+    },
+    "native": {
+      "evidence": "proof/evidence/native-status.json",
+      "sha256": "f6eeffea4137fd1b98ff287aa887c4ff68cf60c7959d5e32df2fe29b9824f310",
+      "passed": true,
+      "scope": "Finite native regression only; no kernel proof or hardware execution."
+    },
+    "math": {
+      "evidence": "proof/evidence/math-status.json",
+      "sha256": "07eb0d6bd9620231365e3575f13d073483a87a21e677372dc0f6915dda2c4756",
+      "passed": true,
+      "scope": "Coq arithmetic/list lemmas only; C VC count zero"
+    }
+  },
+  "remaining": [
+    "original NEON complete VC gate pending",
+    "original RVV kernel generation and proof",
+    "complete kernel/helper/caller call-closure gate",
+    "ISA observation/refinement and termination outside current verified scope"
+  ],
+  "manifest_sha256": "200516fb16759f31a34aececa544fe0ef123f919b2d3603e419dca7fb80095c3",
+  "not_claimed": [
+    "complete paired kernel",
+    "actual hardware execution",
+    "ISA/shim formal correspondence",
+    "arbitrary VLEN",
+    "termination"
+  ],
+  "verified_manifest_changed": false
+}

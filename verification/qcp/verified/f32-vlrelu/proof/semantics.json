@@ -1,0 +1,196 @@
+{
+  "kernel": "f32-vlrelu",
+  "scope": "Executable C-shim reference and finite regression only; no complete kernel proof, formal refinement, real ISA execution, or hardware correspondence.",
+  "references": [
+    {
+      "title": "Arm ACLE Neon intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "title": "RISC-V V extension version 1.0",
+      "url": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    },
+    {
+      "title": "Ratified RVV C intrinsic specification",
+      "url": "https://github.com/riscv-non-isa/riscv-rvv-intrinsic-doc/blob/v1.0-ratified/doc/rvv-intrinsic-spec.adoc"
+    },
+    {
+      "title": "RISC-V scalar floating-point canonical NaN arithmetic",
+      "url": "https://docs.riscv.org/reference/isa/unpriv/f-st-ext.html"
+    }
+  ],
+  "configuration": {
+    "architecture": "LP64 host, little-endian checked by test driver",
+    "float": "IEEE binary32, round-to-nearest-ties-even, gradual underflow",
+    "arm": "Armv8-style FPCR.DN=0, FZ=0, RMode=RNE; alternate NaN handling features disabled",
+    "rvv": {
+      "VLEN": 128,
+      "SEW": 32,
+      "LMUL": 8,
+      "VLMAX": 32,
+      "vstart": 0,
+      "vl_policy": "min(AVL,32)",
+      "tail_policy": "agnostic all-ones choice"
+    },
+    "exceptions": "flags/traps/FPSR/fflags are unobserved; runtime does not claim their architectural behavior"
+  },
+  "layout": {
+    "runtime": "By-value structs with uint32_t lane arrays (NEON4, half2, RVV32) and signed int32 arrays after memcpy reinterpretation; mask arrays contain Boolean values. No pointer-backed shared vector object.",
+    "formal": "Formal candidate uses distinct fixed scalar-field structs and C-call contracts; this runtime is not linked into QCP.",
+    "relationship": "Lane-index correspondence is intended, not formally proved; no ABI identity claim. Real impl sources are linked unchanged into the runtime."
+  },
+  "formal_multiplication_boundary": {
+    "source": "External QCP Rocq/SeparationLogic/FloatLib.v: fp32_mul, fp32_binary_nan, fp32_nan",
+    "definition": "Flocq Bmult mode_NE with fp32_binary_nan; every formal arithmetic NaN has sign=false and payload=1.",
+    "runtime_difference": "Arm runtime propagates selected quieted operand NaN; RVV runtime emits canonical quiet NaN. Neither is represented as exact bit equality to the fixed formal NaN.",
+    "observation_argument": "Kernel selects its branch using the sign bit of the ORIGINAL input before selection. It never reinterprets multiplication output. Multiplication NaN payload/sign therefore reaches only final outputs, where all NaNs are related. Positive-sign input (including positive sNaN) bypasses multiplication via bit selection and preserves its input bits.",
+    "status": "Observation/refinement bridge proof pending; this is an explicit candidate argument, not a checked theorem."
+  },
+  "observation": {
+    "public": "Numerical equality or both NaN; payload and zero-sign may be unobserved by the public spec.",
+    "native_stronger_checks": "Independent oracle checks exact non-NaN bits, including sign of zero, and both-NaN relation. Primitive controls additionally check NaN bit preservation, Arm propagation and RVV canonicalization."
+  },
+  "oracle": {
+    "definition": "signbit(original x) ? binary32_RNE(x*slope) : original x",
+    "implementation": "Separate scalar harness: finite product exactly in binary64 then rounded once to binary32; no use of either runtime multiplication helper.",
+    "independence_limit": "Shares host IEEE floating arithmetic, compiler and platform with the runtime; finite testing cannot establish universal correctness."
+  },
+  "memory": {
+    "input": "n+3 readable float elements, allowing original NEON full tail loads. Exactly n+3 allocated in sanitizer harness. Input and padding snapshots checked unchanged.",
+    "output": "n writable active floats per side with separately checked prefix/suffix canaries; RVV primitive checks every vl=0..32 and unchanged inactive store frame.",
+    "params": "Separate readable slope parameter, all binary32 bit patterns permitted, unchanged snapshot checked.",
+    "aliasing": "Inputs, both outputs and params occupy separate objects; no overlapping or in-place execution claim."
+  },
+  "primitives": [
+    {
+      "name": "vdupq_n_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Replicate unchanged binary32 representation into four lanes.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vmovq_n_s32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Replicate signed int32 into four lanes.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vld1q_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Read exactly four consecutive float representations, including NaN payload/sign and signed zero.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vmulq_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Four independent IEEE binary32 RNE products; Arm DN=0/FZ=0 NaN selection, signaling operands before quiet operands and then operand order; invalid zero-times-infinity gives positive default quiet NaN.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vreinterpretq_s32_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Preserve all 128 bits; reinterpret each binary32 lane as signed two-complement int32.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vcltq_s32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Signed integer comparison; true lane is 0xffffffff, false is zero. Comparing the reinterpreted input with zero tests its original sign bit, including negative zero and negative NaNs.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vbslq_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Per-bit (mask & first) | (~mask & second); true sign mask selects product, false selects original input; no float conversion.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vst1q_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Write exactly four unchanged lane representations.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vget_low_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Copy lanes zero and one.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vget_high_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Copy lanes two and three.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vst1_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Write exactly two unchanged lane representations.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "vst1_lane_f32",
+      "status": "runtime-only; proof pending",
+      "semantics": "Write exactly the requested single lane; this kernel requests lane zero.",
+      "source": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html"
+    },
+    {
+      "name": "__riscv_vsetvl_e32m8",
+      "status": "runtime-only; proof pending",
+      "semantics": "Fixed VLEN128/SEW32/LMUL8: VLMAX32. Choose min(AVL,32), a permitted implementation choice; other permitted choices in AVL 33..63 are not tested.",
+      "source": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    },
+    {
+      "name": "__riscv_vle32_v_f32m8",
+      "status": "runtime-only; proof pending",
+      "semantics": "Read exactly vl consecutive float representations. Tail-agnostic inactive destination lanes explicitly use all-one bits.",
+      "source": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    },
+    {
+      "name": "__riscv_vfmul_vf_f32m8",
+      "status": "runtime-only; proof pending",
+      "semantics": "Multiply active lanes only using binary32 RNE with gradual underflow; all arithmetic NaN results are canonical 0x7fc00000. Tail-agnostic lanes use all-one bits.",
+      "source": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    },
+    {
+      "name": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "status": "runtime-only; proof pending",
+      "semantics": "Preserve every source representation, including original sign, NaN payload, signed zero, and tail bits.",
+      "source": "https://github.com/riscv-non-isa/riscv-rvv-intrinsic-doc/blob/v1.0-ratified/doc/rvv-intrinsic-spec.adoc"
+    },
+    {
+      "name": "__riscv_vmslt_vx_i32m8_b4",
+      "status": "runtime-only; proof pending",
+      "semantics": "Active signed int32 comparison; comparison with zero reads the original input sign bit. Mask tail lanes take the permitted all-ones choice.",
+      "source": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    },
+    {
+      "name": "__riscv_vmerge_vvm_f32m8",
+      "status": "runtime-only; proof pending",
+      "semantics": "For every active body lane mask true chooses the second input (product), false chooses first (input); tail destination all ones.",
+      "source": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    },
+    {
+      "name": "__riscv_vse32_v_f32m8",
+      "status": "runtime-only; proof pending",
+      "semantics": "Write exactly vl active lanes; memory outside the active range is untouched.",
+      "source": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc"
+    }
+  ],
+  "validation_design": {
+    "sanitizers": [
+      "AddressSanitizer",
+      "UndefinedBehaviorSanitizer"
+    ],
+    "lengths": "1..70,95,96,97,127,128,129,255,256,257,1023,1024,1025",
+    "values": "24 boundary/NaN/zero/Inf/subnormal patterns crossed against all 24 slopes, deterministic random raw bits and random slopes",
+    "controls": [
+      "Valid-input output corruption rejected by independent oracle",
+      "Wrong sign-selection model on BOTH sides rejected by independent scalar oracle despite mutual agreement",
+      "Valid-C source-comment mutation rejected for each original implementation"
+    ],
+    "entry": "spec.c equivalent plus direct calls to the two original impl files",
+    "concurrency": 1
+  },
+  "proof_status": "All primitives runtime-only; complete kernel QCP proof and formal runtime correspondence pending."
+}

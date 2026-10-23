@@ -1,0 +1,34 @@
+--- check_full.py.before
++++ check_full.py
+@@ -146,6 +146,14 @@
+             if sha(CASE / item['copy']) != item['sha256'] or (CASE / item['copy']).read_bytes() != (ROOT / item['path']).read_bytes():
+                 raise ValueError('Original implementation identity mismatch: ' + item['copy'])
+         report['originals'] = original
++        archived = HERE / 'evidence/full-run/status.json'
++        archived_goal_hashes = {}
++        if archived.exists():
++            previous_full = json.loads(archived.read_text())
++            if not previous_full['passed']:
++                raise ValueError('Archived full certificate is not complete')
++            archived_goal_hashes = {u['label']: u['goal_sha256']
++                                    for u in previous_full['actual_c_units']}
+         # Capture all reviewed public and proof inputs before creating derived files.
+         inputs = [CASE / 'spec.c', HERE / 'originals.json', HERE / 'semantics.json', Path(__file__)]
+         for folder in [CASE / 'shim', HERE / 'c', HERE / 'coq']:
+@@ -190,8 +198,14 @@
+                      '--input-file=' + str(source), '--coq-output-dir=' + str(output),
+                      '--coq-logic-path=' + namespace, *slp], label.replace('/', '-') + '-qcp', 600)
+             goal = output / (stem + '_goal.v')
+-            if expected_goal is not None and goal.read_bytes() != expected_goal.read_bytes():
+-                raise ValueError('Fresh VC goal differs from checked component target: ' + label)
++            expected_hash = archived_goal_hashes.get(label)
++            if expected_goal is not None and expected_goal.exists():
++                component_hash = sha(expected_goal)
++                if expected_hash is not None and component_hash != expected_hash:
++                    raise ValueError('Component target differs from archived full target: ' + label)
++                expected_hash = component_hash
++            if expected_hash is None or sha(goal) != expected_hash:
++                raise ValueError('Fresh VC goal differs from checked target identity: ' + label)
+             target = coq / namespace.replace('.', '/') / goal.name
+             target.parent.mkdir(parents=True, exist_ok=True)
+             if target.exists() and target.read_bytes() != goal.read_bytes():

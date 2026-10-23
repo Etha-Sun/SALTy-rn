@@ -1,0 +1,19 @@
+--- proof/check_neon_primitives.py (before)
++++ proof/check_neon_primitives.py (after)
+@@ -4,6 +4,7 @@
+ import hashlib
+ import json
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import re
+ import shutil
+ import subprocess
+@@ -22,7 +23,7 @@
+     dep = args.dependency_dir.resolve()
+     generation = json.loads((HERE / 'neon-primitives-generation.json').read_text())
+     assert generation['generation_passed']
+-    generated = Path(generation['run_directory']) / 'neon_primitives_goal.v'
++    generated = artifact_path(generation['run_directory']) / 'neon_primitives_goal.v'
+     run = Path(tempfile.mkdtemp(prefix='neon-primitive-proof-', dir=CASE / '.build'))
+     coq = run / 'coq'
+     coq.mkdir()

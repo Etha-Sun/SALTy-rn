@@ -1,0 +1,149 @@
+{
+  "passed": true,
+  "scope": "Finite native regression only; no kernel proof or hardware execution.",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec",
+  "records": [
+    {
+      "label": "build",
+      "command": [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-DQCP_VLRELU_RUNTIME",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/shim/runtime/intrinsics.h",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/shim/runtime/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/impl/testRVV.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/native"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.1626716000027955,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "check",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/native"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.04428648902103305,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/check.log",
+      "log_sha256": "5e036d8a6074b1e3b221eaad8fba5c45bbb2be89e19b11353440513b24b7ced9"
+    },
+    {
+      "label": "wrong-model-build",
+      "command": [
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fno-omit-frame-pointer",
+        "-fno-pie",
+        "-no-pie",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-sanitize-recover=all",
+        "-DQCP_VLRELU_RUNTIME",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/shim/runtime/intrinsics.h",
+        "-DVLRELU_WRONG_MODEL",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/shim/runtime/harness.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/impl/testRVV.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/wrong-model"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.1957784190308303,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/wrong-model-build.log",
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "wrong-model-check",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/wrong-model",
+        "--model-control"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.009854619158431888,
+      "log": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/verified/f32-vlrelu/.build/native-61g44pec/wrong-model-check.log",
+      "log_sha256": "1e4e5ab177827a11dd1746ed5de4636ba442f9f424eb5269cfcbec3113e8ac5f"
+    }
+  ],
+  "configuration": {
+    "VLEN": 128,
+    "SEW": 32,
+    "LMUL": 8,
+    "VLMAX": 32,
+    "vl_policy": "min(AVL, 32)",
+    "rounding": "RNE",
+    "gradual_underflow": true
+  },
+  "nan_observation": "Both NaN accepted; all non-NaN values including signed zero checked bitwise.",
+  "oracle": "Independent sign-bit branch; binary64 exact finite product then one binary32 rounding.",
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "public_entry": "spec.c: equivalent(n,input,left,right,params)",
+  "formal_correspondence": "Not established. Runtime arrays are not a proof of the formal scalar-field layout.",
+  "original_source_identity": {
+    "impl/testNEON.c": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+    "impl/testRVV.c": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e"
+  },
+  "source_mutation_controls": [
+    {
+      "source": "testNEON.c",
+      "rejected": true,
+      "reason": "Original source identity mismatch: impl/testNEON.c"
+    },
+    {
+      "source": "testRVV.c",
+      "rejected": true,
+      "reason": "Original source identity mismatch: impl/testRVV.c"
+    }
+  ],
+  "compiler": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04.3) 11.4.0",
+  "cases": 2872,
+  "active_lanes_per_path": 196492,
+  "primitive_checks": 2559,
+  "wrong_result_rejected": true,
+  "public_equivalent_checked": true,
+  "wrong_model_rejected_by_independent_oracle": true,
+  "input_hashes": {
+    "spec.c": "6cdb2ece5bd5471f8612e7dc0288ee368e395fb60c005ad47102240ad756f109",
+    "impl/testNEON.c": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+    "impl/testRVV.c": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e",
+    "shim/runtime/intrinsics.h": "85289dd3f2fd82627e4852a47b06c9eebc1640a13afe1240fa77e8bacf192fc7",
+    "shim/runtime/harness.c": "3a63e383ca5b0f2da6a09c0ceca7f367c992281f68ae2fadad466f58afab9fe8",
+    "proof/originals.json": "bf144d8722585c7a94617eaf18c108faa3dec54471a6a612f7c4244be4199a94",
+    "proof/semantics.json": "c7d2f71103fcc9a7f092a31404389a06e5dfe8ae28e9491fcc57871315d32897",
+    "proof/native.py": "5a7beee359c491d930c8dec73e9e952b0f83880c88c19c6eda58be93cbe752eb"
+  },
+  "input_and_params_frame_checked": true,
+  "output_prefix_suffix_and_inactive_frame_checked": true,
+  "input_allocation_floats": "exactly n+3; ASan observes its upper allocation boundary",
+  "execution_concurrency": 1
+}

@@ -1,0 +1,31 @@
+#include "../../shim/model_def.h"
+id: 1
+priority: core(0)
+right: FloatArray::full(?p,?n,vlrelu_values(?count,?a,?c)) at 0
+check: infer(n == 0);
+       infer(count == 0);
+action: right_erase(0);
+
+id: 2
+priority: core(0)
+left: store(field_addr(?p,int32x4_t,s0),int,?x0) at 0
+      store(field_addr(p,int32x4_t,s1),int,?x1) at 1
+      store(field_addr(p,int32x4_t,s2),int,?x2) at 2
+      store(field_addr(p,int32x4_t,s3),int,?x3) at 3
+right: store(field_addr(?q,int32x4_t,s0),int,?y0) at 4
+       store(field_addr(q,int32x4_t,s1),int,?y1) at 5
+       store(field_addr(q,int32x4_t,s2),int,?y2) at 6
+       store(field_addr(q,int32x4_t,s3),int,?y3) at 7
+check: infer(q == p);
+action: left_erase(0);
+        left_erase(1);
+        left_erase(2);
+        left_erase(3);
+        right_erase(4);
+        right_erase(5);
+        right_erase(6);
+        right_erase(7);
+        right_add(x0 == y0);
+        right_add(x1 == y1);
+        right_add(x2 == y2);
+        right_add(x3 == y3);

@@ -1,0 +1,37 @@
+--- proof/check_full.py (before)
++++ proof/check_full.py (after)
+@@ -9,6 +9,7 @@
+ import importlib.util
+ import json
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import re
+ import shutil
+ import subprocess
+@@ -218,7 +219,7 @@
+             checked, instance = aliases[(namespace, stem)]
+             add_unit(namespace + '/' + stem, namespace, stem, temporary.read_text(),
+                      namespace + '.' + checked, instance, dep / namespace / (stem + '_goal.v'))
+-        primitive_dir = Path(components['primitive-closure']['run_directory']) / 'coq'
++        primitive_dir = artifact_path(components['primitive-closure']['run_directory']) / 'coq'
+         for stem, checked, instance in [('bits', 'BitsChecked', 'CheckedBits'),
+                                         ('neon_primitives', 'NeonPrimitives', 'CheckedNeonPrimitives'),
+                                         ('rvv_primitives', 'RvvPrimitives', 'CheckedRvvPrimitives')]:
+@@ -248,7 +249,7 @@
+             original_cpp = run / (side + '-original-expanded.c')
+             execute(['gcc', '-E', '-P', '-CC', '-nostdinc', original_source, '-o', original_cpp], side + '-original-cpp')
+             gen = json.loads((HERE / ('neon-kernel-generation.json' if side == 'neon' else 'rvv-generation-status.json')).read_text())
+-            goal = Path(gen['run_directory']) / (side + '_unit_goal.v')
++            goal = artifact_path(gen['run_directory']) / (side + '_unit_goal.v')
+             add_unit('VLRelu/' + side, 'VLRelu', side + '_unit', frontend + annotated,
+                      'VLRelu.NeonChecked' if side == 'neon' else 'VLRelu.RvvChecked',
+                      'CheckedOriginalNeon' if side == 'neon' else 'KernelChecked', goal)
+@@ -276,7 +277,7 @@
+             namespace = 'VLRelu.' + suffix
+             previous = next(u for u in wrapper_generation['actual_units'] if u['namespace'] == namespace)
+             add_unit(namespace + '/' + stem, namespace, stem, '\n\n'.join(pieces),
+-                     checked, instance, Path(previous['goal']))
++                     checked, instance, artifact_path(previous['goal']))
+         if len(units) != 14:
+             raise ValueError('Unexpected actual C unit set')
+         declarations, definitions, calls = {}, {}, []

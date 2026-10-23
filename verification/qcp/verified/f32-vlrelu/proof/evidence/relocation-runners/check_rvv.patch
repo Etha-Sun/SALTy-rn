@@ -1,0 +1,30 @@
+--- proof/check_rvv.py (before)
++++ proof/check_rvv.py (after)
+@@ -1,6 +1,7 @@
+ #!/usr/bin/env python3
+ """Generate/check the RVV primitive and kernel bodies with fresh local Coq modules."""
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import argparse,json,re,subprocess,shutil,sys,time,resource,hashlib,tempfile
+ HERE=Path(__file__).resolve().parent;CASE=HERE.parent
+ ROOT=next(p for p in CASE.parents if (p/'.git').exists())
+@@ -15,7 +16,7 @@
+ args=parser.parse_args()
+ CFG=json.loads(args.config.read_text())
+ DEPS=args.dependency_dir.resolve()
+-RUN=args.run_dir.resolve() if args.run_dir else (Path(tempfile.mkdtemp(prefix='rvv-kernel-proof-',dir=CASE/'.build')) if args.kernel else CASE/'.build/rvv-primitives')
++RUN=artifact_path(args.run_dir).resolve() if args.run_dir else (Path(tempfile.mkdtemp(prefix='rvv-kernel-proof-',dir=CASE/'.build')) if args.kernel else CASE/'.build/rvv-primitives')
+ COQ=RUN/'coq';COQ.mkdir(parents=True,exist_ok=True)
+ flags=['qcp-env','coqc','-time',*CFG['flags'][2:]]
+ for p in DEPS.iterdir():flags+=['-Q',str(p),'' if p.name=='relations' else p.name]
+@@ -43,8 +44,8 @@
+  execute(flags+[COQ/name],name)
+ 
+ def check_kernel():
+- generation_file=args.generation_dir/'generation-status.json' if args.generation_dir else HERE/'rvv-generation-status.json'
+- generation=json.loads(generation_file.read_text());source_run=Path(generation['run_directory'])
++ generation_file=artifact_path(args.generation_dir)/'generation-status.json' if args.generation_dir else HERE/'rvv-generation-status.json'
++ generation=json.loads(generation_file.read_text());source_run=artifact_path(generation['run_directory'])
+  assert generation['generation_passed']
+  for name in ['Model.v','RvvModel.v','RvvFastFrame.v']:compile(name)
+  strategy=Path(shutil.which('qcp')).resolve().parent/'StrategyCheck'

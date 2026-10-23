@@ -1,0 +1,31 @@
+--- proof/record_status.py (before)
++++ proof/record_status.py (after)
+@@ -3,6 +3,7 @@
+ import hashlib
+ import json
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import shutil
+ 
+ HERE = Path(__file__).resolve().parent
+@@ -34,7 +35,7 @@
+     relocation_path = evidence / 'frontend-portability.json'
+     relocation = json.loads(relocation_path.read_text()) if relocation_path.exists() else None
+     for relative, digest in primitives['sources_sha256'].items():
+-        current = ROOT / relative
++        current = artifact_path(ROOT / relative)
+         if sha(current) == digest:
+             continue
+         if not (relocation and relocation['audit_passed'] and relocation['cpp_bytes_identical']
+@@ -61,9 +62,9 @@
+     for item in original['files']:
+         if sha(CASE / item['copy']) != item['sha256']:
+             raise ValueError('Original source identity changed')
+-    assumptions = Path(primitives['run_directory']) / 'FinalPrimitiveCheck.log'
++    assumptions = artifact_path(primitives['run_directory']) / 'FinalPrimitiveCheck.log'
+     shutil.copyfile(assumptions, evidence / 'FinalPrimitiveCheck.log')
+-    gate = Path(primitives['run_directory']) / 'coq/FinalPrimitiveCheck.v'
++    gate = artifact_path(primitives['run_directory']) / 'coq/FinalPrimitiveCheck.v'
+     shutil.copyfile(gate, HERE / 'coq/FinalPrimitiveCheck.v')
+     inventory = {}
+     for folder in ['impl', 'shim', 'proof/coq', 'proof/c']:

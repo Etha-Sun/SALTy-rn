@@ -1,0 +1,29 @@
+#include "../../shim/rvv_model_def.h"
+id : 1
+priority : core(0)
+right : FloatArray::seg(?p,?lo,?hi,vlrelu_values(?count,?a,?c)) at 0
+check : infer(lo == 0);
+        infer(hi == 0);
+        infer(count == 0);
+action : right_erase(0);
+
+id : 2
+priority : core(0)
+left : store(?p,float,?x) at 0
+right : store(p,float,x) at 1
+action : left_erase(0);
+         right_erase(1);
+
+id : 3
+priority : core(0)
+left : store(?p,int,?x) at 0
+right : store(p,int,x) at 1
+action : left_erase(0);
+         right_erase(1);
+
+id : 4
+priority : core(0)
+left : store(?p : Z,?ty,?x : Z) at 0
+right : store(p,ty,x) at 1
+action : left_erase(0);
+         right_erase(1);

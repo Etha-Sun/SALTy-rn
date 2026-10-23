@@ -1,0 +1,40 @@
+--- proof/check_wrapper_proof.py (before)
++++ proof/check_wrapper_proof.py (after)
+@@ -4,6 +4,7 @@
+ import hashlib
+ import json
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import re
+ import subprocess
+ import time
+@@ -21,17 +22,17 @@
+     generation = json.loads((HERE / 'wrapper-generation.json').read_text())
+     if not generation.get('generation_passed'):
+         raise RuntimeError('Fresh public C VC generation has not passed')
+-    run = Path(generation['run_directory'])
++    run = artifact_path(generation['run_directory'])
+     coq = run / 'coq'
+     sha = lambda p: hashlib.sha256(p.read_bytes()).hexdigest()
+     if sha(CASE / 'spec.c') != generation['public_spec_sha256']:
+         raise RuntimeError('Public spec changed after VC generation')
+     for unit in generation['actual_units']:
+-        if sha(Path(unit['goal'])) != unit['goal_sha256'] or sha(Path(unit['source'])) != unit['cpp_sha256']:
++        if sha(artifact_path(unit['goal'])) != unit['goal_sha256'] or sha(artifact_path(unit['source'])) != unit['cpp_sha256']:
+             raise RuntimeError('Fresh C VC source/goal identity changed')
+     counts = {}
+     for unit in generation['actual_units']:
+-        count = len(re.findall(r'^Axiom proof_of_\w+ :', Path(unit['goal']).read_text(), re.M))
++        count = len(re.findall(r'^Axiom proof_of_\w+ :', artifact_path(unit['goal']).read_text(), re.M))
+         if count != unit['c_vcs']:
+             raise RuntimeError('Generated C VC count mismatch')
+         counts[unit['namespace']] = count
+@@ -84,7 +85,7 @@
+         if sha(CASE / 'spec.c') != generation['public_spec_sha256']:
+             raise RuntimeError('Spec changed during ordinary Coq checking')
+         for unit in generation['actual_units']:
+-            if sha(Path(unit['goal'])) != unit['goal_sha256'] or sha(Path(unit['source'])) != unit['cpp_sha256']:
++            if sha(artifact_path(unit['goal'])) != unit['goal_sha256'] or sha(artifact_path(unit['source'])) != unit['cpp_sha256']:
+                 raise RuntimeError('Generated C inputs changed during checking')
+         report.update(passed=True, actual_fresh_vc_interfaces_bound=True, kernel_contracts_still_conditional=True)
+     finally:

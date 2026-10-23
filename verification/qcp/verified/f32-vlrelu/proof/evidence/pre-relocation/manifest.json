@@ -1,0 +1,147 @@
+{
+  "schema": 1,
+  "kernel": "f32-vlrelu",
+  "variant": "original",
+  "whole_kernel_proved": false,
+  "originals": {
+    "kernel": "f32-vlrelu",
+    "upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "files": [
+      {
+        "path": "kernels/source/f32-vlrelu.c",
+        "copy": "impl/testNEON.c",
+        "sha256": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6"
+      },
+      {
+        "path": "kernels/target/f32-vlrelu.c",
+        "copy": "impl/testRVV.c",
+        "sha256": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e"
+      }
+    ]
+  },
+  "source_inventory_sha256": {
+    "impl/testNEON.c": "4c8689e540b354176daea7b00a01e854917c738f74ba4a3fcca01f944118e3b6",
+    "impl/testRVV.c": "682d136f5c7ac833199fcf0e5f9f83f8c169634de72cc55a0effa99676c5516e",
+    "shim/bits.c": "cfa1967f9dac0f951b230636c62bb9c442eb7926c2c49c6fa65f4fac43394ef2",
+    "shim/bits.h": "baa2f10a480f58c48a261389f65ed6be37105f2c7cd86f46408669fadcde1cb6",
+    "shim/model_def.h": "9d2e480f537a5d3a70d815907b7cf67f74860d59f26f174e52b7a7c00474fd7f",
+    "shim/neon_base.h": "96627d347212e9b5c0b6c9825b0c413b7bee2069104cb2d5c390a9a9059e0ce0",
+    "shim/neon_frontend.h": "078ac5d0ce6109e72111bb1281895bc6d53afcb88265082d5568615943e0adb8",
+    "shim/neon_primitives.c": "e3241bd346cf6c7da00e486ea70ced27f21a25c4ae4934bb45a25232171f8ab9",
+    "shim/neon_primitives.h": "b63cc9c369b0192f19bba4e60aa6f47ba4427c53061372ec7c27f626a31f3be1",
+    "shim/runtime/harness.c": "3a63e383ca5b0f2da6a09c0ceca7f367c992281f68ae2fadad466f58afab9fe8",
+    "shim/runtime/intrinsics.h": "85289dd3f2fd82627e4852a47b06c9eebc1640a13afe1240fa77e8bacf192fc7",
+    "shim/rvv_frontend.h": "643badb7e4ae72f1c8fcb408d969420d7aae96a0286016bbe0e7f3d2c409115e",
+    "shim/rvv_model_def.h": "44f0ec5755fda59fc54d5de4390d92b3ffbf6e4a5c479458a02d8fe82d9c6354",
+    "shim/rvv_primitives.c": "ad39087d0ebad159d6d6e483c806cb59b3f34faabdf85771175c704c1a49aae7",
+    "shim/rvv_types.h": "2279bbd1b00fc4711fbaac6f9ef50b95cae7780574add36fd3ab5235e9ac6197",
+    "shim/types.h": "7f26ad3819939b7191092197ff1293d82a1a99577ec7427045788c5360535a16",
+    "proof/coq/Bits.v": "6a1212a585c087bde1ee41ec322d6f96ea221de99e90ad343893c2db37c83849",
+    "proof/coq/BitsChecked.v": "3681ab275602b273d13ce9a3f1b14a68eaf13f2d25aeb44a3c487048e5d4eeea",
+    "proof/coq/FinalPrimitiveCheck.v": "e398995c464ebfb24b569618453b53359030c21e12a70a5f2379d9f57b6e885b",
+    "proof/coq/Model.v": "c0df4ba8ee7aea150c3141b4e205bc5bd1beb4137e22febff48869329f821c1c",
+    "proof/coq/NeonCalls.v": "d17aed214e01b49ea3b7b830064a6f46973b9ecbeb2298a19ef73449418e6309",
+    "proof/coq/NeonChecked.v": "497b850f4ed9ba775a065e0cb1422435ac6ba27f033f69f186bd17b41c77e2e0",
+    "proof/coq/NeonPrimitives.v": "b4cacc19fef06997b7260a9aaec42d0d07ba4918f58ab77e9031e5c638d5b9e7",
+    "proof/coq/NeonResult.v": "602ee56cb4c913750dc0916a3b0f86ea83b7e81f494d02fbb2dd9112cd1a8e9f",
+    "proof/coq/NeonSelect.v": "1798d8cc7fd97468575c2808c4e15031021e8083e289f35837503795d06cd09c",
+    "proof/coq/NeonVcs.v": "35d5b2146c25e984853b81244c563d3f8b0c1c02db24b1ec1dda7d176c838115",
+    "proof/coq/RvvCalls.v": "b2ca74a7534631d6e28e121a55a937fc8dc54ee1df569fc4e951f5f1870631b0",
+    "proof/coq/RvvFastFrame.v": "8424b7b64ba1c698a29402c9af987e3adbfc9df41a940910ede17ccf7bc78348",
+    "proof/coq/RvvMemory.v": "ceff0df702a598f271b4a6209dc1d7bac01f05e729d1b4ead2851a01f83baa41",
+    "proof/coq/RvvModel.v": "f142fba256c1f10f10f4733d2893cfd12a61f9be8291c4ec4b0a4a7ef5d1fc23",
+    "proof/coq/RvvPrimitiveMask.v": "55ad97213258af845a2cfa8c3b65464563d233afc1e96aa6c4b065c6fea1a64d",
+    "proof/coq/RvvPrimitiveMerge.v": "0dc160a7ebddee585fd392fedae1b6512d20e010852941b886d726aa1579c738",
+    "proof/coq/RvvPrimitiveMul.v": "01a18e22c6629734f43d1b4ea984f3bb4008ba81df574ea61b6e7dc172ad6139",
+    "proof/coq/RvvPrimitiveReinterpret.v": "84b8f5e5c0b09f091c48eb307d7043fbf64fbeb7e8bf8c125ceca10e2e13b14f",
+    "proof/coq/RvvPrimitiveScalar.v": "21e7ad1ce99b03be4a9e79c5b2522d20b91b901b28f8f7f4a4b14cec37999007",
+    "proof/coq/RvvPrimitives.v": "fc93527331ea6aed94bdd5a4db2da8e2b8be8c3741f248b89f79060597cd2e31",
+    "proof/coq/RvvResult.v": "4db1723b5d228c06e85c6f44ff4e4c5e566e3a99a8009398a90b4557343bb2fa",
+    "proof/coq/RvvStrategy.v": "f2f7949c1390fd2f8aff044b91cce1d0adc718333d4ace31df8071e3a6432701",
+    "proof/coq/WrapperChecked.v": "2278f5c9416ca977f5c9cc0d187a89316268dd2ec8e686aaef083751771f6684",
+    "proof/coq/WrapperGate.v": "4b3c29fe26f21878b8d8cc202428931b50317f429dcbe0e281ed4a2ab591e6c1",
+    "proof/coq/neon_test_neon_entail_wit_1.v": "3051bbb93d20bfc183ac37320ab269344b873fd88069e44582b8b1efa7655c47",
+    "proof/coq/neon_test_neon_entail_wit_2.v": "b1f651a1219ad1bc4392b87639d532e3fa1689e3764ee0327a26011d84032910",
+    "proof/coq/neon_test_neon_partial_solve_wit_17.v": "86ccbf8505c1c4df17d338ac58395643bedc46020be8913a4bea3f62b13c5d74",
+    "proof/coq/neon_test_neon_partial_solve_wit_18.v": "cc164c58afe0900490bc6e405c38294c32aca002622fdae5f4d352015d26f413",
+    "proof/coq/neon_test_neon_partial_solve_wit_19.v": "c4879dff3fb3d42e4e5a767e774b1acba36ea1dc6affe022aedf5efb8438394a",
+    "proof/coq/neon_test_neon_partial_solve_wit_20.v": "ed22c9daf8fe6755d1abde8b3f9baaf52e4ed9a3c5598d80837de6fdeacc9905",
+    "proof/coq/neon_test_neon_partial_solve_wit_54.v": "54b8818b976a95c9fbc263b26646eaa51670f4ba2b3984d43b1383515af4fd13",
+    "proof/coq/neon_test_neon_partial_solve_wit_55.v": "956b744905d9a08620f6013a6fcc1e18fa44f4be29a5dc59a309747f8e5d2742",
+    "proof/coq/neon_test_neon_partial_solve_wit_61.v": "2185fba5bdea6428af0a81781a4b834670ef34954a931914baf925c50677beff",
+    "proof/coq/neon_test_neon_partial_solve_wit_7.v": "fb5982d8f67ba9681b613bd5c19f8b78ea5531eb064087cfc675c40d655f645f",
+    "proof/coq/neon_test_neon_return_wit_1.v": "57595ef415fa8d53c08ace4b53cf47c56339773c4bbfeb57f5cfa3e117a2b3ac",
+    "proof/coq/neon_test_neon_return_wit_2.v": "6c7d0f488b554b4b9dfecf97c1e42ae18380bfcd7e3a41573178128aa03161db",
+    "proof/coq/neon_test_neon_return_wit_3.v": "06797c568956885cd05449ffa8009939f54dcbabcb3c587bd0bea958cc3ed6e5",
+    "proof/coq/neon_test_neon_return_wit_4.v": "ed57cbc7f25832d196330bdc04b0588a08c504d34f880ccb8d165276d20d9b48",
+    "proof/coq/neon_vlrelu_strategy_proof.v": "c0be9da3f0e89a967b6d15c1641e004df8a0ee973e9a5b749d667ba95afa0640",
+    "proof/coq/rvv_primitives_goal.v": "c8a0af83aff9b8607980269e779332642ee0e9f00bed4a789299b251446a0a3e",
+    "proof/coq/rvv_vlrelu_strategy_proof.v": "f1903c805e337c525fbd97930907c4a231a6126a8056ef101394df43225b5179",
+    "proof/c/neon.annotations.json": "e4aca4a95d825e659ebcbff2edef38d77008ba4033ce74d677171ce2ef19023b",
+    "proof/c/neon_vlrelu.strategies": "a9d47e7ffbe01be68b8f5875ebb3998e5588c48489252c1dec46253fe2bdfbe4",
+    "proof/c/rvv.annotations.json": "8c28cefaff72f44804225890b43566ff7c009b7a1534d47132f2419ec3c5dad5",
+    "proof/c/rvv_vlrelu.strategies": "5eb463538e6401f4db114cb9b2b2e9bab6e77c5d16272da6ad1e154cd5faa698",
+    "proof/c/wrapper.annotations.json": "0184b4cdaeaf035084407a2ec0773b6f35234860ffde13489e71a6c72b082674",
+    "spec.c": "6cdb2ece5bd5471f8612e7dc0288ee368e395fb60c005ad47102240ad756f109",
+    "proof/originals.json": "bf144d8722585c7a94617eaf18c108faa3dec54471a6a612f7c4244be4199a94",
+    "proof/semantics.json": "c7d2f71103fcc9a7f092a31404389a06e5dfe8ae28e9491fcc57871315d32897",
+    "proof/check_bits.py": "b0b1f5b552611f1c12aefe381542daefed0da112dfac6822368afb34fd4af7b6",
+    "proof/check_full.py": "fcf81c18904ddf2baa3ad643abca4a7dbb8edd5aa56da12e800e83b96a393345",
+    "proof/check_math.py": "cfed63de6dfe291f137f307db623f9eda92e01d83f704269f087e4485099bf1d",
+    "proof/check_neon.py": "80600a421106cd4776b196777eb92018b7f799cac07a5afad287ae910e0c17a1",
+    "proof/check_neon_kernel.py": "8a9f6ed2ae698bd32693e4d5ec8823ae7b3edd4f89e1e12af71c03892c34672f",
+    "proof/check_neon_primitives.py": "c09b9f09118dfc7a31c33340225823a204c98e619ad74b4b0165422b02aa0f10",
+    "proof/check_primitive_closure.py": "4b3bcfb95875231c4418611030f890e3136b393f252fc6595e797f94c54a45dd",
+    "proof/check_rvv.py": "47c98529ac16e2d1a39009d51e9e4f7b23c23af8df2f6a56c5941ca7d871fde1",
+    "proof/check_wrapper.py": "7edc16e091666e457959b3db80cc7a5c07a99937ac96c0a8ff4a67ee3c4cfd70",
+    "proof/check_wrapper_proof.py": "9cbea7021bbcf2f210db6d51ebaba63dbdbb568c525ccb648d2935dfabcef3d1",
+    "proof/generate_rvv.py": "aafa6da6c11832ff17a59f41644a220001cfc6ec3a9c018b367cd7fbbd8ae68c",
+    "proof/native.py": "5a7beee359c491d930c8dec73e9e952b0f83880c88c19c6eda58be93cbe752eb",
+    "proof/record_status.py": "93646fa15f1fd3678dd7770bcb7bfd67e458fae320f220c82d0397a94ff1c641",
+    "proof/resume_primitive_closure.py": "4916019e82c7a06cfdb17995f471ab86712c373f9aac649b1d9c64647fd49a87"
+  },
+  "component_evidence": {
+    "primitive-closure": {
+      "evidence": "proof/evidence/primitive-closure-status.json",
+      "sha256": "29e8b55b15c3909177a4fa49af542302e11135323e0b145d0942a74ce95dbb8b",
+      "passed": true,
+      "scope": "Primitive C-body call closure only; resumed interrupted local build"
+    },
+    "wrapper-proof": {
+      "evidence": "proof/evidence/wrapper-proof-status.json",
+      "sha256": "20372671d3fcd9fcbab3243e383d7b960dfa8a33fd4fa43e34bbb847695800b5",
+      "passed": true,
+      "scope": "Public helper/caller actual C VC interfaces; conditional on kernel contracts"
+    },
+    "native": {
+      "evidence": "proof/evidence/native-status.json",
+      "sha256": "f6eeffea4137fd1b98ff287aa887c4ff68cf60c7959d5e32df2fe29b9824f310",
+      "passed": true,
+      "scope": "Finite native regression only; no kernel proof or hardware execution."
+    },
+    "math": {
+      "evidence": "proof/evidence/math-status.json",
+      "sha256": "07eb0d6bd9620231365e3575f13d073483a87a21e677372dc0f6915dda2c4756",
+      "passed": true,
+      "scope": "Coq arithmetic/list lemmas only; C VC count zero"
+    }
+  },
+  "post_check_identity_audits": [
+    {
+      "path": "proof/evidence/frontend-portability.json",
+      "sha256": "6c44e978487325ab70b3a110ec0583b1b7726e1978f69fa73d62a8ac5dd53754"
+    }
+  ],
+  "final_primitive_gate": "proof/coq/FinalPrimitiveCheck.v",
+  "primitive_units": {
+    "bits": 19,
+    "neon_primitives": 61,
+    "rvv_primitives": 347
+  },
+  "remaining": [
+    "original NEON complete VC gate pending",
+    "original RVV kernel generation and proof",
+    "complete kernel/helper/caller call-closure gate",
+    "ISA observation/refinement and termination outside current verified scope"
+  ]
+}

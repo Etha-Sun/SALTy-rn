@@ -1,0 +1,19 @@
+--- proof/resume_primitive_closure.py (before)
++++ proof/resume_primitive_closure.py (after)
+@@ -10,6 +10,7 @@
+ import importlib.util
+ import json
+ from pathlib import Path
++from artifact_paths import artifact_path
+ import re
+ import shutil
+ import subprocess
+@@ -31,7 +32,7 @@
+     parser.add_argument('--dependency-dir', type=Path, required=True)
+     parser.add_argument('--run-dir', type=Path, required=True)
+     args = parser.parse_args()
+-    run = args.run_dir.resolve()
++    run = artifact_path(args.run_dir).resolve()
+     if run.parent != CASE / '.build' or (run / 'status.json').exists():
+         raise ValueError('Expected an unfinished local run; completed records must remain unchanged')
+     coq = run / 'coq'

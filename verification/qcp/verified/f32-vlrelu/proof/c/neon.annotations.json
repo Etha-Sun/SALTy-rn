@@ -1,0 +1,62 @@
+[
+  {
+    "before": "\n{",
+    "text": "/*@ With (A:list fp32) (c:fp32)\n Require 0 < batch && batch <= 18446744073709551603 && batch % 4 == 0 &&\n params != 0 && input != 0 && output != 0 &&\n FloatArray::full(input,batch/4+3,A) * store(&(params->scalar.slope),float,c) *\n FloatArray::undef_full(output,batch/4)\n Ensure FloatArray::full(input,batch/4+3,A) * store(&(params->scalar.slope),float,c) *\n FloatArray::full(output,batch/4,vlrelu_values(batch/4,A,c)) */"
+  },
+  {
+    "before": "  for (;",
+    "text": "/*@ Inv Assert exists (k:Z),\nfp32_length(A) == batch@pre/4+3 &&\n0 <= k && k*4 + batch == batch@pre && batch % 4 == 0 &&\n0 <= batch && batch <= batch@pre && k <= batch@pre/4 &&\n(batch == 0 || (batch == 4 && batch/4 == 1) ||\n (batch == 8 && batch/4 == 2) || (batch == 12 && batch/4 == 3) ||\n (16 <= batch && 4 <= batch/4)) &&\nparams == params@pre && params != 0 &&\ninput == input@pre + k && output == output@pre + k &&\ninput != 0 && output != 0 &&\nFloatArray::full(input@pre,k,fp32_slice(0,k,A)) *\nFloatArray::full(input,batch/4+3,fp32_slice(k,batch@pre/4+3,A)) *\nstore(&(params->scalar.slope),float,c) *\nstore(&(vslope.s0),float,c) * store(&(vslope.s1),float,c) *\nstore(&(vslope.s2),float,c) * store(&(vslope.s3),float,c) *\nFloatArray::full(output@pre,k,vlrelu_values(k,A,c)) * FloatArray::undef_full(output,batch/4) */"
+  },
+  {
+    "after": "vmulq_f32(vx0123, vslope)",
+    "text": "/*@ where a=&vx0123,b=&vslope */"
+  },
+  {
+    "after": "vmulq_f32(vx, vslope)",
+    "text": "/*@ where a=&vx,b=&vslope */"
+  },
+  {
+    "after": "vcltq_s32(vreinterpretq_s32_f32(vx0123), vmovq_n_s32(0))",
+    "text": "/*@ where a=0,b=0 */"
+  },
+  {
+    "after": "vcltq_s32(vreinterpretq_s32_f32(vx), vmovq_n_s32(0))",
+    "text": "/*@ where a=0,b=0 */"
+  },
+  {
+    "after": "vreinterpretq_s32_f32(vx0123)",
+    "text": "/*@ where a=&vx0123 */"
+  },
+  {
+    "after": "vreinterpretq_s32_f32(vx)",
+    "text": "/*@ where a=&vx */"
+  },
+  {
+    "after": "vbslq_f32(vmask0123, vacc0123, vx0123)",
+    "text": "/*@ where mask=&vmask0123,a=&vacc0123,b=&vx0123 */"
+  },
+  {
+    "after": "vbslq_f32(vmask, vacc, vx)",
+    "text": "/*@ where mask=&vmask,a=&vacc,b=&vx */"
+  },
+  {
+    "after": "vst1q_f32(output, vacc0123)",
+    "text": "/*@ where a=&vacc0123 */"
+  },
+  {
+    "after": "vget_low_f32(vacc)",
+    "text": "/*@ where a=&vacc */"
+  },
+  {
+    "after": "vget_high_f32(vacc)",
+    "text": "/*@ where a=&vacc */"
+  },
+  {
+    "after": "vst1_f32(output, vacc_lo)",
+    "text": "/*@ where a=&vacc_lo */"
+  },
+  {
+    "after": "vst1_lane_f32(output, vacc_lo, 0)",
+    "text": "/*@ where a=&vacc_lo */"
+  }
+]
