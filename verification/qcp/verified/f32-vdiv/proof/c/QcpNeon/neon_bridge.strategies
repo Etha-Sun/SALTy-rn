@@ -1,0 +1,57 @@
+#include "../../../shim/proof/QcpNeon/bridge_def.h"
+
+id : 1
+priority : core(0)
+left : FloatArray::full(?p, ?n, ?l) at 0
+right : store(pointer_offset(?q, 0, float), float, ?x0) at 1
+        store(pointer_offset(q, 1, float), float, ?x1) at 2
+        store(pointer_offset(q, 2, float), float, ?x2) at 3
+        store(pointer_offset(q, 3, float), float, ?x3) at 4
+check : infer(q == p);
+        infer(4 <= n);
+action : left_erase(0);
+         right_erase(1);
+         right_erase(2);
+         right_erase(3);
+         right_erase(4);
+         left_add(FloatArray::seg(p,4,n,fp32_slice(4,n,l)));
+         right_add(x0 == l[0]);
+         right_add(x1 == l[1]);
+         right_add(x2 == l[2]);
+         right_add(x3 == l[3]);
+
+id : 2
+priority : core(0)
+left : UndefStructPredfloat32x4_t(?p) at 0
+right : undef_data_at(field_addr(?q,float32x4_t,s0),float) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,float32x4_t,s0),float));
+         left_add(undef_data_at(field_addr(p,float32x4_t,s1),float));
+         left_add(undef_data_at(field_addr(p,float32x4_t,s2),float));
+         left_add(undef_data_at(field_addr(p,float32x4_t,s3),float));
+
+id : 3
+priority : core(0)
+left : FloatArray::undef_full(?p, ?n) at 0
+right : undef_data_at(pointer_offset(?q,0,float),float) at 1
+        undef_data_at(pointer_offset(q,1,float),float) at 2
+        undef_data_at(pointer_offset(q,2,float),float) at 3
+        undef_data_at(pointer_offset(q,3,float),float) at 4
+check : infer(q == p);
+        infer(4 <= n);
+action : left_erase(0);
+         right_erase(1);
+         right_erase(2);
+         right_erase(3);
+         right_erase(4);
+         left_add(FloatArray::undef_seg(p,4,n));
+
+id : 4
+priority : core(0)
+left : UndefStructPredfloat32x2_t(?p) at 0
+right : undef_data_at(field_addr(?q,float32x2_t,s0),float) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,float32x2_t,s0),float));
+         left_add(undef_data_at(field_addr(p,float32x2_t,s1),float));

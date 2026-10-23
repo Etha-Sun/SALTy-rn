@@ -1,0 +1,25 @@
+#include "../../../../../shared/c-shim/f32/QcpVadd/float_array_def.h"
+
+id : 1
+priority : core(1)
+left : FloatArray::full(?p, ?n, ?l) at 0
+right : store(pointer_offset(?q, ?i, float), float, ?v) at 1
+check : infer(q == p);
+        infer(0 <= i);
+        infer(i < n);
+action : right_erase(1);
+         left_erase(0);
+         left_add(FloatArray::missing_i(p, i, 0, n, l));
+         right_add(v == l[i]);
+
+id : 2
+priority : post(1)
+left : FloatArray::missing_i(?p, ?i, ?lo, ?hi, ?l) at 0
+       store(pointer_offset(?q, ?j, float), float, l[i-lo]) at 1
+check : infer(q == p);
+        infer(i == j);
+        infer(lo <= i);
+        infer(i < hi);
+action : left_erase(1);
+         left_erase(0);
+         left_add(FloatArray::seg(p, lo, hi, l));

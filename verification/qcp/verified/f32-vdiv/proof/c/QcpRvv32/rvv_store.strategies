@@ -1,0 +1,46 @@
+#include "../../../shim/proof/QcpRvv32/rvv_store_def.h"
+
+id : 1
+priority : core(1)
+left : FloatArray::undef_seg(?p, ?lo, ?hi) at 0
+right : undef_data_at(?q,float) at 1
+check : infer(q == pointer_offset(p,lo,float));
+        infer(lo < hi);
+action : left_erase(0);
+         right_erase(1);
+         left_add(FloatArray::undef_seg(p,lo+1,hi));
+
+id : 2
+priority : core(1)
+left : FloatArray::seg(?p, ?lo, ?hi, ?l) at 0
+right : FloatArray::seg(?q, ?lo2, ?hi2, ?r) at 1
+check : infer(p == q);
+        infer(lo == lo2);
+        infer(hi == hi2);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l == r);
+
+id : 3
+priority : core(1)
+left : FloatArray::undef_seg(?p, ?lo, ?hi) at 0
+right : FloatArray::undef_seg(?q, ?lo2, ?hi2) at 1
+check : infer(p == q);
+        infer(lo == lo2);
+        infer(hi == hi2);
+action : left_erase(0);
+         right_erase(1);
+
+id : 4
+priority : core(0)
+left : FloatArray::undef_full(?p, ?n) at 0
+right : FloatArray::undef_seg(?q,0,?m) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+
+id : 5
+priority : core(0)
+right : FloatArray::seg(?p,0,0,rvv_take(0,?l)) at 0
+action : right_erase(0);

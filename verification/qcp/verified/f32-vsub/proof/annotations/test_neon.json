@@ -1,0 +1,38 @@
+[
+  {
+    "after_token": 28,
+    "text": null
+  },
+  {
+    "after_token": 69,
+    "text": "/*@ Inv Assert exists (k:Z),\nfp32_length(A) == batch@pre/4+3 && fp32_length(B) == batch@pre/4+3 &&\n0 <= k && k*4 + batch == batch@pre && batch % 4 == 0 &&\n0 <= batch && batch <= batch@pre && k <= batch@pre/4 &&\n(batch == 0 ||\n (batch == 4 && batch/4 == 1) ||\n (batch == 8 && batch/4 == 2) ||\n (batch == 12 && batch/4 == 3) ||\n (16 <= batch && 4 <= batch/4)) &&\nparams == params@pre && params != 0 &&\ninput_a == input_a@pre + k && input_b == input_b@pre + k && output == output@pre + k &&\ninput_a != 0 && input_b != 0 && output != 0 &&\n\nFloatArray::full(input_a@pre,k,fp32_slice(0,k,A)) *\nFloatArray::full(input_a,batch/4+3,fp32_slice(k,batch@pre/4+3,A)) *\nFloatArray::full(input_b@pre,k,fp32_slice(0,k,B)) *\nFloatArray::full(input_b,batch/4+3,fp32_slice(k,batch@pre/4+3,B)) *\nFloatArray::full(output@pre,k,vadd_values(k,A,B)) * FloatArray::undef_full(output,batch/4) */"
+  },
+  {
+    "after_token": 126,
+    "text": "/*@ where a = &va, b = &vb */"
+  },
+  {
+    "after_token": 133,
+    "text": "/*@ where a = &vacc */"
+  },
+  {
+    "after_token": 174,
+    "text": "/*@ where a = &va, b = &vb */"
+  },
+  {
+    "after_token": 182,
+    "text": "/*@ where a = &vacc */"
+  },
+  {
+    "after_token": 203,
+    "text": "/*@ where a = &vacc_lo */"
+  },
+  {
+    "after_token": 214,
+    "text": "/*@ where a = &vacc */"
+  },
+  {
+    "after_token": 238,
+    "text": "/*@ where a = &vacc_lo */"
+  }
+]

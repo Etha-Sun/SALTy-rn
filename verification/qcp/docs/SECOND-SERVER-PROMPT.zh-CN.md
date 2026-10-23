@@ -8,13 +8,13 @@
 
 本指令更新此前的交接：新的优先路线是保留原kernel的C调用、赋值和控制流，只改shim、加证明注释。旧pointer/out调用改写路线保留为历史参考，不要默认把kernel再改写一遍。
 
-审核结构已按用户新要求整理到 `verification/qcp/vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。 `proof/c/` 现仅保留Inv/Assert注释JSON与策略，重复C模板及spec-preamble.txt已删除；生成器从live spec.c提取全部函数/合同/前缀，不要再维护模板副本。
-新目录已实际完成87个本地Coq模块的全量fresh编译、21模块审核入口检查、430个原始C/native回归与负对照；C-shim模块化等价性记为1/40，真实ISA对应另列。独立重放时以新目录为优先入口。
+审核结构已按用户新要求整理到 `verification/qcp/verified/f32-vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `verified/f32-vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。 `proof/c/` 现仅保留Inv/Assert注释JSON与策略，重复C模板及spec-preamble.txt已删除；生成器从live spec.c提取全部函数/合同/前缀，不要再维护模板副本。
+当前已完成 VADD/VSUB/VMUL/VDIV 四例，统一位于 `verification/qcp/verified/`，以该目录 manifest.json 为准。每例11个C单元、87个本地Coq模块和FinalCheck完整通过，32并发，native430例；C-shim模块化等价性记为4/40，真实ISA对应及终止性另列。平方根仍是未验证候选。leader正在探索VMULC；worker继续GEMM/环境等已领取任务，先读协调板避免重复。独立重放时以新目录为入口。
 
 一、同步并理解当前成果
 
 1. git fetch origin，核对 origin/c-shim-v2 已包含上述完整SHA；后续基于其最新已发布提交工作。已有worker分支先保存工作，再用正常merge等保留历史的方式吸收集成进度，不强推、不覆盖别人改动；没有工作分支才创建 codex/worker-<task>。不要直接推c-shim-v2或自行merge PR。
-2. 先读 verification/qcp/vadd/README.zh-CN.md、spec.c、proof/review-status.json 和 proof/status.json（具体通过范围以实际记录为准），再读 verification/qcp/CHECKPOINT.zh-CN.md，以及：
+2. 先读 verification/qcp/verified/f32-vadd/README.zh-CN.md、spec.c、proof/review-status.json 和 proof/status.json（具体通过范围以实际记录为准），再读 verification/qcp/CHECKPOINT.zh-CN.md，以及：
    - experiments/byvalue-vadd/README.zh-CN.md、replay-status.json、replay.py；
    - experiments/byvalue-rvv/README.zh-CN.md、replay-status.json；
    - docs/ROADMAP.zh-CN.md、docs/COORDINATION.zh-CN.md、docs/CSIM-REPAIRS.zh-CN.md、docs/coordination.json；
@@ -36,8 +36,8 @@
 三、你的接续任务
 
 A. 优先收尾现有环境PR #2。读取leader两条REVIEW，处理显式Dune/in-place布局选择、与固定HEAD比较并检测staged/untracked的Coq源变化、release归档的源清单/构建来源。覆盖新byvalue重放入口，但不要批量重写其C/proof。当前runner仍依赖leader路径与已配置QCP/Coq；环境失败不能记为proof失败。版本/工具与库源哈希必须准确，不能用一份.vo哈希替代依赖闭包证明。
-B. 环境可用后，独立重放新 `python3 verification/qcp/vadd/proof/check.py --jobs 32`（支持--config；并发按服务器资源选择）及native.py，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；旧mapper转换不再是新入口的验收要求，真实ISA对应仍单独列明。
-C. 主实施范围仍为其余39个kernel；VADD case和leader的byvalue试点目录默认只读。继续你已CLAIM的M1-packed/FMA等独立任务，不必等leader再开工。按ROADMAP推进，优先u8-vclamp与新三个矩阵target：qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32；同时规划f32-gemm-minmax。先明确packed布局/单位、整数wrap、FMA单次舍入、NaN/minmax及tail，再证明实际完整循环。
+B. 环境可用后，独立重放新 `python3 verification/qcp/verified/f32-vadd/proof/check.py --jobs 32`（支持--config；并发按服务器资源选择）及native.py，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；旧mapper转换不再是新入口的验收要求，真实ISA对应仍单独列明。
+C. 主实施范围为尚未验证且未由leader领取的kernel；VADD case和leader的byvalue试点目录默认只读。继续你已CLAIM的M1-packed/FMA等独立任务，不必等leader再开工。按ROADMAP推进，优先u8-vclamp与新三个矩阵target：qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32；同时规划f32-gemm-minmax。先明确packed布局/单位、整数wrap、FMA单次舍入、NaN/minmax及tail，再证明实际完整循环。
 D. 在独立case/共享候选目录实施。共享库改动单独小PR；每个kernel单独PR，base=c-shim-v2。新case先给原始来源SHA、简单可审查的spec/mapper，再给primitive真实body、内外循环和实际比较器的证明闭包。CSim修复先重放反例，作为独立repaired版本，不能静默修改原版。
 
 四、持续跟进与通信

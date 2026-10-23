@@ -1,0 +1,33 @@
+#include "../../../../../shared/c-shim/f32/QcpNeonLoop/tail_def.h"
+
+id : 1
+priority : core(0)
+left : FloatArray::undef_full(?p, ?n) at 0
+right : undef_data_at(pointer_offset(?q,0,float),float) at 1
+        undef_data_at(pointer_offset(q,1,float),float) at 2
+check : infer(q == p);
+        infer(2 <= n);
+action : left_erase(0);
+         right_erase(1);
+         right_erase(2);
+         left_add(FloatArray::undef_seg(p,2,n));
+
+id : 2
+priority : core(1)
+left : FloatArray::undef_full(?p, ?n) at 0
+right : undef_data_at(?q,float) at 1
+check : infer(q == p);
+        infer(1 <= n);
+action : left_erase(0);
+         right_erase(1);
+         left_add(FloatArray::undef_seg(p,1,n));
+
+id : 3
+priority : core(1)
+left : FloatArray::undef_seg(?p, ?lo, ?hi) at 0
+right : undef_data_at(?q,float) at 1
+check : infer(q == pointer_offset(p,lo,float));
+        infer(lo < hi);
+action : left_erase(0);
+         right_erase(1);
+         left_add(FloatArray::undef_seg(p,lo+1,hi));

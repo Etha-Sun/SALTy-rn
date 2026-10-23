@@ -1,0 +1,19 @@
+#include "../../../../../shared/c-shim/f32/QcpRvv32/rvv_loop_def.h"
+#include "../../../../../shared/c-shim/f32/QcpRvv32/rvv_store_def.h"
+id : 1
+priority : core(0)
+right : FloatArray::seg(?p,?lo,?hi,vadd_values(?count,?a,?b)) at 0
+check : infer(lo == 0);
+        infer(hi == 0);
+        infer(count == 0);
+action : right_erase(0);
+
+id : 2
+priority : core(0)
+left : FloatArray::undef_full(?p,?n) at 0
+right : FloatArray::undef_seg(?q,?lo,?hi) at 1
+check : infer(p == q);
+        infer(lo == 0);
+        infer(hi == n);
+action : left_erase(0);
+         right_erase(1);

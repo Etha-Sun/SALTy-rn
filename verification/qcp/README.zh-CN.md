@@ -1,8 +1,11 @@
+当前 **4/40**（VADD、VSUB、VMUL、VDIV，公开契约下的 C-shim 模块化部分正确性）。
+已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
+
 # CSim → QCP：小型 kernel 验证框架
 
-当前 VADD 审核入口已整理为 [vadd/spec.c](vadd/spec.c)：比较函数、`equivalent` 及其前后置条件集中在一个文件；
-两个未修改的原始 C 文件放在 `vadd/impl/`，本地 Coq 依赖、shim 和检查脚本放在 `vadd/proof/`。
-目录和复查命令见 [VADD 说明](vadd/README.zh-CN.md)。用户已接受适合证明的 comparator/wrapper 形式，
+当前 VADD 审核入口已整理为 [vadd/spec.c](verified/f32-vadd/spec.c)：比较函数、`equivalent` 及其前后置条件集中在一个文件；
+两个未修改的原始 C 文件放在 `verified/f32-vadd/impl/`，本地 Coq 依赖、shim 和检查脚本放在 `verified/f32-vadd/proof/`。
+目录和复查命令见 [VADD 说明](verified/f32-vadd/README.zh-CN.md)。用户已接受适合证明的 comparator/wrapper 形式，
 因此该入口不再要求转换回旧 mapper 的内联比较循环。下面关于固定 mapper 和 0/40 的记录属于旧验收口径；
 当前模块化 C-shim 证明以新入口的检查记录为准，硬件 ISA 与 shim 的对应仍单独报告。
 
