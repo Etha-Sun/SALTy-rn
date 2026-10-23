@@ -1,0 +1,131 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-final-uiw8o1br",
+  "scope": "Finite current repaired signed reduction kernels using array-runtime shims, independent modulo32 scalar oracle and guards. Not scalar-field provider execution, public-caller check, formal proof or ISA refinement.",
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-DRSUM_SIGNED",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/runtime.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testRVV.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/native_harness.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02404189994558692,
+      "log_sha256": "e271e0040acac1198424a1b2e047d472cdbff6645007388a42ec7f33c06f87d9"
+    },
+    {
+      "label": "compile-ubsan",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-DRSUM_SIGNED",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/runtime.h",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testRVV.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/native_harness.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-final-uiw8o1br/native-ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3004770840052515,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime-ubsan",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-final-uiw8o1br/native-ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.015612398972734809,
+      "log_sha256": "3385a356c40e983c9225fc1ab0e0e4c1883c825def2cf16bac1c462aa030116e"
+    },
+    {
+      "label": "compile-asan",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-DRSUM_SIGNED",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/runtime.h",
+        "-fsanitize=address",
+        "-fno-omit-frame-pointer",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testRVV.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/native_harness.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-final-uiw8o1br/native-asan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.3855579399969429,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "runtime-asan-cgroup",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "--setenv=ASAN_OPTIONS=detect_leaks=1:halt_on_error=1",
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-final-uiw8o1br/cgroup-launch.py",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-final-uiw8o1br/native-asan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.05880111386068165,
+      "log_sha256": "bb31b86e09094151204bc02ae380249fd862152bdd3a7877ee048dcd511d61f6"
+    }
+  ],
+  "ubsan_output": "{\"cases\":990,\"lanes_per_side\":1075860,\"failures\":0,\"input_and_params_preserved\":true,\"canaries_checked\":true}\n",
+  "asan_output": "actual_memory_max=17179869184\n{\"cases\":990,\"lanes_per_side\":1075860,\"failures\":0,\"input_and_params_preserved\":true,\"canaries_checked\":true}\n",
+  "current_sources_sha256": {
+    "shim/native_harness.c": "7234edb638ff9edfde35d08a74d458dc412afd3373ecda28363060b3393ff84d",
+    "shim/runtime.h": "d28d667952b72a848d6f4d88cbd788bb9e646543d6021763d4d2ffeba9fe55cb",
+    "impl/testRVV.c": "ba026373a437183df703f0f12907fbe1b0b06ea75b84a9b5df16f1ba54e18173",
+    "impl/testNEON.c": "a19abf9c19d11298eb820bed7560fd0905ee84d8c0cc3829974e7fbcaa6d1378"
+  },
+  "input_sha256": {
+    "shim/native_harness.c": "7234edb638ff9edfde35d08a74d458dc412afd3373ecda28363060b3393ff84d",
+    "shim/runtime.h": "d28d667952b72a848d6f4d88cbd788bb9e646543d6021763d4d2ffeba9fe55cb",
+    "impl/testRVV.c": "ba026373a437183df703f0f12907fbe1b0b06ea75b84a9b5df16f1ba54e18173",
+    "impl/testNEON.c": "a19abf9c19d11298eb820bed7560fd0905ee84d8c0cc3829974e7fbcaa6d1378"
+  },
+  "recursive_input_count": 4,
+  "input_identity_unchanged": true,
+  "asan_actual_memory_max": 17179869184,
+  "per_process_memory_GiB": 16
+}

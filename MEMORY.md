@@ -7,7 +7,7 @@
 
 ## 用户当前要求
 
-- 目标：从当前 14/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
+- 目标：从当前 15/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
 - 新验证批次默认 **16 并发、每进程 16 GiB**，按复杂度设置有限时限；结合服务器可用内存和其他 worker 的实际占用安排多个批次。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -19,16 +19,16 @@
 - 我们的主工作树：`/srv/home/yuechunsun/tools/qcp-simple-kernels`，分支 `codex/worker-simple-kernels`。
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
-- `neon_kernel_resume`：独占 f32-vrndne 全案。
+- `neon_kernel_resume`：独占 f32-vrndne，并行新增 f32-f16-vcvt。
 - `minmax_repair_finish`：qs8-vcvt 全案已交付；独占后续 qs8-vadd-minmax、qu8-vadd-minmax。
-- `rvv_kernel_resume`：独占 qu8-rsum 全案；qu8-f32-vcvt 已完整发布。
-- root：qs8-rsum、qs8-vlrelu、qs8/qu8-rdsum；统一归档、发布、progress/memory。
+- `rvv_kernel_resume`：完成两项 rsum 后，独占 qs8-rdsum、qu8-rdsum；qu8-f32-vcvt 已完整发布。
+- root：qs8-vlrelu；统一归档、发布、progress/memory。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **14/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **15/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 
@@ -75,3 +75,5 @@ QS8→QS8 转换修复版本次正式收录 `verification/qcp/verified/qs8-vcvt/
 Root 新建 qs8-vlrelu 独立命名空间 Qs8Lrelu：原两侧正/负 multiplier 的4项INT32_MIN UB反例已复现，保留全4个raw int32参数域；GNU精确补丁修复两侧取负。当前仅源码蓝图、数学/有限native阶段，尚无完整kernel证明，不计数。参考157个具体helper源码均须重新生成目标、从源编译；未复用旧对象或验收信用。
 
 QU8-RSUM 本次收录 `verification/qcp/verified/qu8-rsum/`：21实际C单元/890字段/34函数体、2策略字段、257次普通Coq、892项最终Print、既有14项继承假设及463个外部依赖身份核对通过。全案SHA256 `70ec8101e4d27b20f05796657397970b0a2ec5d50d9d926d4d58186bf113d043`。具体全域/内存与repair边界见case中文README；当前NEON语法兼容版，不把parser兼容失败虚构成语义反例。独立clean publication对21实际单元/35递归输入再做990用例/每侧1075860 lane的16GiB UBSan检查，并将两侧首输出同时翻转，确认两侧仍相同而独立scalar oracle拒绝。发布重查不算第二次形式证明，旧路径归档脚本失败和旧writer均保留。
+
+QS8-RSUM 本次收录 `verification/qcp/verified/qs8-rsum/`：21实际C单元/890字段/34函数体、2策略字段、256次普通Coq、892项最终Print、既有14项继承假设及463个外部依赖身份核对通过。全案SHA256 `aae7d4ade922424b268900966a775c9a271eba890e6206ec8e2699cf7f585362`。具体全域/内存与repair边界见case中文README；当前两侧模32溢出修复版，不把parser兼容失败虚构成语义反例。独立clean publication对21实际单元/35递归输入再做990用例/每侧1075860 lane的16GiB UBSan检查，并将两侧首输出同时翻转，确认两侧仍相同而独立scalar oracle拒绝。发布重查不算第二次形式证明，旧路径归档脚本失败和旧writer均保留。

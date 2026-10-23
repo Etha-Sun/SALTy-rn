@@ -1,6 +1,6 @@
 # 已验证的 kernel
 
-当前 **14/40**，目标至少 **21/40**。最新新增 [qu8-rsum](qu8-rsum/README.zh-CN.md) NEON语法兼容版。
+当前 **15/40**，目标至少 **21/40**。最新新增 [qs8-rsum](qs8-rsum/README.zh-CN.md) 两侧模32溢出修复版。
 
 本目录只收录完整 C-shim 模块化等价性检查通过的 kernel；清单见 manifest.json。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。

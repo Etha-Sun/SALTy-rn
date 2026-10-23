@@ -1,0 +1,40 @@
+#include "../../../shim/rvv_frontend.h"
+void test_rvv(
+    size_t batch,
+    const int8_t* input,
+    int32_t* output,
+    const struct xnn_qs8_rsum_params* restrict params) XNN_OOB_READS
+/*@ With (A:list Z) (Init:Z) (Tag:Z) Require 0<batch && batch<=18446744073709551600 && input!=0 && output!=0 && params!=0 && -2147483648<=Init && Init<=2147483647 && CharArray::full(input,batch+15,A) * store(output,int,Init) * store(&(params->_),char,Tag) Ensure CharArray::full(input@pre,batch@pre+15,A) * store(output@pre,int,rs_s32(Init+rs_prefix(A,batch@pre))) * store(&(params@pre->_),char,Tag) */
+{
+  assert(batch != 0);
+  assert(input != NULL);
+  assert(output != NULL);
+  assert(params != NULL);
+
+  // e8m2 and e32m8 have the same VLMAX.
+  size_t vlmax = __riscv_vsetvlmax_e32m8();
+  vint32m8_t vacc = __riscv_vmv_v_x_i32m8(0, vlmax);
+
+/*@ Inv Assert exists (c0:Z) (c1:Z) (c2:Z) (c3:Z) (c4:Z) (c5:Z) (c6:Z) (c7:Z) (c8:Z) (c9:Z) (c10:Z) (c11:Z) (c12:Z) (c13:Z) (c14:Z) (c15:Z) (c16:Z) (c17:Z) (c18:Z) (c19:Z) (c20:Z) (c21:Z) (c22:Z) (c23:Z) (c24:Z) (c25:Z) (c26:Z) (c27:Z) (c28:Z) (c29:Z) (c30:Z) (c31:Z), 0<batch@pre && batch@pre<=18446744073709551600 && input@pre!=0 && output==output@pre && output!=0 && params==params@pre && params!=0 && vlmax==32 && 0<=batch && batch<=batch@pre && input==input@pre+(batch@pre-batch) && -2147483648<=c0 && c0<=2147483647 && -2147483648<=c1 && c1<=2147483647 && -2147483648<=c2 && c2<=2147483647 && -2147483648<=c3 && c3<=2147483647 && -2147483648<=c4 && c4<=2147483647 && -2147483648<=c5 && c5<=2147483647 && -2147483648<=c6 && c6<=2147483647 && -2147483648<=c7 && c7<=2147483647 && -2147483648<=c8 && c8<=2147483647 && -2147483648<=c9 && c9<=2147483647 && -2147483648<=c10 && c10<=2147483647 && -2147483648<=c11 && c11<=2147483647 && -2147483648<=c12 && c12<=2147483647 && -2147483648<=c13 && c13<=2147483647 && -2147483648<=c14 && c14<=2147483647 && -2147483648<=c15 && c15<=2147483647 && -2147483648<=c16 && c16<=2147483647 && -2147483648<=c17 && c17<=2147483647 && -2147483648<=c18 && c18<=2147483647 && -2147483648<=c19 && c19<=2147483647 && -2147483648<=c20 && c20<=2147483647 && -2147483648<=c21 && c21<=2147483647 && -2147483648<=c22 && c22<=2147483647 && -2147483648<=c23 && c23<=2147483647 && -2147483648<=c24 && c24<=2147483647 && -2147483648<=c25 && c25<=2147483647 && -2147483648<=c26 && c26<=2147483647 && -2147483648<=c27 && c27<=2147483647 && -2147483648<=c28 && c28<=2147483647 && -2147483648<=c29 && c29<=2147483647 && -2147483648<=c30 && c30<=2147483647 && -2147483648<=c31 && c31<=2147483647 && rs_acc_total(c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23,c24,c25,c26,c27,c28,c29,c30,c31)==rs_s32(rs_prefix(A,batch@pre-batch)) && CharArray::full(input@pre,batch@pre+15,A) * store(output,int,Init) * store(&(params->_),char,Tag) * store(&(vacc.s0),int,c0) * store(&(vacc.s1),int,c1) * store(&(vacc.s2),int,c2) * store(&(vacc.s3),int,c3) * store(&(vacc.s4),int,c4) * store(&(vacc.s5),int,c5) * store(&(vacc.s6),int,c6) * store(&(vacc.s7),int,c7) * store(&(vacc.s8),int,c8) * store(&(vacc.s9),int,c9) * store(&(vacc.s10),int,c10) * store(&(vacc.s11),int,c11) * store(&(vacc.s12),int,c12) * store(&(vacc.s13),int,c13) * store(&(vacc.s14),int,c14) * store(&(vacc.s15),int,c15) * store(&(vacc.s16),int,c16) * store(&(vacc.s17),int,c17) * store(&(vacc.s18),int,c18) * store(&(vacc.s19),int,c19) * store(&(vacc.s20),int,c20) * store(&(vacc.s21),int,c21) * store(&(vacc.s22),int,c22) * store(&(vacc.s23),int,c23) * store(&(vacc.s24),int,c24) * store(&(vacc.s25),int,c25) * store(&(vacc.s26),int,c26) * store(&(vacc.s27),int,c27) * store(&(vacc.s28),int,c28) * store(&(vacc.s29),int,c29) * store(&(vacc.s30),int,c30) * store(&(vacc.s31),int,c31) */
+  for (; batch > 0; ) {
+    size_t vl = __riscv_vsetvl_e8m2(batch);
+    vint8m2_t vt = __riscv_vle8_v_i8m2(input, vl) /*@ where base=input@pre,count=batch@pre+15,idx=batch@pre-batch,L=A */;
+    
+    // Widen int8 directly to int32
+    vint32m8_t vt32 = __riscv_vsext_vf4_i32m8(vt, vl) /*@ where a=&vt */;
+    
+    // Accumulate using tail-undisturbed policy.
+    // This ensures that if vl < vlmax (in the final iteration), the parallel 
+    // sums in the upper lanes of vacc from previous full iterations are preserved.
+    vacc = __riscv_vadd_vv_i32m8_tu(vacc, vacc, vt32, vl) /*@ where a=&vacc,b=&vt32 */;
+    
+    input += vl;
+    batch -= vl;
+  }
+
+  // Reduce all parallel accumulators across the entire vlmax width
+  vint32m1_t vres = __riscv_vmv_v_x_i32m1(0, __riscv_vsetvlmax_e32m1());
+  vres = __riscv_vredsum_vs_i32m8_i32m1(vacc, vres, vlmax) /*@ where a=&vacc,seed=&vres */;
+  
+  *output = (int32_t)((uint32_t)*output + (uint32_t)__riscv_vmv_x_s_i32m1_i32(vres) /*@ where a=&vres */);
+}

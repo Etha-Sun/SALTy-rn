@@ -1,0 +1,50 @@
+{
+  "scope": "finite native array-runtime integer-reduction check; not formal proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-original-wmvxxg0a",
+  "compile_command": [
+    "gcc",
+    "-std=c11",
+    "-O1",
+    "-g",
+    "-fsanitize=undefined",
+    "-fno-sanitize-recover=all",
+    "-include",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/runtime.h",
+    "-DRSUM_SIGNED",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testNEON.c",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testRVV.c",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/shim/native_harness.c",
+    "-o",
+    "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-original-wmvxxg0a/original"
+  ],
+  "compile_exit_code": 0,
+  "results": [
+    {
+      "side": "neon",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-original-wmvxxg0a/original",
+        "neon"
+      ],
+      "exit_code": 1,
+      "output": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testNEON.c:60:11: runtime error: signed integer overflow: 1 + 2147483647 cannot be represented in type 'int'\n",
+      "log_sha256": "85bfdf0b92586be21ee31145746e14eaf68e3a68574693eba8c35c34fb492882"
+    },
+    {
+      "side": "rvv",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/.build/native-original-wmvxxg0a/original",
+        "rvv"
+      ],
+      "exit_code": 1,
+      "output": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rsum/impl/testRVV.c:36:11: runtime error: signed integer overflow: 1 + 2147483647 cannot be represented in type 'int'\n",
+      "log_sha256": "0f7653513d8ae0683d108acbe66dfe7fc311cec1945c61b55c164a861dd79aa8"
+    }
+  ],
+  "expected_outcome_observed": true,
+  "input_sha256": {
+    "impl/testNEON.c": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+    "impl/testRVV.c": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+    "shim/runtime.h": "d28d667952b72a848d6f4d88cbd788bb9e646543d6021763d4d2ffeba9fe55cb",
+    "shim/native_harness.c": "7234edb638ff9edfde35d08a74d458dc412afd3373ecda28363060b3393ff84d"
+  }
+}

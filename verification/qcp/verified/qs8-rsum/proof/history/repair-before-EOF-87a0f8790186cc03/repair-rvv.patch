@@ -1,0 +1,9 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -33,5 +33,5 @@
+   vint32m1_t vres = __riscv_vmv_v_x_i32m1(0, __riscv_vsetvlmax_e32m1());
+   vres = __riscv_vredsum_vs_i32m8_i32m1(vacc, vres, vlmax);
+   
+-  *output += __riscv_vmv_x_s_i32m1_i32(vres);
++  *output = (int32_t)((uint32_t)*output + (uint32_t)__riscv_vmv_x_s_i32m1_i32(vres));
+ }

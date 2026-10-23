@@ -1,0 +1,56 @@
+{
+  "variant": "both-sides-repaired",
+  "reason": "The vector reduction is modulo32, but both original scalar *output += final_sum expressions use signed int32 addition and have undefined behavior at a valid initial INT32_MAX plus input1. Use unsigned32 addition before explicit signed32 wrap; retain every initialized int32 output and input byte.",
+  "counterexample": {
+    "n": 1,
+    "input": [
+      1
+    ],
+    "initial": 2147483647,
+    "original_neon": "UBSan signed overflow",
+    "original_rvv": "UBSan signed overflow",
+    "repaired_expected": -2147483648
+  },
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "VLEN": 128,
+    "e8m2_and_e32m8_VLMAX": 32,
+    "e32m1_VLMAX": 4,
+    "input_padding": 15
+  },
+  "counterexample_evidence": "proof/evidence/original-native.json",
+  "counterexample_evidence_sha256": "2161ad43fa7adaf5fd7017596c93485188b329b26161c22a7acbb365a6b4ba1b",
+  "sides": {
+    "neon": {
+      "original_sha256": "a9c2c61d1872d119dec43fa4f6b5caae5916a4d0ae396b8deff4517448a3f9a5",
+      "actual_sha256": "a19abf9c19d11298eb820bed7560fd0905ee84d8c0cc3829974e7fbcaa6d1378",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "d2e7056c4e9c48b4f54cde5bb9423f86c2e6adb98be8fb8eb1a4edece771b1b2"
+    },
+    "rvv": {
+      "original_sha256": "176e9b0cbfa7c845c7a1e09b3092bf9b509297b56ce8b670427df88f535cde8b",
+      "actual_sha256": "ba026373a437183df703f0f12907fbe1b0b06ea75b84a9b5df16f1ba54e18173",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "e57821e73ac7ed8ae36e6c7a5a843bf487ef422ef78186e7643149a63e54eac3"
+    }
+  },
+  "whole_kernel_verified": false,
+  "patch_sha256": "bc58d20961a62e399bca95a5da2cb998c309ce3d3068a6bce7afbb6e331d16e3",
+  "compatibility_note": "Additionally make the same immutable private mask table automatic const because QCP does not support static local storage; preserve all initializer bytes and control flow.",
+  "compatibility_notes": [
+    {
+      "kind": "QCP2.1.4 parser compatibility, no original semantic counterexample",
+      "reason": "Pinned parser rejects the legal final trailing comma of the32-byte local aggregate initializer. Remove only that optional final comma; all32 initialized values and all control/arithmetic remain unchanged.",
+      "diagnostic": "neon-kernel-mkzq0393: syntax error unexpected } at local initializer line135, zero complete kernel target",
+      "previous_actual_neon_sha256": "019a23207ab0de28d3d076b778f1fc5601718f9edabcea04ef96d8e9bc15ee2c"
+    }
+  ],
+  "metadata_repairs": [
+    {
+      "reason": "Use GNU diff to preserve the missing-EOF-newline marker; the previous difflib patch could not replay the unchanged RVV implementation. This corrects patch formatting only.",
+      "previous_patch_sha256": "87a0f8790186cc0322439e945d2c8777466f9121c445fb84626be0d9a80a3d10",
+      "history": "proof/history/repair-before-EOF-87a0f8790186cc03"
+    }
+  ]
+}

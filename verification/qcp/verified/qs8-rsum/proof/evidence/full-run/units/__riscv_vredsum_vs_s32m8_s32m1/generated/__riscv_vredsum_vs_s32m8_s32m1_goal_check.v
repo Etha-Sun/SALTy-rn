@@ -1,0 +1,6 @@
+From Qs8Rsum Require Import __riscv_vredsum_vs_s32m8_s32m1_goal __riscv_vredsum_vs_s32m8_s32m1_proof_auto __riscv_vredsum_vs_s32m8_s32m1_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include __riscv_vredsum_vs_s32m8_s32m1_proof_auto.
+  Include __riscv_vredsum_vs_s32m8_s32m1_proof_manual.
+End VC_Correctness.

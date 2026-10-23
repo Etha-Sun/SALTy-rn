@@ -1,0 +1,31 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -15,9 +15,9 @@
+   assert(output != NULL);
+   assert(params != NULL);
+ 
+-  XNN_ALIGN(16) static const int8_t onemask_table[32] = {
++  XNN_ALIGN(16) const int8_t onemask_table[32] = {
+     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   };
+ 
+   int32x4_t vacc0 = vmovq_n_s32(0);
+@@ -57,5 +57,5 @@
+     const int32_t vacc = vget_lane_s32(vacc_lo, 0);
+   #endif
+ 
+-  *output += vacc;
++  *output = (int32_t)((uint32_t)*output + (uint32_t)vacc);
+ }
+--- a/testRVV.c
++++ b/testRVV.c
+@@ -33,5 +33,5 @@
+   vint32m1_t vres = __riscv_vmv_v_x_i32m1(0, __riscv_vsetvlmax_e32m1());
+   vres = __riscv_vredsum_vs_i32m8_i32m1(vacc, vres, vlmax);
+   
+-  *output += __riscv_vmv_x_s_i32m1_i32(vres);
++  *output = (int32_t)((uint32_t)*output + (uint32_t)__riscv_vmv_x_s_i32m1_i32(vres));
+ }
+\ No newline at end of file
