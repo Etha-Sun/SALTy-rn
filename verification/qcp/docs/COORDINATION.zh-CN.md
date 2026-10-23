@@ -1,8 +1,8 @@
 # 双服务器协作约定
 
 2026-10-22更新：最新完整证明源快照为`6426978e`（最终目录以集成分支最新提交为准），新路线保留原kernel调用形式，见
-[最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳已停止，当前用户授权的
-扩展暂停阈值为剩余额度<=50%；下文70%两阶段表保留为历史说明，不作为当前启动授权。
+[最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳仍停止。用户最新明确取消额度百分比停止限制，
+不再按50%/60%/70%阈值暂停；下文旧额度规则仅保留历史含义。
 worker使用自己已部署的心跳、thread和额度设置，每30分钟读取协调板并跟进新检查点。
 当前五个已验证算术case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
 用户已接受适合证明的比较函数和wrapper；旧mapper内联形式不再是新入口的验收要求。
@@ -11,7 +11,7 @@ worker使用自己已部署的心跳、thread和额度设置，每30分钟读取
 
 ## 分工
 
-- 本机 leader：VADD、VSUB、VMUL、VDIV、VMULC 已完整通过；按用户最新授权批量处理简单算术族，VMULC完整门禁也已通过，额度<=50%时收尾。维护审定接口、验收条件和集成分支，审查对方PR。
+- 本机 leader：VADD、VSUB、VMUL、VDIV、VMULC 已完整通过；按用户最新授权批量处理简单算术族，VMULC完整门禁也已通过；用户已取消额度百分比停工阈值。维护审定接口、验收条件和集成分支，审查对方PR。
 - 第二服务器 worker：继续已领取的环境和GEMM等独立任务，避开leader已验证/领取的算术case；优先共享 FMA、packed memory、f32 GEMM、上游新补齐的四个 target；可以再开 subagent，按路径分工。开始先重放环境及已有证明，再改公共接口。
 - 公共库、生成器修改必须单独小 PR；一个 PR 只承担一个能力或一个 kernel。本机暂占 `cases/f32-vadd/`、`shared/vadd/`、vadd lowering 与 NaN 桥。worker 新能力放独立目录，不同时改这些文件；需要改接口时先在协调板提出具体变更。
 
