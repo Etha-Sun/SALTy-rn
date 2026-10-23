@@ -66,4 +66,32 @@ static inline vfloat32m8_t __riscv_vfmax_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,
   for(size_t i=0;i<32;i++)r.lane[i]=i<vl?shim_rvv_minmax(a.lane[i],b.lane[i],0):UINT32_MAX;
   return r;
 }
+
+/* Additional real instructions used by the NaN-propagation repair. */
+typedef struct { unsigned char lane[32]; } vbool4_t;
+static inline vbool4_t __riscv_vmfne_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t b,size_t vl) {
+ assert(vl<=32);vbool4_t r;
+ for(size_t i=0;i<32;i++) {
+  if(i>=vl){r.lane[i]=1;continue;}
+  uint32_t x=a.lane[i],y=b.lane[i];
+  int both_zero=(x&0x7fffffffU)==0&&(y&0x7fffffffU)==0;
+  r.lane[i]=(unsigned char)(shim_nan(x)||shim_nan(y)||(x!=y&&!both_zero));
+ }return r;
+}
+static inline vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl) {
+ assert(vl<=32);vfloat32m8_t r;
+ for(size_t i=0;i<32;i++) {
+  if(i>=vl){r.lane[i]=UINT32_MAX;continue;}
+  uint32_t x=a.lane[i],y=b.lane[i];
+  if(shim_nan(x)||shim_nan(y)){r.lane[i]=0x7fc00000U;continue;}
+  float xx,yy;memcpy(&xx,&x,4);memcpy(&yy,&y,4);
+  volatile float sum=xx+yy;float z=sum;uint32_t zz;memcpy(&zz,&z,4);
+  r.lane[i]=shim_nan(zz)?0x7fc00000U:zz;
+ }return r;
+}
+static inline vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t mask,size_t vl) {
+ assert(vl<=32);vfloat32m8_t r;
+ for(size_t i=0;i<32;i++)r.lane[i]=i<vl?(mask.lane[i]?b.lane[i]:a.lane[i]):UINT32_MAX;
+ return r;
+}
 #endif

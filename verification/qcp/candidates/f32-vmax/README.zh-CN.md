@@ -1,47 +1,29 @@
-# 原版 min/max：指定语义下的 C-shim 反例
+# f32-vmax：NaN 传播修复
 
-本目录保存原始实现及可重复的反例检查。正式状态应为 `counterexample`：
-反例针对下列固定语义配置中的可执行 C shim，**不是实际 Arm/RVV 硬件执行**。
-完整 QCP kernel 证明数为 0。仓库原有已证明数量由公共状态统一管理，本例不增加该数量。
+已按用户要求直接修复 `impl/testRVV.c`，复用此前 Frama-C 的同一份修复。
+NEON 实现保持原样；RVV 原有 min/max 仍按 minimumNumber/maximumNumber 解释，另外检测 NaN 并用 mask/merge 恢复 NaN 输出。
 
-`impl/testNEON.c`、`impl/testRVV.c` 从当前 catalog 所指的原始 source/target 逐字复制，
-身份记录在 `proof/originals.json`，来源提交为 `be16280c7812a7459c26c3ce82a47339a3d07718`。
-重放同时核对原始文件、复制文件和固定 SHA256。
-没有使用历史目录里改变 NaN 传播行为的 RVV 修复版，也没有改写原循环、tail 或 intrinsic 调用。
+[修复记录](proof/repair.json) 保存原始与修复 SHA256、历史来源和观察范围；[补丁](proof/repair.patch) 可在锁定原版上精确应用。
+[原反例记录](proof/history/original-121-case-replay-status.json) 保留原先 121 个样本、44 个反例及输入/输出位，不改写历史。
+[originals.json](proof/originals.json) 保留修复前的上游身份；当前 `impl/testRVV.c` 的身份以修复记录为准。
 
-`spec.c` 是本目录的可执行审核目标：分别运行两个原版，再逐元素检查“数值相等或双方均为 NaN”。
-它允许 `+0`/`-0` 相同、忽略 NaN payload，但不会把 NaN 与有限数视为相同。
-这份目标不是已经生成并检查完的 QCP 契约。
+`spec.c` 实际调用两侧并比较“数值相等或双方均为 NaN”。修复没有排除 NaN、Inf、正负零或次正规数。
+NaN payload/sign 和浮点异常 flags/traps 不在该观察中；新增无条件加法可能改变异常标志，不能宣称精确恢复 Arm 的全部位和状态行为。
+固定配置及官方来源见 [semantics.json](proof/semantics.json)：LP64、小端、binary32，RVV VLEN=128/SEW=32/LMUL=8，RNE、渐进下溢。
+输入各有 `n+3` 个可读 float，两份输出各有 `n` 个可写 float，所有对象分离。
 
-配置为 LP64、小端、binary32；Arm AArch64 FMIN/FMAX，FPCR.DN=0、FZ=0、AH=0、RNE，
-浮点陷阱关闭且不观察异常标志；RVV V1.0，VLEN=128、SEW=32、LMUL=8、VLMAX=32，
-`vl=min(AVL,32)`。RVV FMIN/FMAX 遵循 F 扩展 2.2 的 minimumNumber/maximumNumber。
-输入各有 `n+3` 个可读 float，输出各有 `n` 个可写 float，输入、两份输出及 params 互不重叠。
+重放命令（从仓库根目录）：
 
-例如 `n=1`，左操作数是 `0x7fc12345`（qNaN），右操作数是 `0x3f800000`（1.0）：
-Arm FMIN/FMAX 返回 qNaN；RVV vfmin/vfmax 返回 1.0。
-交换操作数后仍存在差异，因此原版不满足完整 binary32 域中的上述观察关系。
-这是 NaN 与数字的差异，放宽 payload 或零符号的观察无法消除它。
-Arm intrinsic 到 FMIN/FMAX 的映射见 [ACLE](https://arm-software.github.io/acle/neon_intrinsics/advsimd.html)，
-NaN 规则见 [Arm 官方指令手册](https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85)。
-RVV 规则见 [V1.0 浮点 min/max](https://docs.riscv.org/reference/isa/v20240411/unpriv/v-st-ext.html)
-及其引用的 [F2.2 min/max 规则](https://docs.riscv.org/reference/isa/v20240411/unpriv/f-st-ext.html)。
-
-重放命令：
-
-```bash
-python3 verification/qcp/candidates/f32-vmax/proof/replay.py
+```sh
+python3 verification/qcp/candidates/f32-vmax/proof/replay.py --variant original
+python3 verification/qcp/candidates/f32-vmax/proof/replay.py --variant repaired
+python3 verification/qcp/candidates/f32-vmax/proof/record_status.py
 ```
 
-每次在本 case 的 `.build/native-*` 新建运行目录，保留实际编译命令、输入 SHA、
-完整输出、ASan/UBSan 日志、每个反例的输入/输出 bit 及状态。
-`proof/replay-status.json` 是最近一次运行索引；没有运行就不能引用任何历史成功作为本次结果。
+原版从锁定的 `kernels/target/` 复制到私有 `.build/` 后运行；修复版运行当前 `impl/`。
+每次均校验原版身份、补丁零 fuzz 精确应用及修复 SHA。
+独立 literal 位结果表包含 qNaN/sNaN、NaN 与无穷/零、双 NaN、正负零、有限数及次正规数，覆盖 11 个向量/尾部长度边界。
+ASan/UBSan 同时检查输入、padding、参数和输出 frame，并检查错误输出会被比较器拒绝。
+结果见 [status.json](proof/status.json) 和各 variant 的 replay 状态；派生编译日志与程序保留在本案 `.build/`。
 
-运行器真实链接 `spec.c` 和两份原始 C 文件。独立已知 bit 表提供两架构各自的预期结果，
-不调用 shim 来计算期望。覆盖长度 1、2、3、4、5、31、32、33、63、64、65，
-左右各向的 qNaN/有限值、负 qNaN、有限数、零符号、双 NaN、无穷及次正规数。
-每例检查所有 active 输出、全部输入及 padding、params、输出前后哨兵。
-输入严格分配 `n+3` 个 float，因此上界外读取会触发 ASan。
-
-这些有限运行检查没有建立 ISA 到 shim 的形式对应，也没有完成完整 kernel 的 QCP 证明。
-独立 runtime 分别实现两种 NaN 规则；将它们统一以获得通过会改变本例的审核目标。
+这是 native C-shim 修复回归，**不是完整 QCP 证明或实际硬件执行**；本案不增加 verified 数量。

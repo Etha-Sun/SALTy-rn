@@ -1,4 +1,4 @@
-/* Requested relation for the UNCHANGED original pair: each output lane is
+/* Requested relation for the selected original or repaired pair: each output lane is
  * numerically equal or both NaN. One-NaN/one-number is a failure.
  * Inputs: n>0, disjoint n+3 readable floats each, two disjoint n writable
  * outputs, separate readable params. LP64/little-endian/binary32; see semantics.

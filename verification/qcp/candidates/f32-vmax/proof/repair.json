@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "kernel": "f32-vmax",
+  "implementation_variant": "repaired",
+  "version": "frama-c-nan-propagation-v1",
+  "user_authorization": "User explicitly requested modifying impl to fix the bug and retaining only the repair record and relevant counterexamples; no separate repaired-case directory.",
+  "implementation": "impl/testRVV.c",
+  "original_upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+  "original_rvv_path": "kernels/target/f32-vmax.c",
+  "original_rvv_sha256": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6",
+  "repaired_rvv_sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "4ae5a62801a5f62b1b608bd5fdab4f404fa276f0d8e9477bc9300a0bd5c8896d",
+  "historical_repair": {
+    "branch": "feat/shim-c",
+    "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+    "path": "verified/f32-vmax/rvv.c",
+    "sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+    "byte_identical": true
+  },
+  "change": "Keep the original RVV min/max intrinsic; detect each input NaN, compute a quiet NaN using RVV addition, then merge this result for either NaN input.",
+  "observation": "Numerical equality or both NaN. NaN payload/sign and floating exception flags/traps are not observed.",
+  "boundaries": [
+    "This is a repair of the RVV implementation, not a change to either architecture min/max intrinsic semantics.",
+    "The unconditional extra addition can set different floating exception flags.",
+    "Exact Arm NaN payload/sign propagation is not reproduced by canonical RVV NaNs.",
+    "Native regression is not a completed QCP or hardware theorem."
+  ],
+  "original_counterexample_evidence": {
+    "path": "proof/history/original-121-case-replay-status.json",
+    "sha256": "eb8d1e83dd7babe3f2b4150c9d90a4ba9dd03230bbd21143d73198441ead0b38",
+    "cases": 121,
+    "counterexamples": 44
+  }
+}
