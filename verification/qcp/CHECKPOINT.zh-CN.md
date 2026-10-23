@@ -1,5 +1,16 @@
 # VADD 当前 checkpoint（2026-10-22）
 
+## 2026-10-22 收尾：5/40，额度50%停止扩展
+
+新增 `verified/f32-vmulc`，原始两侧 C 不改，B仅一个float，完整binary32输入域保留。
+12个实际C单元、605个VC、110普通Coq模块与两个最终gate通过，最终spec显式保证输出等价。
+迁移后12份CPP和112份Coq源码身份核对通过，native430重跑通过。
+FastFrame编译环境冲突的失败、无证明内容修改的重绑和成功门禁均公开归档。
+当前已验证：VADD、VSUB、VMUL、VDIV、VMULC，清单以 `verified/manifest.json` 为准。
+额度到50%时停止新增kernel/证明，仅完成既有检查和入库推送；平方根仍未验证。
+计数范围仍是公开契约下的C-shim模块化部分正确性，不含真实ISA对应和终止性。
+以下4/40和更早记录保留其历史时间含义。
+
 ## 2026-10-22：算术族批量检查，当前 4/40
 
 已验证目录统一为 `verified/f32-vadd`、`verified/f32-vsub`、`verified/f32-vmul`、`verified/f32-vdiv`，

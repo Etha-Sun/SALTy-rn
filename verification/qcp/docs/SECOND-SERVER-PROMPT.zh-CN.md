@@ -9,7 +9,7 @@
 本指令更新此前的交接：新的优先路线是保留原kernel的C调用、赋值和控制流，只改shim、加证明注释。旧pointer/out调用改写路线保留为历史参考，不要默认把kernel再改写一遍。
 
 审核结构已按用户新要求整理到 `verification/qcp/verified/f32-vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `verified/f32-vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。 `proof/c/` 现仅保留Inv/Assert注释JSON与策略，重复C模板及spec-preamble.txt已删除；生成器从live spec.c提取全部函数/合同/前缀，不要再维护模板副本。
-当前已完成 VADD/VSUB/VMUL/VDIV 四例，统一位于 `verification/qcp/verified/`，以该目录 manifest.json 为准。每例11个C单元、87个本地Coq模块和FinalCheck完整通过，32并发，native430例；C-shim模块化等价性记为4/40，真实ISA对应及终止性另列。平方根仍是未验证候选。leader正在探索VMULC；worker继续GEMM/环境等已领取任务，先读协调板避免重复。独立重放时以新目录为入口。
+当前已完成 VADD/VSUB/VMUL/VDIV/VMULC 五例，统一位于 `verification/qcp/verified/`，以该目录 manifest.json 为准。前四例各11个C单元、87个本地Coq模块及FinalCheck通过；VMULC为12单元、110普通模块及两个gate，统一fresh闭包通过。总并发预算32，每例native430例；C-shim模块化等价性记为5/40，真实ISA对应及终止性另列。平方根仍是未验证候选。leader已完成VMULC并于50%额度停止扩展；worker继续GEMM/环境等已领取任务，先读协调板避免重复。独立重放时以新目录为入口。
 
 一、同步并理解当前成果
 

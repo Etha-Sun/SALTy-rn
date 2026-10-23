@@ -1,4 +1,4 @@
-当前 **4/40**（VADD、VSUB、VMUL、VDIV，公开契约下的 C-shim 模块化部分正确性）。
+当前 **5/40**（VADD、VSUB、VMUL、VDIV、VMULC，公开契约下的 C-shim 模块化部分正确性）。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 
 # CSim → QCP：小型 kernel 验证框架

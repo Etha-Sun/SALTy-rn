@@ -21,12 +21,19 @@ args=parser.parse_args();dep=args.dependency_dir.resolve()
 status_path=args.dependency_status or dep.parent/'status.json'
 sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
 load=lambda p:json.loads(p.read_text())
+def artifact(value):
+ path=Path(value)
+ relocation=HERE/'relocation-audit.json'
+ if relocation.exists():
+  previous=Path(load(relocation)['old_case_directory'])
+  if path.is_relative_to(previous):path=CASE/path.relative_to(previous)
+ return path
 s=importlib.util.spec_from_file_location('vmulc_coverage',BASE/'proof/coverage.py');coverage=importlib.util.module_from_spec(s);s.loader.exec_module(coverage)
 run=Path(tempfile.mkdtemp(prefix='integration-audit-',dir=CASE/'.build'))
 report={'audit_passed':False,'verification_state':'incomplete','whole_kernel_verified':False,'scope':'Actual C binding audit; unified fresh QCP and VC_Correct binding is not implemented by this audit.','run_directory':str(run),'spec_sha256':sha(CASE/'spec.c'),'missing_stages':[]}
 try:
  dependency=load(status_path);manifest=load(args.dependency_manifest)
- assert Path(dependency['run_directory']).resolve()==dep.parent,'Dependency status/run mismatch'
+ assert artifact(dependency['run_directory']).resolve()==dep.parent,'Dependency status/run mismatch'
  assert sha(args.dependency_manifest)==sha(BASE/'proof/manifest.json'),'Dependency manifest differs from reviewed VMUL manifest'
  local_sources=[]
  for item in manifest['modules']:
@@ -103,7 +110,7 @@ try:
   for record in value.get('records',[]):
    command=record.get('command',[])
    if record.get('exit_code')!=0 or command[:2]!=['qcp-env','coqc']:continue
-   actual=Path(command[-1]);current=HERE/'coq'/actual.name
+   actual=artifact(command[-1]);current=HERE/'coq'/actual.name
    if not actual.exists():continue
    if current.exists():assert actual.read_bytes()==current.read_bytes(),'Component checked source differs from current candidate: '+actual.name
    proof_sources[str(actual)]={'sha256':sha(actual),'current_candidate_copy_matches':current.exists()}
@@ -190,10 +197,10 @@ try:
    for record in evidence.get('records',[]):
     cmd=record.get('command',[])
     if record.get('exit_code')!=0 or cmd[:2]!=['qcp-env','coqc']:continue
-    source=Path(cmd[-1]);logical=source.stem;best=-1
+    source=artifact(cmd[-1]);logical=source.stem;best=-1
     for index,word in enumerate(cmd[:-2]):
      if word not in ['-Q','-R']:continue
-     folder=Path(cmd[index+1])
+     folder=artifact(cmd[index+1])
      if source.is_relative_to(folder)and len(str(folder))>best:
       suffix='.'.join(source.relative_to(folder).with_suffix('').parts);logical='.'.join(x for x in [cmd[index+2],suffix]if x);best=len(str(folder))
     digest=sha(source)
