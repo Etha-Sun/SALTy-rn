@@ -22,11 +22,11 @@ Lemma proof_of_equivalent_entail_wit_1 : equivalent_entail_wit_1.
 Proof. unfold equivalent_entail_wit_1; wrapper_finish. Qed.
 Lemma proof_of_equivalent_return_wit_1 : equivalent_return_wit_1.
 Proof.
- unfold equivalent_return_wit_1; intros; csimpl.
+ unfold equivalent_return_wit_1; left; intros; csimpl.
  cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size] in *.
  rewrite Z.quot_mul by lia.
  Exists (VaddBits.vadd_values n_pre A B) (VaddBits.vadd_values n_pre A B).
- entailer!.
+ entailer!; try apply identical_outputs_are_related.
 Qed.
 
 Lemma proof_of_equivalent_partial_solve_wit_1_pure : equivalent_partial_solve_wit_1_pure.

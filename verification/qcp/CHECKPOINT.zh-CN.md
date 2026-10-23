@@ -1,5 +1,20 @@
 # VADD 当前 checkpoint（2026-10-22）
 
+## 当前目录审核边界（2026-10-22 更新）
+
+共享 C shim、类型、intrinsic 契约和 frontend 已从 `vadd/proof/c/` 移到
+[shared/c-shim/f32](shared/c-shim/f32/README.zh-CN.md)；本 kernel 的观察与 wrapper 绑定位于
+`vadd/contracts/`。Coq 语义定义的位置未动，需审核的定义在共享 README 中明确链接。
+内核完整注释副本已删除：验证时从 `vadd/impl/` 读取原始文件，只插入契约/不变量/断言注释。
+新增原始/注释两路 CPP token 对照、11 单元 C 调用/契约闭合和最终 `VC_Correct` Module 门禁。
+`equivalent` 最终后置条件已显式加入 `outputs_related(L,R)`；比较器契约仍只证明等价输入返回1，
+未声称它已形式化证明所有不等输入返回0。最终输出关系直接由两侧 kernel 的共同模型保证。
+新一轮完整检查已通过：11 C 单元、8 组策略、同次空目录运行全部87本地Coq模块及FinalCheck。
+该次运行先串行完成38模块，核对输入后以32并发完成其余49个；没有复用旧实验.vo。
+独立空目录审核检查21模块+门禁通过（约38秒）；native430例通过。
+具体负对照见 `vadd/proof/layout-audit.json`；命令记录见 `vadd/proof/status.json`。
+用户已取消本轮 60% 暂停限制；以下旧额度策略和旧目录描述均属历史记录。
+
 ## 2026-10-22：impl / spec / proof 分离
 
 当前审核入口为 [vadd/spec.c](vadd/spec.c)，集中比较函数、`equivalent` 和前后置条件。
@@ -9,7 +24,7 @@
 `python3 verification/qcp/vadd/proof/check.py` 已实际通过：从空输出目录重新生成11个C单元的VC、
 检查策略，并重新编译全部87个本地Coq模块，不读取旧实验.vo。审核入口单独21个模块也已通过；
 原始C与新spec直接链接的430个native回归通过，额外宏及return0负对照被拒绝。
-当前源与完整检查输入一致的记录见 `vadd/proof/source-audit.json`。
+该次整理前快照与完整检查输入一致的记录见 `vadd/proof/source-audit.json`；不是本次目录整理的新证据。
 可计为当前C-shim语义、既定前置条件下的模块化等价性1/40；真实ISA对应、终止性等仍单独列明。
 以下旧mapper门槛与未重放依赖的记录保留其历史含义，不覆盖这个新入口的结果。
 

@@ -1,4 +1,4 @@
-#include "float_array_def.h"
+#include "../../../../shared/c-shim/f32/QcpVadd/float_array_def.h"
 /*@ include strategies "float_array.strategies" */
 typedef unsigned long long size_t;
 void qcp_vadd_read(const float *p, float *out, size_t n, size_t i)

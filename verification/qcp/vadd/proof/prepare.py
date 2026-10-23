@@ -1,9 +1,12 @@
 """Prepare proof units from spec.c; add only proof annotations to its C bodies."""
 from pathlib import Path
+import json
 import re
 
 HERE = Path(__file__).resolve().parent
 CASE = HERE.parent
+REPO = CASE.parents[2]
+LEXER = re.compile(r'/\*.*?\*/|//[^\n]*|"(?:\\.|[^"\\])*"|\'(?:\\.|[^\'\\])*\'|[A-Za-z_]\w*|[0-9][A-Za-z0-9_.]*|>>=|<<=|\.\.\.|->|\+\+|--|<<|>>|<=|>=|==|!=|&&|\|\||\+=|-=|\*=|/=|%=|&=|\|=|\^=|[^\s]', re.S)
 
 
 def function(text, name):
@@ -24,9 +27,12 @@ def declaration(text):
     return text[:text.index('*/') + 2] + ';'
 
 
+def c_tokens(text):
+    return [m for m in LEXER.finditer(text) if not m.group().startswith(('/*', '//'))]
+
+
 def tokens(text):
-    text = re.sub(r'/\*.*?\*/|//[^\n]*', '', text, flags=re.S)
-    return re.findall(r'\w+|[^\s\w]', text)
+    return [m.group() for m in c_tokens(text)]
 
 
 def review_units():
@@ -71,20 +77,37 @@ def review_units():
     return result
 
 
-def kernel_audit():
+def kernel_units(manifest):
+    """Read the original implementations; insert only public/proof comments."""
     review = (CASE / 'spec.c').read_text()
-    for name, original, annotated in [
-        ('test_neon', 'testNEON.c', 'ByValue/neon.c'),
-        ('test_rvv', 'testRVV.c', 'ByvalueRvv/macro_rvv.c'),
-    ]:
-        source = (CASE / 'impl' / original).read_text()
-        proof = function((HERE / 'c' / annotated).read_text(), name)
-        # Original functions have no QCP contract; compare ordinary C tokens.
-        original_body = source[source.index('void ' + name):]
-        assert tokens(original_body) == tokens(proof), name + ': C tokens changed'
-        contract = re.search(r'/\*@.*?\*/', proof, re.S).group()
+    result = {}
+    for item in manifest['units']:
+        if 'annotations' not in item:
+            continue
+        name = item['function']
+        source = HERE / item['path']
+        original = source.read_text()
+        offset = original.index('void ' + name)
+        raw = original[offset:]
+        positions = c_tokens(raw)
         public = re.search(r'/\*@.*?\*/', function(review, name), re.S).group()
-        assert re.sub(r'\s', '', contract) == re.sub(r'\s', '', public), name + ': contract mismatch'
+        annotated = raw
+        patches = json.loads((HERE / item['annotations']).read_text())
+        assert sum(p['text'] is None for p in patches) == 1, name + ': public contract slot'
+        for patch in reversed(patches):
+            comment = patch['text'] if patch['text'] is not None else public
+            assert re.fullmatch(r'/\*@(?:(?!\*/).)*\*/', comment, re.S), 'Only proof comments may be inserted'
+            at = positions[patch['after_token'] - 1].end()
+            annotated = annotated[:at] + '\n' + comment + '\n' + annotated[at:]
+        assert tokens(raw) == tokens(annotated), name + ': C tokens changed'
+        frontend = REPO / item['frontend']
+        prefix = '#include "' + str(frontend) + '"\n' + original[:offset]
+        result[source] = prefix + annotated
+    return result
+
+
+def kernel_audit():
+    return kernel_units(json.loads((HERE / 'manifest.json').read_text()))
 
 
 def write_unit(source, text, target):

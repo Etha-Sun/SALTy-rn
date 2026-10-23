@@ -1,4 +1,4 @@
-#include "comparator_def.h"
+#include "../../../contracts/VaddComparator/comparator_def.h"
 /*@ include strategies "comparator.strategies" */
 typedef unsigned long long size_t;
 void qcp_vadd_read(const float *p, float *out, size_t n, size_t i)

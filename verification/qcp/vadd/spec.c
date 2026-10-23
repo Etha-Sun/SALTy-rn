@@ -4,7 +4,7 @@
  * All four buffers are disjoint. Equality: numeric equality or both NaN.
  * C-shim partial correctness, binary32/RNE, LP64/little-endian, RVV cap=32.
  */
-#include "proof/c/VaddWrapper/wrapper_def.h"
+#include "contracts/VaddWrapper/wrapper_def.h"
 /*@ Import Coq Require Import NanBridge.BridgeLogic */
 /*@ Extern Coq (bit_same : fp32 -> fp32 -> Prop)
                (returned_one : Z -> Prop)
@@ -85,7 +85,7 @@ int equivalent(size_t n, const float *input_a, const float *input_b,
             input_a != 0 && input_b != 0 && left != 0 && right != 0 &&
             FloatArray::full(input_a,n+3,A) * FloatArray::full(input_b,n+3,B) *
             FloatArray::undef_full(left,n) * FloatArray::undef_full(right,n)
-    Ensure exists (L: list fp32) (R: list fp32), __return == 1 &&
+    Ensure exists (L: list fp32) (R: list fp32), __return == 1 && outputs_related(L,R) &&
            FloatArray::full(input_a,n+3,A) * FloatArray::full(input_b,n+3,B) *
            FloatArray::full(left,n,L) * FloatArray::full(right,n,R) */
 {

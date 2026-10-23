@@ -6,18 +6,23 @@ vadd/
     testNEON.c             原始 NEON C 文件，逐字保留
     testRVV.c              原始 RVV C 文件，逐字保留
   spec.c                   审核入口：比较函数、equivalent、前后置条件
+  contracts/               本 kernel 的观察关系、wrapper 契约及模型绑定
   proof/
     coq/                   全部本地 Coq 源依赖，按命名空间分组
-    c/                     shim、证明注释模板、策略及模型导入头文件
-    prepare.py             从 spec.c 提取函数，附加证明注释
+    c/                     spec 拆分模板和证明策略（不再存共享 shim 或完整内核副本）
+    annotations/           两侧内核的注释插入位置；不包含可执行 C
+    prepare.py             从 impl/ 和 spec.c 生成验证输入，只插入证明注释
     check.py               生成实际 VC，重新编译本地证明依赖
     native.py              原始 C + spec.c 的有限运行回归
     manifest.json          依赖顺序、来源与文件哈希
 ```
 
-审核先读两个 `impl/*.c` 和 `spec.c`。`Require` 是前置条件，`Ensure` 是后置条件。
+每个 kernel 审核两个 `impl/*.c`、`spec.c` 和 `contracts/`。
+公共审核入口是 [共享 shim](../shared/c-shim/f32/README.zh-CN.md)，包括类型、宏、intrinsic 实现和契约；
+它们需要随共享库版本统一审核，不能视为无需审核的证明内部细节。
+`Require` 是前置条件，`Ensure` 是后置条件。
 `spec.c` 中可以看到所有比较 helper 的实际函数体，以及 `equivalent` 的完整调用过程。
-两侧 kernel 的声明包含各自的输入输出契约，最终公开后置条件要求返回 `1` 并保留数组资源。
+两侧 kernel 的声明包含各自的输入输出契约，最终公开后置条件明确要求 `outputs_related(L,R)`、返回 `1` 并保留数组资源。
 
 前置条件要求正长度、两个输入各有 `n+3` 个可读 float、两个输出各有 `n` 个可写 float，
 四个缓冲区互不重叠，并受代码中明确的地址/长度上界约束。
@@ -26,8 +31,11 @@ vadd/
 ## 原始 C 兼容性
 
 两个实现与仓库 `kernels/source/f32-vadd.c`、`kernels/target/f32-vadd.c` 逐字相同。
-证明用注释副本位于 `proof/c/ByValue/neon.c` 和 `proof/c/ByvalueRvv/macro_rvv.c`。
-检查脚本核对其函数的普通 C token 与原始实现相同，并核对 kernel 契约与 `spec.c` 一致。
+检查时直接读取这两个原始文件，按 `proof/annotations/*.json` 中的位置插入 QCP 注释，
+函数契约实时取自 `spec.c`；完整验证副本只输出到 `.build/<run>/units/`。
+不存在另一份需要手工同步的完整内核 C 副本。
+检查器既检查注释插入前后的普通 C token，也用同一份共享 frontend/shim 对两路分别预处理，
+检查预处理后的普通 C token 一致。共享 frontend 的宏本身仍须人工审核。
 原始函数的 intrinsic 调用、赋值、循环和分支均保留；intrinsic 的解释由 shim 提供。
 store 的 shim 宏内部借用局部向量地址，目前仅适用于本例使用的局部向量左值。
 这证明 VADD 可兼容当前方式，不代表所有 40 个 kernel 的类型和 intrinsic 已全部支持。
@@ -37,16 +45,21 @@ store 的 shim 宏内部借用局部向量地址，目前仅适用于本例使�
 在仓库根目录执行：
 
 ```bash
-python3 verification/qcp/vadd/proof/check.py --review-only
-python3 verification/qcp/vadd/proof/check.py
+python3 verification/qcp/vadd/proof/check.py --review-only --jobs 32
+python3 verification/qcp/vadd/proof/check.py --jobs 32
 python3 verification/qcp/vadd/proof/native.py
 ```
 
+`--jobs` 是 Coq 编译并发上限；`coqdep` 提取真实依赖，依赖未完成的模块不会启动。
+每个编译进程使用独立工作目录，避免共享 `.lia.cache`。本机使用 32；不传则默认 1。
+中断续跑可加 `--resume-run /absolute/path/to/vadd/.build/full-...`：重新核对源、CPP、VC 和编译参数，
+只保留该次运行记录中已经成功编译的模块，不凭 `.vo` 文件存在就跳过。
+
 第一个命令只检查审核文件的比较函数、wrapper 和其依赖；它不单独构成 kernel 验证。
 第二个命令还重新生成两侧 kernel、shim 及 RVV primitive 的 VC，检查策略，
-并从空输出目录按依赖顺序编译全部 87 个本地 Coq 模块；不会读取旧实验目录中的 `.vo`。
+并从空输出目录按依赖顺序编译全部 87 个本地 Coq 模块，最后编译 `FinalCheck.v`；不会读取旧实验目录中的 `.vo`。
 `spec.c` 是实际输入：准备脚本从这里提取函数体和契约，不使用旧 wrapper 替代它。
-循环不变量和中间断言取自 `proof/c/`，只添加注释，提取前后会检查函数的普通 C token 一致。
+spec 拆分单元的不变量取自 `proof/c/`，内核不变量取自 `proof/annotations/`，均只插入注释。
 函数外的类型和导入骨架由 `proof/spec-preamble.txt` 固定，额外宏、声明或 include 会被拒绝，
 避免直接编译的入口与拆分的证明输入出现语义差异。
 第三个命令直接链接 `spec.c` 与两个原始 C 文件，使用共享 C runtime 做有限回归。
@@ -63,10 +76,13 @@ python3 verification/qcp/vadd/proof/native.py
 `QcpRvv32`、`ByvalueRvv` 存放 RVV 证明；`VaddComparator`、`VaddWrapper` 存放比较与组合证明。
 新运行位于 `.build/`，结果见 `proof/review-status.json`、`proof/status.json` 和 `proof/native-status.json`。
 
-本机已完成：审核入口21个模块、完整本地依赖87个模块全部重新编译通过；
-11个实际C单元与已证VC一致；原始C直接链接新spec通过430个native回归，且拒绝不等输出。
-额外宏与错误return0负对照均被拒绝。`proof/source-audit.json`核对当前源文件与完整检查输入一致。
-这一结果可计为当前C-shim语义下的模块化等价性1/40；真实ISA对应不包含在这个计数中。
+本次整理后的完整检查已通过：11 个实际 C 单元和 8 组策略重新生成匹配，87 个本地 Coq 模块全部在该次空目录运行中编译，最后 `FinalCheck` 通过。
+其中先串行完成 38 个，核对源码、CPP、VC 与编译参数后，用 32 并发续跑其余 49 个；没有复用旧实验 `.vo`。
+加强后的 `equivalent` 后置条件显式包含 `outputs_related(L,R)`，最终证明也已重编译通过。
+另一次空目录 `--review-only --jobs 32` 检查：21 个模块加门禁通过，约 38 秒；430 个 native 回归通过，且拒绝不等输出。
+六个来源/覆盖负对照和并行续跑记录见 `proof/layout-audit.json`，全量命令记录见 `proof/status.json`。
+旧 `proof/source-audit.json`、`negative-status.json` 保留整理前快照的证据，不作为本次新运行结果。
+当前可计为 C-shim 语义、既定前置条件下的模块化等价性 1/40；真实 ISA 对应另列。
 
 后续 kernel 采用同样的 `impl/`、`spec.c`、`proof/` 审核边界；
 公共 intrinsic 模型应复用，当前整理不宣称通用规格生成器已经支持全部 kernel。
@@ -77,3 +93,22 @@ python3 verification/qcp/vadd/proof/native.py
 结论范围是所列前置条件下、当前 C shim 语义中的部分正确性；
 固定 LP64、小端、binary32/RNE、RVV VLEN=128/e32m8、容量 32。
 硬件 intrinsic 与 shim 的对应、终止性、浮点异常标志不在该证明结论内。
+
+## 审核与防止 reward hack
+
+需要审核。Coq 通过说明实现满足所输入的契约，不自动保证契约有意义或 shim 等同真实 ISA。
+审核分为：
+
+- 每个 kernel：原始实现、`spec.c` 的前置条件/输出观察关系、`contracts/` 的逻辑绑定。留意不可满足前置条件、忽略输出或仅检查部分元素。
+- 共享版本：`../shared/c-shim/f32/` 的类型、宏、intrinsic 函数体和契约，以及该目录 README 列出的 Coq 语义定义。留意错误浮点模型、被换掉的函数和过弱后置条件。
+- 验证工具版本：`proof/prepare.py`、`proof/coverage.py`、`proof/check.py` 和 manifest。生成目录无需逐份人工重读，但生成和覆盖检查本身必须可信。
+
+本次还把 `outputs_related(L,R)` 显式加入 `equivalent` 的最终后置条件：等价性结论不能只靠比较器返回 `1` 来表达。
+`compare_outputs` 的契约仍是“输入已等价则返回 1”，没有宣称它已证明任意不等输入都返回 0。
+最终输出等价性来自两个真实 kernel body 满足共同结果模型的证明，独立于比较器是否能识别所有不等输入。
+
+完整检查固定要求 11 个验证单元和各自的实际函数体；声明与实现的签名/契约必须一致，
+每个 C 调用都必须有已验证函数体。`FinalCheck.v` 强制所有最终 checker 实现对应 `VC_Correct`，
+避免只编译目标定义却漏掉完成证明。该闭合检查只处理当前简单 C 子集，不是通用 C 链接器。
+`--review-only` 明确仍以两个 kernel 契约为条件，不能算完整等价性证明。
+源文件对应检查、调用闭合检查和有限 native 回归能拦截具体绕过方式，不能消除规格及硬件模型的审核责任。

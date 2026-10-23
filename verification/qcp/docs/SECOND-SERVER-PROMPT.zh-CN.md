@@ -2,13 +2,13 @@
 
 仓库：https://github.com/Etha-Sun/SALTy-rn
 集成分支：c-shim-v2
-本轮证明基线：f8a284b85b4adc60590d4c5580cc0b5f50d96d2a
+最低参考基线：4809a7fc9487f88e03ab4511735b3f51256fd91d（同时读取集成分支最新提交与检查记录）
 协调板：https://github.com/Etha-Sun/SALTy-rn/pull/1
 已有环境PR：https://github.com/Etha-Sun/SALTy-rn/pull/2
 
 本指令更新此前的交接：新的优先路线是保留原kernel的C调用、赋值和控制流，只改shim、加证明注释。旧pointer/out调用改写路线保留为历史参考，不要默认把kernel再改写一遍。
 
-审核结构已按用户新要求整理到 `verification/qcp/vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；Coq、shim 与运行脚本集中在 `proof/`。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。
+审核结构已按用户新要求整理到 `verification/qcp/vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。
 新目录已实际完成87个本地Coq模块的全量fresh编译、21模块审核入口检查、430个原始C/native回归与负对照；C-shim模块化等价性记为1/40，真实ISA对应另列。独立重放时以新目录为优先入口。
 
 一、同步并理解当前成果
@@ -30,13 +30,13 @@
 - 当前store宏只支持局部向量左值，不能无条件处理store(p,add(a,b))等一般表达式。重复输入add(a,a)、mask/tuple、位重解释、不同元素类型及VL配置都需实际检查，不能从VADD推断所有kernel已兼容。
 - 纯按值store在QCP生成的循环资源中出现同地址written与undef重复。失败记录已保留；不要利用矛盾前件强行闭合证明。优先复用已通过的宏方案；要扩展其模式时先给最小正反例。
 - 复用 shared/vadd、vadd-rvv 的具体primitive、数组拆拼、循环模型、FastFrame，以及新byvalue目录中的复制/地址归一化策略。96字段的盲目entailer/setoid重写曾很慢；已有FastFrame直接构造分离合取证明。先归一化typed aggregate地址，并在必要时恢复纯条件的andp结合方式。
-- wrapper/spec生成继续采用小模板与简单模式匹配，未知模式明确拒绝。不做通用编译器、DSL或复杂插件架构。人工审查面采用新的impl原始文件与spec.c；比较函数、wrapper及其前后置条件放在同一个审核文件。共享shim/宏/模型需另行审查一次。
-- equivalent必须真实调用两侧并比较输出，post核心为return==1，不能写恒return1。输入域、padding、允许alias和写入frame必须完整。
+- wrapper/spec生成继续采用小模板与简单模式匹配，未知模式明确拒绝。不做通用编译器、DSL或复杂插件架构。人工审查面采用新的impl原始文件与spec.c；比较函数、wrapper及其前后置条件放在同一个审核文件。共享shim/宏/模型需另行审查一次，审核清单见 shared/c-shim/f32/README.zh-CN.md；该清单也链接仍位于proof/coq内的语义定义。
+- equivalent必须真实调用两侧并比较输出，post同时明确要求return==1和输出关系（VADD为outputs_related），不能只把return1当成等价性。compare_outputs当前只证明已等价输入返回1，不宣称已证明它对任意不等输入都返回0。输入域、padding、允许alias和写入frame必须完整。
 
 三、你的接续任务
 
 A. 优先收尾现有环境PR #2。读取leader两条REVIEW，处理显式Dune/in-place布局选择、与固定HEAD比较并检测staged/untracked的Coq源变化、release归档的源清单/构建来源。覆盖新byvalue重放入口，但不要批量重写其C/proof。当前runner仍依赖leader路径与已配置QCP/Coq；环境失败不能记为proof失败。版本/工具与库源哈希必须准确，不能用一份.vo哈希替代依赖闭包证明。
-B. 环境可用后，独立重放新 `python3 verification/qcp/vadd/proof/check.py`（支持--config）及native.py，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；旧mapper转换不再是新入口的验收要求，真实ISA对应仍单独列明。
+B. 环境可用后，独立重放新 `python3 verification/qcp/vadd/proof/check.py --jobs 32`（支持--config；并发按服务器资源选择）及native.py，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；旧mapper转换不再是新入口的验收要求，真实ISA对应仍单独列明。
 C. 主实施范围仍为其余39个kernel；VADD case和leader的byvalue试点目录默认只读。继续你已CLAIM的M1-packed/FMA等独立任务，不必等leader再开工。按ROADMAP推进，优先u8-vclamp与新三个矩阵target：qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32；同时规划f32-gemm-minmax。先明确packed布局/单位、整数wrap、FMA单次舍入、NaN/minmax及tail，再证明实际完整循环。
 D. 在独立case/共享候选目录实施。共享库改动单独小PR；每个kernel单独PR，base=c-shim-v2。新case先给原始来源SHA、简单可审查的spec/mapper，再给primitive真实body、内外循环和实际比较器的证明闭包。CSim修复先重放反例，作为独立repaired版本，不能静默修改原版。
 
@@ -44,7 +44,7 @@ D. 在独立case/共享候选目录实施。共享库改动单独小PR；每个k
 
 现在立即读取协调PR #1和你自己的任务PR最新评论，发布一次CLAIM/进度回复：你读到的BASE、当前HEAD、拥有PATHS、下一步与验收命令。以后每30分钟fetch集成分支并读取协调板及相关PR，跟进leader新CHECKPOINT和评审；正在运行证明时先完成可保存的小步骤。无变化保持安静；仅任务领取、阻塞、可审结果或新评审时发CLAIM/BLOCKED/READY_FOR_REVIEW/REVIEW/RELEASE。
 
-使用你服务器自己的真实可用定时器/自动化，并确认已运行；不能把“我会定期查”当作已启动。若已有worker心跳，检查并更新其prompt而非重复部署。leader的local_thread和heartbeat配置不适用于你的服务器，不覆盖它们。leader本机心跳已按用户要求停止，本轮quota<=60%时暂停；此前70%等待规则是历史配置。你遵循自己服务器最新用户设置与真实额度，不共享凭据或额度，也不假定leader会每30分钟回复。没有收到leader回复不阻塞你推进无冲突任务。
+使用你服务器自己的真实可用定时器/自动化，并确认已运行；不能把“我会定期查”当作已启动。若已有worker心跳，检查并更新其prompt而非重复部署。leader的local_thread和heartbeat配置不适用于你的服务器，不覆盖它们。leader本机心跳仍停止；用户已取消本轮60%暂停限制，旧60%/70%等待规则均不用于本轮。你遵循自己服务器最新用户设置与真实额度，不共享凭据或额度，也不假定leader会每30分钟回复。没有收到leader回复不阻塞你推进无冲突任务。
 
 状态格式：
 TYPE: CLAIM | BLOCKED | READY_FOR_REVIEW | REVIEW | RELEASE

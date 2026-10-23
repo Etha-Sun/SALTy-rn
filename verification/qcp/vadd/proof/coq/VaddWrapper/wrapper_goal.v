@@ -96,18 +96,32 @@ forall (right_pre: Z) (left_pre: Z) (input_b_pre: Z) (input_a_pre: Z) (n_pre: Z)
 .
 
 Definition equivalent_return_wit_1 := 
+(
 forall (right_pre: Z) (left_pre: Z) (input_b_pre: Z) (input_a_pre: Z) (n_pre: Z) (B: (@list fp32)) (A: (@list fp32)) (retval: Z) (PreH1 : (retval = 1)) (PreH2 : (n_pre = ((n_pre * sizeof(FLOAT) ) ÷ 4 ))) (PreH3 : (((n_pre * sizeof(FLOAT) ) % ( 4 ) ) = 0)) (PreH4 : (0 < (n_pre * sizeof(FLOAT) ))) (PreH5 : ((n_pre * sizeof(FLOAT) ) <= 18446744073709551603)) (PreH6 : (( &( "params" ) ) <> 0)) (PreH7 : (0 < n_pre)) (PreH8 : (n_pre <= 4611686018427387900)) (PreH9 : (input_a_pre <> 0)) (PreH10 : (input_b_pre <> 0)) (PreH11 : (left_pre <> 0)) (PreH12 : (right_pre <> 0)) ,
   (FloatArray.full left_pre n_pre (vadd_values (((n_pre * sizeof(FLOAT) ) ÷ 4 )) (A) (B)) )
   **  (FloatArray.full right_pre n_pre (vadd_values (((n_pre * sizeof(FLOAT) ) ÷ 4 )) (A) (B)) )
   **  (FloatArray.full input_a_pre (((n_pre * sizeof(FLOAT) ) ÷ 4 ) + 3 ) A )
   **  (FloatArray.full input_b_pre (((n_pre * sizeof(FLOAT) ) ÷ 4 ) + 3 ) B )
 |--
-  EX (R: (@list fp32))  (L: (@list fp32)) ,
-  “ (retval = 1) ”
+  EX (L: (@list fp32))  (R: (@list fp32)) ,
+  “ (retval = 1) ” 
+  &&  “ (outputs_related L R ) ”
   &&  (FloatArray.full input_a_pre (n_pre + 3 ) A )
   **  (FloatArray.full input_b_pre (n_pre + 3 ) B )
   **  (FloatArray.full left_pre n_pre L )
   **  (FloatArray.full right_pre n_pre R )
+) \/
+(
+forall (right_pre: Z) (left_pre: Z) (input_b_pre: Z) (input_a_pre: Z) (n_pre: Z) (B: (@list fp32)) (A: (@list fp32)) (retval: Z) (PreH1 : (retval = 1)) (PreH2 : (n_pre = ((n_pre * sizeof(FLOAT) ) ÷ 4 ))) (PreH3 : (((n_pre * sizeof(FLOAT) ) % ( 4 ) ) = 0)) (PreH4 : (0 < (n_pre * sizeof(FLOAT) ))) (PreH5 : ((n_pre * sizeof(FLOAT) ) <= 18446744073709551603)) (PreH6 : (( &( "params" ) ) <> 0)) (PreH7 : (0 < n_pre)) (PreH8 : (n_pre <= 4611686018427387900)) (PreH9 : (input_a_pre <> 0)) (PreH10 : (input_b_pre <> 0)) (PreH11 : (left_pre <> 0)) (PreH12 : (right_pre <> 0)) ,
+  TT && emp 
+|--
+  “ (outputs_related (vadd_values (n_pre) (A) (B)) (vadd_values (n_pre) (A) (B)) ) ”
+  &&  emp
+).
+
+Definition equivalent_return_wit_1_split_goal_1 := 
+forall (right_pre: Z) (left_pre: Z) (input_b_pre: Z) (input_a_pre: Z) (n_pre: Z) (B: (@list fp32)) (A: (@list fp32)) (retval: Z) (PreH1 : (retval = 1)) (PreH2 : (n_pre = ((n_pre * sizeof(FLOAT) ) ÷ 4 ))) (PreH3 : (((n_pre * sizeof(FLOAT) ) % ( 4 ) ) = 0)) (PreH4 : (0 < (n_pre * sizeof(FLOAT) ))) (PreH5 : ((n_pre * sizeof(FLOAT) ) <= 18446744073709551603)) (PreH6 : (( &( "params" ) ) <> 0)) (PreH7 : (0 < n_pre)) (PreH8 : (n_pre <= 4611686018427387900)) (PreH9 : (input_a_pre <> 0)) (PreH10 : (input_b_pre <> 0)) (PreH11 : (left_pre <> 0)) (PreH12 : (right_pre <> 0)) ,
+  (outputs_related (vadd_values (n_pre) (A) (B)) (vadd_values (n_pre) (A) (B)) )
 .
 
 Definition equivalent_partial_solve_wit_1_pure := 
