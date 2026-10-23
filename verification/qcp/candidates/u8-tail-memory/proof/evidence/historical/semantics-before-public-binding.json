@@ -1,0 +1,58 @@
+{
+  "scope": "NEON 64-bit byte-backed register view, original nested reinterpret-to-lane0 store only",
+  "official_ACLE": "https://arm-software.github.io/acle/main/acle.html#operations-on-data-types",
+  "official_Neon": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+  "official_version": "aef52c2b0944bf652443c1acd867dbb893af8dd0",
+  "endianness": "little",
+  "implemented_intrinsics": [
+    {
+      "name": "vreinterpret_u32_u8",
+      "input": "uint8x8_t byte vector",
+      "logical_output": "two packed uint32 lanes over unchanged64 bits",
+      "C_representation": "same8 uchar fields, typedef view",
+      "C_body": "copies all8 byte fields",
+      "body_checked": true,
+      "ISA_formal": false
+    },
+    {
+      "name": "vreinterpret_u16_u8",
+      "input": "uint8x8_t byte vector",
+      "logical_output": "four packed uint16 lanes over unchanged64 bits",
+      "C_representation": "same8 uchar fields, typedef view",
+      "C_body": "copies all8 byte fields",
+      "body_checked": true,
+      "ISA_formal": false
+    },
+    {
+      "name": "vst1_lane_u32",
+      "supported_lane": 0,
+      "C_body": "pack low4 bytes through checked pack32 then checked LEStore4byte body",
+      "register_resources_preserved": true,
+      "output": "four individually writable undef bytes become input bytes0..3",
+      "new_alignment_precondition": false,
+      "body_checked": true,
+      "ISA_formal": false
+    },
+    {
+      "name": "vst1_lane_u16",
+      "supported_lane": 0,
+      "C_body": "pack low2 bytes through checked pack16 then checked LEStore2byte body",
+      "register_resources_preserved": true,
+      "output": "two individually writable undef bytes become input bytes0..1",
+      "new_alignment_precondition": false,
+      "body_checked": true,
+      "ISA_formal": false
+    }
+  ],
+  "unknown_mode": "audit rejects nonzero/non-immediate lanes, different operands, independent word-vector context; no generic word arithmetic support",
+  "full_kernel_proved": false,
+  "source_macro_comparison": "two original tail call execution-token sequences unchanged except proof annotation; implementation macros/byteview remain part of reviewed C model, no ISA/ABI theorem",
+  "C_primitive_closure": {
+    "C_VCs": 41,
+    "old_helpers": 19,
+    "new_adapter": 22,
+    "copy_strategies": 2
+  },
+  "proof": "runs/proof05",
+  "native_is_formal_proof": false
+}

@@ -1,0 +1,23 @@
+{
+  "kind": "original u8 tail nested reinterpret -> lane0 store capability",
+  "C_source": "src/adapter.c",
+  "helper_source": "src/le_store.c",
+  "entrypoints": [
+    "original_tail_store32",
+    "original_tail_store16"
+  ],
+  "original_calls": [
+    "vst1_lane_u32((void*) output, vreinterpret_u32_u8(vacc), 0);",
+    "vst1_lane_u16((void*) output, vreinterpret_u16_u8(vacc), 0);"
+  ],
+  "input": "8 arbitrary uchar values in the byte-backed register model",
+  "output": "4 or 2 separated writable uninitialized bytes, no extra alignment",
+  "observation": "exact output bytes0..3 or0..1; remaining memory framed",
+  "evaluation": "macro operand and pointer expression each evaluated once",
+  "word_register_view": "little-endian packed mathematical lanes; C view preserves eight bytes",
+  "unknown_patterns": "nonzero/non-immediate lane or independent uint word arithmetic are rejected",
+  "whole_u8_kernel_proved": false,
+  "source_to_ISA_or_ABI_proved": false,
+  "comparison_wrapper": "not a kernel-equivalence case; no equivalent(...) function claimed",
+  "memory_bridge": "separate theorem aligned4 + four uchar cells entails uint; not a precondition on intrinsic byte writes"
+}
