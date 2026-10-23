@@ -1,0 +1,8 @@
+From FMax Require Import wrapper_unit_goal WrapperHelpers WrapperCalls.
+Module CheckedWrapper : FMax.wrapper_unit_goal.VC_Correct.
+Include float_array_strategy_proof.CheckedFloatArray.
+Include comparator_strategy_proof.CheckedComparatorStrategies.
+Include VaddWrapper.wrapper_strategy_proof.CheckedWrapperStrategy.
+Include CheckedWrapperHelpers.
+Include CheckedWrapperCalls.
+End CheckedWrapper.

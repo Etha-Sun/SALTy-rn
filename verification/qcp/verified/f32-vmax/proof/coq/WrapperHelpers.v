@@ -1,0 +1,66 @@
+From Coq Require Import ZArith Lia List.
+From FMax Require Import ProgramModel Observation wrapper_unit_goal.
+From QcpVadd Require Import array_read_checked.
+From NanBridge Require Import bridge_checked.
+From VaddComparator Require Import comparator_checked.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Module CheckedWrapperHelpers.
+Lemma proof_of_qcp_fmax_read_return_wit_1 : FMax.wrapper_unit_goal.qcp_fmax_read_return_wit_1.
+Proof. exact QcpVadd.array_read_checked.CheckedArrayRead.proof_of_qcp_vadd_read_return_wit_1. Qed.
+Lemma proof_of_qcp_fmax_read_partial_solve_wit_1 : FMax.wrapper_unit_goal.qcp_fmax_read_partial_solve_wit_1.
+Proof. exact QcpVadd.array_read_checked.CheckedArrayRead.proof_of_qcp_vadd_read_partial_solve_wit_1. Qed.
+Lemma proof_of_preserve_float_return_wit_1 : FMax.wrapper_unit_goal.preserve_float_return_wit_1.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_preserve_float_return_wit_1. Qed.
+Lemma proof_of_check_observation_safety_wit_1 : FMax.wrapper_unit_goal.check_observation_safety_wit_1.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_safety_wit_1. Qed.
+Lemma proof_of_check_observation_safety_wit_2 : FMax.wrapper_unit_goal.check_observation_safety_wit_2.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_safety_wit_2. Qed.
+Lemma proof_of_check_observation_safety_wit_3 : FMax.wrapper_unit_goal.check_observation_safety_wit_3.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_safety_wit_3. Qed.
+Lemma proof_of_check_observation_safety_wit_4 : FMax.wrapper_unit_goal.check_observation_safety_wit_4.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_safety_wit_4. Qed.
+Lemma proof_of_check_observation_return_wit_1 : FMax.wrapper_unit_goal.check_observation_return_wit_1.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_return_wit_1. Qed.
+Lemma proof_of_check_observation_return_wit_2 : FMax.wrapper_unit_goal.check_observation_return_wit_2.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_return_wit_2. Qed.
+Lemma proof_of_check_observation_return_wit_3 : FMax.wrapper_unit_goal.check_observation_return_wit_3.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_return_wit_3. Qed.
+Lemma proof_of_check_observation_return_wit_4 : FMax.wrapper_unit_goal.check_observation_return_wit_4.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_return_wit_4. Qed.
+Lemma proof_of_check_observation_partial_solve_wit_1 : FMax.wrapper_unit_goal.check_observation_partial_solve_wit_1.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_partial_solve_wit_1. Qed.
+Lemma proof_of_check_observation_partial_solve_wit_2 : FMax.wrapper_unit_goal.check_observation_partial_solve_wit_2.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_check_observation_partial_solve_wit_2. Qed.
+Lemma proof_of_same_lane_return_wit_1 : FMax.wrapper_unit_goal.same_lane_return_wit_1.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_same_lane_return_wit_1. Qed.
+Lemma proof_of_same_lane_partial_solve_wit_1_pure : FMax.wrapper_unit_goal.same_lane_partial_solve_wit_1_pure.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_same_lane_partial_solve_wit_1_pure. Qed.
+Lemma proof_of_same_lane_partial_solve_wit_1 : FMax.wrapper_unit_goal.same_lane_partial_solve_wit_1.
+Proof. exact NanBridge.bridge_checked.Checked.proof_of_same_lane_partial_solve_wit_1. Qed.
+Lemma proof_of_compare_outputs_safety_wit_1 : FMax.wrapper_unit_goal.compare_outputs_safety_wit_1.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_safety_wit_1. Qed.
+Lemma proof_of_compare_outputs_safety_wit_2 : FMax.wrapper_unit_goal.compare_outputs_safety_wit_2.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_safety_wit_2. Qed.
+Lemma proof_of_compare_outputs_safety_wit_3 : FMax.wrapper_unit_goal.compare_outputs_safety_wit_3.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_safety_wit_3. Qed.
+Lemma proof_of_compare_outputs_entail_wit_1 : FMax.wrapper_unit_goal.compare_outputs_entail_wit_1.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_entail_wit_1. Qed.
+Lemma proof_of_compare_outputs_entail_wit_2 : FMax.wrapper_unit_goal.compare_outputs_entail_wit_2.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_entail_wit_2. Qed.
+Lemma proof_of_compare_outputs_return_wit_1 : FMax.wrapper_unit_goal.compare_outputs_return_wit_1.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_return_wit_1. Qed.
+Lemma proof_of_compare_outputs_partial_solve_wit_1_pure : FMax.wrapper_unit_goal.compare_outputs_partial_solve_wit_1_pure.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_partial_solve_wit_1_pure. Qed.
+Lemma proof_of_compare_outputs_partial_solve_wit_1 : FMax.wrapper_unit_goal.compare_outputs_partial_solve_wit_1.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_partial_solve_wit_1. Qed.
+Lemma proof_of_compare_outputs_partial_solve_wit_2_pure : FMax.wrapper_unit_goal.compare_outputs_partial_solve_wit_2_pure.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_partial_solve_wit_2_pure. Qed.
+Lemma proof_of_compare_outputs_partial_solve_wit_2 : FMax.wrapper_unit_goal.compare_outputs_partial_solve_wit_2.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_partial_solve_wit_2. Qed.
+Lemma proof_of_compare_outputs_partial_solve_wit_3_pure : FMax.wrapper_unit_goal.compare_outputs_partial_solve_wit_3_pure.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_partial_solve_wit_3_pure. Qed.
+Lemma proof_of_compare_outputs_partial_solve_wit_3 : FMax.wrapper_unit_goal.compare_outputs_partial_solve_wit_3.
+Proof. exact VaddComparator.comparator_checked.CheckedComparator.proof_of_compare_outputs_partial_solve_wit_3. Qed.
+End CheckedWrapperHelpers.

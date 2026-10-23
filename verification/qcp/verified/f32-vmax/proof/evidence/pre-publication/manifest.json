@@ -1,0 +1,1554 @@
+{
+  "schema": 2,
+  "kernel": "f32-vmax",
+  "variant": "repaired",
+  "whole_kernel_proved": true,
+  "originals": {
+    "kernel": "f32-vmax",
+    "upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "files": {
+      "neon": {
+        "path": "kernels/source/f32-vmax.c",
+        "copy": "impl/testNEON.c",
+        "sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552"
+      },
+      "rvv": {
+        "path": "kernels/target/f32-vmax.c",
+        "copy": "impl/testRVV.c",
+        "sha256": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6"
+      }
+    }
+  },
+  "repair": {
+    "schema": 1,
+    "kernel": "f32-vmax",
+    "implementation_variant": "repaired",
+    "version": "frama-c-nan-propagation-v1",
+    "user_authorization": "User explicitly requested modifying impl to fix the bug and retaining only the repair record and relevant counterexamples; no separate repaired-case directory.",
+    "implementation": "impl/testRVV.c",
+    "original_upstream_commit": "be16280c7812a7459c26c3ce82a47339a3d07718",
+    "original_rvv_path": "kernels/target/f32-vmax.c",
+    "original_rvv_sha256": "29040b9201bb2a4150f6fc2d1c69fceda44b60ad683f813a02dc83ac69ec3af6",
+    "repaired_rvv_sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+    "patch": "proof/repair.patch",
+    "patch_sha256": "4ae5a62801a5f62b1b608bd5fdab4f404fa276f0d8e9477bc9300a0bd5c8896d",
+    "historical_repair": {
+      "branch": "feat/shim-c",
+      "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+      "path": "verified/f32-vmax/rvv.c",
+      "sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373",
+      "byte_identical": true
+    },
+    "change": "Keep the original RVV min/max intrinsic; detect each input NaN, compute a quiet NaN using RVV addition, then merge this result for either NaN input.",
+    "observation": "Numerical equality or both NaN. NaN payload/sign and floating exception flags/traps are not observed.",
+    "boundaries": [
+      "This is a repair of the RVV implementation, not a change to either architecture min/max intrinsic semantics.",
+      "The unconditional extra addition can set different floating exception flags.",
+      "Exact Arm NaN payload/sign propagation is not reproduced by canonical RVV NaNs.",
+      "Native regression is not a completed QCP or hardware theorem."
+    ],
+    "original_counterexample_evidence": {
+      "path": "proof/history/original-121-case-replay-status.json",
+      "sha256": "eb8d1e83dd7babe3f2b4150c9d90a4ba9dd03230bbd21143d73198441ead0b38",
+      "cases": 121,
+      "counterexamples": 44
+    }
+  },
+  "files": [
+    {
+      "path": ".gitignore",
+      "sha256": "03824949a66ab6db1429bd078d10d1bc2d75706aa1b756c547f9a7ff541c77cb"
+    },
+    {
+      "path": "README.zh-CN.md",
+      "sha256": "cd5ab64100110510bdbc8f6ab5b4c4f6ffcd0b4fb4e53b31e0f66493b9c3490c"
+    },
+    {
+      "path": "impl/testNEON.c",
+      "sha256": "09e27c12a074f0ebac6fb78c055dc8244be915827771359afa16f70527360552"
+    },
+    {
+      "path": "impl/testRVV.c",
+      "sha256": "c41a4a25edf0ac21c2c6422f98be7251610ab779ea5e96a85d3745f237d7b373"
+    },
+    {
+      "path": "proof/assumption-audit.json",
+      "sha256": "9b69e1d28eec270b7fc0a93dde9a020e47a955dc52d04ec529ec5d8d881b98a9"
+    },
+    {
+      "path": "proof/audit_relocation.py",
+      "sha256": "74ff14e837e680e17acccef40efc2303f4322868441248dc29e4cbc3238bcf38"
+    },
+    {
+      "path": "proof/c/neon.annotations.json",
+      "sha256": "f7b34f4bc6f9574e5ccf5e761f5db41e00e1af38e9f49e62db0628a1cff71f6d"
+    },
+    {
+      "path": "proof/c/rvv.annotations.json",
+      "sha256": "2ef204d15de53fbe1e7436b2f950026681660b2c6aea369a0d13d69071c637d9"
+    },
+    {
+      "path": "proof/c/rvv_fmax.strategies",
+      "sha256": "0ce918544ecee87597b3f37d15986e31ce95bfd00e41567b3f7954bd7c2efbc2"
+    },
+    {
+      "path": "proof/c/wrapper.annotations.json",
+      "sha256": "5db926a5b94b71b44e60556ce8ecc7093c40625ebc35480b024af72bdb4eed7e"
+    },
+    {
+      "path": "proof/check_formal_primitives.py",
+      "sha256": "ea4b2b15ef032715103905e3dcbe376c118314e3528b61de78ff860f17c39224"
+    },
+    {
+      "path": "proof/check_full.py",
+      "sha256": "334870a11fbf9d7c8053e127e08ae9bd7782fdf8a96871317722edad68abf54a"
+    },
+    {
+      "path": "proof/check_memory.py",
+      "sha256": "f3303d8152fdb69cb5c3582562d6b8b33d4aad59d96a2cc33fff0e61e523970b"
+    },
+    {
+      "path": "proof/check_models.py",
+      "sha256": "c50a928372684650dfbdca09236165f5f481c946256ddb5e8fca398d244f0d28"
+    },
+    {
+      "path": "proof/check_neon.py",
+      "sha256": "de18de7b35c3357675cf0a7fe6607751a5d82e7e789a721144d9d064f0863276"
+    },
+    {
+      "path": "proof/check_rvv.py",
+      "sha256": "16412c39a8671255e6af7b5ac62087f513a2cd77b77ea78440f64b46c06992e0"
+    },
+    {
+      "path": "proof/check_rvv_parallel.py",
+      "sha256": "6a4662f3725fa6d807d9fda4550f9fdae797a4263e71676f025482fb279bebef"
+    },
+    {
+      "path": "proof/check_scalar_native.py",
+      "sha256": "ac3cd32c6c7f4b1da79b26a71335ba7dc2b5886835508b11ba72cdc9401290e2"
+    },
+    {
+      "path": "proof/check_self_compare.py",
+      "sha256": "cfa30440c472912402f97dbd536887f7435c91cf4ce50bcbecc037c50beba312"
+    },
+    {
+      "path": "proof/check_vectors.py",
+      "sha256": "09b7e1ecc1a5739be28158243bf4fc6127b94c78ee2b33698ea07208d4f38e9a"
+    },
+    {
+      "path": "proof/check_wrapper.py",
+      "sha256": "ee4685413852e8c777d2ab5b2aedb658acc567ccc5e62f539429b495174928ad"
+    },
+    {
+      "path": "proof/coq/Bits.v",
+      "sha256": "6a1212a585c087bde1ee41ec322d6f96ea221de99e90ad343893c2db37c83849"
+    },
+    {
+      "path": "proof/coq/BitsChecked.v",
+      "sha256": "989a912aaedcfde3970b346b5ed50bc22815dc448fabef34fcf03a3d252a00ab"
+    },
+    {
+      "path": "proof/coq/BorrowChecked.v",
+      "sha256": "2fc13c38044a653409e769b994c63f3e02bbb2b242c48a7e35bd25c390df0cd0"
+    },
+    {
+      "path": "proof/coq/Model.v",
+      "sha256": "fd960ef80eb07df6a523bbc074c6c9e2d028a660b87feb334462130af03e2b52"
+    },
+    {
+      "path": "proof/coq/NanFacts.v",
+      "sha256": "66249a256d5d6aef59b52e015ed463a51aa06c11a42fac92f7578831f7123d9b"
+    },
+    {
+      "path": "proof/coq/NeonBranches.v",
+      "sha256": "3a305ebbbd13becf04183484c58133a004f70b5339c54de20991c4e92dda5e73"
+    },
+    {
+      "path": "proof/coq/NeonCalls.v",
+      "sha256": "77aaa00413e1e2628c8452528b5515b917639497139485510adb74fdb4ee431c"
+    },
+    {
+      "path": "proof/coq/NeonChecked.v",
+      "sha256": "a4b919d29d93d7c4344c6b62bf5574ac730798ebfee53117559baed453bd0bbe"
+    },
+    {
+      "path": "proof/coq/NeonLoop.v",
+      "sha256": "1fbbd46d9eeee38cde317536fa2e6d3ee9b2a25ad684a37b1d375d27bf10a52c"
+    },
+    {
+      "path": "proof/coq/NeonMemory.v",
+      "sha256": "61840552a1808e7ac70c11ba6407c5e7adbe38a575213f42b7aa783743b78731"
+    },
+    {
+      "path": "proof/coq/NeonMemoryHelpers.v",
+      "sha256": "df58568cb1c99c5d975dacba99ed622152a3f720b1a88823fbf9697d5ef29135"
+    },
+    {
+      "path": "proof/coq/NeonPure.v",
+      "sha256": "bc19e231d9fda777a28644cea107312c25525e1d26cec08ba3962a1ac72ed4c3"
+    },
+    {
+      "path": "proof/coq/NeonReturns.v",
+      "sha256": "64e03b0790471fbb3d52db993bbf4fad6cf55d47fa2bbd84dcf164236e745bef"
+    },
+    {
+      "path": "proof/coq/NeonSupport.v",
+      "sha256": "829a6791c9aa221b853c2ffc6067f0acd3b8cef66f83c15716c3a7e0f7ce8c19"
+    },
+    {
+      "path": "proof/coq/Observation.v",
+      "sha256": "5ba33740af1f9254ab379f55ba81b9c2e573c35ccb5f2d5f642fc59a95e10ae2"
+    },
+    {
+      "path": "proof/coq/ProgramModel.v",
+      "sha256": "fcd0385c81cab29b60678885a00622db8b87a5db351284c000274a9a07449d65"
+    },
+    {
+      "path": "proof/coq/RvvCalls.v",
+      "sha256": "174614c9cb741a3c1fddc0c3cf1fac3c73258a944913d8d3b1d7f1c44568da08"
+    },
+    {
+      "path": "proof/coq/RvvCallsPart1.v",
+      "sha256": "ec3f98233572258e6968e59ca2c095a110d30317c917dcda22aa9c400b4b9839"
+    },
+    {
+      "path": "proof/coq/RvvCallsPart2.v",
+      "sha256": "ae4709cd19af1f9fb73bf498abcfdcfdee220b4f3d9f17deb778bb5a5156f4fe"
+    },
+    {
+      "path": "proof/coq/RvvCallsPart3.v",
+      "sha256": "53a005a63096a825f1eea050aba78cf169cf8ad772f29c5ffb520aaceb3805b0"
+    },
+    {
+      "path": "proof/coq/RvvCallsPart4.v",
+      "sha256": "a4f2a594aaad606b9b38a2b16d9fcb09538e0df9301bc342e8bd885f5b5308c8"
+    },
+    {
+      "path": "proof/coq/RvvCallsPart5.v",
+      "sha256": "bfe7549378e9856e83bdd8769522b73d639e877a0335a832d7df973e3395e072"
+    },
+    {
+      "path": "proof/coq/RvvCallsSupport.v",
+      "sha256": "573302c48c6ee59617a55a5fa2d8e4449088c9c2ea7add0c07c6b19f43007aa6"
+    },
+    {
+      "path": "proof/coq/RvvChecked.v",
+      "sha256": "23390e426b0ebe9fd4b527cb18fce1f4153cd18560816683a1995c6463193eb9"
+    },
+    {
+      "path": "proof/coq/RvvListSupport.v",
+      "sha256": "c872a13affc676b8f7624a5f0207e1740f647fc9c4845e53b6ecb900891d5a54"
+    },
+    {
+      "path": "proof/coq/RvvMemory.v",
+      "sha256": "f8afe26e2a04d314cceda660599ef833b60ef37f9b7cdfe5559b7037473cacd4"
+    },
+    {
+      "path": "proof/coq/RvvResult.v",
+      "sha256": "a6e403f27a0453a611e075d2af276d15aa26678c142edca105649c4775986de6"
+    },
+    {
+      "path": "proof/coq/RvvStrategy.v",
+      "sha256": "9775dbf77469fb279e77c50989aedd382d3ebc442e8fe7dcae26f07bf9cb671d"
+    },
+    {
+      "path": "proof/coq/ScalarChecked.v",
+      "sha256": "bf0c37774ac1c14d9ab724b26a67a8d1174d7af8eaa401d05651d963260d0978"
+    },
+    {
+      "path": "proof/coq/SelfChecked.v",
+      "sha256": "7c544fe6606b57f9c88c10eeee48d0a42c3e82593a477daaa15e179017ff8372"
+    },
+    {
+      "path": "proof/coq/Types.v",
+      "sha256": "9a61e908cf3c8812ce918bd94856fa8ac872beea53e7b85c56608e499693887c"
+    },
+    {
+      "path": "proof/coq/VectorAddChecked.v",
+      "sha256": "5050d2067b49447f004c9f7ccb5c1d72901fbfd64b3fa24eb1a576c58431c948"
+    },
+    {
+      "path": "proof/coq/VectorChecked.v",
+      "sha256": "703b75cf98c8687af8e1b9b1c936f6d6fb713bcbae3a04f80d9531972aa02c51"
+    },
+    {
+      "path": "proof/coq/VectorFastFrame.v",
+      "sha256": "8424b7b64ba1c698a29402c9af987e3adbfc9df41a940910ede17ccf7bc78348"
+    },
+    {
+      "path": "proof/coq/VectorMaxChecked.v",
+      "sha256": "18d3ae7418c5b1ba0ee5b9b0e5a59b4984ce3507719897806c401935e0295b17"
+    },
+    {
+      "path": "proof/coq/VectorMergeChecked.v",
+      "sha256": "d62a86c1460b8e2c8fee59696982d6776f307ad90e25fa9b985c5497fb9ec8d0"
+    },
+    {
+      "path": "proof/coq/VectorModel.v",
+      "sha256": "5eecec1e8302aacc4a66994d9d4d844544e5404cfb1c2171b446511d38582500"
+    },
+    {
+      "path": "proof/coq/VectorNeonChecked.v",
+      "sha256": "767f15094aefcc305c893ba37535c8afc88b177e6a87a967fa33be9b496d9017"
+    },
+    {
+      "path": "proof/coq/VectorScalarChecked.v",
+      "sha256": "f0c1a89dbd885050dc14017427d03b48982514a145c0503026253ed62540d091"
+    },
+    {
+      "path": "proof/coq/WrapperCalls.v",
+      "sha256": "02a4edd68c32b4cea281a1dded2b56ce2a11f0294d5753869a86e64eb9e4adec"
+    },
+    {
+      "path": "proof/coq/WrapperChecked.v",
+      "sha256": "178cf8e8e311ce45252ed07a1e2fd4513c0bb48824632e8b9c7322a54fe5deef"
+    },
+    {
+      "path": "proof/coq/WrapperHelpers.v",
+      "sha256": "5eb84691e62533e9b790c6d4cf8cb8c2115256cd56fbc48b80a8622ffd22d9a1"
+    },
+    {
+      "path": "proof/coq/memory_rvv_load_checked.v",
+      "sha256": "f540c58337adffa5c06ae0486aa16657f88f98ce611706fd9d32cdb978c3d5f8"
+    },
+    {
+      "path": "proof/coq/memory_rvv_store_checked.v",
+      "sha256": "153b1cba4f0d91da37deb0f55277e531701cadd117623d77b61065abdb97c9b2"
+    },
+    {
+      "path": "proof/coq/rvv_control_checked.v",
+      "sha256": "c91f4291ddc24d99ecd24aa4109006a2542a76880342a7fdb6c544a85806d912"
+    },
+    {
+      "path": "proof/coq/rvv_fmax_strategy_proof.v",
+      "sha256": "a5f4d376ab3f0515b5429579edeba541d1baec2dd2623a0142370a5b128cc272"
+    },
+    {
+      "path": "proof/evidence/candidate-history/manifest-absence.json",
+      "sha256": "c61a483db875168937397a69be711f36a2cf77ab123131384c02cbca2dfaa817"
+    },
+    {
+      "path": "proof/evidence/candidate-history/status.json",
+      "sha256": "a4a3e1c219d8cf0275cbfc01ca399102007c263f53c7dbca6ed19bad15654e2c"
+    },
+    {
+      "path": "proof/evidence/full-run/FinalCaseCheck.log",
+      "sha256": "96801ec4061e05fd627cf0aaf09d21d1b777d4c04f4e8108283a8660fd5705cf"
+    },
+    {
+      "path": "proof/evidence/full-run/FinalCaseCheck.v",
+      "sha256": "a45b3bf227468c2224e58042b7a57b39075055ca856cd16fcc2af5d2f60d4cdb"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/formal-primitives-status.json",
+      "sha256": "ab48228e1a9518c390ffba2d0b690eb0ee02a4191a78cfdb2d793b7cfc867c88"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/history/original-121-case-replay-status.json",
+      "sha256": "eb8d1e83dd7babe3f2b4150c9d90a4ba9dd03230bbd21143d73198441ead0b38"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/memory-proof-status.json",
+      "sha256": "91fc15f3ada91f727b98c9da7b6fbaceacd592242336a561a2bf0ccbc0426e76"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/models-status.json",
+      "sha256": "aa477c4c083f423a100961359cd8e982b4f259548e45064918c1b1efb204a8af"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/neon-proof-status.json",
+      "sha256": "46467d37315afb23e2b0243f4f2ca5f5064cf6ac03845f59ab3e339bdef22ae3"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/repaired-replay-status.json",
+      "sha256": "1643e245a58bfbbe5b90dc226418a03a4d57bb99bd7e53393457bc56044ab461"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/rvv-proof-status.json",
+      "sha256": "c90dde8c39ccf66ba7bc6334d5d191206d410c887e4b1c0e7b60a9d57684b75e"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/scalar-native-status.json",
+      "sha256": "54e44b307e2ac8f7377a9a1cc2ffadf64e3774bbf86fb300c075383fc16eedc5"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/self-compare-status.json",
+      "sha256": "fe9dda601982bb09570694def99233fb3e556adc84c23be40e13e14582f4907b"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/vector-status.json",
+      "sha256": "21ff82b81dcd3552c69dc63fec3d5ed9eb174f4602ee7890768db6fc0a0ac4cd"
+    },
+    {
+      "path": "proof/evidence/full-run/component-status/proof/wrapper-proof-status.json",
+      "sha256": "6fc4b17d1cd1cb53a4452d127963a70b5c89ce43e7ab1ed16e5795aba7e21d30"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_adapted.log",
+      "sha256": "06f5433b2ce99f76cde290a1e3ad029b05e8c90a17ff07c16ff97f2592620b87"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_copy_checked.log",
+      "sha256": "7edd16f8bf93fa7937534e0802e434a666ae96bc64520e332ba4c25013a10718"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_full_checked.log",
+      "sha256": "002ff7aabe846e18d9229b279b25d748707364caa5e97f32a53d43ba99d089f2"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_load_calls.log",
+      "sha256": "97c0c4f465233f63980388bc55a002bcb463ea09d4e17ff8d0aea291fa433587"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_pure_tail.log",
+      "sha256": "7becb077a9519b021972488e5ec6bd16744107a96d9d160a2bd54e0a7eb4e461"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_reused.log",
+      "sha256": "71a94ddd6ebc95243d249da52dfcec38dc53db3e7b650411fc9fcc47c6840f46"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_store_calls.log",
+      "sha256": "a360bebeb78c90e9105c40686d21e7e242b16c9374e1bcba0543be8415ebdd69"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-neon_unit_goal.log",
+      "sha256": "432c2c9a848c87202c9e84c7c1c29b645c03b8b212aba38cba384823f3b912f6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-shim_checked.log",
+      "sha256": "13052a53538c768498e2cd6fdf7f376762b0c999d2e1bec75d2ac5e02ddae3ed"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByValue-shim_unit_goal.log",
+      "sha256": "022dcee240b217f8ab267b4ffc2cc897e23a37310d99d149a7eab3d6cc290e62"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-Layout.log",
+      "sha256": "490a4500676b4da732fb4b28b014edf95ca2125e1b65d1479224d35de339409b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-MacroKernelCalls.log",
+      "sha256": "511f9a079c6de742182d243ed718f2db1bccaeea1d5d702d7c098b5ea8175022"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-MacroKernelChecked.log",
+      "sha256": "8ebfdf8bdc71432e4ade49def5ca00e80eb161cb70875895aa6314aba0516431"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-MacroKernelMemory.log",
+      "sha256": "0c4c7428eca37fbf2cfbe41a80c85b44666ed4b90e59eb2a66a14b99b33e532b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-macro_unit_goal.log",
+      "sha256": "3d5414592adadd6da3fc2632ebe8bf965695edd951dd36fa265358c3bd5ec67b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-shim_checked.log",
+      "sha256": "26713446b638cd384d5cfc83c8681bb859efb981c768d1c125aea070269d6271"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/ByvalueRvv-shim_goal.log",
+      "sha256": "1b8de47d7b0c44367844ca43bafedb007f0cb114c3fa5b54096316023ecafe55"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-Bits.log",
+      "sha256": "df8ea341c33a0588d45dffc2877dcd013091eaf04cf2536a53fa5109c019d46f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-BitsChecked.log",
+      "sha256": "7bb258c522089be608f3d5c1eaa223680b19c58594aa1c78b0bd2adf16a94469"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-BorrowChecked.log",
+      "sha256": "db369a48aee6c7c0e2bb0d830ef5ab78f7f0ffa99047126903ded7bbbe64100c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-Model.log",
+      "sha256": "237bfadf16a1e98d316b1d50d1d6f372d4ea811a52a5a9ff7323b33ef7d81de0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NanFacts.log",
+      "sha256": "2d7f7220d072a3a4e74bd87875d58d71514e4673483cc351b8f06ccdeca53017"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonBranches.log",
+      "sha256": "7648a6bcfd60952249d8af7eb46cd8d64cfc399d55165db41755f74915fb1977"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonCalls.log",
+      "sha256": "97fbe8f5583c01ff5bb8bd0a2ea7c46119380025c2c1f1a0cd0a0664de9731a7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonChecked.log",
+      "sha256": "3d3551c6755fa7276f3b240065f88456f4cf38d4e3ece080a35d2666be664dc3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonLoop.log",
+      "sha256": "2f49a2fca98221306b64bc568449820b425ab48d40bc1b7a281bb6ed26ae31ff"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonMemory.log",
+      "sha256": "c17654ebd84039cafb86c2407c9bc805cb0ed818c45cd6e66e9c69795d14f464"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonMemoryHelpers.log",
+      "sha256": "23ae23aafd8fa648cd403c9da43db47c10f8da2a2fbcbf2cc0717d59a996d1b2"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonPure.log",
+      "sha256": "83a1d9af478469e8ce2c3904ae41f8a30479b8f25137cfa3be4135550c7b84a1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonReturns.log",
+      "sha256": "0c02ab58c2be267307d3f111a6bb6fd876bcd1d81cafb0c458c66949e00c5488"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-NeonSupport.log",
+      "sha256": "32dcb90dfdc00fc5389379e7658edd51bf480ac166dbd1f4402e0d135e8fff1c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-Observation.log",
+      "sha256": "aa67eb366d4b0d0b881f007ae1c0f2551d3885293182a0bbe9c8f8a0e83dc9d9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-ProgramModel.log",
+      "sha256": "dd179a16349e34e79991c97d533e569aa299241ebbdeccc78ad8eadc45d21f78"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCalls.log",
+      "sha256": "85fe788809557e3fffa5835c9bf76e6dc37637ca49d34ef06ff923980bb5957c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCallsPart1.log",
+      "sha256": "6efc6e1a220f2a9787eea32feb5765212396b27781729fd4de7ffbf49b622973"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCallsPart2.log",
+      "sha256": "44ed55d13baffa9f0505c5e25030b09b5d2ce0760c98e3d7e2b113440420e342"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCallsPart3.log",
+      "sha256": "1eeb60585ea1627bc8d3b9d39b0fe271ca1286f22fdbf203c817af5f3582b729"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCallsPart4.log",
+      "sha256": "640cd56682011baf8807dbdec6e1f46609802866be871d16418a21c819544304"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCallsPart5.log",
+      "sha256": "fc8c64765869390cd1d0f2c11858b264d04a76a913d0680425d0325f6ac8d287"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvCallsSupport.log",
+      "sha256": "7bb882fc7f04aaddaa1d5ba431f3f72e45f08fc93366cbc51d059bf008a65365"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvChecked.log",
+      "sha256": "2932aaec46894e31489233cf4d6d479fa1c87eeb1dec005c8f50fa5785eb59d8"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvListSupport.log",
+      "sha256": "fb9cde308c416ae090ba2f34fd9911a714213e5ce5960445baac9153c4f474c0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvMemory.log",
+      "sha256": "db1496e26d9ba17de576e4935b0eccd4448b4008e09124ace3215a675ed09a10"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvResult.log",
+      "sha256": "9d7a1cb43f6ce912b0572e4f3b8637ccc0be16b3ced54fbc8ae4488b1567891f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-RvvStrategy.log",
+      "sha256": "48aabb3084bf10a3b38160487d24cf22647c95a0489d781e3b753824c6942eb9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-ScalarChecked.log",
+      "sha256": "6a4a44a162180f061d22cf3313e7ec755eb606b65a1166c5486a286db55fec94"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-SelfChecked.log",
+      "sha256": "e0c55adb329d1a57837a30d8bc45c7b00ad20e49eecac2cb64e3cfd8e0ff6c96"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-Types.log",
+      "sha256": "48cdc2813fb63a0091ef1a56c572cc1ec16188c0daa6f37b82066c4ec8f95ec4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorAddChecked.log",
+      "sha256": "79ced7f23ee2d82e0cc5bd9b3d79a0e4d0b81a2929f7e7005ab7e40d6db188cc"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorChecked.log",
+      "sha256": "21bef2b048f91f1541261edfdd29333c3fc8d9863d47ad1e6ab13e2f57a21360"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorFastFrame.log",
+      "sha256": "8b72aaedf91c59854fbf13c390d3727f4c39201a0ec83641962b70e203b4230b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorMaxChecked.log",
+      "sha256": "059cfc1734fb89b4c9f36e0b7c3fd12234859789ca4deb732df2b4497e809b8c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorMergeChecked.log",
+      "sha256": "b16205737a02e353ce115ed7f8eeaab8bc280010bcf1cc40459ac07927ec7262"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorModel.log",
+      "sha256": "d735f9f9c29b211e503abb95165bea800a3e255b0a5e5a7efdb9750784a29042"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorNeonChecked.log",
+      "sha256": "ef3966a0d7e29214321e85b30782707dd4ef475ad0a79cb271002d0fc568fc77"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-VectorScalarChecked.log",
+      "sha256": "62c7d6bf73c84b2b30c943b53913f6f4570037bbf49dea188fe9e8391fac5295"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-WrapperCalls.log",
+      "sha256": "b83850bf3bfb4c383469ea65f4984bc8d57b23a447a11ef968adf049cde5ee08"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-WrapperChecked.log",
+      "sha256": "7ff20f095f347635d95297e77c6fb811234ffe29dd27b86fa4d49e62e16223bd"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-WrapperHelpers.log",
+      "sha256": "00aac5988f5c14f1fa505b1935779199faf94cf78141b04746a676dbf74c6711"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-bits-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-bits-qcp.log",
+      "sha256": "b467eea5f937fe2077dbf7e884ca4c2bd2729d154e0c277eb661a19c925488c4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-bits_goal.log",
+      "sha256": "453aca1f59a98626f5a3e7303c87e4db30376c2d82f7770224cf38242da07ed0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-borrow_compare-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-borrow_compare-qcp.log",
+      "sha256": "d0e36177a2ed24163bf2685c4669f7281c67c7b8c1e2dab4439191521a9899e4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-borrow_compare_goal.log",
+      "sha256": "89f65bde7be7c2b1e1ef01d6310d85fd6ff86b483bbee276e71cdeeae5db0eb4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_neon-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_neon-qcp.log",
+      "sha256": "5743d2287a0a9f943d29e03b38df931e7dfb34beada44813269e305acbb0295a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_neon_goal.log",
+      "sha256": "b5ea6a201b750c03ad61c15896cb876713ebeee63db665911ade026ae38145e6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_load-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_load-qcp.log",
+      "sha256": "8f02c8d75604af92cc327d413390af5d4b71179eec452e45512091fe83b294eb"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_load_checked.log",
+      "sha256": "66bebf1b7a0b7d276a20c9eecea5c0c16e8e0e3bb82d857aaf5bbd313d6f9c16"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_load_goal.log",
+      "sha256": "59685d7c97c37d9b03cff45f41b3b3ac5d763cefc569fca8a6698e0149cd6543"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_store-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_store-qcp.log",
+      "sha256": "dc7b6f8b0852ae403fa06c43cdb39af3bc3baafc54cc46bfb6a2789806fcc81d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_store_checked.log",
+      "sha256": "f7ea329ddbad6b694d3d274d0b83926021ebe0b41f1bf9c684f6ea2ae305818c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-memory_rvv_store_goal.log",
+      "sha256": "bbed231c541718084caf6d4474fab9812add71d2fabae22fa8cdc5dec08645ae"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-neon_unit-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-neon_unit-original-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-neon_unit-qcp.log",
+      "sha256": "83fc5fbaf0077ba9d27e091c5e4221cbf233645bed78a4068a0db86256f5d76c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-neon_unit_goal.log",
+      "sha256": "9537dc8449ee269f304754d86f13f1af4fac2df54aeeb1b568447d47a3000f8c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_control-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_control-qcp.log",
+      "sha256": "02a1042585291bafddb76f64fd3511c8193490e8f27da1b94d798f9b0b2e872c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_control_checked.log",
+      "sha256": "e08f70005644885216d97b1244729035e6880832b7137561ec3140bf61fe260f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_control_goal.log",
+      "sha256": "878f8f42887b065f4f64757623237c70934704027ec60b17075e2f62533e32fc"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_fmax_strategy_goal.log",
+      "sha256": "1d4526254cfde545970be2b1db67ac17eeda5f1b2aa3cfceae5705a9f7838dcc"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_fmax_strategy_proof.log",
+      "sha256": "7dbea0fc332a07bc1b07cccdc69199c23a493f9f8f1ee5ca69445df5358eb8d3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_unit-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_unit-original-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_unit-qcp.log",
+      "sha256": "521da85cce4108284348dc976480ecb2fac1d23c2fc57287adf66fa0c1798075"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-rvv_unit_goal.log",
+      "sha256": "c806dfe450748b32723e940f0d03121b85ad81bcf02c5ed76f0f2bfea4f1c879"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-scalar_primitives-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-scalar_primitives-qcp.log",
+      "sha256": "e83a6923dc43742a5b858cb91dada8f743ad7641d0d5abe89abd7546c94948d5"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-scalar_primitives_goal.log",
+      "sha256": "21f0a7788c16d87988efcf1ad241970023f47e03491c61ea290b7c736c6ce829"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-self_compare-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-self_compare-qcp.log",
+      "sha256": "da0eefea756ee3b82be4ef0cfcefe277ec8a259407f66bc4bd169a536c9cac96"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-self_compare_goal.log",
+      "sha256": "f252c6eb16f18ce120d16ee8be40f1b16f454120efe433f3325cee4175e3b86e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-vector_primitives-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-vector_primitives-qcp.log",
+      "sha256": "a2645ff21b66517d576960cd6d85e72bbc71afa153b86994b96c6efa52a25ab4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-vector_primitives_goal.log",
+      "sha256": "62f6ca0830ccabc95cc8984fc24cc02808e1e6cfab7ff41906ce71c4f6c9faf9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-wrapper_unit-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-wrapper_unit-original-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-wrapper_unit-qcp.log",
+      "sha256": "eb4e9c3bd24627480ce6bd84b45773e15126b38023284cb0a46cd709e32178c7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FMax-wrapper_unit_goal.log",
+      "sha256": "bee03ab72d03ef150e584538f025368b8d55797e3eae9af90f0f36935c085ca9"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/FinalCaseCheck.log",
+      "sha256": "96801ec4061e05fd627cf0aaf09d21d1b777d4c04f4e8108283a8660fd5705cf"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-BridgeLogic.log",
+      "sha256": "7b19df9475958b6df8e983912d9bc81546075869f735ff9a57444bb952294975"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-ListBridge.log",
+      "sha256": "6972098fd91d36cb2dd045f02bb290484c092fce5a22874eeecfd8406db9cb08"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-bridge_checked.log",
+      "sha256": "8932756e105c80a8f72a28236c6c5bf988c21f83994280af5f62bcdc0733f3e5"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/NanBridge-bridge_goal.log",
+      "sha256": "854272ff404c4507f9ccf02d7797786867df5b352403343cc522b6dd3f053d52"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeon-NeonBridge.log",
+      "sha256": "ce63dc3f9e92ec013ac1d5d5fbf3abe44ddb3017e6c14258c0eaacf64143a0b1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeon-neon_bridge_strategy_goal.log",
+      "sha256": "0f2146b412e67936fd9ba3c9c839441d6b1fba7f3b6a108b8f9c6bff085e484d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeon-neon_bridge_strategy_proof.log",
+      "sha256": "60fc67452ea2bdb50a4e733d50c71a6dd8e2d6368cce327eaaf60c8f4cef8979"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-InvariantFacts.log",
+      "sha256": "9285b18cd68a79ba14a3bcb4b0a990bf8b92ebb502158fb982bc1590709acfe6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-LoopMemory.log",
+      "sha256": "4957f8a6c565449b2186a3488ade77be8ec6e15c60d7be9cc2e17ef027a6e143"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-NeonLoopBridge.log",
+      "sha256": "6b0c18c9f8053da8bf4ca1fb9227bc82e3d944dd0029d11b4ad3bb8fa031df4a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-TailMemory.log",
+      "sha256": "da5e7114360b0c44e79a8e838f8a33140047260944e64b1df77f08ecf008ab61"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_branch_checked.log",
+      "sha256": "143c725d9c1cf7b86428931c229d2def716aa3f440bc50bf58c646728424f221"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_branch_impossible_checked.log",
+      "sha256": "9d306db718cc4023036e334cf8b787a1e6f3a28970c2fdfc4af1c675a560783e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_branch_more_checked.log",
+      "sha256": "233c6ea5d112362efbed19121bc41a8ba1d80259a59c18ff0011940d82398933"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_checked.log",
+      "sha256": "d8a54c77d20e711e0a21f5738fbe37726a49e949816d79c635c7038abebbcd18"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_mid_checked.log",
+      "sha256": "056abd8a2545ea2cb823b09d1fcd6e43e925b87d8f39494be77ea5f8266352aa"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_more_checked.log",
+      "sha256": "b5f68d648ae60a9ccae6ca78bc4a0a9fc51fb5caa4e6375295555f8789604b55"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_reassign_checked.log",
+      "sha256": "3d0f860de7acd4bfc217f55dd6de70eac90c64b0296b5c3d947f70fe96a6bda6"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_struct_checked.log",
+      "sha256": "6d16c0665fbc527b1c6e6751f856192b12800997c314fbe05487bf8860d3f190"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_call_tail_checked.log",
+      "sha256": "b69c7926d897aa698954c58565832f8eabdbc4dc072f1173baafed4ba597895d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_full_checked.log",
+      "sha256": "5ee90f57d9086506e27876698204b7c6b1156b93c23a4ae4250e8a8b07ca4ae1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_init_checked.log",
+      "sha256": "f77ae25572fb82e51bc2c59dc6880efbb9d93a8d68f5775e0588ddc1d0dca577"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_init_lemmas.log",
+      "sha256": "d492fcbead9e1f030ffd3eef1c37a8f26709452b3b4ce8598f5007d0c84df071"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_loop_unit_goal.log",
+      "sha256": "2bc457e3aa6c3baf55276ee9b28bd1f17aa9a20d4c10a6cb9ccc70cd5fdec280"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_return_tail_checked.log",
+      "sha256": "485f42e0b04f3f19e3a1614a3ee8ddacae838011ba7f4e9b34bf28eb39ac5c1c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_return_zero_checked.log",
+      "sha256": "a2c1aad81168e905e78f5d81cdccdd0eed2474a3939a484b61019f6acab6dbd7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_safety_extra_checked.log",
+      "sha256": "cc49edd9900d53c2e13a5055117998d4da4da527d7307d992e35386ac6792d0a"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_simple_checked.log",
+      "sha256": "f77c6ff1fe1b883a152c4b6d1e742e0f7867c82f8d2ee9b11ccfad0f89da66d2"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_tail_models.log",
+      "sha256": "98dc3b36180958e3ee2596c5cba4f6f6d42444e3313414b8781019b8de448166"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_tail_strategy_goal.log",
+      "sha256": "5aea2c6c06c340a79ed61436baf17b4b152db5e36e3794f611d88bf668b0c151"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpNeonLoop-neon_tail_strategy_proof.log",
+      "sha256": "d69734b5e1e9984368383a8fb4ad5a8e8656286915bb82a88e2d65d4c749c309"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-FastFrame.log",
+      "sha256": "cd851982f45fe990fe7b36663a3dee1468b4888d69fb551b7fdfda4776491763"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLayout.log",
+      "sha256": "272cbde3b91618a8e0a079b2017cd1e46ff2f217a765749888230acf560de308"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLogic.log",
+      "sha256": "bf633b9240cb8014f9eb250f763d4d0c974a6dd6dfe95cce5650efe6c6c9c93c"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLoopMemory.log",
+      "sha256": "cb82e2ed70eb7b0cd6439dd8b25b9ad248acc7e778b19da0f7c7bd63173f0333"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLoopModel.log",
+      "sha256": "870fef4098b938003072611f9bd1ce94b6493dfa48f2d668dfc7280c78c063b3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvLoopResult.log",
+      "sha256": "94865ff52a47ac6d4c6ec8818b4ed249c817bde1735fa19f5f7d6e397b4cbc09"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvResultBridge.log",
+      "sha256": "83fc85bd0895581c494d06f519af19c83d497b44cd0984621d05e67cd93909bc"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-RvvStoreModel.log",
+      "sha256": "6c2bf7901c3ebdc02a876f0785c546e07e354c23136ffb9c4d744b9e628e7ed3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_add_checked.log",
+      "sha256": "b94211a0b5745bf5d49584ae9a8af6ec4d50d614caf2cdb06ffd43d91b45afe2"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_add_goal.log",
+      "sha256": "d03b5dd034c8b8936a240d59674d300c09128281d646465fde190b5516111d4d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_arrays_strategy_goal.log",
+      "sha256": "e45465f2d1f6f92e816e41fbb4ccc38f788e8a88e70c662c07497fd6b4002bc4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_arrays_strategy_proof.log",
+      "sha256": "11febc31801913d267caff7bf2b4ee1e07971eea7047392843ed0e22ca82757f"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_load_checked.log",
+      "sha256": "32ea47a8e0f8bfb5de8d95de323232fe5203115528a761bb9c3e1ccf5d8f1dd2"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_load_goal.log",
+      "sha256": "4a8419186e84c203df995374692f562f8ddf04894b0e7a9d5e88e6b792c20318"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_pure_checked.log",
+      "sha256": "d81a0a9c31875bcfacde5eab3ce882d3811fe4bd9a47a2291c70721473cb2bdf"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_strategy_goal.log",
+      "sha256": "19419246aab789f502d8ef23e639ed840da23d1079c931ed207c2a736c02600d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_strategy_proof.log",
+      "sha256": "d074ee49070aa237dbf4a1157c27600e84d5b33b60371fc459b9aa3ec3da7177"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_loop_unit_goal.log",
+      "sha256": "c071a8fd6963635c3ebccacfcd42bc93f3f3089e43919839cf7c40aa6c0f3873"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_checked.log",
+      "sha256": "fbe82713b61d5a7d804e1c255f88400d5e2ca1b6a7cfea543fae3ed563bb88c0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_goal.log",
+      "sha256": "af87c82f734fc7a586cefb9df13991e25f277ea1e5f19bea529d4caeddd3ff4b"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_strategy_goal.log",
+      "sha256": "25c51684673d5b9bc721d3111db0a69a9999724784b7ed6eff4118cc6468dd20"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpRvv32-rvv_store_strategy_proof.log",
+      "sha256": "4818ce0f7effaa0fb804a8cc49d24e82ee42ca9bd9cde74e016ced783d9ee9e4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-VaddBits.log",
+      "sha256": "d39cfddef398789c38dd8b914d7b41d58ea58676affc6dbf87f09ae42c147a69"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-array_read_checked.log",
+      "sha256": "0279e1ebcff66959fc142ea8a502631ab459e8c5edf2de7e0db50a8fe6f97420"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-array_read_goal.log",
+      "sha256": "8f92201f2cd3bb91813d28cceaee13094ec93b14f9455d18e0bec88027359ea1"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-float_array_strategy_goal.log",
+      "sha256": "12805c8d8c1f1047e8c6dad94887527ed7f87c029b12265213ad5b7def2bdc16"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/QcpVadd-float_array_strategy_proof.log",
+      "sha256": "6ddd825a7076dabf50cd5bf06214f0b4acd3483efdda36fe0f441c4b9382f5a0"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-ComparatorLogic.log",
+      "sha256": "90d57c6bf769bc74f54e72ac5a73713a9855f3d862c840ab78de204e4ec09bb5"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_checked.log",
+      "sha256": "ca3483529e5828c795482c38f023b41c4fd5187ab25062a24b2881c62956fde2"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_goal.log",
+      "sha256": "9f03d78ca528a0ca90f5a189d5422824bcdea3acfc7262d54cdc06902f6a4546"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_strategy_goal.log",
+      "sha256": "b0e5bd299c4d4b2983bb19643d40d03784445610459fd742974814121df848b7"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddComparator-comparator_strategy_proof.log",
+      "sha256": "37de2290a209d56e2cd4317e7e37999afdc0a27d04657ca01e6829561fafad56"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-WrapperLogic.log",
+      "sha256": "aa715850849bbe253d8ecaba8bc75a0ca89b55723f7c73363273e2369daf1246"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_checked.log",
+      "sha256": "7b14bdfb2e88b34ce0dffbe6c542fc76ed026b0d528aa1ac03c35a616c123c00"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_goal.log",
+      "sha256": "ab833ef9dc71c7bccbb1a32a0d9ac815adbdb46f77399116f403fb828a552ce3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_strategy_goal.log",
+      "sha256": "e9aae070a69b0c1338f8b045a961343b13d10cda710f665de278a98b3d2ad601"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/VaddWrapper-wrapper_strategy_proof.log",
+      "sha256": "91474c0b2c8761acd614a6aabb033b254bbfae165a5623698d8912e44132a137"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/patch-exact-application.log",
+      "sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/public-cpp.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/relations-ResultBridge.log",
+      "sha256": "17426741b7cc53b343778c3887e30293bb1370a1b13ea25bd447c2fcd5b5a67e"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/relations-VaddSegments.log",
+      "sha256": "4d516097a58ad61cb5f24a23e16dc1605934ad2fc09a9b5e03795001d594e44d"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-FMax-rvv_fmax.log",
+      "sha256": "ab9f9346c589617a3b94e8e77546a32dc65b46695769191c6c2050f7cbd13dd3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpNeon-neon_bridge.log",
+      "sha256": "1da98398f2512253fcfaa5440a7e7ba327f259f9cf4aa920e59b48e4c735ff75"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpNeonLoop-neon_tail.log",
+      "sha256": "8fa7206f25a4e75c685de8e6ac32894b477ac3ec0c72f6979fee90bebba167f4"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpRvv32-rvv_arrays.log",
+      "sha256": "1fac58405ad617951c7035142c29a02c36bc762c10bb88235b967af471926339"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpRvv32-rvv_loop.log",
+      "sha256": "a88784c4d9a9b8274639ebf4b5260a8402cfe7611fde2923f35702717a48ebe3"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpRvv32-rvv_store.log",
+      "sha256": "3b8b16529c86c67c1a1b254c47709ebaf20a44f27968829bde4d6b704d597e69"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-QcpVadd-float_array.log",
+      "sha256": "7353848c5f4415c0d69cbc1501152b2eb9535cec7cb57b2932c44345a122ce36"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-VaddComparator-comparator.log",
+      "sha256": "2a49f42ea9420f20420d19ab33c5f274b0fe8167b109855bfb8d1626e6caff46"
+    },
+    {
+      "path": "proof/evidence/full-run/logs/strategy-VaddWrapper-wrapper.log",
+      "sha256": "3f435d2c3a55a56319267c7acc7e3e28a2bd667f01377b0d5b215da213526fb9"
+    },
+    {
+      "path": "proof/evidence/full-run/repair-identity.patch.log",
+      "sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "path": "proof/evidence/full-run/status.json",
+      "sha256": "b76395aea9aae1202735440754171f1cebd75a79c5f75d97ffc8ee4f48052a83"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/FMax-rvv_fmax/rvv_fmax_strategy_goal.v",
+      "sha256": "d098e9649b8d2c9f474fa43f944557f4a20e994c233da631a68147f127db5baf"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpNeon-neon_bridge/neon_bridge_strategy_goal.v",
+      "sha256": "9f4cde0636936899121b1c998f8e5facfaaba895ef862dd95d8005a0b0cda2b7"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpNeonLoop-neon_tail/neon_tail_strategy_goal.v",
+      "sha256": "7b2fe6e87cf3d104134d85a6d29c2329956dadd382ae3dd945d56cf6c1158d42"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpRvv32-rvv_arrays/rvv_arrays_strategy_goal.v",
+      "sha256": "b832305946933b087d164aaee144406d636833a62c57b4ebbe97b3c478537261"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpRvv32-rvv_loop/rvv_loop_strategy_goal.v",
+      "sha256": "47e78c348374e4fec292ac75ff740f990a31829db3d88d8d2d339af74a933089"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpRvv32-rvv_store/rvv_store_strategy_goal.v",
+      "sha256": "a9269307bef646bd20ca10a0e75cd7383920bf1e5d18d8e0f49875152a647a0d"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/QcpVadd-float_array/float_array_strategy_goal.v",
+      "sha256": "e7152efd9dae1521e929e1f42b21ba5aee925295d91d945c7458b08344c42f28"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/VaddComparator-comparator/comparator_strategy_goal.v",
+      "sha256": "51776ee6e3eaf689e5dc021a84c82419223e230e444578e787dfd798f85cf5d3"
+    },
+    {
+      "path": "proof/evidence/full-run/strategies/VaddWrapper-wrapper/wrapper_strategy_goal.v",
+      "sha256": "cf753e4857ec18410aff47706bf6f0e635719e185eb5921657e24092609f7018"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-bits/expanded.c",
+      "sha256": "477c72f79afa02b84c30be6e73f9b6bbbedd9b25e3aefc9d4793ef3d3ff187a6"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-bits/goal.v",
+      "sha256": "f40f00339d2ec3fea2e41ea3578ede4f1f8800e121e67e837bdc278f49a95c23"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-borrow_compare/expanded.c",
+      "sha256": "652e733d42efbd9e73d52651cf18cc89a0cf112d52bd41521f3fa99991e85146"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-borrow_compare/goal.v",
+      "sha256": "b797d677402bf4adc1ec0f20b87ab73d83ef3452f6ecec264a7e7dd26f729a39"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-memory_neon/expanded.c",
+      "sha256": "3d04b0db243081ad9ac3b17948512265b66114f46291920825ce780a40b7fd34"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-memory_neon/goal.v",
+      "sha256": "4bce5d77cc0f0b070a3746633f2761f9f15993ed3032cc2c0a52cd092c62c60d"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-memory_rvv_load/expanded.c",
+      "sha256": "61c254a5209d605c8f8c4f337b1566a0ced8560226427f3f73382301ca5bc138"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-memory_rvv_load/goal.v",
+      "sha256": "d53e262fb5524539a0b0f60ae0d9b46631307db26ddd047686ec82562d3f55ec"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-memory_rvv_store/expanded.c",
+      "sha256": "29ae1b5f5e551148f06890e2695fd1a30aaf837750cccbc82f183bbe017abb5f"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-memory_rvv_store/goal.v",
+      "sha256": "1824b489e3744b8013f17bca7f1524500e96a74fa1d65a7da98b49062572c8e0"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-neon_unit/expanded.c",
+      "sha256": "1b713ab3452fb1a66c79b9b82feffc48b3e56517638d59044748aa5c3a7d32b7"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-neon_unit/goal.v",
+      "sha256": "81fb6d7e53ada68a9fe4ae99a52e6fe11466a4e7b456e0618ee8bd88bad0333e"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-rvv_control/expanded.c",
+      "sha256": "21f670d602e5b050639295e5272b0048aa545b465ee589262808373d3af72114"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-rvv_control/goal.v",
+      "sha256": "86fb539bc0ed9b2b968591f6301ba5e15f77fdd57583119e94c3907baebb118d"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-rvv_unit/expanded.c",
+      "sha256": "6c8c3631b53693541ee8c6ea6498fd4e86bcfbb1de60d77b413aa836e89e9e29"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-rvv_unit/goal.v",
+      "sha256": "d86d15a8f46d9fd8e25cbcc7cab5375955b338e4b12c6b81c3d7753f61dc1da1"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-scalar_primitives/expanded.c",
+      "sha256": "0aff8ae3bdd105eafbda51cb849a0020b1eb5fd4dc28d58adcf5a262fa113688"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-scalar_primitives/goal.v",
+      "sha256": "40a1c8c6641e923dbd1be5a839de5cc876be6aebc11ad40d6e7604fd4b16d0c4"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-self_compare/expanded.c",
+      "sha256": "fb6f0b52883f85a440c84e58563c3789303e47b8edd0c45f3888c89b8028f710"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-self_compare/goal.v",
+      "sha256": "0778594513b77221ce6b31ed2e9de1a90482b08642eee9a174f5eb1aaf91cdea"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-vector_primitives/expanded.c",
+      "sha256": "98c9f161c30ed09c0dac292f579ebfc8e9b81fb5ca5cfc85e23dd5621d5198d4"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-vector_primitives/goal.v",
+      "sha256": "c4373d150071fe4fbedf4b247cdb9670881cec981fead62d46a153a9551a3929"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-wrapper_unit/expanded.c",
+      "sha256": "b9f9cc733828317353e4c9281601cd97b1c564ab91a0e7597ef1d2fc7ab1a210"
+    },
+    {
+      "path": "proof/evidence/full-run/units/FMax-wrapper_unit/goal.v",
+      "sha256": "b71541502cac60a9a5ce0984f9d0237543e9b2f58362ea6befbb7e69e377767e"
+    },
+    {
+      "path": "proof/evidence/pre-relocation/manifest.json",
+      "sha256": "463eec8cea6920b392332402b20e53643469695a65f9f63607651c245267f29f"
+    },
+    {
+      "path": "proof/evidence/pre-relocation/relocation-identity.json",
+      "sha256": "a82b1b412448fbe380239e2fffb347ca1e2edd2e94e684fbf9cb50f27843bcfb"
+    },
+    {
+      "path": "proof/evidence/pre-relocation/status.json",
+      "sha256": "fac1fdb4d02bd76f52a655b2c291df6f668fdec1461c39f59ce00e2306881420"
+    },
+    {
+      "path": "proof/formal-primitives-status.json",
+      "sha256": "ab48228e1a9518c390ffba2d0b690eb0ee02a4191a78cfdb2d793b7cfc867c88"
+    },
+    {
+      "path": "proof/formal-template-provenance.json",
+      "sha256": "ab70a9e908680d303f4b51f0066d40db0e193661402e0a44ba0545158f35c54b"
+    },
+    {
+      "path": "proof/frozen-full-handoff.json",
+      "sha256": "07cb2e5ef94f2574fd3acf55062817b1aef9c17f2ace20a5e043062bd1cd77dd"
+    },
+    {
+      "path": "proof/full-status.json",
+      "sha256": "b76395aea9aae1202735440754171f1cebd75a79c5f75d97ffc8ee4f48052a83"
+    },
+    {
+      "path": "proof/generate_neon.py",
+      "sha256": "4be9288bc9ed602b615178cba7b3a1be46706979cbb0fdf1fdbe1561bd3e307b"
+    },
+    {
+      "path": "proof/generate_rvv.py",
+      "sha256": "4eeb1ef9401aeb32aeca130225574fabcb875cdda16cac4861824ed7f60fb022"
+    },
+    {
+      "path": "proof/generate_scalar_proof.py",
+      "sha256": "78715cc5344fdc0e5dea1783a54f53f9769fe22b687ce784e8ed07596afe0e62"
+    },
+    {
+      "path": "proof/generate_vector_proofs.py",
+      "sha256": "c3462796c5dac63debc03100d23bffa2a7e60d1fcf30cdf9e2f33491fee76f64"
+    },
+    {
+      "path": "proof/generate_vectors.py",
+      "sha256": "265040361021e7c118359bf52b8394258e0407ea06f9181e255d7880887281e3"
+    },
+    {
+      "path": "proof/generate_wrapper.py",
+      "sha256": "2e414d9ef182cf3d586f14ddb7980d88facc83f731d681be9aa3be2eabeda1d3"
+    },
+    {
+      "path": "proof/history/README-before-full.zh-CN.md",
+      "sha256": "73bc13507a7ee8a885023daa1bcc51da012ce0283c1ed48fad1154dff4e4fb75"
+    },
+    {
+      "path": "proof/history/original-121-case-replay-status.json",
+      "sha256": "eb8d1e83dd7babe3f2b4150c9d90a4ba9dd03230bbd21143d73198441ead0b38"
+    },
+    {
+      "path": "proof/history/original-121-case-replay.py",
+      "sha256": "f5d9551d6060a61656f2458f0ff98859812b809af093c785f96e1acb9ccbfebb"
+    },
+    {
+      "path": "proof/history/original-121-case-semantics.json",
+      "sha256": "e1dcfa4d680f7c6adf54de6d162cadd281cff375cbaabf2059f446fb9c603d90"
+    },
+    {
+      "path": "proof/history/original-121-case-status.json",
+      "sha256": "71e87da4d5ade39be542be0d019562982b0202962c1dd9d06e42f5c0fb774d8f"
+    },
+    {
+      "path": "proof/history/rvv-balanced-success.json",
+      "sha256": "c90dde8c39ccf66ba7bc6334d5d191206d410c887e4b1c0e7b60a9d57684b75e"
+    },
+    {
+      "path": "proof/history/rvv-module-budget.json",
+      "sha256": "fa0d6331974a39ce4001b3c5c13c0b790dfda9ecdc36cb5e93e07a7dd8b0dc12"
+    },
+    {
+      "path": "proof/history/rvv-proof-partition.json",
+      "sha256": "08b1ca615e34b08bf7b80f8c663ac2ce9cedab7c667f4b1cebf04f648f99d783"
+    },
+    {
+      "path": "proof/history/rvv-superseded-runs.json",
+      "sha256": "7d4042d566462653e7edf0b3a2605ae745d9cd321014f77f6126192e6d9d2d81"
+    },
+    {
+      "path": "proof/memory-proof-status.json",
+      "sha256": "91fc15f3ada91f727b98c9da7b6fbaceacd592242336a561a2bf0ccbc0426e76"
+    },
+    {
+      "path": "proof/models-status.json",
+      "sha256": "aa477c4c083f423a100961359cd8e982b4f259548e45064918c1b1efb204a8af"
+    },
+    {
+      "path": "proof/neon-generation-status.json",
+      "sha256": "c6660cbab65d5c7837e579f11e46d311f71ea0b18264e486f3a582ee9a9b85fe"
+    },
+    {
+      "path": "proof/neon-proof-status.json",
+      "sha256": "46467d37315afb23e2b0243f4f2ca5f5064cf6ac03845f59ab3e339bdef22ae3"
+    },
+    {
+      "path": "proof/original-replay-status.json",
+      "sha256": "21cf4a6fc2d0001512508a76d652b6940889bc5cb595b5288ad62447f3594914"
+    },
+    {
+      "path": "proof/originals.json",
+      "sha256": "533a6b3e894f9210c4283b1995e55ba3b9d32067b671f745c0859abaf2472188"
+    },
+    {
+      "path": "proof/record_status.py",
+      "sha256": "0f58786fe135962c6f4096be31ac115d20a63307150f6e3727f087da8bd31a90"
+    },
+    {
+      "path": "proof/relocation-identity.json",
+      "sha256": "98d8dc81a76d9cb31331edee4029b08750c81b9f97aded65af361bac54346dfe"
+    },
+    {
+      "path": "proof/repair-identity.json",
+      "sha256": "57a00e69ec1f8aa2305057304bba357ffb9925bf9b1bc2a9bc9501c3e2489b7e"
+    },
+    {
+      "path": "proof/repair.json",
+      "sha256": "15d02d2102e843e7e573c714e5861ba7f52408ba6c15a4623a7d2981aa5bb352"
+    },
+    {
+      "path": "proof/repair.patch",
+      "sha256": "4ae5a62801a5f62b1b608bd5fdab4f404fa276f0d8e9477bc9300a0bd5c8896d"
+    },
+    {
+      "path": "proof/repaired-replay-status.json",
+      "sha256": "90a522f3ab10ccadd1301a57254e4a27d536bd3e7c710ceaf4e78f6b3d6f57b1"
+    },
+    {
+      "path": "proof/replay-status.json",
+      "sha256": "90a522f3ab10ccadd1301a57254e4a27d536bd3e7c710ceaf4e78f6b3d6f57b1"
+    },
+    {
+      "path": "proof/replay.py",
+      "sha256": "971b94fbf7d5276b18a810adb7c12c214a0b5c435e2628001dbbf6a2fc8e0fbf"
+    },
+    {
+      "path": "proof/rvv-generation-history.json",
+      "sha256": "9e75f727c4699ce573dcb9fd2c69dbca9e6f9112cbd89aef8be87d5c8f1a940a"
+    },
+    {
+      "path": "proof/rvv-generation-status.json",
+      "sha256": "d0081cdfc446fdfa48125a6d3578864100588ffde6588d1694730234462530bd"
+    },
+    {
+      "path": "proof/rvv-memory-provenance.json",
+      "sha256": "b236ddde441d1a99f79e23ecc8aa0a6cb3027f8733f3ab9f5f3f67fab50e82ce"
+    },
+    {
+      "path": "proof/rvv-proof-status.json",
+      "sha256": "c90dde8c39ccf66ba7bc6334d5d191206d410c887e4b1c0e7b60a9d57684b75e"
+    },
+    {
+      "path": "proof/scalar-native-status.json",
+      "sha256": "54e44b307e2ac8f7377a9a1cc2ffadf64e3774bbf86fb300c075383fc16eedc5"
+    },
+    {
+      "path": "proof/self-compare-status.json",
+      "sha256": "fe9dda601982bb09570694def99233fb3e556adc84c23be40e13e14582f4907b"
+    },
+    {
+      "path": "proof/semantics.json",
+      "sha256": "752b35a3c0f8d389ea79a679e73f7c19986f2af06f66758ff3a3d1126320185b"
+    },
+    {
+      "path": "proof/vector-status.json",
+      "sha256": "21ff82b81dcd3552c69dc63fec3d5ed9eb174f4602ee7890768db6fc0a0ac4cd"
+    },
+    {
+      "path": "proof/wrapper-generation-status.json",
+      "sha256": "ca05d4db6b0668171da82d7b12701a130d7e3a4effff31566c72d4ca9ad9b1d0"
+    },
+    {
+      "path": "proof/wrapper-proof-status.json",
+      "sha256": "6fc4b17d1cd1cb53a4452d127963a70b5c89ce43e7ab1ed16e5795aba7e21d30"
+    },
+    {
+      "path": "shim/bits.c",
+      "sha256": "cfa1967f9dac0f951b230636c62bb9c442eb7926c2c49c6fa65f4fac43394ef2"
+    },
+    {
+      "path": "shim/bits.h",
+      "sha256": "6522671935c20d3b90d01c1acc29af5e987ba734c732241ad234178de6b26386"
+    },
+    {
+      "path": "shim/borrow_compare.c",
+      "sha256": "a215b6112b6e9d40962aa5074be006230a4fa05249f83cf0c8aaa7993d789507"
+    },
+    {
+      "path": "shim/borrow_compare.h",
+      "sha256": "7d44286d2cbe5e7868e1781d55d452c72838a9cb88cc55adabf56fbee0fa643a"
+    },
+    {
+      "path": "shim/formal_model.h",
+      "sha256": "2aa46332e6a77f6e85af0501e4bb2253e32e8e2fdc8c8d123e36775ef47da23f"
+    },
+    {
+      "path": "shim/formal_scalar.h",
+      "sha256": "5eca4e6cf0534d2b8359ee8374237ddab0d84fe89891a16abb8021a3feb3e040"
+    },
+    {
+      "path": "shim/formal_types.h",
+      "sha256": "2c23660549ddad2f1ade1f593ce604d0dffd53e9ed8c6cbf4c498f75c3cb1862"
+    },
+    {
+      "path": "shim/formal_vector_model.h",
+      "sha256": "89384a5e55999a086795b53350ca4bceebe5dbf94b2acd0afc93a40e9ccd568e"
+    },
+    {
+      "path": "shim/harness.c",
+      "sha256": "6a343eaf6456b7a9b4a35035fa3b5085544c279508a98f073157da8a5f810c41"
+    },
+    {
+      "path": "shim/memory_neon.c",
+      "sha256": "bc575c46f8a62c41ab8a53a8e0210f2291350a9beedd243f5e660638bf7c82a2"
+    },
+    {
+      "path": "shim/memory_neon.h",
+      "sha256": "a14467533cbc343907d73ac74243ec0ec6e360e299327f3a0233a474471dc64e"
+    },
+    {
+      "path": "shim/memory_rvv.h",
+      "sha256": "675e8f7dc44f93ca71378baadc13081250582da46b0fe47015ae1a748968f9fc"
+    },
+    {
+      "path": "shim/memory_rvv_load.c",
+      "sha256": "58b7a1e09e8b286588a4c1412d9babafb9f6a4c61086b97f3347dfa3be445df9"
+    },
+    {
+      "path": "shim/memory_rvv_store.c",
+      "sha256": "eb201992ab2a0f1a876ee807eaa7995de4937bd06715b7e02d604270046e8da4"
+    },
+    {
+      "path": "shim/neon_frontend.h",
+      "sha256": "ac921261a646b6f23f0153388d00e077e893f641bc6ce0d28756e038cd669f9b"
+    },
+    {
+      "path": "shim/program_model.h",
+      "sha256": "368c8331a88ae82c4c6ac652799705a12bc2c7ac79644ee9bad45f056c80393e"
+    },
+    {
+      "path": "shim/runtime.h",
+      "sha256": "b295e2052a9638440fd1cea46c0f3fd81d569d8c136320227b4690bc69e71632"
+    },
+    {
+      "path": "shim/rvv_control.c",
+      "sha256": "aae56ca9b1fa34f458c312aa60e80a80c6f91a63c9a319f6abb4986b77cfd310"
+    },
+    {
+      "path": "shim/rvv_frontend.h",
+      "sha256": "5a17444c966feeb9a53590fb2721d08c64d8be092429821986aa05989f727ca4"
+    },
+    {
+      "path": "shim/scalar_primitives.c",
+      "sha256": "86d21814a3e0b216f074f86a13946310ee313b07afdf45afde3bab74c022646f"
+    },
+    {
+      "path": "shim/self_compare.c",
+      "sha256": "02d4c80a5f90b982c06987cca2e3a60d83e3ce41c448780671ecb15ce6ed834b"
+    },
+    {
+      "path": "shim/self_compare.h",
+      "sha256": "060966c56cc6754a78b4f69e8d0e066c351832c3f51b73dafa28709410563e53"
+    },
+    {
+      "path": "shim/vector_primitives.c",
+      "sha256": "4fadbaccb987f0428c6d52abf7ecdf55661a886dd7ba55b44b36dec4b97cec8f"
+    },
+    {
+      "path": "shim/vector_primitives.h",
+      "sha256": "ea7fb139da7106b05e506230b2b9f0de1d5d2c6013bba491d8586dcf50b76984"
+    },
+    {
+      "path": "spec.c",
+      "sha256": "a46390a43b6d5f0deea0ae93ef752498e686f1fccb9e90a75b5dbe2a1769a45b"
+    }
+  ],
+  "full_evidence": "proof/full-status.json",
+  "full_evidence_sha256": "b76395aea9aae1202735440754171f1cebd75a79c5f75d97ffc8ee4f48052a83",
+  "generated_source_policy": "Archived CPP and goal snapshots bind identities; every full replay regenerates actual C targets and compiles all required ordinary Coq source afresh."
+}

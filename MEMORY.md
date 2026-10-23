@@ -21,20 +21,20 @@
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
 - `neon_kernel_resume`：s8-clamp 128-lane RVV 实际 C/body/kernel 支援；字节尾部支持已闭合。
 - `minmax_repair_finish`：监控冻结的 FMin 全案重放；推进 s8-clamp。
-- `rvv_kernel_resume`：独立 qs8-f32-vcvt；FMax 已冻结并交 root 做 full。
+- `rvv_kernel_resume`：独立 qs8-f32-vcvt；FMax full 已通过并交 root 发布。
 - root：验收、record_status/audit、发布、progress/memory、Arcadia 修复来源审查。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **8/40**；前一项 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **9/40**；前一项 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 正在运行的全案输入必须冻结：
 
 - VCMUL 已通过：`verification/qcp/verified/f32-vcmul/.build/full-_e5udkje`，原始实现，旧批次 jobs4；11 C 单元/629 字段，123 本地源 + 最终门禁。完整 661 项 Assumptions 已归档。
 - FMin 已通过：`verification/qcp/verified/f32-vmin/.build/full-xlbp0zhc`，RVV 修复版，jobs16；12 C 单元/1188 字段，140 本地源 + 最终门禁。1216 项 Assumptions 已归档。
-- FMax：所有组件通过，root 已启动 full jobs16；具体目录及分工读最新 STATE 和 `.build/team-handoff.json`。
+- FMax 已通过：`verification/qcp/verified/f32-vmax/.build/full-wghluc3i`，RVV 修复版，jobs16；12 C 单元/1188 字段，146 本地源 + 最终门禁。1216 项 Assumptions 已归档。
 
 恢复时检查真实进程和 run/status.json，不因历史 `passed`、单项 Qed 或模块比例推断全案完成；超时/环境错误与反例分开。
 已配置工具 PATH：`.build/simple-kernels-bootstrap/bin:/tmp/qcp-coq820-install/bin:$PATH`；Coq 配置 `.build/simple-kernels-bootstrap/coq-flags.json`。

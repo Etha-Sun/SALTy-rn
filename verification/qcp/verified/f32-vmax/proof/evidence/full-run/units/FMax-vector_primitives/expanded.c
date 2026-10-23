@@ -1,0 +1,209 @@
+/* Fixed scalar-field representation, VLEN=128/SEW=32/LMUL=8, VLMAX=32. */
+/*@ Import Coq Require Import FMax.Types */
+typedef unsigned long long size_t;
+typedef unsigned int uint32_t;
+struct xnn_f32_default_params { char _; };
+typedef struct float32x4_t { float s0; float s1; float s2; float s3; } float32x4_t;
+typedef struct float32x2_t { float s0; float s1; } float32x2_t;
+typedef struct vfloat32m8_t { float s0; float s1; float s2; float s3; float s4; float s5; float s6; float s7; float s8; float s9; float s10; float s11; float s12; float s13; float s14; float s15; float s16; float s17; float s18; float s19; float s20; float s21; float s22; float s23; float s24; float s25; float s26; float s27; float s28; float s29; float s30; float s31; } vfloat32m8_t;
+typedef struct vbool4_t { int s0; int s1; int s2; int s3; int s4; int s5; int s6; int s7; int s8; int s9; int s10; int s11; int s12; int s13; int s14; int s15; int s16; int s17; int s18; int s19; int s20; int s21; int s22; int s23; int s24; int s25; int s26; int s27; int s28; int s29; int s30; int s31; } vbool4_t;
+/*@ Import Coq Require Import FMax.Bits */
+/*@ Extern Coq (same_bits : fp32 -> fp32 -> Prop)
+ (bits_of_fp32 : fp32 -> Z)
+ (fp32_of_bits : Z -> fp32)
+ (word32 : Z -> Z -> Z -> Z -> Z -> Prop)
+ (aligned_4 : Z -> Prop) */
+unsigned int qcp_float_bits(float x)
+/*@ Require emp
+ Ensure __return == bits_of_fp32(x) && emp */;
+float qcp_float_from_bits(unsigned int bits)
+/*@ Require emp
+ Ensure same_bits(__return,fp32_of_bits(bits)) && emp */;
+/*@ Import Coq Require Import FMax.Model */
+/*@ Extern Coq
+ (mm_abs_bits : Z -> Z) (mm_nan_bits : Z -> Z)
+ (mm_snan_bits : Z -> Z) (mm_order_key : Z -> Z)
+ (mm_ordered_bits : Z -> Z -> Z)
+ (mm_arm_bits : Z -> Z -> Z) (mm_rvv_bits : Z -> Z -> Z)
+ (mm_arm : fp32 -> fp32 -> fp32) (mm_rvv : fp32 -> fp32 -> fp32)
+ (mm_canonical_nan : fp32) (mm_rvv_add : fp32 -> fp32 -> fp32)
+ (mm_rvv_ne : fp32 -> fp32 -> Z) */
+/*@ Import Coq Require Import FMax.VectorModel */
+/*@ Extern Coq
+ (mm_active_max : Z -> Z -> fp32 -> fp32 -> fp32)
+ (mm_active_add : Z -> Z -> fp32 -> fp32 -> fp32)
+ (mm_active_ne : Z -> Z -> fp32 -> fp32 -> Z)
+ (mm_active_merge : Z -> Z -> fp32 -> fp32 -> Z -> fp32) */
+unsigned int qcp_fmax_abs_bits(unsigned int u)
+/*@ Require emp Ensure __return == mm_abs_bits(u) && emp */;
+int qcp_fmax_nan_bits(unsigned int u)
+/*@ Require emp Ensure __return == mm_nan_bits(u) && emp */;
+int qcp_fmax_snan_bits(unsigned int u)
+/*@ Require emp Ensure __return == mm_snan_bits(u) && emp */;
+unsigned int qcp_fmax_order_key(unsigned int u)
+/*@ Require emp Ensure __return == mm_order_key(u) && emp */;
+unsigned int qcp_fmax_ordered_bits(unsigned int a,unsigned int b)
+/*@ Require emp Ensure __return == mm_ordered_bits(a,b) && emp */;
+unsigned int qcp_fmax_arm_bits(unsigned int a,unsigned int b)
+/*@ Require emp Ensure __return == mm_arm_bits(a,b) && emp */;
+unsigned int qcp_fmax_rvv_bits(unsigned int a,unsigned int b)
+/*@ Require emp Ensure __return == mm_rvv_bits(a,b) && emp */;
+float qcp_fmax_arm(float a,float b)
+/*@ Require emp Ensure same_bits(__return,mm_arm(a,b)) && emp */;
+float qcp_fmax_rvv(float a,float b)
+/*@ Require emp Ensure same_bits(__return,mm_rvv(a,b)) && emp */;
+float qcp_fmax_rvv_add(float a,float b)
+/*@ Require emp Ensure same_bits(__return,mm_rvv_add(a,b)) && emp */;
+int qcp_fmax_rvv_ne(float a,float b)
+/*@ Require emp Ensure __return == mm_rvv_ne(a,b) && emp */;
+float qcp_fmax_active_max(float a,float b,unsigned long long i,unsigned long long vl)
+/*@ Require 0 <= i && i < 32 && 0 <= vl && vl <= 32 && emp
+ Ensure same_bits(__return,mm_active_max(i,vl,a,b)) && emp */
+{ if (i < vl) return qcp_fmax_rvv(a,b); return qcp_float_from_bits(0U); }
+float qcp_fmax_active_add(float a,float b,unsigned long long i,unsigned long long vl)
+/*@ Require 0 <= i && i < 32 && 0 <= vl && vl <= 32 && emp
+ Ensure same_bits(__return,mm_active_add(i,vl,a,b)) && emp */
+{ if (i < vl) return qcp_fmax_rvv_add(a,b); return qcp_float_from_bits(0U); }
+int qcp_fmax_active_ne(float a,float b,unsigned long long i,unsigned long long vl)
+/*@ Require 0 <= i && i < 32 && 0 <= vl && vl <= 32 && emp
+ Ensure __return == mm_active_ne(i,vl,a,b) && emp */
+{ if (i < vl) return qcp_fmax_rvv_ne(a,b); return 0; }
+float qcp_fmax_active_merge(float a,float b,int mask,unsigned long long i,unsigned long long vl)
+/*@ Require 0 <= i && i < 32 && 0 <= vl && vl <= 32 && emp
+ Ensure same_bits(__return,mm_active_merge(i,vl,a,b,mask)) && emp */
+{
+ if (i < vl) { if (mask == 0) return a; return b; }
+ return qcp_float_from_bits(0U);
+}
+float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)
+ Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)
+ Ensure store(&(__return.s0),float,mm_arm(x0,y0)) * store(&(__return.s1),float,mm_arm(x1,y1)) * store(&(__return.s2),float,mm_arm(x2,y2)) * store(&(__return.s3),float,mm_arm(x3,y3)) */
+{
+ float32x4_t r;
+ r.s0=qcp_fmax_arm(a.s0,b.s0);
+ r.s1=qcp_fmax_arm(a.s1,b.s1);
+ r.s2=qcp_fmax_arm(a.s2,b.s2);
+ r.s3=qcp_fmax_arm(a.s3,b.s3);
+ return r;
+}
+vfloat32m8_t __riscv_vfmax_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,unsigned long long vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (y16:fp32) (y17:fp32) (y18:fp32) (y19:fp32) (y20:fp32) (y21:fp32) (y22:fp32) (y23:fp32) (y24:fp32) (y25:fp32) (y26:fp32) (y27:fp32) (y28:fp32) (y29:fp32) (y30:fp32) (y31:fp32)
+ Require 0 <= vl && vl <= 32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(b.s16),float,y16) * store(&(b.s17),float,y17) * store(&(b.s18),float,y18) * store(&(b.s19),float,y19) * store(&(b.s20),float,y20) * store(&(b.s21),float,y21) * store(&(b.s22),float,y22) * store(&(b.s23),float,y23) * store(&(b.s24),float,y24) * store(&(b.s25),float,y25) * store(&(b.s26),float,y26) * store(&(b.s27),float,y27) * store(&(b.s28),float,y28) * store(&(b.s29),float,y29) * store(&(b.s30),float,y30) * store(&(b.s31),float,y31)
+ Ensure store(&(__return.s0),float,mm_active_max(0,vl,x0,y0)) * store(&(__return.s1),float,mm_active_max(1,vl,x1,y1)) * store(&(__return.s2),float,mm_active_max(2,vl,x2,y2)) * store(&(__return.s3),float,mm_active_max(3,vl,x3,y3)) * store(&(__return.s4),float,mm_active_max(4,vl,x4,y4)) * store(&(__return.s5),float,mm_active_max(5,vl,x5,y5)) * store(&(__return.s6),float,mm_active_max(6,vl,x6,y6)) * store(&(__return.s7),float,mm_active_max(7,vl,x7,y7)) * store(&(__return.s8),float,mm_active_max(8,vl,x8,y8)) * store(&(__return.s9),float,mm_active_max(9,vl,x9,y9)) * store(&(__return.s10),float,mm_active_max(10,vl,x10,y10)) * store(&(__return.s11),float,mm_active_max(11,vl,x11,y11)) * store(&(__return.s12),float,mm_active_max(12,vl,x12,y12)) * store(&(__return.s13),float,mm_active_max(13,vl,x13,y13)) * store(&(__return.s14),float,mm_active_max(14,vl,x14,y14)) * store(&(__return.s15),float,mm_active_max(15,vl,x15,y15)) * store(&(__return.s16),float,mm_active_max(16,vl,x16,y16)) * store(&(__return.s17),float,mm_active_max(17,vl,x17,y17)) * store(&(__return.s18),float,mm_active_max(18,vl,x18,y18)) * store(&(__return.s19),float,mm_active_max(19,vl,x19,y19)) * store(&(__return.s20),float,mm_active_max(20,vl,x20,y20)) * store(&(__return.s21),float,mm_active_max(21,vl,x21,y21)) * store(&(__return.s22),float,mm_active_max(22,vl,x22,y22)) * store(&(__return.s23),float,mm_active_max(23,vl,x23,y23)) * store(&(__return.s24),float,mm_active_max(24,vl,x24,y24)) * store(&(__return.s25),float,mm_active_max(25,vl,x25,y25)) * store(&(__return.s26),float,mm_active_max(26,vl,x26,y26)) * store(&(__return.s27),float,mm_active_max(27,vl,x27,y27)) * store(&(__return.s28),float,mm_active_max(28,vl,x28,y28)) * store(&(__return.s29),float,mm_active_max(29,vl,x29,y29)) * store(&(__return.s30),float,mm_active_max(30,vl,x30,y30)) * store(&(__return.s31),float,mm_active_max(31,vl,x31,y31)) */
+{
+ vfloat32m8_t r;
+ r.s0=qcp_fmax_active_max(a.s0,b.s0,0,vl);
+ r.s1=qcp_fmax_active_max(a.s1,b.s1,1,vl);
+ r.s2=qcp_fmax_active_max(a.s2,b.s2,2,vl);
+ r.s3=qcp_fmax_active_max(a.s3,b.s3,3,vl);
+ r.s4=qcp_fmax_active_max(a.s4,b.s4,4,vl);
+ r.s5=qcp_fmax_active_max(a.s5,b.s5,5,vl);
+ r.s6=qcp_fmax_active_max(a.s6,b.s6,6,vl);
+ r.s7=qcp_fmax_active_max(a.s7,b.s7,7,vl);
+ r.s8=qcp_fmax_active_max(a.s8,b.s8,8,vl);
+ r.s9=qcp_fmax_active_max(a.s9,b.s9,9,vl);
+ r.s10=qcp_fmax_active_max(a.s10,b.s10,10,vl);
+ r.s11=qcp_fmax_active_max(a.s11,b.s11,11,vl);
+ r.s12=qcp_fmax_active_max(a.s12,b.s12,12,vl);
+ r.s13=qcp_fmax_active_max(a.s13,b.s13,13,vl);
+ r.s14=qcp_fmax_active_max(a.s14,b.s14,14,vl);
+ r.s15=qcp_fmax_active_max(a.s15,b.s15,15,vl);
+ r.s16=qcp_fmax_active_max(a.s16,b.s16,16,vl);
+ r.s17=qcp_fmax_active_max(a.s17,b.s17,17,vl);
+ r.s18=qcp_fmax_active_max(a.s18,b.s18,18,vl);
+ r.s19=qcp_fmax_active_max(a.s19,b.s19,19,vl);
+ r.s20=qcp_fmax_active_max(a.s20,b.s20,20,vl);
+ r.s21=qcp_fmax_active_max(a.s21,b.s21,21,vl);
+ r.s22=qcp_fmax_active_max(a.s22,b.s22,22,vl);
+ r.s23=qcp_fmax_active_max(a.s23,b.s23,23,vl);
+ r.s24=qcp_fmax_active_max(a.s24,b.s24,24,vl);
+ r.s25=qcp_fmax_active_max(a.s25,b.s25,25,vl);
+ r.s26=qcp_fmax_active_max(a.s26,b.s26,26,vl);
+ r.s27=qcp_fmax_active_max(a.s27,b.s27,27,vl);
+ r.s28=qcp_fmax_active_max(a.s28,b.s28,28,vl);
+ r.s29=qcp_fmax_active_max(a.s29,b.s29,29,vl);
+ r.s30=qcp_fmax_active_max(a.s30,b.s30,30,vl);
+ r.s31=qcp_fmax_active_max(a.s31,b.s31,31,vl);
+ return r;
+}
+vfloat32m8_t __riscv_vfadd_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,unsigned long long vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (y16:fp32) (y17:fp32) (y18:fp32) (y19:fp32) (y20:fp32) (y21:fp32) (y22:fp32) (y23:fp32) (y24:fp32) (y25:fp32) (y26:fp32) (y27:fp32) (y28:fp32) (y29:fp32) (y30:fp32) (y31:fp32)
+ Require 0 <= vl && vl <= 32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(b.s16),float,y16) * store(&(b.s17),float,y17) * store(&(b.s18),float,y18) * store(&(b.s19),float,y19) * store(&(b.s20),float,y20) * store(&(b.s21),float,y21) * store(&(b.s22),float,y22) * store(&(b.s23),float,y23) * store(&(b.s24),float,y24) * store(&(b.s25),float,y25) * store(&(b.s26),float,y26) * store(&(b.s27),float,y27) * store(&(b.s28),float,y28) * store(&(b.s29),float,y29) * store(&(b.s30),float,y30) * store(&(b.s31),float,y31)
+ Ensure store(&(__return.s0),float,mm_active_add(0,vl,x0,y0)) * store(&(__return.s1),float,mm_active_add(1,vl,x1,y1)) * store(&(__return.s2),float,mm_active_add(2,vl,x2,y2)) * store(&(__return.s3),float,mm_active_add(3,vl,x3,y3)) * store(&(__return.s4),float,mm_active_add(4,vl,x4,y4)) * store(&(__return.s5),float,mm_active_add(5,vl,x5,y5)) * store(&(__return.s6),float,mm_active_add(6,vl,x6,y6)) * store(&(__return.s7),float,mm_active_add(7,vl,x7,y7)) * store(&(__return.s8),float,mm_active_add(8,vl,x8,y8)) * store(&(__return.s9),float,mm_active_add(9,vl,x9,y9)) * store(&(__return.s10),float,mm_active_add(10,vl,x10,y10)) * store(&(__return.s11),float,mm_active_add(11,vl,x11,y11)) * store(&(__return.s12),float,mm_active_add(12,vl,x12,y12)) * store(&(__return.s13),float,mm_active_add(13,vl,x13,y13)) * store(&(__return.s14),float,mm_active_add(14,vl,x14,y14)) * store(&(__return.s15),float,mm_active_add(15,vl,x15,y15)) * store(&(__return.s16),float,mm_active_add(16,vl,x16,y16)) * store(&(__return.s17),float,mm_active_add(17,vl,x17,y17)) * store(&(__return.s18),float,mm_active_add(18,vl,x18,y18)) * store(&(__return.s19),float,mm_active_add(19,vl,x19,y19)) * store(&(__return.s20),float,mm_active_add(20,vl,x20,y20)) * store(&(__return.s21),float,mm_active_add(21,vl,x21,y21)) * store(&(__return.s22),float,mm_active_add(22,vl,x22,y22)) * store(&(__return.s23),float,mm_active_add(23,vl,x23,y23)) * store(&(__return.s24),float,mm_active_add(24,vl,x24,y24)) * store(&(__return.s25),float,mm_active_add(25,vl,x25,y25)) * store(&(__return.s26),float,mm_active_add(26,vl,x26,y26)) * store(&(__return.s27),float,mm_active_add(27,vl,x27,y27)) * store(&(__return.s28),float,mm_active_add(28,vl,x28,y28)) * store(&(__return.s29),float,mm_active_add(29,vl,x29,y29)) * store(&(__return.s30),float,mm_active_add(30,vl,x30,y30)) * store(&(__return.s31),float,mm_active_add(31,vl,x31,y31)) */
+{
+ vfloat32m8_t r;
+ r.s0=qcp_fmax_active_add(a.s0,b.s0,0,vl);
+ r.s1=qcp_fmax_active_add(a.s1,b.s1,1,vl);
+ r.s2=qcp_fmax_active_add(a.s2,b.s2,2,vl);
+ r.s3=qcp_fmax_active_add(a.s3,b.s3,3,vl);
+ r.s4=qcp_fmax_active_add(a.s4,b.s4,4,vl);
+ r.s5=qcp_fmax_active_add(a.s5,b.s5,5,vl);
+ r.s6=qcp_fmax_active_add(a.s6,b.s6,6,vl);
+ r.s7=qcp_fmax_active_add(a.s7,b.s7,7,vl);
+ r.s8=qcp_fmax_active_add(a.s8,b.s8,8,vl);
+ r.s9=qcp_fmax_active_add(a.s9,b.s9,9,vl);
+ r.s10=qcp_fmax_active_add(a.s10,b.s10,10,vl);
+ r.s11=qcp_fmax_active_add(a.s11,b.s11,11,vl);
+ r.s12=qcp_fmax_active_add(a.s12,b.s12,12,vl);
+ r.s13=qcp_fmax_active_add(a.s13,b.s13,13,vl);
+ r.s14=qcp_fmax_active_add(a.s14,b.s14,14,vl);
+ r.s15=qcp_fmax_active_add(a.s15,b.s15,15,vl);
+ r.s16=qcp_fmax_active_add(a.s16,b.s16,16,vl);
+ r.s17=qcp_fmax_active_add(a.s17,b.s17,17,vl);
+ r.s18=qcp_fmax_active_add(a.s18,b.s18,18,vl);
+ r.s19=qcp_fmax_active_add(a.s19,b.s19,19,vl);
+ r.s20=qcp_fmax_active_add(a.s20,b.s20,20,vl);
+ r.s21=qcp_fmax_active_add(a.s21,b.s21,21,vl);
+ r.s22=qcp_fmax_active_add(a.s22,b.s22,22,vl);
+ r.s23=qcp_fmax_active_add(a.s23,b.s23,23,vl);
+ r.s24=qcp_fmax_active_add(a.s24,b.s24,24,vl);
+ r.s25=qcp_fmax_active_add(a.s25,b.s25,25,vl);
+ r.s26=qcp_fmax_active_add(a.s26,b.s26,26,vl);
+ r.s27=qcp_fmax_active_add(a.s27,b.s27,27,vl);
+ r.s28=qcp_fmax_active_add(a.s28,b.s28,28,vl);
+ r.s29=qcp_fmax_active_add(a.s29,b.s29,29,vl);
+ r.s30=qcp_fmax_active_add(a.s30,b.s30,30,vl);
+ r.s31=qcp_fmax_active_add(a.s31,b.s31,31,vl);
+ return r;
+}
+vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t mask,unsigned long long vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (y16:fp32) (y17:fp32) (y18:fp32) (y19:fp32) (y20:fp32) (y21:fp32) (y22:fp32) (y23:fp32) (y24:fp32) (y25:fp32) (y26:fp32) (y27:fp32) (y28:fp32) (y29:fp32) (y30:fp32) (y31:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z) (m16:Z) (m17:Z) (m18:Z) (m19:Z) (m20:Z) (m21:Z) (m22:Z) (m23:Z) (m24:Z) (m25:Z) (m26:Z) (m27:Z) (m28:Z) (m29:Z) (m30:Z) (m31:Z)
+ Require 0 <= vl && vl <= 32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(b.s16),float,y16) * store(&(b.s17),float,y17) * store(&(b.s18),float,y18) * store(&(b.s19),float,y19) * store(&(b.s20),float,y20) * store(&(b.s21),float,y21) * store(&(b.s22),float,y22) * store(&(b.s23),float,y23) * store(&(b.s24),float,y24) * store(&(b.s25),float,y25) * store(&(b.s26),float,y26) * store(&(b.s27),float,y27) * store(&(b.s28),float,y28) * store(&(b.s29),float,y29) * store(&(b.s30),float,y30) * store(&(b.s31),float,y31) * store(&(mask.s0),int,m0) * store(&(mask.s1),int,m1) * store(&(mask.s2),int,m2) * store(&(mask.s3),int,m3) * store(&(mask.s4),int,m4) * store(&(mask.s5),int,m5) * store(&(mask.s6),int,m6) * store(&(mask.s7),int,m7) * store(&(mask.s8),int,m8) * store(&(mask.s9),int,m9) * store(&(mask.s10),int,m10) * store(&(mask.s11),int,m11) * store(&(mask.s12),int,m12) * store(&(mask.s13),int,m13) * store(&(mask.s14),int,m14) * store(&(mask.s15),int,m15) * store(&(mask.s16),int,m16) * store(&(mask.s17),int,m17) * store(&(mask.s18),int,m18) * store(&(mask.s19),int,m19) * store(&(mask.s20),int,m20) * store(&(mask.s21),int,m21) * store(&(mask.s22),int,m22) * store(&(mask.s23),int,m23) * store(&(mask.s24),int,m24) * store(&(mask.s25),int,m25) * store(&(mask.s26),int,m26) * store(&(mask.s27),int,m27) * store(&(mask.s28),int,m28) * store(&(mask.s29),int,m29) * store(&(mask.s30),int,m30) * store(&(mask.s31),int,m31)
+ Ensure store(&(__return.s0),float,mm_active_merge(0,vl,x0,y0,m0)) * store(&(__return.s1),float,mm_active_merge(1,vl,x1,y1,m1)) * store(&(__return.s2),float,mm_active_merge(2,vl,x2,y2,m2)) * store(&(__return.s3),float,mm_active_merge(3,vl,x3,y3,m3)) * store(&(__return.s4),float,mm_active_merge(4,vl,x4,y4,m4)) * store(&(__return.s5),float,mm_active_merge(5,vl,x5,y5,m5)) * store(&(__return.s6),float,mm_active_merge(6,vl,x6,y6,m6)) * store(&(__return.s7),float,mm_active_merge(7,vl,x7,y7,m7)) * store(&(__return.s8),float,mm_active_merge(8,vl,x8,y8,m8)) * store(&(__return.s9),float,mm_active_merge(9,vl,x9,y9,m9)) * store(&(__return.s10),float,mm_active_merge(10,vl,x10,y10,m10)) * store(&(__return.s11),float,mm_active_merge(11,vl,x11,y11,m11)) * store(&(__return.s12),float,mm_active_merge(12,vl,x12,y12,m12)) * store(&(__return.s13),float,mm_active_merge(13,vl,x13,y13,m13)) * store(&(__return.s14),float,mm_active_merge(14,vl,x14,y14,m14)) * store(&(__return.s15),float,mm_active_merge(15,vl,x15,y15,m15)) * store(&(__return.s16),float,mm_active_merge(16,vl,x16,y16,m16)) * store(&(__return.s17),float,mm_active_merge(17,vl,x17,y17,m17)) * store(&(__return.s18),float,mm_active_merge(18,vl,x18,y18,m18)) * store(&(__return.s19),float,mm_active_merge(19,vl,x19,y19,m19)) * store(&(__return.s20),float,mm_active_merge(20,vl,x20,y20,m20)) * store(&(__return.s21),float,mm_active_merge(21,vl,x21,y21,m21)) * store(&(__return.s22),float,mm_active_merge(22,vl,x22,y22,m22)) * store(&(__return.s23),float,mm_active_merge(23,vl,x23,y23,m23)) * store(&(__return.s24),float,mm_active_merge(24,vl,x24,y24,m24)) * store(&(__return.s25),float,mm_active_merge(25,vl,x25,y25,m25)) * store(&(__return.s26),float,mm_active_merge(26,vl,x26,y26,m26)) * store(&(__return.s27),float,mm_active_merge(27,vl,x27,y27,m27)) * store(&(__return.s28),float,mm_active_merge(28,vl,x28,y28,m28)) * store(&(__return.s29),float,mm_active_merge(29,vl,x29,y29,m29)) * store(&(__return.s30),float,mm_active_merge(30,vl,x30,y30,m30)) * store(&(__return.s31),float,mm_active_merge(31,vl,x31,y31,m31)) */
+{
+ vfloat32m8_t r;
+ r.s0=qcp_fmax_active_merge(a.s0,b.s0,mask.s0,0,vl);
+ r.s1=qcp_fmax_active_merge(a.s1,b.s1,mask.s1,1,vl);
+ r.s2=qcp_fmax_active_merge(a.s2,b.s2,mask.s2,2,vl);
+ r.s3=qcp_fmax_active_merge(a.s3,b.s3,mask.s3,3,vl);
+ r.s4=qcp_fmax_active_merge(a.s4,b.s4,mask.s4,4,vl);
+ r.s5=qcp_fmax_active_merge(a.s5,b.s5,mask.s5,5,vl);
+ r.s6=qcp_fmax_active_merge(a.s6,b.s6,mask.s6,6,vl);
+ r.s7=qcp_fmax_active_merge(a.s7,b.s7,mask.s7,7,vl);
+ r.s8=qcp_fmax_active_merge(a.s8,b.s8,mask.s8,8,vl);
+ r.s9=qcp_fmax_active_merge(a.s9,b.s9,mask.s9,9,vl);
+ r.s10=qcp_fmax_active_merge(a.s10,b.s10,mask.s10,10,vl);
+ r.s11=qcp_fmax_active_merge(a.s11,b.s11,mask.s11,11,vl);
+ r.s12=qcp_fmax_active_merge(a.s12,b.s12,mask.s12,12,vl);
+ r.s13=qcp_fmax_active_merge(a.s13,b.s13,mask.s13,13,vl);
+ r.s14=qcp_fmax_active_merge(a.s14,b.s14,mask.s14,14,vl);
+ r.s15=qcp_fmax_active_merge(a.s15,b.s15,mask.s15,15,vl);
+ r.s16=qcp_fmax_active_merge(a.s16,b.s16,mask.s16,16,vl);
+ r.s17=qcp_fmax_active_merge(a.s17,b.s17,mask.s17,17,vl);
+ r.s18=qcp_fmax_active_merge(a.s18,b.s18,mask.s18,18,vl);
+ r.s19=qcp_fmax_active_merge(a.s19,b.s19,mask.s19,19,vl);
+ r.s20=qcp_fmax_active_merge(a.s20,b.s20,mask.s20,20,vl);
+ r.s21=qcp_fmax_active_merge(a.s21,b.s21,mask.s21,21,vl);
+ r.s22=qcp_fmax_active_merge(a.s22,b.s22,mask.s22,22,vl);
+ r.s23=qcp_fmax_active_merge(a.s23,b.s23,mask.s23,23,vl);
+ r.s24=qcp_fmax_active_merge(a.s24,b.s24,mask.s24,24,vl);
+ r.s25=qcp_fmax_active_merge(a.s25,b.s25,mask.s25,25,vl);
+ r.s26=qcp_fmax_active_merge(a.s26,b.s26,mask.s26,26,vl);
+ r.s27=qcp_fmax_active_merge(a.s27,b.s27,mask.s27,27,vl);
+ r.s28=qcp_fmax_active_merge(a.s28,b.s28,mask.s28,28,vl);
+ r.s29=qcp_fmax_active_merge(a.s29,b.s29,mask.s29,29,vl);
+ r.s30=qcp_fmax_active_merge(a.s30,b.s30,mask.s30,30,vl);
+ r.s31=qcp_fmax_active_merge(a.s31,b.s31,mask.s31,31,vl);
+ return r;
+}
