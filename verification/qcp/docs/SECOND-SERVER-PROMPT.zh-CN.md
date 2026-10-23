@@ -1,59 +1,201 @@
-你是本项目第二台服务器的实施负责人。请跟进 leader 已发布的进度并实际继续实施；保留你已有的分支、工作树、未提交成果和已领取任务，不要重新开一套平行框架。
+# 给另一台服务器 agent 的完整接续 prompt
 
-仓库：https://github.com/Etha-Sun/SALTy-rn
-集成分支：c-shim-v2
-最低参考基线：4809a7fc9487f88e03ab4511735b3f51256fd91d（同时读取集成分支最新提交与检查记录）
-协调板：https://github.com/Etha-Sun/SALTy-rn/pull/1
-已有环境PR：https://github.com/Etha-Sun/SALTy-rn/pull/2
+你是 SALTy-rn 的 QCP kernel 验证实施负责人。请直接接续现有 verified 框架，实际验证更多 kernel，目标是逐项处理完整40项。不要重新搭另一套框架，也不要为了凑40/40而改变原程序、intrinsic语义或输出关系。若原版本不等价，交付反例与独立修复候选，而不是伪造证明。
 
-本指令更新此前的交接：新的优先路线是保留原kernel的C调用、赋值和控制流，只改shim、加证明注释。旧pointer/out调用改写路线保留为历史参考，不要默认把kernel再改写一遍。
+## 1. 仓库、基线与工作方式
 
-审核结构已按用户新要求整理到 `verification/qcp/verified/f32-vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `verified/f32-vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。 `proof/c/` 现仅保留Inv/Assert注释JSON与策略，重复C模板及spec-preamble.txt已删除；生成器从live spec.c提取全部函数/合同/前缀，不要再维护模板副本。
-当前已完成 VADD/VSUB/VMUL/VDIV/VMULC 五例，统一位于 `verification/qcp/verified/`，以该目录 manifest.json 为准。前四例各11个C单元、87个本地Coq模块及FinalCheck通过；VMULC为12单元、110普通模块及两个gate，统一fresh闭包通过。总并发预算32，每例native430例；C-shim模块化等价性记为5/40，真实ISA对应及终止性另列。平方根仍是未验证候选。leader已完成VMULC并于50%额度停止扩展；worker继续GEMM/环境等已领取任务，先读协调板避免重复。独立重放时以新目录为入口。
+- 仓库： https://github.com/Etha-Sun/SALTy-rn
+- 集成分支：`c-shim-v2`，完整已发布基线：`51fd96df027a188a1e10019eb53195999a107062`。取该分支最新提交，并确认包含本基线；旧 `main`、Sail研究分支不是本任务入口。
+- 协调板： https://github.com/Etha-Sun/SALTy-rn/pull/1
+- 环境工作PR： https://github.com/Etha-Sun/SALTy-rn/pull/2 。读取其最新内容再判断是否可用，不能把“已有PR”当作环境已独立重建成功。
+- 原始40对代码及来源：`kernels/source/*.c`、`kernels/target/*.c`；固定上游 `be16280c7812a7459c26c3ce82a47339a3d07718`，逐项身份见 `verification/qcp/catalog.json`。该上游补齐四个target，完整清单为40，不能再按37项统计。
+- leader原工作树为 `/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework`；这是来源路径，不要求你的服务器使用同一绝对路径。
 
-一、同步并理解当前成果
+先保存你已有分支、未提交文件、工作树和已领取任务，再fetch最新集成分支；用正常merge等保留历史的方式同步。新任务使用 `codex/worker-<task>`；不要直接推集成分支、强推、自动merge或覆盖其他agent的工作。可以在自己任务分支提交和push，按kernel或独立共享能力开PR，base=`c-shim-v2`。
 
-1. git fetch origin，核对 origin/c-shim-v2 已包含上述完整SHA；后续基于其最新已发布提交工作。已有worker分支先保存工作，再用正常merge等保留历史的方式吸收集成进度，不强推、不覆盖别人改动；没有工作分支才创建 codex/worker-<task>。不要直接推c-shim-v2或自行merge PR。
-2. 先读 verification/qcp/verified/f32-vadd/README.zh-CN.md、spec.c、proof/review-status.json 和 proof/status.json（具体通过范围以实际记录为准），再读 verification/qcp/CHECKPOINT.zh-CN.md，以及：
-   - experiments/byvalue-vadd/README.zh-CN.md、replay-status.json、replay.py；
-   - experiments/byvalue-rvv/README.zh-CN.md、replay-status.json；
-   - docs/ROADMAP.zh-CN.md、docs/COORDINATION.zh-CN.md、docs/CSIM-REPAIRS.zh-CN.md、docs/coordination.json；
-   - catalog.json 与你当前任务、环境PR的最新评论。
-3. 最新已实际通过：NEON原调用形式118个kernel C VC、26个shim C VC；RVV原调用形式45个循环/helper C VC、11个按值外壳VC（正式load/add用8个）；已有equivalent调用方9个C VC；NEON430组native对照。统一入口6阶段全部退出0：
-   python3 verification/qcp/experiments/byvalue-vadd/replay.py
-4. 这是既定QCP/C shim下的模块化部分正确性。新 proof/check.py 从空输出目录重建87个本地Coq模块，不读取旧实验.vo；审核spec是真实输入，全局声明骨架和kernel token/契约均有检查。C-shim等价性与真实ISA对应分开计数；真实ISA对应、终止性、任意VLEN都不在已完成范围，不把局部VC数相加当作整核计数。
+先读协调板最新CLAIM，再发布自己的OWNER/BASE/HEAD/PATHS。已有worker正在做GEMM和环境修复时，保留其任务，其他agent并行领取简单kernel。不要因leader不回复而停止无冲突工作。
 
-二、优先复用的实现与已知边界
+## 2. 现状：5/40，接受范围必须准确
 
-- 原始两侧kernel、公开spec.h/mapper.c和冻结输入保持不变。注释副本必须复用既有freeze/token检查，确认只新增证明注释。不要修改普通C去消除证明困难。
-- load/add/get可以保留struct按值接口；调用后的where是QCP注释。store采用shim宏，内部借用局部向量地址并调用已有pointer-store。原kernel继续写原intrinsic调用；不能声称shim内部完全没有指针。
-- 当前store宏只支持局部向量左值，不能无条件处理store(p,add(a,b))等一般表达式。重复输入add(a,a)、mask/tuple、位重解释、不同元素类型及VL配置都需实际检查，不能从VADD推断所有kernel已兼容。
-- 纯按值store在QCP生成的循环资源中出现同地址written与undef重复。失败记录已保留；不要利用矛盾前件强行闭合证明。优先复用已通过的宏方案；要扩展其模式时先给最小正反例。
-- 复用 shared/vadd、vadd-rvv 的具体primitive、数组拆拼、循环模型、FastFrame，以及新byvalue目录中的复制/地址归一化策略。96字段的盲目entailer/setoid重写曾很慢；已有FastFrame直接构造分离合取证明。先归一化typed aggregate地址，并在必要时恢复纯条件的andp结合方式。
-- wrapper/spec生成继续采用小模板与简单模式匹配，未知模式明确拒绝。不做通用编译器、DSL或复杂插件架构。人工审查面采用新的impl原始文件与spec.c；比较函数、wrapper及其前后置条件放在同一个审核文件。共享shim/宏/模型需另行审查一次，审核清单见 shared/c-shim/f32/README.zh-CN.md；该清单也链接仍位于proof/coq内的语义定义。
-- equivalent必须真实调用两侧并比较输出，post同时明确要求return==1和输出关系（VADD为outputs_related），不能只把return1当成等价性。compare_outputs当前只证明已等价输入返回1，不宣称已证明它对任意不等输入都返回0。输入域、padding、允许alias和写入frame必须完整。
+权威机器清单为 `verification/qcp/verified/manifest.json`，已有：
 
-三、你的接续任务
+| kernel | 完整证据 |
+|---|---|
+| f32-vadd、f32-vsub、f32-vmul、f32-vdiv | 每案11个实际C单元、8组策略、87个普通本地Coq模块及FinalCheck通过；每案native430例 |
+| f32-vmulc | 12个实际C单元、605个C VC；87个fresh共享依赖模块+23个本案普通模块，另两个gate；最终12个VC_Correct绑定通过；native430例 |
 
-A. 优先收尾现有环境PR #2。读取leader两条REVIEW，处理显式Dune/in-place布局选择、与固定HEAD比较并检测staged/untracked的Coq源变化、release归档的源清单/构建来源。覆盖新byvalue重放入口，但不要批量重写其C/proof。当前runner仍依赖leader路径与已配置QCP/Coq；环境失败不能记为proof失败。版本/工具与库源哈希必须准确，不能用一份.vo哈希替代依赖闭包证明。
-B. 环境可用后，独立重放新 `python3 verification/qcp/verified/f32-vadd/proof/check.py --jobs 32`（支持--config；并发按服务器资源选择）及native.py，把新日志和环境身份放在你自己的run目录，保留leader历史记录。可提交最小移植补丁；旧mapper转换不再是新入口的验收要求，真实ISA对应仍单独列明。
-C. 主实施范围为尚未验证且未由leader领取的kernel；VADD case和leader的byvalue试点目录默认只读。继续你已CLAIM的M1-packed/FMA等独立任务，不必等leader再开工。按ROADMAP推进，优先u8-vclamp与新三个矩阵target：qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32；同时规划f32-gemm-minmax。先明确packed布局/单位、整数wrap、FMA单次舍入、NaN/minmax及tail，再证明实际完整循环。
-D. 在独立case/共享候选目录实施。共享库改动单独小PR；每个kernel单独PR，base=c-shim-v2。新case先给原始来源SHA、简单可审查的spec/mapper，再给primitive真实body、内外循环和实际比较器的证明闭包。CSim修复先重放反例，作为独立repaired版本，不能静默修改原版。
+这些是公开契约下的 **C-shim模块化部分正确性**。真实ISA到shim的形式对应、任意VLEN、完整程序终止性尚未证明，不得用“无条件原始机器代码正确”描述。记录继承的QCP/Coq/Flocq假设；“没有新增公理”不等于“整个项目无公理”。
 
-四、持续跟进与通信
+VMULC关键证据：`verified/f32-vmulc/proof/status.json` → `full-status.json`；原NEON111 VC、原RVV42 VC、新primitive102 VC分别通过，最终全调用闭包也通过。其B缓冲区仅需一个float，不能误套成第二个n元素输入。605包含多个实际C单元，不能再把各分项重复加进去。
 
-现在立即读取协调PR #1和你自己的任务PR最新评论，发布一次CLAIM/进度回复：你读到的BASE、当前HEAD、拥有PATHS、下一步与验收命令。以后每30分钟fetch集成分支并读取协调板及相关PR，跟进leader新CHECKPOINT和评审；正在运行证明时先完成可保存的小步骤。无变化保持安静；仅任务领取、阻塞、可审结果或新评审时发CLAIM/BLOCKED/READY_FOR_REVIEW/REVIEW/RELEASE。
+`candidates/f32-vsqrt`仍未验证：模型编译与native156例通过，但当前QCP缺checked sqrt原语/实现；仅声明外部sqrtf合同能产生VC，不能消除实现义务。
 
-使用你服务器自己的真实可用定时器/自动化，并确认已运行；不能把“我会定期查”当作已启动。若已有worker心跳，检查并更新其prompt而非重复部署。leader的local_thread和heartbeat配置不适用于你的服务器，不覆盖它们。leader本机心跳仍停止；用户已取消本轮60%暂停限制，旧60%/70%等待规则均不用于本轮。你遵循自己服务器最新用户设置与真实额度，不共享凭据或额度，也不假定leader会每30分钟回复。没有收到leader回复不阻塞你推进无冲突任务。
+旧Frama-C/CSim有效清单为16项，另有隔离旧结果；这些只能供参考，不能转记为QCP通过。上述五个此前也有Frama-C结果，本次为独立QCP检查。CSim引用路径、模型修复和原版/修复版差异见 `catalog.json`、`docs/CSIM-REPAIRS.zh-CN.md`。
 
-状态格式：
+## 3. 必须沿用的目录与人工审核入口
+
+开发中的kernel放在 `verification/qcp/candidates/<完整kernel名>/`；只有完整通过才物理移入 `verification/qcp/verified/<完整kernel名>/`。
+
+```text
+<kernel>/
+  impl/
+    testNEON.c              原始NEON文件，逐字保留
+    testRVV.c               原始RVV文件，逐字保留
+  spec.c                    唯一公开函数与kernel契约入口
+  contracts/                可选：短逻辑绑定头；不复制spec里的函数合同
+  shim/                     本案公开的类型、intrinsic实现/合同、调用适配
+  README.md                 输入域、观察标准、硬件配置、命令、完成与开放边界
+  proof/
+    c/                      仅Inv/Assert注释位置与策略；不放旧C函数体/旧合同
+    coq/                    有组织的Coq定义、策略证明、kernel/helper证明及最终gate
+    *.py                    小而直接的生成/检查脚本
+    manifest.json           精确源文件、模型、依赖、单元与模块身份
+    status.json             统一结果入口；引用详细完整检查记录
+    evidence/               必要日志、失败及修复来源，不放工具二进制/大缓存
+  .build/                   自动生成的完整C验证副本、CPP、goals、编译产物与运行目录；忽略提交
+```
+
+人首先审核 `impl` 两文件、`spec.c`、公开 `shim/contracts`，并审核它们引用的Coq语义定义。语义定义即使位于proof/coq，也不是免审内容。`contracts/*.h`通常只是Import/Extern逻辑绑定；真正前后置条件在spec和intrinsic函数注释里，逻辑含义还在Coq定义中。
+
+`spec.c`包含比较helpers、实际调用两侧的`equivalent`与前后置条件。wrapper形式不必固定，可采用已通过的compare_outputs形式。公开post必须明确 `return==1` **以及输出之间的关系**、输入保持与合法写区域。不能只证明比较器在假设两数组已相等时返回1，就宣称kernel等价。
+
+完整生成副本必须直接从当前impl/spec/shim生成。禁止在proof/c或Python字符串中藏另一份旧kernel函数体、旧Require/Ensure模板来替代公开入口。Inv/Assert/where等证明注释可以单独生成；不变量不是用户输入前提。未知模式明确拒绝，不默默降级。
+
+## 4. 当前intrinsic按值返回的机制
+
+问题并非“QCP完全不能返回struct”。早期带lane数组的向量表示及按值资源交接难处理；当前已验证表示为固定标量字段：
+
+```c
+struct float32x4_t { float s0, s1, s2, s3; };
+/* typedef在shim中提供 */
+float32x4_t vaddq_f32(float32x4_t a, float32x4_t b) {
+  float32x4_t r;
+  r.s0=a.s0+b.s0; r.s1=a.s1+b.s1;
+  r.s2=a.s2+b.s2; r.s3=a.s3+b.s3;
+  return r;
+}
+```
+
+load/add/sub/mul/div/get等可以按值参数、按值返回。RVV目前用32个标量字段表示相应配置的向量。原kernel继续写原来的赋值与调用，不把原代码改成pointer/out或SSA副本。
+
+store通过shim宏借用局部向量地址：
+
+```c
+#define vst1q_f32(p,a) qcp_vst1q_f32((p), &(a))
+/* RVV同类宏：__riscv_vse32_v_f32m8((p), &(a), (vl)) */
+```
+
+pointer-store的真实C函数体和合同都已检查。原kernel仍调用原store intrinsic；不是“shim里完全没指针”。现宏只支持当前局部向量左值，不能宣称支持 `store(p,add(a,b))`、任意有副作用表达式、mask/tuple或所有元素类型。新形式先做最小真实探针及正反例；保持求值次数、lane顺序、类型、别名和frame。
+
+纯按值store曾产生同地址written与undef重复资源，不能用这种矛盾前件证明任何结果。现有where是QCP注释，不是普通C调用重写。
+
+## 5. Shim语义来源与禁止reward hack的规则
+
+每个新增intrinsic或新配置都要在一个短语义台账里记录：原始intrinsic名、参数/返回类型、NEON或RVV来源、官方文档版本/章节或伪代码链接、所选ISA配置、C实现/合同、对应Coq定义、body proof与ISA对应状态。优先依据Arm官方ACLE/指令伪代码以及RISC-V官方Vector/浮点规范，必要时查固定版本Sail；独立查证两边，不凭相似名字推断相同语义。
+
+**C body满足合同**与**合同忠实描述ISA**是两个问题。前者完整闭合才能计C-shim验证通过；后者需要来源审核和明确剩余形式化边界。不得将未经证实的ISA语义选择隐藏在“已证明”标签中。分别记录 `spec-only`、`body-checked`、`ISA-correspondence-checked`；早期extern合同只能帮助探索caller，不能计完整kernel。
+
+必须保留的真实差别包括：
+
+- ARM NaN传播min/max与RVV minimumNumber/maximumNumber分别建模。不能给它们同一个方便证明的实现。
+- FMA单次舍入；普通乘加两次舍入；保持实际累加顺序与归约树。不能为证明套结合律、交换律或临时放宽精确关系为误差容限。
+- binary32/16精度、舍入、NaN/Inf/±0、quiet/signaling与payload相关位行为、subnormal及架构状态。仅最终观察可忽略被公开规格排除的差别；中间reinterpret/分支/除法不能无条件使用“数值相等或同NaN”替代位语义。
+- 明确符号扩展、截断、wrap、饱和、移位宽度与VXRM；reinterpret不是数值cast。
+- VL/VLMAX、SEW/LMUL、mask/tail policy、inactive lane及读写地址/长度。现有RVV shim把某些不被使用的inactive lane选为+0，只能在当前明确选择/允许的模型下使用；它不是所有真实RVV指令在所有策略下必须写零的证明。若后续代码观察这些lane，必须重新论证选择与ISA规范、调用约束的一致性。
+
+禁止以下取得“成功”的方法：
+
+1. 让两边shim共享一个错误操作以制造相等；例如把sub/mul都解释为add，或让load/store/输出变成常量。
+2. 把post关系定义为True、从前提直接假定最终输出等价、给不可能满足的Require、复制冲突heap资源再用False消去。
+3. 未说明地排除NaN/Inf/零、增加非零除数、固定n=1、限制矩阵为1x8，然后宣称整个原kernel已完成。真实内存/参数/溢出约束需要有接口依据并公开；有限子情况另行标识。
+4. 为消除VC改原始C、改变FMA/归约顺序、移除分支、把完整kernel换成手写功能模型。若必须lower原调用，需独立source-to-model语义桥；仅token对照/native不等于该桥完成。
+5. 用Admitted、新增未证公理、未闭合extern/libm合同、只定义VC_Correct ModuleType、仅生成VC或仅跑native代替完整实现证明。
+6. 把其他ISA的模型当当前ISA规范；照抄CSim旧shim/修复target而不查来源与原反例。
+
+最小验证既要跨两侧对照，也要与独立scalar/位语义oracle或可信语义源对照，防止双方同错。增加有效输入上的错误结果/错误模型控制、源篡改拒绝控制和false目标控制；保留实际结果。它们是回归与身份防线，不是模型一致性或ISA形式对应的完整证明。
+
+## 6. 原始版本、修复版本与40项台账
+
+catalog已记录旧CSim中4个与当前上游target不同的已收录版本：u8-vclamp、f32-vmin、f32-vmax、qs8-vcvt。尤其旧u8-vclamp-v3是在旧空target基础上另写，新上游u8 target须独立验证。其它NaN/FMA/layout/shift等反例与修复见CSIM-REPAIRS文档。
+
+原版本实际不等价时：保存输入、输出、模型/硬件条件及来源，标明 `counterexample`；修复候选另立 `<name>-repaired-<version>`、保留patch及原始文件，单独证明。不得覆盖原target或把修复版的通过计成原版40项全通过。
+
+当前建议按能力分组推进；可并行，不必等GEMM才能证明简单kernel：
+
+| 组 | 完整kernel集合 | 数量 |
+|---|---|---:|
+| 已通过 | f32-vadd、f32-vsub、f32-vmul、f32-vdiv、f32-vmulc | 5 |
+| byte/整数邻近接口 | s8-vclamp、u8-vclamp、qs8-f32-vcvt、qu8-f32-vcvt、qs8-vcvt、qs8-vlrelu | 6 |
+| 其余float逐元素/复数/转换 | f32-vmin、f32-vmax、f32-vlrelu、f32-vrndne、f32-vsqrt、f32-vcmul、f32-f16-vcvt | 7 |
+| 整数归约与量化 | qs8-rsum、qu8-rsum、qs8-rdsum、qu8-rdsum、qs8-vadd-minmax、qu8-vadd-minmax、qs8-vmul-minmax-fp32 | 7 |
+| 布局 | x32-packw-gemm-goi、x32-transposec | 2 |
+| 矩阵/卷积 | f32-gemm-minmax、f32-igemm-minmax、f32-spmm-minmax、f32-conv-hwc2chw、f32-dwconv-minmax、f32-dwconv2d-chw、qd8-f32-qc4w-gemm-minmax、qd8-f32-qc8w-gemm-minmax、qd8-f32-qc8w-igemm-minmax、qs8-qc8w-gemm-minmax-fp32 | 10 |
+| 池化/exp归约 | f32-maxpool、f32-argmaxpool、f32-raddstoreexpminusmax | 3 |
+
+以catalog为机器身份来源，不手抄出重复/遗漏条目。每项保持 `not-started / in-progress / proved / counterexample / tool-gap / environment-blocked`，附显式输入域、原版/修复身份与证据。目标是处理全部40项，不承诺错误原版都存在等价性证明。
+
+已有GEMM worker的最新进度需先读协调板，不可误计：1x8 lowered子情况有局部聚合证明，full-domain caller44项仍依赖两kernel合同；全域原kernel完整证明、19种lowering语义对应等仍开放。部分QCP在scope退出时crash属于工具问题，不是kernel反例，也不允许为避crash缩小公开域。其本地未push成果/环境改动要保留。
+
+## 7. 已积累的省工经验
+
+- `tools/binary_family.py`只支持已经确认形状的SUB/MUL/DIV。原始C字节冻结；同一小生成器同步替换真实C操作和fp32模型，三案无需逐VC手工补Coq。不要无审核扩展为所有操作或把min/max强行放进同一运算语义。
+- 相对VADD的24个shim C/H文件，SUB/MUL/DIV各有13个逐字相同；其余主要是运算/名字/模型绑定变化。现阶段允许各case保留隔离版本，先积累已通过结果，最后再集中抽共享、统一审核。不要现在为完美共享库重构全部已验证case。
+- VMULC比opcode替换多了单数组+广播常量模型。复用map/firstn、有效向量前缀与分段追加lemma，复用已有load/store/数组策略，新的NEON111项合成515行NeonVcs.v；不需每加kernel就从零手写几千行。
+- nth/map默认值必须带in-bounds条件：`0 * c`对NaN/Inf不一定为0，不能用错误默认值等式简化越界情况。
+- 用地址归一化、andp/sepcon结合归一化、FastFrame/fast_cancel及通用数组拆拼，避免对96字段盲目entailer或setoid重写。纯条件先单独lia，heap frame再精确取消；必要时unfold undef struct谓词和消除合法的析取分支。
+- `verified/f32-vadd/proof/automation/`有通用float内存tactic独立原型，已覆盖39个未改VC；它不等于所有kernel不变量自动生成，也不是替换当前正式证明的免审许可。
+- 旧某单VC35s超时，给同一证明120s后成功；区分timeout与真正失败，先用-time定位而非改spec。
+- VMULC各组件独立成功后，FinalCaseCheck发现FastFrame.vo库假设不一致。统一在同一fresh Model/FastFrame环境重编译两个原有primitive模块后才最终通过。公开记录见 `proof/rebind-history.json`、`proof/evidence/`；不能拿source hash相同或.vo存在就跳过统一绑定。
+- `tools/promote_case.py`当前是11单元/87模块二元族的严格迁移器，不是所有未来case的通用工具；VMULC为12单元/110普通模块，不能为适配工具伪造计数。迁移须核对全部实际CPP、Coq源码及调用闭包身份；迁移身份审计不是第二次证明重放。
+- `tools/vmulc_candidate.py`仅初始scaffold，明确不保证逐字重建最终spec。新生成器要保持短小、确定性和模式检查；生成模板的post不能偷偷替代当前公开spec。
+
+## 8. 每个kernel的完整准入标准
+
+依次完成并保留实际新日志：
+
+1. 原source/target来源与hash，impl逐字相同；原始/加注释两路C token及同frontend CPP token一致。额外预处理指令、宏注入、私有Require/Ensure替换必须拒绝。
+2. 简单公开spec，输入输出对象/长度/单位、padding、alias、参数域、overflow、frame、硬件配置与最终观察明确；模型定义有审查入口。比较器合同不偷偷承担原kernel证明。
+3. 所有实际kernel、intrinsic、helper、compare/wrapper的真实C unit清单。遍历全部call，callee合同与已证明body精确绑定，不能只信extern声明；新的assert/vsetvl helper也要覆盖。
+4. 用该次实际C重新生成QCP goals与策略目标；核对checked Coq目标就是这次生成目标。`--no-float-finite-vc`用于当前完整IEEE域路径，不得借有限性默认检查无意缩小域。
+5. 所需Coq依赖先编译，新C VC/策略全部闭合；最终真正实例化每个unit的 `Module ... : <fresh_goal>.VC_Correct := <checked_module>`。ModuleType里有Axiom列表只是接口，不是证明。
+6. 统一fresh依赖环境下的完整门禁，核查生成目标、source/模型hash与logical module一致性。既有共享依赖若复用，必须有精确来源和完整已检查身份；发布验收需fresh重放必要闭包，不使用任意旧实验.vo伪装当前检查。不得把Model/FastFrame同名而不同编译实例混用。
+7. 导出Print Assumptions及显式theorem参数/未证extern/继承假设。Coq显示Closed也不能消除显式参数或C→ISA边界。native、ASan/UBSan和负控制另行记录，不并入形式证明计数。
+8. 全部通过后才移入verified，写README、manifest、status详细指向证据，更新总清单/catalog。不按固定VC数写死判定；区分普通模块、gate和重复编译次数。搬迁后核对实际CPP/Coq源身份，保留历史命令/失败记录，支持新路径重放。
+
+## 9. 环境与并行
+
+先恢复你服务器QCP/Coq环境并验证工具/库源版本与hash，阅读PR2。当前leader用QCP-V2.1.4和配置中的Coq环境；其它研究分支的Coq8.19/Lean环境不能无说明混用。Git只包含来源/脚本/证据，不包含已配置工具链或全部.build缓存。
+
+先在隔离工作树或输出目录重放VADD，保留旧状态；当前标准入口支持：
+
+```sh
+python3 verification/qcp/verified/f32-vadd/proof/check.py --config /your/coq-flags.json --jobs 32
+python3 verification/qcp/verified/f32-vadd/proof/native.py
+```
+
+前四个case支持上述check入口。VMULC有分组件生成/检查与统一check_full.py，读取其README.md、脚本参数及full-status中的真实命令；这些脚本仍含leader路径/默认配置，需做最小环境移植，不能假定全部支持--config或新clone一次运行即成功。移植保留公开C/spec/Coq源，若工具/模型变动则显式记录并重放。不要篡改旧lock/hash把新环境冒充原环境。
+
+验证器总并发上限32，可以按kernel/模块拆并行；不是每个agent各起32。先核实内存并设置合理作业上限，32个作业不表示随时有32个可并行Coq依赖。旧worker声称已探测32×16GiB配置仍需核对本机实际状态，不假定另一台server也有相同资源。一次检查通过后，仅因新变更、失败或明确未决疑点再扩大/重复检查。
+
+leader本机50%停止线仅适用于本机本轮；不要照搬到你服务器，也不要使用leader thread/凭据/额度。按你服务器用户设定运行并记录真实quota；不可用时明确不可查询，不编造百分比。已有心跳保留且避免重复部署；每30分钟读取协调板、集成checkpoint及相关PR，无变化保持安静，有领取/阻塞/结果/新评审才留言。未经本机授权不另造常驻后台任务；不假定leader会定时回复。
+
+## 10. 后续统一共享与交付
+
+用户已同意：先按case继续证明，最后统一抽到共享文件夹，集中审核shim。到共享化阶段，按类型/内存/VL、具体intrinsic、数值/位模型、调用适配组织；每个原语保留来源、合同和证明状态。不能仅按同名或C文本相同合并：相同Extern/Import在不同case可能绑定不同Coq运算模型。抽取后核对绑定、实际验证输入及所有受影响kernel的完整门禁，再更新manifest。不能假定挪文件不改变语义。
+
+每个PR交付：原始身份、公开spec/shim及语义来源、生成器/annotations、Coq证明与真正最终gate、实际命令和新结果、依赖/工具/模型hash、失败及修复来源、剩余边界。不要提交巨大日志、.vo、编译器/solver二进制或认证资料。环境修改与kernel证明分开PR；无合并授权不自行merge。
+
+协调留言格式：
+
+```text
 TYPE: CLAIM | BLOCKED | READY_FOR_REVIEW | REVIEW | RELEASE
-TASK: 任务ID
-OWNER: worker-server
-BASE: 完整SHA
-HEAD: 分支与完整SHA
-PATHS: 拥有路径
-EVIDENCE: 实际命令、结果文件、通过范围
-OPEN: 剩余义务、显式假设、下一步
+TASK: kernel或共享能力
+OWNER: worker名称
+BASE: 集成完整SHA
+HEAD: 分支和完整SHA
+PATHS: 独占目录
+EVIDENCE: 实际命令、结果文件、输入/模型身份、精确通过范围
+OPEN: spec问题 / proof缺口 / 工具限制 / 环境失败 / 实际反例，逐项区分
+```
 
-不要通过finite-only限制、未证extern、Admitted、新公理、删内存条件或放宽观察关系获得成功。区分spec问题、proof缺口、工具限制、环境失败与真实不等。不要购买reset credits、交换认证或换账户绕过额度。交付真实命令与新日志、源/工具/模型身份、Print Assumptions及未完成边界；不伪造已接收/已启动/已证明状态。现在按以上顺序开始，持续推进你拥有的工作。
+现在开始：先同步和读取最新协调信息，保护已有GEMM/环境成果，重放环境与一个verified样例，再将剩余35项按能力分给无冲突agent并持续推进。不要停在计划、native结果或条件性caller；逐项完成真实kernel与全部实现闭包。遇到实际不等价或工具缺口，保存可复现证据并转向其他可推进kernel，不为40/40改写事实。
