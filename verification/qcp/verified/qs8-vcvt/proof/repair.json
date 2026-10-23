@@ -1,0 +1,55 @@
+{
+  "variant": "repaired",
+  "authorization": "User authorized direct implementation repair with retained original source hashes, exact patch, reasons and counterexamples; root assignment continues to at least21 kernels.",
+  "created_utc": "2026-10-23T16:55:19.667025+00:00",
+  "original_neon_sha256": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+  "original_rvv_sha256": "19da29a3dd0c32ac1a44ad5cec73b0e25d81ecd765a60e9a01e6a128c21f4b76",
+  "repaired_neon_sha256": "e37574500b28568dfe482bc8382a078ffe3362b6bb39f9d14e55306d0af9ef46",
+  "repaired_rvv_sha256": "1aee17cd2a10d3ecfd5d6737d64e80e22c77c632430d2210cccfb76770a90d7f",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "f727e131705e36a34a5f76d690231a5c25bccd4d94c9278be7d64cc1c08b76ad",
+  "purposes": [
+    "Remove undefined signed int32 negation at multiplier INT32_MIN using unsigned32 negation then explicit signed16 narrowing; both sides preserve all previously defined results.",
+    "Remove RVV signed32 doubled-product wrap; round the exact signed16 product at15bits before signed16 saturation, as independently required by SQRDMULH."
+  ],
+  "historical_frama_scope": "Original historical spec explicitly excludes multiplier INT32_MIN. No historical proof credit inherited and no such exclusion in the new contract.",
+  "historical_frama_repaired_rvv_sha256": "d1335e78123b25f763ce828db0a7801868632cd25e6588c45acb56f0b2e50074",
+  "arcadia_ref": "4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca",
+  "counterexamples_pending_actual_replay": false,
+  "qcp_verified_at_creation": false,
+  "counterexamples": {
+    "rounding": {
+      "n": 1,
+      "input": [
+        -128
+      ],
+      "input_zero_point": 128,
+      "multiplier": 32768,
+      "output_zero_point": 0,
+      "original_neon": [
+        127
+      ],
+      "original_rvv": [
+        -128
+      ],
+      "repaired_neon": [
+        127
+      ],
+      "repaired_rvv": [
+        127
+      ]
+    },
+    "undefined_negation": {
+      "multiplier": -2147483648,
+      "original_neon_ubsan": true,
+      "original_rvv_ubsan": true,
+      "repaired_outputs": [
+        0,
+        0
+      ]
+    },
+    "evidence": "proof/evidence/original-counterexamples.json",
+    "evidence_sha256": "6e854c9717b5113bcf532ad5ce42686c2f4faf8a527bd8747fcfd4f22e0a1f0a"
+  },
+  "patch_serialization_correction": "Original source/repair bytes unchanged. GNU unified diff retains missing-final-newline markers; malformed historical difflib serialization preserved under proof/history."
+}

@@ -1,0 +1,98 @@
+{
+  "version": 1,
+  "namespace": "Qs8I8Cvt",
+  "scope": "C-shim modular partial correctness; ISA/ABI refinement and termination theorem open",
+  "reviewed_utc": "2026-10-23T17:14:16.014617+00:00",
+  "sources": [
+    {
+      "label": "Arm ACLE Neon Intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "sections": [
+        "Saturating multiply: vqrdmulhq_s16 -> SQRDMULH Vd.8H",
+        "Saturating addition: vqaddq_s16 -> SQADD Vd.8H",
+        "Saturating narrow: vqmovn_s16 -> SQXTN Vd.8B",
+        "Widening subtract, shift left, vector load/store and byte reinterpret"
+      ]
+    },
+    {
+      "label": "Arm A64 ISA aarchmrs v2025-03_rel / pseudocode v2025-03_rel",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "bytes": 15314151,
+      "sections": [
+        "SQRDMULH (vector), page1850: mathematical doubled product, rounding shift, signed saturation",
+        "SQADD and SQXTN signed saturation"
+      ],
+      "downloaded_from_official_arm": true,
+      "private_download": ".build/semantics-downloads/arm-isa-2025-03.pdf"
+    },
+    {
+      "label": "RISC-V Vector extension1.0",
+      "url": "https://docs.riscv.org/reference/isa/extensions/vector/_attachments/riscv-v-spec.pdf",
+      "sections": [
+        "Fixed-point vxrm table: RNU=0, RDN=2",
+        "Vector widening signed multiply, logical left shift, signed saturating add",
+        "Vector narrowing signed clip: round before saturation, mask shift to log2(source_width) bits"
+      ]
+    },
+    {
+      "label": "RISC-V C intrinsics1.0 fixed-point operations",
+      "url": "https://docs.riscv.org/reference/vector-c-intrinsics/overloaded_intrinsic_funcs/03_vector_fixed-point_arithmetic_intrinsics.html"
+    },
+    {
+      "label": "Arm-authored shared ASL RShr, mirrored source document",
+      "url": "https://www.scs.stanford.edu/~zyedidia/arm64/shared_pseudocode.html#impl-shared.RShr.3",
+      "hosting": "Archive mirror, not an official Arm host; primary Arm-authored ASL content, cross-read with official Arm instruction PDF.",
+      "section": "shared/functions/common/RShr",
+      "rule_review": "For round=true and positive shift, add positive half before arithmetic right shift; negative half ties go toward positive infinity."
+    }
+  ],
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "vlen_bits": 128,
+    "sew_lmul": [
+      {
+        "sew": 8,
+        "lmul": 2
+      },
+      {
+        "sew": 16,
+        "lmul": 4
+      },
+      {
+        "sew": 32,
+        "lmul": 8
+      }
+    ],
+    "vlmax": 32,
+    "selected_vl": "min(AVL,32)",
+    "vstart": 0,
+    "input_pad_bytes": 7,
+    "output_pad_bytes": 0,
+    "inactive_lanes": "selected legal zero representative; not a universal policy claim",
+    "observed_state": "output signed-byte equality, input/parameter preservation and spatial frame; FPSR.QC/vxsat are not compared"
+  },
+  "integer_rules": {
+    "neon_subw": "signed16(input_zero - signed8input), wrapping to16bits",
+    "shl7": "retain low16bits of a*128; no saturating left shift",
+    "neon_qrdmulh": "sat16(floor((2*a*b+32768)/65536)); doubled mathematical product is not truncated32",
+    "rvv_wmul": "exact signed16x16->signed32 product",
+    "rvv_clip15": "sat16((p arithmetic-right15)+bit14(p)); equivalently sat16(floor((p+16384)/32768))",
+    "sat_add": "sat16(a+b)",
+    "narrow8": "sat8(a)",
+    "negated_multiplier": "signed16(unsigned32(0-unsigned32(raw_multiplier))); defined for every int32 raw multiplier",
+    "rounding_ties": "SQRDMULH and the selected RNU conversion both use ties toward positive infinity; they are not ties-away-from-zero or RNE."
+  },
+  "model_files": [
+    "proof/coq/Model.v",
+    "proof/coq/ScalarFacts.v"
+  ],
+  "actual_c_sources": [
+    "shim/scalar.c"
+  ],
+  "body_verification_state": "in-progress; no complete component/full-case claim yet",
+  "isa_correspondence_checked": false,
+  "historical_scope": "Frama old spec excluded multiplier INT32_MIN; Arcadia repair is reviewed as provenance, not imported QCP evidence."
+}

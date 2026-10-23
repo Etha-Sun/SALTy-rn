@@ -1,0 +1,72 @@
+{
+  "passed": true,
+  "formal_proof": false,
+  "scope": "Finite actual repaired kernel and scalar-helper hostC replay against independent128bit oracle; array runtime is separate from scalar-field formal vector ABI",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/native-oracle-k5ys061d",
+  "records": [
+    {
+      "label": "build",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim/native_oracle.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/native-oracle-k5ys061d/native"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4152133979368955,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "native",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/native-oracle-k5ys061d/native"
+      ],
+      "exit_code": 0,
+      "seconds": 0.46736622881144285,
+      "log_sha256": "05db656d13b48507d90386b917ec9823b3c070bc004e7d3552ca113161cd6281"
+    },
+    {
+      "label": "bad-model-build",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim/native_oracle.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/native-oracle-k5ys061d/bad-scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/native-oracle-k5ys061d/bad-native"
+      ],
+      "exit_code": 0,
+      "seconds": 0.21482021594420075,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "bad-shared-zero-model",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/native-oracle-k5ys061d/bad-native"
+      ],
+      "exit_code": 13,
+      "seconds": 0.03196467901580036,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "input_sha256": {
+    "shim/native_oracle.c": "bff9900d33351a8680762099c4909771aca2c827d35b58bfafe9bcf57e4bdc21",
+    "shim/runtime.h": "85cdd18173fda4e5b19ee93ce9c863080933eb792915b2cef4fc450a6b80e379",
+    "shim/scalar.c": "783fcc91125d5707754d881447dc0148077c644cc3638763ab5a75823ad00bb2",
+    "shim/scalar.h": "38446c3edd1af4d5989d79aeeef46ffdd10c0c9f8abfd597414e546b704a9e93",
+    "impl/testNEON.c": "e37574500b28568dfe482bc8382a078ffe3362b6bb39f9d14e55306d0af9ef46",
+    "impl/testRVV.c": "1aee17cd2a10d3ecfd5d6737d64e80e22c77c632430d2210cccfb76770a90d7f"
+  },
+  "wrong_shared_zero_model_rejected": true
+}

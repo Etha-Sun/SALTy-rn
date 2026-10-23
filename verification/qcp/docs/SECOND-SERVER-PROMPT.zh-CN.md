@@ -67,7 +67,7 @@ VMULC关键证据：`verified/f32-vmulc/proof/status.json` → `full-status.json
 
 完整生成副本必须直接从当前impl/spec/shim生成。禁止在proof/c或Python字符串中藏另一份旧kernel函数体、旧Require/Ensure模板来替代公开入口。Inv/Assert/where等证明注释可以单独生成；不变量不是用户输入前提。未知模式明确拒绝，不默默降级。
 
-最新新增 qu8-f32-vcvt 修复／兼容版：31实际C单元、1476单元VC字段、61实际body、30策略字段、646本地源+Final共647次fresh普通Coq，1506项假设核对通过；具体公开域和两侧修改原因见对应verified case。正式数量现为12/40，目标至少21。
+最新新增 qu8-f32-vcvt 修复／兼容版：31实际C单元、1476单元VC字段、61实际body、30策略字段、646本地源+Final共647次fresh普通Coq，1506项假设核对通过；具体公开域和两侧修改原因见对应verified case。当时正式数量为12/40。现新增qs8-vcvt两侧修复版：25实际C单元、1664字段、64实际函数、15策略字段、238次fresh普通Coq、1679项最终报告；正式数量13/40，目标至少21。
 
 ## 4. 当前intrinsic按值返回的机制
 

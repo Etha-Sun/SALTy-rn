@@ -1,0 +1,69 @@
+{
+  "passed": true,
+  "scope": "Original actual-C NaN-free integer mismatch and signed negation UB replay, not a formal proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/counterexamples-4u15eaf1",
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim/counterexamples.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/counterexamples-4u15eaf1/probe"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "rounding-counterexample",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/counterexamples-4u15eaf1/probe"
+      ],
+      "exit_code": 0,
+      "log_sha256": "b1f83d1b0db6efc2e9d55c14d414117d76ff873cdb89f6ee62e7755aeb904511"
+    },
+    {
+      "label": "neon-original-ub",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/counterexamples-4u15eaf1/probe",
+        "neon"
+      ],
+      "exit_code": 1,
+      "log_sha256": "eec5e15dda2d2769de87059e4e8a0c386a7b926af4bb90d0a5ab75b2104e82da"
+    },
+    {
+      "label": "rvv-original-ub",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vcvt/.build/counterexamples-4u15eaf1/probe",
+        "rvv"
+      ],
+      "exit_code": 1,
+      "log_sha256": "cfa2fa82f0ddf3ccb686fb06b3c930e42d02022eae7d0ea13d867f6494d59387"
+    }
+  ],
+  "input_sha256": {
+    "shim/runtime.h": "85cdd18173fda4e5b19ee93ce9c863080933eb792915b2cef4fc450a6b80e379",
+    "shim/scalar.c": "783fcc91125d5707754d881447dc0148077c644cc3638763ab5a75823ad00bb2",
+    "shim/scalar.h": "38446c3edd1af4d5989d79aeeef46ffdd10c0c9f8abfd597414e546b704a9e93",
+    "shim/counterexamples.c": "a5610aaa7a5fd3047e74ae8bb0d53b63d9d2df4c1c493c4eaa1a1c983becc985",
+    "impl/testNEON.c": "e37574500b28568dfe482bc8382a078ffe3362b6bb39f9d14e55306d0af9ef46",
+    "impl/testRVV.c": "1aee17cd2a10d3ecfd5d6737d64e80e22c77c632430d2210cccfb76770a90d7f",
+    "proof/original/testNEON.c": "715bd7cd48e9241c1a56b287cbfc2c7e2fbbc100e22226abea93d438b137530d",
+    "proof/original/testRVV.c": "19da29a3dd0c32ac1a44ad5cec73b0e25d81ecd765a60e9a01e6a128c21f4b76"
+  },
+  "original_output": [
+    127,
+    -128
+  ],
+  "repaired_output": [
+    127,
+    127
+  ],
+  "ubsan_reproduced_both_sides": true
+}

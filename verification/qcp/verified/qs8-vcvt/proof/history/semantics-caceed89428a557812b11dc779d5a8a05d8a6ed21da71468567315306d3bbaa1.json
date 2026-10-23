@@ -1,0 +1,138 @@
+{
+  "version": 1,
+  "namespace": "Qs8I8Cvt",
+  "scope": "C-shim modular partial correctness; ISA/ABI refinement and termination theorem open",
+  "reviewed_utc": "2026-10-23T17:14:16.014617+00:00",
+  "sources": [
+    {
+      "label": "Arm ACLE Neon Intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "sections": [
+        "Saturating multiply: vqrdmulhq_s16 -> SQRDMULH Vd.8H",
+        "Saturating addition: vqaddq_s16 -> SQADD Vd.8H",
+        "Saturating narrow: vqmovn_s16 -> SQXTN Vd.8B",
+        "Widening subtract, shift left, vector load/store and byte reinterpret"
+      ]
+    },
+    {
+      "label": "Arm A64 ISA aarchmrs v2025-03_rel / pseudocode v2025-03_rel",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "bytes": 15314151,
+      "sections": [
+        "SQRDMULH (vector), Operation: mathematical doubled product, rounding shift, signed saturation",
+        "SQADD and SQXTN signed saturation"
+      ],
+      "downloaded_from_official_arm": true,
+      "private_download": ".build/semantics-downloads/arm-isa-2025-03.pdf"
+    },
+    {
+      "label": "RISC-V Vector extension1.0",
+      "url": "https://docs.riscv.org/reference/isa/extensions/vector/_attachments/riscv-v-spec.pdf",
+      "sections": [
+        "Fixed-point vxrm table: RNU=0, RDN=2",
+        "Vector widening signed multiply, logical left shift, signed saturating add",
+        "Vector narrowing signed clip: round before saturation, mask shift to log2(source_width) bits"
+      ]
+    },
+    {
+      "label": "RISC-V C intrinsics1.0 fixed-point operations",
+      "url": "https://docs.riscv.org/reference/vector-c-intrinsics/overloaded_intrinsic_funcs/03_vector_fixed-point_arithmetic_intrinsics.html"
+    },
+    {
+      "label": "Arm-authored shared ASL RShr, mirrored source document",
+      "url": "https://www.scs.stanford.edu/~zyedidia/arm64/shared_pseudocode.html#impl-shared.RShr.3",
+      "hosting": "Archive mirror, not an official Arm host; primary Arm-authored ASL content, cross-read with official Arm instruction PDF.",
+      "section": "shared/functions/common/RShr",
+      "rule_review": "For round=true and positive shift, add positive half before arithmetic right shift; negative half ties go toward positive infinity."
+    }
+  ],
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "vlen_bits": 128,
+    "sew_lmul": [
+      {
+        "sew": 8,
+        "lmul": 2
+      },
+      {
+        "sew": 16,
+        "lmul": 4
+      },
+      {
+        "sew": 32,
+        "lmul": 8
+      }
+    ],
+    "vlmax": 32,
+    "selected_vl": "min(AVL,32)",
+    "vstart": 0,
+    "input_pad_bytes": 7,
+    "output_pad_bytes": 0,
+    "inactive_lanes": "selected legal zero representative; not a universal policy claim",
+    "observed_state": "output signed-byte equality, input/parameter preservation and spatial frame; FPSR.QC/vxsat are not compared"
+  },
+  "integer_rules": {
+    "neon_subw": "signed16(input_zero - signed8input), wrapping to16bits",
+    "shl7": "retain low16bits of a*128; no saturating left shift",
+    "neon_qrdmulh": "sat16(floor((2*a*b+32768)/65536)); doubled mathematical product is not truncated32",
+    "rvv_wmul": "exact signed16x16->signed32 product",
+    "rvv_clip15": "sat16((p arithmetic-right15)+bit14(p)); equivalently sat16(floor((p+16384)/32768))",
+    "sat_add": "sat16(a+b)",
+    "narrow8": "sat8(a)",
+    "negated_multiplier": "signed16(unsigned32(0-unsigned32(raw_multiplier))); defined for every int32 raw multiplier",
+    "rounding_ties": "SQRDMULH and the selected RNU conversion both use ties toward positive infinity; they are not ties-away-from-zero or RNE."
+  },
+  "model_files": [
+    "proof/coq/Model.v",
+    "proof/coq/Types.v",
+    "proof/coq/ScalarFacts.v",
+    "proof/coq/MemoryModel.v",
+    "proof/coq/ProgramModel.v",
+    "proof/coq/ProgramFacts.v",
+    "proof/coq/RvvModel.v",
+    "proof/coq/RvvKernelFacts.v",
+    "proof/coq/ComposedModel.v",
+    "proof/coq/ComposedBridge.v",
+    "proof/coq/KernelMemory.v"
+  ],
+  "actual_c_sources": [
+    "shim/scalar.c",
+    "shim/neon_load.c",
+    "shim/neon_store.c",
+    "shim/signed_tail.c",
+    "shim/neon_ext.c",
+    "shim/neon_vdupq_n_s16.c",
+    "shim/neon_vsubw_s8.c",
+    "shim/neon_qcp_qcv_vshlq_n_s16_7.c",
+    "shim/neon_vqrdmulhq_s16.c",
+    "shim/neon_vqaddq_s16.c",
+    "shim/neon_vqmovn_s16.c",
+    "shim/rvv_active.c",
+    "shim/rvv___riscv_vsext_vf2_i16m4.c",
+    "shim/rvv___riscv_vrsub_vx_i16m4.c",
+    "shim/rvv___riscv_vsll_vx_i16m4.c",
+    "shim/rvv___riscv_vwmul_vx_i32m8.c",
+    "shim/rvv___riscv_vnclip_wx_i16m4.c",
+    "shim/rvv___riscv_vsadd_vx_i16m4.c",
+    "shim/rvv___riscv_vnclip_wx_i8m2.c",
+    "shim/rvv_load.c",
+    "shim/rvv_store.c",
+    "shim/neon_composed.c",
+    "impl/testNEON.c",
+    "impl/testRVV.c",
+    "spec.c"
+  ],
+  "body_verification_state": "Results are recorded in component/full proof status and checked ordinary-Coq interfaces; this semantics ledger alone is not a proof.",
+  "isa_correspondence_checked": false,
+  "historical_scope": "Frama old spec excluded multiplier INT32_MIN; Arcadia repair is reviewed as provenance, not imported QCP evidence.",
+  "source_expression_composition": {
+    "scope": "Only three exact pure-variable output/vy/lane0 source expressions, checked by full_inputs/check_neon_composed guards",
+    "construction": "Borrow &vy once; in real adapter C copy all eight Char fields into a local int8x8_t, then evaluate the original canonical nested reinterpret/store expression. Original leaf bodies and all three actual adapters are mandatory typed closure units.",
+    "memory_bridge": "Six universal full/undef-array versus byte-cell equivalences; initialized UChar/Char conversion uses bounded signed roundtrip, never undef-to-initialized conversion.",
+    "ownership": "Borrowed input vector cells are preserved. Direct by-value caller recovery and indirect adapters with duplicate output ownership were rejected and archived. Native tests do not replace C/Coq proof.",
+    "boundary": "No general theorem for side-effectful macro arguments, ISA/ABI compilation refinement or termination."
+  }
+}

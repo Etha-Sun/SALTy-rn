@@ -7,7 +7,7 @@
 
 ## 用户当前要求
 
-- 目标：从当前 12/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
+- 目标：从当前 13/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
 - 新验证批次默认 **16 并发、每进程 16 GiB**，按复杂度设置有限时限；结合服务器可用内存和其他 worker 的实际占用安排多个批次。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -20,15 +20,15 @@
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
 - `neon_kernel_resume`：独占 f32-vrndne 全案。
-- `minmax_repair_finish`：独占 qs8-vcvt，之后 qs8-vlrelu、qs8-vadd-minmax、qu8-vadd-minmax。
+- `minmax_repair_finish`：qs8-vcvt 全案已交付；独占后续 qs8-vadd-minmax、qu8-vadd-minmax。
 - `rvv_kernel_resume`：独占 qu8-rsum 全案；qu8-f32-vcvt 已完整发布。
-- root：qs8-rsum、qs8/qu8-rdsum；统一归档、发布、progress/memory。
+- root：qs8-rsum、qs8-vlrelu、qs8/qu8-rdsum；统一归档、发布、progress/memory。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **12/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **13/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 
@@ -66,6 +66,10 @@ S8 全案证据：`verification/qcp/verified/s8-vclamp/.build/full-r8b58urd`，1
 
 QU8→FP32 全案证据：`verification/qcp/verified/qu8-f32-vcvt/.build/full-kb8mmn44`；31 个实际 C 单元、1476 个 C 字段、61 个函数体，10 组策略／30 字段；646 个本地源加最终门禁共647次普通Coq，1506 项最终假设核对均通过，仍为既有14项继承假设。完整证书 SHA256 `4d07d60a3b0b43357ac87e2bea08baada92c2313cb4cfcbbea089c8ce07643d4`。发布身份审计再次核对全部31个CPP、647个编译源和完整归档，62个递归C输入的UBSan回归通过；发布审计不是第二次形式化证明。
 
-当前 RSUM 分工：root 的 QS8 已完成495个vector/scalar字段、169个byte字段、40个基础scalar字段及9个VL/assert字段；两侧真实函数目标126/46已生成，循环尚待完成。QU8 RSUM由rvv subagent继续。组件不计verified；目标21尚未完成。
+当前 RSUM 分工：root 的 QS8 已恢复真正126字段的完整 NEON 接口，并额外用 fully-qualified Module 别名及126项 Print 实际检查；完整 RVV46 也已通过。此前汇总脚本把117字段的部分模块写入完整模块文件，最终门禁真实拒绝，错误状态/源码/失败运行均已明确保留并撤销，不增加计数。修复后重新执行全部 C/Coq 门禁。QU8 RSUM由rvv subagent继续。组件不计verified；目标21尚未完成。
 
 QU8→FP32 在无私有旧缓存的已配置环境重放前，先运行 `python3 verification/qcp/verified/qu8-f32-vcvt/proof/restore_dependency_receipts.py`。它只按冻结审计中的SHA恢复一份历史UnsignedModel源码／普通编译日志，不恢复.vo，不重放旧证明；随后完整runner仍重新生成并编译所有当前目标。原发布证书保存在pre-replay-support历史中，全案证明本身不变。
+
+QS8→QS8 转换修复版本次正式收录 `verification/qcp/verified/qs8-vcvt/`：25实际C单元/1664字段/64函数体，5策略组15字段，237实际依赖源+Final共238次普通Coq，1679项最终报告只含既有14项继承假设。全案SHA256 `e89ddf39a1d24fa195d990d51428ebd008efc1822e063d0b5a8722f02f1c62f9`。修复INT32_MIN求负和RVV先倍增32位溢出；原件、精确零fuzz补丁、原语义反例都保留。旧ByValue尾部适配产生的重复内存前件已拒绝，新borrowed-copy实际C/13VC和6数组桥均 checked，未把不可满足前件当通过。发布另在干净工作树独立编译真实字段C闭包，两个前端各27496次公开调用/1998725输出元素，双侧共错的临时scalar负控由独立128bit oracle拒绝。发布审计不是第二次形式化证明。
+
+Root 新建 qs8-vlrelu 独立命名空间 Qs8Lrelu：原两侧正/负 multiplier 的4项INT32_MIN UB反例已复现，保留全4个raw int32参数域；GNU精确补丁修复两侧取负。当前仅源码蓝图、数学/有限native阶段，尚无完整kernel证明，不计数。参考157个具体helper源码均须重新生成目标、从源编译；未复用旧对象或验收信用。
