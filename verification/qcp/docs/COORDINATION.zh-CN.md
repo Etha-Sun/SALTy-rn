@@ -1,6 +1,8 @@
 # 双服务器协作约定
 
-2026-10-23 当前更正：U8原始整案已收录；QS8转换的旧 UInt32/native64 错误准入撤回后，现已完成明确unsigned64类型的全案fresh重新验证并恢复verified。八个实际sizeof字段进入26单元/1672 C字段+15策略的统一门禁，240次普通Coq、1687最终Print全部通过，不复用旧32位C对象。当前有效17/40；先fetch最新清单，禁止用其他工作树的旧32位证书覆盖新验收。相关QLR/ADD继续同样的64位重验，不缩域。
+2026-10-23 最新：QS8激活两侧修复版完整64位门禁通过并收录，当前有效18/40（包含U8 clamp）。34实际C单元/2192 C字段+15策略/297普通Coq/2207最终假设报告；四个raw int32参数与64位长度域保留，原件/四项INT32_MIN反例/精确补丁/类型失效历史均归档。QS8/QU8加法、FP16和RDSUM仍由原owner并行推进，组件不增加计数。
+
+2026-10-23 当前更正：U8原始整案已收录；QS8转换的旧 UInt32/native64 错误准入撤回后，现已完成明确unsigned64类型的全案fresh重新验证并恢复verified。八个实际sizeof字段进入26单元/1672 C字段+15策略的统一门禁，240次普通Coq、1687最终Print全部通过，不复用旧32位C对象。恢复转换时有效17/40；先fetch最新清单，禁止用其他工作树的旧32位证书覆盖新验收。QLR现也完成相同64位完整验收，ADD继续推进，不缩域。
 
 用户最新目标为至少21个完整verified kernel。新批次默认16并发、每进程16GiB，时限按任务设置，实际并行批次按服务器可用资源调度；修复主动参考Frama-C和Arcadia-y，保留原因/补丁/反例，无需等待批准。工作恢复入口为本worker的MEMORY.md和私有checkpoint；只在完整验收后更新正式数量。
 
@@ -10,7 +12,7 @@
 [最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳仍停止。用户最新明确取消额度百分比停止限制，
 不再按50%/60%/70%阈值暂停；下文旧额度规则仅保留历史含义。
 worker使用自己已部署的心跳、thread和额度设置，每30分钟读取协调板并跟进新检查点。
-当前17个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
+当前18个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
 用户已接受适合证明的比较函数和wrapper；旧mapper内联形式不再是新入口的验收要求。
 
 集成分支为 `Etha-Sun/SALTy-rn:c-shim-v2`，上游基线 `be16280c7812a7459c26c3ce82a47339a3d07718`。本机工作树为 `build/qcp-kernel-framework`；旧 `build/verified-output-equivalence` 只读参考。GitHub 仓库关闭了 Issues，因此使用一条专门的 draft PR 作协调板；地址登记在本目录的 `coordination.json`。该 PR 仅承载任务状态，不作为功能合并入口。

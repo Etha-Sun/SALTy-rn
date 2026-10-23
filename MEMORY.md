@@ -1,6 +1,8 @@
 # QCP 工作记忆入口
 
-类型宽度更正已完成：旧 QS8 转换准入因 QCP UInt32/native64 不符而撤回；本次使用明确 unsigned64 类型，八个实际 sizeof C 函数及完整26单元/1672 C字段+15策略字段重新生成，240次 fresh 普通 Coq、1687项最终假设审计全部通过，不复用旧32位 C 对象、不缩长度域。已恢复到 `verification/qcp/verified/qs8-vcvt/`。原失效记录与本次 resolution 均保留；QLR/ADD 的相关64位重验仍在进行。当前有效17/40。
+最新：QS8-VLRELU 两侧取负 UB 修复版已完成全64位统一验收，收录 `verification/qcp/verified/qs8-vlrelu/`；当前有效 **18/40**，包含 U8 clamp。34实际C单元/85函数体/2192 C字段+15策略，296依赖源+最终门禁共297次普通Coq，2207项最终假设报告仅既有14项；完整SHA `67e148d97ca3901fe4a6e265c1110bf2fb36df5de629b039e6433b7c684e870d`。公开四个raw int32参数和64位长度域均保留，原四项INT32_MIN反例、补丁与旧32位失效记录归档。干净发布目录重核34 CPP/85函数体和全部源日志，31实际字段provider及公开caller的ASan/UBSan各17940用例、7187700 lane/side，共错负控拒绝；发布检查不计第二次形式化证明。继续 QS8/QU8 加法、FP16 转换及多行归约。
+
+类型宽度更正已完成：旧 QS8 转换准入因 QCP UInt32/native64 不符而撤回；本次使用明确 unsigned64 类型，八个实际 sizeof C 函数及完整26单元/1672 C字段+15策略字段重新生成，240次 fresh 普通 Coq、1687项最终假设审计全部通过，不复用旧32位 C 对象、不缩长度域。已恢复到 `verification/qcp/verified/qs8-vcvt/`。原失效记录与本次 resolution 均保留；QLR 的相关64位重验也已完成，ADD 继续推进。这一段记录恢复QS8转换时的17/40。
 
 先读本文件，再读 [PROGRESS.md](PROGRESS.md) 和 [.build/memory/STATE.json](.build/memory/STATE.json)。
 机器状态由 `python3 .build/memory/checkpoint.py` 刷新；重要变化另加 `--event '简单说明'`。
@@ -9,7 +11,7 @@
 
 ## 用户当前要求
 
-- 目标：从当前 17/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
+- 目标：从当前 18/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
 - 新验证批次默认 **16 并发、每进程 16 GiB**，按复杂度设置有限时限；结合服务器可用内存和其他 worker 的实际占用安排多个批次。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -24,13 +26,13 @@
 - `neon_kernel_resume`：f32-vrndne 已交付并正式收录，独占 f32-f16-vcvt。
 - `minmax_repair_finish`：qs8-vcvt 全案已交付；独占后续 qs8-vadd-minmax、qu8-vadd-minmax。
 - `rvv_kernel_resume`：完成两项 rsum 后，独占 qs8-rdsum、qu8-rdsum；qu8-f32-vcvt 已完整发布。
-- root：qs8-vcvt 类型宽度重验已完成，继续 qs8-vlrelu；统一归档、发布、progress/memory。
+- root：qs8-vcvt 与 qs8-vlrelu 全64位验收已完成；帮助独立数学义务，统一归档、发布、progress/memory。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **17/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **18/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 

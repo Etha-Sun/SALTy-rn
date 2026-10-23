@@ -1,0 +1,23 @@
+From Qs8Lrelu Require Import neon_unit_goal S8ArraysStrategy signed_tail_strategy_proof NeonMemoryStrategy NeonKernelMemory NeonKernelPart00 NeonKernelPart01 NeonKernelPart02 NeonKernelPart03 NeonKernelPart04 NeonKernelPart05 NeonKernelPart06 NeonKernelPart07 NeonKernelPart08 NeonKernelPart09 NeonKernelPart10 NeonKernelPart11 NeonKernelPart12 NeonKernelPart13 NeonKernelPart14 NeonKernelPart15.
+Module CheckedNeonKernel : Qs8Lrelu.neon_unit_goal.VC_Correct.
+Include Qs8Lrelu.S8ArraysStrategy.CheckedS8Arrays.
+Include Qs8Lrelu.signed_tail_strategy_proof.CheckedSignedTailStrategy.
+Include Qs8Lrelu.NeonMemoryStrategy.CheckedNeonMemoryStrategy.
+Include Qs8Lrelu.NeonKernelMemory.CheckedNeonKernelMemory.
+Include Qs8Lrelu.NeonKernelPart00.CheckedNeonKernelPart00.
+Include Qs8Lrelu.NeonKernelPart01.CheckedNeonKernelPart01.
+Include Qs8Lrelu.NeonKernelPart02.CheckedNeonKernelPart02.
+Include Qs8Lrelu.NeonKernelPart03.CheckedNeonKernelPart03.
+Include Qs8Lrelu.NeonKernelPart04.CheckedNeonKernelPart04.
+Include Qs8Lrelu.NeonKernelPart05.CheckedNeonKernelPart05.
+Include Qs8Lrelu.NeonKernelPart06.CheckedNeonKernelPart06.
+Include Qs8Lrelu.NeonKernelPart07.CheckedNeonKernelPart07.
+Include Qs8Lrelu.NeonKernelPart08.CheckedNeonKernelPart08.
+Include Qs8Lrelu.NeonKernelPart09.CheckedNeonKernelPart09.
+Include Qs8Lrelu.NeonKernelPart10.CheckedNeonKernelPart10.
+Include Qs8Lrelu.NeonKernelPart11.CheckedNeonKernelPart11.
+Include Qs8Lrelu.NeonKernelPart12.CheckedNeonKernelPart12.
+Include Qs8Lrelu.NeonKernelPart13.CheckedNeonKernelPart13.
+Include Qs8Lrelu.NeonKernelPart14.CheckedNeonKernelPart14.
+Include Qs8Lrelu.NeonKernelPart15.CheckedNeonKernelPart15.
+End CheckedNeonKernel.

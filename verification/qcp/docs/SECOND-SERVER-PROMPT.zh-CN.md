@@ -1,5 +1,7 @@
 # 给另一台服务器 agent 的完整接续 prompt
 
+2026-10-23 最新完整数量为18/40，包含U8 clamp、全64位重新验收的QS8转换和本次QS8激活修复版；权威清单为 verified/manifest.json。QS8激活全部34实际C单元、297普通Coq、2207项最终假设审计通过，四个原raw int32参数与64位长度域不收缩。继续已有owner的QS8/QU8加法、FP16和RDSUM，默认16并发/每进程16GiB；不要用下面历史9/40表覆盖新清单。
+
 2026-10-23 用户更新：完整验证通过后先 fetch，直接提交并正常 push 到 `c-shim-v2` 的 `verified/`，不再通过功能 PR 发布。可参考 Frama-C 修改本案 `impl/` 后证明修复版，保留修复记录和反例；不必另建修复版目录。下文以本次更新后的规则为准，证明标准不降低。
 
 你是 SALTy-rn 的 QCP kernel 验证实施负责人。请直接接续现有 verified 框架，实际验证更多 kernel，目标是逐项处理完整40项。不要重新搭另一套框架，也不要为了凑40/40而改变原程序、intrinsic语义或输出关系。若原版本不等价，交付反例与独立修复候选，而不是伪造证明。
@@ -17,7 +19,7 @@
 
 先读协调板最新CLAIM，再发布自己的OWNER/BASE/HEAD/PATHS。已有worker正在做GEMM和环境修复时，保留其任务，其他agent并行领取简单kernel。不要因leader不回复而停止无冲突工作。
 
-## 2. 现状：9/40，接受范围必须准确
+## 2. 历史9/40快照，接受范围必须准确
 
 权威机器清单为 `verification/qcp/verified/manifest.json`，已有：
 

@@ -1,0 +1,62 @@
+{
+  "passed": false,
+  "vc_correct_passed": false,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/lrelu-active-qcnx4qax",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/lrelu_active.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/lrelu-active-qcnx4qax/lrelu_active.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01720095402561128,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/lrelu-active-qcnx4qax/lrelu_active.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/lrelu-active-qcnx4qax/generated",
+        "--coq-logic-path=Qs8Lrelu"
+      ],
+      "exit_code": 1,
+      "seconds": 0.065137870144099,
+      "log_sha256": "5683583d30c57f871c582c39f11b6aaef700e83d2d2415c8d3583f18c565c38a"
+    }
+  ],
+  "input_sha256": {
+    "shim/lrelu_active.c": "b605a23085e5e69fb0621f799b6adab78c817350b4fa15c48d8690c553aa7fb0",
+    "shim/lrelu_active.h": "32af8743a2eb482efb887d8c24b32f4e21a481bcb2864c7048325eaff4641e86",
+    "shim/lrelu_selection.h": "56bc7ef3174d1d5301b96e11080470a0f772e3422cc4d3a76d50e92eb32333b8",
+    "shim/rvv_active.h": "e42aa977198f082d11e0c52257c604bb71dc9544c35c7ecbe44a5df8a5f87236",
+    "shim/types.h": "37c038ccd593203059d820aa0e8a16a5a0a889bdf4ac6aad3dd32ca939e8455d",
+    "shim/types_def.h": "56dcd01637a0d1b273314c2aa6d79188a0ddf3a1be76a818a27e6f03cbbfe3b9",
+    "shim/scalar.h": "61c39df0d983a82257f7a68918a30ff08eebf7ef13e9d6e98ee6ac5eb73b61d8",
+    "proof/check_lrelu_active.py": "ccca4ce6e147e1559e72134498913348d9c411995bceb539a54cbde1ada95a17",
+    "proof/coq/Model.v": "2277015608939967aeef120e6114e76476dedc57c2e6a116f147217bd6bc3db3",
+    "proof/coq/Types.v": "8c424880636efd9716f97e366d52fbc03e33808566d9b154b69656a10c9d0df4",
+    "proof/coq/LreluModel.v": "f9e8d8352fdd426d7afb4b8ef3fa52f9843ad8c7928a8e8ee9ba2856476859d5",
+    "proof/coq/RvvModel.v": "eba7d5a436dbab159545e817f78f9552fc7d1ba5717749c7c913cf4f8f15d879",
+    "proof/coq/LreluActiveModel.v": "af0de666d04edf259fdb348abf1a286555d24258e5cdbc6c94ef2e75ce4180e8"
+  },
+  "scope": "Three active-lane compare/splat/merge C helpers under the fixed kernel mask convention; component only",
+  "error": "qcp: Program: `/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/lrelu-active-qcnx4qax/lrelu_active.c`\nStart to parse strategies file common\nFile Path: builtin/common.strategies\nFinish parsing strategies file common\nStart to parse strategies file string_literal\nFile Path: builtin/string_literal.strategies\nFinish parsing strategies file string_literal\nStart to parse function declaration of function qcp_qcv_narrow16\nStart to parse function declaration of function qcp_qcv_asr15\nStart to parse function declaration of function qcp_qcv_asr16\nStart to parse function declaration of function qcp_qcv_sat16\nStart to parse function declaration of function qcp_qcv_sat8\nStart to parse function declaration of function qcp_qcv_seed\nStart to parse function declaration of function qcp_qcv_subw\nStart to parse function declaration of function qcp_qcv_shl7\nStart to parse function declaration of function qcp_qcv_neon_qrdmulh\nStart to parse function declaration of function qcp_qcv_rvv_mul\nStart to parse function declaration of function qcp_qcv_rvv_clip15\nStart to parse function declaration of function qcp_qcv_neon_add\nStart to parse function declaration of function qcp_qcv_rvv_add\nStart to parse function declaration of function qcp_qlr_cmp16\nStart to parse function declaration of function qcp_qlr_cmpbool\nStart to parse function declaration of function qcp_qlr_choose_neon\nStart to parse function declaration of function qcp_qlr_choose_rvv\nStart to parse function declaration of function qcp_qcv_active_sext\nStart to parse function declaration of function qcp_qcv_active_rsub\nStart to parse function declaration of function qcp_qcv_active_shl7\nStart to parse function declaration of function qcp_qcv_active_mul\nStart to parse function declaration of function qcp_qcv_active_clip15\nStart to parse function declaration of function qcp_qcv_active_add\nStart to parse function declaration of function qcp_qcv_active_clip8\nStart to parse function declaration of function __riscv_vsetvl_e8m2\nStart to parse function declaration of function qcp_qlr_active_mask\nStart to parse function declaration of function qcp_qlr_active_splat\nStart to parse function declaration of function qcp_qlr_active_merge\nFunction `qcp_qlr_active_mask`\nEnd of function `qcp_qlr_active_mask`\nFunction `qcp_qlr_active_splat`\nEnd of function `qcp_qlr_active_splat`\nFunction `qcp_qlr_active_merge`\n\u001b[1;31mfatal error: \u001b[0mCannot derive the precondition of function qcp_qlr_choose_rvv for spec (default) in /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/lrelu-active-qcnx4qax/lrelu_active.c:312:41\nFunction call failed because the caller assertion does not entail the callee Require assertion after substituting actual arguments.\nFunction call argument bindings:\n  argument 1: m <- m_1721_pre\n  argument 2: a <- b_1724_pre\n  argument 3: b <- a_1727_pre\nCallee precondition after substituting actual arguments:\nPROP[\n  m_1721_pre == 1;\n  (- 32768) <= b_1724_pre;\n  b_1724_pre <= 32767;\n  (- 32768) <= a_1727_pre;\n  a_1727_pre <= 32767 ]\nLOCAL[]\nSEP[]\n\nCaller current assertion:\nPROP[\n  k_1718_pre < vl_1715_pre;\n  (- 32768) <= a_1727_pre;\n  a_1727_pre <= 32767;\n  (- 32768) <= b_1724_pre;\n  b_1724_pre <= 32767;\n  m_1721_pre == 0;\n  0 <= k_1718_pre;\n  k_1718_pre <= 31;\n  0 <= vl_1715_pre;\n  vl_1715_pre <= 32 ]\nLOCAL[\n  Temp a a_1728_addr;\n  Temp b b_1725_addr;\n  Temp m m_1722_addr;\n  Temp k k_1719_addr;\n  Temp vl vl_1716_addr ]\nSEP[\n  store(a_1728_addr, a_1727_pre, signed int16);\n  store(b_1725_addr, b_1724_pre, signed int16);\n  store(m_1722_addr, m_1721_pre, unsigned I8);\n  store(k_1719_addr, k_1718_pre, unsigned int);\n  store(vl_1716_addr, vl_1715_pre, unsigned int) ]\n\n"
+}

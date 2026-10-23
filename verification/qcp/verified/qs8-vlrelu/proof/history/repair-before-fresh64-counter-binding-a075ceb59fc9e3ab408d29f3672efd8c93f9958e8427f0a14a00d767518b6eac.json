@@ -1,0 +1,93 @@
+{
+  "variant": "both-sides-repaired",
+  "reason": "Both original kernels unconditionally negate the full int32 positive and negative multiplier fields. INT32_MIN negation is undefined before narrowing. Perform defined uint32 negation and explicitly narrow to int16, retaining every raw int32 parameter value.",
+  "counterexample_evidence": "proof/evidence/original-negation.json",
+  "counterexample_evidence_sha256": "24cca6f5631be65a5ae7b1e64a106e7a7a67ae66d45d08cabca613e87bb6bb01",
+  "counterexamples": {
+    "count": 4,
+    "sides": [
+      "neon",
+      "rvv"
+    ],
+    "parameter_fields": [
+      "positive_multiplier",
+      "negative_multiplier"
+    ],
+    "raw_multiplier": -2147483648,
+    "other_multiplier": 0,
+    "input_zero_point": 0,
+    "output_zero_point": 0,
+    "n": 1,
+    "input": [
+      0
+    ],
+    "padding_initialized_zeros": 7,
+    "original_outcome": "UBSan negation of INT32_MIN exit1",
+    "repaired_expected": [
+      0
+    ]
+  },
+  "sides": {
+    "neon": {
+      "original_sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+      "actual_sha256": "7aee07765f5ca9edf95f14e2c2a06a6bde29ef98608369ff492fcf69c85c709f",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "c4923dbb4cfe2f23a3395683f30dcabd563ad2bbcffab21d9db8ba65ab1c23ad"
+    },
+    "rvv": {
+      "original_sha256": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+      "actual_sha256": "24ce6af82b5bf719af001531ce2f25b9b5021df4bfeb29d9274a3fcc8a7240bd",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "afb64564108a6da96e2f1fa62a7029ffe6deb3319df03c42d386cfec5a377408"
+    }
+  },
+  "patch_sha256": "81ba387dfedeb9b8a4ef0a6593f5304199186659bd16e31e2598149cb0501743",
+  "whole_kernel_verified": false,
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "VLEN": 128,
+    "e8m2_e16m4_e32m8_VLMAX": 32,
+    "input_padding": 7,
+    "raw_parameter_domains": "all four fields are int32"
+  },
+  "compatibility": {
+    "kind": "QCP nested-struct-return With-variable inference gap, not semantic counterexample",
+    "side": "neon",
+    "reason": "The original nested vmovq_n_s16(0) argument to vcltq_s16 leaves b_callee uninferred in actual whole-kernel generation. Hoist the same pure constant expression to a const local vzero and reuse it at both calls. No parameter/domain/memory/observation restriction.",
+    "history": "proof/history/neon-vzero-compat-before-88e0e292a4354173",
+    "failed_generation": {
+      "generation_passed": false,
+      "whole_kernel_verified": false,
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/neon-kernel-30dzrci2",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=1024",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/neon-kernel-30dzrci2/neon_unit.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/neon-kernel-30dzrci2",
+        "--coq-logic-path=Qs8Lrelu",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim",
+        "Qs8Lrelu",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/proof/c",
+        "Qs8Lrelu"
+      ],
+      "exit_code": 1,
+      "seconds": 1.4171382680069655,
+      "raw_c_sha256": "88e0e292a4354173ee987dfe5418bbe841b1a21ac31e9c756d3093f31fe41fa4",
+      "same_frontend_cpp_tokens_identical": true,
+      "generated_c_vcs": 0
+    },
+    "failed_qcp_log_sha256": "f62fa741c94b607ac47b1484042a020b06feceba027bc24bff00c662609b56c0",
+    "previous_semantically_repaired_neon_sha256": "88e0e292a4354173ee987dfe5418bbe841b1a21ac31e9c756d3093f31fe41fa4",
+    "semantics": "vmovq_n_s16 actual scalar-field provider duplicates zero into eight signed16 fields and has no heap/frame effects; hoisting this pure fixed constant does not alter output values. Current repaired whole kernel still requires a complete fresh proof."
+  }
+}

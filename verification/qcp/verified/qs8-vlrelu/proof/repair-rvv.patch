@@ -1,0 +1,13 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -10,8 +10,8 @@
+   assert(output != NULL);
+ 
+   const int16_t input_zero_point = (int16_t) params->scalar.input_zero_point;
+-  const int16_t positive_multiplier = (int16_t) -params->scalar.positive_multiplier;
+-  const int16_t negative_multiplier = (int16_t) -params->scalar.negative_multiplier;
++  const int16_t positive_multiplier = (int16_t)(0U-(uint32_t)params->scalar.positive_multiplier);
++  const int16_t negative_multiplier = (int16_t)(0U-(uint32_t)params->scalar.negative_multiplier);
+   const int16_t output_zero_point = (int16_t) params->scalar.output_zero_point;
+ 
+   while (batch > 0) {

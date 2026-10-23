@@ -1,6 +1,8 @@
-当前 **17/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
+当前 **18/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
+
+最新 [QS8 激活修复版](verified/qs8-vlrelu/README.md) 完整64位统一门禁已通过：34实际C单元、2192 C字段+15策略字段、297次普通Coq、2207项最终假设审计；四项原取负UB反例和精确补丁保留。
 
 此前新增 [QU8→FP32 修复／兼容版](verified/qu8-f32-vcvt/README.zh-CN.md) 通过完整统一门禁；当前目标至少21个。QS8 转换已修正类型并完成全64位完整重验，见 verified/qs8-vcvt/。
 

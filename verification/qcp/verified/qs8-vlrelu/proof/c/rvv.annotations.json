@@ -1,0 +1,16 @@
+{
+  "entry_cut": "/*@ Assert Zlength(A)==batch@pre+7 && sizeof(int8_t)==1 && batch%sizeof(int8_t)==0 && batch==batch@pre && input==input@pre && output==output@pre && params==params@pre && 0<batch@pre && batch@pre<=18446744073709551608 && input!=0 && output!=0 && params!=0 && (-2147483647-1)<=RawZ && RawZ<=2147483647 && (-2147483647-1)<=PM && PM<=2147483647 && (-2147483647-1)<=NM && NM<=2147483647 && (-2147483647-1)<=O && O<=2147483647 && CharArray::full(input,batch+7,A) * CharArray::undef_full(output,batch) * store(&(params->scalar.input_zero_point),int,RawZ) * store(&(params->scalar.positive_multiplier),int,PM) * store(&(params->scalar.negative_multiplier),int,NM) * store(&(params->scalar.output_zero_point),int,O) */",
+  "invariant": "/*@ Inv Assert Zlength(A)==batch@pre+7 && sizeof(int8_t)==1 && 0<batch@pre && batch@pre<=18446744073709551608 && 0<=batch && batch<=batch@pre && 0<=batch@pre-batch && input==input@pre+(batch@pre-batch) && ((batch>0 && output==output@pre+(batch@pre-batch)) || batch==0) && params==params@pre && params!=0 && (-2147483647-1)<=RawZ && RawZ<=2147483647 && (-2147483647-1)<=PM && PM<=2147483647 && (-2147483647-1)<=NM && NM<=2147483647 && (-2147483647-1)<=O && O<=2147483647 && input_zero_point==qcv_s16(RawZ) && positive_multiplier==qcv_seed(PM) && negative_multiplier==qcv_seed(NM) && output_zero_point==qcv_s16(O) && CharArray::full(input@pre,batch@pre+7,A) * CharArray::full(output@pre,batch@pre-batch,qlr_values(batch@pre-batch,RawZ,PM,NM,O,A)) * CharArray::undef_full(output,batch) * store(&(params->scalar.input_zero_point),int,RawZ) * store(&(params->scalar.positive_multiplier),int,PM) * store(&(params->scalar.negative_multiplier),int,NM) * store(&(params->scalar.output_zero_point),int,O) */",
+  "where": {
+    "__riscv_vle8_v_i8m2(input, vl)": "base=input@pre,count=batch@pre+7,idx=batch@pre-batch,L=A",
+    "__riscv_vsext_vf2_i16m4(vx, vl)": "a=&vx",
+    "__riscv_vsll_vx_i16m4(vacc, 7, vl)": "a=&vacc",
+    "__riscv_vnclip_wx_i16m4(prod, 15, __RISCV_VXRM_RNU, vl)": "a=&prod",
+    "__riscv_vsadd_vx_i16m4(vacc, output_zero_point, vl)": "a=&vacc",
+    "__riscv_vnclip_wx_i8m2(vacc, 0, __RISCV_VXRM_RDN, vl)": "a=&vacc",
+    "__riscv_vrsub_vx_i16m4(vx_wide, input_zero_point, vl)": "a=&vx_wide",
+    "__riscv_vmslt_vx_i16m4_b4(vacc, 0, vl)": "a=&vacc",
+    "__riscv_vmerge_vxm_i16m4(vneg_mult, positive_multiplier, vmask, vl)": "a=&vneg_mult,m=&vmask",
+    "__riscv_vwmul_vv_i32m8(vacc, vmultiplier, vl)": "a=&vacc,b=&vmultiplier"
+  }
+}

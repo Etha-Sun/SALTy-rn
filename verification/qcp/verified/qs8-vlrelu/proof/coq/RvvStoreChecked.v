@@ -1,0 +1,21 @@
+From Qs8Lrelu Require Import rvv_store_goal S8ArraysStrategy rvv_store_strategy_proof RvvStorePart00 RvvStorePart01 RvvStorePart02 RvvStorePart03 RvvStorePart04 RvvStorePart05 RvvStorePart06 RvvStorePart07 RvvStorePart08 RvvStorePart09 RvvStorePart10 RvvStorePart11 RvvStorePart12 RvvStorePart13 RvvStorePart14 RvvStorePart15.
+Module CheckedRvvStore : Qs8Lrelu.rvv_store_goal.VC_Correct.
+Include Qs8Lrelu.S8ArraysStrategy.CheckedS8Arrays.
+Include Qs8Lrelu.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include Qs8Lrelu.RvvStorePart00.CheckedRvvStorePart00.
+Include Qs8Lrelu.RvvStorePart01.CheckedRvvStorePart01.
+Include Qs8Lrelu.RvvStorePart02.CheckedRvvStorePart02.
+Include Qs8Lrelu.RvvStorePart03.CheckedRvvStorePart03.
+Include Qs8Lrelu.RvvStorePart04.CheckedRvvStorePart04.
+Include Qs8Lrelu.RvvStorePart05.CheckedRvvStorePart05.
+Include Qs8Lrelu.RvvStorePart06.CheckedRvvStorePart06.
+Include Qs8Lrelu.RvvStorePart07.CheckedRvvStorePart07.
+Include Qs8Lrelu.RvvStorePart08.CheckedRvvStorePart08.
+Include Qs8Lrelu.RvvStorePart09.CheckedRvvStorePart09.
+Include Qs8Lrelu.RvvStorePart10.CheckedRvvStorePart10.
+Include Qs8Lrelu.RvvStorePart11.CheckedRvvStorePart11.
+Include Qs8Lrelu.RvvStorePart12.CheckedRvvStorePart12.
+Include Qs8Lrelu.RvvStorePart13.CheckedRvvStorePart13.
+Include Qs8Lrelu.RvvStorePart14.CheckedRvvStorePart14.
+Include Qs8Lrelu.RvvStorePart15.CheckedRvvStorePart15.
+End CheckedRvvStore.

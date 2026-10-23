@@ -1,0 +1,202 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite original/repaired whole kernels in array runtime with independent128-bit oracle; not scalar-field proof, not ISA execution",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f",
+  "records": [
+    {
+      "label": "undefined-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O1",
+        "-g",
+        "-std=c11",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/native_oracle.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/undefined"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.47693260479718447,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-oracle",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/undefined"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.5658656861633062,
+      "log_sha256": "8ebb9fd24f3d140103657854143d31384b25eca9b465e030c423814352d01877"
+    },
+    {
+      "label": "undefined-negative-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O1",
+        "-g",
+        "-std=c11",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-DQLR_NEGATIVE_CONTROL",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/native_oracle.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/undefined-wrong"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.36555325286462903,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-negative",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/undefined-wrong"
+      ],
+      "exit_code": -6,
+      "expected_exit_code": -6,
+      "seconds": 0.11499928100965917,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "address-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O1",
+        "-g",
+        "-std=c11",
+        "-fsanitize=address",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/native_oracle.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/address"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.8184338179416955,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "address-oracle",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,json,sys;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184' and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/address"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.6670720528345555,
+      "log_sha256": "bffc45205f973d7159e9c4fe835d48882cd3677ad236c2276425a27d8c0d3e18"
+    },
+    {
+      "label": "address-negative-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O1",
+        "-g",
+        "-std=c11",
+        "-fsanitize=address",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-DQLR_NEGATIVE_CONTROL",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/native_oracle.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/address-wrong"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.1398454278241843,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "address-negative",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,json,sys;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184' and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/native-oracle-e2ve4_5f/address-wrong"
+      ],
+      "exit_code": 250,
+      "expected_exit_code": 250,
+      "seconds": 0.2029331719968468,
+      "log_sha256": "0b8bec4ebb6c392ecd91d7b0fe7a2b281e3b9be1103baea74e04f72712d2ac06"
+    }
+  ],
+  "undefined_output": {
+    "cases": 17940,
+    "lanes_per_side": 7187700,
+    "scalar_checks": 33280,
+    "failures": 0,
+    "input_and_params_preserved": true,
+    "canaries_checked": true
+  },
+  "asan_cgroup": {
+    "actual_memory_max": "17179869184",
+    "actual_memory_swap_max": "0"
+  },
+  "address_output": {
+    "cases": 17940,
+    "lanes_per_side": 7187700,
+    "scalar_checks": 33280,
+    "failures": 0,
+    "input_and_params_preserved": true,
+    "canaries_checked": true
+  },
+  "input_sha256": {
+    "shim/native_oracle.c": "f0d3d6b5908bcf88b659a8892bb90f671a9f3c3f94a0997c8ac0b8c94957687b",
+    "shim/runtime.h": "5923919735701002da6e9bf4afa4be6042c8d4519d0e5463c453330df6ed69b1",
+    "shim/scalar.h": "61c39df0d983a82257f7a68918a30ff08eebf7ef13e9d6e98ee6ac5eb73b61d8",
+    "impl/testNEON.c": "88e0e292a4354173ee987dfe5418bbe841b1a21ac31e9c756d3093f31fe41fa4",
+    "impl/testRVV.c": "24ce6af82b5bf719af001531ce2f25b9b5021df4bfeb29d9274a3fcc8a7240bd",
+    "shim/scalar.c": "783fcc91125d5707754d881447dc0148077c644cc3638763ab5a75823ad00bb2"
+  },
+  "source_identity_stable": true,
+  "system_headers_not_hashed": true
+}

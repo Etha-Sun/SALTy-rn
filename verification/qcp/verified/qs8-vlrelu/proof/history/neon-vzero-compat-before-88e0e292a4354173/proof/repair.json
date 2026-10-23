@@ -1,0 +1,54 @@
+{
+  "variant": "both-sides-repaired",
+  "reason": "Both original kernels unconditionally negate the full int32 positive and negative multiplier fields. INT32_MIN negation is undefined before narrowing. Perform defined uint32 negation and explicitly narrow to int16, retaining every raw int32 parameter value.",
+  "counterexample_evidence": "proof/evidence/original-negation.json",
+  "counterexample_evidence_sha256": "24cca6f5631be65a5ae7b1e64a106e7a7a67ae66d45d08cabca613e87bb6bb01",
+  "counterexamples": {
+    "count": 4,
+    "sides": [
+      "neon",
+      "rvv"
+    ],
+    "parameter_fields": [
+      "positive_multiplier",
+      "negative_multiplier"
+    ],
+    "raw_multiplier": -2147483648,
+    "other_multiplier": 0,
+    "input_zero_point": 0,
+    "output_zero_point": 0,
+    "n": 1,
+    "input": [
+      0
+    ],
+    "padding_initialized_zeros": 7,
+    "original_outcome": "UBSan negation of INT32_MIN exit1",
+    "repaired_expected": [
+      0
+    ]
+  },
+  "sides": {
+    "neon": {
+      "original_sha256": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+      "actual_sha256": "88e0e292a4354173ee987dfe5418bbe841b1a21ac31e9c756d3093f31fe41fa4",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "02e633b9690a13477eb27036bf6a81ee60fd8657b7257d770ca9380fa73d731e"
+    },
+    "rvv": {
+      "original_sha256": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+      "actual_sha256": "24ce6af82b5bf719af001531ce2f25b9b5021df4bfeb29d9274a3fcc8a7240bd",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "afb64564108a6da96e2f1fa62a7029ffe6deb3319df03c42d386cfec5a377408"
+    }
+  },
+  "patch_sha256": "1e9d1d498258fcff5c8e79a24628d1b97cff85dae03965074550b4eae1aafe5c",
+  "whole_kernel_verified": false,
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "VLEN": 128,
+    "e8m2_e16m4_e32m8_VLMAX": 32,
+    "input_padding": 7,
+    "raw_parameter_domains": "all four fields are int32"
+  }
+}

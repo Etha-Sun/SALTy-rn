@@ -1,0 +1,216 @@
+{
+  "version": 1,
+  "namespace": "Qs8Lrelu",
+  "scope": "C-shim modular partial correctness; ISA/ABI refinement and termination theorem open",
+  "reviewed_utc": "2026-10-23T22:24:25.167193+00:00",
+  "sources": [
+    {
+      "label": "Arm ACLE Neon Intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "sections": [
+        "Saturating multiply: vqrdmulhq_s16 -> SQRDMULH Vd.8H",
+        "Saturating addition: vqaddq_s16 -> SQADD Vd.8H",
+        "Saturating narrow: vqmovn_s16 -> SQXTN Vd.8B",
+        "Widening subtract, shift left, vector load/store and byte reinterpret",
+        "vcltq_s16 maps reversed signed CMGT",
+        "vbslq_s16 maps BSL, first argument supplies destination mask"
+      ]
+    },
+    {
+      "label": "Arm A64 ISA aarchmrs v2025-03_rel / pseudocode v2025-03_rel",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "bytes": 15314151,
+      "sections": [
+        "SQRDMULH (vector), Operation: mathematical doubled product, rounding shift, signed saturation",
+        "SQADD and SQXTN signed saturation",
+        "BSL SIMD Operation, PDF zero-index1134/printed1132, destination-mask bit selection",
+        "CMGT(register) SIMD, PDF zero-indices1148..1149/printed1146..1147, signed comparison yields Ones or Zeros"
+      ],
+      "downloaded_from_official_arm": true,
+      "private_download": ".build/semantics-downloads/arm-isa-2025-03.pdf"
+    },
+    {
+      "label": "RISC-V Vector extension1.0",
+      "url": "https://docs.riscv.org/reference/isa/extensions/vector/_attachments/riscv-v-spec.pdf",
+      "sections": [
+        "Fixed-point vxrm table: RNU=0, RDN=2",
+        "Vector widening signed multiply, logical left shift, signed saturating add",
+        "Vector narrowing signed clip: round before saturation, mask shift to log2(source_width) bits"
+      ]
+    },
+    {
+      "label": "RISC-V C intrinsics1.0 fixed-point operations",
+      "url": "https://docs.riscv.org/reference/vector-c-intrinsics/overloaded_intrinsic_funcs/03_vector_fixed-point_arithmetic_intrinsics.html"
+    },
+    {
+      "label": "Arm-authored shared ASL RShr, mirrored source document",
+      "url": "https://www.scs.stanford.edu/~zyedidia/arm64/shared_pseudocode.html#impl-shared.RShr.3",
+      "hosting": "Archive mirror, not an official Arm host; primary Arm-authored ASL content, cross-read with official Arm instruction PDF.",
+      "section": "shared/functions/common/RShr",
+      "rule_review": "For round=true and positive shift, add positive half before arithmetic right shift; negative half ties go toward positive infinity."
+    },
+    {
+      "label": "RISC-V ratified Vector1.0, versioned20260120 HTML",
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "sections": [
+        "30.1.11.8 integer comparison vmslt.vx signed",
+        "30.1.11.10 widening integer multiply",
+        "30.1.11.15 integer merge",
+        "30.1.11.16 move/splat"
+      ],
+      "official_primary_source_reviewed": true
+    }
+  ],
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "vlen_bits": 128,
+    "sew_lmul": [
+      {
+        "sew": 8,
+        "lmul": 2
+      },
+      {
+        "sew": 16,
+        "lmul": 4
+      },
+      {
+        "sew": 32,
+        "lmul": 8
+      }
+    ],
+    "vlmax": 32,
+    "selected_vl": "min(AVL,32)",
+    "vstart": 0,
+    "input_pad_bytes": 7,
+    "output_pad_bytes": 0,
+    "inactive_lanes": "Unobserved inactive C-shim fields are concretized to zero; no ISA-policy refinement claim. The output contract observes only the first VL lanes.",
+    "observed_state": "output signed-byte equality, input/parameter preservation and spatial frame; FPSR.QC/vxsat are not compared"
+  },
+  "integer_rules": {
+    "neon_subw": "signed16(input_zero - signed8input), wrapping to16bits",
+    "shl7": "retain low16bits of a*128; no saturating left shift",
+    "neon_qrdmulh": "sat16(floor((2*a*b+32768)/65536)); doubled mathematical product is not truncated32",
+    "rvv_wmul": "exact signed16x16->signed32 product",
+    "rvv_clip15": "sat16((p arithmetic-right15)+bit14(p)); equivalently sat16(floor((p+16384)/32768))",
+    "sat_add": "sat16(a+b)",
+    "narrow8": "sat8(a)",
+    "negated_multiplier": "signed16(unsigned32(0-unsigned32(raw_multiplier))); defined for every int32 raw multiplier",
+    "rounding_ties": "SQRDMULH and the selected RNU conversion both use ties toward positive infinity; they are not ties-away-from-zero or RNE.",
+    "parameter_projection": "All four raw int32 fields preserved: z=signed16(raw_z), o=signed16(raw_o); choose positive multiplier when signed16(z-x)<0, otherwise negative; negate chosen multiplier in unsigned32 and narrow16.",
+    "neon_mask": "Per signed16 compare, canonical0 or65535; only canonical masks are needed by the public kernel. qlr_neon_canonical is proved by actual comparator C closure, never assumed of public inputs.",
+    "neon_select": "For canonical mask65535 choose first signed16 source; for0 choose second. This is the restriction of official per-bit BSL semantics to comparator-generated masks, not a claim of arbitrary-mask ISA bit-select support.",
+    "rvv_compare_splat_merge": "Active lane signed16 less-than gives boolean0/1; splat negative seed, then vmerge selects positive seed when mask1 and preserves negative seed otherwise. Fixed e16m4, no arbitrary VLEN claim."
+  },
+  "model_files": [
+    "proof/coq/Model.v",
+    "proof/coq/Types.v",
+    "proof/coq/ScalarFacts.v",
+    "proof/coq/MemoryModel.v",
+    "proof/coq/ProgramModel.v",
+    "proof/coq/ProgramFacts.v",
+    "proof/coq/RvvModel.v",
+    "proof/coq/LreluModel.v",
+    "proof/coq/LreluFacts.v",
+    "proof/coq/LreluActiveModel.v",
+    "proof/coq/LreluChunkExpressionFacts.v",
+    "proof/coq/LreluRvvKernelFacts.v",
+    "proof/coq/ComposedModel.v",
+    "proof/coq/ComposedBridge.v",
+    "proof/coq/KernelMemory.v"
+  ],
+  "actual_c_sources": [
+    "shim/scalar.c",
+    "shim/neon_load.c",
+    "shim/neon_store.c",
+    "shim/signed_tail.c",
+    "shim/neon_ext.c",
+    "shim/neon_vdupq_n_s16.c",
+    "shim/neon_vsubw_s8.c",
+    "shim/neon_qcp_qcv_vshlq_n_s16_7.c",
+    "shim/neon_vqrdmulhq_s16.c",
+    "shim/neon_vqaddq_s16.c",
+    "shim/neon_vqmovn_s16.c",
+    "shim/rvv_active.c",
+    "shim/rvv___riscv_vsext_vf2_i16m4.c",
+    "shim/rvv___riscv_vrsub_vx_i16m4.c",
+    "shim/rvv___riscv_vsll_vx_i16m4.c",
+    "shim/rvv___riscv_vwmul_vx_i32m8.c",
+    "shim/rvv___riscv_vnclip_wx_i16m4.c",
+    "shim/rvv___riscv_vsadd_vx_i16m4.c",
+    "shim/rvv___riscv_vnclip_wx_i8m2.c",
+    "shim/rvv_load.c",
+    "shim/rvv_store.c",
+    "shim/neon_composed.c",
+    "shim/neon_vcltq_s16.c",
+    "shim/neon_vbslq_s16.c",
+    "shim/rvv___riscv_vmslt_vx_i16m4_b4.c",
+    "shim/rvv___riscv_vmv_v_x_i16m4.c",
+    "shim/rvv___riscv_vmerge_vxm_i16m4.c",
+    "shim/rvv___riscv_vwmul_vv_i32m8.c",
+    "shim/lrelu_selection.c",
+    "shim/lrelu_active.c",
+    "shim/control.c",
+    "shim/type_width.c",
+    "impl/testNEON.c",
+    "impl/testRVV.c",
+    "spec.c"
+  ],
+  "body_verification_state": "This source ledger is not proof evidence. Only current complete ordinary-Coq typed gates/full status establish C bodies; ISA/physical ABI refinement remains open.",
+  "isa_correspondence_checked": false,
+  "historical_scope": "Prior Frama-C/Arcadia repairs and QS8 conversion proof blueprints are provenance only. This independent case regenerates and proves its actual C closure under its own namespace.",
+  "source_expression_composition": {
+    "scope": "Only three exact pure-variable output/vy/lane0 source expressions, checked by full_inputs/check_neon_composed guards",
+    "construction": "Borrow &vy once; in real adapter C copy all eight Char fields into a local int8x8_t, then evaluate the original canonical nested reinterpret/store expression. Original leaf bodies and all three actual adapters are mandatory typed closure units.",
+    "memory_bridge": "Six universal full/undef-array versus byte-cell equivalences; initialized UChar/Char conversion uses bounded signed roundtrip, never undef-to-initialized conversion.",
+    "ownership": "Borrowed input vector cells are preserved. Direct by-value caller recovery and indirect adapters with duplicate output ownership were rejected and archived. Native tests do not replace C/Coq proof.",
+    "boundary": "No general theorem for side-effectful macro arguments, ISA/ABI compilation refinement or termination."
+  },
+  "type_projection": "Formal explicit unsigned-long-long size_t64; native QCP_NATIVE stddef size_t is separately checked unsigned64, including full range. sizeof eight actual used types is a C closure unit. The old unsigned-long->UINT32 mismatch is invalid historical evidence only.",
+  "new_operations": [
+    {
+      "intrinsic": "vcltq_s16",
+      "source": "shim/neon_vcltq_s16.c",
+      "model": "qlr_neon_mask",
+      "body_state": "See current full status; old32 receipts carry no full64 credit",
+      "ISA_correspondence_formally_checked": false
+    },
+    {
+      "intrinsic": "vbslq_s16",
+      "source": "shim/neon_vbslq_s16.c",
+      "model": "qlr_choose_neon under canonical masks",
+      "body_state": "See current full status; old32 receipts carry no full64 credit",
+      "ISA_correspondence_formally_checked": false
+    },
+    {
+      "intrinsic": "__riscv_vmslt_vx_i16m4_b4",
+      "source": "shim/rvv___riscv_vmslt_vx_i16m4_b4.c",
+      "model": "qlr_active_mask",
+      "body_state": "See current full status; old32 receipts carry no full64 credit",
+      "ISA_correspondence_formally_checked": false
+    },
+    {
+      "intrinsic": "__riscv_vmv_v_x_i16m4",
+      "source": "shim/rvv___riscv_vmv_v_x_i16m4.c",
+      "model": "qlr_active_splat",
+      "body_state": "See current full status; old32 receipts carry no full64 credit",
+      "ISA_correspondence_formally_checked": false
+    },
+    {
+      "intrinsic": "__riscv_vmerge_vxm_i16m4",
+      "source": "shim/rvv___riscv_vmerge_vxm_i16m4.c",
+      "model": "qlr_active_merge",
+      "body_state": "See current full status; old32 receipts carry no full64 credit",
+      "ISA_correspondence_formally_checked": false
+    },
+    {
+      "intrinsic": "__riscv_vwmul_vv_i32m8",
+      "source": "shim/rvv___riscv_vwmul_vv_i32m8.c",
+      "model": "qcv_active_mul",
+      "body_state": "See current full status; old32 receipts carry no full64 credit",
+      "ISA_correspondence_formally_checked": false
+    }
+  ]
+}

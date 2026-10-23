@@ -1,0 +1,130 @@
+{
+  "passed": true,
+  "formal_proof": false,
+  "whole_kernel_verified": false,
+  "scope": "Original unary-negation UB only; native runtime is finite C-shim context, not an ISA proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8",
+  "records": [
+    {
+      "label": "neon-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O1",
+        "-g",
+        "-std=c11",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/neon.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/neon"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.21670380397699773,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "neon-positive_multiplier",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/neon",
+        "p"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.004280052147805691,
+      "log_sha256": "56cb81fb2dcc937e328c24115b9d07fd18f71002a212991aa9ccc3189537f7c0"
+    },
+    {
+      "label": "neon-negative_multiplier",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/neon",
+        "n"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.0041615699883550406,
+      "log_sha256": "33c6a299488234dcbe4a5cf7508df6182935152b02e6e77a12b7a7bd4bc20d95"
+    },
+    {
+      "label": "rvv-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O1",
+        "-g",
+        "-std=c11",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/rvv.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/shim/scalar.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/rvv"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.2647374211810529,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "rvv-positive_multiplier",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/rvv",
+        "p"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.00417009019292891,
+      "log_sha256": "245eca8f0a43d5857d187269e7c73310c5ee4e98cefefe8e00f20a390673f0c0"
+    },
+    {
+      "label": "rvv-negative_multiplier",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vlrelu/.build/original-negation-on6xhxr8/rvv",
+        "n"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "seconds": 0.0045373470056802034,
+      "log_sha256": "eff7abac505e26dc2c8b685c0410b6959cdc6cf4424982b9060d61fb32ebc510"
+    }
+  ],
+  "input_sha256": {
+    "proof/original/testNEON.c": "b855a4d1ecc42155b81c2355ce28f221a884bf732625c53e1000ca596abf9d4f",
+    "proof/original/testRVV.c": "a6821a3561b7dc9d7be3d1d0ba5582840fac0fa88c4c821abc55b8a831c5f234",
+    "shim/runtime.h": "5923919735701002da6e9bf4afa4be6042c8d4519d0e5463c453330df6ed69b1",
+    "shim/scalar.h": "61c39df0d983a82257f7a68918a30ff08eebf7ef13e9d6e98ee6ac5eb73b61d8",
+    "shim/scalar.c": "783fcc91125d5707754d881447dc0148077c644cc3638763ab5a75823ad00bb2"
+  },
+  "source_identity_stable": true,
+  "system_headers_not_hashed": true,
+  "counterexamples": 4,
+  "input": {
+    "n": 1,
+    "input": [
+      0
+    ],
+    "input_padding_zeros": 7,
+    "input_zero_point": 0,
+    "output_zero_point": 0,
+    "one_multiplier": -2147483648,
+    "other_multiplier": 0
+  }
+}

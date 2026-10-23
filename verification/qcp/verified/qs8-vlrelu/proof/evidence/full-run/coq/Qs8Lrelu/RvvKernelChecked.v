@@ -1,0 +1,22 @@
+From Qs8Lrelu Require Import rvv_unit_goal S8ArraysStrategy rvv_kernel_strategy_proof RvvKernelMemory RvvKernelPart00 RvvKernelPart01 RvvKernelPart02 RvvKernelPart03 RvvKernelPart04 RvvKernelPart05 RvvKernelPart06 RvvKernelPart07 RvvKernelPart08 RvvKernelPart09 RvvKernelPart10 RvvKernelPart11 RvvKernelPart12 RvvKernelPart13 RvvKernelPart14 RvvKernelPart15.
+Module CheckedRvvKernel : Qs8Lrelu.rvv_unit_goal.VC_Correct.
+Include Qs8Lrelu.S8ArraysStrategy.CheckedS8Arrays.
+Include Qs8Lrelu.rvv_kernel_strategy_proof.CheckedRvvKernelStrategy.
+Include Qs8Lrelu.RvvKernelMemory.CheckedRvvKernelMemory.
+Include Qs8Lrelu.RvvKernelPart00.CheckedRvvKernelPart00.
+Include Qs8Lrelu.RvvKernelPart01.CheckedRvvKernelPart01.
+Include Qs8Lrelu.RvvKernelPart02.CheckedRvvKernelPart02.
+Include Qs8Lrelu.RvvKernelPart03.CheckedRvvKernelPart03.
+Include Qs8Lrelu.RvvKernelPart04.CheckedRvvKernelPart04.
+Include Qs8Lrelu.RvvKernelPart05.CheckedRvvKernelPart05.
+Include Qs8Lrelu.RvvKernelPart06.CheckedRvvKernelPart06.
+Include Qs8Lrelu.RvvKernelPart07.CheckedRvvKernelPart07.
+Include Qs8Lrelu.RvvKernelPart08.CheckedRvvKernelPart08.
+Include Qs8Lrelu.RvvKernelPart09.CheckedRvvKernelPart09.
+Include Qs8Lrelu.RvvKernelPart10.CheckedRvvKernelPart10.
+Include Qs8Lrelu.RvvKernelPart11.CheckedRvvKernelPart11.
+Include Qs8Lrelu.RvvKernelPart12.CheckedRvvKernelPart12.
+Include Qs8Lrelu.RvvKernelPart13.CheckedRvvKernelPart13.
+Include Qs8Lrelu.RvvKernelPart14.CheckedRvvKernelPart14.
+Include Qs8Lrelu.RvvKernelPart15.CheckedRvvKernelPart15.
+End CheckedRvvKernel.
