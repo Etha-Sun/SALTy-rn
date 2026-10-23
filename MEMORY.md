@@ -67,3 +67,5 @@ S8 全案证据：`verification/qcp/verified/s8-vclamp/.build/full-r8b58urd`，1
 QU8→FP32 全案证据：`verification/qcp/verified/qu8-f32-vcvt/.build/full-kb8mmn44`；31 个实际 C 单元、1476 个 C 字段、61 个函数体，10 组策略／30 字段；646 个本地源加最终门禁共647次普通Coq，1506 项最终假设核对均通过，仍为既有14项继承假设。完整证书 SHA256 `4d07d60a3b0b43357ac87e2bea08baada92c2313cb4cfcbbea089c8ce07643d4`。发布身份审计再次核对全部31个CPP、647个编译源和完整归档，62个递归C输入的UBSan回归通过；发布审计不是第二次形式化证明。
 
 当前 RSUM 分工：root 的 QS8 已完成495个vector/scalar字段、169个byte字段、40个基础scalar字段及9个VL/assert字段；两侧真实函数目标126/46已生成，循环尚待完成。QU8 RSUM由rvv subagent继续。组件不计verified；目标21尚未完成。
+
+QU8→FP32 在无私有旧缓存的已配置环境重放前，先运行 `python3 verification/qcp/verified/qu8-f32-vcvt/proof/restore_dependency_receipts.py`。它只按冻结审计中的SHA恢复一份历史UnsignedModel源码／普通编译日志，不恢复.vo，不重放旧证明；随后完整runner仍重新生成并编译所有当前目标。原发布证书保存在pre-replay-support历史中，全案证明本身不变。
