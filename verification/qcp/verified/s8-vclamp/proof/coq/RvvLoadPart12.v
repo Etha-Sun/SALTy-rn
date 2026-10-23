@@ -1,0 +1,57 @@
+From S8Clamp Require Import RvvLoadSupport.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Local Open Scope string_scope.
+Local Opaque s8_read_lane s8_rvv_min_lane s8_rvv_max_lane s8_min s8_max.
+
+Module CheckedRvvLoadPart12.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_13 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_13.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_13; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_29 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_29.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_29; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_45 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_45.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_45; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_61 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_61.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_61; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_77 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_77.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_77; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_93 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_93.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_93; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_109 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_109.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_109; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_safety_wit_125 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_125.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_safety_wit_125; rvv_pure. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_6 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_6.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_6; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_6_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_14 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_14.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_14; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_14_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_22 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_22.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_22; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_22_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_30 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_30.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_30; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_30_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_38 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_38.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_38; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_38_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_46 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_46.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_46; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_46_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_54 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_54.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_54; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_54_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_62 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_62.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_62; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_62_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_70 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_70.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_70; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_70_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_78 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_78.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_78; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_78_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_86 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_86.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_86; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_86_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_94 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_94.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_94; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_94_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_102 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_102.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_102; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_102_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_110 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_110.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_110; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_110_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_118 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_118.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_118; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_118_aux; intros; subst; rvv_frame. Qed.
+Lemma proof_of___riscv_vle8_v_i8m8_partial_solve_wit_126 : S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_126.
+Proof. unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_126; intros Hpure; unfold S8Clamp.rvv_load_goal.__riscv_vle8_v_i8m8_partial_solve_wit_126_aux; intros; subst; rvv_frame. Qed.
+End CheckedRvvLoadPart12.

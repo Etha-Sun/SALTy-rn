@@ -1,0 +1,500 @@
+typedef unsigned long long size_t;
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef int int32_t;
+struct qcp_s8_scalar_params { int32_t min; int32_t max; };
+struct xnn_s8_minmax_params { struct qcp_s8_scalar_params scalar; };
+typedef struct int8x8_t {
+  int8_t s0;
+  int8_t s1;
+  int8_t s2;
+  int8_t s3;
+  int8_t s4;
+  int8_t s5;
+  int8_t s6;
+  int8_t s7;
+} int8x8_t;
+typedef struct int8x16_t {
+  int8_t s0;
+  int8_t s1;
+  int8_t s2;
+  int8_t s3;
+  int8_t s4;
+  int8_t s5;
+  int8_t s6;
+  int8_t s7;
+  int8_t s8;
+  int8_t s9;
+  int8_t s10;
+  int8_t s11;
+  int8_t s12;
+  int8_t s13;
+  int8_t s14;
+  int8_t s15;
+} int8x16_t;
+typedef struct vint8m8_t {
+  int8_t s0;
+  int8_t s1;
+  int8_t s2;
+  int8_t s3;
+  int8_t s4;
+  int8_t s5;
+  int8_t s6;
+  int8_t s7;
+  int8_t s8;
+  int8_t s9;
+  int8_t s10;
+  int8_t s11;
+  int8_t s12;
+  int8_t s13;
+  int8_t s14;
+  int8_t s15;
+  int8_t s16;
+  int8_t s17;
+  int8_t s18;
+  int8_t s19;
+  int8_t s20;
+  int8_t s21;
+  int8_t s22;
+  int8_t s23;
+  int8_t s24;
+  int8_t s25;
+  int8_t s26;
+  int8_t s27;
+  int8_t s28;
+  int8_t s29;
+  int8_t s30;
+  int8_t s31;
+  int8_t s32;
+  int8_t s33;
+  int8_t s34;
+  int8_t s35;
+  int8_t s36;
+  int8_t s37;
+  int8_t s38;
+  int8_t s39;
+  int8_t s40;
+  int8_t s41;
+  int8_t s42;
+  int8_t s43;
+  int8_t s44;
+  int8_t s45;
+  int8_t s46;
+  int8_t s47;
+  int8_t s48;
+  int8_t s49;
+  int8_t s50;
+  int8_t s51;
+  int8_t s52;
+  int8_t s53;
+  int8_t s54;
+  int8_t s55;
+  int8_t s56;
+  int8_t s57;
+  int8_t s58;
+  int8_t s59;
+  int8_t s60;
+  int8_t s61;
+  int8_t s62;
+  int8_t s63;
+  int8_t s64;
+  int8_t s65;
+  int8_t s66;
+  int8_t s67;
+  int8_t s68;
+  int8_t s69;
+  int8_t s70;
+  int8_t s71;
+  int8_t s72;
+  int8_t s73;
+  int8_t s74;
+  int8_t s75;
+  int8_t s76;
+  int8_t s77;
+  int8_t s78;
+  int8_t s79;
+  int8_t s80;
+  int8_t s81;
+  int8_t s82;
+  int8_t s83;
+  int8_t s84;
+  int8_t s85;
+  int8_t s86;
+  int8_t s87;
+  int8_t s88;
+  int8_t s89;
+  int8_t s90;
+  int8_t s91;
+  int8_t s92;
+  int8_t s93;
+  int8_t s94;
+  int8_t s95;
+  int8_t s96;
+  int8_t s97;
+  int8_t s98;
+  int8_t s99;
+  int8_t s100;
+  int8_t s101;
+  int8_t s102;
+  int8_t s103;
+  int8_t s104;
+  int8_t s105;
+  int8_t s106;
+  int8_t s107;
+  int8_t s108;
+  int8_t s109;
+  int8_t s110;
+  int8_t s111;
+  int8_t s112;
+  int8_t s113;
+  int8_t s114;
+  int8_t s115;
+  int8_t s116;
+  int8_t s117;
+  int8_t s118;
+  int8_t s119;
+  int8_t s120;
+  int8_t s121;
+  int8_t s122;
+  int8_t s123;
+  int8_t s124;
+  int8_t s125;
+  int8_t s126;
+  int8_t s127;
+} vint8m8_t;
+typedef struct uint8x8_t {
+  uint8_t s0;
+  uint8_t s1;
+  uint8_t s2;
+  uint8_t s3;
+  uint8_t s4;
+  uint8_t s5;
+  uint8_t s6;
+  uint8_t s7;
+} uint8x8_t;
+/* Byte-backed views preserve all eight bytes, without aligned word loads. */
+typedef uint8x8_t uint32x2_t;
+typedef uint8x8_t uint16x4_t;
+/*@ Import Coq Require Import S8Clamp.Types */
+/*@ Extern Coq (UndefStructPredint8x8_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredint8x16_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredvint8m8_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPreduint8x8_t:Z -> Assertion) */
+/*@ Import Coq Require Import S8Clamp.MemoryModel */
+/*@ Extern Coq (CharArray::full:Z -> Z -> list Z -> Assertion)
+ (CharArray::missing_i:Z -> Z -> Z -> Z -> list Z -> Assertion)
+ (CharArray::seg:Z -> Z -> Z -> list Z -> Assertion)
+ (CharArray::undef_full:Z -> Z -> Assertion)
+ (CharArray::undef_seg:Z -> Z -> Z -> Assertion)
+ (CharArray::undef_missing_i:Z -> Z -> Z -> Z -> Assertion)
+ (Znth:{A} -> Z -> list A -> A -> A)
+ (s8_read_lane:Z -> Z -> Z -> list Z -> Z) */
+/*@ include strategies "s8_arrays.strategies" */
+/*@ Import Coq Require Import S8Clamp.RvvModel */
+/*@ Extern Coq (s8_rvv_min_lane:Z -> Z -> Z -> Z -> Z)
+ (s8_rvv_max_lane:Z -> Z -> Z -> Z -> Z)
+ (s8_rvv_prefix:Z -> list Z -> list Z)
+ (s8_rvv_snoc:list Z -> Z -> list Z)
+ (s8_rvv_length:list Z -> Z)
+ (s8_rvv_nth:list Z -> Z -> Z)
+ (s8_rvv_pack128:Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> list Z) */
+/*@ Extern Coq (s8_min:Z -> Z -> Z) (s8_max:Z -> Z -> Z) (s8_narrow:Z -> Z) */
+int8_t qcp_s8_min(int8_t a,int8_t b)
+/*@ Require -128<=a && a<=127 && -128<=b && b<=127 && emp
+    Ensure __return == s8_min(a,b) && emp */;
+int8_t qcp_s8_max(int8_t a,int8_t b)
+/*@ Require -128<=a && a<=127 && -128<=b && b<=127 && emp
+    Ensure __return == s8_max(a,b) && emp */;
+int8_t qcp_s8_narrow(int32_t x)
+/*@ Require -2147483648<=x && x<=2147483647 && emp
+    Ensure __return == s8_narrow(x) && emp */;
+size_t __riscv_vsetvl_e8m8(size_t n)
+/*@ Require 0<=n && n<=18446744073709551615 && emp
+    Ensure ((n<128 && __return==n) || (128<=n && __return==128)) && emp */;
+/*@ include strategies "rvv_vectors.strategies" */
+int8_t qcp_s8_rvv_min_lane(int8_t x,int8_t bound,size_t i,size_t vl)
+/*@ Require -128<=x && x<=127 && -128<=bound && bound<=127 && 0<=i && i<128 && 0<=vl && vl<=128 && emp
+ Ensure __return==s8_rvv_min_lane(x,bound,i,vl) && emp */
+{
+ if(i<vl)return qcp_s8_min(x,bound);
+ return x;
+}
+int8_t qcp_s8_rvv_max_lane(int8_t x,int8_t bound,size_t i,size_t vl)
+/*@ Require -128<=x && x<=127 && -128<=bound && bound<=127 && 0<=i && i<128 && 0<=vl && vl<=128 && emp
+ Ensure __return==s8_rvv_max_lane(x,bound,i,vl) && emp */
+{
+ if(i<vl)return qcp_s8_max(x,bound);
+ return x;
+}
+vint8m8_t qcp_s8_rvv_vmin_borrow(const vint8m8_t *a,int8_t bound,size_t vl)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z) (a32:Z) (a33:Z) (a34:Z) (a35:Z) (a36:Z) (a37:Z) (a38:Z) (a39:Z) (a40:Z) (a41:Z) (a42:Z) (a43:Z) (a44:Z) (a45:Z) (a46:Z) (a47:Z) (a48:Z) (a49:Z) (a50:Z) (a51:Z) (a52:Z) (a53:Z) (a54:Z) (a55:Z) (a56:Z) (a57:Z) (a58:Z) (a59:Z) (a60:Z) (a61:Z) (a62:Z) (a63:Z) (a64:Z) (a65:Z) (a66:Z) (a67:Z) (a68:Z) (a69:Z) (a70:Z) (a71:Z) (a72:Z) (a73:Z) (a74:Z) (a75:Z) (a76:Z) (a77:Z) (a78:Z) (a79:Z) (a80:Z) (a81:Z) (a82:Z) (a83:Z) (a84:Z) (a85:Z) (a86:Z) (a87:Z) (a88:Z) (a89:Z) (a90:Z) (a91:Z) (a92:Z) (a93:Z) (a94:Z) (a95:Z) (a96:Z) (a97:Z) (a98:Z) (a99:Z) (a100:Z) (a101:Z) (a102:Z) (a103:Z) (a104:Z) (a105:Z) (a106:Z) (a107:Z) (a108:Z) (a109:Z) (a110:Z) (a111:Z) (a112:Z) (a113:Z) (a114:Z) (a115:Z) (a116:Z) (a117:Z) (a118:Z) (a119:Z) (a120:Z) (a121:Z) (a122:Z) (a123:Z) (a124:Z) (a125:Z) (a126:Z) (a127:Z)
+Require -128<=bound && bound<=127 && 0<=vl && vl<=128 && store(&(a->s0),char,a0) * store(&(a->s1),char,a1) * store(&(a->s2),char,a2) * store(&(a->s3),char,a3) * store(&(a->s4),char,a4) * store(&(a->s5),char,a5) * store(&(a->s6),char,a6) * store(&(a->s7),char,a7) * store(&(a->s8),char,a8) * store(&(a->s9),char,a9) * store(&(a->s10),char,a10) * store(&(a->s11),char,a11) * store(&(a->s12),char,a12) * store(&(a->s13),char,a13) * store(&(a->s14),char,a14) * store(&(a->s15),char,a15) * store(&(a->s16),char,a16) * store(&(a->s17),char,a17) * store(&(a->s18),char,a18) * store(&(a->s19),char,a19) * store(&(a->s20),char,a20) * store(&(a->s21),char,a21) * store(&(a->s22),char,a22) * store(&(a->s23),char,a23) * store(&(a->s24),char,a24) * store(&(a->s25),char,a25) * store(&(a->s26),char,a26) * store(&(a->s27),char,a27) * store(&(a->s28),char,a28) * store(&(a->s29),char,a29) * store(&(a->s30),char,a30) * store(&(a->s31),char,a31) * store(&(a->s32),char,a32) * store(&(a->s33),char,a33) * store(&(a->s34),char,a34) * store(&(a->s35),char,a35) * store(&(a->s36),char,a36) * store(&(a->s37),char,a37) * store(&(a->s38),char,a38) * store(&(a->s39),char,a39) * store(&(a->s40),char,a40) * store(&(a->s41),char,a41) * store(&(a->s42),char,a42) * store(&(a->s43),char,a43) * store(&(a->s44),char,a44) * store(&(a->s45),char,a45) * store(&(a->s46),char,a46) * store(&(a->s47),char,a47) * store(&(a->s48),char,a48) * store(&(a->s49),char,a49) * store(&(a->s50),char,a50) * store(&(a->s51),char,a51) * store(&(a->s52),char,a52) * store(&(a->s53),char,a53) * store(&(a->s54),char,a54) * store(&(a->s55),char,a55) * store(&(a->s56),char,a56) * store(&(a->s57),char,a57) * store(&(a->s58),char,a58) * store(&(a->s59),char,a59) * store(&(a->s60),char,a60) * store(&(a->s61),char,a61) * store(&(a->s62),char,a62) * store(&(a->s63),char,a63) * store(&(a->s64),char,a64) * store(&(a->s65),char,a65) * store(&(a->s66),char,a66) * store(&(a->s67),char,a67) * store(&(a->s68),char,a68) * store(&(a->s69),char,a69) * store(&(a->s70),char,a70) * store(&(a->s71),char,a71) * store(&(a->s72),char,a72) * store(&(a->s73),char,a73) * store(&(a->s74),char,a74) * store(&(a->s75),char,a75) * store(&(a->s76),char,a76) * store(&(a->s77),char,a77) * store(&(a->s78),char,a78) * store(&(a->s79),char,a79) * store(&(a->s80),char,a80) * store(&(a->s81),char,a81) * store(&(a->s82),char,a82) * store(&(a->s83),char,a83) * store(&(a->s84),char,a84) * store(&(a->s85),char,a85) * store(&(a->s86),char,a86) * store(&(a->s87),char,a87) * store(&(a->s88),char,a88) * store(&(a->s89),char,a89) * store(&(a->s90),char,a90) * store(&(a->s91),char,a91) * store(&(a->s92),char,a92) * store(&(a->s93),char,a93) * store(&(a->s94),char,a94) * store(&(a->s95),char,a95) * store(&(a->s96),char,a96) * store(&(a->s97),char,a97) * store(&(a->s98),char,a98) * store(&(a->s99),char,a99) * store(&(a->s100),char,a100) * store(&(a->s101),char,a101) * store(&(a->s102),char,a102) * store(&(a->s103),char,a103) * store(&(a->s104),char,a104) * store(&(a->s105),char,a105) * store(&(a->s106),char,a106) * store(&(a->s107),char,a107) * store(&(a->s108),char,a108) * store(&(a->s109),char,a109) * store(&(a->s110),char,a110) * store(&(a->s111),char,a111) * store(&(a->s112),char,a112) * store(&(a->s113),char,a113) * store(&(a->s114),char,a114) * store(&(a->s115),char,a115) * store(&(a->s116),char,a116) * store(&(a->s117),char,a117) * store(&(a->s118),char,a118) * store(&(a->s119),char,a119) * store(&(a->s120),char,a120) * store(&(a->s121),char,a121) * store(&(a->s122),char,a122) * store(&(a->s123),char,a123) * store(&(a->s124),char,a124) * store(&(a->s125),char,a125) * store(&(a->s126),char,a126) * store(&(a->s127),char,a127)
+Ensure store(&(a->s0),char,a0) * store(&(a->s1),char,a1) * store(&(a->s2),char,a2) * store(&(a->s3),char,a3) * store(&(a->s4),char,a4) * store(&(a->s5),char,a5) * store(&(a->s6),char,a6) * store(&(a->s7),char,a7) * store(&(a->s8),char,a8) * store(&(a->s9),char,a9) * store(&(a->s10),char,a10) * store(&(a->s11),char,a11) * store(&(a->s12),char,a12) * store(&(a->s13),char,a13) * store(&(a->s14),char,a14) * store(&(a->s15),char,a15) * store(&(a->s16),char,a16) * store(&(a->s17),char,a17) * store(&(a->s18),char,a18) * store(&(a->s19),char,a19) * store(&(a->s20),char,a20) * store(&(a->s21),char,a21) * store(&(a->s22),char,a22) * store(&(a->s23),char,a23) * store(&(a->s24),char,a24) * store(&(a->s25),char,a25) * store(&(a->s26),char,a26) * store(&(a->s27),char,a27) * store(&(a->s28),char,a28) * store(&(a->s29),char,a29) * store(&(a->s30),char,a30) * store(&(a->s31),char,a31) * store(&(a->s32),char,a32) * store(&(a->s33),char,a33) * store(&(a->s34),char,a34) * store(&(a->s35),char,a35) * store(&(a->s36),char,a36) * store(&(a->s37),char,a37) * store(&(a->s38),char,a38) * store(&(a->s39),char,a39) * store(&(a->s40),char,a40) * store(&(a->s41),char,a41) * store(&(a->s42),char,a42) * store(&(a->s43),char,a43) * store(&(a->s44),char,a44) * store(&(a->s45),char,a45) * store(&(a->s46),char,a46) * store(&(a->s47),char,a47) * store(&(a->s48),char,a48) * store(&(a->s49),char,a49) * store(&(a->s50),char,a50) * store(&(a->s51),char,a51) * store(&(a->s52),char,a52) * store(&(a->s53),char,a53) * store(&(a->s54),char,a54) * store(&(a->s55),char,a55) * store(&(a->s56),char,a56) * store(&(a->s57),char,a57) * store(&(a->s58),char,a58) * store(&(a->s59),char,a59) * store(&(a->s60),char,a60) * store(&(a->s61),char,a61) * store(&(a->s62),char,a62) * store(&(a->s63),char,a63) * store(&(a->s64),char,a64) * store(&(a->s65),char,a65) * store(&(a->s66),char,a66) * store(&(a->s67),char,a67) * store(&(a->s68),char,a68) * store(&(a->s69),char,a69) * store(&(a->s70),char,a70) * store(&(a->s71),char,a71) * store(&(a->s72),char,a72) * store(&(a->s73),char,a73) * store(&(a->s74),char,a74) * store(&(a->s75),char,a75) * store(&(a->s76),char,a76) * store(&(a->s77),char,a77) * store(&(a->s78),char,a78) * store(&(a->s79),char,a79) * store(&(a->s80),char,a80) * store(&(a->s81),char,a81) * store(&(a->s82),char,a82) * store(&(a->s83),char,a83) * store(&(a->s84),char,a84) * store(&(a->s85),char,a85) * store(&(a->s86),char,a86) * store(&(a->s87),char,a87) * store(&(a->s88),char,a88) * store(&(a->s89),char,a89) * store(&(a->s90),char,a90) * store(&(a->s91),char,a91) * store(&(a->s92),char,a92) * store(&(a->s93),char,a93) * store(&(a->s94),char,a94) * store(&(a->s95),char,a95) * store(&(a->s96),char,a96) * store(&(a->s97),char,a97) * store(&(a->s98),char,a98) * store(&(a->s99),char,a99) * store(&(a->s100),char,a100) * store(&(a->s101),char,a101) * store(&(a->s102),char,a102) * store(&(a->s103),char,a103) * store(&(a->s104),char,a104) * store(&(a->s105),char,a105) * store(&(a->s106),char,a106) * store(&(a->s107),char,a107) * store(&(a->s108),char,a108) * store(&(a->s109),char,a109) * store(&(a->s110),char,a110) * store(&(a->s111),char,a111) * store(&(a->s112),char,a112) * store(&(a->s113),char,a113) * store(&(a->s114),char,a114) * store(&(a->s115),char,a115) * store(&(a->s116),char,a116) * store(&(a->s117),char,a117) * store(&(a->s118),char,a118) * store(&(a->s119),char,a119) * store(&(a->s120),char,a120) * store(&(a->s121),char,a121) * store(&(a->s122),char,a122) * store(&(a->s123),char,a123) * store(&(a->s124),char,a124) * store(&(a->s125),char,a125) * store(&(a->s126),char,a126) * store(&(a->s127),char,a127) * store(&(__return.s0),char,s8_rvv_min_lane(a0,bound,0,vl)) * store(&(__return.s1),char,s8_rvv_min_lane(a1,bound,1,vl)) * store(&(__return.s2),char,s8_rvv_min_lane(a2,bound,2,vl)) * store(&(__return.s3),char,s8_rvv_min_lane(a3,bound,3,vl)) * store(&(__return.s4),char,s8_rvv_min_lane(a4,bound,4,vl)) * store(&(__return.s5),char,s8_rvv_min_lane(a5,bound,5,vl)) * store(&(__return.s6),char,s8_rvv_min_lane(a6,bound,6,vl)) * store(&(__return.s7),char,s8_rvv_min_lane(a7,bound,7,vl)) * store(&(__return.s8),char,s8_rvv_min_lane(a8,bound,8,vl)) * store(&(__return.s9),char,s8_rvv_min_lane(a9,bound,9,vl)) * store(&(__return.s10),char,s8_rvv_min_lane(a10,bound,10,vl)) * store(&(__return.s11),char,s8_rvv_min_lane(a11,bound,11,vl)) * store(&(__return.s12),char,s8_rvv_min_lane(a12,bound,12,vl)) * store(&(__return.s13),char,s8_rvv_min_lane(a13,bound,13,vl)) * store(&(__return.s14),char,s8_rvv_min_lane(a14,bound,14,vl)) * store(&(__return.s15),char,s8_rvv_min_lane(a15,bound,15,vl)) * store(&(__return.s16),char,s8_rvv_min_lane(a16,bound,16,vl)) * store(&(__return.s17),char,s8_rvv_min_lane(a17,bound,17,vl)) * store(&(__return.s18),char,s8_rvv_min_lane(a18,bound,18,vl)) * store(&(__return.s19),char,s8_rvv_min_lane(a19,bound,19,vl)) * store(&(__return.s20),char,s8_rvv_min_lane(a20,bound,20,vl)) * store(&(__return.s21),char,s8_rvv_min_lane(a21,bound,21,vl)) * store(&(__return.s22),char,s8_rvv_min_lane(a22,bound,22,vl)) * store(&(__return.s23),char,s8_rvv_min_lane(a23,bound,23,vl)) * store(&(__return.s24),char,s8_rvv_min_lane(a24,bound,24,vl)) * store(&(__return.s25),char,s8_rvv_min_lane(a25,bound,25,vl)) * store(&(__return.s26),char,s8_rvv_min_lane(a26,bound,26,vl)) * store(&(__return.s27),char,s8_rvv_min_lane(a27,bound,27,vl)) * store(&(__return.s28),char,s8_rvv_min_lane(a28,bound,28,vl)) * store(&(__return.s29),char,s8_rvv_min_lane(a29,bound,29,vl)) * store(&(__return.s30),char,s8_rvv_min_lane(a30,bound,30,vl)) * store(&(__return.s31),char,s8_rvv_min_lane(a31,bound,31,vl)) * store(&(__return.s32),char,s8_rvv_min_lane(a32,bound,32,vl)) * store(&(__return.s33),char,s8_rvv_min_lane(a33,bound,33,vl)) * store(&(__return.s34),char,s8_rvv_min_lane(a34,bound,34,vl)) * store(&(__return.s35),char,s8_rvv_min_lane(a35,bound,35,vl)) * store(&(__return.s36),char,s8_rvv_min_lane(a36,bound,36,vl)) * store(&(__return.s37),char,s8_rvv_min_lane(a37,bound,37,vl)) * store(&(__return.s38),char,s8_rvv_min_lane(a38,bound,38,vl)) * store(&(__return.s39),char,s8_rvv_min_lane(a39,bound,39,vl)) * store(&(__return.s40),char,s8_rvv_min_lane(a40,bound,40,vl)) * store(&(__return.s41),char,s8_rvv_min_lane(a41,bound,41,vl)) * store(&(__return.s42),char,s8_rvv_min_lane(a42,bound,42,vl)) * store(&(__return.s43),char,s8_rvv_min_lane(a43,bound,43,vl)) * store(&(__return.s44),char,s8_rvv_min_lane(a44,bound,44,vl)) * store(&(__return.s45),char,s8_rvv_min_lane(a45,bound,45,vl)) * store(&(__return.s46),char,s8_rvv_min_lane(a46,bound,46,vl)) * store(&(__return.s47),char,s8_rvv_min_lane(a47,bound,47,vl)) * store(&(__return.s48),char,s8_rvv_min_lane(a48,bound,48,vl)) * store(&(__return.s49),char,s8_rvv_min_lane(a49,bound,49,vl)) * store(&(__return.s50),char,s8_rvv_min_lane(a50,bound,50,vl)) * store(&(__return.s51),char,s8_rvv_min_lane(a51,bound,51,vl)) * store(&(__return.s52),char,s8_rvv_min_lane(a52,bound,52,vl)) * store(&(__return.s53),char,s8_rvv_min_lane(a53,bound,53,vl)) * store(&(__return.s54),char,s8_rvv_min_lane(a54,bound,54,vl)) * store(&(__return.s55),char,s8_rvv_min_lane(a55,bound,55,vl)) * store(&(__return.s56),char,s8_rvv_min_lane(a56,bound,56,vl)) * store(&(__return.s57),char,s8_rvv_min_lane(a57,bound,57,vl)) * store(&(__return.s58),char,s8_rvv_min_lane(a58,bound,58,vl)) * store(&(__return.s59),char,s8_rvv_min_lane(a59,bound,59,vl)) * store(&(__return.s60),char,s8_rvv_min_lane(a60,bound,60,vl)) * store(&(__return.s61),char,s8_rvv_min_lane(a61,bound,61,vl)) * store(&(__return.s62),char,s8_rvv_min_lane(a62,bound,62,vl)) * store(&(__return.s63),char,s8_rvv_min_lane(a63,bound,63,vl)) * store(&(__return.s64),char,s8_rvv_min_lane(a64,bound,64,vl)) * store(&(__return.s65),char,s8_rvv_min_lane(a65,bound,65,vl)) * store(&(__return.s66),char,s8_rvv_min_lane(a66,bound,66,vl)) * store(&(__return.s67),char,s8_rvv_min_lane(a67,bound,67,vl)) * store(&(__return.s68),char,s8_rvv_min_lane(a68,bound,68,vl)) * store(&(__return.s69),char,s8_rvv_min_lane(a69,bound,69,vl)) * store(&(__return.s70),char,s8_rvv_min_lane(a70,bound,70,vl)) * store(&(__return.s71),char,s8_rvv_min_lane(a71,bound,71,vl)) * store(&(__return.s72),char,s8_rvv_min_lane(a72,bound,72,vl)) * store(&(__return.s73),char,s8_rvv_min_lane(a73,bound,73,vl)) * store(&(__return.s74),char,s8_rvv_min_lane(a74,bound,74,vl)) * store(&(__return.s75),char,s8_rvv_min_lane(a75,bound,75,vl)) * store(&(__return.s76),char,s8_rvv_min_lane(a76,bound,76,vl)) * store(&(__return.s77),char,s8_rvv_min_lane(a77,bound,77,vl)) * store(&(__return.s78),char,s8_rvv_min_lane(a78,bound,78,vl)) * store(&(__return.s79),char,s8_rvv_min_lane(a79,bound,79,vl)) * store(&(__return.s80),char,s8_rvv_min_lane(a80,bound,80,vl)) * store(&(__return.s81),char,s8_rvv_min_lane(a81,bound,81,vl)) * store(&(__return.s82),char,s8_rvv_min_lane(a82,bound,82,vl)) * store(&(__return.s83),char,s8_rvv_min_lane(a83,bound,83,vl)) * store(&(__return.s84),char,s8_rvv_min_lane(a84,bound,84,vl)) * store(&(__return.s85),char,s8_rvv_min_lane(a85,bound,85,vl)) * store(&(__return.s86),char,s8_rvv_min_lane(a86,bound,86,vl)) * store(&(__return.s87),char,s8_rvv_min_lane(a87,bound,87,vl)) * store(&(__return.s88),char,s8_rvv_min_lane(a88,bound,88,vl)) * store(&(__return.s89),char,s8_rvv_min_lane(a89,bound,89,vl)) * store(&(__return.s90),char,s8_rvv_min_lane(a90,bound,90,vl)) * store(&(__return.s91),char,s8_rvv_min_lane(a91,bound,91,vl)) * store(&(__return.s92),char,s8_rvv_min_lane(a92,bound,92,vl)) * store(&(__return.s93),char,s8_rvv_min_lane(a93,bound,93,vl)) * store(&(__return.s94),char,s8_rvv_min_lane(a94,bound,94,vl)) * store(&(__return.s95),char,s8_rvv_min_lane(a95,bound,95,vl)) * store(&(__return.s96),char,s8_rvv_min_lane(a96,bound,96,vl)) * store(&(__return.s97),char,s8_rvv_min_lane(a97,bound,97,vl)) * store(&(__return.s98),char,s8_rvv_min_lane(a98,bound,98,vl)) * store(&(__return.s99),char,s8_rvv_min_lane(a99,bound,99,vl)) * store(&(__return.s100),char,s8_rvv_min_lane(a100,bound,100,vl)) * store(&(__return.s101),char,s8_rvv_min_lane(a101,bound,101,vl)) * store(&(__return.s102),char,s8_rvv_min_lane(a102,bound,102,vl)) * store(&(__return.s103),char,s8_rvv_min_lane(a103,bound,103,vl)) * store(&(__return.s104),char,s8_rvv_min_lane(a104,bound,104,vl)) * store(&(__return.s105),char,s8_rvv_min_lane(a105,bound,105,vl)) * store(&(__return.s106),char,s8_rvv_min_lane(a106,bound,106,vl)) * store(&(__return.s107),char,s8_rvv_min_lane(a107,bound,107,vl)) * store(&(__return.s108),char,s8_rvv_min_lane(a108,bound,108,vl)) * store(&(__return.s109),char,s8_rvv_min_lane(a109,bound,109,vl)) * store(&(__return.s110),char,s8_rvv_min_lane(a110,bound,110,vl)) * store(&(__return.s111),char,s8_rvv_min_lane(a111,bound,111,vl)) * store(&(__return.s112),char,s8_rvv_min_lane(a112,bound,112,vl)) * store(&(__return.s113),char,s8_rvv_min_lane(a113,bound,113,vl)) * store(&(__return.s114),char,s8_rvv_min_lane(a114,bound,114,vl)) * store(&(__return.s115),char,s8_rvv_min_lane(a115,bound,115,vl)) * store(&(__return.s116),char,s8_rvv_min_lane(a116,bound,116,vl)) * store(&(__return.s117),char,s8_rvv_min_lane(a117,bound,117,vl)) * store(&(__return.s118),char,s8_rvv_min_lane(a118,bound,118,vl)) * store(&(__return.s119),char,s8_rvv_min_lane(a119,bound,119,vl)) * store(&(__return.s120),char,s8_rvv_min_lane(a120,bound,120,vl)) * store(&(__return.s121),char,s8_rvv_min_lane(a121,bound,121,vl)) * store(&(__return.s122),char,s8_rvv_min_lane(a122,bound,122,vl)) * store(&(__return.s123),char,s8_rvv_min_lane(a123,bound,123,vl)) * store(&(__return.s124),char,s8_rvv_min_lane(a124,bound,124,vl)) * store(&(__return.s125),char,s8_rvv_min_lane(a125,bound,125,vl)) * store(&(__return.s126),char,s8_rvv_min_lane(a126,bound,126,vl)) * store(&(__return.s127),char,s8_rvv_min_lane(a127,bound,127,vl)) */
+{
+vint8m8_t r;
+ r.s0=qcp_s8_rvv_min_lane(a->s0,bound,0,vl);
+ r.s1=qcp_s8_rvv_min_lane(a->s1,bound,1,vl);
+ r.s2=qcp_s8_rvv_min_lane(a->s2,bound,2,vl);
+ r.s3=qcp_s8_rvv_min_lane(a->s3,bound,3,vl);
+ r.s4=qcp_s8_rvv_min_lane(a->s4,bound,4,vl);
+ r.s5=qcp_s8_rvv_min_lane(a->s5,bound,5,vl);
+ r.s6=qcp_s8_rvv_min_lane(a->s6,bound,6,vl);
+ r.s7=qcp_s8_rvv_min_lane(a->s7,bound,7,vl);
+ r.s8=qcp_s8_rvv_min_lane(a->s8,bound,8,vl);
+ r.s9=qcp_s8_rvv_min_lane(a->s9,bound,9,vl);
+ r.s10=qcp_s8_rvv_min_lane(a->s10,bound,10,vl);
+ r.s11=qcp_s8_rvv_min_lane(a->s11,bound,11,vl);
+ r.s12=qcp_s8_rvv_min_lane(a->s12,bound,12,vl);
+ r.s13=qcp_s8_rvv_min_lane(a->s13,bound,13,vl);
+ r.s14=qcp_s8_rvv_min_lane(a->s14,bound,14,vl);
+ r.s15=qcp_s8_rvv_min_lane(a->s15,bound,15,vl);
+ r.s16=qcp_s8_rvv_min_lane(a->s16,bound,16,vl);
+ r.s17=qcp_s8_rvv_min_lane(a->s17,bound,17,vl);
+ r.s18=qcp_s8_rvv_min_lane(a->s18,bound,18,vl);
+ r.s19=qcp_s8_rvv_min_lane(a->s19,bound,19,vl);
+ r.s20=qcp_s8_rvv_min_lane(a->s20,bound,20,vl);
+ r.s21=qcp_s8_rvv_min_lane(a->s21,bound,21,vl);
+ r.s22=qcp_s8_rvv_min_lane(a->s22,bound,22,vl);
+ r.s23=qcp_s8_rvv_min_lane(a->s23,bound,23,vl);
+ r.s24=qcp_s8_rvv_min_lane(a->s24,bound,24,vl);
+ r.s25=qcp_s8_rvv_min_lane(a->s25,bound,25,vl);
+ r.s26=qcp_s8_rvv_min_lane(a->s26,bound,26,vl);
+ r.s27=qcp_s8_rvv_min_lane(a->s27,bound,27,vl);
+ r.s28=qcp_s8_rvv_min_lane(a->s28,bound,28,vl);
+ r.s29=qcp_s8_rvv_min_lane(a->s29,bound,29,vl);
+ r.s30=qcp_s8_rvv_min_lane(a->s30,bound,30,vl);
+ r.s31=qcp_s8_rvv_min_lane(a->s31,bound,31,vl);
+ r.s32=qcp_s8_rvv_min_lane(a->s32,bound,32,vl);
+ r.s33=qcp_s8_rvv_min_lane(a->s33,bound,33,vl);
+ r.s34=qcp_s8_rvv_min_lane(a->s34,bound,34,vl);
+ r.s35=qcp_s8_rvv_min_lane(a->s35,bound,35,vl);
+ r.s36=qcp_s8_rvv_min_lane(a->s36,bound,36,vl);
+ r.s37=qcp_s8_rvv_min_lane(a->s37,bound,37,vl);
+ r.s38=qcp_s8_rvv_min_lane(a->s38,bound,38,vl);
+ r.s39=qcp_s8_rvv_min_lane(a->s39,bound,39,vl);
+ r.s40=qcp_s8_rvv_min_lane(a->s40,bound,40,vl);
+ r.s41=qcp_s8_rvv_min_lane(a->s41,bound,41,vl);
+ r.s42=qcp_s8_rvv_min_lane(a->s42,bound,42,vl);
+ r.s43=qcp_s8_rvv_min_lane(a->s43,bound,43,vl);
+ r.s44=qcp_s8_rvv_min_lane(a->s44,bound,44,vl);
+ r.s45=qcp_s8_rvv_min_lane(a->s45,bound,45,vl);
+ r.s46=qcp_s8_rvv_min_lane(a->s46,bound,46,vl);
+ r.s47=qcp_s8_rvv_min_lane(a->s47,bound,47,vl);
+ r.s48=qcp_s8_rvv_min_lane(a->s48,bound,48,vl);
+ r.s49=qcp_s8_rvv_min_lane(a->s49,bound,49,vl);
+ r.s50=qcp_s8_rvv_min_lane(a->s50,bound,50,vl);
+ r.s51=qcp_s8_rvv_min_lane(a->s51,bound,51,vl);
+ r.s52=qcp_s8_rvv_min_lane(a->s52,bound,52,vl);
+ r.s53=qcp_s8_rvv_min_lane(a->s53,bound,53,vl);
+ r.s54=qcp_s8_rvv_min_lane(a->s54,bound,54,vl);
+ r.s55=qcp_s8_rvv_min_lane(a->s55,bound,55,vl);
+ r.s56=qcp_s8_rvv_min_lane(a->s56,bound,56,vl);
+ r.s57=qcp_s8_rvv_min_lane(a->s57,bound,57,vl);
+ r.s58=qcp_s8_rvv_min_lane(a->s58,bound,58,vl);
+ r.s59=qcp_s8_rvv_min_lane(a->s59,bound,59,vl);
+ r.s60=qcp_s8_rvv_min_lane(a->s60,bound,60,vl);
+ r.s61=qcp_s8_rvv_min_lane(a->s61,bound,61,vl);
+ r.s62=qcp_s8_rvv_min_lane(a->s62,bound,62,vl);
+ r.s63=qcp_s8_rvv_min_lane(a->s63,bound,63,vl);
+ r.s64=qcp_s8_rvv_min_lane(a->s64,bound,64,vl);
+ r.s65=qcp_s8_rvv_min_lane(a->s65,bound,65,vl);
+ r.s66=qcp_s8_rvv_min_lane(a->s66,bound,66,vl);
+ r.s67=qcp_s8_rvv_min_lane(a->s67,bound,67,vl);
+ r.s68=qcp_s8_rvv_min_lane(a->s68,bound,68,vl);
+ r.s69=qcp_s8_rvv_min_lane(a->s69,bound,69,vl);
+ r.s70=qcp_s8_rvv_min_lane(a->s70,bound,70,vl);
+ r.s71=qcp_s8_rvv_min_lane(a->s71,bound,71,vl);
+ r.s72=qcp_s8_rvv_min_lane(a->s72,bound,72,vl);
+ r.s73=qcp_s8_rvv_min_lane(a->s73,bound,73,vl);
+ r.s74=qcp_s8_rvv_min_lane(a->s74,bound,74,vl);
+ r.s75=qcp_s8_rvv_min_lane(a->s75,bound,75,vl);
+ r.s76=qcp_s8_rvv_min_lane(a->s76,bound,76,vl);
+ r.s77=qcp_s8_rvv_min_lane(a->s77,bound,77,vl);
+ r.s78=qcp_s8_rvv_min_lane(a->s78,bound,78,vl);
+ r.s79=qcp_s8_rvv_min_lane(a->s79,bound,79,vl);
+ r.s80=qcp_s8_rvv_min_lane(a->s80,bound,80,vl);
+ r.s81=qcp_s8_rvv_min_lane(a->s81,bound,81,vl);
+ r.s82=qcp_s8_rvv_min_lane(a->s82,bound,82,vl);
+ r.s83=qcp_s8_rvv_min_lane(a->s83,bound,83,vl);
+ r.s84=qcp_s8_rvv_min_lane(a->s84,bound,84,vl);
+ r.s85=qcp_s8_rvv_min_lane(a->s85,bound,85,vl);
+ r.s86=qcp_s8_rvv_min_lane(a->s86,bound,86,vl);
+ r.s87=qcp_s8_rvv_min_lane(a->s87,bound,87,vl);
+ r.s88=qcp_s8_rvv_min_lane(a->s88,bound,88,vl);
+ r.s89=qcp_s8_rvv_min_lane(a->s89,bound,89,vl);
+ r.s90=qcp_s8_rvv_min_lane(a->s90,bound,90,vl);
+ r.s91=qcp_s8_rvv_min_lane(a->s91,bound,91,vl);
+ r.s92=qcp_s8_rvv_min_lane(a->s92,bound,92,vl);
+ r.s93=qcp_s8_rvv_min_lane(a->s93,bound,93,vl);
+ r.s94=qcp_s8_rvv_min_lane(a->s94,bound,94,vl);
+ r.s95=qcp_s8_rvv_min_lane(a->s95,bound,95,vl);
+ r.s96=qcp_s8_rvv_min_lane(a->s96,bound,96,vl);
+ r.s97=qcp_s8_rvv_min_lane(a->s97,bound,97,vl);
+ r.s98=qcp_s8_rvv_min_lane(a->s98,bound,98,vl);
+ r.s99=qcp_s8_rvv_min_lane(a->s99,bound,99,vl);
+ r.s100=qcp_s8_rvv_min_lane(a->s100,bound,100,vl);
+ r.s101=qcp_s8_rvv_min_lane(a->s101,bound,101,vl);
+ r.s102=qcp_s8_rvv_min_lane(a->s102,bound,102,vl);
+ r.s103=qcp_s8_rvv_min_lane(a->s103,bound,103,vl);
+ r.s104=qcp_s8_rvv_min_lane(a->s104,bound,104,vl);
+ r.s105=qcp_s8_rvv_min_lane(a->s105,bound,105,vl);
+ r.s106=qcp_s8_rvv_min_lane(a->s106,bound,106,vl);
+ r.s107=qcp_s8_rvv_min_lane(a->s107,bound,107,vl);
+ r.s108=qcp_s8_rvv_min_lane(a->s108,bound,108,vl);
+ r.s109=qcp_s8_rvv_min_lane(a->s109,bound,109,vl);
+ r.s110=qcp_s8_rvv_min_lane(a->s110,bound,110,vl);
+ r.s111=qcp_s8_rvv_min_lane(a->s111,bound,111,vl);
+ r.s112=qcp_s8_rvv_min_lane(a->s112,bound,112,vl);
+ r.s113=qcp_s8_rvv_min_lane(a->s113,bound,113,vl);
+ r.s114=qcp_s8_rvv_min_lane(a->s114,bound,114,vl);
+ r.s115=qcp_s8_rvv_min_lane(a->s115,bound,115,vl);
+ r.s116=qcp_s8_rvv_min_lane(a->s116,bound,116,vl);
+ r.s117=qcp_s8_rvv_min_lane(a->s117,bound,117,vl);
+ r.s118=qcp_s8_rvv_min_lane(a->s118,bound,118,vl);
+ r.s119=qcp_s8_rvv_min_lane(a->s119,bound,119,vl);
+ r.s120=qcp_s8_rvv_min_lane(a->s120,bound,120,vl);
+ r.s121=qcp_s8_rvv_min_lane(a->s121,bound,121,vl);
+ r.s122=qcp_s8_rvv_min_lane(a->s122,bound,122,vl);
+ r.s123=qcp_s8_rvv_min_lane(a->s123,bound,123,vl);
+ r.s124=qcp_s8_rvv_min_lane(a->s124,bound,124,vl);
+ r.s125=qcp_s8_rvv_min_lane(a->s125,bound,125,vl);
+ r.s126=qcp_s8_rvv_min_lane(a->s126,bound,126,vl);
+ r.s127=qcp_s8_rvv_min_lane(a->s127,bound,127,vl);
+ return r;
+}
+vint8m8_t qcp_s8_rvv_vmax_borrow(const vint8m8_t *a,int8_t bound,size_t vl)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z) (a32:Z) (a33:Z) (a34:Z) (a35:Z) (a36:Z) (a37:Z) (a38:Z) (a39:Z) (a40:Z) (a41:Z) (a42:Z) (a43:Z) (a44:Z) (a45:Z) (a46:Z) (a47:Z) (a48:Z) (a49:Z) (a50:Z) (a51:Z) (a52:Z) (a53:Z) (a54:Z) (a55:Z) (a56:Z) (a57:Z) (a58:Z) (a59:Z) (a60:Z) (a61:Z) (a62:Z) (a63:Z) (a64:Z) (a65:Z) (a66:Z) (a67:Z) (a68:Z) (a69:Z) (a70:Z) (a71:Z) (a72:Z) (a73:Z) (a74:Z) (a75:Z) (a76:Z) (a77:Z) (a78:Z) (a79:Z) (a80:Z) (a81:Z) (a82:Z) (a83:Z) (a84:Z) (a85:Z) (a86:Z) (a87:Z) (a88:Z) (a89:Z) (a90:Z) (a91:Z) (a92:Z) (a93:Z) (a94:Z) (a95:Z) (a96:Z) (a97:Z) (a98:Z) (a99:Z) (a100:Z) (a101:Z) (a102:Z) (a103:Z) (a104:Z) (a105:Z) (a106:Z) (a107:Z) (a108:Z) (a109:Z) (a110:Z) (a111:Z) (a112:Z) (a113:Z) (a114:Z) (a115:Z) (a116:Z) (a117:Z) (a118:Z) (a119:Z) (a120:Z) (a121:Z) (a122:Z) (a123:Z) (a124:Z) (a125:Z) (a126:Z) (a127:Z)
+Require -128<=bound && bound<=127 && 0<=vl && vl<=128 && store(&(a->s0),char,a0) * store(&(a->s1),char,a1) * store(&(a->s2),char,a2) * store(&(a->s3),char,a3) * store(&(a->s4),char,a4) * store(&(a->s5),char,a5) * store(&(a->s6),char,a6) * store(&(a->s7),char,a7) * store(&(a->s8),char,a8) * store(&(a->s9),char,a9) * store(&(a->s10),char,a10) * store(&(a->s11),char,a11) * store(&(a->s12),char,a12) * store(&(a->s13),char,a13) * store(&(a->s14),char,a14) * store(&(a->s15),char,a15) * store(&(a->s16),char,a16) * store(&(a->s17),char,a17) * store(&(a->s18),char,a18) * store(&(a->s19),char,a19) * store(&(a->s20),char,a20) * store(&(a->s21),char,a21) * store(&(a->s22),char,a22) * store(&(a->s23),char,a23) * store(&(a->s24),char,a24) * store(&(a->s25),char,a25) * store(&(a->s26),char,a26) * store(&(a->s27),char,a27) * store(&(a->s28),char,a28) * store(&(a->s29),char,a29) * store(&(a->s30),char,a30) * store(&(a->s31),char,a31) * store(&(a->s32),char,a32) * store(&(a->s33),char,a33) * store(&(a->s34),char,a34) * store(&(a->s35),char,a35) * store(&(a->s36),char,a36) * store(&(a->s37),char,a37) * store(&(a->s38),char,a38) * store(&(a->s39),char,a39) * store(&(a->s40),char,a40) * store(&(a->s41),char,a41) * store(&(a->s42),char,a42) * store(&(a->s43),char,a43) * store(&(a->s44),char,a44) * store(&(a->s45),char,a45) * store(&(a->s46),char,a46) * store(&(a->s47),char,a47) * store(&(a->s48),char,a48) * store(&(a->s49),char,a49) * store(&(a->s50),char,a50) * store(&(a->s51),char,a51) * store(&(a->s52),char,a52) * store(&(a->s53),char,a53) * store(&(a->s54),char,a54) * store(&(a->s55),char,a55) * store(&(a->s56),char,a56) * store(&(a->s57),char,a57) * store(&(a->s58),char,a58) * store(&(a->s59),char,a59) * store(&(a->s60),char,a60) * store(&(a->s61),char,a61) * store(&(a->s62),char,a62) * store(&(a->s63),char,a63) * store(&(a->s64),char,a64) * store(&(a->s65),char,a65) * store(&(a->s66),char,a66) * store(&(a->s67),char,a67) * store(&(a->s68),char,a68) * store(&(a->s69),char,a69) * store(&(a->s70),char,a70) * store(&(a->s71),char,a71) * store(&(a->s72),char,a72) * store(&(a->s73),char,a73) * store(&(a->s74),char,a74) * store(&(a->s75),char,a75) * store(&(a->s76),char,a76) * store(&(a->s77),char,a77) * store(&(a->s78),char,a78) * store(&(a->s79),char,a79) * store(&(a->s80),char,a80) * store(&(a->s81),char,a81) * store(&(a->s82),char,a82) * store(&(a->s83),char,a83) * store(&(a->s84),char,a84) * store(&(a->s85),char,a85) * store(&(a->s86),char,a86) * store(&(a->s87),char,a87) * store(&(a->s88),char,a88) * store(&(a->s89),char,a89) * store(&(a->s90),char,a90) * store(&(a->s91),char,a91) * store(&(a->s92),char,a92) * store(&(a->s93),char,a93) * store(&(a->s94),char,a94) * store(&(a->s95),char,a95) * store(&(a->s96),char,a96) * store(&(a->s97),char,a97) * store(&(a->s98),char,a98) * store(&(a->s99),char,a99) * store(&(a->s100),char,a100) * store(&(a->s101),char,a101) * store(&(a->s102),char,a102) * store(&(a->s103),char,a103) * store(&(a->s104),char,a104) * store(&(a->s105),char,a105) * store(&(a->s106),char,a106) * store(&(a->s107),char,a107) * store(&(a->s108),char,a108) * store(&(a->s109),char,a109) * store(&(a->s110),char,a110) * store(&(a->s111),char,a111) * store(&(a->s112),char,a112) * store(&(a->s113),char,a113) * store(&(a->s114),char,a114) * store(&(a->s115),char,a115) * store(&(a->s116),char,a116) * store(&(a->s117),char,a117) * store(&(a->s118),char,a118) * store(&(a->s119),char,a119) * store(&(a->s120),char,a120) * store(&(a->s121),char,a121) * store(&(a->s122),char,a122) * store(&(a->s123),char,a123) * store(&(a->s124),char,a124) * store(&(a->s125),char,a125) * store(&(a->s126),char,a126) * store(&(a->s127),char,a127)
+Ensure store(&(a->s0),char,a0) * store(&(a->s1),char,a1) * store(&(a->s2),char,a2) * store(&(a->s3),char,a3) * store(&(a->s4),char,a4) * store(&(a->s5),char,a5) * store(&(a->s6),char,a6) * store(&(a->s7),char,a7) * store(&(a->s8),char,a8) * store(&(a->s9),char,a9) * store(&(a->s10),char,a10) * store(&(a->s11),char,a11) * store(&(a->s12),char,a12) * store(&(a->s13),char,a13) * store(&(a->s14),char,a14) * store(&(a->s15),char,a15) * store(&(a->s16),char,a16) * store(&(a->s17),char,a17) * store(&(a->s18),char,a18) * store(&(a->s19),char,a19) * store(&(a->s20),char,a20) * store(&(a->s21),char,a21) * store(&(a->s22),char,a22) * store(&(a->s23),char,a23) * store(&(a->s24),char,a24) * store(&(a->s25),char,a25) * store(&(a->s26),char,a26) * store(&(a->s27),char,a27) * store(&(a->s28),char,a28) * store(&(a->s29),char,a29) * store(&(a->s30),char,a30) * store(&(a->s31),char,a31) * store(&(a->s32),char,a32) * store(&(a->s33),char,a33) * store(&(a->s34),char,a34) * store(&(a->s35),char,a35) * store(&(a->s36),char,a36) * store(&(a->s37),char,a37) * store(&(a->s38),char,a38) * store(&(a->s39),char,a39) * store(&(a->s40),char,a40) * store(&(a->s41),char,a41) * store(&(a->s42),char,a42) * store(&(a->s43),char,a43) * store(&(a->s44),char,a44) * store(&(a->s45),char,a45) * store(&(a->s46),char,a46) * store(&(a->s47),char,a47) * store(&(a->s48),char,a48) * store(&(a->s49),char,a49) * store(&(a->s50),char,a50) * store(&(a->s51),char,a51) * store(&(a->s52),char,a52) * store(&(a->s53),char,a53) * store(&(a->s54),char,a54) * store(&(a->s55),char,a55) * store(&(a->s56),char,a56) * store(&(a->s57),char,a57) * store(&(a->s58),char,a58) * store(&(a->s59),char,a59) * store(&(a->s60),char,a60) * store(&(a->s61),char,a61) * store(&(a->s62),char,a62) * store(&(a->s63),char,a63) * store(&(a->s64),char,a64) * store(&(a->s65),char,a65) * store(&(a->s66),char,a66) * store(&(a->s67),char,a67) * store(&(a->s68),char,a68) * store(&(a->s69),char,a69) * store(&(a->s70),char,a70) * store(&(a->s71),char,a71) * store(&(a->s72),char,a72) * store(&(a->s73),char,a73) * store(&(a->s74),char,a74) * store(&(a->s75),char,a75) * store(&(a->s76),char,a76) * store(&(a->s77),char,a77) * store(&(a->s78),char,a78) * store(&(a->s79),char,a79) * store(&(a->s80),char,a80) * store(&(a->s81),char,a81) * store(&(a->s82),char,a82) * store(&(a->s83),char,a83) * store(&(a->s84),char,a84) * store(&(a->s85),char,a85) * store(&(a->s86),char,a86) * store(&(a->s87),char,a87) * store(&(a->s88),char,a88) * store(&(a->s89),char,a89) * store(&(a->s90),char,a90) * store(&(a->s91),char,a91) * store(&(a->s92),char,a92) * store(&(a->s93),char,a93) * store(&(a->s94),char,a94) * store(&(a->s95),char,a95) * store(&(a->s96),char,a96) * store(&(a->s97),char,a97) * store(&(a->s98),char,a98) * store(&(a->s99),char,a99) * store(&(a->s100),char,a100) * store(&(a->s101),char,a101) * store(&(a->s102),char,a102) * store(&(a->s103),char,a103) * store(&(a->s104),char,a104) * store(&(a->s105),char,a105) * store(&(a->s106),char,a106) * store(&(a->s107),char,a107) * store(&(a->s108),char,a108) * store(&(a->s109),char,a109) * store(&(a->s110),char,a110) * store(&(a->s111),char,a111) * store(&(a->s112),char,a112) * store(&(a->s113),char,a113) * store(&(a->s114),char,a114) * store(&(a->s115),char,a115) * store(&(a->s116),char,a116) * store(&(a->s117),char,a117) * store(&(a->s118),char,a118) * store(&(a->s119),char,a119) * store(&(a->s120),char,a120) * store(&(a->s121),char,a121) * store(&(a->s122),char,a122) * store(&(a->s123),char,a123) * store(&(a->s124),char,a124) * store(&(a->s125),char,a125) * store(&(a->s126),char,a126) * store(&(a->s127),char,a127) * store(&(__return.s0),char,s8_rvv_max_lane(a0,bound,0,vl)) * store(&(__return.s1),char,s8_rvv_max_lane(a1,bound,1,vl)) * store(&(__return.s2),char,s8_rvv_max_lane(a2,bound,2,vl)) * store(&(__return.s3),char,s8_rvv_max_lane(a3,bound,3,vl)) * store(&(__return.s4),char,s8_rvv_max_lane(a4,bound,4,vl)) * store(&(__return.s5),char,s8_rvv_max_lane(a5,bound,5,vl)) * store(&(__return.s6),char,s8_rvv_max_lane(a6,bound,6,vl)) * store(&(__return.s7),char,s8_rvv_max_lane(a7,bound,7,vl)) * store(&(__return.s8),char,s8_rvv_max_lane(a8,bound,8,vl)) * store(&(__return.s9),char,s8_rvv_max_lane(a9,bound,9,vl)) * store(&(__return.s10),char,s8_rvv_max_lane(a10,bound,10,vl)) * store(&(__return.s11),char,s8_rvv_max_lane(a11,bound,11,vl)) * store(&(__return.s12),char,s8_rvv_max_lane(a12,bound,12,vl)) * store(&(__return.s13),char,s8_rvv_max_lane(a13,bound,13,vl)) * store(&(__return.s14),char,s8_rvv_max_lane(a14,bound,14,vl)) * store(&(__return.s15),char,s8_rvv_max_lane(a15,bound,15,vl)) * store(&(__return.s16),char,s8_rvv_max_lane(a16,bound,16,vl)) * store(&(__return.s17),char,s8_rvv_max_lane(a17,bound,17,vl)) * store(&(__return.s18),char,s8_rvv_max_lane(a18,bound,18,vl)) * store(&(__return.s19),char,s8_rvv_max_lane(a19,bound,19,vl)) * store(&(__return.s20),char,s8_rvv_max_lane(a20,bound,20,vl)) * store(&(__return.s21),char,s8_rvv_max_lane(a21,bound,21,vl)) * store(&(__return.s22),char,s8_rvv_max_lane(a22,bound,22,vl)) * store(&(__return.s23),char,s8_rvv_max_lane(a23,bound,23,vl)) * store(&(__return.s24),char,s8_rvv_max_lane(a24,bound,24,vl)) * store(&(__return.s25),char,s8_rvv_max_lane(a25,bound,25,vl)) * store(&(__return.s26),char,s8_rvv_max_lane(a26,bound,26,vl)) * store(&(__return.s27),char,s8_rvv_max_lane(a27,bound,27,vl)) * store(&(__return.s28),char,s8_rvv_max_lane(a28,bound,28,vl)) * store(&(__return.s29),char,s8_rvv_max_lane(a29,bound,29,vl)) * store(&(__return.s30),char,s8_rvv_max_lane(a30,bound,30,vl)) * store(&(__return.s31),char,s8_rvv_max_lane(a31,bound,31,vl)) * store(&(__return.s32),char,s8_rvv_max_lane(a32,bound,32,vl)) * store(&(__return.s33),char,s8_rvv_max_lane(a33,bound,33,vl)) * store(&(__return.s34),char,s8_rvv_max_lane(a34,bound,34,vl)) * store(&(__return.s35),char,s8_rvv_max_lane(a35,bound,35,vl)) * store(&(__return.s36),char,s8_rvv_max_lane(a36,bound,36,vl)) * store(&(__return.s37),char,s8_rvv_max_lane(a37,bound,37,vl)) * store(&(__return.s38),char,s8_rvv_max_lane(a38,bound,38,vl)) * store(&(__return.s39),char,s8_rvv_max_lane(a39,bound,39,vl)) * store(&(__return.s40),char,s8_rvv_max_lane(a40,bound,40,vl)) * store(&(__return.s41),char,s8_rvv_max_lane(a41,bound,41,vl)) * store(&(__return.s42),char,s8_rvv_max_lane(a42,bound,42,vl)) * store(&(__return.s43),char,s8_rvv_max_lane(a43,bound,43,vl)) * store(&(__return.s44),char,s8_rvv_max_lane(a44,bound,44,vl)) * store(&(__return.s45),char,s8_rvv_max_lane(a45,bound,45,vl)) * store(&(__return.s46),char,s8_rvv_max_lane(a46,bound,46,vl)) * store(&(__return.s47),char,s8_rvv_max_lane(a47,bound,47,vl)) * store(&(__return.s48),char,s8_rvv_max_lane(a48,bound,48,vl)) * store(&(__return.s49),char,s8_rvv_max_lane(a49,bound,49,vl)) * store(&(__return.s50),char,s8_rvv_max_lane(a50,bound,50,vl)) * store(&(__return.s51),char,s8_rvv_max_lane(a51,bound,51,vl)) * store(&(__return.s52),char,s8_rvv_max_lane(a52,bound,52,vl)) * store(&(__return.s53),char,s8_rvv_max_lane(a53,bound,53,vl)) * store(&(__return.s54),char,s8_rvv_max_lane(a54,bound,54,vl)) * store(&(__return.s55),char,s8_rvv_max_lane(a55,bound,55,vl)) * store(&(__return.s56),char,s8_rvv_max_lane(a56,bound,56,vl)) * store(&(__return.s57),char,s8_rvv_max_lane(a57,bound,57,vl)) * store(&(__return.s58),char,s8_rvv_max_lane(a58,bound,58,vl)) * store(&(__return.s59),char,s8_rvv_max_lane(a59,bound,59,vl)) * store(&(__return.s60),char,s8_rvv_max_lane(a60,bound,60,vl)) * store(&(__return.s61),char,s8_rvv_max_lane(a61,bound,61,vl)) * store(&(__return.s62),char,s8_rvv_max_lane(a62,bound,62,vl)) * store(&(__return.s63),char,s8_rvv_max_lane(a63,bound,63,vl)) * store(&(__return.s64),char,s8_rvv_max_lane(a64,bound,64,vl)) * store(&(__return.s65),char,s8_rvv_max_lane(a65,bound,65,vl)) * store(&(__return.s66),char,s8_rvv_max_lane(a66,bound,66,vl)) * store(&(__return.s67),char,s8_rvv_max_lane(a67,bound,67,vl)) * store(&(__return.s68),char,s8_rvv_max_lane(a68,bound,68,vl)) * store(&(__return.s69),char,s8_rvv_max_lane(a69,bound,69,vl)) * store(&(__return.s70),char,s8_rvv_max_lane(a70,bound,70,vl)) * store(&(__return.s71),char,s8_rvv_max_lane(a71,bound,71,vl)) * store(&(__return.s72),char,s8_rvv_max_lane(a72,bound,72,vl)) * store(&(__return.s73),char,s8_rvv_max_lane(a73,bound,73,vl)) * store(&(__return.s74),char,s8_rvv_max_lane(a74,bound,74,vl)) * store(&(__return.s75),char,s8_rvv_max_lane(a75,bound,75,vl)) * store(&(__return.s76),char,s8_rvv_max_lane(a76,bound,76,vl)) * store(&(__return.s77),char,s8_rvv_max_lane(a77,bound,77,vl)) * store(&(__return.s78),char,s8_rvv_max_lane(a78,bound,78,vl)) * store(&(__return.s79),char,s8_rvv_max_lane(a79,bound,79,vl)) * store(&(__return.s80),char,s8_rvv_max_lane(a80,bound,80,vl)) * store(&(__return.s81),char,s8_rvv_max_lane(a81,bound,81,vl)) * store(&(__return.s82),char,s8_rvv_max_lane(a82,bound,82,vl)) * store(&(__return.s83),char,s8_rvv_max_lane(a83,bound,83,vl)) * store(&(__return.s84),char,s8_rvv_max_lane(a84,bound,84,vl)) * store(&(__return.s85),char,s8_rvv_max_lane(a85,bound,85,vl)) * store(&(__return.s86),char,s8_rvv_max_lane(a86,bound,86,vl)) * store(&(__return.s87),char,s8_rvv_max_lane(a87,bound,87,vl)) * store(&(__return.s88),char,s8_rvv_max_lane(a88,bound,88,vl)) * store(&(__return.s89),char,s8_rvv_max_lane(a89,bound,89,vl)) * store(&(__return.s90),char,s8_rvv_max_lane(a90,bound,90,vl)) * store(&(__return.s91),char,s8_rvv_max_lane(a91,bound,91,vl)) * store(&(__return.s92),char,s8_rvv_max_lane(a92,bound,92,vl)) * store(&(__return.s93),char,s8_rvv_max_lane(a93,bound,93,vl)) * store(&(__return.s94),char,s8_rvv_max_lane(a94,bound,94,vl)) * store(&(__return.s95),char,s8_rvv_max_lane(a95,bound,95,vl)) * store(&(__return.s96),char,s8_rvv_max_lane(a96,bound,96,vl)) * store(&(__return.s97),char,s8_rvv_max_lane(a97,bound,97,vl)) * store(&(__return.s98),char,s8_rvv_max_lane(a98,bound,98,vl)) * store(&(__return.s99),char,s8_rvv_max_lane(a99,bound,99,vl)) * store(&(__return.s100),char,s8_rvv_max_lane(a100,bound,100,vl)) * store(&(__return.s101),char,s8_rvv_max_lane(a101,bound,101,vl)) * store(&(__return.s102),char,s8_rvv_max_lane(a102,bound,102,vl)) * store(&(__return.s103),char,s8_rvv_max_lane(a103,bound,103,vl)) * store(&(__return.s104),char,s8_rvv_max_lane(a104,bound,104,vl)) * store(&(__return.s105),char,s8_rvv_max_lane(a105,bound,105,vl)) * store(&(__return.s106),char,s8_rvv_max_lane(a106,bound,106,vl)) * store(&(__return.s107),char,s8_rvv_max_lane(a107,bound,107,vl)) * store(&(__return.s108),char,s8_rvv_max_lane(a108,bound,108,vl)) * store(&(__return.s109),char,s8_rvv_max_lane(a109,bound,109,vl)) * store(&(__return.s110),char,s8_rvv_max_lane(a110,bound,110,vl)) * store(&(__return.s111),char,s8_rvv_max_lane(a111,bound,111,vl)) * store(&(__return.s112),char,s8_rvv_max_lane(a112,bound,112,vl)) * store(&(__return.s113),char,s8_rvv_max_lane(a113,bound,113,vl)) * store(&(__return.s114),char,s8_rvv_max_lane(a114,bound,114,vl)) * store(&(__return.s115),char,s8_rvv_max_lane(a115,bound,115,vl)) * store(&(__return.s116),char,s8_rvv_max_lane(a116,bound,116,vl)) * store(&(__return.s117),char,s8_rvv_max_lane(a117,bound,117,vl)) * store(&(__return.s118),char,s8_rvv_max_lane(a118,bound,118,vl)) * store(&(__return.s119),char,s8_rvv_max_lane(a119,bound,119,vl)) * store(&(__return.s120),char,s8_rvv_max_lane(a120,bound,120,vl)) * store(&(__return.s121),char,s8_rvv_max_lane(a121,bound,121,vl)) * store(&(__return.s122),char,s8_rvv_max_lane(a122,bound,122,vl)) * store(&(__return.s123),char,s8_rvv_max_lane(a123,bound,123,vl)) * store(&(__return.s124),char,s8_rvv_max_lane(a124,bound,124,vl)) * store(&(__return.s125),char,s8_rvv_max_lane(a125,bound,125,vl)) * store(&(__return.s126),char,s8_rvv_max_lane(a126,bound,126,vl)) * store(&(__return.s127),char,s8_rvv_max_lane(a127,bound,127,vl)) */
+{
+vint8m8_t r;
+ r.s0=qcp_s8_rvv_max_lane(a->s0,bound,0,vl);
+ r.s1=qcp_s8_rvv_max_lane(a->s1,bound,1,vl);
+ r.s2=qcp_s8_rvv_max_lane(a->s2,bound,2,vl);
+ r.s3=qcp_s8_rvv_max_lane(a->s3,bound,3,vl);
+ r.s4=qcp_s8_rvv_max_lane(a->s4,bound,4,vl);
+ r.s5=qcp_s8_rvv_max_lane(a->s5,bound,5,vl);
+ r.s6=qcp_s8_rvv_max_lane(a->s6,bound,6,vl);
+ r.s7=qcp_s8_rvv_max_lane(a->s7,bound,7,vl);
+ r.s8=qcp_s8_rvv_max_lane(a->s8,bound,8,vl);
+ r.s9=qcp_s8_rvv_max_lane(a->s9,bound,9,vl);
+ r.s10=qcp_s8_rvv_max_lane(a->s10,bound,10,vl);
+ r.s11=qcp_s8_rvv_max_lane(a->s11,bound,11,vl);
+ r.s12=qcp_s8_rvv_max_lane(a->s12,bound,12,vl);
+ r.s13=qcp_s8_rvv_max_lane(a->s13,bound,13,vl);
+ r.s14=qcp_s8_rvv_max_lane(a->s14,bound,14,vl);
+ r.s15=qcp_s8_rvv_max_lane(a->s15,bound,15,vl);
+ r.s16=qcp_s8_rvv_max_lane(a->s16,bound,16,vl);
+ r.s17=qcp_s8_rvv_max_lane(a->s17,bound,17,vl);
+ r.s18=qcp_s8_rvv_max_lane(a->s18,bound,18,vl);
+ r.s19=qcp_s8_rvv_max_lane(a->s19,bound,19,vl);
+ r.s20=qcp_s8_rvv_max_lane(a->s20,bound,20,vl);
+ r.s21=qcp_s8_rvv_max_lane(a->s21,bound,21,vl);
+ r.s22=qcp_s8_rvv_max_lane(a->s22,bound,22,vl);
+ r.s23=qcp_s8_rvv_max_lane(a->s23,bound,23,vl);
+ r.s24=qcp_s8_rvv_max_lane(a->s24,bound,24,vl);
+ r.s25=qcp_s8_rvv_max_lane(a->s25,bound,25,vl);
+ r.s26=qcp_s8_rvv_max_lane(a->s26,bound,26,vl);
+ r.s27=qcp_s8_rvv_max_lane(a->s27,bound,27,vl);
+ r.s28=qcp_s8_rvv_max_lane(a->s28,bound,28,vl);
+ r.s29=qcp_s8_rvv_max_lane(a->s29,bound,29,vl);
+ r.s30=qcp_s8_rvv_max_lane(a->s30,bound,30,vl);
+ r.s31=qcp_s8_rvv_max_lane(a->s31,bound,31,vl);
+ r.s32=qcp_s8_rvv_max_lane(a->s32,bound,32,vl);
+ r.s33=qcp_s8_rvv_max_lane(a->s33,bound,33,vl);
+ r.s34=qcp_s8_rvv_max_lane(a->s34,bound,34,vl);
+ r.s35=qcp_s8_rvv_max_lane(a->s35,bound,35,vl);
+ r.s36=qcp_s8_rvv_max_lane(a->s36,bound,36,vl);
+ r.s37=qcp_s8_rvv_max_lane(a->s37,bound,37,vl);
+ r.s38=qcp_s8_rvv_max_lane(a->s38,bound,38,vl);
+ r.s39=qcp_s8_rvv_max_lane(a->s39,bound,39,vl);
+ r.s40=qcp_s8_rvv_max_lane(a->s40,bound,40,vl);
+ r.s41=qcp_s8_rvv_max_lane(a->s41,bound,41,vl);
+ r.s42=qcp_s8_rvv_max_lane(a->s42,bound,42,vl);
+ r.s43=qcp_s8_rvv_max_lane(a->s43,bound,43,vl);
+ r.s44=qcp_s8_rvv_max_lane(a->s44,bound,44,vl);
+ r.s45=qcp_s8_rvv_max_lane(a->s45,bound,45,vl);
+ r.s46=qcp_s8_rvv_max_lane(a->s46,bound,46,vl);
+ r.s47=qcp_s8_rvv_max_lane(a->s47,bound,47,vl);
+ r.s48=qcp_s8_rvv_max_lane(a->s48,bound,48,vl);
+ r.s49=qcp_s8_rvv_max_lane(a->s49,bound,49,vl);
+ r.s50=qcp_s8_rvv_max_lane(a->s50,bound,50,vl);
+ r.s51=qcp_s8_rvv_max_lane(a->s51,bound,51,vl);
+ r.s52=qcp_s8_rvv_max_lane(a->s52,bound,52,vl);
+ r.s53=qcp_s8_rvv_max_lane(a->s53,bound,53,vl);
+ r.s54=qcp_s8_rvv_max_lane(a->s54,bound,54,vl);
+ r.s55=qcp_s8_rvv_max_lane(a->s55,bound,55,vl);
+ r.s56=qcp_s8_rvv_max_lane(a->s56,bound,56,vl);
+ r.s57=qcp_s8_rvv_max_lane(a->s57,bound,57,vl);
+ r.s58=qcp_s8_rvv_max_lane(a->s58,bound,58,vl);
+ r.s59=qcp_s8_rvv_max_lane(a->s59,bound,59,vl);
+ r.s60=qcp_s8_rvv_max_lane(a->s60,bound,60,vl);
+ r.s61=qcp_s8_rvv_max_lane(a->s61,bound,61,vl);
+ r.s62=qcp_s8_rvv_max_lane(a->s62,bound,62,vl);
+ r.s63=qcp_s8_rvv_max_lane(a->s63,bound,63,vl);
+ r.s64=qcp_s8_rvv_max_lane(a->s64,bound,64,vl);
+ r.s65=qcp_s8_rvv_max_lane(a->s65,bound,65,vl);
+ r.s66=qcp_s8_rvv_max_lane(a->s66,bound,66,vl);
+ r.s67=qcp_s8_rvv_max_lane(a->s67,bound,67,vl);
+ r.s68=qcp_s8_rvv_max_lane(a->s68,bound,68,vl);
+ r.s69=qcp_s8_rvv_max_lane(a->s69,bound,69,vl);
+ r.s70=qcp_s8_rvv_max_lane(a->s70,bound,70,vl);
+ r.s71=qcp_s8_rvv_max_lane(a->s71,bound,71,vl);
+ r.s72=qcp_s8_rvv_max_lane(a->s72,bound,72,vl);
+ r.s73=qcp_s8_rvv_max_lane(a->s73,bound,73,vl);
+ r.s74=qcp_s8_rvv_max_lane(a->s74,bound,74,vl);
+ r.s75=qcp_s8_rvv_max_lane(a->s75,bound,75,vl);
+ r.s76=qcp_s8_rvv_max_lane(a->s76,bound,76,vl);
+ r.s77=qcp_s8_rvv_max_lane(a->s77,bound,77,vl);
+ r.s78=qcp_s8_rvv_max_lane(a->s78,bound,78,vl);
+ r.s79=qcp_s8_rvv_max_lane(a->s79,bound,79,vl);
+ r.s80=qcp_s8_rvv_max_lane(a->s80,bound,80,vl);
+ r.s81=qcp_s8_rvv_max_lane(a->s81,bound,81,vl);
+ r.s82=qcp_s8_rvv_max_lane(a->s82,bound,82,vl);
+ r.s83=qcp_s8_rvv_max_lane(a->s83,bound,83,vl);
+ r.s84=qcp_s8_rvv_max_lane(a->s84,bound,84,vl);
+ r.s85=qcp_s8_rvv_max_lane(a->s85,bound,85,vl);
+ r.s86=qcp_s8_rvv_max_lane(a->s86,bound,86,vl);
+ r.s87=qcp_s8_rvv_max_lane(a->s87,bound,87,vl);
+ r.s88=qcp_s8_rvv_max_lane(a->s88,bound,88,vl);
+ r.s89=qcp_s8_rvv_max_lane(a->s89,bound,89,vl);
+ r.s90=qcp_s8_rvv_max_lane(a->s90,bound,90,vl);
+ r.s91=qcp_s8_rvv_max_lane(a->s91,bound,91,vl);
+ r.s92=qcp_s8_rvv_max_lane(a->s92,bound,92,vl);
+ r.s93=qcp_s8_rvv_max_lane(a->s93,bound,93,vl);
+ r.s94=qcp_s8_rvv_max_lane(a->s94,bound,94,vl);
+ r.s95=qcp_s8_rvv_max_lane(a->s95,bound,95,vl);
+ r.s96=qcp_s8_rvv_max_lane(a->s96,bound,96,vl);
+ r.s97=qcp_s8_rvv_max_lane(a->s97,bound,97,vl);
+ r.s98=qcp_s8_rvv_max_lane(a->s98,bound,98,vl);
+ r.s99=qcp_s8_rvv_max_lane(a->s99,bound,99,vl);
+ r.s100=qcp_s8_rvv_max_lane(a->s100,bound,100,vl);
+ r.s101=qcp_s8_rvv_max_lane(a->s101,bound,101,vl);
+ r.s102=qcp_s8_rvv_max_lane(a->s102,bound,102,vl);
+ r.s103=qcp_s8_rvv_max_lane(a->s103,bound,103,vl);
+ r.s104=qcp_s8_rvv_max_lane(a->s104,bound,104,vl);
+ r.s105=qcp_s8_rvv_max_lane(a->s105,bound,105,vl);
+ r.s106=qcp_s8_rvv_max_lane(a->s106,bound,106,vl);
+ r.s107=qcp_s8_rvv_max_lane(a->s107,bound,107,vl);
+ r.s108=qcp_s8_rvv_max_lane(a->s108,bound,108,vl);
+ r.s109=qcp_s8_rvv_max_lane(a->s109,bound,109,vl);
+ r.s110=qcp_s8_rvv_max_lane(a->s110,bound,110,vl);
+ r.s111=qcp_s8_rvv_max_lane(a->s111,bound,111,vl);
+ r.s112=qcp_s8_rvv_max_lane(a->s112,bound,112,vl);
+ r.s113=qcp_s8_rvv_max_lane(a->s113,bound,113,vl);
+ r.s114=qcp_s8_rvv_max_lane(a->s114,bound,114,vl);
+ r.s115=qcp_s8_rvv_max_lane(a->s115,bound,115,vl);
+ r.s116=qcp_s8_rvv_max_lane(a->s116,bound,116,vl);
+ r.s117=qcp_s8_rvv_max_lane(a->s117,bound,117,vl);
+ r.s118=qcp_s8_rvv_max_lane(a->s118,bound,118,vl);
+ r.s119=qcp_s8_rvv_max_lane(a->s119,bound,119,vl);
+ r.s120=qcp_s8_rvv_max_lane(a->s120,bound,120,vl);
+ r.s121=qcp_s8_rvv_max_lane(a->s121,bound,121,vl);
+ r.s122=qcp_s8_rvv_max_lane(a->s122,bound,122,vl);
+ r.s123=qcp_s8_rvv_max_lane(a->s123,bound,123,vl);
+ r.s124=qcp_s8_rvv_max_lane(a->s124,bound,124,vl);
+ r.s125=qcp_s8_rvv_max_lane(a->s125,bound,125,vl);
+ r.s126=qcp_s8_rvv_max_lane(a->s126,bound,126,vl);
+ r.s127=qcp_s8_rvv_max_lane(a->s127,bound,127,vl);
+ return r;
+}

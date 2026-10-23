@@ -1,0 +1,74 @@
+{
+  "passed": false,
+  "variant": "original",
+  "scope": "finite native C-shim regression",
+  "whole_kernel_verified": false,
+  "qcp_c_vcs": 0,
+  "actual_hardware_executed": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-h10fjedx",
+  "records": [
+    {
+      "label": "exact-patch",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "patch",
+        "--batch",
+        "--fuzz=0",
+        "-p1",
+        "-d",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-h10fjedx/patch",
+        "-i",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/proof/repair.patch"
+      ],
+      "exit_code": 0,
+      "seconds": 0.004250674042850733,
+      "log_sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fno-pie",
+        "-no-pie",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/shim/runtime.h",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-h10fjedx/selected-rvv.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/shim/harness.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-h10fjedx/replay"
+      ],
+      "exit_code": 0,
+      "seconds": 0.7168618300929666,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "replay",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-h10fjedx/replay",
+        "original"
+      ],
+      "exit_code": -6,
+      "seconds": 0.11486561386846006,
+      "log_sha256": "6e096c19321e65a2221dfffd5bea25a4d204e0b0324483a9a05a19a90600596f"
+    }
+  ],
+  "error": "replay: ==3715027==ERROR: AddressSanitizer failed to allocate 0xdfff0001000 (15392894357504) bytes at address 2008fff7000 (errno: 12)\n==3715027==ReserveShadowMemoryRange failed while trying to map 0xdfff0001000 bytes. Perhaps you're using ulimit -v\n"
+}

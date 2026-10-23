@@ -1,0 +1,104 @@
+{
+  "passed": true,
+  "variant": "original",
+  "scope": "finite native C-shim regression",
+  "whole_kernel_verified": false,
+  "qcp_c_vcs": 0,
+  "actual_hardware_executed": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-384rz5__",
+  "records": [
+    {
+      "label": "exact-patch",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "patch",
+        "--batch",
+        "--fuzz=0",
+        "-p1",
+        "-d",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-384rz5__/patch",
+        "-i",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/proof/repair.patch"
+      ],
+      "exit_code": 0,
+      "seconds": 0.004336704034358263,
+      "log_sha256": "0f2be16e3cdc7184bc4a7b2af14fcc44897b4a1f7277b7a61c44614563cb4d62"
+    },
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/usr/bin/gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-fno-omit-frame-pointer",
+        "-fsanitize=address,undefined",
+        "-fno-pie",
+        "-no-pie",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/shim/runtime.h",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-384rz5__/selected-rvv.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/shim/harness.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-384rz5__/replay"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5680664300452918,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "replay",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/s8-vclamp/.build/native-original-384rz5__/replay",
+        "original"
+      ],
+      "exit_code": 0,
+      "seconds": 2.3759112767875195,
+      "log_sha256": "cc9e80f3be63f5c9f921ad141948f6c000e436bc0036da37394dd448ee24d486"
+    }
+  ],
+  "checks": {
+    "cases": 19044,
+    "lanes_per_side": 3667557,
+    "disagreements": 6420,
+    "exhaustive_scalar_triples": 16777216,
+    "wrong_result_rejected": true,
+    "frames_checked": true,
+    "minimal_n1_lo1_hi0_input0": {
+      "neon": 1,
+      "rvv": 0,
+      "relation": 0
+    }
+  },
+  "input_sha256": {
+    "spec.c": "e241d3f80c11cd051aa052cd37330e56cb7cd60d6c4b65f02df9d619b7d140b2",
+    "impl/testNEON.c": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+    "impl/testRVV.c": "46c8552d97df5f9ccd11e377103bec7c6492989cef263263c4c337f988b98e4e",
+    "shim/runtime.h": "cb6bc50983af0a95986e2bae4bf9ca677e79fc70e2b79624ba2b728acdfc0287",
+    "shim/harness.c": "7898d2778bbece89a4c934a43c9a0d0a87391a102222a86b6d45e12014e6e0b9",
+    "proof/originals.json": "0eba0ebfc2e9e5ce9cd04677287c8dd4f8f46c0f6750a36732c7ed1163279e2a",
+    "proof/repair.json": "639365b74f22b5e826dba95ce157318701e23ba63a019c07f32bf134ce19dd4c",
+    "proof/repair.patch": "fd939fba6de35a1fe42e5599ed7ef0e05dc61cbeb4b3e950b368d7190614e785",
+    "proof/native.py": "8e4325d51630dedab019e6d52e248119bf15bf60f03eb058e2cfaaac3cedfb1f"
+  },
+  "selected_rvv_sha256": "109360a580298b5e412f3808356668b6511f40b5c9441967c2f060a03fc2ea4e",
+  "patch_exact_application_checked": true,
+  "compiler_sha256": "821af3c74506283c179ca413bb33e6b528805a4dd8a5c09df125e5ad560a9e89",
+  "asan_ubsan_checked": true,
+  "oracle": "Independent scalar signed-byte narrowing and initial-n bulk64/remainder schedule",
+  "limits": [
+    "Finite native C-shim checks only, not QCP proof or physical ISA execution",
+    "Fixed VLEN128/SEW8/LMUL8/VLMAX128 and legal vl=min(AVL,128)",
+    "All signed-byte bounds permitted, including narrowed min>max; int32 params use two-complement low-byte conversion"
+  ]
+}

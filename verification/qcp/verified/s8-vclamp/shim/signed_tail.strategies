@@ -1,0 +1,24 @@
+#include "types_def.h"
+id : 1
+priority : core(0)
+left : UndefStructPreduint8x8_t(?p) at 0
+right : undef_data_at(field_addr(?q,uint8x8_t,s0),U8) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s0),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s1),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s2),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s3),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s4),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s5),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s6),U8));
+         left_add(undef_data_at(field_addr(p,uint8x8_t,s7),U8));
+
+
+id : 2
+priority : core(0)
+left : undef_data_at(pointer_offset(?p,?i,I8),I8) at 0
+right : undef_data_at(?q,U8) at 1
+check : infer(q == pointer_offset(p,i,U8));
+action : left_erase(0);
+         left_add(undef_data_at(pointer_offset(p,i,U8),U8));

@@ -1,0 +1,44 @@
+{
+  "kernel": "s8-vclamp",
+  "implementation_variant": "repaired",
+  "implementation": "impl/testRVV.c",
+  "original_rvv_sha256": "109360a580298b5e412f3808356668b6511f40b5c9441967c2f060a03fc2ea4e",
+  "repaired_rvv_sha256": "46c8552d97df5f9ccd11e377103bec7c6492989cef263263c4c337f988b98e4e",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "fd939fba6de35a1fe42e5599ed7ef0e05dc61cbeb4b3e950b368d7190614e785",
+  "purpose": "Preserve the NEON bulk64 max-then-min and final remainder min-then-max schedules for every signed byte min/max pair, including min>max.",
+  "reason": "Original RVV max-then-min for every element disagrees on the final non-64 remainder whenever narrowed min>max. No min<=max precondition is introduced.",
+  "counterexample": {
+    "n": 1,
+    "input": [
+      0
+    ],
+    "scalar_min": 1,
+    "scalar_max": 0,
+    "neon_output": [
+      1
+    ],
+    "original_rvv_output": [
+      0
+    ]
+  },
+  "repair_source": {
+    "path": "kernels/target/u8-vclamp.c",
+    "sha256": "018e3ba729c18c674b29a40ae7ab04ddd2e10ea59b032f5e9fd794a36681665f",
+    "rule": "Reuse the upstream unsigned clamp bulk64/tail control schedule, preserving signed byte intrinsics and signed public signature."
+  },
+  "authorization": "User explicitly authorized direct impl repairs with original identity, exact patch and counterexamples retained; root task 2026-10-23 confirmed no approval needed.",
+  "qcp_verified": false,
+  "original_counterexample_evidence": {
+    "path": "proof/history/original-counterexample-native-d4fde1b0e9d71d40504b7841a7a07c19a2e7aa93853c980eac492723c15c81cb.json",
+    "sha256": "d4fde1b0e9d71d40504b7841a7a07c19a2e7aa93853c980eac492723c15c81cb",
+    "cases": 19044,
+    "disagreements": 6420,
+    "minimal": "n=1/input0/min1/max0: actual NEON1, originalRVV0, equivalent0",
+    "provenance": "Immutable successful original replay before this history-reference metadata was appended; original C hashes and runtime/caller identities retained in that record."
+  },
+  "related_historical_scope": {
+    "reference": "Arcadia-y verification @4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca / S8Clamp Spec entry",
+    "boundary": "Its explicit Valid/ordered bounds premise excludes the new min>max counterexample; it is not inherited QCP evidence."
+  }
+}

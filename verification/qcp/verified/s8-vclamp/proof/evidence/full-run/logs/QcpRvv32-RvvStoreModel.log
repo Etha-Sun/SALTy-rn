@@ -1,0 +1,36 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.264 secs (0.136u,0.127s)
+Chars 41 - 79 [From~QcpRvv32~Require~Export~R...] 3.14 secs (2.625u,0.515s)
+Chars 80 - 101 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 102 - 121 [Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 122 - 621 [Definition~rvv_pack32~(x0~:~fp...] 0.002 secs (0.002u,0.s)
+Chars 622 - 689 [Definition~rvv_take~(i~:~Z)~(x...] 0. secs (0.u,0.s)
+Chars 690 - 753 [Definition~rvv_get~(i~:~Z)~(xs...] 0. secs (0.u,0.s)
+Chars 754 - 811 [Definition~rvv_snoc~(xs~:~list...] 0. secs (0.u,0.s)
+Chars 812 - 863 [Definition~rvv_length~(xs~:~li...] 0. secs (0.u,0.s)
+Chars 864 - 992 [Lemma~take_step~:~~~forall~(xs...] 0. secs (0.u,0.s)
+Chars 993 - 999 [Proof.] 0. secs (0.u,0.s)
+Chars 1002 - 1126 [(assert~~~(Hnth~:~~~~forall~(n...] 0. secs (0.u,0.s)
+Chars 1129 - 1130 [{] 0. secs (0.u,0.s)
+Chars 1131 - 1196 [(induction~n;~destruct~l;~simp...] 0.004 secs (0.004u,0.s)
+Chars 1201 - 1209 [f_equal.] 0.001 secs (0.001u,0.s)
+Chars 1210 - 1220 [(apply~IHn).] 0. secs (0.u,0.s)
+Chars 1221 - 1225 [lia.] 0. secs (0.u,0.s)
+Chars 1226 - 1227 [}] 0. secs (0.u,0.s)
+Chars 1230 - 1245 [(intros~xs~i~Hi).] 0. secs (0.u,0.s)
+Chars 1246 - 1287 [(unfold~rvv_snoc,~rvv_take,~rv...] 0. secs (0.u,0.s)
+Chars 1290 - 1344 [replace~(Z.to_nat~(i~+~1))~wit...] 0.002 secs (0.002u,0.s)
+Chars 1347 - 1358 [(apply~Hnth).] 0. secs (0.u,0.s)
+Chars 1359 - 1389 [(rewrite~Zlength_correct~in~Hi).] 0. secs (0.u,0.s)
+Chars 1390 - 1394 [lia.] 0.001 secs (0.001u,0.s)
+Chars 1395 - 1399 [Qed.] 0.005 secs (0.005u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1400 - 1428 [Print~Assumptions~take_step.] 0.919 secs (0.903u,0.015s)

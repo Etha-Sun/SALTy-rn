@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "formal_proof_replayed": false,
+  "scope": "Finite actual kernels/public wrapper with array runtime shims and UBSan; not scalar-field provider or ISA execution. System headers not hashed.",
+  "input_sha256": {
+    "impl/testNEON.c": "4edb4d3c7d185bb0c969664c7408e7161b01a7d0f52cc651d2919c9d9e6bda7f",
+    "impl/testRVV.c": "46c8552d97df5f9ccd11e377103bec7c6492989cef263263c4c337f988b98e4e",
+    "shim/harness.c": "7898d2778bbece89a4c934a43c9a0d0a87391a102222a86b6d45e12014e6e0b9",
+    "shim/runtime.h": "cb6bc50983af0a95986e2bae4bf9ca677e79fc70e2b79624ba2b728acdfc0287",
+    "spec.c": "e241d3f80c11cd051aa052cd37330e56cb7cd60d6c4b65f02df9d619b7d140b2"
+  },
+  "input_identity_unchanged": true,
+  "per_process_memory_GiB": 16,
+  "checks": {
+    "cases": 19044,
+    "lanes_per_side": 3667557,
+    "disagreements": 0,
+    "exhaustive_scalar_triples": 16777216,
+    "wrong_result_rejected": true,
+    "frames_checked": true,
+    "minimal_n1_lo1_hi0_input0": {
+      "neon": 1,
+      "rvv": 1,
+      "relation": 1
+    }
+  },
+  "records": [
+    {
+      "label": "native-dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/shim/runtime.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/impl/testRVV.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/shim/harness.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.028627963038161397,
+      "log_sha256": "84bd35a15d870ac9d7fc9681aeb31fd989089b918e241e97eebd9c7393b5c407"
+    },
+    {
+      "label": "native-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/shim/runtime.h",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/impl/testNEON.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/impl/testRVV.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/spec.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/shim/harness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/.build/publication-6uuyq9_p/native-ubsan"
+      ],
+      "exit_code": 0,
+      "seconds": 0.48116559186019003,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "native-run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/s8-vclamp/.build/publication-6uuyq9_p/native-ubsan",
+        "repaired"
+      ],
+      "exit_code": 0,
+      "seconds": 1.2777697839774191,
+      "log_sha256": "ce0db35d0e65dfe42ad57a0232bdf639b2971643220eae44b1338ea058730979"
+    }
+  ]
+}

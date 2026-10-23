@@ -1,0 +1,26 @@
+From Coq Require Import ZArith String Lia.
+From S8Clamp Require Import NeonFrame neon_primitives_goal.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope string_scope.
+Local Open Scope sac.
+Local Opaque s8_min s8_max.
+From S8Clamp Require Import NeonVectorPart00 NeonVectorPart01 NeonVectorPart02 NeonVectorPart03 NeonVectorPart04 NeonVectorPart05 NeonVectorPart06 NeonVectorPart07 NeonVectorPart08 NeonVectorPart09 NeonVectorPart10 NeonVectorPart11 NeonVectorPart12 NeonVectorPart13 NeonVectorPart14 NeonVectorPart15.
+Module CheckedNeonPrimitives : S8Clamp.neon_primitives_goal.VC_Correct.
+Include S8Clamp.NeonVectorPart00.CheckedNeonVectorPart00.
+Include S8Clamp.NeonVectorPart01.CheckedNeonVectorPart01.
+Include S8Clamp.NeonVectorPart02.CheckedNeonVectorPart02.
+Include S8Clamp.NeonVectorPart03.CheckedNeonVectorPart03.
+Include S8Clamp.NeonVectorPart04.CheckedNeonVectorPart04.
+Include S8Clamp.NeonVectorPart05.CheckedNeonVectorPart05.
+Include S8Clamp.NeonVectorPart06.CheckedNeonVectorPart06.
+Include S8Clamp.NeonVectorPart07.CheckedNeonVectorPart07.
+Include S8Clamp.NeonVectorPart08.CheckedNeonVectorPart08.
+Include S8Clamp.NeonVectorPart09.CheckedNeonVectorPart09.
+Include S8Clamp.NeonVectorPart10.CheckedNeonVectorPart10.
+Include S8Clamp.NeonVectorPart11.CheckedNeonVectorPart11.
+Include S8Clamp.NeonVectorPart12.CheckedNeonVectorPart12.
+Include S8Clamp.NeonVectorPart13.CheckedNeonVectorPart13.
+Include S8Clamp.NeonVectorPart14.CheckedNeonVectorPart14.
+Include S8Clamp.NeonVectorPart15.CheckedNeonVectorPart15.
+End CheckedNeonPrimitives.

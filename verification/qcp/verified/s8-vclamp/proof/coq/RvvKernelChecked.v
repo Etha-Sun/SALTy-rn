@@ -1,0 +1,22 @@
+From S8Clamp Require Import rvv_unit_goal S8ArraysStrategy rvv_vectors_strategy_proof rvv_kernel_strategy_proof RvvKernelPart00 RvvKernelPart01 RvvKernelPart02 RvvKernelPart03 RvvKernelPart04 RvvKernelPart05 RvvKernelPart06 RvvKernelPart07 RvvKernelPart08 RvvKernelPart09 RvvKernelPart10 RvvKernelPart11 RvvKernelPart12 RvvKernelPart13 RvvKernelPart14 RvvKernelPart15.
+Module CheckedRvvKernel : S8Clamp.rvv_unit_goal.VC_Correct.
+Include S8Clamp.S8ArraysStrategy.CheckedS8Arrays.
+Include S8Clamp.rvv_vectors_strategy_proof.CheckedRvvVectorsStrategy.
+Include S8Clamp.rvv_kernel_strategy_proof.CheckedRvvKernelStrategy.
+Include S8Clamp.RvvKernelPart00.CheckedRvvKernelPart00.
+Include S8Clamp.RvvKernelPart01.CheckedRvvKernelPart01.
+Include S8Clamp.RvvKernelPart02.CheckedRvvKernelPart02.
+Include S8Clamp.RvvKernelPart03.CheckedRvvKernelPart03.
+Include S8Clamp.RvvKernelPart04.CheckedRvvKernelPart04.
+Include S8Clamp.RvvKernelPart05.CheckedRvvKernelPart05.
+Include S8Clamp.RvvKernelPart06.CheckedRvvKernelPart06.
+Include S8Clamp.RvvKernelPart07.CheckedRvvKernelPart07.
+Include S8Clamp.RvvKernelPart08.CheckedRvvKernelPart08.
+Include S8Clamp.RvvKernelPart09.CheckedRvvKernelPart09.
+Include S8Clamp.RvvKernelPart10.CheckedRvvKernelPart10.
+Include S8Clamp.RvvKernelPart11.CheckedRvvKernelPart11.
+Include S8Clamp.RvvKernelPart12.CheckedRvvKernelPart12.
+Include S8Clamp.RvvKernelPart13.CheckedRvvKernelPart13.
+Include S8Clamp.RvvKernelPart14.CheckedRvvKernelPart14.
+Include S8Clamp.RvvKernelPart15.CheckedRvvKernelPart15.
+End CheckedRvvKernel.

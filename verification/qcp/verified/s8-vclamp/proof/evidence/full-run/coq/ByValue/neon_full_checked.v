@@ -1,0 +1,13 @@
+From ByValue Require Import neon_unit_goal neon_reused neon_adapted neon_copy_checked neon_load_calls neon_store_calls neon_pure_tail.
+Module CheckedOriginalNeon : neon_unit_goal.VC_Correct.
+Include neon_bridge_strategy_proof.CheckedNeonBridge.
+Include neon_tail_strategy_proof.CheckedNeonTail.
+Include float_array_strategy_proof.CheckedFloatArray.
+Include ReusedNeon.
+Include AdaptedNeonTactics.
+Include CheckedNeonCopies.
+Include CheckedNeonLoads.
+Include NeonStoreCalls.
+Include NeonPureTail.
+End CheckedOriginalNeon.
+Print Assumptions CheckedOriginalNeon.proof_of_test_neon_return_wit_1.

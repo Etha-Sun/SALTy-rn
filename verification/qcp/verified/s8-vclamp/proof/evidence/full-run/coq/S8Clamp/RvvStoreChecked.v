@@ -1,0 +1,21 @@
+From S8Clamp Require Import rvv_store_goal S8ArraysStrategy rvv_store_strategy_proof RvvStorePart00 RvvStorePart01 RvvStorePart02 RvvStorePart03 RvvStorePart04 RvvStorePart05 RvvStorePart06 RvvStorePart07 RvvStorePart08 RvvStorePart09 RvvStorePart10 RvvStorePart11 RvvStorePart12 RvvStorePart13 RvvStorePart14 RvvStorePart15.
+Module CheckedRvvStore : S8Clamp.rvv_store_goal.VC_Correct.
+Include S8Clamp.S8ArraysStrategy.CheckedS8Arrays.
+Include S8Clamp.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include S8Clamp.RvvStorePart00.CheckedRvvStorePart00.
+Include S8Clamp.RvvStorePart01.CheckedRvvStorePart01.
+Include S8Clamp.RvvStorePart02.CheckedRvvStorePart02.
+Include S8Clamp.RvvStorePart03.CheckedRvvStorePart03.
+Include S8Clamp.RvvStorePart04.CheckedRvvStorePart04.
+Include S8Clamp.RvvStorePart05.CheckedRvvStorePart05.
+Include S8Clamp.RvvStorePart06.CheckedRvvStorePart06.
+Include S8Clamp.RvvStorePart07.CheckedRvvStorePart07.
+Include S8Clamp.RvvStorePart08.CheckedRvvStorePart08.
+Include S8Clamp.RvvStorePart09.CheckedRvvStorePart09.
+Include S8Clamp.RvvStorePart10.CheckedRvvStorePart10.
+Include S8Clamp.RvvStorePart11.CheckedRvvStorePart11.
+Include S8Clamp.RvvStorePart12.CheckedRvvStorePart12.
+Include S8Clamp.RvvStorePart13.CheckedRvvStorePart13.
+Include S8Clamp.RvvStorePart14.CheckedRvvStorePart14.
+Include S8Clamp.RvvStorePart15.CheckedRvvStorePart15.
+End CheckedRvvStore.

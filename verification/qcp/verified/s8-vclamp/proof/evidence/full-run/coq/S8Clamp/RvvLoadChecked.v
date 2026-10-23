@@ -1,0 +1,21 @@
+From S8Clamp Require Import rvv_load_goal S8ArraysStrategy rvv_vectors_strategy_proof RvvLoadPart00 RvvLoadPart01 RvvLoadPart02 RvvLoadPart03 RvvLoadPart04 RvvLoadPart05 RvvLoadPart06 RvvLoadPart07 RvvLoadPart08 RvvLoadPart09 RvvLoadPart10 RvvLoadPart11 RvvLoadPart12 RvvLoadPart13 RvvLoadPart14 RvvLoadPart15.
+Module CheckedRvvLoad : S8Clamp.rvv_load_goal.VC_Correct.
+Include S8Clamp.S8ArraysStrategy.CheckedS8Arrays.
+Include S8Clamp.rvv_vectors_strategy_proof.CheckedRvvVectorsStrategy.
+Include S8Clamp.RvvLoadPart00.CheckedRvvLoadPart00.
+Include S8Clamp.RvvLoadPart01.CheckedRvvLoadPart01.
+Include S8Clamp.RvvLoadPart02.CheckedRvvLoadPart02.
+Include S8Clamp.RvvLoadPart03.CheckedRvvLoadPart03.
+Include S8Clamp.RvvLoadPart04.CheckedRvvLoadPart04.
+Include S8Clamp.RvvLoadPart05.CheckedRvvLoadPart05.
+Include S8Clamp.RvvLoadPart06.CheckedRvvLoadPart06.
+Include S8Clamp.RvvLoadPart07.CheckedRvvLoadPart07.
+Include S8Clamp.RvvLoadPart08.CheckedRvvLoadPart08.
+Include S8Clamp.RvvLoadPart09.CheckedRvvLoadPart09.
+Include S8Clamp.RvvLoadPart10.CheckedRvvLoadPart10.
+Include S8Clamp.RvvLoadPart11.CheckedRvvLoadPart11.
+Include S8Clamp.RvvLoadPart12.CheckedRvvLoadPart12.
+Include S8Clamp.RvvLoadPart13.CheckedRvvLoadPart13.
+Include S8Clamp.RvvLoadPart14.CheckedRvvLoadPart14.
+Include S8Clamp.RvvLoadPart15.CheckedRvvLoadPart15.
+End CheckedRvvLoad.

@@ -1,0 +1,11 @@
+#include "../../shim/rvv_kernel_model.h"
+id : 1
+priority : core(0)
+left : CharArray::undef_full(?p,?n) at 0
+right : CharArray::undef_full(?q,?m) at 1
+check : infer(q == p);
+        infer(0 <= m);
+        infer(m <= n);
+action : left_erase(0);
+         right_erase(1);
+         left_add(CharArray::undef_full(pointer_offset(p,m,char),n-m));

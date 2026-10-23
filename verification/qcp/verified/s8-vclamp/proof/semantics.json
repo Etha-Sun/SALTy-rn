@@ -1,0 +1,83 @@
+{
+  "kernel": "s8-vclamp",
+  "implementation_variant": "repaired",
+  "observation": "Exact equality of all n output signed-byte values/bit patterns",
+  "domain": {
+    "n": "positive, byte-addressable under public disjoint memory contracts",
+    "input_padding_bytes": 7,
+    "parameters": "all int32 bit patterns, narrowed with signed_last_nbits x 8; no bound ordering assumption",
+    "byte_values": "all -128..127"
+  },
+  "configuration": {
+    "address": "LP64, little endian",
+    "RVV": {
+      "VLEN": 128,
+      "SEW": 8,
+      "LMUL": 8,
+      "VLMAX": 128,
+      "vl": "min(AVL,128), one legal fixed implementation policy",
+      "vstart": 0,
+      "inactive_lanes": "positive-zero representative of unobserved inactive byte fields; no ISA refinement claim"
+    }
+  },
+  "schedule": {
+    "bulk": "first n-(n mod 64) elements: min(max(x,lo),hi)",
+    "tail": "remaining n mod 64 elements: max(min(x,hi),lo)",
+    "unordered_bounds": "Preserved and distinguished by original/repaired native regressions, not excluded"
+  },
+  "sources": [
+    {
+      "title": "Arm Neon Intrinsics Reference",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "operations": [
+        "vdupq_n_s8",
+        "vmin_s8",
+        "vminq_s8",
+        "vmax_s8",
+        "vmaxq_s8",
+        "vget_low_s8",
+        "vext_s8",
+        "vld1_s8",
+        "vld1q_s8",
+        "vst1_s8",
+        "vst1q_s8",
+        "vreinterpret_u16_s8",
+        "vreinterpret_u32_s8",
+        "vst1_lane_u16",
+        "vst1_lane_u32",
+        "vst1_lane_s8"
+      ],
+      "boundary": "Signed SMIN/SMAX lanes; byte order preserved by reinterpretation; lane0 word stores have byte-backed views."
+    },
+    {
+      "title": "RISC-V V Standard Extension v1.0",
+      "url": "https://docs.riscv.org/reference/isa/unpriv/v-st-ext",
+      "operations": [
+        "vmin.vx",
+        "vmax.vx",
+        "vle8.v",
+        "vse8.v",
+        "vsetvli"
+      ],
+      "boundary": "Signed min/max and active unit-stride byte accesses; fixed legal VL policy, not arbitrary VLEN."
+    },
+    {
+      "title": "RISC-V Vector C Intrinsics v1.0",
+      "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html"
+    }
+  ],
+  "status": {
+    "scalar_actual_body": "four actual bodies/nine fields checked in standalone typed component gate",
+    "neon_vector_actual_body": "Complete actual scalar9/vector108/self-ext10/read-load105/store29/signedtail41 component C gates passed; whole kernel not yet checked",
+    "rvv_vector_actual_body": "load128 component 386 fields passed; arithmetic/store/full repaired kernel still in progress",
+    "tail_byte_bridge": "41 actual C fields+2 strategies+24 math ordinary Coq complete; physical ISA/register-layout refinement remains open",
+    "whole_kernel": "not yet checked",
+    "ISA_correspondence": "not proved"
+  },
+  "limits": [
+    "No complete kernel theorem yet",
+    "Native arrays and formal scalar-field structs need explicit representation bridges",
+    "Inherited QCP/Coq memory/type/address assumptions remain visible",
+    "Historical Arcadia ordered-bounds/Frama-C results are references, not new QCP evidence"
+  ]
+}

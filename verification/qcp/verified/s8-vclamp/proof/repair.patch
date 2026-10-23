@@ -1,0 +1,40 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -9,16 +9,33 @@
+   assert(input != NULL);
+   assert(output != NULL);
+ 
+-  const int8_t min = (int8_t) params->scalar.min;
+-  const int8_t max = (int8_t) params->scalar.max;
++  const int8_t voutput_min = (int8_t) params->scalar.min;
++  const int8_t voutput_max = (int8_t) params->scalar.max;
++
++  size_t batch64 = batch & ~((size_t)63);
++  while (batch64 > 0) {
++    size_t vl = __riscv_vsetvl_e8m8(batch64);
++    
++    vint8m8_t vacc = __riscv_vle8_v_i8m8(input, vl);
++    
++    vacc = __riscv_vmax_vx_i8m8(vacc, voutput_min, vl);
++    vacc = __riscv_vmin_vx_i8m8(vacc, voutput_max, vl);
++    
++    __riscv_vse8_v_i8m8(output, vacc, vl);
++    
++    input += vl;
++    output += vl;
++    batch -= vl;
++    batch64 -= vl;
++  }
+ 
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m8(batch);
+     
+     vint8m8_t vacc = __riscv_vle8_v_i8m8(input, vl);
+     
+-    vacc = __riscv_vmax_vx_i8m8(vacc, min, vl);
+-    vacc = __riscv_vmin_vx_i8m8(vacc, max, vl);
++    vacc = __riscv_vmin_vx_i8m8(vacc, voutput_max, vl);
++    vacc = __riscv_vmax_vx_i8m8(vacc, voutput_min, vl);
+     
+     __riscv_vse8_v_i8m8(output, vacc, vl);
+     
