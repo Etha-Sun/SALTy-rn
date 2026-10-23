@@ -108,7 +108,7 @@ def main():
             unit_dir = run / ('resume-inputs' if args.resume_run else 'units') / namespace
             unit_dir.mkdir(parents=True, exist_ok=True)
             source_copy = unit_dir / (stem + '.c')
-            write_unit(source, kernels.get(source, review.get(source, source.read_text())), source_copy)
+            write_unit(source, kernels.get(source, review.get((namespace, stem), source.read_text())), source_copy)
             expanded = unit_dir / (stem + '_expanded.c')
             execute(['gcc', '-E', '-P', '-CC', '-nostdinc', source_copy, '-o', expanded], namespace + '-' + stem + '-cpp')
             if 'annotations' in item:

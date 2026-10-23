@@ -9,7 +9,7 @@ vadd/
   contracts/               本 kernel 的观察关系、wrapper 契约及模型绑定
   proof/
     coq/                   全部本地 Coq 源依赖，按命名空间分组
-    c/                     spec 拆分模板和证明策略（不再存共享 shim 或完整内核副本）
+    c/                     只有 Inv/Assert 注释 JSON 和证明策略，无 C 函数体/契约
     annotations/           两侧内核的注释插入位置；不包含可执行 C
     prepare.py             从 impl/ 和 spec.c 生成验证输入，只插入证明注释
     check.py               生成实际 VC，重新编译本地证明依赖
@@ -59,9 +59,12 @@ python3 verification/qcp/vadd/proof/native.py
 第二个命令还重新生成两侧 kernel、shim 及 RVV primitive 的 VC，检查策略，
 并从空输出目录按依赖顺序编译全部 87 个本地 Coq 模块，最后编译 `FinalCheck.v`；不会读取旧实验目录中的 `.vo`。
 `spec.c` 是实际输入：准备脚本从这里提取函数体和契约，不使用旧 wrapper 替代它。
-spec 拆分单元的不变量取自 `proof/c/`，内核不变量取自 `proof/annotations/`，均只插入注释。
-函数外的类型和导入骨架由 `proof/spec-preamble.txt` 固定，额外宏、声明或 include 会被拒绝，
-避免直接编译的入口与拆分的证明输入出现语义差异。
+spec 单元从 `spec.c` 直接提取函数体、声明、契约和首个函数前的完整前缀。
+`manifest.json` 只列出每个验证单元使用哪些函数、哪些作为定义/声明、哪些策略和证明注释；
+没有保存另一份 C 签名、函数体或契约。函数之间/之后出现未处理的宏、声明或逻辑导入会被拒绝，
+避免把有位置含义的全局文本搬到前面。`proof/spec-preamble.txt` 已删除，类型和导入前缀也只在公开 spec 中维护。
+不变量/Assert 取自 `proof/c/` 下的 `*.annotations.json`（按命名空间分目录），内核注释取自 `proof/annotations/`。
+插入后检查 C token 一致；spec 注释只允许单个 `Inv` 或 `Assert`，拒绝可执行代码、契约及 Coq 导入。
 第三个命令直接链接 `spec.c` 与两个原始 C 文件，使用共享 C runtime 做有限回归。
 
 需要已配置的 QCP 2.1.4、Coq 8.20.1、`qcp-env`、GCC。
@@ -76,11 +79,10 @@ spec 拆分单元的不变量取自 `proof/c/`，内核不变量取自 `proof/an
 `QcpRvv32`、`ByvalueRvv` 存放 RVV 证明；`VaddComparator`、`VaddWrapper` 存放比较与组合证明。
 新运行位于 `.build/`，结果见 `proof/review-status.json`、`proof/status.json` 和 `proof/native-status.json`。
 
-本次整理后的完整检查已通过：11 个实际 C 单元和 8 组策略重新生成匹配，87 个本地 Coq 模块全部在该次空目录运行中编译，最后 `FinalCheck` 通过。
-其中先串行完成 38 个，核对源码、CPP、VC 与编译参数后，用 32 并发续跑其余 49 个；没有复用旧实验 `.vo`。
-加强后的 `equivalent` 后置条件显式包含 `outputs_related(L,R)`，最终证明也已重编译通过。
-另一次空目录 `--review-only --jobs 32` 检查：21 个模块加门禁通过，约 38 秒；430 个 native 回归通过，且拒绝不等输出。
-六个来源/覆盖负对照和并行续跑记录见 `proof/layout-audit.json`，全量命令记录见 `proof/status.json`。
+本次删除重复模板后的完整检查已通过：从空目录重新生成核对 11 个 C 单元、8 组策略，并用 32 并发编译全部 87 个本地 Coq 模块及 `FinalCheck`，约 380 秒。
+没有中断续跑，也没有复用旧实验 `.vo`。四份 spec 目标只增加 live 前缀带来的 Coq 导入，证明义务未变；没有修改任何手写 Coq 证明。
+独立空目录审核检查：21 模块加门禁通过，约 37 秒；430 个 native 回归通过，且拒绝不等输出。10 个来源/注释/覆盖负对照均被拒绝。
+完整命令记录见 `proof/status.json`、`proof/review-status.json`；来源审核与负对照见 `proof/layout-audit.json`。
 旧 `proof/source-audit.json`、`negative-status.json` 保留整理前快照的证据，不作为本次新运行结果。
 当前可计为 C-shim 语义、既定前置条件下的模块化等价性 1/40；真实 ISA 对应另列。
 

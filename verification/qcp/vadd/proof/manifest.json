@@ -945,7 +945,8 @@
     {
       "path": "proof/coq/VaddComparator/comparator_goal.v",
       "origin": "verification/qcp/experiments/vadd-comparator/comparator_goal.v",
-      "sha256": "aaf6c276bc3f70e4efc9b3b75aebac0d4e8737425697a849c14b2b64df09febe"
+      "sha256": "b7879c254dc73f14a3a7bb69b67d0604844a1ce59f0dacc7a25c13798336d3da",
+      "change": "Import-only regeneration from live spec.c preamble; proof obligations unchanged"
     },
     {
       "path": "proof/coq/VaddComparator/comparator_checked.v",
@@ -955,7 +956,8 @@
     {
       "path": "proof/coq/NanBridge/bridge_goal.v",
       "origin": "verification/qcp/experiments/nan-bridge/bridge_goal.v",
-      "sha256": "ac7a60d536083b14dadc11dff2e55ddc3f1fa9166cd88f1d4a4cdf58da99d61e"
+      "sha256": "68611929233fb03de772ffababc805435ac3b2048e976a5d05575212dbf727c5",
+      "change": "Import-only regeneration from live spec.c preamble; proof obligations unchanged"
     },
     {
       "path": "proof/coq/NanBridge/bridge_checked.v",
@@ -965,7 +967,8 @@
     {
       "path": "proof/coq/QcpVadd/array_read_goal.v",
       "origin": "verification/qcp/shared/vadd/array_read_goal.v",
-      "sha256": "d98ea7718289aed8ea5da0051db71f7f7a0c92f8ff183b0fa56a75bfabaf327d"
+      "sha256": "02f18a90b32f5fb6060d64559704b00ab41b070523a5548019920a110445738c",
+      "change": "Import-only regeneration from live spec.c preamble; proof obligations unchanged"
     },
     {
       "path": "proof/coq/QcpVadd/array_read_checked.v",
@@ -990,8 +993,8 @@
     {
       "path": "proof/coq/VaddWrapper/wrapper_goal.v",
       "origin": "verification/qcp/experiments/vadd-wrapper/wrapper_goal.v",
-      "sha256": "2e0844384ad5f74461f96df0fe4a0d871e8fe45fed9444ce4ef78016d9d56233",
-      "change": "Explicit outputs_related(L,R) in final equivalent postcondition; no executable C change"
+      "sha256": "332c6dc3b20f5f7d7b82d3ce6ffb9fb971b0fc7a9721ff7d8bb2c4accb00b54e",
+      "change": "Import-only regeneration from live spec.c preamble; proof obligations unchanged"
     },
     {
       "path": "proof/coq/relations/ResultBridge.v",
@@ -1021,39 +1024,15 @@
       "change": "relative C include paths only"
     },
     {
-      "path": "proof/c/QcpVadd/array_read.c",
-      "origin": "verification/qcp/shared/vadd/array_read.c",
-      "sha256": "2deba747bbf3b599cde97d251a2cf16b5a8fec95931bd69c8579f071affb025d",
-      "change": "relative C include paths only"
-    },
-    {
-      "path": "proof/c/NanBridge/bridge.c",
-      "origin": "verification/qcp/experiments/nan-bridge/bridge.c",
-      "sha256": "5d51cc2f0344c754dc8b203ba939821d0bcb07310badfdf157e2bc0eeaf72f2e",
-      "change": "relative C include paths only"
-    },
-    {
       "path": "contracts/VaddComparator/comparator_def.h",
       "origin": "verification/qcp/experiments/vadd-comparator/comparator_def.h",
       "sha256": "25dc61f618f3fc51616d531bb9a037873b0086fce57dbf9ad382b004fd204155",
       "change": "relative C include paths only"
     },
     {
-      "path": "proof/c/VaddComparator/comparator.c",
-      "origin": "verification/qcp/experiments/vadd-comparator/comparator.c",
-      "sha256": "278d088001fdc920907e8fb55c8ed12b61075d09aa77b0fbdc2ad38288d570ac",
-      "change": "relative C include paths only"
-    },
-    {
       "path": "contracts/VaddWrapper/wrapper_def.h",
       "origin": "verification/qcp/experiments/vadd-wrapper/wrapper_def.h",
       "sha256": "80ab06f425476b7a195dc1097b43b299a1ff00378453a20b7ee9f2e44ee16835",
-      "change": "relative C include paths only"
-    },
-    {
-      "path": "proof/c/VaddWrapper/wrapper.c",
-      "origin": "verification/qcp/experiments/vadd-wrapper/wrapper.c",
-      "sha256": "ab092cef387f8cc21b15ff1e0316c7692e4dd29bee8cd07d1345436ee15cb962",
       "change": "relative C include paths only"
     },
     {
@@ -1225,24 +1204,84 @@
       "path": "../shared/c-shim/f32/ByValue/frontend.h",
       "origin": "extracted from annotated VADD input; executable kernel source is impl/",
       "sha256": "a2144509dfd61aa39443a87ad2c1b811774ceee3a2c3617ef0a28ba06ca8a416"
+    },
+    {
+      "path": "proof/c/VaddComparator/comparator.annotations.json",
+      "origin": "Proof-only annotations extracted from former C template; functions/contracts live only in spec.c",
+      "sha256": "ac178ab7da7d60a15655bdcaae0d0d16a93e5a050769fa55a0a85ea097227d17"
+    },
+    {
+      "path": "proof/c/VaddWrapper/wrapper.annotations.json",
+      "origin": "Proof-only annotations extracted from former C template; functions/contracts live only in spec.c",
+      "sha256": "e1c2b1d0d0bacdb2f4815dc5d59bb57d38b7bb0160d816866a6f618e9fa97404"
     }
   ],
   "units": [
     {
       "namespace": "QcpVadd",
-      "path": "c/QcpVadd/array_read.c"
+      "path": "../spec.c",
+      "stem": "array_read",
+      "functions": [
+        "qcp_vadd_read"
+      ],
+      "definitions": [
+        "qcp_vadd_read"
+      ],
+      "strategies": [
+        "float_array.strategies"
+      ]
     },
     {
       "namespace": "NanBridge",
-      "path": "c/NanBridge/bridge.c"
+      "path": "../spec.c",
+      "stem": "bridge",
+      "functions": [
+        "preserve_float",
+        "check_observation",
+        "same_lane"
+      ],
+      "definitions": [
+        "preserve_float",
+        "check_observation",
+        "same_lane"
+      ],
+      "strategies": []
     },
     {
       "namespace": "VaddComparator",
-      "path": "c/VaddComparator/comparator.c"
+      "path": "../spec.c",
+      "stem": "comparator",
+      "functions": [
+        "qcp_vadd_read",
+        "same_lane",
+        "compare_outputs"
+      ],
+      "definitions": [
+        "compare_outputs"
+      ],
+      "proof_annotations": "c/VaddComparator/comparator.annotations.json",
+      "strategies": [
+        "comparator.strategies"
+      ]
     },
     {
       "namespace": "VaddWrapper",
-      "path": "c/VaddWrapper/wrapper.c"
+      "path": "../spec.c",
+      "stem": "wrapper",
+      "functions": [
+        "test_neon",
+        "test_rvv",
+        "compare_outputs",
+        "equivalent"
+      ],
+      "definitions": [
+        "equivalent"
+      ],
+      "proof_annotations": "c/VaddWrapper/wrapper.annotations.json",
+      "strategies": [
+        "comparator.strategies",
+        "wrapper.strategies"
+      ]
     },
     {
       "namespace": "ByValue",

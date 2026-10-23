@@ -19,6 +19,7 @@ Import Snaive_C_Rules64.
 Require Import QcpVadd.VaddBits.
 Require Import VaddComparator.ComparatorLogic.
 Require Import VaddWrapper.WrapperLogic.
+Require Import NanBridge.BridgeLogic.
 Local Open Scope sac.
 From VaddComparator Require Import comparator_strategy_goal.
 From VaddComparator Require Import comparator_strategy_proof.

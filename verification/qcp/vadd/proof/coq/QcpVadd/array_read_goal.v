@@ -17,6 +17,9 @@ Local Open Scope string_scope.
 Local Open Scope list.
 Import Snaive_C_Rules64.
 Require Import QcpVadd.VaddBits.
+Require Import VaddComparator.ComparatorLogic.
+Require Import VaddWrapper.WrapperLogic.
+Require Import NanBridge.BridgeLogic.
 Local Open Scope sac.
 From QcpVadd Require Import float_array_strategy_goal.
 From QcpVadd Require Import float_array_strategy_proof.

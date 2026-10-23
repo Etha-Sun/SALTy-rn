@@ -1,50 +1,214 @@
 {
   "passed": true,
-  "run_directory": "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/vadd/.build/layout-audit-3wsl_whn",
-  "current_units_cpp_checked": 11,
-  "positive_c_call_and_contract_closure": true,
-  "negative_controls": {
-    "missing_final_root": {
+  "scope": "Independent cleanup audit plus a fresh conditional review-only replay; separate full replay is not certified by this report.",
+  "source_sha256": {
+    "proof/prepare.py": "21ec1155f6057629eb43bda3126b18caca4af66e573ff8bb66609599cc1cf05d",
+    "proof/check.py": "ae3965600aa0ea342c0160b38b46679b09c92a14de91afda86ffb3faecc38ac2",
+    "proof/coverage.py": "813f00d0266102c836bce5a1319f266f97f155f31c08d680f374eeba2ac80ec6",
+    "proof/parallel.py": "cd44be4fe53431e74b11b31cda5fa13b40add4007c126d4f9b841d0b4ce67769",
+    "spec.c": "614892749e419a045c343788a1e0927bd6d07f31bca969124491d927b596e345"
+  },
+  "review_run": "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/vadd/.build/review-lzu4e5wn",
+  "review_status_sha256": "90f3947ece0f3a7f5234822178dac28ed4a54c2d0564a5e40f8ac348a5b5b634",
+  "fresh_review": {
+    "passed": true,
+    "local_modules": 21,
+    "parallel_jobs": 32,
+    "all_commands_exit0": true,
+    "elapsed_file_timestamp_seconds": 37.008
+  },
+  "native": {
+    "passed": true,
+    "cases": 430,
+    "unequal_outputs_rejected": true,
+    "entry": "spec.c + impl/testNEON.c + impl/testRVV.c",
+    "scope": "Finite native regression using the shared C runtime; not a proof."
+  },
+  "source_derivation": {
+    "source": "spec.c",
+    "all_spec_units_use_live_preamble": true,
+    "spec_unit_manifest_path": "../spec.c",
+    "proof_c_c_files": 0,
+    "duplicate_spec_preamble_exists": false,
+    "proof_annotations": "Only Inv/Assert comments; strategy references come from manifest metadata.",
+    "cpp_function_instances": [
+      {
+        "unit": "QcpVadd/array_read",
+        "function": "qcp_vadd_read",
+        "definition": true,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "NanBridge/bridge",
+        "function": "preserve_float",
+        "definition": true,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "NanBridge/bridge",
+        "function": "check_observation",
+        "definition": true,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "NanBridge/bridge",
+        "function": "same_lane",
+        "definition": true,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddComparator/comparator",
+        "function": "qcp_vadd_read",
+        "definition": false,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddComparator/comparator",
+        "function": "same_lane",
+        "definition": false,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddComparator/comparator",
+        "function": "compare_outputs",
+        "definition": true,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddWrapper/wrapper",
+        "function": "test_neon",
+        "definition": false,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddWrapper/wrapper",
+        "function": "test_rvv",
+        "definition": false,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddWrapper/wrapper",
+        "function": "compare_outputs",
+        "definition": false,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      },
+      {
+        "unit": "VaddWrapper/wrapper",
+        "function": "equivalent",
+        "definition": true,
+        "cpp_c_tokens_match_live_spec": true,
+        "contract_matches_live_spec": true
+      }
+    ]
+  },
+  "closure": {
+    "scope": "review",
+    "current_fresh_cpp_units": 4,
+    "final_check_module_aliases": 4,
+    "conditional_external_callees": [
+      "test_neon",
+      "test_rvv"
+    ],
+    "all_other_declared_or_called_functions_have_checked_bodies": true
+  },
+  "negative_controls": [
+    {
+      "name": "executable_payload",
       "rejected": true,
-      "reason": "Required proof root missing: ByValue.neon_full_checked"
+      "error": "Only Inv/Assert may be inserted"
     },
-    "missing_kernel_unit": {
+    {
+      "name": "Require_payload",
       "rejected": true,
-      "reason": "C unit coverage mismatch: missing={('ByValue', 'neon_unit')}, unexpected=set()"
+      "error": "Contract/import in proof annotation"
     },
-    "unproved_c_callee": {
+    {
+      "name": "Extern_payload",
       "rejected": true,
-      "reason": "VaddWrapper/wrapper:equivalent: unproved external C callees: {'unproved_kernel'}"
+      "error": "Contract/import in proof annotation"
     },
-    "kernel_contract_mismatch": {
+    {
+      "name": "trailing_macro",
       "rejected": true,
-      "reason": "C declaration/body contract or signature mismatch for test_neon: VaddWrapper/wrapper versus ByValue/neon_unit"
+      "error": "Unexpected text between/after spec functions"
     },
-    "spec_global_macro": {
+    {
+      "name": "inter_function_macro",
       "rejected": true,
-      "reason": "Unexpected spec.c global declarations/macros"
+      "error": "Unexpected text between/after spec functions"
     },
-    "executable_annotation_payload": {
+    {
+      "name": "missing_anchor",
       "rejected": true,
-      "reason": "Only proof comments may be inserted"
+      "error": "Proof anchor missing or ambiguous: compare_outputs"
+    },
+    {
+      "name": "ambiguous_anchor",
+      "rejected": true,
+      "error": "Proof anchor missing or ambiguous: compare_outputs"
+    },
+    {
+      "name": "missing_final_root",
+      "rejected": true,
+      "error": "Required proof root missing: VaddWrapper.wrapper_checked"
+    },
+    {
+      "name": "missing_callee",
+      "rejected": true,
+      "error": "VaddComparator/comparator:compare_outputs: unproved external C callees: {'qcp_unproved'}"
+    },
+    {
+      "name": "contract_mismatch",
+      "rejected": true,
+      "error": "C declaration/body contract or signature mismatch for compare_outputs: VaddComparator/comparator versus VaddWrapper/wrapper"
     }
+  ],
+  "goal_diff": [
+    {
+      "path": "coq/QcpVadd/array_read_goal.v",
+      "non_require_lines_unchanged_from_comparison_base": true
+    },
+    {
+      "path": "coq/NanBridge/bridge_goal.v",
+      "non_require_lines_unchanged_from_comparison_base": true
+    },
+    {
+      "path": "coq/VaddComparator/comparator_goal.v",
+      "non_require_lines_unchanged_from_comparison_base": true
+    },
+    {
+      "path": "coq/VaddWrapper/wrapper_goal.v",
+      "non_require_lines_unchanged_from_comparison_base": true
+    }
+  ],
+  "limits": [
+    "The conditional review checks spec bodies and assumes test_neon/test_rvv contracts; it does not establish either kernel body.",
+    "Full checking separately covers all 11 C units and 87 local Coq modules; no result of that still separate replay is claimed here.",
+    "C token/contract identity and checked closure do not establish hardware-to-shim correspondence or termination.",
+    "Shared shim semantics, Coq predicate definitions, generator/checker logic, and external QCP/Coq/Flocq libraries remain review and trust boundaries.",
+    "This fixed-parser audit covers the current source subset; it is not a proof of correctness of the generator for arbitrary C programs."
+  ],
+  "full_replay": {
+    "status_file": "proof/status.json",
+    "status_sha256": "75f6bd22a21d818f22a6e1d47d8729c58c73870d67d433f6ef644a9bb007adef",
+    "run_directory": "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/vadd/.build/full-p9x0m1tf",
+    "passed": true,
+    "freshly_compiled_local_modules": 87,
+    "parallel_jobs": 32,
+    "resumed_same_run": false,
+    "generated_c_units": 11,
+    "strategy_groups": 8,
+    "final_check_passed": true
   },
-  "checker_sha256": {
-    "prepare.py": "93884e32e533c48240c5f2dc03b4c8ea0c688b309cbc210de00e048ba64f509a",
-    "coverage.py": "813f00d0266102c836bce5a1319f266f97f155f31c08d680f374eeba2ac80ec6",
-    "check.py": "d5b15fd2a959ad5a2465ea99575bfc753e2ca0cf56841a36842689eb45f612af",
-    "parallel.py": "cd44be4fe53431e74b11b31cda5fa13b40add4007c126d4f9b841d0b4ce67769"
-  },
-  "scope": "Specific source/coverage bypasses; not proof of meaningful contracts or hardware semantics.",
-  "spec_sha256": "614892749e419a045c343788a1e0927bd6d07f31bca969124491d927b596e345",
-  "final_postcondition": "return == 1 AND outputs_related(L,R) AND array resources preserved",
-  "independent_review": "No concrete new generator/coverage mismatch found; same frontend correspondence does not prove ISA-to-shim semantics.",
-  "parallel_replay": {
-    "jobs": 32,
-    "run_directory": "/zp_vegeta/scratch_sb/ycsun/verus/build/qcp-kernel-framework/verification/qcp/vadd/.build/full-w166rzzo",
-    "retained_fresh_modules_from_this_run": 38,
-    "fresh_modules_total": 87,
-    "final_gate_passed": true,
-    "resume_wall_seconds": 142.705
-  }
+  "comparison_base_commit": "fa81cc18616ffe8d371bda43c4d9bd0e523506dd"
 }

@@ -8,7 +8,7 @@
 
 本指令更新此前的交接：新的优先路线是保留原kernel的C调用、赋值和控制流，只改shim、加证明注释。旧pointer/out调用改写路线保留为历史参考，不要默认把kernel再改写一遍。
 
-审核结构已按用户新要求整理到 `verification/qcp/vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。
+审核结构已按用户新要求整理到 `verification/qcp/vadd/`：`impl/testNEON.c`、`impl/testRVV.c` 是逐字保留的原实现；`spec.c` 集中比较函数、equivalent 和前后置条件；共享 shim、类型与 intrinsic 契约位于 `verification/qcp/shared/c-shim/f32/`，本 kernel 逻辑绑定在 `vadd/contracts/`；Coq 与运行脚本在 `proof/`。原始 impl 加注释后生成完整验证副本到 `.build/`，不再维护手写完整内核副本。用户明确允许适合证明的 comparator/wrapper 形式，不再要求证明回旧 mapper 的内联比较循环。后续 kernel 沿用 impl/spec/proof 分离。 `proof/c/` 现仅保留Inv/Assert注释JSON与策略，重复C模板及spec-preamble.txt已删除；生成器从live spec.c提取全部函数/合同/前缀，不要再维护模板副本。
 新目录已实际完成87个本地Coq模块的全量fresh编译、21模块审核入口检查、430个原始C/native回归与负对照；C-shim模块化等价性记为1/40，真实ISA对应另列。独立重放时以新目录为优先入口。
 
 一、同步并理解当前成果

@@ -36,44 +36,45 @@ def tokens(text):
 
 
 def review_units():
+    """Split live spec.c; metadata supplies names and proof comments only."""
     review = (CASE / 'spec.c').read_text()
-    remainder = review
-    for name in ['test_neon', 'test_rvv', 'qcp_vadd_read', 'preserve_float',
-                 'check_observation', 'same_lane', 'compare_outputs', 'equivalent']:
-        remainder = remainder.replace(function(review, name), '', 1)
-    # A macro or extra declaration outside the extracted functions could change
-    # direct compilation while escaping the split proof units.
-    expected = (HERE / 'spec-preamble.txt').read_text()
-    assert tokens(remainder) == tokens(expected), 'Unexpected spec.c global declarations/macros'
-    annotations = lambda text: [re.sub(r'\s', '', item) for item in re.findall(r'/\*@.*?\*/', text, re.S)]
-    assert annotations(remainder) == annotations(expected), 'Unexpected spec.c global proof declarations'
-    groups = {
-        'QcpVadd/array_read.c': ['qcp_vadd_read'],
-        'NanBridge/bridge.c': ['preserve_float', 'check_observation', 'same_lane'],
-        'VaddComparator/comparator.c': ['qcp_vadd_read', 'same_lane', 'compare_outputs'],
-        'VaddWrapper/wrapper.c': ['test_neon', 'test_rvv', 'compare_outputs', 'equivalent'],
-    }
+    manifest = json.loads((HERE / 'manifest.json').read_text())
+    units = [item for item in manifest['units'] if 'functions' in item]
+    names = set(name for item in units for name in item['functions'])
+    assert names == {'test_neon', 'test_rvv', 'qcp_vadd_read', 'preserve_float',
+                     'check_observation', 'same_lane', 'compare_outputs', 'equivalent'}, 'Spec function coverage'
+    functions = {name: function(review, name) for name in names}
+    first = min(review.index(text) for text in functions.values())
+    preamble = review[:first]
+    remainder = review[first:]
+    for text in functions.values():
+        remainder = remainder.replace(text, '', 1)
+    assert not tokens(remainder) and not re.search(r'/\*@', remainder), 'Unexpected text between/after spec functions'
     result = {}
-    for relative, names in groups.items():
-        path = HERE / 'c' / relative
-        text = path.read_text()
-        for name in names:
-            old = function(text, name)
-            new = function(review, name)
-            if old.endswith(';'):
-                new = declaration(new)
-            else:
-                # Keep loop invariants/intermediate assertions out of the review file.
-                annotations = re.findall(r'/\*@ (?:Inv|Assert).*?\*/', old, re.S)
-                for annotation in annotations:
-                    anchor = 'while (i < n)' if name == 'compare_outputs' else 'test_neon(n * sizeof(float)'
-                    new = new.replace(anchor, annotation + '\n  ' + anchor, 1)
-            text = text.replace(old, new, 1)
-        # The split units have the same executable functions as the review entry.
-        for name in names:
-            if not function(text, name).endswith(';'):
-                assert tokens(function(text, name)) == tokens(function(review, name)), name
-        result[path] = text
+    for item in units:
+        annotations = json.loads((HERE / item['proof_annotations']).read_text()) if 'proof_annotations' in item else {}
+        assert set(annotations) <= set(item['definitions']), 'Annotation on a declaration'
+        pieces = [preamble]
+        for strategy in item.get('strategies', []):
+            assert re.fullmatch(r'[a-z_]+\.strategies', strategy), 'Invalid strategy name'
+            pieces.append('/*@ include strategies "' + strategy + '" */')
+        for name in item['functions']:
+            original = functions[name]
+            if name not in item['definitions']:
+                pieces.append(declaration(original))
+                continue
+            assert not original.endswith(';'), 'Definition missing from spec: ' + name
+            annotated = original
+            for patch in annotations.get(name, []):
+                comment = patch['text']
+                assert re.fullmatch(r'/\*@ (?:Inv|Assert)\b(?:(?!\*/).)*\*/', comment, re.S), 'Only Inv/Assert may be inserted'
+                assert not re.search(r'\b(?:Require|Ensure|With|Extern|Import|include)\b', comment), 'Contract/import in proof annotation'
+                anchor = patch['before']
+                assert annotated.count(anchor) == 1, 'Proof anchor missing or ambiguous: ' + name
+                annotated = annotated.replace(anchor, comment + '\n  ' + anchor, 1)
+            assert tokens(annotated) == tokens(original), 'Spec C tokens changed: ' + name
+            pieces.append(annotated)
+        result[item['namespace'], item['stem']] = '\n\n'.join(pieces) + '\n'
     return result
 
 

@@ -9,10 +9,13 @@
 新增原始/注释两路 CPP token 对照、11 单元 C 调用/契约闭合和最终 `VC_Correct` Module 门禁。
 `equivalent` 最终后置条件已显式加入 `outputs_related(L,R)`；比较器契约仍只证明等价输入返回1，
 未声称它已形式化证明所有不等输入返回0。最终输出关系直接由两侧 kernel 的共同模型保证。
-新一轮完整检查已通过：11 C 单元、8 组策略、同次空目录运行全部87本地Coq模块及FinalCheck。
-该次运行先串行完成38模块，核对输入后以32并发完成其余49个；没有复用旧实验.vo。
-独立空目录审核检查21模块+门禁通过（约38秒）；native430例通过。
+删除重复模板后的完整检查已通过：空目录11 C单元、8组策略、32并发全部87本地Coq模块及FinalCheck，约380秒。
+本次没有中断续跑，没有复用旧实验.vo，也未修改手写Coq证明。
+独立空目录审核检查21模块+门禁通过（约37秒）；native430例通过，10个负对照被拒绝。
 具体负对照见 `vadd/proof/layout-audit.json`；命令记录见 `vadd/proof/status.json`。
+重复 spec C 模板和 `spec-preamble.txt` 也已删除：`proof/c/` 仅保留 Inv/Assert 注释JSON和策略。
+所有 wrapper/比较helper的定义、声明、契约、类型/导入前缀均直接来自公开 `spec.c`；内核来自 `impl/`。
+四份重新生成的spec目标仅增加Coq导入，证明义务未改变。最新完整检查以 `proof/status.json` 为准。
 用户已取消本轮 60% 暂停限制；以下旧额度策略和旧目录描述均属历史记录。
 
 ## 2026-10-22：impl / spec / proof 分离
