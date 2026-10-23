@@ -1,0 +1,19 @@
+{
+  "variant": "neon-compatibility-repaired",
+  "reason": "QCP2.1.4 rejects local variables with static storage. The private read-only mask table is never modified or exposed; use an automatic const table with identical32 initialized bytes. This is a declared compatibility source variant; original native behavior is tested separately, not claimed as a fresh original-C proof.",
+  "counterexample": {
+    "kind": "tool-gap-not-runtime-mismatch",
+    "diagnostic": ".build/array-syntax-probe-qefln2me/qcp.log",
+    "qcp_message": "Declaring variable with global storage in function is not supported yet"
+  },
+  "sides": {
+    "neon": {
+      "original_sha256": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+      "actual_sha256": "92530b0091655fd2dc4ae29da88d65307c556f1ae0603d3b05ccbfac60350f73",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "fc6c97e8dcd46f5b6b089a1bc3414e9fbc9187729dfcb72035ba15139d0e52ca"
+    }
+  },
+  "whole_kernel_verified": false,
+  "patch_sha256": "fc6c97e8dcd46f5b6b089a1bc3414e9fbc9187729dfcb72035ba15139d0e52ca"
+}

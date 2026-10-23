@@ -1,0 +1,27 @@
+{
+  "variant": "neon-compatibility-repaired",
+  "reason": "QCP2.1.4 rejects local variables with static storage. The private read-only mask table is never modified or exposed; use an automatic const table with identical32 initialized bytes. This is a declared compatibility source variant; original native behavior is tested separately, not claimed as a fresh original-C proof. The pinned parser also rejects the optional trailing comma after the32nd initializer; remove only that comma, retaining every initialized byte.",
+  "counterexample": {
+    "kind": "tool-gap-not-runtime-mismatch",
+    "diagnostic": ".build/array-syntax-probe-qefln2me/qcp.log",
+    "qcp_message": "Declaring variable with global storage in function is not supported yet"
+  },
+  "sides": {
+    "neon": {
+      "original_sha256": "47afcdb91951923a487ed321e63f283bf3d9a97bb006ce16b165f62f7378e09b",
+      "actual_sha256": "61c28322ec5e5b99606fb3f0003366266b30612b35a7f218eb653a6c998ba04d",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "fb8fa7e96cfef1b5a5e7ab063cbc6f5bf028646977b19bf433868ec7ca5d0cce"
+    }
+  },
+  "whole_kernel_verified": false,
+  "patch_sha256": "fb8fa7e96cfef1b5a5e7ab063cbc6f5bf028646977b19bf433868ec7ca5d0cce",
+  "compatibility_controls": [
+    {
+      "kind": "tool-gap-not-runtime-mismatch",
+      "reason": "Optional initializer trailing comma unsupported by pinned QCP",
+      "diagnostic": ".build/trailing-comma-tool-gap-zzz7w45k/qcp.log",
+      "actual_c_vcs": 0
+    }
+  ]
+}

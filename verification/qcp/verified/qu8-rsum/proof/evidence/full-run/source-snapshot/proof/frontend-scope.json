@@ -1,0 +1,27 @@
+{
+  "passed": true,
+  "formal_proof": false,
+  "whole_kernel_verified": false,
+  "scope": "Syntactic guard of specialized single-resource C adapter and fixed shim configuration; no ISA/ABI refinement claim",
+  "call_arguments": [
+    "vacc",
+    "vacc",
+    "vt32",
+    "vl"
+  ],
+  "source_sha256": {
+    "impl/testRVV.c": "f44a9addcab95a4f9c57e3c65818c05b332d3a6aa9a3fc59ce1fc4cc3943e494",
+    "shim/rvv_frontend.h": "8dae4ebaa345d201e295865f64802a160f30a00f8a50406905f67c4e29b4ef64"
+  },
+  "observation": "All 32 accumulator fields are preserved or updated by the actual C adapter; inactive lanes retain their previous accumulator. The duplicate passthrough argument is the same side-effect-free lvalue.",
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "VLEN": 128,
+    "e8m2_VLMAX": 32,
+    "e32m8_VLMAX": 32,
+    "e32m1_VLMAX": 4,
+    "setvl": "min(AVL,32)"
+  },
+  "aliases": "Hardware u8/u32 spellings map to explicitly defined scalar-field C u8/u32 providers; names do not establish actual ISA semantics."
+}

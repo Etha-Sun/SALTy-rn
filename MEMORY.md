@@ -7,7 +7,7 @@
 
 ## 用户当前要求
 
-- 目标：从当前 13/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
+- 目标：从当前 14/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
 - 新验证批次默认 **16 并发、每进程 16 GiB**，按复杂度设置有限时限；结合服务器可用内存和其他 worker 的实际占用安排多个批次。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -28,7 +28,7 @@
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **13/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-23 当前已验收 **14/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 
@@ -73,3 +73,5 @@ QU8→FP32 在无私有旧缓存的已配置环境重放前，先运行 `python3
 QS8→QS8 转换修复版本次正式收录 `verification/qcp/verified/qs8-vcvt/`：25实际C单元/1664字段/64函数体，5策略组15字段，237实际依赖源+Final共238次普通Coq，1679项最终报告只含既有14项继承假设。全案SHA256 `e89ddf39a1d24fa195d990d51428ebd008efc1822e063d0b5a8722f02f1c62f9`。修复INT32_MIN求负和RVV先倍增32位溢出；原件、精确零fuzz补丁、原语义反例都保留。旧ByValue尾部适配产生的重复内存前件已拒绝，新borrowed-copy实际C/13VC和6数组桥均 checked，未把不可满足前件当通过。发布另在干净工作树独立编译真实字段C闭包，两个前端各27496次公开调用/1998725输出元素，双侧共错的临时scalar负控由独立128bit oracle拒绝。发布审计不是第二次形式化证明。
 
 Root 新建 qs8-vlrelu 独立命名空间 Qs8Lrelu：原两侧正/负 multiplier 的4项INT32_MIN UB反例已复现，保留全4个raw int32参数域；GNU精确补丁修复两侧取负。当前仅源码蓝图、数学/有限native阶段，尚无完整kernel证明，不计数。参考157个具体helper源码均须重新生成目标、从源编译；未复用旧对象或验收信用。
+
+QU8-RSUM 本次收录 `verification/qcp/verified/qu8-rsum/`：21实际C单元/890字段/34函数体、2策略字段、257次普通Coq、892项最终Print、既有14项继承假设及463个外部依赖身份核对通过。全案SHA256 `70ec8101e4d27b20f05796657397970b0a2ec5d50d9d926d4d58186bf113d043`。具体全域/内存与repair边界见case中文README；当前NEON语法兼容版，不把parser兼容失败虚构成语义反例。独立clean publication对21实际单元/35递归输入再做990用例/每侧1075860 lane的16GiB UBSan检查，并将两侧首输出同时翻转，确认两侧仍相同而独立scalar oracle拒绝。发布重查不算第二次形式证明，旧路径归档脚本失败和旧writer均保留。

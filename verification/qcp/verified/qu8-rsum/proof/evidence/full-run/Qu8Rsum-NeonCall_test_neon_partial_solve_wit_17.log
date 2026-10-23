@@ -1,0 +1,38 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.29 secs (0.163u,0.126s)
+Chars 41 - 184 [From~Qu8Rsum~Require~Import~Ty...] 6.022 secs (5.389u,0.632s)
+Chars 185 - 209 [Import~Snaive_C_Rules64.] 0.037 secs (0.037u,0.s)
+Chars 210 - 235 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 236 - 257 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 258 - 490 [Ltac~~rs_limits~:=~~~try~chang...] 0.001 secs (0.001u,0.s)
+Chars 491 - 999 [Ltac~~rs_kernel_term_bound~t~:...] 0. secs (0.u,0.s)
+Chars 1000 - 1401 [Ltac~~rs_kernel_bound~:=~first...] 0.001 secs (0.001u,0.s)
+Chars 1402 - 1834 [Ltac~~rs_count_context~:=~~~re...] 0. secs (0.u,0.s)
+Chars 1835 - 2261 [Ltac~~rs_simple_pure~:=~~~rs_l...] 0. secs (0.u,0.s)
+Chars 2262 - 2370 [Ltac~~rs_all_pure~q~:=~~~lazym...] 0. secs (0.u,0.s)
+Chars 2371 - 2647 [Ltac~~rs_frame~:=~~~lazymatch~...] 0. secs (0.u,0.s)
+Chars 2648 - 2750 [Lemma~proof_of_test_neon_parti...] 0. secs (0.u,0.s)
+Chars 2751 - 2757 [Proof.] 0. secs (0.u,0.s)
+Chars 2758 - 3103 [(unfold~Qu8Rsum.neon_unit_goal...] 4.265 secs (4.217u,0.047s)
+Chars 3104 - 3108 [Qed.] 0.443 secs (0.442u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 3109 - 3167 [Print~Assumptions~proof_of_tes...] 0.442 secs (0.406u,0.036s)

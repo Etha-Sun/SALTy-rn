@@ -1,0 +1,6 @@
+From Qu8Rsum Require Import __riscv_vmv_x_s_u32m1_u32_goal __riscv_vmv_x_s_u32m1_u32_proof_auto __riscv_vmv_x_s_u32m1_u32_proof_manual.
+
+Module VC_Correctness : VC_Correct.
+  Include __riscv_vmv_x_s_u32m1_u32_proof_auto.
+  Include __riscv_vmv_x_s_u32m1_u32_proof_manual.
+End VC_Correctness.

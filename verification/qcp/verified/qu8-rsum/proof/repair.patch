@@ -1,0 +1,14 @@
+--- a/testNEON.c
++++ b/testNEON.c
+@@ -15,9 +15,9 @@
+   assert(output != NULL);
+   assert(params != NULL);
+ 
+-  XNN_ALIGN(16) static const uint8_t onemask_table[32] = {
++  XNN_ALIGN(16) const uint8_t onemask_table[32] = {
+     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
++    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+   };
+ 
+   uint32x4_t vacc0 = vmovq_n_u32(0);

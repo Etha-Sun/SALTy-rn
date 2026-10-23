@@ -1,0 +1,10 @@
+From Qu8Rsum Require Import vl_goal VlChecked.
+Module Checked : Qu8Rsum.vl_goal.VC_Correct := Qu8Rsum.VlChecked.CheckedScalar.
+Print Assumptions Checked.proof_of___riscv_vsetvl_e8m2_safety_wit_1.
+Print Assumptions Checked.proof_of___riscv_vsetvl_e8m2_safety_wit_2.
+Print Assumptions Checked.proof_of___riscv_vsetvl_e8m2_return_wit_1.
+Print Assumptions Checked.proof_of___riscv_vsetvl_e8m2_return_wit_2.
+Print Assumptions Checked.proof_of___riscv_vsetvlmax_e32m8_safety_wit_1.
+Print Assumptions Checked.proof_of___riscv_vsetvlmax_e32m8_return_wit_1.
+Print Assumptions Checked.proof_of___riscv_vsetvlmax_e32m1_safety_wit_1.
+Print Assumptions Checked.proof_of___riscv_vsetvlmax_e32m1_return_wit_1.

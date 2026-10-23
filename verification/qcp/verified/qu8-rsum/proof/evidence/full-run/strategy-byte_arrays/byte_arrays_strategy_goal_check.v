@@ -1,0 +1,5 @@
+From Qu8Rsum Require Import byte_arrays_strategy_goal byte_arrays_strategy_proof.
+
+Module byte_arrays_Strategy_Correctness : byte_arrays_Strategy_Correct.
+  Include byte_arrays_strategy_proof.
+End byte_arrays_Strategy_Correctness.
