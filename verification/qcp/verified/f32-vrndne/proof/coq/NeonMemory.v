@@ -1,0 +1,57 @@
+From Rndne Require Import neon_unit_goal NeonMemoryPart0 NeonMemoryPart1 NeonMemoryPart2 NeonMemoryPart3 NeonMemoryPart4 NeonMemoryPart5 NeonMemoryPart6 NeonMemoryPart7 NeonMemoryPart8 NeonMemoryPart9 NeonMemoryPart10 NeonMemoryPart11 NeonMemoryPart12 NeonMemoryPart13 NeonMemoryPart14 NeonMemoryPart15.
+Module CheckedNeonMemory.
+Lemma proof_of_test_neon_entail_wit_1 : Rndne.neon_unit_goal.test_neon_entail_wit_1.
+Proof. exact Rndne.NeonMemoryPart0.CheckedNeonMemoryPart0.proof_of_test_neon_entail_wit_1. Qed.
+Lemma proof_of_test_neon_entail_wit_2 : Rndne.neon_unit_goal.test_neon_entail_wit_2.
+Proof. exact Rndne.NeonMemoryPart1.CheckedNeonMemoryPart1.proof_of_test_neon_entail_wit_2. Qed.
+Lemma proof_of_test_neon_entail_wit_3_1 : Rndne.neon_unit_goal.test_neon_entail_wit_3_1.
+Proof. exact Rndne.NeonMemoryPart2.CheckedNeonMemoryPart2.proof_of_test_neon_entail_wit_3_1. Qed.
+Lemma proof_of_test_neon_entail_wit_3_2 : Rndne.neon_unit_goal.test_neon_entail_wit_3_2.
+Proof. exact Rndne.NeonMemoryPart3.CheckedNeonMemoryPart3.proof_of_test_neon_entail_wit_3_2. Qed.
+Lemma proof_of_test_neon_entail_wit_3_3 : Rndne.neon_unit_goal.test_neon_entail_wit_3_3.
+Proof. exact Rndne.NeonMemoryPart4.CheckedNeonMemoryPart4.proof_of_test_neon_entail_wit_3_3. Qed.
+Lemma proof_of_test_neon_entail_wit_4_1 : Rndne.neon_unit_goal.test_neon_entail_wit_4_1.
+Proof. exact Rndne.NeonMemoryPart5.CheckedNeonMemoryPart5.proof_of_test_neon_entail_wit_4_1. Qed.
+Lemma proof_of_test_neon_entail_wit_4_2 : Rndne.neon_unit_goal.test_neon_entail_wit_4_2.
+Proof. exact Rndne.NeonMemoryPart6.CheckedNeonMemoryPart6.proof_of_test_neon_entail_wit_4_2. Qed.
+Lemma proof_of_test_neon_entail_wit_4_3 : Rndne.neon_unit_goal.test_neon_entail_wit_4_3.
+Proof. exact Rndne.NeonMemoryPart7.CheckedNeonMemoryPart7.proof_of_test_neon_entail_wit_4_3. Qed.
+Lemma proof_of_test_neon_entail_wit_5_1 : Rndne.neon_unit_goal.test_neon_entail_wit_5_1.
+Proof. exact Rndne.NeonMemoryPart8.CheckedNeonMemoryPart8.proof_of_test_neon_entail_wit_5_1. Qed.
+Lemma proof_of_test_neon_entail_wit_5_2 : Rndne.neon_unit_goal.test_neon_entail_wit_5_2.
+Proof. exact Rndne.NeonMemoryPart9.CheckedNeonMemoryPart9.proof_of_test_neon_entail_wit_5_2. Qed.
+Lemma proof_of_test_neon_entail_wit_5_3 : Rndne.neon_unit_goal.test_neon_entail_wit_5_3.
+Proof. exact Rndne.NeonMemoryPart10.CheckedNeonMemoryPart10.proof_of_test_neon_entail_wit_5_3. Qed.
+Lemma proof_of_test_neon_entail_wit_6_1 : Rndne.neon_unit_goal.test_neon_entail_wit_6_1.
+Proof. exact Rndne.NeonMemoryPart11.CheckedNeonMemoryPart11.proof_of_test_neon_entail_wit_6_1. Qed.
+Lemma proof_of_test_neon_entail_wit_6_2 : Rndne.neon_unit_goal.test_neon_entail_wit_6_2.
+Proof. exact Rndne.NeonMemoryPart12.CheckedNeonMemoryPart12.proof_of_test_neon_entail_wit_6_2. Qed.
+Lemma proof_of_test_neon_entail_wit_6_3 : Rndne.neon_unit_goal.test_neon_entail_wit_6_3.
+Proof. exact Rndne.NeonMemoryPart13.CheckedNeonMemoryPart13.proof_of_test_neon_entail_wit_6_3. Qed.
+Lemma proof_of_test_neon_return_wit_1 : Rndne.neon_unit_goal.test_neon_return_wit_1.
+Proof. exact Rndne.NeonMemoryPart14.CheckedNeonMemoryPart14.proof_of_test_neon_return_wit_1. Qed.
+Lemma proof_of_test_neon_return_wit_2 : Rndne.neon_unit_goal.test_neon_return_wit_2.
+Proof. exact Rndne.NeonMemoryPart15.CheckedNeonMemoryPart15.proof_of_test_neon_return_wit_2. Qed.
+Lemma proof_of_test_neon_return_wit_3 : Rndne.neon_unit_goal.test_neon_return_wit_3.
+Proof. exact Rndne.NeonMemoryPart0.CheckedNeonMemoryPart0.proof_of_test_neon_return_wit_3. Qed.
+Lemma proof_of_test_neon_return_wit_4 : Rndne.neon_unit_goal.test_neon_return_wit_4.
+Proof. exact Rndne.NeonMemoryPart1.CheckedNeonMemoryPart1.proof_of_test_neon_return_wit_4. Qed.
+End CheckedNeonMemory.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_1.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_2.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_3_1.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_3_2.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_3_3.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_4_1.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_4_2.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_4_3.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_5_1.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_5_2.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_5_3.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_6_1.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_6_2.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_entail_wit_6_3.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_return_wit_1.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_return_wit_2.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_return_wit_3.
+Print Assumptions CheckedNeonMemory.proof_of_test_neon_return_wit_4.

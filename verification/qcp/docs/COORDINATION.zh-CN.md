@@ -8,7 +8,7 @@
 [最新交接prompt](SECOND-SERVER-PROMPT.zh-CN.md)。leader本机自动心跳仍停止。用户最新明确取消额度百分比停止限制，
 不再按50%/60%/70%阈值暂停；下文旧额度规则仅保留历史含义。
 worker使用自己已部署的心跳、thread和额度设置，每30分钟读取协调板并跟进新检查点。
-当前15个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
+当前16个已验证case统一位于 `verification/qcp/verified/`，完成清单见该目录manifest.json；VADD入口为 `verification/qcp/verified/f32-vadd/`，按 `impl/`、`spec.c`、`proof/` 分离。
 用户已接受适合证明的比较函数和wrapper；旧mapper内联形式不再是新入口的验收要求。
 
 集成分支为 `Etha-Sun/SALTy-rn:c-shim-v2`，上游基线 `be16280c7812a7459c26c3ce82a47339a3d07718`。本机工作树为 `build/qcp-kernel-framework`；旧 `build/verified-output-equivalence` 只读参考。GitHub 仓库关闭了 Issues，因此使用一条专门的 draft PR 作协调板；地址登记在本目录的 `coordination.json`。该 PR 仅承载任务状态，不作为功能合并入口。

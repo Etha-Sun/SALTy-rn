@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**15/40**。新目标：**至少 21/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**16/40**。新目标：**至少 21/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 - f32-vadd
 - f32-vsub
@@ -17,21 +17,24 @@
 - qs8-vcvt（两侧修复版）
 - qu8-rsum（NEON语法兼容版）
 - qs8-rsum（两侧模32溢出修复版）
+- f32-vrndne（两侧原始实现）
 
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
 ## 当前工作
 
 - QU8→FP32：完整验证通过；继续 signed/unsigned rsum。
-- FP32 取整：证明原始 magic-number 算法与按位操作。
+- FP32 取整已完成；继续 FP32→FP16。
 - QS8 转换已完成；继续 QS8 激活与 QS8/QU8 加法修复验证。
-- 整数归约：先 signed/unsigned rsum，再推进 rdsum。
+- 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 
 历史修复与原反例（PR 已关闭，后续直接提交）：[vmin PR #3](https://github.com/Etha-Sun/SALTy-rn/pull/3)、[vmax PR #4](https://github.com/Etha-Sun/SALTy-rn/pull/4)。
 
 ## 大进展
+
+- 2026-10-23（洛杉矶）：FP32 取整原始实现完整验收并纳入本次直接提交；已验证 **16/40**。
 
 - 2026-10-23（洛杉矶）：QS8 求和两侧模32溢出修复版完整验收并纳入本次直接提交；已验证 **15/40**。
 

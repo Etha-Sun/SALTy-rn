@@ -1,4 +1,4 @@
-当前 **15/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
+当前 **16/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
 
@@ -155,3 +155,5 @@ python3 verification/qcp/tools/generate_review.py
 新增 [QU8 求和NEON语法兼容版](verified/qu8-rsum/README.zh-CN.md)，完整门禁和独立发布核对通过。
 
 新增 [QS8 求和两侧模32溢出修复版](verified/qs8-rsum/README.zh-CN.md)，完整门禁和独立发布核对通过。
+
+新增 [FP32 取整原始实现](verified/f32-vrndne/README.zh-CN.md)，完整门禁及独立发布核对通过。

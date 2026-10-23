@@ -1,0 +1,21 @@
+From Rndne Require Import rvv_control_goal rndne_memory_strategy_proof.
+From ByValue Require Import shim_checked.
+From QcpRvv32 Require Import rvv_load_checked rvv_store_checked rvv_loop_pure_checked.
+From ByvalueRvv Require Import shim_checked.
+Module Checked_rvv_control : Rndne.rvv_control_goal.VC_Correct.
+Include Rndne.RndneStrategy.CheckedRndneStrategy.
+Include QcpVadd.float_array_strategy_proof.CheckedFloatArray.
+Include QcpNeon.neon_bridge_strategy_proof.CheckedNeonBridge.
+Include QcpNeonLoop.neon_tail_strategy_proof.CheckedNeonTail.
+Include QcpRvv32.rvv_arrays_strategy_proof.CheckedRvvArray.
+Include QcpRvv32.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include QcpRvv32.rvv_loop_strategy_proof.CheckedRvvLoopStrategy.
+Lemma proof_of___riscv_vsetvl_e32m8_safety_wit_1 : Rndne.rvv_control_goal.__riscv_vsetvl_e32m8_safety_wit_1.
+Proof. exact QcpRvv32.rvv_loop_pure_checked.CheckedRvvLoopPure.proof_of___riscv_vsetvl_e32m8_safety_wit_1. Qed.
+Lemma proof_of___riscv_vsetvl_e32m8_safety_wit_2 : Rndne.rvv_control_goal.__riscv_vsetvl_e32m8_safety_wit_2.
+Proof. exact QcpRvv32.rvv_loop_pure_checked.CheckedRvvLoopPure.proof_of___riscv_vsetvl_e32m8_safety_wit_2. Qed.
+Lemma proof_of___riscv_vsetvl_e32m8_return_wit_1 : Rndne.rvv_control_goal.__riscv_vsetvl_e32m8_return_wit_1.
+Proof. exact QcpRvv32.rvv_loop_pure_checked.CheckedRvvLoopPure.proof_of___riscv_vsetvl_e32m8_return_wit_1. Qed.
+Lemma proof_of___riscv_vsetvl_e32m8_return_wit_2 : Rndne.rvv_control_goal.__riscv_vsetvl_e32m8_return_wit_2.
+Proof. exact QcpRvv32.rvv_loop_pure_checked.CheckedRvvLoopPure.proof_of___riscv_vsetvl_e32m8_return_wit_2. Qed.
+End Checked_rvv_control.

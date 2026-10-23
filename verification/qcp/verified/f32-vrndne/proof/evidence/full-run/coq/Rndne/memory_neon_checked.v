@@ -1,0 +1,61 @@
+From Rndne Require Import memory_neon_goal rndne_memory_strategy_proof.
+From ByValue Require Import shim_checked.
+From QcpRvv32 Require Import rvv_load_checked rvv_store_checked rvv_loop_pure_checked.
+From ByvalueRvv Require Import shim_checked.
+Module Checked_memory_neon : Rndne.memory_neon_goal.VC_Correct.
+Include Rndne.RndneStrategy.CheckedRndneStrategy.
+Include QcpVadd.float_array_strategy_proof.CheckedFloatArray.
+Include QcpNeon.neon_bridge_strategy_proof.CheckedNeonBridge.
+Include QcpNeonLoop.neon_tail_strategy_proof.CheckedNeonTail.
+Include QcpRvv32.rvv_arrays_strategy_proof.CheckedRvvArray.
+Include QcpRvv32.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include QcpRvv32.rvv_loop_strategy_proof.CheckedRvvLoopStrategy.
+Lemma proof_of_vld1q_f32_safety_wit_1 : Rndne.memory_neon_goal.vld1q_f32_safety_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vld1q_f32_safety_wit_1. Qed.
+Lemma proof_of_vld1q_f32_safety_wit_2 : Rndne.memory_neon_goal.vld1q_f32_safety_wit_2.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vld1q_f32_safety_wit_2. Qed.
+Lemma proof_of_vld1q_f32_safety_wit_3 : Rndne.memory_neon_goal.vld1q_f32_safety_wit_3.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vld1q_f32_safety_wit_3. Qed.
+Lemma proof_of_vld1q_f32_safety_wit_4 : Rndne.memory_neon_goal.vld1q_f32_safety_wit_4.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vld1q_f32_safety_wit_4. Qed.
+Lemma proof_of_vld1q_f32_return_wit_1 : Rndne.memory_neon_goal.vld1q_f32_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vld1q_f32_return_wit_1. Qed.
+Lemma proof_of_vld1q_f32_partial_solve_wit_1 : Rndne.memory_neon_goal.vld1q_f32_partial_solve_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vld1q_f32_partial_solve_wit_1. Qed.
+Lemma proof_of_qcp_vst1q_f32_safety_wit_1 : Rndne.memory_neon_goal.qcp_vst1q_f32_safety_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1q_f32_safety_wit_1. Qed.
+Lemma proof_of_qcp_vst1q_f32_safety_wit_2 : Rndne.memory_neon_goal.qcp_vst1q_f32_safety_wit_2.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1q_f32_safety_wit_2. Qed.
+Lemma proof_of_qcp_vst1q_f32_safety_wit_3 : Rndne.memory_neon_goal.qcp_vst1q_f32_safety_wit_3.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1q_f32_safety_wit_3. Qed.
+Lemma proof_of_qcp_vst1q_f32_safety_wit_4 : Rndne.memory_neon_goal.qcp_vst1q_f32_safety_wit_4.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1q_f32_safety_wit_4. Qed.
+Lemma proof_of_qcp_vst1q_f32_return_wit_1 : Rndne.memory_neon_goal.qcp_vst1q_f32_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1q_f32_return_wit_1. Qed.
+Lemma proof_of_qcp_vst1_f32_safety_wit_1 : Rndne.memory_neon_goal.qcp_vst1_f32_safety_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_f32_safety_wit_1. Qed.
+Lemma proof_of_qcp_vst1_f32_safety_wit_2 : Rndne.memory_neon_goal.qcp_vst1_f32_safety_wit_2.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_f32_safety_wit_2. Qed.
+Lemma proof_of_qcp_vst1_f32_return_wit_1 : Rndne.memory_neon_goal.qcp_vst1_f32_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_f32_return_wit_1. Qed.
+Lemma proof_of_vget_low_f32_return_wit_1 : Rndne.memory_neon_goal.vget_low_f32_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vget_low_f32_return_wit_1. Qed.
+Lemma proof_of_vget_low_f32_partial_solve_wit_1 : Rndne.memory_neon_goal.vget_low_f32_partial_solve_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vget_low_f32_partial_solve_wit_1. Qed.
+Lemma proof_of_vget_high_f32_return_wit_1 : Rndne.memory_neon_goal.vget_high_f32_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vget_high_f32_return_wit_1. Qed.
+Lemma proof_of_vget_high_f32_partial_solve_wit_1 : Rndne.memory_neon_goal.vget_high_f32_partial_solve_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_vget_high_f32_partial_solve_wit_1. Qed.
+Lemma proof_of_qcp_vst1_lane_f32_safety_wit_1 : Rndne.memory_neon_goal.qcp_vst1_lane_f32_safety_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_lane_f32_safety_wit_1. Qed.
+Lemma proof_of_qcp_vst1_lane_f32_safety_wit_2 : Rndne.memory_neon_goal.qcp_vst1_lane_f32_safety_wit_2.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_lane_f32_safety_wit_2. Qed.
+Lemma proof_of_qcp_vst1_lane_f32_safety_wit_3 : Rndne.memory_neon_goal.qcp_vst1_lane_f32_safety_wit_3.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_lane_f32_safety_wit_3. Qed.
+Lemma proof_of_qcp_vst1_lane_f32_safety_wit_4 : Rndne.memory_neon_goal.qcp_vst1_lane_f32_safety_wit_4.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_lane_f32_safety_wit_4. Qed.
+Lemma proof_of_qcp_vst1_lane_f32_return_wit_1 : Rndne.memory_neon_goal.qcp_vst1_lane_f32_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_vst1_lane_f32_return_wit_1. Qed.
+Lemma proof_of_qcp_assert_return_wit_1 : Rndne.memory_neon_goal.qcp_assert_return_wit_1.
+Proof. exact ByValue.shim_checked.CheckedShim.proof_of_qcp_assert_return_wit_1. Qed.
+End Checked_memory_neon.

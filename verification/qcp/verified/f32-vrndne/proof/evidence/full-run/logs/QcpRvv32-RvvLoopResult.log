@@ -1,0 +1,36 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.256 secs (0.136u,0.12s)
+Chars 41 - 84 [From~QcpRvv32~Require~Import~R...] 3.648 secs (3.142u,0.506s)
+Chars 85 - 113 [Require~Import~VaddSegments.] 0. secs (0.u,0.s)
+Chars 114 - 149 [From~AUXLib~Require~Import~Lis...] 0. secs (0.u,0.s)
+Chars 150 - 171 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 172 - 191 [Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 193 - 429 [Lemma~firstn_vadd_truncate~:~~...] 0.001 secs (0.001u,0.s)
+Chars 430 - 436 [Proof.] 0. secs (0.u,0.s)
+Chars 438 - 478 [(induction~n;~intros~a~b;~[~re...] 0.001 secs (0.001u,0.s)
+Chars 480 - 515 [(destruct~a,~b;~cbn;~try~refle...] 0.002 secs (0.002u,0.s)
+Chars 517 - 533 [now~rewrite~IHn.] 0. secs (0.u,0.s)
+Chars 534 - 538 [Qed.] 0.002 secs (0.002u,0.s)
+Chars 540 - 708 [Lemma~rvv_vadd_append~:~~~fora...] 0. secs (0.u,0.s)
+Chars 709 - 715 [Proof.] 0. secs (0.u,0.s)
+Chars 717 - 739 [(intros~k~vl~a~b~Hk~Hv).] 0. secs (0.u,0.s)
+Chars 741 - 774 [(rewrite~vadd_values_split~by~...] 0.002 secs (0.002u,0.s)
+Chars 775 - 783 [f_equal.] 0.001 secs (0.001u,0.s)
+Chars 785 - 800 [(unfold~sublist).] 0.001 secs (0.001u,0.s)
+Chars 801 - 828 [(rewrite~!skipn_firstn_comm).] 0.001 secs (0.001u,0.s)
+Chars 830 - 859 [(rewrite~Z2Nat.inj_add~by~lia).] 0.001 secs (0.001u,0.s)
+Chars 861 - 939 [replace~(Z.to_nat~k~+~Z.to_nat...] 0.003 secs (0.003u,0.s)
+Chars 941 - 960 [(unfold~vadd_values).] 0. secs (0.u,0.s)
+Chars 961 - 970 [symmetry.] 0. secs (0.u,0.s)
+Chars 971 - 998 [(apply~firstn_vadd_truncate).] 0. secs (0.u,0.s)
+Chars 999 - 1003 [Qed.] 0.005 secs (0.005u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1005 - 1039 [Print~Assumptions~rvv_vadd_app...] 0.961 secs (0.922u,0.039s)

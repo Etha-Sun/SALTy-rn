@@ -1,0 +1,16 @@
+#include "../../shim/program_model.h"
+id : 1
+priority : core(0)
+left : store(?p,float,?x) at 0
+right : store(?q,float,x) at 1
+check : infer(p == q);
+action : left_erase(0);
+         right_erase(1);
+
+id : 2
+priority : core(0)
+left : store(?p : Z,?ty,?x : Z) at 0
+right : store(?q,ty,x) at 1
+check : infer(p == q);
+action : left_erase(0);
+         right_erase(1);

@@ -1,0 +1,52 @@
+{
+  "schema": 1,
+  "scope": "official-source semantic audit, not an ISA correspondence proof",
+  "arm": {
+    "document": "Arm Neon Intrinsics Reference",
+    "revision": "aef52c2 (2026Q1 page as fetched 2026-10-23)",
+    "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+    "operations": {
+      "vabsq_f32": "FABS: clear sign bit, no numeric conversion",
+      "vcaltq_f32": "FACGT with reversed operand order: abs(a)<abs(b); unordered false",
+      "vbslq_f32": "BSL: (mask & a_bits) | (~mask & b_bits)",
+      "vorrq_u32": "ORR: per-bit inclusive OR",
+      "vreinterpretq_f32_u32": "register bit reinterpretation, no numeric cast",
+      "vaddq_f32/vsubq_f32": "binary32 floating add/sub with original order, RNE; exception flags unobserved"
+    },
+    "fpcr": {
+      "RMode": "RNE",
+      "DN": 0,
+      "FZ": 0,
+      "AH": 0,
+      "exception_flags": "unobserved"
+    }
+  },
+  "rvv": {
+    "document": "V Standard Extension v1.0 / F Extension v2.2, isa v20260120",
+    "urls": [
+      "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "https://docs.riscv.org/reference/isa/v20260120/unpriv/f-st-ext.html"
+    ],
+    "operations": {
+      "vfabs": "vfsgnjx(v,v): clear sign bit",
+      "vfsgnj.vv": "magnitude bits from first argument, sign bit from second, no rounding/NaN canonicalization",
+      "vfadd.vf/vfsub.vf": "active binary32 add/sub under dynamic RNE; arithmetic NaNs canonicalized",
+      "vmfgt.vf": "ordered greater-than, NaN false",
+      "vmfne.vv": "not-equal including unordered, self compare iff NaN; alias consumes one resource",
+      "vor.vx": "per-bit inclusive OR scalar/vector",
+      "vmerge.vvm": "mask false first value, true second value",
+      "vreinterpret": "same raw bits, no numeric conversion"
+    }
+  },
+  "configuration": {
+    "VLEN": 128,
+    "SEW": 32,
+    "LMUL": 8,
+    "VLMAX": 32,
+    "rounding": "RNE",
+    "inactive_lanes": "unobserved deterministic shim representatives; no architectural tail-zero claim"
+  },
+  "observation": "numeric equality or both NaN; +/-0 numerically equal; payload/sign/flags/traps unobserved",
+  "status": "Official-source semantic ledger only; current formal verification status is recorded separately in proof/status.json.",
+  "model_note": "Arm add/sub explicitly prioritize signaling NaNs and quiet original payload; RVV add/sub canonicalize arithmetic NaNs with real bit helpers. Existing QCP/Flocq arithmetic is used only after explicit NaN classification/canonical-result handling. Observation.rndne_pointwise_bits is ordinary-Coq checked for all binary32; this is a C-shim model theorem, not formal ISA correspondence."
+}

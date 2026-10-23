@@ -1,0 +1,32 @@
+{
+  "patches": [
+    {
+      "before": "\n{",
+      "text": "/*@ With (A:list fp32)\n Require 0 < batch && batch <= 18446744073709551615 && batch % 4 == 0 &&\n input != 0 && output != 0 && FloatArray::full(input,batch/4+3,A) * FloatArray::undef_full(output,batch/4)\n Ensure FloatArray::full(input,batch/4+3,A) * FloatArray::full(output,batch/4,rndne_values(batch/4,A)) */"
+    },
+    {
+      "before": "  for (;",
+      "text": "/*@ Inv Assert exists (k:Z),\n fp32_length(A) == batch@pre/4+3 &&\n 0 <= k && k*4+batch == batch@pre && batch % 4 == 0 &&\n 0 <= batch && batch <= batch@pre && k <= batch@pre/4 &&\n (batch == 0 || (batch == 4 && batch/4 == 1) ||\n (batch == 8 && batch/4 == 2) || (batch == 12 && batch/4 == 3) ||\n (16 <= batch && 4 <= batch/4)) && params == params@pre &&\n input == input@pre+k && output == output@pre+k && input != 0 && output != 0 &&\n FloatArray::full(input@pre,k,fp32_slice(0,k,A)) *\n FloatArray::full(input,batch/4+3,fp32_slice(k,batch@pre/4+3,A)) *\n store(&(vmagic_number.s0),float,fp32_of_bits(1258291200)) *\n store(&(vmagic_number.s1),float,fp32_of_bits(1258291200)) *\n store(&(vmagic_number.s2),float,fp32_of_bits(1258291200)) *\n store(&(vmagic_number.s3),float,fp32_of_bits(1258291200)) *\n FloatArray::full(output@pre,k,rndne_values(k,A)) * FloatArray::undef_full(output,batch/4) */"
+    }
+  ],
+  "where": {
+    "vreinterpretq_f32_u32(vmovq_n_u32(UINT32_C(0x4B000000)))": "a=0",
+    "vabsq_f32(vx0123)": "a=&vx0123",
+    "vcaltq_f32(vmagic_number, vx0123)": "a=&vmagic_number,b=&vx0123",
+    "vaddq_f32(vabsx0123, vmagic_number)": "a=&vabsx0123,b=&vmagic_number",
+    "vorrq_u32(vrndmask0123, vmovq_n_u32(UINT32_C(0x80000000)))": "a=&vrndmask0123,b=0",
+    "vsubq_f32(vrndabsx0123, vmagic_number)": "a=&vrndabsx0123,b=&vmagic_number",
+    "vbslq_f32(vrndmask0123, vx0123, vrndabsx0123)": "mask=&vrndmask0123,a=&vx0123,b=&vrndabsx0123",
+    "vabsq_f32(vx)": "a=&vx",
+    "vcaltq_f32(vmagic_number, vx)": "a=&vmagic_number,b=&vx",
+    "vaddq_f32(vabsx, vmagic_number)": "a=&vabsx,b=&vmagic_number",
+    "vorrq_u32(vrndmask, vmovq_n_u32(UINT32_C(0x80000000)))": "a=&vrndmask,b=0",
+    "vsubq_f32(vrndabsx, vmagic_number)": "a=&vrndabsx,b=&vmagic_number",
+    "vbslq_f32(vrndmask, vx, vrndabsx)": "mask=&vrndmask,a=&vx,b=&vrndabsx",
+    "vst1q_f32(output, vy0123)": "a=&vy0123",
+    "vget_low_f32(vy)": "a=&vy",
+    "vget_high_f32(vy)": "a=&vy",
+    "vst1_f32(output, vy_lo)": "a=&vy_lo",
+    "vst1_lane_f32(output, vy_lo, 0)": "a=&vy_lo"
+  }
+}

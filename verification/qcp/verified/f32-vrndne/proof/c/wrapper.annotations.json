@@ -1,0 +1,24 @@
+{
+  "test_neon": [],
+  "test_rvv": [],
+  "qcp_vadd_read": [],
+  "preserve_float": [],
+  "check_observation": [],
+  "same_lane": [],
+  "compare_outputs": [
+    {
+      "before": "while (i < n)",
+      "text": "/*@ Inv n == n@pre && left == left@pre && right == right@pre &&\n          0 < n && n <= 4611686018427387903 && 0 <= i && i <= n &&\n          Zlength(L) == n && outputs_related(L,R) &&\n          FloatArray::full(left,n,L) * FloatArray::full(right,n,R) */"
+    }
+  ],
+  "equivalent": [
+    {
+      "before": "test_neon(n * sizeof(float)",
+      "text": "/*@ Assert n == (n * sizeof(float))/4 && (n * sizeof(float))%4 == 0 &&\n 0 < n * sizeof(float) && n * sizeof(float) <= 18446744073709551615 &&\n n == n@pre && input == input@pre && left == left@pre && right == right@pre && params == params@pre &&\n 0 < n && n <= 4611686018427387903 && input != 0 && left != 0 && right != 0 &&\n FloatArray::full(input,n+3,A) * FloatArray::undef_full(left,n) * FloatArray::undef_full(right,n) */"
+    },
+    {
+      "before": "return compare_outputs(n,left,right);",
+      "text": "/*@ Assert n == n@pre && input == input@pre && left == left@pre && right == right@pre && params == params@pre &&\n 0 < n && n <= 4611686018427387903 && outputs_related(rndne_values(n,A),rndne_rvv_values(n,A)) &&\n FloatArray::full(input,n+3,A) * FloatArray::full(left,n,rndne_values(n,A)) * FloatArray::full(right,n,rndne_rvv_values(n,A)) */"
+    }
+  ]
+}
