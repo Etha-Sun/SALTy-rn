@@ -1,0 +1,9 @@
+From VMulc Require Import neon_unit_goal neon_vmulc_strategy_proof NeonVcs.
+Module CheckedOriginalNeon : VC_Correct.
+Include neon_bridge_strategy_proof.CheckedNeonBridge.
+Include neon_tail_strategy_proof.CheckedNeonTail.
+Include float_array_strategy_proof.CheckedFloatArray.
+Include CheckedNeonVmulcStrategy.
+Include CheckedNeonVcs.
+End CheckedOriginalNeon.
+Print Assumptions CheckedOriginalNeon.proof_of_test_neon_entail_wit_2.

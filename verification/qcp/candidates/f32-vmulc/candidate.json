@@ -1,0 +1,34 @@
+{
+  "kernel": "f32-vmulc",
+  "whole_kernel_verified": false,
+  "originals": [
+    {
+      "original": "kernels/source/f32-vmulc.c",
+      "copy": "impl/testNEON.c",
+      "sha256": "6d44346474e9925f74ff0243cb4fb4e3111afedfb0db976972f5f19ab7419bdb",
+      "byte_identical": true
+    },
+    {
+      "original": "kernels/target/f32-vmulc.c",
+      "copy": "impl/testRVV.c",
+      "sha256": "0e0d5032af61f2766859b4f0f71dc87007613d49c99b199cce227345b536522a",
+      "byte_identical": true
+    }
+  ],
+  "model": "firstn n (map (fun x => fp32_mul x c) A)",
+  "scalar_readable_floats": 1,
+  "open": [
+    "uniform fresh C/Coq dependency closure and FinalCaseCheck gate"
+  ],
+  "generator_sha256": "2df3599b23ad87d8375e6cecc02a72c47ae9ee75798ba45a0411b84295167985",
+  "proved_scopes": {
+    "new_broadcast_primitives": 102,
+    "original_RVV_kernel_body_VCs": 42,
+    "original_NEON_kernel_body_CVCs_individually": 111,
+    "original_NEON_kernel_body_CVCs_fresh_aggregate": 111,
+    "original_RVV_kernel_body_CVCs_fresh_dependencies": 42,
+    "wrapper": "see proof/wrapper-proof-status.json"
+  },
+  "generator_scope": "initial scaffold only; current spec helpers and proof extensions were added after scaffold generation, so this generator does not byte-rebuild the current candidate",
+  "current_public_spec_sha256": "3a2083d029c725c8f1061a0878ebddd4efb37e1afc6f23150d4291a65d82f94e"
+}

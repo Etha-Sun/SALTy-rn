@@ -1,0 +1,20 @@
+{
+  "patches": [
+    {
+      "before": "\n{",
+      "text": "/*@ With (A:list fp32) (c:fp32)\n Require 0 < batch && batch <= 18446744073709551603 && batch % 4 == 0 &&\n params != 0 && input_a != 0 && input_b != 0 && output != 0 &&\n FloatArray::full(input_a,batch/4+3,A) * store(input_b,float,c) * FloatArray::undef_full(output,batch/4)\n Ensure FloatArray::full(input_a,batch/4+3,A) * store(input_b,float,c) *\n FloatArray::full(output,batch/4,vmulc_values(batch/4,A,c)) */"
+    },
+    {
+      "before": "  while (n > 0)",
+      "text": "/*@ Assert batch == batch@pre && params == params@pre && input_b == input_b@pre && fp32_bits_equal(b,c) &&\n 0 < (batch@pre/4) && (batch@pre/4) <= 4611686018427387900 && input_a == input_a@pre && output == output@pre &&\n n == (batch@pre/4) && rvv_length(A) == (batch@pre/4)+3 &&\n FloatArray::full(input_a@pre,(batch@pre/4)+3,A) * store(input_b@pre,float,c) * FloatArray::undef_full(output,(batch@pre/4)) */\n/*@ Inv batch == batch@pre && params == params@pre && input_b == input_b@pre && fp32_bits_equal(b,c) &&\n 0 < (batch@pre/4) && (batch@pre/4) <= 4611686018427387900 && 0 <= n && n <= (batch@pre/4) && rvv_length(A) == (batch@pre/4)+3 &&\n input_a == pointer_offset(input_a@pre,((batch@pre/4)-n),float) && output == pointer_offset(output@pre,((batch@pre/4)-n),float) &&\n FloatArray::full(input_a@pre,(batch@pre/4)+3,A) * store(input_b@pre,float,c) *\n FloatArray::seg(output@pre,0,((batch@pre/4)-n),vmulc_values(((batch@pre/4)-n),A,c)) * FloatArray::undef_seg(output@pre,((batch@pre/4)-n),(batch@pre/4)) */"
+    },
+    {
+      "before": "    vfloat32m8_t va =",
+      "text": "/*@ Assert batch == batch@pre && params == params@pre && input_b == input_b@pre && fp32_bits_equal(b,c) &&\n 0 < (batch@pre/4) && (batch@pre/4) <= 4611686018427387900 && 0 <= n && n <= (batch@pre/4) && rvv_length(A) == (batch@pre/4)+3 &&\n input_a == pointer_offset(input_a@pre,((batch@pre/4)-n),float) && output == pointer_offset(output@pre,((batch@pre/4)-n),float) && 0 < n && 0 < vl && vl <= 32 && vl <= n && vl == vadd_vl(n) &&\n FloatArray::seg(input_a@pre,0,((batch@pre/4)-n),rvv_slice(0,((batch@pre/4)-n),A)) *\n FloatArray::full(input_a,vl,rvv_slice(((batch@pre/4)-n),(((batch@pre/4)-n)+vl),A)) *\n FloatArray::seg(input_a@pre,(((batch@pre/4)-n)+vl),(batch@pre/4)+3,rvv_slice((((batch@pre/4)-n)+vl),(batch@pre/4)+3,A)) *\n store(input_b@pre,float,c) *\n FloatArray::seg(output@pre,0,((batch@pre/4)-n),vmulc_values(((batch@pre/4)-n),A,c)) *\n FloatArray::undef_full(output,vl) *\n FloatArray::undef_seg(output@pre,(((batch@pre/4)-n)+vl),(batch@pre/4)) */"
+    }
+  ],
+  "where": {
+    "__riscv_vfmul_vf_f32m8": "a = &va",
+    "__riscv_vse32_v_f32m8": "a = &vacc"
+  }
+}
