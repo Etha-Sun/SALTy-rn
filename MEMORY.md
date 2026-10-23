@@ -19,10 +19,10 @@
 - 我们的主工作树：`/srv/home/yuechunsun/tools/qcp-simple-kernels`，分支 `codex/worker-simple-kernels`。
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
-- `neon_kernel_resume`：QS8 全案重放已通过，交 root 归档发布。
-- `minmax_repair_finish`：S8 完整重放已通过，交 root 归档发布。
+- `neon_kernel_resume`：QS8 全案已通过并发布，所有 verifier/metadata writer 已结束。
+- `minmax_repair_finish`：S8 全案已通过并发布，所有 verifier 已结束。
 - `rvv_kernel_resume`：QS8 两侧函数证明完成；后续 kernel 的只读评估已保存。
-- root：验收、record_status/audit、发布、progress/memory、Arcadia 修复来源审查。
+- root：两案验收、归档、迁移审计和发布完成；当前 11/40，本轮目标已达成。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
@@ -59,3 +59,5 @@ QS8 全案证据：`verification/qcp/verified/qs8-f32-vcvt/.build/full-adz1c3m4`
 S8 全案证据：`verification/qcp/verified/s8-vclamp/.build/full-r8b58urd`，12 实际 C 单元/2060 字段、41 函数体、16 策略字段、249 普通 Coq 模块；2076 项最终假设报告已核对通过。完整证书 SHA256 `45f3dd5b2088152a2f0f8d666f212025df282cfb56e369e309867f67c44e9124`。两侧原件、RVV 修复补丁及原始 6420 个有限回归差异保留。
 
 本轮 10+ 目标已达成。后续继续沿用 16 并发/每进程16GiB、有限任务时限、主动 repair、全案通过后 fetch/直接提交 c-shim-v2 的约定。
+
+本轮直接发布提交：QS8 `598bf3976f1a4f20dd36c536b851706026ce6c75`；S8 `3d40082c1aeae15894d0926929eb793cbb5b5768`。两案迁移与发布后的源码/CPP 身份审计通过，并分别完成有限 UBSan 回归；这些发布审计不算第二次形式化证明。公有 manifest 的全部源和原始证明日志均已显式入 Git，不含 `.build` 或 `.vo`。当前没有待完成的本轮验证任务；下一项只读评估尚未领取。

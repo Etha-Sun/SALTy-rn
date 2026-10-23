@@ -23,8 +23,8 @@
 - **vmax（RVV 修复版）**：完整验收通过，保留 repair 和原始 NaN 反例。
 - **复数乘法 vcmul**：完整验收通过，原始实现保持，已直接提交 `48930561`。
 
-- **s8-clamp（RVV 修复版）**：完整验证通过，收录 `verified/s8-vclamp`。u8-clamp 沿用其他 worker 的现有分工。
-- **qs8-f32 转换（NEON 修复版）**：完整验证通过，已收录 `verified/qs8-f32-vcvt`。
+- **s8-clamp（RVV 修复版）**：完整验证通过，直接提交 `3d40082c`，收录 `verified/s8-vclamp`。u8-clamp 沿用其他 worker 的现有分工。
+- **qs8-f32 转换（NEON 修复版）**：完整验证通过，直接提交 `598bf397`，收录 `verified/qs8-f32-vcvt`。
 
 历史修复与原反例（PR 已关闭，后续直接提交）：[vmin PR #3](https://github.com/Etha-Sun/SALTy-rn/pull/3)、[vmax PR #4](https://github.com/Etha-Sun/SALTy-rn/pull/4)。
 
@@ -39,7 +39,7 @@
 - 2026-10-23：s8-clamp、qs8-f32 转换的两侧完整函数组件通过，继续统一验收；仍 **9/40**。
 
 - 2026-10-23：qs8-f32 转换修复版完整验收并直接提交 `598bf397`；当时 **10/40**。
-- 2026-10-23：s8-clamp 修复版完整验收通过；当前 **11/40**。
+- 2026-10-23：s8-clamp 修复版完整验收并直接提交 `3d40082c`；当前 **11/40**。
 
 **小函数验证通过，只代表“零件”通过；完整 kernel 还要单独验收。只有完整验收通过，才增加上方数量。**
 
