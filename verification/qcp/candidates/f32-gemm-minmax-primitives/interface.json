@@ -1,0 +1,44 @@
+{
+  "kind": "six NEON GEMM vector intrinsic C bodies plus shared scalar min/max capability",
+  "entrypoints": [
+    "qcp_min_number",
+    "qcp_max_number",
+    "qcp_neon_min",
+    "qcp_neon_max"
+  ],
+  "input": "two arbitrary binary32 values, including all NaNs, infinities, subnormals and signed zeros",
+  "precondition": "emp; no finite-only or ordering restriction",
+  "postcondition": "exact Coq fp32 value equality to GemmSpec.IntrinsicModel selected operation",
+  "rvv_nan_rule": "one NaN returns the other operand; both NaN return canonical 0x7fc00000",
+  "neon_nan_rule": "either NaN returns canonical 0x7fc00000",
+  "zero_ties": "min is negative zero if either zero is negative; max is negative zero only if both are negative",
+  "environment": "LP64, little endian, binary32, round to nearest ties to even, no flush, no fast-math",
+  "helper_closure": "actual qcp_minmax_identity body and fresh checked qcp_float_from_bits byte-copy body plus its callees",
+  "scalar_C_VCs": 39,
+  "reused_representation_C_VCs": 19,
+  "whole_gemm_kernel_proved": false,
+  "vector_intrinsics_proved": [
+    "vminq_f32",
+    "vmaxq_f32",
+    "vdupq_n_f32",
+    "vdupq_lane_f32",
+    "vget_low_f32",
+    "vget_high_f32"
+  ],
+  "FMA_body_proved": false,
+  "ISA_or_ABI_proved": false,
+  "independent_termination_theorem": false,
+  "external_libraries_reused": true,
+  "vector_entrypoints": [
+    "vminq_f32",
+    "vmaxq_f32",
+    "vdupq_n_f32",
+    "vdupq_lane_f32",
+    "vget_low_f32",
+    "vget_high_f32"
+  ],
+  "vector_contract_source": "../../experiments/gemm-qcp-do-reproducer/input/shim-undef.h; exact function signature and contract identity checked",
+  "vector_C_VCs": 23,
+  "strategies": 2,
+  "remaining_intrinsic_gaps": "GEMM FMA, NEON memory load/store, all RVV vector operations"
+}

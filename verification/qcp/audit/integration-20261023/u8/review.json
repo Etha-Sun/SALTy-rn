@@ -1,0 +1,46 @@
+{
+  "reviewed_commit": "9dd92b6b478a7a4a567af9a53743b70e9e131f66",
+  "scope": "Shared u8 tail reinterpret/lane0 byte-store capability; not complete u8 kernel or ISA proof",
+  "review_findings": [
+    "All adapter callees have actual bodies in adapter.c/le_store.c. le_store.c is included in adapter translation unit, so 14 helper VCs are exact type-checked reuse rather than unresolved externs.",
+    "Checked module implements all 41 VC_Correct fields, includes both strategy proofs; gate instantiates helper and adapter signatures.",
+    "Generated Axiom declarations occur only inside required module-type signatures; no project Admitted or new global axioms found in checked proof source.",
+    "Each byte input is unrestricted uchar; output requires separated writable bytes, no added alignment. Separate uint memory bridge requires aligned_4 only for that bridge.",
+    "Source identity manifest covers proof/C/model/reference inputs and repository FastFrame dependency. Generated goals and strategy signature must byte-match preserved goals.",
+    "Fixed original call patterns only: lane 0 nested reinterpret stores. Not a general word-vector arithmetic interface.",
+    "Coq/QCP external libraries are reused and their source-to-object provenance is not rebuilt by this candidate; inherited field/sizeof/extensionality assumptions remain.",
+    "reference kernels are provenance/scope inputs; only two extracted original tail calls are token-compared and proved, correctly not claimed whole-kernel proof."
+  ],
+  "initial_environment_failure": "Original QCP dune layout missing _build/default/Rocq/StrategyLib; fresh replay uses strict isolated environment prepared by review_environment without changing pins.",
+  "native_environment_adjustment": {
+    "ASAN_OPTIONS": "detect_leaks=0",
+    "reason": "LeakSanitizer reports ptrace unsupported in this execution environment; address and undefined sanitizers retained, native test has no heap allocation."
+  },
+  "native_standalone_result": {
+    "store32_cases": 131072,
+    "store16_cases": 131072,
+    "single_evaluation_checked": true,
+    "unaligned_output_and_canaries_checked": true
+  },
+  "replay_command": "QCP_HOME=/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/.build/integration-environment/QCP-V2.1.4 QCP_COQC=/zp_vegeta/scratch_sb/ycsun/verus/build/rocq-editor/opam-root/qcp820/bin/coqc QCP_LAYOUT=dune ASAN_OPTIONS=detect_leaks=0 python3 verification/qcp/candidates/u8-tail-memory/proof/check.py --name integration-20261023-u8 --native",
+  "fresh_replay_result": {
+    "passed": true,
+    "scope": "shared tail C-body capability only",
+    "whole_kernel_proved": false,
+    "ISA_proved": false,
+    "external_libraries_reused": true,
+    "project_objects_reused": false,
+    "C_VCs_proved": 41,
+    "strategies_proved": 2,
+    "new_distinct_C_VCs": 0,
+    "C_body_closure_modules_fresh": 10,
+    "support_math_modules_fresh": 2,
+    "gate_checked": true,
+    "all_VC_Print_reports": 41,
+    "fresh_generated_goals_match_archived_sources": true,
+    "source_inputs_unchanged": true,
+    "native_passed_not_a_proof": true,
+    "seconds": 103.50093369104434
+  },
+  "merge_recommendation": "Recommend merge PR8 as shared u8 tail C capability, with no whole-kernel or ISA claim. Fresh 41 C VCs, 2 strategies, complete candidate module gate, native ASan/UBSan passed."
+}

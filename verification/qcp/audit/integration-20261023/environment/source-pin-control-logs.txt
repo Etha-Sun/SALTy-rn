@@ -1,0 +1,48 @@
+
+==================== authentic-source.log ====================
+{"matched_rocq_git_tree": "f51a198ef02b9a491ae428f4e7239ebe170781c1", "pinned_source_files": 2992, "manifest_sha256": "67b9eac37fb81d8dccf60fb3677ab24481f049b88654dff6288109ace939e7cf"}
+
+
+==================== duplicate-root-input.log ====================
+Traceback (most recent call last):
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 58, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 37, in main
+    if relative in root_inputs:raise RuntimeError('duplicate root build input: '+relative)
+                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: duplicate root build input: _CoqProject
+
+
+==================== missing-root-input.log ====================
+Traceback (most recent call last):
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 58, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 46, in main
+    if set(root_inputs)!=required_root:raise RuntimeError('missing required archive root build input')
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: missing required archive root build input
+
+
+==================== root-content-mutation.log ====================
+Traceback (most recent call last):
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 58, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 40, in main
+    if root.get(relative)!=(mode,blob):raise RuntimeError('archive root build input differs from authenticated Git tree: '+relative)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: archive root build input differs from authenticated Git tree: _CoqProject
+
+
+==================== root-mode-mutation.log ====================
+Traceback (most recent call last):
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 58, in <module>
+    if __name__=='__main__':main()
+                            ^^^^^^
+  File "/zp_vegeta/scratch_sb/ycsun/verus/build/c-shim-v2-integration-gemm/verification/qcp/tools/pin_qcp_source.py", line 40, in main
+    if root.get(relative)!=(mode,blob):raise RuntimeError('archive root build input differs from authenticated Git tree: '+relative)
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: archive root build input differs from authenticated Git tree: _CoqProject
+

@@ -1,5 +1,9 @@
-当前 **5/40**（VADD、VSUB、VMUL、VDIV、VMULC，公开契约下的 C-shim 模块化部分正确性）。
+当前 **6/40**（VADD、VSUB、VMUL、VDIV、VMULC、VLRELU，公开契约下的 C-shim 模块化部分正确性）。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
+
+2026-10-23 集成了环境 PR #5、GEMM 模型 PR #6、前端复现 PR #7 和 u8 尾存储 PR #8。
+独立重放与本次 GEMM 推进见 [集成记录](audit/integration-20261023/README.zh-CN.md)。
+GEMM 模型、intrinsic 局部证明和 u8 尾存储能力均不增加上述整核计数。
 
 # CSim → QCP：小型 kernel 验证框架
 

@@ -1,0 +1,75 @@
+{
+  "scope": "QCP frontend diagnostics; no GEMM proof",
+  "binary_sha256": "0e74c446cebca8c804ff9b838f07c67f23e31a093630675bc720b25c986e1032",
+  "source_available": false,
+  "source_search": "installed release tree and upstream QinxiangCao/QualifiedCProgramming 08cc7a0f1373a1db3800111a0205a340b6d6f99c contain binary but no SymExec C implementation",
+  "original_frozen_run": {
+    "exit_code": 139,
+    "wall_seconds": 159.54,
+    "max_RSS_KiB": 1616348,
+    "generated_C_VCs": 0,
+    "proved_C_VCs": 0
+  },
+  "minimal_fault": {
+    "signal": "SIGSEGV",
+    "RIP": "0x116753a",
+    "RAX": 0,
+    "dereferenced_RDI_first_word": 0,
+    "matches_historical_PR7_PC": true
+  },
+  "regressions": {
+    "do_normal": {
+      "expected_exit": 0,
+      "input_sha256": "812b58f605343164d308a98bd2bbc3301843be08825b728e3ff822fe65ff1f5a"
+    },
+    "nested_for": {
+      "expected_exit": 0,
+      "input_sha256": "a5f248e8060e85319baade30f110a313cba1bf99cbefcb3d909e466d097a603b"
+    },
+    "for_then_if_k": {
+      "expected_exit": -11,
+      "input_sha256": "0f9af8a9c9c37690a8c22c5665ff3d27cbc2af17b6fa558a62af77fe38cef598"
+    },
+    "for_if_explicit_cut": {
+      "expected_exit": 0,
+      "input_sha256": "4d939e3abe30c6900b59ce264b4297eca85c34d70ee2e4bf808da3d2e585df23"
+    },
+    "for_if_no_outer": {
+      "expected_exit": 0,
+      "input_sha256": "550e951ec363bb8ff1b507bc18eda784d64b272350125a9ab0dbbcf5dba77137"
+    },
+    "for_if_outer_while": {
+      "expected_exit": 0,
+      "input_sha256": "41c986a90978f68fd4758947cf3730f0e3ed7c3370b8215749716e42d068c5cf"
+    },
+    "while_if_outer_do": {
+      "expected_exit": 0,
+      "input_sha256": "a562545413d11ef9ae237266b4260e2fa46779af7e5695f498093d35c4bc00bc"
+    }
+  },
+  "patched_binary": false,
+  "kernel_proved": false,
+  "ISA_proved": false,
+  "minimal_checked_VCs": 15,
+  "minimal_assumptions": [
+    "CNotation.eval_addr_expr (8 safety VCs)",
+    "closed under global context (7 entailment/return VCs)"
+  ],
+  "original_with_for_exit_cut": {
+    "exit_code": 0,
+    "seconds": 249.69,
+    "max_RSS_KiB": 2309660,
+    "generated_C_VCs": 474,
+    "proved_C_VCs": 0,
+    "contracts_unchanged": true,
+    "executing_CPP_sha256": "64eb8a9c5db07e1c52ef651d999d955a70220366b8876bca5a263aec638931c7",
+    "note": "First-success generation resource record. Final shim removes unused PartialOutput import; fresh generation also474 with identical goal statements."
+  },
+  "final_generation": {
+    "generated_C_VCs": 474,
+    "exit_code": 0,
+    "goal_sha256": "316ab243b9284388061ed04d51ab926f4c52f04f566796ee101097fcf21bbe45",
+    "kernel_proved": false
+  },
+  "strategy_lemmas_checked": 3
+}
