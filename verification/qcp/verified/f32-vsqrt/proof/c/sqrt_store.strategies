@@ -1,0 +1,10 @@
+#include "../../shim/model.h"
+id : 1
+priority : core(0)
+left : FloatArray::undef_full(?p, ?n) at 0
+right : undef_data_at(?q,float) at 1
+check : infer(q == pointer_offset(p,0,float));
+        infer(0 < n);
+action : left_erase(0);
+         right_erase(1);
+         left_add(FloatArray::undef_seg(p,1,n));

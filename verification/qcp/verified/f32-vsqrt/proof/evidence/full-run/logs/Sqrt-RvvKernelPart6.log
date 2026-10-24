@@ -1,0 +1,82 @@
+Chars 0 - 55 [From~Coq~Require~Import~ZArith...] 0.282 secs (0.141u,0.139s)
+Chars 56 - 133 [From~Sqrt~Require~Import~Borro...] 4.946 secs (4.045u,0.888s)
+Chars 134 - 158 [Import~Snaive_C_Rules64.] 0.033 secs (0.033u,0.s)
+Chars 159 - 184 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 185 - 206 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 207 - 387 [#[local]~Opaque~sqrt_arm~sqrt_...] 0. secs (0.u,0.s)
+Chars 388 - 427 [Lemma~retry_q4~:~forall~x~:~Z,...] 0.001 secs (0.001u,0.s)
+Chars 428 - 434 [Proof.] 0. secs (0.u,0.s)
+Chars 435 - 508 [(intro;~replace~(4~*~x)~with~(...] 0.006 secs (0.006u,0.s)
+Chars 509 - 513 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 514 - 629 [Ltac~~retry_ground~t~:=~first~...] 0. secs (0.u,0.s)
+Chars 630 - 995 [Ltac~~retry_constants~:=~~~rep...] 0. secs (0.u,0.s)
+Chars 996 - 1107 [Ltac~~retry_prepare~:=~~~sqrt_...] 0. secs (0.u,0.s)
+Chars 1108 - 1526 [Ltac~~retry_split~:=~~~lazymat...] 0.001 secs (0.001u,0.s)
+Chars 1527 - 2228 [Ltac~~retry_finish~:=~~~lazyma...] 0.001 secs (0.001u,0.s)
+Chars 2229 - 2258 [Module~CheckedRvvKernelPart6.] 0. secs (0.u,0.s)
+Chars 2259 - 2339 [Lemma~proof_of_test_rvv_safety...] 0. secs (0.u,0.s)
+Chars 2340 - 2346 [Proof.] 0. secs (0.u,0.s)
+Chars 2347 - 2395 [(unfold~Sqrt.rvv_unit_goal.tes...] 0. secs (0.u,0.s)
+Chars 2396 - 2415 [sqrt_kernel_finish.] 0.015 secs (0.015u,0.s)
+Chars 2416 - 2420 [Qed.] 0.003 secs (0.003u,0.s)
+Chars 2422 - 2516 [Lemma~proof_of_test_rvv_partia...] 0. secs (0.u,0.s)
+Chars 2517 - 2523 [Proof.] 0. secs (0.u,0.s)
+Chars 2524 - 2579 [(unfold~Sqrt.rvv_unit_goal.tes...] 0. secs (0.u,0.s)
+Chars 2580 - 2599 [sqrt_kernel_finish.] 0.014 secs (0.014u,0.s)
+Chars 2600 - 2604 [Qed.] 0.005 secs (0.005u,0.s)
+Chars 2606 - 2702 [Lemma~proof_of_test_rvv_partia...] 0. secs (0.u,0.s)
+Chars 2703 - 2709 [Proof.] 0. secs (0.u,0.s)
+Chars 2710 - 2766 [(unfold~Sqrt.rvv_unit_goal.tes...] 0.001 secs (0.001u,0.s)
+Chars 2767 - 2786 [sqrt_kernel_finish.] 27.07 secs (24.788u,0.514s)
+Chars 2787 - 2791 [Qed.] 4.808 secs (4.736u,0.053s)
+Chars 2793 - 2819 [End~CheckedRvvKernelPart6.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+eval_addr_expr : rvalue_expr -> addr
+Chars 2820 - 2891 [Print~Assumptions~CheckedRvvKe...] 0.277 secs (0.273u,0.003s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2892 - 2970 [Print~Assumptions~CheckedRvvKe...] 0.882 secs (0.816u,0.059s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 2971 - 3050 [Print~Assumptions~CheckedRvvKe...] 1.04 secs (1.006u,0.023s)

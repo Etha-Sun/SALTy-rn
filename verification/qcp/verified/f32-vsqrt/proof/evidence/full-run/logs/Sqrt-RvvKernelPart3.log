@@ -1,0 +1,74 @@
+Chars 0 - 55 [From~Coq~Require~Import~ZArith...] 0.672 secs (0.28u,0.253s)
+Chars 56 - 133 [From~Sqrt~Require~Import~Borro...] 4.305 secs (3.816u,0.485s)
+Chars 134 - 158 [Import~Snaive_C_Rules64.] 0.036 secs (0.036u,0.s)
+Chars 159 - 184 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 185 - 206 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 207 - 387 [#[local]~Opaque~sqrt_arm~sqrt_...] 0. secs (0.u,0.s)
+Chars 388 - 427 [Lemma~retry_q4~:~forall~x~:~Z,...] 0. secs (0.u,0.s)
+Chars 428 - 434 [Proof.] 0. secs (0.u,0.s)
+Chars 435 - 508 [(intro;~replace~(4~*~x)~with~(...] 0.007 secs (0.007u,0.s)
+Chars 509 - 513 [Qed.] 0.002 secs (0.002u,0.s)
+Chars 514 - 629 [Ltac~~retry_ground~t~:=~first~...] 0. secs (0.u,0.s)
+Chars 630 - 995 [Ltac~~retry_constants~:=~~~rep...] 0.001 secs (0.001u,0.s)
+Chars 996 - 1107 [Ltac~~retry_prepare~:=~~~sqrt_...] 0. secs (0.u,0.s)
+Chars 1108 - 1526 [Ltac~~retry_split~:=~~~lazymat...] 0.001 secs (0.001u,0.s)
+Chars 1527 - 2228 [Ltac~~retry_finish~:=~~~lazyma...] 0.001 secs (0.001u,0.s)
+Chars 2229 - 2258 [Module~CheckedRvvKernelPart3.] 0. secs (0.u,0.s)
+Chars 2259 - 2339 [Lemma~proof_of_test_rvv_safety...] 0. secs (0.u,0.s)
+Chars 2340 - 2346 [Proof.] 0. secs (0.u,0.s)
+Chars 2347 - 2395 [(unfold~Sqrt.rvv_unit_goal.tes...] 0. secs (0.u,0.s)
+Chars 2396 - 2415 [sqrt_kernel_finish.] 0.02 secs (0.02u,0.s)
+Chars 2416 - 2420 [Qed.] 0.003 secs (0.003u,0.s)
+Chars 2422 - 2516 [Lemma~proof_of_test_rvv_partia...] 0. secs (0.u,0.s)
+Chars 2517 - 2523 [Proof.] 0. secs (0.u,0.s)
+Chars 2524 - 2579 [(unfold~Sqrt.rvv_unit_goal.tes...] 0. secs (0.u,0.s)
+Chars 2580 - 2666 [(intro~Hcall;~unfold~Sqrt.rvv_...] 0.019 secs (0.019u,0.s)
+Chars 2667 - 2671 [Qed.] 0.004 secs (0.004u,0.s)
+Chars 2673 - 2769 [Lemma~proof_of_test_rvv_partia...] 0. secs (0.u,0.s)
+Chars 2770 - 2776 [Proof.] 0. secs (0.u,0.s)
+Chars 2777 - 2833 [(unfold~Sqrt.rvv_unit_goal.tes...] 0. secs (0.u,0.s)
+Chars 2834 - 2921 [(intro~Hcall;~unfold~Sqrt.rvv_...] 14.817 secs (13.566u,1.217s)
+Chars 2922 - 2926 [Qed.] 3.286 secs (3.09u,0.178s)
+Chars 2928 - 2954 [End~CheckedRvvKernelPart3.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+eval_addr_expr : rvalue_expr -> addr
+Chars 2955 - 3026 [Print~Assumptions~CheckedRvvKe...] 0.4 secs (0.292u,0.035s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+eval_addr_expr : rvalue_expr -> addr
+Chars 3027 - 3105 [Print~Assumptions~CheckedRvvKe...] 0.341 secs (0.275u,0.s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 3106 - 3185 [Print~Assumptions~CheckedRvvKe...] 1.397 secs (1.154u,0.174s)

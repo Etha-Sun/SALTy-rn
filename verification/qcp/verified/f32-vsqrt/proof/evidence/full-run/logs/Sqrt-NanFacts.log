@@ -1,0 +1,92 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.328 secs (0.16u,0.167s)
+Chars 41 - 87 [From~Flocq.IEEE754~Require~Imp...] 0.107 secs (0.035u,0.071s)
+Chars 88 - 124 [From~Flocq.Core~Require~Import...] 0. secs (0.u,0.s)
+Chars 125 - 161 [From~Sqrt~Require~Import~Model...] 5.816 secs (4.431u,1.053s)
+Chars 162 - 226 [Definition~sqrt_canonical_nan~...] 0.002 secs (0.001u,0.s)
+Chars 227 - 252 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 253 - 358 [Lemma~sqrt_split_magnitude~:~~...] 0.003 secs (0.003u,0.s)
+Chars 359 - 365 [Proof.] 0. secs (0.u,0.s)
+Chars 367 - 376 [(intros~u).] 0. secs (0.u,0.s)
+Chars 378 - 428 [(pose~proof~(Z.div_mod~u~83886...] 0.004 secs (0.001u,0.002s)
+Chars 430 - 486 [(pose~proof~(Z.div_mod~(u~/~83...] 0.003 secs (0.003u,0.s)
+Chars 488 - 544 [(pose~proof~(Z.mod_pos_bound~u...] 0.002 secs (0.u,0.002s)
+Chars 546 - 608 [(pose~proof~(Z.mod_pos_bound~(...] 0.001 secs (0.u,0.001s)
+Chars 610 - 619 [symmetry.] 0.001 secs (0.001u,0.s)
+Chars 620 - 670 [(apply~Z.mod_unique~with~(q~:=...] 0.078 secs (0.009u,0.s)
+Chars 671 - 675 [Qed.] 0.171 secs (0.095u,0.076s)
+Chars 676 - 763 [Lemma~sqrt_nan_decode~:~~~fora...] 0.001 secs (0.u,0.s)
+Chars 764 - 770 [Proof.] 0. secs (0.u,0.s)
+Chars 772 - 781 [(intros~u).] 0. secs (0.u,0.s)
+Chars 782 - 818 [(unfold~sqrt_nan_bits,~sqrt_ab...] 0. secs (0.u,0.s)
+Chars 820 - 871 [replace~2147483647~with~(Z.one...] 0.001 secs (0.001u,0.s)
+Chars 873 - 900 [(rewrite~Z.land_ones~by~lia).] 0.001 secs (0.001u,0.s)
+Chars 902 - 932 [(change~(2~^~31)~with~21474836...] 0.001 secs (0.001u,0.s)
+Chars 934 - 963 [(rewrite~sqrt_split_magnitude).] 0.001 secs (0.001u,0.s)
+Chars 965 - 1032 [(unfold~fp32_isNaN,~fp32_of_bi...] 0.001 secs (0.001u,0.s)
+Chars 1034 - 1061 [(rewrite~Binary.is_nan_FF2B).] 0.002 secs (0.002u,0.s)
+Chars 1063 - 1107 [(unfold~binary_float_of_bits_a...] 0. secs (0.u,0.s)
+Chars 1109 - 1152 [(cbn-[Z.modulo~Z.div~Z.eqb~Z.l...] 0.052 secs (0.052u,0.s)
+Chars 1154 - 1191 [(remember~(u~mod~8388608)~as~m...] 0.014 secs (0.011u,0.003s)
+Chars 1193 - 1236 [(remember~((u~/~8388608)~mod~2...] 0.003 secs (0.003u,0.s)
+Chars 1238 - 1303 [(assert~(HmB~:~0~<=~m~<~838860...] 0.002 secs (0.002u,0.s)
+Chars 1305 - 1366 [(assert~(HeB~:~0~<=~e~<~256)~b...] 0.001 secs (0.001u,0.s)
+Chars 1368 - 1914 [(change~~~~((if~Z.ltb~21390950...] 0.007 secs (0.007u,0.s)
+Chars 1916 - 2117 [(destruct~(Zeq_bool_spec~e~0);...] 1.271 secs (0.717u,0.117s)
+Chars 2118 - 2122 [Qed.] 0.122 secs (0.114u,0.004s)
+Chars 2123 - 2205 [Lemma~sqrt_nan_fp32~:~~~forall...] 0.001 secs (0.001u,0.s)
+Chars 2206 - 2212 [Proof.] 0. secs (0.u,0.s)
+Chars 2214 - 2222 [intro~x.] 0. secs (0.u,0.s)
+Chars 2223 - 2269 [(rewrite~sqrt_nan_decode,~fp32...] 0.005 secs (0.005u,0.s)
+Chars 2270 - 2282 [reflexivity.] 0.001 secs (0.001u,0.s)
+Chars 2283 - 2287 [Qed.] 0. secs (0.u,0.s)
+Chars 2288 - 2360 [Lemma~sqrt_nan_cases~:~forall~...] 0. secs (0.u,0.s)
+Chars 2361 - 2367 [Proof.] 0. secs (0.u,0.s)
+Chars 2368 - 2451 [(intro~u;~unfold~sqrt_nan_bits...] 0.002 secs (0.002u,0.s)
+Chars 2452 - 2456 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 2457 - 2538 [Lemma~sqrt_snan_implies_nan~:~...] 0.001 secs (0.001u,0.s)
+Chars 2539 - 2545 [Proof.] 0. secs (0.u,0.s)
+Chars 2547 - 2586 [(intros~u~H;~unfold~sqrt_snan_...] 0. secs (0.u,0.s)
+Chars 2588 - 2657 [(destruct~(Z.eqb_spec~(sqrt_na...] 0.002 secs (0.002u,0.s)
+Chars 2658 - 2662 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 2663 - 2762 [Lemma~sqrt_quiet_preserves_nan...] 0.001 secs (0.001u,0.s)
+Chars 2763 - 2769 [Proof.] 0. secs (0.u,0.s)
+Chars 2771 - 2782 [(intros~u~H).] 0. secs (0.u,0.s)
+Chars 2783 - 2823 [(unfold~sqrt_nan_bits,~sqrt_ab...] 0. secs (0.u,0.s)
+Chars 2825 - 2852 [(rewrite~Z.land_lor_distr_l).] 0.001 secs (0.001u,0.s)
+Chars 2854 - 2902 [(change~(Z.land~4194304~214748...] 0.003 secs (0.003u,0.s)
+Chars 2904 - 2972 [(pose~proof~(Z.sub_lor_l_same_...] 0.002 secs (0.002u,0.s)
+Chars 2974 - 3038 [(assert~(Hb~:~0~<=~Z.land~4194...] 0.001 secs (0.001u,0.s)
+Chars 3040 - 3041 [{] 0. secs (0.u,0.s)
+Chars 3042 - 3072 [(apply~Z.land_nonneg;~left;~lia).] 0.002 secs (0.002u,0.s)
+Chars 3073 - 3074 [}] 0. secs (0.u,0.s)
+Chars 3076 - 3148 [(destruct~(Z.ltb_spec~21390950...] 0.008 secs (0.008u,0.s)
+Chars 3150 - 3240 [(destruct~(Z.ltb_spec~21390950...] 0.006 secs (0.006u,0.s)
+Chars 3241 - 3245 [Qed.] 0.008 secs (0.008u,0.s)
+Chars 3246 - 3306 [Lemma~sqrt_canonical_is_nan~:~...] 0. secs (0.u,0.s)
+Chars 3307 - 3313 [Proof.] 0. secs (0.u,0.s)
+Chars 3314 - 3397 [(unfold~sqrt_canonical_nan;~ap...] 0.001 secs (0.001u,0.s)
+Chars 3398 - 3402 [Qed.] 0. secs (0.u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 3403 - 3437 [Print~Assumptions~sqrt_nan_dec...] 1.163 secs (1.096u,0.066s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 3438 - 3470 [Print~Assumptions~sqrt_nan_fp32.] 1.476 secs (1.43u,0.019s)
+Closed under the global context
+Chars 3471 - 3514 [Print~Assumptions~sqrt_quiet_p...] 1.898 secs (0.643u,0.047s)

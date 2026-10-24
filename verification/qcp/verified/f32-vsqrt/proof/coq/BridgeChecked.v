@@ -1,0 +1,17 @@
+Require Import NanBridge.bridge_checked.
+From Sqrt Require Import bridge_goal.
+Module CheckedBridge : Sqrt.bridge_goal.VC_Correct := NanBridge.bridge_checked.Checked.
+Print Assumptions CheckedBridge.proof_of_preserve_float_return_wit_1.
+Print Assumptions CheckedBridge.proof_of_check_observation_safety_wit_1.
+Print Assumptions CheckedBridge.proof_of_check_observation_safety_wit_2.
+Print Assumptions CheckedBridge.proof_of_check_observation_safety_wit_3.
+Print Assumptions CheckedBridge.proof_of_check_observation_safety_wit_4.
+Print Assumptions CheckedBridge.proof_of_check_observation_return_wit_1.
+Print Assumptions CheckedBridge.proof_of_check_observation_return_wit_2.
+Print Assumptions CheckedBridge.proof_of_check_observation_return_wit_3.
+Print Assumptions CheckedBridge.proof_of_check_observation_return_wit_4.
+Print Assumptions CheckedBridge.proof_of_check_observation_partial_solve_wit_1.
+Print Assumptions CheckedBridge.proof_of_check_observation_partial_solve_wit_2.
+Print Assumptions CheckedBridge.proof_of_same_lane_return_wit_1.
+Print Assumptions CheckedBridge.proof_of_same_lane_partial_solve_wit_1_pure.
+Print Assumptions CheckedBridge.proof_of_same_lane_partial_solve_wit_1.

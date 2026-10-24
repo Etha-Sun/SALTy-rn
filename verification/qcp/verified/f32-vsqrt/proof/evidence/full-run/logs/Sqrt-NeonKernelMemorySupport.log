@@ -1,0 +1,97 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.382 secs (0.2u,0.18s)
+Chars 41 - 76 [From~AUXLib~Require~Import~Lis...] 0.113 secs (0.052u,0.06s)
+Chars 77 - 137 [From~Sqrt~Require~Export~Kerne...] 6.394 secs (4.534u,1.649s)
+Chars 138 - 176 [Import~ListNotations~Snaive_C_...] 0.049 secs (0.049u,0.s)
+Chars 177 - 202 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 203 - 224 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 225 - 266 [#[local]~Opaque~sqrt_arm~sqrt_...] 0. secs (0.u,0.s)
+Chars 267 - 521 [Lemma~sqrt_arm_window4~:~~~for...] 0.002 secs (0.002u,0.s)
+Chars 522 - 528 [Proof.] 0.006 secs (0.u,0.005s)
+Chars 530 - 554 [(intros~k~r~A~Hk~Hr~Hend).] 0. secs (0.u,0.s)
+Chars 556 - 634 [(assert~(Hsub~:~Zlength~(subli...] 0.006 secs (0.004u,0.001s)
+Chars 636 - 724 [(assert~(HsubN~:~length~(subli...] 0.003 secs (0.003u,0.s)
+Chars 726 - 796 [(unfold~sqrt_arm_values;~rewri...] 0.002 secs (0.u,0.002s)
+Chars 798 - 836 [(apply~(list_eq_nth~fp32~_~_~f...] 0. secs (0.u,0.s)
+Chars 838 - 839 [-] 0. secs (0.u,0.s)
+Chars 840 - 925 [(rewrite~length_map,~length_fi...] 0.005 secs (0.005u,0.s)
+Chars 927 - 928 [-] 0. secs (0.u,0.s)
+Chars 929 - 966 [(intros~i~Hi;~rewrite~length_m...] 0. secs (0.u,0.s)
+Chars 970 - 1054 [(rewrite~~~(map_nth_len~fp32~f...] 0.002 secs (0.002u,0.s)
+Chars 1058 - 1084 [(rewrite~nth_firstn~by~lia).] 0.176 secs (0.034u,0.083s)
+Chars 1088 - 1116 [(assert~(Hi4~:~(i~<~4)%nat)~by...] 0.003 secs (0.002u,0.s)
+Chars 1120 - 1253 [replace~(nth~i~(sublist~k~(k~+...] 0.002 secs (0.u,0.002s)
+Chars 1257 - 1285 [(rewrite~Znth_sublist~by~lia).] 0.004 secs (0.003u,0.001s)
+Chars 1289 - 1382 [(do~4~~~(destruct~i~as~[|~i];~...] 0.014 secs (0.014u,0.s)
+Chars 1383 - 1387 [lia.] 0.001 secs (0.001u,0.s)
+Chars 1388 - 1392 [Qed.] 0.032 secs (0.032u,0.s)
+Chars 1393 - 1553 [Lemma~sqrt_prefix_chunk~:~~~fo...] 0.002 secs (0.002u,0.s)
+Chars 1554 - 1560 [Proof.] 0. secs (0.u,0.s)
+Chars 1562 - 1585 [(intros~p~k~r~P~Q~Hk~Hr).] 0. secs (0.u,0.s)
+Chars 1587 - 1629 [(sep_apply~(FloatArray.seg_to_...] 0.018 secs (0.012u,0.004s)
+Chars 1631 - 1697 [(replace~(p~+~0~*~sizeof~(~FLO...] 0.003 secs (0.003u,0.s)
+Chars 1699 - 1769 [(pose~proof~(FloatArray.full_m...] 0.001 secs (0.001u,0.s)
+Chars 1771 - 1818 [(replace~(k~+~r~-~k)~with~r~in...] 0.091 secs (0.086u,0.003s)
+Chars 1820 - 1849 [(apply~FloatArray.full_to_seg).] 0. secs (0.u,0.s)
+Chars 1850 - 1854 [Qed.] 0.006 secs (0.006u,0.s)
+Chars 1855 - 1916 [Lemma~sqrt_batch_div4~:~forall...] 0. secs (0.u,0.s)
+Chars 1917 - 1923 [Proof.] 0. secs (0.u,0.s)
+Chars 1924 - 1973 [(intros;~pose~proof~(Z.quot_re...] 0.002 secs (0.002u,0.s)
+Chars 1974 - 1978 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1979 - 2071 [Lemma~sqrt_batch_step~:~~~fora...] 0.001 secs (0.001u,0.s)
+Chars 2072 - 2078 [Proof.] 0. secs (0.u,0.s)
+Chars 2080 - 2135 [(intros~b~Hb~Hdiv;~replace~(b~...] 0.002 secs (0.002u,0.s)
+Chars 2137 - 2178 [(rewrite~Z.quot_mul,~Z.rem_mul...] 0.002 secs (0.002u,0.s)
+Chars 2179 - 2183 [Qed.] 0.002 secs (0.002u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2184 - 2219 [Print~Assumptions~sqrt_arm_win...] 1.811 secs (1.403u,0.385s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+PropExtensionality.propositional_extensionality :
+  forall P Q : Prop, P <-> Q -> P = Q
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Chars 2220 - 2256 [Print~Assumptions~sqrt_prefix_...] 0.382 secs (0.367u,0.013s)
+Closed under the global context
+Chars 2257 - 2291 [Print~Assumptions~sqrt_batch_d...] 0.26 secs (0.258u,0.s)
+Closed under the global context
+Chars 2292 - 2326 [Print~Assumptions~sqrt_batch_s...] 0.37 secs (0.348u,0.02s)
+Chars 2327 - 2690 [Lemma~sqrt_output_finish~:~~~f...] 0.002 secs (0.002u,0.s)
+Chars 2691 - 2697 [Proof.] 0. secs (0.u,0.s)
+Chars 2699 - 2736 [(intros~p~k~r~A~Q~Hk~Hr~HA~HQ;...] 0. secs (0.u,0.s)
+Chars 2738 - 2782 [(rewrite~<-~(sqrt_arm_window4~...] 0. secs (0.u,0.s)
+Chars 2784 - 2889 [(sep_apply~~~(sqrt_prefix_chun...] 0.069 secs (0.066u,0.003s)
+Chars 2891 - 2956 [(rewrite~<-~(sqrt_arm_values_a...] 0.006 secs (0.006u,0.s)
+Chars 2958 - 3030 [(pose~proof~(FloatArray.seg_to...] 0. secs (0.u,0.s)
+Chars 3032 - 3078 [replace~(p~+~0~*~sizeof~(~FLOA...] 0.001 secs (0.001u,0.s)
+Chars 3080 - 3125 [(replace~(k~+~r~-~0)~with~(k~+...] 0.002 secs (0.002u,0.s)
+Chars 3126 - 3130 [Qed.] 0.011 secs (0.011u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+PropExtensionality.propositional_extensionality :
+  forall P Q : Prop, P <-> Q -> P = Q
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 3131 - 3168 [Print~Assumptions~sqrt_output_...] 1.526 secs (1.515u,0.006s)

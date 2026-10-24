@@ -1,0 +1,19 @@
+From Sqrt Require Import NeonKernelPart0 NeonKernelPart1 NeonKernelPart2 NeonKernelPart3 NeonKernelPart4 NeonKernelPart5 NeonKernelPart6 NeonKernelPart7 NeonKernelPart8 NeonKernelPart9 NeonKernelPart10 NeonKernelPart11 NeonKernelPart12 NeonKernelPart13 NeonKernelPart14 NeonKernelPart15.
+Module CheckedNeonNonMemory.
+Include NeonKernelPart0.CheckedNeonKernelPart0.
+Include NeonKernelPart1.CheckedNeonKernelPart1.
+Include NeonKernelPart2.CheckedNeonKernelPart2.
+Include NeonKernelPart3.CheckedNeonKernelPart3.
+Include NeonKernelPart4.CheckedNeonKernelPart4.
+Include NeonKernelPart5.CheckedNeonKernelPart5.
+Include NeonKernelPart6.CheckedNeonKernelPart6.
+Include NeonKernelPart7.CheckedNeonKernelPart7.
+Include NeonKernelPart8.CheckedNeonKernelPart8.
+Include NeonKernelPart9.CheckedNeonKernelPart9.
+Include NeonKernelPart10.CheckedNeonKernelPart10.
+Include NeonKernelPart11.CheckedNeonKernelPart11.
+Include NeonKernelPart12.CheckedNeonKernelPart12.
+Include NeonKernelPart13.CheckedNeonKernelPart13.
+Include NeonKernelPart14.CheckedNeonKernelPart14.
+Include NeonKernelPart15.CheckedNeonKernelPart15.
+End CheckedNeonNonMemory.

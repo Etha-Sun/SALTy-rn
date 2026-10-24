@@ -1,0 +1,33 @@
+Chars 0 - 46 [From~Coq~Require~Import~ZArith...] 0.291 secs (0.186u,0.103s)
+Chars 47 - 98 [From~SimpleC.SL~Require~Export...] 4.483 secs (3.643u,0.693s)
+Chars 99 - 123 [Import~Snaive_C_Rules64.] 0.037 secs (0.037u,0.s)
+Chars 124 - 149 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 150 - 180 [#[local]~Open~Scope~string_scope.] 0. secs (0.u,0.s)
+Chars 181 - 202 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 203 - 1947 [Definition~UndefStructPredvflo...] 0.04 secs (0.04u,0.s)
+Chars 1948 - 2193 [Lemma~rvv_local_field_address~...] 0. secs (0.u,0.s)
+Chars 2194 - 2200 [Proof.] 0. secs (0.u,0.s)
+Chars 2202 - 2209 [(intros).] 0. secs (0.u,0.s)
+Chars 2210 - 2237 [(apply~eval_addr_expr_congr).] 0. secs (0.u,0.s)
+Chars 2238 - 2261 [(apply~RE_addr_of_congr).] 0. secs (0.u,0.s)
+Chars 2263 - 2323 [(apply~LE_arrow_field_congr;~[...] 0. secs (0.u,0.s)
+Chars 2324 - 2328 [Qed.] 0. secs (0.u,0.s)
+Axioms:
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 2329 - 2371 [Print~Assumptions~rvv_local_fi...] 0.032 secs (0.032u,0.s)
+Chars 2373 - 3696 [Lemma~rvv_local_undef_fields~:...] 0.009 secs (0.009u,0.s)
+Chars 3697 - 3703 [Proof.] 0. secs (0.u,0.s)
+Chars 3704 - 3794 [(intros;~unfold~UndefStructPre...] 0.994 secs (0.977u,0.016s)
+Chars 3795 - 3799 [Qed.] 0.474 secs (0.471u,0.s)

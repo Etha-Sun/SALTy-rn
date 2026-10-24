@@ -1,0 +1,44 @@
+From Coq Require Import ZArith Strings.String.
+From Sqrt Require Export Model.
+Import Snaive_C_Rules64. Local Open Scope sac. Local Open Scope string_scope.
+Definition UndefStructPredfloat32x4_t (p:Z) : Assertion :=
+ (&(p # "float32x4_t" ->ₛ "s0")) # Float |->_ **
+ (&(p # "float32x4_t" ->ₛ "s1")) # Float |->_ **
+ (&(p # "float32x4_t" ->ₛ "s2")) # Float |->_ **
+ (&(p # "float32x4_t" ->ₛ "s3")) # Float |->_.
+Definition UndefStructPredfloat32x2_t (p:Z) : Assertion :=
+ (&(p # "float32x2_t" ->ₛ "s0")) # Float |->_ **
+ (&(p # "float32x2_t" ->ₛ "s1")) # Float |->_.
+Definition UndefStructPredvfloat32m8_t (p:Z) : Assertion :=
+ (&(p # "vfloat32m8_t" ->ₛ "s0")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s1")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s2")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s3")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s4")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s5")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s6")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s7")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s8")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s9")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s10")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s11")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s12")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s13")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s14")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s15")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s16")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s17")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s18")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s19")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s20")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s21")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s22")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s23")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s24")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s25")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s26")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s27")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s28")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s29")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s30")) # Float |->_ **
+ (&(p # "vfloat32m8_t" ->ₛ "s31")) # Float |->_.

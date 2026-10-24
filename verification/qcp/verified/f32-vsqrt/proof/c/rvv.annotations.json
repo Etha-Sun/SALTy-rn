@@ -1,0 +1,15 @@
+{
+  "contract": "/*@ With (A:list fp32)\n Require 0 < batch && batch <= 18446744073709551615 && batch % 4 == 0 && input != 0 && output != 0 &&\n FloatArray::full(input,batch/4+3,A) * FloatArray::undef_full(output,batch/4)\n Ensure FloatArray::full(input,batch/4+3,A) * FloatArray::full(output,batch/4,sqrt_rvv_values(batch/4,A)) */",
+  "entry_assertion": "/*@ Assert unused_params == unused_params@pre && batch == batch@pre && input == input@pre && output == output@pre && 0 < batch && batch <= 18446744073709551615 && batch % 4 == 0 && input != 0 && output != 0 && sizeof(float) == 4 && batch % sizeof(float) == 0 && 0 < (batch@pre/4) && (batch@pre/4) <= 4611686018427387903 && FloatArray::full(input,(batch@pre/4)+3,A) * FloatArray::undef_full(output,(batch@pre/4)) */",
+  "invariants": [
+    {
+      "anchor": "  while (n > 0) {",
+      "annotation": "/*@ Inv Assert unused_params == unused_params@pre && sizeof(float) == 4 && batch == batch@pre && batch % 4 == 0 && batch % sizeof(float) == 0 && 0 < (batch@pre/4) && (batch@pre/4) <= 4611686018427387903 && 0 <= n && n <= (batch@pre/4) && input == pointer_offset(input@pre,((batch@pre/4)-n),float) && output == pointer_offset(output@pre,((batch@pre/4)-n),float) && FloatArray::full(input@pre,(batch@pre/4)+3,A) * FloatArray::seg(output@pre,0,((batch@pre/4)-n),sqrt_rvv_values(((batch@pre/4)-n),A)) * FloatArray::undef_full(output,(batch@pre/4)-((batch@pre/4)-n)) */"
+    }
+  ],
+  "where": {
+    "__riscv_vle32_v_f32m8(input, vl)": "base=input@pre,total=(batch@pre/4)+3,k=((batch@pre/4)-n),A=A",
+    "__riscv_vfsqrt_v_f32m8(vx, vl)": "a=&vx,x0=vx.s0,x1=vx.s1,x2=vx.s2,x3=vx.s3,x4=vx.s4,x5=vx.s5,x6=vx.s6,x7=vx.s7,x8=vx.s8,x9=vx.s9,x10=vx.s10,x11=vx.s11,x12=vx.s12,x13=vx.s13,x14=vx.s14,x15=vx.s15,x16=vx.s16,x17=vx.s17,x18=vx.s18,x19=vx.s19,x20=vx.s20,x21=vx.s21,x22=vx.s22,x23=vx.s23,x24=vx.s24,x25=vx.s25,x26=vx.s26,x27=vx.s27,x28=vx.s28,x29=vx.s29,x30=vx.s30,x31=vx.s31"
+  },
+  "source_sha256": "b09b69f0e4b7de2a839b71c1207f21ac2f024a7aa173e7ca1b4c19cca5b06012"
+}

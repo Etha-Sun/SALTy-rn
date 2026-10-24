@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**22/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**23/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 - f32-vadd
 - f32-vsub
@@ -26,6 +26,8 @@
 - [f32-gemm-minmax](verification/qcp/verified/f32-gemm-minmax/README.md)（其他 worker 完成，修复版）
 - [qs8-vadd-minmax](verification/qcp/verified/qs8-vadd-minmax/README.md)（修复版，完整64位）
 
+- [f32-vsqrt](verification/qcp/verified/f32-vsqrt/README.zh-CN.md)（两侧原始实现，intrinsic spec 边界）
+
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
 最新约定：intrinsic 只需采用与原始规范对应、可审核的 spec；C 实现及其证明可选。完整 kernel 仍须验证。见 [规范边界](verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
@@ -34,20 +36,22 @@
 
 - 2026-10-24（洛杉矶）：两项 GEMM 已收录；QS8 加法修复版完整验证、归档和发布复核通过，当前 **22/40**。
 
+- 2026-10-24（洛杉矶）：平方根两侧原始实现完整验证及发布复核通过，当前 **23/40**。
+
 ## 当前工作
 
-- FP32→FP16：56 个实际 C 目标已全部重新生成并精确匹配，正在完整编译 Coq 证明。
+- FP32→FP16：完整门禁已通过，正在归档和发布复核。
 - QS8 加法已完整收录；QU8 加法两侧完整组件通过，正在整案新鲜重放。
 - QS8 RDSUM 已完整通过并收录；继续 QU8 多行归约。
 - QU8 RDSUM：37 个实际 C 目标已全部重新生成通过，正在完整编译证明。
 
 - ArgmaxPool：大尺寸计数错误已修复，回归及指针表调用探针通过，继续完整形式化。
 
-- FP32 sqrt：浮点数学及两侧大部分实际 C 字段通过，继续内存接口与整案门禁。
+- FP32 sqrt 已完整收录；继续三输入 depthwise 卷积，先检查权重布局与 NaN 行为。
 - QS8 乘法：magic-bias 与负 NaN 修复后的全 binary32 逐元素等价证明通过，继续实际 kernel 验证。
 - FP32 maxpool：修复计数与 NaN 顺序问题，回归通过，继续实际 C 验证。
 
-上述其余候选与组件进展尚未计入 22 个完整通过的 kernel。
+上述其余候选与组件进展尚未计入 23 个完整通过的 kernel。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。

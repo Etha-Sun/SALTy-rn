@@ -1,0 +1,19 @@
+From Sqrt Require Import CaseTyped.
+Print Assumptions Sqrt.CaseTyped.ActualUnit0.proof_of_qcp_sqrt_store4_partial_solve_wit_4.
+Print Assumptions Sqrt.CaseTyped.ActualUnit1.proof_of_qcp_rvv_get32_safety_wit_8.
+Print Assumptions Sqrt.CaseTyped.ActualUnit1.proof_of_qcp_rvv_get32_safety_wit_24.
+Print Assumptions Sqrt.CaseTyped.ActualUnit1.proof_of_qcp_rvv_get32_return_wit_7.
+Print Assumptions Sqrt.CaseTyped.ActualUnit1.proof_of_qcp_rvv_get32_return_wit_23.
+Print Assumptions Sqrt.CaseTyped.ActualUnit1.proof_of___riscv_vse32_v_f32m8_partial_solve_wit_1_pure.
+Print Assumptions Sqrt.CaseTyped.ActualUnit4.proof_of_check_observation_partial_solve_wit_1.
+Print Assumptions Sqrt.CaseTyped.ActualUnit5.proof_of_compare_outputs_partial_solve_wit_3.
+Print Assumptions Sqrt.CaseTyped.ActualUnit7.proof_of_test_neon_safety_wit_5.
+Print Assumptions Sqrt.CaseTyped.ActualUnit7.proof_of_test_neon_safety_wit_21.
+Print Assumptions Sqrt.CaseTyped.ActualUnit7.proof_of_test_neon_entail_wit_6_2.
+Print Assumptions Sqrt.CaseTyped.ActualUnit7.proof_of_test_neon_partial_solve_wit_3_pure.
+Print Assumptions Sqrt.CaseTyped.ActualUnit7.proof_of_test_neon_partial_solve_wit_15.
+Print Assumptions Sqrt.CaseTyped.ActualUnit8.proof_of_test_rvv_safety_wit_8.
+Print Assumptions Sqrt.CaseTyped.ActualUnit8.proof_of_test_rvv_partial_solve_wit_2.
+Print Assumptions Sqrt.CaseTyped.ActualUnit8.proof_of_test_rvv_partial_solve_wit_12.
+Print Assumptions Sqrt.CaseTyped.ActualStrategy2.sqrt_public_strategy1_correctness.
+Print Assumptions Sqrt.CaseTyped.ActualStrategy7.rvv_store_strategy1_correctness.

@@ -1,0 +1,384 @@
+{
+  "kernel": "f32-vsqrt",
+  "status": "Precise source-reviewed intrinsic specifications and adapter bindings; final human specification review pending",
+  "policy": "docs/INTRINSIC-SPEC-POLICY.zh-CN.md",
+  "sources": [
+    {
+      "publisher": "Arm",
+      "title": "AArch64 Instruction Set Architecture,2025-03,shared pseudocode",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "reviewed_pdf_indices": {
+        "FSQRT_vector": 1534,
+        "FPSqrt": 5915,
+        "FPProcessNaN": 5893,
+        "FPDefaultNaN": 5875,
+        "FPUnpack": 5920,
+        "FPUnpackBase": 5922
+      },
+      "review": "Read official extracted pseudocode; no third-party mirror used."
+    },
+    {
+      "publisher": "Arm ACLE",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "revision": "aef52c2",
+      "section": "Square root:vsqrtq_f32 maps to FSQRT Vd.4S,Vn.4S"
+    },
+    {
+      "publisher": "RISC-V International",
+      "version": "V1.0/F2.2 semantics",
+      "retrieved_source": {
+        "label": "rvv-vector",
+        "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/main/src/unpriv/vector-common.adoc",
+        "sha256": "953eade975979f04181c1d34065696880cfa1b1ff7f0a6f185eaefe007d2316d",
+        "etag": "\"0e3a2b283b691dd1da36f9244676a91f7ec332345158fc7ecf6b0b1a581c30ed\"",
+        "bytes": 225053
+      }
+    },
+    {
+      "publisher": "RISC-V International",
+      "version": "V1.0/F2.2 semantics",
+      "retrieved_source": {
+        "label": "riscv-f",
+        "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/main/src/unpriv/f-st-ext.adoc",
+        "sha256": "695edb2aa38d7b1c8711b4b2565b081bbee208d64f56db2cd0007420c947957b",
+        "etag": "\"3e7baa442e416a31b6167db1ba8a0a5ed313a61461fee87c9a2b3d2c6be198d5\"",
+        "bytes": 23918
+      }
+    }
+  ],
+  "environment": {
+    "arm": "A64 little-endian;RNE;DN=0,FZ=0,FIZ=0,AH=0;FP exception traps disabled;FP exception flags unobserved",
+    "rvv": "VLEN128,SEW32,LMUL8,VLMAX32;FRM=RNE;noFP traps,flagsunobserved",
+    "vl": "All architectural legal selections; n<=32→VL=n,32<n<64→ceil(n/2)<=VL<=32,n>=64→VL32; no forcedmin assumption",
+    "tail": "Explicit active-prefix abstraction; logical inactive fields arbitrary,never forced0; kernel stores onlyactiveVL",
+    "input": "One shared readonly FloatArray regionN+3; vld4/vle activeVL useexactp=base+4*k andinboundswindow,preserveentireregion",
+    "output": "Nfloatcells,noextraoutputpadding; onlymemorypreconditionsdeclaredbyFloatArray,nonphysical ABI correspondence open",
+    "alignment": "FloatArray full initialized/undef float cells entail natural four-byte alignment through inherited isvalidptr_float; no extra alignment precondition added"
+  },
+  "model_notes": {
+    "armNaN": "Preserve inputNaNsign/payload,quietbit22;invalidnegative→+0x7fc00000;±0/+Inf preserved",
+    "rvvNaN": "Canonical+0x7fc00000forNaNinput/invalidnegative;±0/+Inf preserved",
+    "core": "Flocq Binary.Bsqrt24/128 RNE; common mathematicalIEEE operation, distinct ISA NaN wrappers",
+    "observation": "numeric equality orbothNaN; inputmemory/frame preserved",
+    "proof": "Sqrt.Observation.sqrt_cross_isa andsqrt_prefix_related actualordinaryCoq/Print passed .build/coq-closure-04ov3hgj; notISArefinement"
+  },
+  "entries": [
+    {
+      "original_intrinsic": "vld1q_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Pack.sqrt_lane",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        }
+      ],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 4,
+      "contract_exact_text_sha256": "26df99ce108ad967c823bf5e909d9e4b4ed47ac0fb71882f96441586575435a7",
+      "signature": "float32x4_t vld1q_f32(const float* p)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "vld1q_f32",
+      "ownership": "borrow entire existing FloatArray.full(base,total,A), exact p=base+4*k, read only four/activeVL lanes and preserve same region; no duplicate or aligned extra region"
+    },
+    {
+      "original_intrinsic": "vsqrtq_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Model.sqrt_arm",
+          "file": "proof/coq/Model.v",
+          "sha256": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03"
+        },
+        {
+          "name": "Sqrt.Model.sqrt_core",
+          "file": "proof/coq/Model.v",
+          "sha256": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03"
+        },
+        {
+          "name": "Sqrt.Model.sqrt_quiet",
+          "file": "proof/coq/Model.v",
+          "sha256": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03"
+        },
+        {
+          "name": "Sqrt.Model.sqrt_nan_bits",
+          "file": "proof/coq/Model.v",
+          "sha256": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03"
+        }
+      ],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 6,
+      "contract_exact_text_sha256": "bf02a5a1d50b267872e8143f576d499857b41d234a0d1ce9ee1e7675e4d4e2a8",
+      "signature": "float32x4_t vsqrtq_f32(float32x4_t a)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "vsqrtq_f32"
+    },
+    {
+      "original_intrinsic": "vget_low_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 8,
+      "contract_exact_text_sha256": "769319591c9c162ef37b037577bdf65b0300025a18277299a714bb2f5a8fc24a",
+      "signature": "float32x2_t vget_low_f32(float32x4_t a)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "vget_low_f32",
+      "direct_coq_expression": "post store(ret.s0,float,x0) * store(ret.s1,float,x1); structural identity projection of the input four field values"
+    },
+    {
+      "original_intrinsic": "vget_high_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 10,
+      "contract_exact_text_sha256": "74c04e7d1ed5df77a8281e936c1dd0a7e18243469f97db2d5c33817ae51696e3",
+      "signature": "float32x2_t vget_high_f32(float32x4_t a)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "vget_high_f32",
+      "direct_coq_expression": "post store(ret.s0,float,x2) * store(ret.s1,float,x3); structural identity projection of the input four field values"
+    },
+    {
+      "original_intrinsic": "vst1q_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Pack.sqrt_pack4",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        }
+      ],
+      "status": "actual-C-body component checked; fresh full case status is tracked separately",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 12,
+      "contract_exact_text_sha256": "5b43434caf8ae9226a91b6fd0058ebe9df1e86f10417c97b6c9cce73594132f2",
+      "signature": "void qcp_sqrt_store4(float* p,const float32x4_t* a)",
+      "specification_boundary": "actual ordinary C adapter/body also checked",
+      "actual_provider": "qcp_sqrt_store4",
+      "actual_source": "shim/store_adapters.c",
+      "actual_source_sha256": "6058c89aff04608373d605ed29910c3bc4d8b4e9cef5989367788d2cba169414",
+      "typed_instance": "Sqrt.StoreAdaptersChecked.CheckedStoreAdapters",
+      "actual_target_interface": "Sqrt.store_adapters_goal.VC_Correct",
+      "macro_single_evaluation": true,
+      "physical_isa_store_refinement": "source-reviewed only"
+    },
+    {
+      "original_intrinsic": "vst1_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Pack.sqrt_pack2",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        }
+      ],
+      "status": "actual-C-body component checked; fresh full case status is tracked separately",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 15,
+      "contract_exact_text_sha256": "f5aedc312b12bd6183352532a47e0908c221c46dcbab80dbf05acd4319e65d5b",
+      "signature": "void qcp_sqrt_store2(float* p,const float32x2_t* a)",
+      "specification_boundary": "actual ordinary C adapter/body also checked",
+      "actual_provider": "qcp_sqrt_store2",
+      "actual_source": "shim/store_adapters.c",
+      "actual_source_sha256": "6058c89aff04608373d605ed29910c3bc4d8b4e9cef5989367788d2cba169414",
+      "typed_instance": "Sqrt.StoreAdaptersChecked.CheckedStoreAdapters",
+      "actual_target_interface": "Sqrt.store_adapters_goal.VC_Correct",
+      "macro_single_evaluation": true,
+      "physical_isa_store_refinement": "source-reviewed only"
+    },
+    {
+      "original_intrinsic": "vst1_lane_f32",
+      "isa": "Arm",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Pack.sqrt_pack1",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        }
+      ],
+      "status": "actual-C-body component checked; fresh full case status is tracked separately",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 17,
+      "contract_exact_text_sha256": "40c08966fd63292e630150621a932ceba201b260545edfb997c3bf2b74e9d8ce",
+      "signature": "void qcp_sqrt_store1_0(float* p,const float32x2_t* a)",
+      "specification_boundary": "actual ordinary C adapter/body also checked",
+      "actual_provider": "qcp_sqrt_store1_0",
+      "actual_source": "shim/store_adapters.c",
+      "actual_source_sha256": "6058c89aff04608373d605ed29910c3bc4d8b4e9cef5989367788d2cba169414",
+      "typed_instance": "Sqrt.StoreAdaptersChecked.CheckedStoreAdapters",
+      "actual_target_interface": "Sqrt.store_adapters_goal.VC_Correct",
+      "macro_single_evaluation": true,
+      "physical_isa_store_refinement": "source-reviewed only",
+      "configuration": "lane literal 0 only; unsupported dynamic/nonzero lanes have no provided macro/callee"
+    },
+    {
+      "original_intrinsic": "__riscv_vsetvl_e32m8",
+      "isa": "RVV",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Pack.sqrt_vl_allowed",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        }
+      ],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 19,
+      "contract_exact_text_sha256": "cf43d65346b088567debbe729d101bbd4212ae10ca5f3f75d04b8b5d0f9e573f",
+      "signature": "size_t __riscv_vsetvl_e32m8(size_t n)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "__riscv_vsetvl_e32m8",
+      "configuration": "VLEN128 / SEW32 / LMUL8 / VLMAX32; full architectural pointwise legal range, no forced min"
+    },
+    {
+      "original_intrinsic": "__riscv_vle32_v_f32m8",
+      "isa": "RVV",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Borrowed.sqrt_read_at",
+          "file": "proof/coq/Borrowed.v",
+          "sha256": "384df789c8ba8ab46d65765e11cb8758e7c58ca1db5023210a9a244256b050c4"
+        },
+        {
+          "name": "Sqrt.Pack.sqrt_lane",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        }
+      ],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 21,
+      "contract_exact_text_sha256": "21d25902b18218324ec4f84d11d2543f26519ed4313f3f4110623a7b4e3d008b",
+      "signature": "vfloat32m8_t __riscv_vle32_v_f32m8(const float* p,size_t vl)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "__riscv_vle32_v_f32m8",
+      "ownership": "borrow entire existing FloatArray.full(base,total,A), exact p=base+4*k, read only four/activeVL lanes and preserve same region; no duplicate or aligned extra region",
+      "inactive_fields": "arbitrary logical tail values; only active prefix constrained/observed"
+    },
+    {
+      "original_intrinsic": "__riscv_vfsqrt_v_f32m8",
+      "isa": "RVV",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "Sqrt.Pack.sqrt_active",
+          "file": "proof/coq/Pack.v",
+          "sha256": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f"
+        },
+        {
+          "name": "Sqrt.Model.sqrt_rvv",
+          "file": "proof/coq/Model.v",
+          "sha256": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03"
+        },
+        {
+          "name": "Sqrt.Model.sqrt_core",
+          "file": "proof/coq/Model.v",
+          "sha256": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03"
+        }
+      ],
+      "status": "source-reviewed-spec; intrinsic implementation body intentionally outside proof boundary",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 23,
+      "contract_exact_text_sha256": "a75dcbefae91ada69c9168828f963ec2b6bc2a17f8c24ceb6284c497b4a42ccd",
+      "signature": "vfloat32m8_t __riscv_vfsqrt_v_f32m8(vfloat32m8_t a,size_t vl)",
+      "specification_boundary": "reviewed intrinsic contract",
+      "actual_provider": "__riscv_vfsqrt_v_f32m8",
+      "inactive_fields": "arbitrary logical tail values; only active prefix constrained/observed"
+    },
+    {
+      "original_intrinsic": "__riscv_vse32_v_f32m8",
+      "isa": "RVV",
+      "contract_file": "shim/intrinsics.h",
+      "contract_source_sha256": "dc79410e02ad6214a12ec87e7349c2b91af59150cd80bc11f94296ace4ec946a",
+      "coq_definitions": [
+        {
+          "name": "QcpRvv32.RvvStoreModel.rvv_pack32",
+          "file": "../../verified/f32-vadd/proof/coq/QcpRvv32/RvvStoreModel.v",
+          "sha256": "c73de8dac34847bee48ec2f0fe5ada01f4ac37b8a2ea74e6b8f06c72bc5bb116"
+        },
+        {
+          "name": "QcpRvv32.RvvStoreModel.rvv_take",
+          "file": "../../verified/f32-vadd/proof/coq/QcpRvv32/RvvStoreModel.v",
+          "sha256": "c73de8dac34847bee48ec2f0fe5ada01f4ac37b8a2ea74e6b8f06c72bc5bb116"
+        }
+      ],
+      "status": "actual-C-body component checked; fresh full case status is tracked separately",
+      "human_final_review": "pending",
+      "formal_isa_correspondence": "not established",
+      "contract_line": 25,
+      "contract_exact_text_sha256": "da6ea65b5312e96654cffc3f5a7391a8b1a8f3239dff5d3251cd81ceef1d0b3b",
+      "signature": "void __riscv_vse32_v_f32m8(float *p,const struct vfloat32m8_t *a,unsigned long long vl)",
+      "specification_boundary": "actual ordinary C adapter/body also checked",
+      "actual_provider": "__riscv_vse32_v_f32m8",
+      "actual_source": "shim/rvv_store.c",
+      "actual_source_sha256": "550ac0b7d1aec2666e5f05834737d52fe7fb69c14491b985c887d0afafae05f1",
+      "typed_instance": "Sqrt.RvvStoreChecked.CheckedRvvStore",
+      "actual_target_interface": "Sqrt.rvv_store_goal.VC_Correct",
+      "macro_single_evaluation": true,
+      "physical_isa_store_refinement": "source-reviewed only"
+    }
+  ],
+  "unfinished": [
+    "Final human intrinsic specification review; no formal ISA refinement theorem is claimed"
+  ],
+  "spec_only_declarations": [
+    "vld1q_f32",
+    "vsqrtq_f32",
+    "vget_low_f32",
+    "vget_high_f32",
+    "__riscv_vsetvl_e32m8",
+    "__riscv_vle32_v_f32m8",
+    "__riscv_vfsqrt_v_f32m8"
+  ],
+  "body_checked_adapters": [
+    "qcp_sqrt_store4",
+    "qcp_sqrt_store2",
+    "qcp_sqrt_store1_0",
+    "__riscv_vse32_v_f32m8"
+  ],
+  "formal_isa_refinement_established": false,
+  "model_source_sha256": {
+    "proof/coq/Model.v": "d146d403f7c8435cd5cd3137ae5d5ecc8b5e4b0fbe8a8723f7e4fe7a90468b03",
+    "proof/coq/Bits.v": "6a1212a585c087bde1ee41ec322d6f96ea221de99e90ad343893c2db37c83849",
+    "proof/coq/NanFacts.v": "145261e7a141b194dbea50f5d2afcac04b5b90d077e3ccb449f2a5c5307d58e1",
+    "proof/coq/Types.v": "06b242510d23e1faa9b5471e5e8c6c49ad16846ff24d646c96803c479665d8c0",
+    "proof/coq/Pack.v": "d981f9d143f3cb94dc79b1f7a80ca151393f5e030912d654c31a3991fa03dd1f",
+    "proof/coq/Borrowed.v": "384df789c8ba8ab46d65765e11cb8758e7c58ca1db5023210a9a244256b050c4",
+    "proof/coq/Observation.v": "0f4c1a7ef46675d984a812f78df4c49cad7b48254718d1c14dcf2d1a797fa43b",
+    "proof/coq/KernelFacts.v": "abc7cda65aebb551a9894c465cc28eb5f1a924c81f4d27def8fd209886f79ae7"
+  },
+  "whole_case_status_source": "proof/status.json; this ledger grants no whole-case credit"
+}

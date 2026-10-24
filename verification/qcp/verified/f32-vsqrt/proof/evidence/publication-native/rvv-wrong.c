@@ -1,0 +1,26 @@
+#include "/srv/home/yuechunsun/tools/qcp-simple-integration/verification/qcp/verified/f32-vsqrt/.build/publication-rle1klf8/finite-replay/verification/qcp/verified/f32-vsqrt/shim/intrinsics.h"
+#define test_rvv real_test_rvv
+void test_rvv(
+    size_t batch,
+    const float* input,
+    float* output,
+    const struct xnn_f32_default_params* unused_params)
+{
+  assert(batch != 0);
+  assert(batch % sizeof(float) == 0);
+  assert(input != NULL);
+  assert(output != NULL);
+
+  size_t n = batch / sizeof(float);
+  while (n > 0) {
+    size_t vl = __riscv_vsetvl_e32m8(n);
+    vfloat32m8_t vx = __riscv_vle32_v_f32m8(input, vl);
+    vfloat32m8_t vy = __riscv_vfsqrt_v_f32m8(vx, vl);
+    __riscv_vse32_v_f32m8(output, vy, vl);
+    input += vl;
+    output += vl;
+    n -= vl;
+  }
+}
+#undef test_rvv
+void test_rvv(size_t n,const float* a,float* b,const struct xnn_f32_default_params*p){real_test_rvv(n,a,b,p);unsigned u;__builtin_memcpy(&u,b,4);u^=1;__builtin_memcpy(b,&u,4);}

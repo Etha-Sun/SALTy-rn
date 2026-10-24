@@ -1,0 +1,46 @@
+{
+  "candidate": "f32-vsqrt",
+  "verified": false,
+  "checked_c_vcs": 0,
+  "checked_original_kernels": 0,
+  "generated_unit_vcs": 109,
+  "model_coqc_exit_code": 0,
+  "native": {
+    "passed": true,
+    "cases": 156,
+    "scope": "Finite native shim regression; libc sqrtf unproved; no kernel theorem."
+  },
+  "originals": [
+    {
+      "original": "kernels/source/f32-vsqrt.c",
+      "copy": "impl/testNEON.c",
+      "byte_identical": true,
+      "sha256": "b4970661c787e642b8428f213a4b60bd894f4a63704ffc31ec96087beab4ef3e"
+    },
+    {
+      "original": "kernels/target/f32-vsqrt.c",
+      "copy": "impl/testRVV.c",
+      "byte_identical": true,
+      "sha256": "b09b69f0e4b7de2a839b71c1207f21ac2f024a7aa173e7ca1b4c19cca5b06012"
+    }
+  ],
+  "blocker": "QCP has no sqrtf/__builtin_sqrtf builtin; vector goals assume an external sqrtf contract with no checked implementation.",
+  "additional_gaps": [
+    "named-field/native lane adapter",
+    "unary original kernel loop and wrapper proofs"
+  ],
+  "source_sha256": {
+    "contracts/spec.h": "acd75b71bd24569f727ac3de95caa8c76a30f6e60bf0cd769f1459f5f19173f4",
+    "impl/testNEON.c": "b4970661c787e642b8428f213a4b60bd894f4a63704ffc31ec96087beab4ef3e",
+    "impl/testRVV.c": "b09b69f0e4b7de2a839b71c1207f21ac2f024a7aa173e7ca1b4c19cca5b06012",
+    "proof/SqrtLogic.v": "9d1cac1d22e8e774aba3dc54613876af2a28a52176b5f81033137e80c5174f63",
+    "proof/goals/vector_sqrt/vector_sqrt_goal.v": "a43aa43aabc0119f2c55a265e109d4f66311bcab95a4333c1cc412b3476cf194",
+    "proof/native.py": "071eb9c631e5e7c5532d944a5adbf5479ece8abd9c054f17569f5621214cc4d3",
+    "proof/probe.py": "174c144dfb689c5b60750f52fc7ca69c3d86de4504c0750cfaa2654287945e22",
+    "proof/probes/__builtin_sqrtf.c": "58a0685f06418e43d4137c91af9fef8ba3ce15f9337e1a3c863bba5f56f207e4",
+    "proof/probes/sqrtf.c": "423981bd29472e8e859d59da86ce94b975305dadc31f5672b5acbd94173a55c7",
+    "proof/probes/vector_sqrt.c": "5fa0ee0ecac97cf8940329ff76d30b1133683af8d57b1b252284c496be1a4142",
+    "shim/sqrt_ops.c": "a0e3b3591e3ecc238420c734bdd6334b9afdbddfd3a595436ade67f5768d7fea",
+    "spec.c": "11e77872f8b07daae060d1696b94fc3d5ae9567637ba188b657386cf6446810a"
+  }
+}

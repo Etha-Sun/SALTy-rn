@@ -1,0 +1,83 @@
+Chars 0 - 55 [From~Coq~Require~Import~ZArith...] 0.432 secs (0.242u,0.187s)
+Chars 56 - 133 [From~Sqrt~Require~Import~Borro...] 6.886 secs (5.342u,1.337s)
+Chars 134 - 158 [Import~Snaive_C_Rules64.] 0.058 secs (0.056u,0.s)
+Chars 159 - 184 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 185 - 206 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 207 - 387 [#[local]~Opaque~sqrt_arm~sqrt_...] 0. secs (0.u,0.s)
+Chars 388 - 427 [Lemma~retry_q4~:~forall~x~:~Z,...] 0.001 secs (0.001u,0.s)
+Chars 428 - 434 [Proof.] 0. secs (0.u,0.s)
+Chars 435 - 508 [(intro;~replace~(4~*~x)~with~(...] 0.008 secs (0.008u,0.s)
+Chars 509 - 513 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 514 - 629 [Ltac~~retry_ground~t~:=~first~...] 0. secs (0.u,0.s)
+Chars 630 - 995 [Ltac~~retry_constants~:=~~~rep...] 0. secs (0.u,0.s)
+Chars 996 - 1107 [Ltac~~retry_prepare~:=~~~sqrt_...] 0. secs (0.u,0.s)
+Chars 1108 - 1526 [Ltac~~retry_split~:=~~~lazymat...] 0. secs (0.u,0.s)
+Chars 1527 - 2228 [Ltac~~retry_finish~:=~~~lazyma...] 0.001 secs (0.001u,0.s)
+Chars 2229 - 2260 [Module~CheckedNeonKernelPart15.] 0. secs (0.u,0.s)
+Chars 2261 - 2346 [Lemma~proof_of_test_neon_safet...] 0. secs (0.u,0.s)
+Chars 2347 - 2353 [Proof.] 0. secs (0.u,0.s)
+Chars 2354 - 2405 [(unfold~Sqrt.neon_unit_goal.te...] 0. secs (0.u,0.s)
+Chars 2406 - 2425 [sqrt_kernel_finish.] 0.142 secs (0.138u,0.003s)
+Chars 2426 - 2430 [Qed.] 0.029 secs (0.029u,0.s)
+Chars 2432 - 2529 [Lemma~proof_of_test_neon_parti...] 0. secs (0.u,0.s)
+Chars 2530 - 2536 [Proof.] 0. secs (0.u,0.s)
+Chars 2537 - 2594 [(unfold~Sqrt.neon_unit_goal.te...] 0. secs (0.u,0.s)
+Chars 2595 - 2683 [(intro~Hcall;~unfold~Sqrt.neon...] 0.377 secs (0.096u,0.259s)
+Chars 2684 - 2688 [Qed.] 0.007 secs (0.007u,0.s)
+Chars 2690 - 2789 [Lemma~proof_of_test_neon_parti...] 0. secs (0.u,0.s)
+Chars 2790 - 2796 [Proof.] 0. secs (0.u,0.s)
+Chars 2797 - 2855 [(unfold~Sqrt.neon_unit_goal.te...] 0. secs (0.u,0.s)
+Chars 2856 - 2875 [sqrt_kernel_finish.] 1.354 secs (1.318u,0.019s)
+Chars 2876 - 2880 [Qed.] 0.144 secs (0.144u,0.s)
+Chars 2882 - 2910 [End~CheckedNeonKernelPart15.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr : rvalue_expr -> addr
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2911 - 2986 [Print~Assumptions~CheckedNeonK...] 2.208 secs (1.35u,0.082s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+eval_addr_expr : rvalue_expr -> addr
+Chars 2987 - 3068 [Print~Assumptions~CheckedNeonK...] 0.509 secs (0.431u,0.s)
+Axioms:
+sizeof_union_type : string -> Z
+sizeof_struct_type : string -> Z
+sizeof_enum_type : string -> Z
+sizeof_alias_type : string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 3069 - 3151 [Print~Assumptions~CheckedNeonK...] 0.905 secs (0.897u,0.006s)

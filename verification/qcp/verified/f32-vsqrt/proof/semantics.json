@@ -1,0 +1,26 @@
+{
+  "kernel": "f32-vsqrt",
+  "proof_boundary": "actual kernel/helper/caller C partial correctness under explicit source-reviewed intrinsic specifications; not a formal ISA refinement or termination proof",
+  "namespace": "Sqrt",
+  "observation": "numeric equality or both NaN; input/output frame preserved",
+  "input_domain": "all binary32 bit patterns; 0<n<=4611686018427387903; input n+3/output n float cells; unused params may be NULL",
+  "environment": {
+    "arm": "A64 little-endian;RNE;DN=0,FZ=0,FIZ=0,AH=0;FP exception traps disabled;FP exception flags unobserved",
+    "rvv": "VLEN128,SEW32,LMUL8,VLMAX32;FRM=RNE;noFP traps,flagsunobserved",
+    "vl": "All architectural legal selections; n<=32→VL=n,32<n<64→ceil(n/2)<=VL<=32,n>=64→VL32; no forcedmin assumption",
+    "tail": "Explicit active-prefix abstraction; logical inactive fields arbitrary,never forced0; kernel stores onlyactiveVL",
+    "input": "One shared readonly FloatArray regionN+3; vld4/vle activeVL useexactp=base+4*k andinboundswindow,preserveentireregion",
+    "output": "Nfloatcells,noextraoutputpadding; onlymemorypreconditionsdeclaredbyFloatArray,nonphysical ABI correspondence open",
+    "alignment": "FloatArray full initialized/undef float cells entail natural four-byte alignment through inherited isvalidptr_float; no extra alignment precondition added"
+  },
+  "intrinsic_ledger": "proof/intrinsic-ledger.json",
+  "acceptance_status": "proof/status.json scope full passed true whole_kernel_verified true plus exact identity checks; this semantic description grants no verification credit",
+  "original_kernels_repaired": false,
+  "annotation_history": "old duplicate-heap byvalue-store probe and dropped unused-Carg cut rejected; final pointer store adapters and preserved current/pre Carg links",
+  "limits": [
+    "fixed VLEN128 SEW32 LMUL8 VLMAX32",
+    "RNE fixed FP environment; flags/traps unobserved",
+    "inactive logical fields arbitrary; only active prefix observed",
+    "ISA-to-model, physical ABI/compiler correspondence, and total termination unproved"
+  ]
+}
