@@ -1,6 +1,6 @@
 2026-10-23 用户更新：intrinsic 不再强制提供 C implementation/body 证明，可直接采用与原始规范对应、公开定义并逐项登记的 spec；完整 kernel 证明和最终人工 spec 审核保留。详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。下文早期 body 必选要求仅保留历史含义，已发布证据不改写。
 
-当前 **24/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
+当前 **25/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
 最新收录 [F32→F16 常量兼容版](verified/f32-f16-vcvt/README.zh-CN.md)：56实际C单元、2672 C字段+36策略、374普通Coq、2708假设报告及发布复核通过。完整FP32输入域、半精度输出位相等，原件及精确同值常量兼容记录保留。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。

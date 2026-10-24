@@ -1,0 +1,48 @@
+--- a/testNEON.c
++++ b/testNEON.c
+@@ -40,13 +40,13 @@
+     // 256 uint8s may be summed into an uint16 before overflowing
+     // To prevent handling the tails of the inner 256 loop, we round 256 down to
+     // the nearest integer multiple of ACCUMULATORS.
+-    int r = rows;
++    size_t r = rows;
+     while (r > 0) {
+       uint16x8_t vacc16_4 = vmovq_n_u16(0);
+       uint16x8_t vacc16_12 = vmovq_n_u16(0);
+       uint16x8_t vacc16_20 = vmovq_n_u16(0);
+       uint16x8_t vacc16_28 = vmovq_n_u16(0);
+-      for (int current_batch = min(r, 252); current_batch > 0; current_batch -= 7) {
++      for (int current_batch = rdsum_min252(r); current_batch > 0; current_batch -= 7) {
+         if XNN_UNPREDICTABLE(current_batch < 2) {
+           i1 = zero;
+         }
+@@ -177,9 +177,9 @@
+ 
+     input_increment = 7 * input_stride;
+     // 256 uint8s may be summed into an uint16 before overflowing.
+-    do {
+-      int num_batches = floor((rows + 251) / 252);
+-      int r = rows;
++    while (channels != 0) {
++      size_t num_batches = rdsum_ceil252(rows);
++      size_t r = rows;
+       const uint8_t* i0 = input;
+       const uint8_t* i1 = (const uint8_t*) ((uintptr_t) input + 1 * input_stride);
+       const uint8_t* i2 = (const uint8_t*) ((uintptr_t) input + 2 * input_stride);
+@@ -193,7 +193,7 @@
+ 
+       for (; num_batches > 0; --num_batches) {
+         uint16x8_t vacc16 = vmovq_n_u16(0);
+-        for (int current_batch = min(r, 252); current_batch > 0; current_batch -= 7) {
++        for (int current_batch = rdsum_min252(r); current_batch > 0; current_batch -= 7) {
+           if XNN_UNPREDICTABLE(current_batch < 2) {
+             i1 = zero;
+           }
+@@ -267,6 +267,6 @@
+         }
+         channels = 0;
+       }
+-    } while (channels != 0);
++    }
+   }
+ }

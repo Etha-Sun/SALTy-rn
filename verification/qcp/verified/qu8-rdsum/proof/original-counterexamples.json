@@ -1,0 +1,65 @@
+{
+  "whole_kernel_verified": false,
+  "original_semantic_status": "counterexample",
+  "scope": "Fresh native original-C diagnosis with separately audited array emulation, not a formal C-body/ISA proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-rdsum/.build/original-counter-5zugfymr",
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-O2",
+        "-g",
+        "-std=c11",
+        "-fsanitize=undefined,float-cast-overflow",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-rdsum/proof/native/original_counterexample.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-rdsum/.build/original-counter-5zugfymr/original"
+      ],
+      "exit_code": 0,
+      "seconds": 2.6204050588421524,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "large-rows-oracle",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-rdsum/.build/original-counter-5zugfymr/original"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0044603419955819845,
+      "log_sha256": "0eac6a3073a46a1623f48e08f203533647e5541132630b856215c270e704b524"
+    }
+  ],
+  "native_donor": {
+    "path": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shared-extension/integer/shared/integer-qu8-rdsum.c",
+    "sha256": "da971c99878b72e7bce2d25a99af0c51d6a4352c49792f39da044eacd248a84f",
+    "old_proof_status_not_inherited": true
+  },
+  "counterexample_observed": true,
+  "large_rows_counterexample": {
+    "rows": 2147483648,
+    "channels": 32,
+    "stride": 0,
+    "int_r": -2147483648,
+    "expected_bits": 2147483648,
+    "neon_bits": 0,
+    "rvv_bits": 0,
+    "both_equal_but_wrong": true
+  },
+  "source_sha256": {
+    "proof/original/testNEON.c": "513063b3667ea19323f67b1c8076e6aa34be3a475adaf7e22e9cd1c8701f6054",
+    "proof/original/testRVV.c": "98ed75dac4eb23270fae1b67c8760e2acafb0577450ed83c2e21b0651f3a98e5",
+    "proof/native/isa_arrays.c": "da971c99878b72e7bce2d25a99af0c51d6a4352c49792f39da044eacd248a84f",
+    "proof/native/original_counterexample.c": "a3410fa43881ba6dfa36812e3a3a386bad276207856c9c2ac474b26124544e1e",
+    "proof/native/shim.h": "262569eb45845bbd51517892a46d7f2b6669e52e977003b8da3e6bd20dafcf30"
+  },
+  "gcc_sha256": "821af3c74506283c179ca413bb33e6b528805a4dd8a5c09df125e5ad560a9e89"
+}

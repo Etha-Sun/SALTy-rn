@@ -1,6 +1,8 @@
 # VADD 当前 checkpoint（2026-10-22）
 
-2026-10-24 最新入口：有效24/40，目标至少31；以 verified/manifest.json 与根 PROGRESS/MEMORY 为准。用户已统一允许直接采用与原始规范对应的 intrinsic spec，C implementation/body 证明可选，详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。这取代下文历史的 intrinsic 实现必选门槛；不改变既有证明身份，不因规则更新增加计数。
+2026-10-24：QU8 RDSUM 修复版已完整通过并直接收录，37实际C单元/1854字段、893普通Coq、2034最终假设报告；详见 [case](verified/qu8-rdsum/README.md)。
+
+2026-10-24 最新入口：有效25/40，目标至少31；以 verified/manifest.json 与根 PROGRESS/MEMORY 为准。用户已统一允许直接采用与原始规范对应的 intrinsic spec，C implementation/body 证明可选，详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。这取代下文历史的 intrinsic 实现必选门槛；不改变既有证明身份，不因规则更新增加计数。
 
 用户最新指令更新：已取消人为额度百分比停止线，后续不按50%/60%/70%阈值主动暂停。下文到50%收尾是历史记录；该更新不改变5/40证明状态，也不恢复已停止的后台心跳。
 

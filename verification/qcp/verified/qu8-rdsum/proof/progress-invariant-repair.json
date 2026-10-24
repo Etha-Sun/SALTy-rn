@@ -1,0 +1,32 @@
+{
+  "kind": "proof_annotation_strengthening",
+  "not_a_C_semantic_counterexample": true,
+  "C_implementation_unchanged": true,
+  "public_contract_unchanged": true,
+  "readonly_alias_domain_unchanged": true,
+  "counterexample": "old gate(cb=0,p=0,expected=352) is true but next outer gate(live=1,p=0,expected=352) is false; r=rows=253,stride=1,input=100 is a pointer-fragment counterexample to the invariant implication",
+  "new_predicate": "rd_inner_gate(r,cb,p,e) := (r<=252 /\\ cb<=0) \\/ p=e",
+  "unsigned_rvv_parameter": "orig_r, because actual C subtracts the bounded block size before its inner for loop",
+  "math_source": "proof/coq/ProgressFacts.v",
+  "actual_C_probe": "../qs8-rdsum/proof/diagnostics/progress/pointer_step.c",
+  "actual_probe_status": "../qs8-rdsum/proof/progress-probe-status.json",
+  "historical_status_sha256": {
+    "proof/c/neon.annotations.json": "5e5d2e1ee98770de1ed12d631259e954f9401258153d44acfdc2b178179b8998",
+    "proof/c/rvv.annotations.json": "1e1744c68aaaa766228006840f6a00036b0a2d799f652552ec6f0af85b2d9437",
+    "proof/neon-generation-status.json": "76c0a08de12491b1dd9a2a25984f0a6c2fcf5cf751a52926a26e48a53dfc8f03",
+    "proof/rvv-generation-status.json": "14f2815ea632318ada950b5fc989ecd1c52cb53cb1fb45975ee5ce5f3bef9b75",
+    "proof/rvv-core-status.json": "e9e6ec4098250ec6b472b6537b6f91eab676ff338a0c9c3ae66d8b753e354bac"
+  },
+  "annotations": {
+    "neon": {
+      "changed_pointer_gates": 14,
+      "annotation_sha256": "4a1d54e9448cad60eba0344c24e3f1c922ffc955404dbdea55ec32be02062f4c"
+    },
+    "rvv": {
+      "changed_pointer_gates": 7,
+      "annotation_sha256": "32aa8ed6caa2ad51cb6144bf7f54999073a247fc34d24dd6561e9566274ec9ab"
+    }
+  },
+  "history_directory": "proof/history/inner-progress-gate-before-5093ccd5ec24824a",
+  "whole_kernel_verified": false
+}

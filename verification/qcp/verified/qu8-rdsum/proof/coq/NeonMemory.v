@@ -1,0 +1,23 @@
+From Qu8Rdsum Require Import NeonMemoryPart00 NeonMemoryPart01 NeonMemoryPart02 NeonMemoryPart03 NeonMemoryPart04 NeonMemoryPart05 NeonMemoryPart06 NeonMemoryPart07 NeonMemoryPart08 NeonMemoryPart09 NeonMemoryPart10 NeonMemoryPart11 NeonMemoryPart12 NeonMemoryPart13 NeonMemoryPart14 NeonMemoryPart15 NeonMemoryPart16 NeonMemoryPart17 NeonMemoryPart18 NeonMemoryPart19.
+Module CheckedNeonMemory.
+Include Qu8Rdsum.NeonMemoryPart00.CheckedNeonMemoryPart00.
+Include Qu8Rdsum.NeonMemoryPart01.CheckedNeonMemoryPart01.
+Include Qu8Rdsum.NeonMemoryPart02.CheckedNeonMemoryPart02.
+Include Qu8Rdsum.NeonMemoryPart03.CheckedNeonMemoryPart03.
+Include Qu8Rdsum.NeonMemoryPart04.CheckedNeonMemoryPart04.
+Include Qu8Rdsum.NeonMemoryPart05.CheckedNeonMemoryPart05.
+Include Qu8Rdsum.NeonMemoryPart06.CheckedNeonMemoryPart06.
+Include Qu8Rdsum.NeonMemoryPart07.CheckedNeonMemoryPart07.
+Include Qu8Rdsum.NeonMemoryPart08.CheckedNeonMemoryPart08.
+Include Qu8Rdsum.NeonMemoryPart09.CheckedNeonMemoryPart09.
+Include Qu8Rdsum.NeonMemoryPart10.CheckedNeonMemoryPart10.
+Include Qu8Rdsum.NeonMemoryPart11.CheckedNeonMemoryPart11.
+Include Qu8Rdsum.NeonMemoryPart12.CheckedNeonMemoryPart12.
+Include Qu8Rdsum.NeonMemoryPart13.CheckedNeonMemoryPart13.
+Include Qu8Rdsum.NeonMemoryPart14.CheckedNeonMemoryPart14.
+Include Qu8Rdsum.NeonMemoryPart15.CheckedNeonMemoryPart15.
+Include Qu8Rdsum.NeonMemoryPart16.CheckedNeonMemoryPart16.
+Include Qu8Rdsum.NeonMemoryPart17.CheckedNeonMemoryPart17.
+Include Qu8Rdsum.NeonMemoryPart18.CheckedNeonMemoryPart18.
+Include Qu8Rdsum.NeonMemoryPart19.CheckedNeonMemoryPart19.
+End CheckedNeonMemory.

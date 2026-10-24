@@ -1,0 +1,21 @@
+{
+  "variant": "both-sides-repaired-v1",
+  "reason": "Full-size_t row count replaces signed32 truncation; NEON ceil uses overflow-free integer quotient/remainder and full size_t batches. Bounded inner batch remains signed int so final subtraction by7 may become negative instead of unsigned underflow. Unsigned output accumulation already has defined modulo32 semantics; no signed-output overflow repair is claimed for QU8.",
+  "original_counterexamples": "proof/original-counterexamples.json",
+  "rows_domain": "all positive uint64 values subject only to actual memory capacity/readability; no rows<2^31 restriction",
+  "sides": {
+    "neon": {
+      "original_sha256": "513063b3667ea19323f67b1c8076e6aa34be3a475adaf7e22e9cd1c8701f6054",
+      "actual_sha256": "671c52e5a7bc928e5b03c28a7edda85b976c20677d77a530c3829b82486db7c6",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "65f2e84715a8ab06f482395ffe12cf59844a93d6aaef9d7532a52bfa45403386"
+    },
+    "rvv": {
+      "original_sha256": "98ed75dac4eb23270fae1b67c8760e2acafb0577450ed83c2e21b0651f3a98e5",
+      "actual_sha256": "2b682cf4e22b03db45c6f3e3e98a4a48c583c3b48b9381b066dd9460a3a8eef3",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "ff2104a15cba080a409764e636dd20a4d9c41eabf57f9d39da70da551a0fbc78"
+    }
+  },
+  "semantic_repair_not_original_proof": true
+}

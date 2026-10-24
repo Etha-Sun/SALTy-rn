@@ -1,0 +1,20 @@
+--- a/testRVV.c
++++ b/testRVV.c
+@@ -24,7 +24,7 @@
+ 
+     vuint32m8_t vacc32 = __riscv_vmv_v_x_u32m8(0, vl);
+ 
+-    int r = rows;
++    size_t r = rows;
+     const uint8_t* i0 = input;
+     const uint8_t* i1 = (const uint8_t*) ((uintptr_t) input + 1 * input_stride);
+     const uint8_t* i2 = (const uint8_t*) ((uintptr_t) input + 2 * input_stride);
+@@ -35,7 +35,7 @@
+ 
+     while (r > 0) {
+       vuint16m4_t vacc16 = __riscv_vmv_v_x_u16m4(0, vl);
+-      int current_batch = r < 252 ? r : 252;
++      int current_batch = rdsum_min252(r);
+       r -= current_batch;
+ 
+       for (; current_batch > 0; current_batch -= 7) {

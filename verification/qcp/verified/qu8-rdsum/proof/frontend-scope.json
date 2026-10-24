@@ -1,0 +1,129 @@
+{
+  "passed": true,
+  "scope": "exact side-effect-free source call shapes only; pure semantic bridges and actual helper body proofs separately required",
+  "findings": [],
+  "rules": {
+    "vget_low_u8": {
+      "occurrences": 28,
+      "guarded_occurrences": 28,
+      "expected": 28,
+      "literal_matches": [
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))",
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))",
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))",
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))",
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))",
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))",
+        "vaddw_u8(vacc16_4, vget_low_u8(vin4))",
+        "vaddw_u8(vacc16_12, vget_low_u8(vin12))",
+        "vaddw_u8(vacc16_20, vget_low_u8(vin20))",
+        "vaddw_u8(vacc16_28, vget_low_u8(vin28))"
+      ]
+    },
+    "vget_low_u16": {
+      "occurrences": 5,
+      "guarded_occurrences": 5,
+      "expected": 5,
+      "literal_matches": [
+        "vaddw_u16(vacc0, vget_low_u16(vacc16_4))",
+        "vaddw_u16(vacc8, vget_low_u16(vacc16_12))",
+        "vaddw_u16(vacc16, vget_low_u16(vacc16_20))",
+        "vaddw_u16(vacc24, vget_low_u16(vacc16_28))",
+        "vaddw_u16(vacc0, vget_low_u16(vacc16))"
+      ]
+    },
+    "vget_high_u16": {
+      "occurrences": 5,
+      "guarded_occurrences": 5,
+      "expected": 5,
+      "literal_matches": [
+        "vaddw_u16(vacc4, vget_high_u16(vacc16_4))",
+        "vaddw_u16(vacc12, vget_high_u16(vacc16_12))",
+        "vaddw_u16(vacc20, vget_high_u16(vacc16_20))",
+        "vaddw_u16(vacc28, vget_high_u16(vacc16_28))",
+        "vaddw_u16(vacc1, vget_high_u16(vacc16))"
+      ]
+    },
+    "vget_low_u32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vadd_u32(vo, vget_low_u32(vacc0))"
+      ]
+    },
+    "vextq_u32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vextq_u32(vacc0, vacc0, 2)"
+      ]
+    },
+    "vgetq_lane_u32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vgetq_lane_u32(vacc0, 0)"
+      ]
+    },
+    "vst1_u32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vst1_u32(output, vo)"
+      ],
+      "adapter": "const vector pointer borrow, every original expression evaluated once"
+    },
+    "vst1q_u32": {
+      "occurrences": 11,
+      "guarded_occurrences": 11,
+      "expected": 11,
+      "literal_matches": [
+        "vst1q_u32(output, vacc0)",
+        "vst1q_u32(output, vacc4)",
+        "vst1q_u32(output, vacc8)",
+        "vst1q_u32(output, vacc12)",
+        "vst1q_u32(output, vacc16)",
+        "vst1q_u32(output, vacc20)",
+        "vst1q_u32(output, vacc24)",
+        "vst1q_u32(output, vacc28)",
+        "vst1q_u32(output, vo0)",
+        "vst1q_u32(output, vo1)",
+        "vst1q_u32(output, vo)"
+      ],
+      "adapter": "const vector pointer borrow, every original expression evaluated once"
+    },
+    "__riscv_vse32_v_u32m8": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "__riscv_vse32_v_u32m8(output, vo, vl)"
+      ],
+      "adapter": "const vector pointer borrow, every original expression evaluated once"
+    }
+  },
+  "source_sha256": "49a8c01c82430a9f07665e5e7fccdfb51cb5b86b97783f0dbe741488193a2dd3",
+  "frontend_sha256": "a07fe2c2422fcddc62f96391d33a6074b53117edfc8c22ba7b1c8b6f590d378a"
+}

@@ -1,0 +1,23 @@
+{
+  "variant": "both-sides-repaired-neon-loop-compatible-v2",
+  "reason": "Full-size_t row count replaces signed32 truncation; NEON ceil uses overflow-free integer quotient/remainder and full size_t batches. Bounded inner batch remains signed int so final subtraction by7 may become negative instead of unsigned underflow. Unsigned output accumulation already has defined modulo32 semantics; no signed-output overflow repair is claimed for QU8. NEON guarded do-while normalized to while with byte-identical body and no jumps. QCP record SIGSEGV was reproduced in the signed neighboring case; this unsigned control normalization is justified by the same generic checked bridge, not claimed as an unsigned semantic counterexample.",
+  "original_counterexamples": "proof/original-counterexamples.json",
+  "rows_domain": "All positive uint64 row counts and all uint64 strides under the existing public rd_inputs/rd_mem valid non-wrapping row-footprint contract; stride0 and overlapping input/zero rows are preserved. Numeric address-wrap layouts are outside this contract. Initialized output is separate from the owned readonly footprint, as already expressed by public separation conjunction.",
+  "sides": {
+    "neon": {
+      "original_sha256": "513063b3667ea19323f67b1c8076e6aa34be3a475adaf7e22e9cd1c8701f6054",
+      "actual_sha256": "49a8c01c82430a9f07665e5e7fccdfb51cb5b86b97783f0dbe741488193a2dd3",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "b2f7dc88470ee734494f50021d1fdc98e3b916c7aaec6fcc74b56bbaa95a37c4"
+    },
+    "rvv": {
+      "original_sha256": "98ed75dac4eb23270fae1b67c8760e2acafb0577450ed83c2e21b0651f3a98e5",
+      "actual_sha256": "2b682cf4e22b03db45c6f3e3e98a4a48c583c3b48b9381b066dd9460a3a8eef3",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "ff2104a15cba080a409764e636dd20a4d9c41eabf57f9d39da70da551a0fbc78"
+    }
+  },
+  "semantic_repair_not_original_proof": true,
+  "compatibility_record": "proof/loop-compatibility.json",
+  "domain_clarification": "Documentation only; no Require, C body, annotation, mathematical model or parameter domain was changed."
+}

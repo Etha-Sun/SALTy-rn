@@ -1,0 +1,5 @@
+From Qu8Rdsum Require Import RvvChecked rvv_unit_goal.
+Print Assumptions Qu8Rdsum.RvvChecked.CheckedRvv.proof_of_test_rvv_safety_wit_8.
+Print Assumptions Qu8Rdsum.RvvChecked.CheckedRvv.proof_of_test_rvv_entail_wit_8_1.
+Print Assumptions Qu8Rdsum.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_14.
+Print Assumptions Qu8Rdsum.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_35.

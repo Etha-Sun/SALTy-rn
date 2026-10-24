@@ -1,0 +1,15 @@
+From Qu8Rdsum Require Import rvv_unit_goal RvvLastWordPart00 RvvLastWordPart01.
+Module Type LastWordVC.
+ Parameter proof_of_test_rvv_partial_solve_wit_43_pure:
+  Qu8Rdsum.rvv_unit_goal.test_rvv_partial_solve_wit_43_pure.
+ Parameter proof_of_test_rvv_partial_solve_wit_43:
+  Qu8Rdsum.rvv_unit_goal.test_rvv_partial_solve_wit_43.
+End LastWordVC.
+Module CheckedRvvLastWordCalls:LastWordVC.
+ Definition proof_of_test_rvv_partial_solve_wit_43_pure:=
+  RvvLastWordPart00.proof_of_test_rvv_partial_solve_wit_43_pure.
+ Definition proof_of_test_rvv_partial_solve_wit_43:=
+  RvvLastWordPart01.proof_of_test_rvv_partial_solve_wit_43.
+End CheckedRvvLastWordCalls.
+Print Assumptions CheckedRvvLastWordCalls.proof_of_test_rvv_partial_solve_wit_43_pure.
+Print Assumptions CheckedRvvLastWordCalls.proof_of_test_rvv_partial_solve_wit_43.
