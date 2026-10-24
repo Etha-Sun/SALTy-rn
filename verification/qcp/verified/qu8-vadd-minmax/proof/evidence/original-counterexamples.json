@@ -1,0 +1,194 @@
+{
+  "passed": true,
+  "formal_proof": false,
+  "whole_kernel_verified": false,
+  "scope": "actual original/repaired C counterexample replay, not whole-domain proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/.build/counterexamples-oqzho95c",
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=undefined",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/shim/counterexamples.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/.build/counterexamples-oqzho95c/probe"
+      ],
+      "exit_code": 0,
+      "expected_zero": true,
+      "seconds": 0.46521192602813244,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "replay",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/.build/counterexamples-oqzho95c/probe"
+      ],
+      "exit_code": 0,
+      "expected_zero": true,
+      "seconds": 0.03180672298185527,
+      "log_sha256": "f07b7fc7c07bf2bd4af444424342537fc1c8ba586bf55941356b0f12dfe04d47"
+    },
+    {
+      "label": "original-neon-intmin-ubsan",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/.build/counterexamples-oqzho95c/probe",
+        "n"
+      ],
+      "exit_code": 1,
+      "expected_zero": false,
+      "seconds": 0.0035757438745349646,
+      "log_sha256": "3bd98019baac6823f59b16cb377d77af325c005dab71e40d5931807f7d909c04"
+    },
+    {
+      "label": "original-rvv-intmin-ubsan",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/.build/counterexamples-oqzho95c/probe",
+        "r"
+      ],
+      "exit_code": 1,
+      "expected_zero": false,
+      "seconds": 0.0035746328067034483,
+      "log_sha256": "2d292441c525003715c16216f20bccb6525df2df76e88e071d6e8c6f9e10b594"
+    },
+    {
+      "label": "repaired-intmin-defined",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qu8-vadd-minmax/.build/counterexamples-oqzho95c/probe",
+        "f"
+      ],
+      "exit_code": 0,
+      "expected_zero": true,
+      "seconds": 0.00140363909304142,
+      "log_sha256": "49ac462be465ea36624f25c9376452f51e610f528513feb0d397a5bb3a13a00d"
+    }
+  ],
+  "input_sha256": {
+    "proof/check_counterexamples.py": "6a1fdff87739945e4c6e92be0b8520196d14653a1fa7e481e629687607b20555",
+    "shim/native_runtime.h": "bd3dc738b05d275f721b29e58c580ac6dad797fd21abcf6d18d75f6b6fb42f99",
+    "shim/counterexamples.c": "06572a4ed2b86438e931ec6a225b7e240a158e270b7d41019f0885bfb372d224",
+    "proof/original/testNEON.c": "7f6435954cc0ac4ab31881da9ff8b16f04abdfc8da0c1a945b15b64f3bcb2294",
+    "proof/original/testRVV.c": "e211e5fc712d38ea90776aff23bcdfe72ecec23aa08b5999683b483adfb2bbc9",
+    "impl/testNEON.c": "415c787619aa070aa1187422d7b5b785fcf029f99c587b68ac47b69e7535cd13",
+    "impl/testRVV.c": "774b382c3ffeefc75a90b4d8c2229edf93d817f553015ed4af5dc5cbdaa4b1ea"
+  },
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "vlen_bits": 128,
+    "vlmax": 32,
+    "inactive": "unobserved C runtime fields concretized zero; no ISA-policy refinement claim"
+  },
+  "witness": {
+    "n": 1,
+    "a": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "b": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    "a_zero_point": 0,
+    "b_zero_point": 0,
+    "a_multiplier": 1,
+    "b_multiplier": 0,
+    "output_zero_point": 0,
+    "min": 0,
+    "max": 255
+  },
+  "rows": [
+    {
+      "raw_shift": 32,
+      "original_neon": 0,
+      "original_rvv": 1,
+      "repaired_neon": 0,
+      "repaired_rvv": 0,
+      "independent_python_reference": 0
+    },
+    {
+      "raw_shift": -1,
+      "original_neon": 2,
+      "original_rvv": 2,
+      "repaired_neon": 2,
+      "repaired_rvv": 2,
+      "independent_python_reference": 2
+    },
+    {
+      "raw_shift": 127,
+      "original_neon": 0,
+      "original_rvv": 0,
+      "repaired_neon": 0,
+      "repaired_rvv": 0,
+      "independent_python_reference": 0
+    },
+    {
+      "raw_shift": -128,
+      "original_neon": 0,
+      "original_rvv": 1,
+      "repaired_neon": 0,
+      "repaired_rvv": 0,
+      "independent_python_reference": 0
+    },
+    {
+      "raw_shift": -129,
+      "original_neon": 0,
+      "original_rvv": 2,
+      "repaired_neon": 0,
+      "repaired_rvv": 0,
+      "independent_python_reference": 0
+    },
+    {
+      "raw_shift": 255,
+      "original_neon": 2,
+      "original_rvv": 0,
+      "repaired_neon": 2,
+      "repaired_rvv": 2,
+      "independent_python_reference": 2
+    },
+    {
+      "raw_shift": 256,
+      "original_neon": 1,
+      "original_rvv": 1,
+      "repaired_neon": 1,
+      "repaired_rvv": 1,
+      "independent_python_reference": 1
+    },
+    {
+      "raw_shift": -257,
+      "original_neon": 2,
+      "original_rvv": 2,
+      "repaired_neon": 2,
+      "repaired_rvv": 2,
+      "independent_python_reference": 2
+    },
+    {
+      "raw_shift": 2147483647,
+      "original_neon": 2,
+      "original_rvv": 0,
+      "repaired_neon": 2,
+      "repaired_rvv": 2,
+      "independent_python_reference": 2
+    }
+  ],
+  "source_intmin_ubsan_reproduced": true,
+  "original_rvv_intmin_ubsan_reproduced": true,
+  "repaired_intmin_both_defined": true,
+  "low_byte_controls_replayed": 256
+}

@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**25/40**。新目标：**至少 36/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**27/40**。新目标：**至少 36/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
@@ -34,6 +34,9 @@
 
 - [qu8-rdsum](verification/qcp/verified/qu8-rdsum/README.md)（两侧大行数修复版，完整64位）
 
+- [qd8-f32-qc8w-igemm-minmax](verification/qcp/verified/qd8-f32-qc8w-igemm-minmax/README.md)（其他 worker 完成，intrinsic spec 边界）
+- [qu8-vadd-minmax](verification/qcp/verified/qu8-vadd-minmax/README.md)（两侧修复版，完整64位）
+
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
 最新约定：intrinsic 只需采用与原始规范对应、可审核的 spec；C 实现及其证明可选。完整 kernel 仍须验证。见 [规范边界](verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
@@ -52,7 +55,7 @@
 ## 当前工作
 
 - FP32→FP16 已完整收录；原始范围和常量兼容记录保留。
-- QS8 加法已完整收录；QU8 加法两侧完整组件通过，正在整案新鲜重放。
+- QS8、QU8 加法均已完整验证、归档并收录。
 - QS8、QU8 RDSUM 均已完整通过并收录；QU8 保留两侧大行数修复记录与原反例。
 
 - ArgmaxPool：计数修复及回归通过；指针表读取、比较选择小调用和输出复用资源证明通过，继续完整 kernel。
@@ -61,7 +64,7 @@
 - QS8 乘法：全 binary32 数学关系通过；位级 NaN 检测兼容修复回归通过，继续实际 helper 和 kernel 验证。
 - FP32 maxpool：修复计数与 NaN 顺序问题，回归通过，继续实际 C 验证。
 
-上述其余候选与组件进展尚未计入 25 个完整通过的 kernel。
+上述其余候选与组件进展尚未计入 27 个完整通过的 kernel。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
@@ -116,3 +119,5 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 2026-10-24 matrix worker：QD8 QC8W GEMM策略绑定复核完成，1914C/12策略/1455freshCoq/1941假设报告；原impl/spec不变，旧证据另存，verified仍25/40。IGEMM与QC4W仍candidate，不计整核。
 
 2026-10-24 matrix worker：QD8 QC8W IGEMM完整入verified，6C/1381VC/15策略/1398fresh模块/1409假设报告；native41310cases/371790outputs/6negative controls，公开intrinsic-spec边界。当前清单26/40。本轮仅余已开工F32 IGEMM与QC4W GEMM，完成后停止。
+
+- 2026-10-24（洛杉矶）：QD8 QC8W IGEMM 和 QU8 加法完整通过并收录，当前 **27/40**，继续向 **36/40** 推进。

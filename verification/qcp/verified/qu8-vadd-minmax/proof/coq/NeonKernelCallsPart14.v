@@ -1,0 +1,52 @@
+From Qu8Add Require Import NeonKernelCallAutomation NeonKernelSplitsPart00 NeonKernelSplitsPart01.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_test_neon_partial_solve_wit_15 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_15.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_15,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_15_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_31 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_31.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_31;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_47 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_47.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_47;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_63 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_63.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_63;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_79 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_79.
+Proof. exact Qu8Add.NeonKernelSplitsPart00.proof_of_test_neon_partial_solve_wit_79. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_95 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_95.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_95,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_95_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_111 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_111.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_111,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_111_aux;try left;intros;subst;prop_apply(qu_full_values input_a_pre(batch_pre+7)A);Intros_p HAValues;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_127 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_127.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_127;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_143 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_143.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_143;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_159 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_159.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_159,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_159_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_175 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_175.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_175;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_191 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_191.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_191,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_191_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_207 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_207.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_207,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_207_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_223 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_223.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_223,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_223_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_239 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_239.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_239,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_239_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_255 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_255.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_255,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_255_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_271 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_271.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_271;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_287 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_287.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_287;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_303 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_303.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_303,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_303_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_319 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_319.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_319;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_335 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_335.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_335;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_351 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_351.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_351,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_351_aux;try left;intros;subst;qu_kernel_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_367 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_367.
+Proof. exact Qu8Add.NeonKernelSplitsPart01.proof_of_test_neon_partial_solve_wit_367. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_383 : Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_383.
+Proof. unfold Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_383,Qu8Add.neon_unit_goal.test_neon_partial_solve_wit_383_aux;try left;intros;subst;qu_kernel_call_frame. Qed.

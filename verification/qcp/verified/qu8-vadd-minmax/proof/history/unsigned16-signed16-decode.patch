@@ -1,0 +1,11 @@
+--- a/shim/unsigned_scalar.c
++++ b/shim/unsigned_scalar.c
+@@ -7,7 +7,7 @@
+ {return qcp_qu_u16((int32_t)a-(int32_t)b);}
+ int16_t qcp_qu_from_u16(uint16_t x)
+ /*@ Require 0<=x && x<=65535 && emp Ensure __return==qu_s16(x) && -32768<=__return && __return<=32767 && emp */
+-{return (int16_t)x;}
++{if(x<=32767)return (int16_t)x;return (int16_t)((int32_t)x-65536);}
+ uint8_t qcp_qu_usat8(int16_t x)
+ /*@ Require -32768<=x && x<=32767 && emp Ensure __return==qu_usat8(x) && 0<=__return && __return<=255 && emp */
+ {if(x<0)return 0;if(x>255)return 255;return(uint8_t)x;}

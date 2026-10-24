@@ -1,0 +1,18 @@
+{
+  "kind": "C-shim type interpretation repair; not a change to original kernel C",
+  "created_utc": "2026-10-23T21:34:08.705403+00:00",
+  "scope": "Explicit unsigned64 value model for original LP64 size_t; no restriction to32-bit counts; ISA/ABI refinement remains unproved",
+  "old_header_sha256": "4da77365faa41834491a31b0abd0ce1c51629f95257f1ddcc6d7aed9d6d0fad3",
+  "new_header_sha256": "1e9c88486ea8b4d91409aee2f5a85f86bc33cc203bfa57be846b070aedc599f7",
+  "old_declaration": "typedef unsigned long size_t;",
+  "new_declaration": "typedef unsigned long long size_t;",
+  "reason": "Actual --arch64 QCP parses unsigned long as UINT32; explicit unsigned long long parses UINT64. Native GCC LP64 reports both long and long long as64.",
+  "wrong_model_history": "proof/history/before-size_t64",
+  "withdrawn_components": [
+    "scalar-status.json"
+  ],
+  "fresh_width_check_pending": false,
+  "fresh_width_status": "proof/type-width-status.json",
+  "fresh_width_status_sha256": "3ce4ad25c1bfc80747c4c20560837f3e33e785157af08182d5eee396e9e202c8",
+  "native_interface_policy": "separate self-contained native TU with matching explicit ULL size_t prototypes; raw-source array-runtime backend separately uses native LP64 stddef; no mixed system typedefs or C ABI theorem"
+}

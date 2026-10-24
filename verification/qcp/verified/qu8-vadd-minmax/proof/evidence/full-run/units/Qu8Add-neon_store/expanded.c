@@ -1,0 +1,316 @@
+typedef signed char int8_t;
+typedef unsigned char uint8_t;
+typedef short int16_t;
+typedef unsigned short uint16_t;
+typedef int int32_t;
+typedef unsigned int uint32_t;
+typedef long long int64_t;
+typedef unsigned long long size_t;
+/*@ Import Coq Require Import Qu8Add.Model */
+/*@ Extern Coq (qu_s8:Z -> Z) (qu_s16:Z -> Z) (qu_s32:Z -> Z)
+ (qu_pow2:Z -> Z) (qu_floor:Z -> Z -> Z) (qu_sat16:Z -> Z) (qu_sat8:Z -> Z)
+ (qu_neon_mul:Z -> Z -> Z) (qu_rvv_mul:Z -> Z -> Z)
+ (qu_neon_mla:Z -> Z -> Z -> Z) (qu_rvv_macc:Z -> Z -> Z -> Z)
+ (qu_neon_shift:Z -> Z -> Z) (qu_rvv_rnu:Z -> Z -> Z) (qu_rvv_sll:Z -> Z -> Z)
+ (qu_neon_add16:Z -> Z -> Z) (qu_rvv_add16:Z -> Z -> Z) */
+int8_t qcp_qu_s8(int32_t x)
+/*@ Require -2147483648<=x && x<=2147483647 && emp Ensure __return==qu_s8(x) && -128<=__return && __return<=127 && emp */;
+int16_t qcp_qu_s16(int32_t x)
+/*@ Require -2147483648<=x && x<=2147483647 && emp Ensure __return==qu_s16(x) && -32768<=__return && __return<=32767 && emp */;
+int32_t qcp_qu_s32(int64_t x)
+/*@ Require -9223372036854775807-1<=x && x<=9223372036854775807 && emp Ensure __return==qu_s32(x) && -2147483648<=__return && __return<=2147483647 && emp */;
+int64_t qcp_qu_pow2(int32_t d)
+/*@ Require 0<=d && d<=31 && emp Ensure __return==qu_pow2(d) && 1<=__return && __return<=2147483648 && emp */;
+int64_t qcp_qu_floor(int64_t x,int64_t p)
+/*@ Require -4294967296<=x && x<=4294967296 && 1<=p && p<=2147483648 && emp Ensure __return==qu_floor(x,p) && emp */;
+int16_t qcp_qu_sat16(int64_t x)
+/*@ Require -9223372036854775807-1<=x && x<=9223372036854775807 && emp Ensure __return==qu_sat16(x) && -32768<=__return && __return<=32767 && emp */;
+int8_t qcp_qu_sat8(int16_t x)
+/*@ Require -32768<=x && x<=32767 && emp Ensure __return==qu_sat8(x) && -128<=__return && __return<=127 && emp */;
+int32_t qcp_qu_neon_mul(int32_t a,int32_t b)
+/*@ Require -2147483648<=a && a<=2147483647 && -2147483648<=b && b<=2147483647 && emp Ensure __return==qu_neon_mul(a,b) && -2147483648<=__return && __return<=2147483647 && emp */;
+int32_t qcp_qu_rvv_mul(int32_t a,int32_t b)
+/*@ Require -2147483648<=a && a<=2147483647 && -2147483648<=b && b<=2147483647 && emp Ensure __return==qu_rvv_mul(a,b) && -2147483648<=__return && __return<=2147483647 && emp */;
+int32_t qcp_qu_neon_mla(int32_t a,int32_t b,int32_t c)
+/*@ Require -2147483648<=a && a<=2147483647 && -2147483648<=b && b<=2147483647 && -2147483648<=c && c<=2147483647 && emp Ensure __return==qu_neon_mla(a,b,c) && -2147483648<=__return && __return<=2147483647 && emp */;
+int32_t qcp_qu_rvv_macc(int32_t a,int32_t b,int32_t c)
+/*@ Require -2147483648<=a && a<=2147483647 && -2147483648<=b && b<=2147483647 && -2147483648<=c && c<=2147483647 && emp Ensure __return==qu_rvv_macc(a,b,c) && -2147483648<=__return && __return<=2147483647 && emp */;
+int32_t qcp_qu_neon_shift(int32_t a,int32_t b)
+/*@ Require -2147483648<=a && a<=2147483647 && -2147483648<=b && b<=2147483647 && emp Ensure __return==qu_neon_shift(a,b) && -2147483648<=__return && __return<=2147483647 && emp */;
+int32_t qcp_qu_rvv_rnu(int32_t a,int32_t d)
+/*@ Require -2147483648<=a && a<=2147483647 && 0<=d && d<=31 && emp Ensure __return==qu_rvv_rnu(a,d) && -2147483648<=__return && __return<=2147483647 && emp */;
+int32_t qcp_qu_rvv_sll(int32_t a,int32_t d)
+/*@ Require -2147483648<=a && a<=2147483647 && 0<=d && d<=31 && emp Ensure __return==qu_rvv_sll(a,d) && -2147483648<=__return && __return<=2147483647 && emp */;
+int16_t qcp_qu_neon_add16(int16_t a,int16_t b)
+/*@ Require -32768<=a && a<=32767 && -32768<=b && b<=32767 && emp Ensure __return==qu_neon_add16(a,b) && -32768<=__return && __return<=32767 && emp */;
+int16_t qcp_qu_rvv_add16(int16_t a,int16_t b)
+/*@ Require -32768<=a && a<=32767 && -32768<=b && b<=32767 && emp Ensure __return==qu_rvv_add16(a,b) && -32768<=__return && __return<=32767 && emp */;
+int16_t qcp_qu_sub8(int8_t a,int8_t b)
+/*@ Require -128<=a && a<=127 && -128<=b && b<=127 && emp Ensure __return==qu_s16(a-b) && -32768<=__return && __return<=32767 && emp */;
+struct qu_scalar_params {uint8_t a_zero_point; uint8_t b_zero_point; int32_t bias; int32_t a_multiplier; int32_t b_multiplier; int32_t shift; int16_t output_zero_point; uint8_t output_min; uint8_t output_max;};
+struct xnn_qu8_add_minmax_params {struct qu_scalar_params scalar;};
+typedef struct uint8x8_t {
+ uint8_t s0;
+ uint8_t s1;
+ uint8_t s2;
+ uint8_t s3;
+ uint8_t s4;
+ uint8_t s5;
+ uint8_t s6;
+ uint8_t s7;
+} uint8x8_t;
+typedef struct uint8x16_t {
+ uint8_t s0;
+ uint8_t s1;
+ uint8_t s2;
+ uint8_t s3;
+ uint8_t s4;
+ uint8_t s5;
+ uint8_t s6;
+ uint8_t s7;
+ uint8_t s8;
+ uint8_t s9;
+ uint8_t s10;
+ uint8_t s11;
+ uint8_t s12;
+ uint8_t s13;
+ uint8_t s14;
+ uint8_t s15;
+} uint8x16_t;
+typedef struct uint16x8_t {
+ uint16_t s0;
+ uint16_t s1;
+ uint16_t s2;
+ uint16_t s3;
+ uint16_t s4;
+ uint16_t s5;
+ uint16_t s6;
+ uint16_t s7;
+} uint16x8_t;
+typedef struct int16x4_t {
+ int16_t s0;
+ int16_t s1;
+ int16_t s2;
+ int16_t s3;
+} int16x4_t;
+typedef struct int16x8_t {
+ int16_t s0;
+ int16_t s1;
+ int16_t s2;
+ int16_t s3;
+ int16_t s4;
+ int16_t s5;
+ int16_t s6;
+ int16_t s7;
+} int16x8_t;
+typedef struct int32x4_t {
+ int32_t s0;
+ int32_t s1;
+ int32_t s2;
+ int32_t s3;
+} int32x4_t;
+typedef struct vuint8m2_t {
+ uint8_t s0;
+ uint8_t s1;
+ uint8_t s2;
+ uint8_t s3;
+ uint8_t s4;
+ uint8_t s5;
+ uint8_t s6;
+ uint8_t s7;
+ uint8_t s8;
+ uint8_t s9;
+ uint8_t s10;
+ uint8_t s11;
+ uint8_t s12;
+ uint8_t s13;
+ uint8_t s14;
+ uint8_t s15;
+ uint8_t s16;
+ uint8_t s17;
+ uint8_t s18;
+ uint8_t s19;
+ uint8_t s20;
+ uint8_t s21;
+ uint8_t s22;
+ uint8_t s23;
+ uint8_t s24;
+ uint8_t s25;
+ uint8_t s26;
+ uint8_t s27;
+ uint8_t s28;
+ uint8_t s29;
+ uint8_t s30;
+ uint8_t s31;
+} vuint8m2_t;
+typedef struct vuint16m4_t {
+ uint16_t s0;
+ uint16_t s1;
+ uint16_t s2;
+ uint16_t s3;
+ uint16_t s4;
+ uint16_t s5;
+ uint16_t s6;
+ uint16_t s7;
+ uint16_t s8;
+ uint16_t s9;
+ uint16_t s10;
+ uint16_t s11;
+ uint16_t s12;
+ uint16_t s13;
+ uint16_t s14;
+ uint16_t s15;
+ uint16_t s16;
+ uint16_t s17;
+ uint16_t s18;
+ uint16_t s19;
+ uint16_t s20;
+ uint16_t s21;
+ uint16_t s22;
+ uint16_t s23;
+ uint16_t s24;
+ uint16_t s25;
+ uint16_t s26;
+ uint16_t s27;
+ uint16_t s28;
+ uint16_t s29;
+ uint16_t s30;
+ uint16_t s31;
+} vuint16m4_t;
+typedef struct vint16m4_t {
+ int16_t s0;
+ int16_t s1;
+ int16_t s2;
+ int16_t s3;
+ int16_t s4;
+ int16_t s5;
+ int16_t s6;
+ int16_t s7;
+ int16_t s8;
+ int16_t s9;
+ int16_t s10;
+ int16_t s11;
+ int16_t s12;
+ int16_t s13;
+ int16_t s14;
+ int16_t s15;
+ int16_t s16;
+ int16_t s17;
+ int16_t s18;
+ int16_t s19;
+ int16_t s20;
+ int16_t s21;
+ int16_t s22;
+ int16_t s23;
+ int16_t s24;
+ int16_t s25;
+ int16_t s26;
+ int16_t s27;
+ int16_t s28;
+ int16_t s29;
+ int16_t s30;
+ int16_t s31;
+} vint16m4_t;
+typedef struct vint32m8_t {
+ int32_t s0;
+ int32_t s1;
+ int32_t s2;
+ int32_t s3;
+ int32_t s4;
+ int32_t s5;
+ int32_t s6;
+ int32_t s7;
+ int32_t s8;
+ int32_t s9;
+ int32_t s10;
+ int32_t s11;
+ int32_t s12;
+ int32_t s13;
+ int32_t s14;
+ int32_t s15;
+ int32_t s16;
+ int32_t s17;
+ int32_t s18;
+ int32_t s19;
+ int32_t s20;
+ int32_t s21;
+ int32_t s22;
+ int32_t s23;
+ int32_t s24;
+ int32_t s25;
+ int32_t s26;
+ int32_t s27;
+ int32_t s28;
+ int32_t s29;
+ int32_t s30;
+ int32_t s31;
+} vint32m8_t;
+typedef uint8x8_t uint32x2_t;
+typedef uint8x8_t uint16x4_t;
+/*@ Import Coq Require Import Qu8Add.Types */
+/*@ Extern Coq (UndefStructPreduint8x8_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPreduint8x16_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPreduint16x8_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredint16x4_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredint16x8_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredint32x4_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredvuint8m2_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredvuint16m4_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredvint16m4_t:Z -> Assertion) */
+/*@ Extern Coq (UndefStructPredvint32m8_t:Z -> Assertion) */
+/*@ Import Coq Require Import Qu8Add.MemoryModel */
+/*@ Extern Coq (UCharArray::full:Z -> Z -> list Z -> Assertion)
+ (UCharArray::missing_i:Z -> Z -> Z -> Z -> list Z -> Assertion)
+ (UCharArray::seg:Z -> Z -> Z -> list Z -> Assertion)
+ (UCharArray::undef_full:Z -> Z -> Assertion)
+ (UCharArray::undef_seg:Z -> Z -> Z -> Assertion)
+ (UCharArray::undef_missing_i:Z -> Z -> Z -> Z -> Assertion)
+ (Znth:{A} -> Z -> list A -> A -> A)
+ (u8_read_lane:Z -> Z -> Z -> list Z -> Z) */
+/*@ include strategies "u8_arrays.strategies" */
+/*@ Import Coq Require Import Qu8Add.NeonStoreModel */
+/*@ Extern Coq (u8_pack8:Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> list Z) */
+/*@ Extern Coq (u8_pack16:Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> Z -> list Z) */
+void qcp_u8_store8(uint8_t *p,const uint8x8_t *a)
+/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)
+ Require UCharArray::undef_full(p,8) * store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7)
+ Ensure UCharArray::full(p,8,u8_pack8(x0,x1,x2,x3,x4,x5,x6,x7)) * store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7) */
+{
+ /*@ Assert p==p@pre && a==a@pre && store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7) * undef_data_at(p+0,unsigned char) * undef_data_at(p+1,unsigned char) * undef_data_at(p+2,unsigned char) * undef_data_at(p+3,unsigned char) * undef_data_at(p+4,unsigned char) * undef_data_at(p+5,unsigned char) * undef_data_at(p+6,unsigned char) * undef_data_at(p+7,unsigned char) */
+ p[0]=a->s0;
+ p[1]=a->s1;
+ p[2]=a->s2;
+ p[3]=a->s3;
+ p[4]=a->s4;
+ p[5]=a->s5;
+ p[6]=a->s6;
+ p[7]=a->s7;
+}
+void qcp_u8_store16(uint8_t *p,const uint8x16_t *a)
+/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)
+ Require UCharArray::undef_full(p,16) * store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7) * store(&(a->s8),unsigned char,x8) * store(&(a->s9),unsigned char,x9) * store(&(a->s10),unsigned char,x10) * store(&(a->s11),unsigned char,x11) * store(&(a->s12),unsigned char,x12) * store(&(a->s13),unsigned char,x13) * store(&(a->s14),unsigned char,x14) * store(&(a->s15),unsigned char,x15)
+ Ensure UCharArray::full(p,16,u8_pack16(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15)) * store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7) * store(&(a->s8),unsigned char,x8) * store(&(a->s9),unsigned char,x9) * store(&(a->s10),unsigned char,x10) * store(&(a->s11),unsigned char,x11) * store(&(a->s12),unsigned char,x12) * store(&(a->s13),unsigned char,x13) * store(&(a->s14),unsigned char,x14) * store(&(a->s15),unsigned char,x15) */
+{
+ /*@ Assert p==p@pre && a==a@pre && store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7) * store(&(a->s8),unsigned char,x8) * store(&(a->s9),unsigned char,x9) * store(&(a->s10),unsigned char,x10) * store(&(a->s11),unsigned char,x11) * store(&(a->s12),unsigned char,x12) * store(&(a->s13),unsigned char,x13) * store(&(a->s14),unsigned char,x14) * store(&(a->s15),unsigned char,x15) * undef_data_at(p+0,unsigned char) * undef_data_at(p+1,unsigned char) * undef_data_at(p+2,unsigned char) * undef_data_at(p+3,unsigned char) * undef_data_at(p+4,unsigned char) * undef_data_at(p+5,unsigned char) * undef_data_at(p+6,unsigned char) * undef_data_at(p+7,unsigned char) * undef_data_at(p+8,unsigned char) * undef_data_at(p+9,unsigned char) * undef_data_at(p+10,unsigned char) * undef_data_at(p+11,unsigned char) * undef_data_at(p+12,unsigned char) * undef_data_at(p+13,unsigned char) * undef_data_at(p+14,unsigned char) * undef_data_at(p+15,unsigned char) */
+ p[0]=a->s0;
+ p[1]=a->s1;
+ p[2]=a->s2;
+ p[3]=a->s3;
+ p[4]=a->s4;
+ p[5]=a->s5;
+ p[6]=a->s6;
+ p[7]=a->s7;
+ p[8]=a->s8;
+ p[9]=a->s9;
+ p[10]=a->s10;
+ p[11]=a->s11;
+ p[12]=a->s12;
+ p[13]=a->s13;
+ p[14]=a->s14;
+ p[15]=a->s15;
+}
+void qcp_u8_store_lane0(uint8_t *p,const uint8x8_t *a)
+/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)
+ Require undef_data_at(p,unsigned char) * store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7)
+ Ensure store(p,unsigned char,x0) * store(&(a->s0),unsigned char,x0) * store(&(a->s1),unsigned char,x1) * store(&(a->s2),unsigned char,x2) * store(&(a->s3),unsigned char,x3) * store(&(a->s4),unsigned char,x4) * store(&(a->s5),unsigned char,x5) * store(&(a->s6),unsigned char,x6) * store(&(a->s7),unsigned char,x7) */
+{ *p=a->s0; }

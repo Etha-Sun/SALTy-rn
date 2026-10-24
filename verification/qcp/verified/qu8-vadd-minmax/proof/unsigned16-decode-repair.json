@@ -1,0 +1,22 @@
+{
+  "kind": "equivalent C-shim implementation rewrite for actual QCP frontend cast-elision gap; kernel impl unchanged",
+  "original_source_sha256": "1f7b8f104cf25477535e8511ff5b1663249c8310e9ca9a523de7d4873b68486c",
+  "repaired_source_sha256": "c24d29250c3eab083a3cedbb640726224a535f9850e671ca140ee4b300fbd8ef",
+  "exact_patch": "proof/history/unsigned16-signed16-decode.patch",
+  "patch_sha256": "3feb397166817dcc4f232205086ae1a2d4d5fd96eb9d259ba3e8a1abbeed303a",
+  "rejected_actual_goal": "proof/history/unsigned16-signed16-direct-cast_goal.v",
+  "goal_sha256": "583bc0b8ab4e5a8bc705985e81bc7cc313dd4a06fed57683af19e2e851b97aba",
+  "counterexample": {
+    "input_uint16": 65535,
+    "native_old_cast": -1,
+    "native_explicit_decode": -1,
+    "qcp_old_return_value": 65535
+  },
+  "domain": "every unsigned16 value0..65535; no x<=32767 precondition added",
+  "reason": "Keep exact16-bit reinterpretation. Decode high half by subtracting65536 in signed32 before range-safe signed16 cast.",
+  "fresh_c_proof_pending": false,
+  "fresh_actual_c_status": "proof/unsigned-scalar-status.json",
+  "fresh_actual_c_status_sha256": "c7d5375e1bee958f9fe299df157a83cd43eb4bae083a56f21e7efd0fcae17674",
+  "actual_c_vcs": 25,
+  "proof_scope": "25 actual C fields, all16 leaf modules + fullyqualified VC_Correct + all math/C Print; all ushort0..65535; 16 configured jobs"
+}

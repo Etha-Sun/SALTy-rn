@@ -1,0 +1,71 @@
+{
+  "namespace": "Qu8Add",
+  "scope": "C-shim modular partial correctness under the explicit public memory contract; ISA/ABI refinement and termination are separate obligations",
+  "sources": [
+    {
+      "label": "Arm ACLE Neon Intrinsics",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "operations": [
+        "vsubl_u8 -> USUBL Vd.8H,Vn.8B,Vm.8B",
+        "vqmovun_s16 -> SQXTUN Vd.8B,Vn.8H",
+        "vrshlq_s32 -> SRSHL Vd.4S,Vn.4S,Vm.4S",
+        "vmulq_s32/vmlaq_s32: low32 integer products/addition",
+        "vqmovn_s32/vqaddq_s16: signed16 saturation"
+      ]
+    },
+    {
+      "label": "Official Arm A64 instruction PDF, aarchmrs/pseudocode v2025-03_rel",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "srshl_physical_pages": [
+        1890,
+        1891
+      ],
+      "review": "SRSHL reads signed low8 count, clamps through ShiftSat, shifts mathematically with rounding on right shifts, then retains low32. Signed32 right rounding counts >=32 yield zero; left counts >=32 retain zero low32."
+    },
+    {
+      "label": "RISC-V Vector1.0",
+      "url": "https://docs.riscv.org/reference/isa/extensions/vector/_attachments/riscv-v-spec.pdf",
+      "review": "VSSRA uses low log2(SEW) count bits and vxrm rounding; RNU increments by discarded bit d-1. VSLL masks count to5 at SEW32. Vmul/vmacc retain low32. Narrowing clips and saturating adds round/saturate in the stated order."
+    }
+  ],
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "vlen_bits": 128,
+    "vlmax": 32,
+    "vector_types": "e8m2/e16m4/e32m8",
+    "selected_vl": "min(AVL,32)",
+    "vstart": 0,
+    "input_padding_each_bytes": 7,
+    "output_padding_bytes": 0,
+    "inactive": "Unobserved inactive C-shim fields concretized zero; no ISA-policy refinement claim",
+    "observed": "Output unsigned-byte equality, both inputs/parameters and spatial frame preserved; QC/vxsat excluded",
+    "size_t_model": "Explicit unsigned long long64 in formal/self-contained C-shim TU, checked QCP UINT64 sizeof8 and native width8; full0..2^64-1 value domain",
+    "native_type_bridge": "Raw original-source TU uses system LP64 size_t; formal-field native TU uses matching explicit ULL prototypes and private byte utilities. Width/value projection only; ABI/type-identity refinement remains open.",
+    "known_backend_long_gap": "QCP --arch64 parses bare unsigned long as UINT32. Formal consumed size_t no longer uses it; old C results withdrawn and archived."
+  },
+  "integer_rules": {
+    "widen_subtract": "Unsigned8 subtraction wraps16 then explicit signed16 bit reinterpret; actual input differences lie in[-255,255].",
+    "multiply_accumulate": "first multiply wraps32, then add the second wrapped product modulo32; RVV macc has the same low32 result",
+    "raw_shift": "Every int32 raw shift is admitted in the repaired variant. Negate unsigned32 and decode signed low byte; raw256 is count0",
+    "neon_shift": "Signed low8 control >=0 means wrapping left; negative means rounded arithmetic right with ties toward positive infinity",
+    "rvv_original": "Original QU8 RVV selects VSSRA for nonnegative raw count, VSLL for negative, each masked5; -INT32_MIN in the negative branch is UB. Both originals have independently reproduced INT32_MIN UB.",
+    "rvv_repaired_control": "zero when decoded control lies outside (-32,32); RNU right for negative control, wrapping left otherwise",
+    "narrowing": "Operational paths kept separate; UnsignedModel.qu_rvv_unsigned_finish_exact proves equality for every signed16 operand.",
+    "bounds": "No output_min<=output_max assumption",
+    "bias": "Original sources do not read scalar.bias; it is preserved and is not silently added to the arithmetic",
+    "neon_narrowing": "Signed32 sat16; signed sat-add16; SQXTUN signed16 to unsigned8; unsigned max(low) then min(high).",
+    "rvv_narrowing": "Signed32 clip16 RDN0; signed sat-add16; signed max with0; reinterpret unsigned16; unsigned clip8 RDN0; unsigned max(low) then min(high)."
+  },
+  "verification_state": "See actual component/full status records. Source review or finite counterexamples alone carry no QCP credit.",
+  "original_counterexamples": "proof/evidence/original-counterexamples.json",
+  "reference_provenance": "proof/history/reference.json",
+  "unsigned_primary_review": {
+    "reviewed_url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+    "review": "Official ACLE maps vsubl_u8 to USUBL, vqmovun_s16 to SQXTUN. Unsigned subtract/reinterpret and unsigned saturation are represented separately from signed-byte operations.",
+    "formal_math_run": ".build/unsigned-model-mca8c6zy",
+    "source_domain": "full uint8 zeros/bounds, full int32 multipliers/rawshift/bias, full int16 output-zero-point; no order or conventional shift-range condition"
+  }
+}

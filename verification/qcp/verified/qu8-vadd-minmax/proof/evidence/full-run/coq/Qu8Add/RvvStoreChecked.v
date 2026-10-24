@@ -1,0 +1,21 @@
+From Qu8Add Require Import rvv_store_goal U8ArraysStrategy rvv_store_strategy_proof RvvStorePart00 RvvStorePart01 RvvStorePart02 RvvStorePart03 RvvStorePart04 RvvStorePart05 RvvStorePart06 RvvStorePart07 RvvStorePart08 RvvStorePart09 RvvStorePart10 RvvStorePart11 RvvStorePart12 RvvStorePart13 RvvStorePart14 RvvStorePart15.
+Module CheckedRvvStore : Qu8Add.rvv_store_goal.VC_Correct.
+Include Qu8Add.U8ArraysStrategy.CheckedU8Arrays.
+Include Qu8Add.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include Qu8Add.RvvStorePart00.CheckedRvvStorePart00.
+Include Qu8Add.RvvStorePart01.CheckedRvvStorePart01.
+Include Qu8Add.RvvStorePart02.CheckedRvvStorePart02.
+Include Qu8Add.RvvStorePart03.CheckedRvvStorePart03.
+Include Qu8Add.RvvStorePart04.CheckedRvvStorePart04.
+Include Qu8Add.RvvStorePart05.CheckedRvvStorePart05.
+Include Qu8Add.RvvStorePart06.CheckedRvvStorePart06.
+Include Qu8Add.RvvStorePart07.CheckedRvvStorePart07.
+Include Qu8Add.RvvStorePart08.CheckedRvvStorePart08.
+Include Qu8Add.RvvStorePart09.CheckedRvvStorePart09.
+Include Qu8Add.RvvStorePart10.CheckedRvvStorePart10.
+Include Qu8Add.RvvStorePart11.CheckedRvvStorePart11.
+Include Qu8Add.RvvStorePart12.CheckedRvvStorePart12.
+Include Qu8Add.RvvStorePart13.CheckedRvvStorePart13.
+Include Qu8Add.RvvStorePart14.CheckedRvvStorePart14.
+Include Qu8Add.RvvStorePart15.CheckedRvvStorePart15.
+End CheckedRvvStore.

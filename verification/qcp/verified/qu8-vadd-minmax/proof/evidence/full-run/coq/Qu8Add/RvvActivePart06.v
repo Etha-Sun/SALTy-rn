@@ -1,0 +1,12 @@
+From Qu8Add Require Import RvvActiveAutomation.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_qcp_qu_active_subu_return_wit_2 : Qu8Add.rvv_active_goal.qcp_qu_active_subu_return_wit_2.
+Proof. unfold Qu8Add.rvv_active_goal.qcp_qu_active_subu_return_wit_2;try left;intros;subst;qu_active_core. Qed.
+Lemma proof_of_qcp_qu_active_mov_safety_wit_1 : Qu8Add.rvv_active_goal.qcp_qu_active_mov_safety_wit_1.
+Proof. unfold Qu8Add.rvv_active_goal.qcp_qu_active_mov_safety_wit_1;try left;intros;subst;qu_active_core. Qed.
+Lemma proof_of_qcp_qu_active_clip16_partial_solve_wit_1_pure : Qu8Add.rvv_active_goal.qcp_qu_active_clip16_partial_solve_wit_1_pure.
+Proof. unfold Qu8Add.rvv_active_goal.qcp_qu_active_clip16_partial_solve_wit_1_pure;try left;intros;subst;qu_active_core. Qed.
+Lemma proof_of_qcp_qu_active_clipu8_partial_solve_wit_1 : Qu8Add.rvv_active_goal.qcp_qu_active_clipu8_partial_solve_wit_1.
+Proof. unfold Qu8Add.rvv_active_goal.qcp_qu_active_clipu8_partial_solve_wit_1,Qu8Add.rvv_active_goal.qcp_qu_active_clipu8_partial_solve_wit_1_aux;try left;intros;subst;qu_active_core. Qed.

@@ -1,0 +1,20 @@
+From Qu8Add Require Import rvv_load_goal U8ArraysStrategy RvvLoadPart00 RvvLoadPart01 RvvLoadPart02 RvvLoadPart03 RvvLoadPart04 RvvLoadPart05 RvvLoadPart06 RvvLoadPart07 RvvLoadPart08 RvvLoadPart09 RvvLoadPart10 RvvLoadPart11 RvvLoadPart12 RvvLoadPart13 RvvLoadPart14 RvvLoadPart15.
+Module CheckedRvvLoad : Qu8Add.rvv_load_goal.VC_Correct.
+Include Qu8Add.U8ArraysStrategy.CheckedU8Arrays.
+Include Qu8Add.RvvLoadPart00.CheckedRvvLoadPart00.
+Include Qu8Add.RvvLoadPart01.CheckedRvvLoadPart01.
+Include Qu8Add.RvvLoadPart02.CheckedRvvLoadPart02.
+Include Qu8Add.RvvLoadPart03.CheckedRvvLoadPart03.
+Include Qu8Add.RvvLoadPart04.CheckedRvvLoadPart04.
+Include Qu8Add.RvvLoadPart05.CheckedRvvLoadPart05.
+Include Qu8Add.RvvLoadPart06.CheckedRvvLoadPart06.
+Include Qu8Add.RvvLoadPart07.CheckedRvvLoadPart07.
+Include Qu8Add.RvvLoadPart08.CheckedRvvLoadPart08.
+Include Qu8Add.RvvLoadPart09.CheckedRvvLoadPart09.
+Include Qu8Add.RvvLoadPart10.CheckedRvvLoadPart10.
+Include Qu8Add.RvvLoadPart11.CheckedRvvLoadPart11.
+Include Qu8Add.RvvLoadPart12.CheckedRvvLoadPart12.
+Include Qu8Add.RvvLoadPart13.CheckedRvvLoadPart13.
+Include Qu8Add.RvvLoadPart14.CheckedRvvLoadPart14.
+Include Qu8Add.RvvLoadPart15.CheckedRvvLoadPart15.
+End CheckedRvvLoad.
