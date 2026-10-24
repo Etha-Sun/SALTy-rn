@@ -1,0 +1,165 @@
+From Coq Require Import ZArith Lia.
+From SimpleC.SL Require Import Mem SeparationLogic.
+From Qd8Guard Require Import neon_guard_goal.
+Require Import Qd8CheckedSubset.SubsetChecked.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_404.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_405.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_406.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_407.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_408.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_409.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_410.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_411.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_412.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_413.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_414.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_419.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_420.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_421.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_422.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_423.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_424.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_425.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_426.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_427.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_428.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_429.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_430.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_431.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_432.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_433.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_434.
+Require Import Qd8Resume_frames_all01.Auto_partial_solve_wit_435.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_neon_partial_solve_wit_468 : neon_guard_goal.test_neon_partial_solve_wit_468.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_404.Checked.proof_of_test_neon_partial_solve_wit_404.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_469 : neon_guard_goal.test_neon_partial_solve_wit_469.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_405.Checked.proof_of_test_neon_partial_solve_wit_405.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_470 : neon_guard_goal.test_neon_partial_solve_wit_470.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_406.Checked.proof_of_test_neon_partial_solve_wit_406.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_471 : neon_guard_goal.test_neon_partial_solve_wit_471.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_407.Checked.proof_of_test_neon_partial_solve_wit_407.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_472 : neon_guard_goal.test_neon_partial_solve_wit_472.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_408.Checked.proof_of_test_neon_partial_solve_wit_408.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_473 : neon_guard_goal.test_neon_partial_solve_wit_473.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_409.Checked.proof_of_test_neon_partial_solve_wit_409.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_474 : neon_guard_goal.test_neon_partial_solve_wit_474.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_410.Checked.proof_of_test_neon_partial_solve_wit_410.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_475 : neon_guard_goal.test_neon_partial_solve_wit_475.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_411.Checked.proof_of_test_neon_partial_solve_wit_411.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_476 : neon_guard_goal.test_neon_partial_solve_wit_476.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_412.Checked.proof_of_test_neon_partial_solve_wit_412.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_477 : neon_guard_goal.test_neon_partial_solve_wit_477.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_413.Checked.proof_of_test_neon_partial_solve_wit_413.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_478 : neon_guard_goal.test_neon_partial_solve_wit_478.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_414.Checked.proof_of_test_neon_partial_solve_wit_414.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_479 : neon_guard_goal.test_neon_partial_solve_wit_479.
+Proof.
+  exact Qd8CheckedSubset.SubsetChecked.Checked.proof_of_test_neon_partial_solve_wit_415.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_480 : neon_guard_goal.test_neon_partial_solve_wit_480.
+Proof.
+  exact Qd8CheckedSubset.SubsetChecked.Checked.proof_of_test_neon_partial_solve_wit_416.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_481 : neon_guard_goal.test_neon_partial_solve_wit_481.
+Proof.
+  exact Qd8CheckedSubset.SubsetChecked.Checked.proof_of_test_neon_partial_solve_wit_417.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_482 : neon_guard_goal.test_neon_partial_solve_wit_482.
+Proof.
+  exact Qd8CheckedSubset.SubsetChecked.Checked.proof_of_test_neon_partial_solve_wit_418.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_483 : neon_guard_goal.test_neon_partial_solve_wit_483.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_419.Checked.proof_of_test_neon_partial_solve_wit_419.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_484 : neon_guard_goal.test_neon_partial_solve_wit_484.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_420.Checked.proof_of_test_neon_partial_solve_wit_420.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_485 : neon_guard_goal.test_neon_partial_solve_wit_485.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_421.Checked.proof_of_test_neon_partial_solve_wit_421.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_486 : neon_guard_goal.test_neon_partial_solve_wit_486.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_422.Checked.proof_of_test_neon_partial_solve_wit_422.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_487 : neon_guard_goal.test_neon_partial_solve_wit_487.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_423.Checked.proof_of_test_neon_partial_solve_wit_423.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_488 : neon_guard_goal.test_neon_partial_solve_wit_488.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_424.Checked.proof_of_test_neon_partial_solve_wit_424.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_489 : neon_guard_goal.test_neon_partial_solve_wit_489.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_425.Checked.proof_of_test_neon_partial_solve_wit_425.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_490 : neon_guard_goal.test_neon_partial_solve_wit_490.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_426.Checked.proof_of_test_neon_partial_solve_wit_426.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_491 : neon_guard_goal.test_neon_partial_solve_wit_491.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_427.Checked.proof_of_test_neon_partial_solve_wit_427.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_492 : neon_guard_goal.test_neon_partial_solve_wit_492.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_428.Checked.proof_of_test_neon_partial_solve_wit_428.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_493 : neon_guard_goal.test_neon_partial_solve_wit_493.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_429.Checked.proof_of_test_neon_partial_solve_wit_429.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_494 : neon_guard_goal.test_neon_partial_solve_wit_494.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_430.Checked.proof_of_test_neon_partial_solve_wit_430.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_495 : neon_guard_goal.test_neon_partial_solve_wit_495.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_431.Checked.proof_of_test_neon_partial_solve_wit_431.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_496 : neon_guard_goal.test_neon_partial_solve_wit_496.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_432.Checked.proof_of_test_neon_partial_solve_wit_432.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_497 : neon_guard_goal.test_neon_partial_solve_wit_497.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_433.Checked.proof_of_test_neon_partial_solve_wit_433.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_498 : neon_guard_goal.test_neon_partial_solve_wit_498.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_434.Checked.proof_of_test_neon_partial_solve_wit_434.
+Qed.
+Lemma proof_of_test_neon_partial_solve_wit_499 : neon_guard_goal.test_neon_partial_solve_wit_499.
+Proof.
+  exact Qd8Resume_frames_all01.Auto_partial_solve_wit_435.Checked.proof_of_test_neon_partial_solve_wit_435.
+Qed.
+End Checked.

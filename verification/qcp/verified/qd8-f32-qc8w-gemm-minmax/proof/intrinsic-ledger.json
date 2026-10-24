@@ -1,0 +1,2011 @@
+{
+  "schema": 1,
+  "kernel": "qd8-f32-qc8w-gemm-minmax",
+  "basis": "source-reviewed intrinsic specifications; full actual C kernel and ordinary helper/caller proofs",
+  "reviewer": "assistant source review; final human review not yet performed",
+  "reviewed_utc": "2026-10-24T05:48:45.319708+00:00",
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "neon": "AArch64 branch; FPCR rounding RNE, FZ=0, default IEEE behavior; no FP traps observed",
+    "rvv": {
+      "VLEN": 128,
+      "ELEN_minimum": 32,
+      "lane_configurations": [
+        "e8mf2",
+        "e16m1",
+        "e32m2"
+      ],
+      "VLMAX": 8,
+      "vstart": 0,
+      "VL": "min(nc,8), request always <= VLMAX",
+      "rounding": "RNE; no flush-to-zero",
+      "mask": "only self-NaN mask used to select at same lane",
+      "tail": "active-prefix abstraction, not fixed physical tail values",
+      "VXRM": "not used by these non-saturating integer operations"
+    },
+    "float_domain": "all binary32 including sNaN/qNaN, Inf, signed zero, subnormal; lo>hi allowed",
+    "observation": "numeric equality or both NaN; payload, quieting and exception flags not observed; intermediate float path has no payload-dependent branching or reinterpret",
+    "FMA": "Binary.Bfma, one rounding; separate preceding Binary.Bmult remains a separate rounding"
+  },
+  "abstraction_proofs": {
+    "path": "proof/coq/Qd8Admission/ProofBoundary.v",
+    "sha256": "af305ae4c56798c5740c70dafa6bb793d992ab0878138c10dde82f1bdc464315",
+    "NaN": "qd8_full_float_stage_nan_policy_independent",
+    "tail": "qd8_completion_unobservable, qd8_prefix_unary/binary/ternary, qd8_store_prefix_unobservable",
+    "scope": "mathematical abstraction support; source-reviewed correspondence of intrinsic calls to lane operations; not a formal ISA/compiler refinement theorem"
+  },
+  "entries": [
+    {
+      "intrinsic": "vcvtq_f32_s32",
+      "ISA": "neon",
+      "call_symbol": "vcvtq_f32_s32",
+      "C_signature": "float32x4_t vcvtq_f32_s32(int32x4_t a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 80,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "c6a58d7e215b822179322500712bbb7e2fe06538bf1f52e8e7b1b3887a9e414f",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z)\n Require store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3)\n Ensure store(&(__return.s0),float,fp32_of_Z(x0)) * store(&(__return.s1),float,fp32_of_Z(x1)) * store(&(__return.s2),float,fp32_of_Z(x2)) * store(&(__return.s3),float,fp32_of_Z(x3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32_of_Z",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 293,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "RNE fp32_of_Z of each signed32 field",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vdupq_n_f32",
+      "ISA": "neon",
+      "call_symbol": "vdupq_n_f32",
+      "C_signature": "float32x4_t vdupq_n_f32(float x)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 57,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "ec137708574eba4b050338053ec72fd07419e1949e8c0bfcfbc216b756d61f52",
+        "text": "/*@ Require emp\n Ensure store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "four copies of the exact fp32 value",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vfmaq_f32",
+      "ISA": "neon",
+      "call_symbol": "vfmaq_f32",
+      "C_signature": "float32x4_t vfmaq_f32(float32x4_t acc,float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 100,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "592b92dce9251c43bd53449e002dfd39d0a4b8e5c6c22c99d54a407afc262648",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32)\n Require store(&(acc.s0),float,z0) * store(&(acc.s1),float,z1) * store(&(acc.s2),float,z2) * store(&(acc.s3),float,z3) * store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fma_rne(x0,y0,z0)) * store(&(__return.s1),float,fma_rne(x1,y1,z1)) * store(&(__return.s2),float,fma_rne(x2,y2,z2)) * store(&(__return.s3),float,fma_rne(x3,y3,z3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        }
+      ],
+      "reviewed_value_semantics": "field j=fma_rne(a[j],b[j],acc[j]);single rounding",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vget_high_f32",
+      "ISA": "neon",
+      "call_symbol": "vget_high_f32",
+      "C_signature": "float32x2_t vget_high_f32(float32x4_t a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 72,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "cdc41a77cd0242b5f187a4508a9ee08100098e7e75adb599d8da009164473dc6",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3)\n Ensure store(&(__return.s0),float,x2) * store(&(__return.s1),float,x3) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "fields2,3",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vget_high_s16",
+      "ISA": "neon",
+      "call_symbol": "vget_high_s16",
+      "C_signature": "int16x4_t vget_high_s16(int16x8_t a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 64,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "589bb0fff011682ae372c92a33af7d330f2903620bf9be185c675962b4d347a5",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require store(&(a.s0),short,x0) * store(&(a.s1),short,x1) * store(&(a.s2),short,x2) * store(&(a.s3),short,x3) * store(&(a.s4),short,x4) * store(&(a.s5),short,x5) * store(&(a.s6),short,x6) * store(&(a.s7),short,x7)\n Ensure store(&(__return.s0),short,x4) * store(&(__return.s1),short,x5) * store(&(__return.s2),short,x6) * store(&(__return.s3),short,x7) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "fields4..7",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vget_low_f32",
+      "ISA": "neon",
+      "call_symbol": "vget_low_f32",
+      "C_signature": "float32x2_t vget_low_f32(float32x4_t a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 68,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "d4989b3e59320b90381c2ebd9ed21544121a11baac793e86766bd1d558152d03",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3)\n Ensure store(&(__return.s0),float,x0) * store(&(__return.s1),float,x1) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "fields0,1",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vget_low_s16",
+      "ISA": "neon",
+      "call_symbol": "vget_low_s16",
+      "C_signature": "int16x4_t vget_low_s16(int16x8_t a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 60,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "fca12498feb5cad04cbb0565f14fe1129b6c5a9557f38607f8cde731e116368f",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require store(&(a.s0),short,x0) * store(&(a.s1),short,x1) * store(&(a.s2),short,x2) * store(&(a.s3),short,x3) * store(&(a.s4),short,x4) * store(&(a.s5),short,x5) * store(&(a.s6),short,x6) * store(&(a.s7),short,x7)\n Ensure store(&(__return.s0),short,x0) * store(&(__return.s1),short,x1) * store(&(__return.s2),short,x2) * store(&(__return.s3),short,x3) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "fields0..3",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vld1_s8",
+      "ISA": "neon",
+      "call_symbol": "vld1_s8",
+      "C_signature": "int8x8_t vld1_s8(const void *p)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 37,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "d06a64066df604e3a0ececdb9e1dbb1cdcb020242fb558165b19b5f644acc5d0",
+        "text": "/*@ With (K:Z) (ab:Z) (wb:Z) (tile:Z) (j:Z) (mode:Z) (A:list Z) (Ps:list panel_data)\n Require 0<K && qd8_matrix_wf(K,Ps) && qd8_i8_address_ok(mode,p,ab,wb,K,tile,j,Ps) && CharArray::full(ab,a_read_extent(K),A) * packed_matrix(K,wb,Ps)\n Ensure CharArray::full(ab,a_read_extent(K),A) * packed_matrix(K,wb,Ps) * store(&(__return.s0),char,qd8_char_field(mode,tile,j,0,A,Ps)) * store(&(__return.s1),char,qd8_char_field(mode,tile,j,1,A,Ps)) * store(&(__return.s2),char,qd8_char_field(mode,tile,j,2,A,Ps)) * store(&(__return.s3),char,qd8_char_field(mode,tile,j,3,A,Ps)) * store(&(__return.s4),char,qd8_char_field(mode,tile,j,4,A,Ps)) * store(&(__return.s5),char,qd8_char_field(mode,tile,j,5,A,Ps)) * store(&(__return.s6),char,qd8_char_field(mode,tile,j,6,A,Ps)) * store(&(__return.s7),char,qd8_char_field(mode,tile,j,7,A,Ps)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.a_read_extent",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 21,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.packed_matrix",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 31,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_char_field",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 19,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_i8_address_ok",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 21,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_matrix_wf",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 25,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "read8 signed bytes;all8 bytes allocated even at K tail",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vld1q_dup_f32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_dup_f32",
+      "C_signature": "float32x4_t vld1q_dup_f32(const float *p)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 53,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "e62a010e4d292c0b645c5abc8e77778371a5aaeb3b667d50d3724f6928d1309c",
+        "text": "/*@ With (x:fp32)\n Require store(p,float,x)\n Ensure store(p,float,x) * store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "read1 fp32 cell,duplicate4",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vld1q_dup_s32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_dup_s32",
+      "C_signature": "int32x4_t vld1q_dup_s32(const int *p)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 49,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "1efb6981d5f49313a16eec65f2d003dd8e74b053bc9f0d8c734fb437d5e9abc2",
+        "text": "/*@ With (x:Z)\n Require store(p,int,x)\n Ensure store(p,int,x) * store(&(__return.s0),int,x) * store(&(__return.s1),int,x) * store(&(__return.s2),int,x) * store(&(__return.s3),int,x) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "read1 signed32 cell,duplicate4",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vld1q_f32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_f32",
+      "C_signature": "float32x4_t vld1q_f32(const void *p)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 45,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "70a8636b0bb0a9a120182b7ba3ded3ab1ef056a62bcdb395286957a5bc5fabc6",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (kind:Z) (j:Z) (Ps:list panel_data)\n Require 0<K && qd8_matrix_wf(K,Ps) && 0<=tile && tile<Zlength(Ps) && 0<=kind && kind<=1 && 0<=j && j+4<=8 && p==wb+tile*(96+8*K)+32+8*K+32*kind+4*j && packed_matrix(K,wb,Ps)\n Ensure packed_matrix(K,wb,Ps) * store(&(__return.s0),float,qd8_float_field(kind,tile,j+0,Ps)) * store(&(__return.s1),float,qd8_float_field(kind,tile,j+1,Ps)) * store(&(__return.s2),float,qd8_float_field(kind,tile,j+2,Ps)) * store(&(__return.s3),float,qd8_float_field(kind,tile,j+3,Ps)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.packed_matrix",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 31,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_float_field",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 17,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_matrix_wf",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 25,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "read4 fp32 cells",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vld1q_s32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_s32",
+      "C_signature": "int32x4_t vld1q_s32(const void *p)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 41,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "bd007c26d5e29ecf7e55145667ff0608b62de45bc83ca7fe5bc0e13bf54f2f9d",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (j:Z) (Ps:list panel_data)\n Require 0<K && qd8_matrix_wf(K,Ps) && 0<=tile && tile<Zlength(Ps) && 0<=j && j+4<=8 && p==wb+tile*(96+8*K)+4*j && packed_matrix(K,wb,Ps)\n Ensure packed_matrix(K,wb,Ps) * store(&(__return.s0),int,qd8_ks(tile,j+0,Ps)) * store(&(__return.s1),int,qd8_ks(tile,j+1,Ps)) * store(&(__return.s2),int,qd8_ks(tile,j+2,Ps)) * store(&(__return.s3),int,qd8_ks(tile,j+3,Ps)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.packed_matrix",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 31,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_ks",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 15,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_matrix_wf",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 25,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "read4 signed32 cells",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vmaxq_f32",
+      "ISA": "neon",
+      "call_symbol": "vmaxq_f32",
+      "C_signature": "float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 96,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "da653fe4bc3051065bba5a4cef0ee13b6206b63866745e466c3b376190837aa5",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_neon_max(x0,y0)) * store(&(__return.s1),float,fp32_neon_max(x1,y1)) * store(&(__return.s2),float,fp32_neon_max(x2,y2)) * store(&(__return.s3),float,fp32_neon_max(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_max",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 31,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "fieldwise fp32_neon_max (NaN propagating)",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vminq_f32",
+      "ISA": "neon",
+      "call_symbol": "vminq_f32",
+      "C_signature": "float32x4_t vminq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 92,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "20de05f25e68f5d82dbf314c64eece1cd6795bfca2e9f144b70c66da199c4d1e",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_neon_min(x0,y0)) * store(&(__return.s1),float,fp32_neon_min(x1,y1)) * store(&(__return.s2),float,fp32_neon_min(x2,y2)) * store(&(__return.s3),float,fp32_neon_min(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_min",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 28,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "fieldwise fp32_neon_min (NaN propagating)",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vmlal_lane_s16",
+      "ISA": "neon",
+      "call_symbol": "vmlal_lane_s16",
+      "C_signature": "int32x4_t vmlal_lane_s16(int32x4_t acc,int16x4_t b,int16x4_t a,int lane)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 104,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "d01099eea8a1bf30754436bbb11aeedf415944c33d9978a922c80230df5aeb95",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (y0:Z) (y1:Z) (y2:Z) (y3:Z) (z0:Z) (z1:Z) (z2:Z) (z3:Z)\n Require 0<=lane && lane<4 && store(&(acc.s0),int,z0) * store(&(acc.s1),int,z1) * store(&(acc.s2),int,z2) * store(&(acc.s3),int,z3) * store(&(b.s0),short,y0) * store(&(b.s1),short,y1) * store(&(b.s2),short,y2) * store(&(b.s3),short,y3) * store(&(a.s0),short,x0) * store(&(a.s1),short,x1) * store(&(a.s2),short,x2) * store(&(a.s3),short,x3)\n Ensure store(&(__return.s0),int,qd8_mac_signed(z0,y0,qd8_i16_lane(lane,x0,x1,x2,x3))) * store(&(__return.s1),int,qd8_mac_signed(z1,y1,qd8_i16_lane(lane,x0,x1,x2,x3))) * store(&(__return.s2),int,qd8_mac_signed(z2,y2,qd8_i16_lane(lane,x0,x1,x2,x3))) * store(&(__return.s3),int,qd8_mac_signed(z3,y3,qd8_i16_lane(lane,x0,x1,x2,x3))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_i16_lane",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 26,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_mac_signed",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 14,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "field j=signed32_view(wrap32(acc[j]+b[j]*a[lane]));lane0..3",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vmovl_s8",
+      "ISA": "neon",
+      "call_symbol": "vmovl_s8",
+      "C_signature": "int16x8_t vmovl_s8(int8x8_t a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 76,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "b65b714f7c8169cb537d65c0e7c60b7df88df1f931da951f3ca8e9c2b9f01804",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7)\n Ensure store(&(__return.s0),short,x0) * store(&(__return.s1),short,x1) * store(&(__return.s2),short,x2) * store(&(__return.s3),short,x3) * store(&(__return.s4),short,x4) * store(&(__return.s5),short,x5) * store(&(__return.s6),short,x6) * store(&(__return.s7),short,x7) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "signed-i8 to signed-i16 exact field preservation",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vmulq_f32",
+      "ISA": "neon",
+      "call_symbol": "vmulq_f32",
+      "C_signature": "float32x4_t vmulq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 88,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "f1dbc176dc05e0889e76f560ce39cd62c35bc31bc353fd999e9b0dce9ea66bc8",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_mul(x0,y0)) * store(&(__return.s1),float,fp32_mul(x1,y1)) * store(&(__return.s2),float,fp32_mul(x2,y2)) * store(&(__return.s3),float,fp32_mul(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32_mul",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 66,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "fieldwise separate RNE fp32_mul",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vmulq_s32",
+      "ISA": "neon",
+      "call_symbol": "vmulq_s32",
+      "C_signature": "int32x4_t vmulq_s32(int32x4_t a,int32x4_t b)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 84,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "c5d3c3e52371a195d6f7a5aa914ad18348cb123bafd1abd39e09f5bfe0b5b075",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (y0:Z) (y1:Z) (y2:Z) (y3:Z)\n Require store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(b.s0),int,y0) * store(&(b.s1),int,y1) * store(&(b.s2),int,y2) * store(&(b.s3),int,y3)\n Ensure store(&(__return.s0),int,qd8_wrap_signed(x0*y0)) * store(&(__return.s1),int,qd8_wrap_signed(x1*y1)) * store(&(__return.s2),int,qd8_wrap_signed(x2*y2)) * store(&(__return.s3),int,qd8_wrap_signed(x3*y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_wrap_signed",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 13,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "fieldwise signed32_view(wrap32(a[j]*b[j]))",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes"
+    },
+    {
+      "intrinsic": "vst1_f32",
+      "ISA": "neon",
+      "call_symbol": "qcp_vst1_f32",
+      "C_signature": "void qcp_vst1_f32(float *p,const float32x2_t *a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 113,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "e91834a3f62c3eddedfc8694ee4f0e9d55b9fab8bfe5b712d74030cdec5a48d7",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (base:Z) (N:Z) (done:Z) (L:list fp32)\n Require 0<=done && done+2<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qd8_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qd8_write_state(base,N,done+2,qd8_fappend(L,cons(x0,cons(x1,nil)))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_fappend",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 49,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_write_state",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 47,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "write2 fp32 cells,borrow local vector lvalue only",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes",
+      "adaptation": "Pointer borrow of existing local vector lvalue(s), evaluated once. vmfne is restricted by its contract to the same source vector. No side-effecting/nested temporary operand supported."
+    },
+    {
+      "intrinsic": "vst1_lane_f32",
+      "ISA": "neon",
+      "call_symbol": "qcp_vst1_lane_f32",
+      "C_signature": "void qcp_vst1_lane_f32(float *p,const float32x2_t *a,int lane)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 118,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "fb93dc689ac1498db2b22b8c67792ef0e7462a51da35b8d66aee996e97c0df8a",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (base:Z) (N:Z) (done:Z) (L:list fp32)\n Require lane==0 && 0<=done && done+1<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qd8_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qd8_write_state(base,N,done+1,qd8_fappend(L,cons(x0,nil))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_fappend",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 49,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_write_state",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 47,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "write one fp32 at p; this kernel and contract use lane=0 only",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes",
+      "adaptation": "Pointer borrow of existing local vector lvalue(s), evaluated once. vmfne is restricted by its contract to the same source vector. No side-effecting/nested temporary operand supported."
+    },
+    {
+      "intrinsic": "vst1q_f32",
+      "ISA": "neon",
+      "call_symbol": "qcp_vst1q_f32",
+      "C_signature": "void qcp_vst1q_f32(float *p,const float32x4_t *a)",
+      "contract": {
+        "path": "shim/neon-api.h",
+        "line": 108,
+        "file_sha256": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+        "signature_and_contract_sha256": "682a9e233d467e7a4bc01d64a070e7e3ddfa0944000994b9dbc83be483a2c55a",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (base:Z) (N:Z) (done:Z) (L:list fp32)\n Require 0<=done && done+4<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * qd8_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * qd8_write_state(base,N,done+4,qd8_fappend(L,cons(x0,cons(x1,cons(x2,cons(x3,nil)))))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_fappend",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 49,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_write_state",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 47,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "write4 fp32 cells,borrow local vector lvalue only",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry and AArch64 instruction/operand mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed NEON lanes",
+      "adaptation": "Pointer borrow of existing local vector lvalue(s), evaluated once. vmfne is restricted by its contract to the same source vector. No side-effecting/nested temporary operand supported."
+    },
+    {
+      "intrinsic": "__riscv_vfcvt_f_x_v_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfcvt_f_x_v_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vfcvt_f_x_v_f32m2(vint32m2_t a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 50,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "1a5dbb494d353715431fbabcd9a245474385e8911beb5021a8cd3d763bf5582f",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require 1<=vl && vl<=8 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(a.s4),int,x4) * store(&(a.s5),int,x5) * store(&(a.s6),int,x6) * store(&(a.s7),int,x7)\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,fp32_of_Z(x0))) * store(&(__return.s1),float,qd8_selected_f(vl,1,fp32_of_Z(x1))) * store(&(__return.s2),float,qd8_selected_f(vl,2,fp32_of_Z(x2))) * store(&(__return.s3),float,qd8_selected_f(vl,3,fp32_of_Z(x3))) * store(&(__return.s4),float,qd8_selected_f(vl,4,fp32_of_Z(x4))) * store(&(__return.s5),float,qd8_selected_f(vl,5,fp32_of_Z(x5))) * store(&(__return.s6),float,qd8_selected_f(vl,6,fp32_of_Z(x6))) * store(&(__return.s7),float,qd8_selected_f(vl,7,fp32_of_Z(x7))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32_of_Z",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 293,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active RNE fp32_of_Z of signed32 value",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vfmacc_vv_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmacc_vv_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vfmacc_vv_f32m2(vfloat32m2_t acc,vfloat32m2_t a,vfloat32m2_t b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 66,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "d47a86c9b2d815d11219f452a97fb582dc2445708d99bb1dfd5d11a6b42f35c4",
+        "text": "/*@ With (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) (z4:fp32) (z5:fp32) (z6:fp32) (z7:fp32) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32)\n Require 1<=vl && vl<=8 && store(&(acc.s0),float,z0) * store(&(acc.s1),float,z1) * store(&(acc.s2),float,z2) * store(&(acc.s3),float,z3) * store(&(acc.s4),float,z4) * store(&(acc.s5),float,z5) * store(&(acc.s6),float,z6) * store(&(acc.s7),float,z7) * store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7)\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,fma_rne(x0,y0,z0))) * store(&(__return.s1),float,qd8_selected_f(vl,1,fma_rne(x1,y1,z1))) * store(&(__return.s2),float,qd8_selected_f(vl,2,fma_rne(x2,y2,z2))) * store(&(__return.s3),float,qd8_selected_f(vl,3,fma_rne(x3,y3,z3))) * store(&(__return.s4),float,qd8_selected_f(vl,4,fma_rne(x4,y4,z4))) * store(&(__return.s5),float,qd8_selected_f(vl,5,fma_rne(x5,y5,z5))) * store(&(__return.s6),float,qd8_selected_f(vl,6,fma_rne(x6,y6,z6))) * store(&(__return.s7),float,qd8_selected_f(vl,7,fma_rne(x7,y7,z7))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active fma_rne(a,b,acc),single rounding",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vfmax_vf_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmax_vf_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vfmax_vf_f32m2(vfloat32m2_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 62,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "6af51775ea14f815b13082b740a6bcb4c8480761b10371e29e378b146325a272",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32)\n Require 1<=vl && vl<=8 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7)\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,fp32_max_number(x0,scalar))) * store(&(__return.s1),float,qd8_selected_f(vl,1,fp32_max_number(x1,scalar))) * store(&(__return.s2),float,qd8_selected_f(vl,2,fp32_max_number(x2,scalar))) * store(&(__return.s3),float,qd8_selected_f(vl,3,fp32_max_number(x3,scalar))) * store(&(__return.s4),float,qd8_selected_f(vl,4,fp32_max_number(x4,scalar))) * store(&(__return.s5),float,qd8_selected_f(vl,5,fp32_max_number(x5,scalar))) * store(&(__return.s6),float,qd8_selected_f(vl,6,fp32_max_number(x6,scalar))) * store(&(__return.s7),float,qd8_selected_f(vl,7,fp32_max_number(x7,scalar))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_max_number",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 20,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active fp32_max_number,not ARM NaN propagation",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vfmin_vf_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmin_vf_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vfmin_vf_f32m2(vfloat32m2_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 58,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "db7ba0b2d315d30eb2a3c2d6414f653029e85c89c62d62e311423b91fa7af521",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32)\n Require 1<=vl && vl<=8 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7)\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,fp32_min_number(x0,scalar))) * store(&(__return.s1),float,qd8_selected_f(vl,1,fp32_min_number(x1,scalar))) * store(&(__return.s2),float,qd8_selected_f(vl,2,fp32_min_number(x2,scalar))) * store(&(__return.s3),float,qd8_selected_f(vl,3,fp32_min_number(x3,scalar))) * store(&(__return.s4),float,qd8_selected_f(vl,4,fp32_min_number(x4,scalar))) * store(&(__return.s5),float,qd8_selected_f(vl,5,fp32_min_number(x5,scalar))) * store(&(__return.s6),float,qd8_selected_f(vl,6,fp32_min_number(x6,scalar))) * store(&(__return.s7),float,qd8_selected_f(vl,7,fp32_min_number(x7,scalar))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_min_number",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 12,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active fp32_min_number,not ARM NaN propagation",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vfmul_vf_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmul_vf_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vfmul_vf_f32m2(vfloat32m2_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 54,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "dc16d7c610e73117caf33b7b349a904269bcc76214047b2928dc24a45018a063",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32)\n Require 1<=vl && vl<=8 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7)\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,fp32_mul(x0,scalar))) * store(&(__return.s1),float,qd8_selected_f(vl,1,fp32_mul(x1,scalar))) * store(&(__return.s2),float,qd8_selected_f(vl,2,fp32_mul(x2,scalar))) * store(&(__return.s3),float,qd8_selected_f(vl,3,fp32_mul(x3,scalar))) * store(&(__return.s4),float,qd8_selected_f(vl,4,fp32_mul(x4,scalar))) * store(&(__return.s5),float,qd8_selected_f(vl,5,fp32_mul(x5,scalar))) * store(&(__return.s6),float,qd8_selected_f(vl,6,fp32_mul(x6,scalar))) * store(&(__return.s7),float,qd8_selected_f(vl,7,fp32_mul(x7,scalar))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32_mul",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 66,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active separate RNE fp32_mul",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vfmv_v_f_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmv_v_f_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vfmv_v_f_f32m2(float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 70,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "b9572f51393878578eb445f049ba4d83c2aad30a4aa8f02c9605f7d806bb9b54",
+        "text": "/*@ Require 1<=vl && vl<=8 && emp\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,scalar)) * store(&(__return.s1),float,qd8_selected_f(vl,1,scalar)) * store(&(__return.s2),float,qd8_selected_f(vl,2,scalar)) * store(&(__return.s3),float,qd8_selected_f(vl,3,scalar)) * store(&(__return.s4),float,qd8_selected_f(vl,4,scalar)) * store(&(__return.s5),float,qd8_selected_f(vl,5,scalar)) * store(&(__return.s6),float,qd8_selected_f(vl,6,scalar)) * store(&(__return.s7),float,qd8_selected_f(vl,7,scalar)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active exact fp32 broadcast",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/f-st-ext.adoc",
+          "version": "20260120; F 2.2",
+          "section": "RNE; NaN Generation and Propagation; single rounding FMA; min/max"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vle32_v_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vle32_v_f32m2(const float *p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 81,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "f3d2792cade0bea41b6dccb37bafc32bbe4e00f792cb83f6ad6191fd91ab1e46",
+        "text": "/*@ With  (K:Z) (wb:Z) (tile:Z) (j:Z) (kind:Z) (Ps:list panel_data)\n Require 1<=vl && vl<=8 && 0<K && 0<=tile && tile<Zlength(Ps) && 0<=kind && kind<=1 && 0<=j && j+vl<=8 && p==wb+tile*(96+8*K)+32+8*K+32*kind+4*j && qd8_matrix_wf(K,Ps) && packed_matrix(K,wb,Ps)\n Ensure packed_matrix(K,wb,Ps) * store(&(__return.s0),float,qd8_selected_f(vl,0,qd8_float_field(kind,tile,j+0,Ps))) * store(&(__return.s1),float,qd8_selected_f(vl,1,qd8_float_field(kind,tile,j+1,Ps))) * store(&(__return.s2),float,qd8_selected_f(vl,2,qd8_float_field(kind,tile,j+2,Ps))) * store(&(__return.s3),float,qd8_selected_f(vl,3,qd8_float_field(kind,tile,j+3,Ps))) * store(&(__return.s4),float,qd8_selected_f(vl,4,qd8_float_field(kind,tile,j+4,Ps))) * store(&(__return.s5),float,qd8_selected_f(vl,5,qd8_float_field(kind,tile,j+5,Ps))) * store(&(__return.s6),float,qd8_selected_f(vl,6,qd8_float_field(kind,tile,j+6,Ps))) * store(&(__return.s7),float,qd8_selected_f(vl,7,qd8_float_field(kind,tile,j+7,Ps))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.packed_matrix",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 31,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_float_field",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 17,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_matrix_wf",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 25,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "read only active vl fp32 cells",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_i32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vle32_v_i32m2",
+      "C_signature": "vint32m2_t __riscv_vle32_v_i32m2(const int *p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 77,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "218316c5878fbe7b825b2c6c81ab8a34f6aea3e647769a00174659cf81c67ef6",
+        "text": "/*@ With  (K:Z) (wb:Z) (tile:Z) (j:Z) (kind:Z) (Ps:list panel_data)\n Require 1<=vl && vl<=8 && 0<K && 0<=tile && tile<Zlength(Ps) && 0<=j && j+vl<=8 && p==wb+tile*(96+8*K)+4*j && qd8_matrix_wf(K,Ps) && packed_matrix(K,wb,Ps)\n Ensure packed_matrix(K,wb,Ps) * store(&(__return.s0),int,qd8_selected_z(vl,0,qd8_ks(tile,j+0,Ps))) * store(&(__return.s1),int,qd8_selected_z(vl,1,qd8_ks(tile,j+1,Ps))) * store(&(__return.s2),int,qd8_selected_z(vl,2,qd8_ks(tile,j+2,Ps))) * store(&(__return.s3),int,qd8_selected_z(vl,3,qd8_ks(tile,j+3,Ps))) * store(&(__return.s4),int,qd8_selected_z(vl,4,qd8_ks(tile,j+4,Ps))) * store(&(__return.s5),int,qd8_selected_z(vl,5,qd8_ks(tile,j+5,Ps))) * store(&(__return.s6),int,qd8_selected_z(vl,6,qd8_ks(tile,j+6,Ps))) * store(&(__return.s7),int,qd8_selected_z(vl,7,qd8_ks(tile,j+7,Ps))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.packed_matrix",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 31,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_ks",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 15,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_matrix_wf",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 25,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_z",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 26,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "read only active vl signed32 cells",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vle8_v_i8mf2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vle8_v_i8mf2",
+      "C_signature": "vint8mf2_t __riscv_vle8_v_i8mf2(const char *p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 85,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "e0984a3cdf37ce3b478d0c437e0e7e8a214be5b51302cb4e8f652daae3ddae6b",
+        "text": "/*@ With  (K:Z) (wb:Z) (tile:Z) (j:Z) (kind:Z) (Ps:list panel_data)\n Require 1<=vl && vl<=8 && 0<K && 0<=tile && tile<Zlength(Ps) && 0<=j && j+vl<=8*K && p==wb+tile*(96+8*K)+32+j && qd8_matrix_wf(K,Ps) && packed_matrix(K,wb,Ps)\n Ensure packed_matrix(K,wb,Ps) * store(&(__return.s0),char,qd8_selected_z(vl,0,qd8_zget(j+0,weights(panel_at(Ps,tile))))) * store(&(__return.s1),char,qd8_selected_z(vl,1,qd8_zget(j+1,weights(panel_at(Ps,tile))))) * store(&(__return.s2),char,qd8_selected_z(vl,2,qd8_zget(j+2,weights(panel_at(Ps,tile))))) * store(&(__return.s3),char,qd8_selected_z(vl,3,qd8_zget(j+3,weights(panel_at(Ps,tile))))) * store(&(__return.s4),char,qd8_selected_z(vl,4,qd8_zget(j+4,weights(panel_at(Ps,tile))))) * store(&(__return.s5),char,qd8_selected_z(vl,5,qd8_zget(j+5,weights(panel_at(Ps,tile))))) * store(&(__return.s6),char,qd8_selected_z(vl,6,qd8_zget(j+6,weights(panel_at(Ps,tile))))) * store(&(__return.s7),char,qd8_selected_z(vl,7,qd8_zget(j+7,weights(panel_at(Ps,tile))))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.packed_matrix",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 31,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.panel_at",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 22,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_matrix_wf",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 25,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_z",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 26,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_zget",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 11,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.weights",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 14,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "read only active vl signed8 cells",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vmerge_vvm_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vmerge_vvm_f32m2",
+      "C_signature": "vfloat32m2_t __riscv_vmerge_vvm_f32m2(vfloat32m2_t a,vfloat32m2_t b,vbool16_t m,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 73,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "cf2a1806837968260393893e92d80281d05585682fd86a948dbdbeb3b72e5434",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (z0:Z) (z1:Z) (z2:Z) (z3:Z) (z4:Z) (z5:Z) (z6:Z) (z7:Z)\n Require 1<=vl && vl<=8 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(m.s0),int,z0) * store(&(m.s1),int,z1) * store(&(m.s2),int,z2) * store(&(m.s3),int,z3) * store(&(m.s4),int,z4) * store(&(m.s5),int,z5) * store(&(m.s6),int,z6) * store(&(m.s7),int,z7)\n Ensure store(&(__return.s0),float,qd8_selected_f(vl,0,qd8_merge_value(x0,y0,z0))) * store(&(__return.s1),float,qd8_selected_f(vl,1,qd8_merge_value(x1,y1,z1))) * store(&(__return.s2),float,qd8_selected_f(vl,2,qd8_merge_value(x2,y2,z2))) * store(&(__return.s3),float,qd8_selected_f(vl,3,qd8_merge_value(x3,y3,z3))) * store(&(__return.s4),float,qd8_selected_f(vl,4,qd8_merge_value(x4,y4,z4))) * store(&(__return.s5),float,qd8_selected_f(vl,5,qd8_merge_value(x5,y5,z5))) * store(&(__return.s6),float,qd8_selected_f(vl,6,qd8_merge_value(x6,y6,z6))) * store(&(__return.s7),float,qd8_selected_f(vl,7,qd8_merge_value(x7,y7,z7))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_merge_value",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 33,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_f",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 24,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active mask?other:base, bit-value copy including NaN",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        },
+        {
+          "url": "https://reviews.llvm.org/D140686?id=485363",
+          "version": "LLVM D140686",
+          "section": "vmerge operand order update including f32m2; vs2, vs1, mask, vl"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vmfne_vv_f32m2_b16",
+      "ISA": "rvv",
+      "call_symbol": "qcp_qd8_self_nan",
+      "C_signature": "vbool16_t qcp_qd8_self_nan(const vfloat32m2_t *a,const vfloat32m2_t *b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 92,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "2b7f5b37a2ea1b09eeb8d10dd0a4ccdbcb4bcda5726988e3adcba55bd97ea92e",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32)\n Require a==b && 1<=vl && vl<=8 && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(__return.s0),int,qd8_selected_z(vl,0,qd8_nan_flag(x0))) * store(&(__return.s1),int,qd8_selected_z(vl,1,qd8_nan_flag(x1))) * store(&(__return.s2),int,qd8_selected_z(vl,2,qd8_nan_flag(x2))) * store(&(__return.s3),int,qd8_selected_z(vl,3,qd8_nan_flag(x3))) * store(&(__return.s4),int,qd8_selected_z(vl,4,qd8_nan_flag(x4))) * store(&(__return.s5),int,qd8_selected_z(vl,5,qd8_nan_flag(x5))) * store(&(__return.s6),int,qd8_selected_z(vl,6,qd8_nan_flag(x6))) * store(&(__return.s7),int,qd8_selected_z(vl,7,qd8_nan_flag(x7))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_nan_flag",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 32,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_z",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 26,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active unordered-or-not-equal;actual source selfmask uses single owner,not duplicate heap",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel.",
+      "adaptation": "Pointer borrow of existing local vector lvalue(s), evaluated once. vmfne is restricted by its contract to the same source vector. No side-effecting/nested temporary operand supported."
+    },
+    {
+      "intrinsic": "__riscv_vmul_vx_i32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vmul_vx_i32m2",
+      "C_signature": "vint32m2_t __riscv_vmul_vx_i32m2(vint32m2_t a,int scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 38,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "95c91c5695768c4ef376e09c8aaba2b4fd5b44babaa43376a7259a36ae59aaa6",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require 1<=vl && vl<=8 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(a.s4),int,x4) * store(&(a.s5),int,x5) * store(&(a.s6),int,x6) * store(&(a.s7),int,x7)\n Ensure store(&(__return.s0),int,qd8_selected_z(vl,0,qd8_wrap_signed(x0*scalar))) * store(&(__return.s1),int,qd8_selected_z(vl,1,qd8_wrap_signed(x1*scalar))) * store(&(__return.s2),int,qd8_selected_z(vl,2,qd8_wrap_signed(x2*scalar))) * store(&(__return.s3),int,qd8_selected_z(vl,3,qd8_wrap_signed(x3*scalar))) * store(&(__return.s4),int,qd8_selected_z(vl,4,qd8_wrap_signed(x4*scalar))) * store(&(__return.s5),int,qd8_selected_z(vl,5,qd8_wrap_signed(x5*scalar))) * store(&(__return.s6),int,qd8_selected_z(vl,6,qd8_wrap_signed(x6*scalar))) * store(&(__return.s7),int,qd8_selected_z(vl,7,qd8_wrap_signed(x7*scalar))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_z",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 26,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_wrap_signed",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 13,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "active signed32_view(wrap32(a[j]*zp))",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vse32_v_f32m2",
+      "ISA": "rvv",
+      "call_symbol": "qcp_qd8_store",
+      "C_signature": "void qcp_qd8_store(float *p,const vfloat32m2_t *a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 97,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "79fedabf7a195d04a6f8dc2654da508128456030aef3f0efa288570f2802b7ec",
+        "text": "/*@ With (base:Z) (N:Z) (done:Z) (L:list fp32) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32)\n Require 1<=vl && vl<=8 && 0<=done && done+vl<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * qd8_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * qd8_write_state(base,N,done+vl,qd8_fappend(L,sublist(0,vl,cons(x0,cons(x1,cons(x2,cons(x3,cons(x4,cons(x5,cons(x6,cons(x7,nil))))))))))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_fappend",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 49,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_write_state",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 47,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        }
+      ],
+      "reviewed_value_semantics": "write only active vl fp32 cells;borrow local vector",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel.",
+      "adaptation": "Pointer borrow of existing local vector lvalue(s), evaluated once. vmfne is restricted by its contract to the same source vector. No side-effecting/nested temporary operand supported."
+    },
+    {
+      "intrinsic": "__riscv_vsetvl_e32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vsetvl_e32m2",
+      "C_signature": "size_t __riscv_vsetvl_e32m2(size_t n)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 89,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "e96db940f408500eec1055c9c6b4b6a9b9f20aef25e01697f64b7a088178f54f",
+        "text": "/*@ Require 1<=n && n<=8 && emp\n Ensure __return==n && emp */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        }
+      ],
+      "reviewed_value_semantics": "actual request1..8=>return request;other shapes unsupported until reviewed",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vsext_vf2_i16m1",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vsext_vf2_i16m1",
+      "C_signature": "vint16m1_t __riscv_vsext_vf2_i16m1(vint8mf2_t a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 42,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "5c66806c2ea11d29f064a2b4751ebbd0c39f1ea9518ca47a00518383549f254b",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require 1<=vl && vl<=8 && store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7)\n Ensure store(&(__return.s0),short,qd8_selected_z(vl,0,x0)) * store(&(__return.s1),short,qd8_selected_z(vl,1,x1)) * store(&(__return.s2),short,qd8_selected_z(vl,2,x2)) * store(&(__return.s3),short,qd8_selected_z(vl,3,x3)) * store(&(__return.s4),short,qd8_selected_z(vl,4,x4)) * store(&(__return.s5),short,qd8_selected_z(vl,5,x5)) * store(&(__return.s6),short,qd8_selected_z(vl,6,x6)) * store(&(__return.s7),short,qd8_selected_z(vl,7,x7)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_z",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 26,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active signed8 sign extension to signed16",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__riscv_vwmacc_vx_i32m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vwmacc_vx_i32m2",
+      "C_signature": "vint32m2_t __riscv_vwmacc_vx_i32m2(vint32m2_t acc,short scalar,vint16m1_t b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "line": 46,
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "e62b58b5e076b066e9cdd228a6db72c22d575536a2fb5b3ea62580c0dd32b23a",
+        "text": "/*@ With (z0:Z) (z1:Z) (z2:Z) (z3:Z) (z4:Z) (z5:Z) (z6:Z) (z7:Z) (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require 1<=vl && vl<=8 && store(&(acc.s0),int,z0) * store(&(acc.s1),int,z1) * store(&(acc.s2),int,z2) * store(&(acc.s3),int,z3) * store(&(acc.s4),int,z4) * store(&(acc.s5),int,z5) * store(&(acc.s6),int,z6) * store(&(acc.s7),int,z7) * store(&(b.s0),short,x0) * store(&(b.s1),short,x1) * store(&(b.s2),short,x2) * store(&(b.s3),short,x3) * store(&(b.s4),short,x4) * store(&(b.s5),short,x5) * store(&(b.s6),short,x6) * store(&(b.s7),short,x7)\n Ensure store(&(__return.s0),int,qd8_selected_z(vl,0,qd8_mac_signed(z0,scalar,x0))) * store(&(__return.s1),int,qd8_selected_z(vl,1,qd8_mac_signed(z1,scalar,x1))) * store(&(__return.s2),int,qd8_selected_z(vl,2,qd8_mac_signed(z2,scalar,x2))) * store(&(__return.s3),int,qd8_selected_z(vl,3,qd8_mac_signed(z3,scalar,x3))) * store(&(__return.s4),int,qd8_selected_z(vl,4,qd8_mac_signed(z4,scalar,x4))) * store(&(__return.s5),int,qd8_selected_z(vl,5,qd8_mac_signed(z5,scalar,x5))) * store(&(__return.s6),int,qd8_selected_z(vl,6,qd8_mac_signed(z6,scalar,x6))) * store(&(__return.s7),int,qd8_selected_z(vl,7,qd8_mac_signed(z7,scalar,x7))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.data_capacity",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 112,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8FullKernel.FullModel.domain_shape",
+          "path": "proof/coq/Qd8FullKernel/FullModel.v",
+          "line": 107,
+          "sha256": "8d4484fc31799da1f79d7e6919eafd30761419bd3c5b54bd63097397fe6d2df6"
+        },
+        {
+          "qualified_name": "Qd8API.ApiModel.qd8_mac_signed",
+          "path": "proof/coq/Qd8API/ApiModel.v",
+          "line": 14,
+          "sha256": "6ea7fd01c8447e7c09c6db87365e535a3588d092209af51165ab89dbe703e97d"
+        },
+        {
+          "qualified_name": "Qd8Rvv.RvvModel.qd8_selected_z",
+          "path": "proof/coq/Qd8Rvv/RvvModel.v",
+          "line": 26,
+          "sha256": "618dce42c3325edf7970c59b127cf266c9eb56dde8e379b7daf45c9b1a88b0f3"
+        }
+      ],
+      "reviewed_value_semantics": "active signed32_view(wrap32(acc[j]+a*b[j]))",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120; Vector 1.0",
+          "section": "corresponding named vector instruction subsection"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "implicit FP rounding; default tail policy; vstart=0; C vector assignment"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "Active-prefix abstraction; the zero completion in scalar fields is a representative, not an architectural tail value. ProofBoundary proves prefix congruence and store-prefix invariance; no horizontal reads or tail-to-active moves occur in this kernel."
+    },
+    {
+      "intrinsic": "__builtin_nanf",
+      "ISA": "compiler builtin",
+      "call_symbol": "qcp_qd8_nanf",
+      "C_signature": "float qcp_qd8_nanf(void)",
+      "contract": {
+        "path": "shim/rvv-api.h",
+        "file_sha256": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+        "signature_and_contract_sha256": "45c4458bf430ba4ea3f8834686854201e7e6faaabf41cb1886726002c3d2f7bc",
+        "text": "/*@ Require emp\n Ensure qd8_bit_same(__return,canonical_qnan) && emp */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.canonical_qnan",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 9,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "official_sources": [
+        {
+          "url": "https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Other-Builtins.html",
+          "version": "GCC 12.1.0 builtin nanf interface; empty tag used here",
+          "section": "__builtin_nan / nanf"
+        }
+      ],
+      "reviewed_value_semantics": "quiet NaN; empty payload tag is unobserved by the public numeric-or-both-NaN relation",
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false
+    }
+  ],
+  "unproved_boundaries": [
+    "ISA/compiler/physical struct ABI correspondence",
+    "independent total-correctness/termination theorem",
+    "arbitrary hardware VLEN",
+    "FP exception flag equality and NaN payload equality",
+    "ISO C object-provenance semantics beyond the declared QCP integer-address memory model"
+  ]
+}

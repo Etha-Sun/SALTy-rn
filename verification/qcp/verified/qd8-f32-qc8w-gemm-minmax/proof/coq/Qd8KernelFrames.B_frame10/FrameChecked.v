@@ -1,0 +1,57 @@
+From Coq Require Import ZArith Lia.
+From SimpleC.SL Require Import Mem SeparationLogic.
+From Qd8API Require Import neon_full_goal.
+From Qd8Frame Require Import KernelFrame.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_neon_partial_solve_wit_1_pure:neon_full_goal.test_neon_partial_solve_wit_1_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_1_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_1:neon_full_goal.test_neon_partial_solve_wit_1.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_1,neon_full_goal.test_neon_partial_solve_wit_1_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_2_pure:neon_full_goal.test_neon_partial_solve_wit_2_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_2_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_2:neon_full_goal.test_neon_partial_solve_wit_2.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_2,neon_full_goal.test_neon_partial_solve_wit_2_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_3_pure:neon_full_goal.test_neon_partial_solve_wit_3_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_3_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_3:neon_full_goal.test_neon_partial_solve_wit_3.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_3,neon_full_goal.test_neon_partial_solve_wit_3_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_4_pure:neon_full_goal.test_neon_partial_solve_wit_4_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_4_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_4:neon_full_goal.test_neon_partial_solve_wit_4.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_4,neon_full_goal.test_neon_partial_solve_wit_4_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_6_pure:neon_full_goal.test_neon_partial_solve_wit_6_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_6_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_6:neon_full_goal.test_neon_partial_solve_wit_6.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_6,neon_full_goal.test_neon_partial_solve_wit_6_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_7_pure:neon_full_goal.test_neon_partial_solve_wit_7_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_7_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_7:neon_full_goal.test_neon_partial_solve_wit_7.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_7,neon_full_goal.test_neon_partial_solve_wit_7_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_8_pure:neon_full_goal.test_neon_partial_solve_wit_8_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_8_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_8:neon_full_goal.test_neon_partial_solve_wit_8.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_8,neon_full_goal.test_neon_partial_solve_wit_8_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_9_pure:neon_full_goal.test_neon_partial_solve_wit_9_pure.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_9_pure;intros;unfold derivable1,coq_prop;intros;lia. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_9:neon_full_goal.test_neon_partial_solve_wit_9.
+Proof. unfold neon_full_goal.test_neon_partial_solve_wit_9,neon_full_goal.test_neon_partial_solve_wit_9_aux;intros;timeout 1800 solve [qd8_frame]. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_1_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_1.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_2_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_2.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_3_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_3.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_4_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_4.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_6_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_6.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_7_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_7.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_8_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_8.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_9_pure.
+Print Assumptions Checked.proof_of_test_neon_partial_solve_wit_9.

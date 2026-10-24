@@ -1,0 +1,109 @@
+{
+  "source_token_sha256": "add6104c7355064bb1c326563962431f8ffb5e5e8e68d4953fedcc701830350a",
+  "annotations": [
+    {
+      "before_token": 53,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 86,
+      "kind": "proof_annotation",
+      "text": "/*@ emp which implies sizeof(int8_t)==1 && kc@pre%sizeof(int8_t)==0 && emp */"
+    },
+    {
+      "before_token": 191,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=(nc@pre-nc)/8, Ps=Ps, j=0, kind=0 */"
+    },
+    {
+      "before_token": 219,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vksum */"
+    },
+    {
+      "before_token": 227,
+      "kind": "proof_annotation",
+      "text": "/*@ a0==pointer_offset(a@pre,(kc@pre-k),char) && 0<=(kc@pre-k) && (kc@pre-k)<a_read_extent(kc@pre) && CharArray::full(a@pre,a_read_extent(kc@pre),A) which implies a0==pointer_offset(a@pre,(kc@pre-k),char) && 0<=(kc@pre-k) && (kc@pre-k)<a_read_extent(kc@pre) && CharArray::missing_i(a@pre,(kc@pre-k),0,a_read_extent(kc@pre),A) * store(a0,char,A[(kc@pre-k)]) */"
+    },
+    {
+      "before_token": 237,
+      "kind": "proof_annotation",
+      "text": "/*@ a0==pointer_offset(a@pre,(kc@pre-k),char) && 0<=(kc@pre-k) && (kc@pre-k)<a_read_extent(kc@pre) && CharArray::missing_i(a@pre,(kc@pre-k),0,a_read_extent(kc@pre),A) * store(a0,char,A[(kc@pre-k)]) which implies a0==pointer_offset(a@pre,(kc@pre-k),char) && 0<=(kc@pre-k) && (kc@pre-k)<a_read_extent(kc@pre) && CharArray::full(a@pre,a_read_extent(kc@pre),A) */"
+    },
+    {
+      "before_token": 256,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=(nc@pre-nc)/8, Ps=Ps, j=8*(kc@pre-k), kind=0 */"
+    },
+    {
+      "before_token": 277,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb */"
+    },
+    {
+      "before_token": 290,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc, b=&vxb */"
+    },
+    {
+      "before_token": 300,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert exists (z0:Z) (z1:Z) (z2:Z) (z3:Z) (z4:Z) (z5:Z) (z6:Z) (z7:Z) (s0:Z) (s1:Z) (s2:Z) (s3:Z) (s4:Z) (s5:Z) (s6:Z) (s7:Z), mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==32 && mr==1 && 0<kc@pre && 0<nc@pre && domain_shape(1,nc@pre,kc@pre,Ps) && data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && qd8_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && bounds_nan==qd8_bounds_flag(lo,hi) && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && c0==pointer_offset(c@pre,nc@pre-nc,float) && 1<=vl && vl<=8 && vl<=nc && (vl==8 || vl==nc) && 0<=k && k<=kc@pre && a0==pointer_offset(a@pre,(kc@pre-k),char) && w==pointer_offset(w@pre,((nc@pre-nc)/8)*(96+8*kc@pre)+32+8*(kc@pre-k),char) && qd8_active_z(vl,0,z0,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),0,zp,A,Ps)) && qd8_active_z(vl,1,z1,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),1,zp,A,Ps)) && qd8_active_z(vl,2,z2,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),2,zp,A,Ps)) && qd8_active_z(vl,3,z3,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),3,zp,A,Ps)) && qd8_active_z(vl,4,z4,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),4,zp,A,Ps)) && qd8_active_z(vl,5,z5,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),5,zp,A,Ps)) && qd8_active_z(vl,6,z6,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),6,zp,A,Ps)) && qd8_active_z(vl,7,z7,qd8_acc_signed(kc@pre,(kc@pre-k),((nc@pre-nc)/8),7,zp,A,Ps)) && CharArray::full(a@pre,a_read_extent(kc@pre),A) * packed_matrix(kc@pre,w@pre,Ps) * qd8_rvv_prefix(c@pre,nc@pre,nc@pre-nc,kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) * store(&(vacc.s0),int,z0) * store(&(vacc.s1),int,z1) * store(&(vacc.s2),int,z2) * store(&(vacc.s3),int,z3) * store(&(vacc.s4),int,z4) * store(&(vacc.s5),int,z5) * store(&(vacc.s6),int,z6) * store(&(vacc.s7),int,z7) * store(&(vksum.s0),int,s0) * store(&(vksum.s1),int,s1) * store(&(vksum.s2),int,s2) * store(&(vksum.s3),int,s3) * store(&(vksum.s4),int,s4) * store(&(vksum.s5),int,s5) * store(&(vksum.s6),int,s6) * store(&(vksum.s7),int,s7) */"
+    },
+    {
+      "before_token": 317,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 333,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 348,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=(nc@pre-nc)/8, Ps=Ps, j=0, kind=0 */"
+    },
+    {
+      "before_token": 374,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=(nc@pre-nc)/8, Ps=Ps, j=0, kind=1 */"
+    },
+    {
+      "before_token": 398,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vbias, a=&vout, b=&vfilter_output_scale */"
+    },
+    {
+      "before_token": 431,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 447,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 460,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout, b=&vunclamped, m=&vnan */"
+    },
+    {
+      "before_token": 480,
+      "kind": "proof_annotation",
+      "text": "/*@ qd8_rvv_prefix(c@pre,nc@pre,nc@pre-nc,kc@pre,zp,A,Ps,inv,lo,hi) which implies qd8_write_state(c@pre,nc@pre,nc@pre-nc,qd8_rvv_completed(kc@pre,nc@pre-nc,zp,A,Ps,inv,lo,hi)) */"
+    },
+    {
+      "before_token": 488,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=nc@pre-nc */"
+    },
+    {
+      "before_token": 526,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert exists (wp:Z) (cp:Z), mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==32 && mr==1 && 0<kc@pre && 0<nc@pre && domain_shape(1,nc@pre,kc@pre,Ps) && data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && qd8_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && bounds_nan==qd8_bounds_flag(lo,hi) && a0==a@pre && w==wp && c0==cp && (nc==0 || (0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && cp==pointer_offset(c@pre,nc@pre-nc,float) && wp==pointer_offset(w@pre,((nc@pre-nc)/8)*(96+8*kc@pre),char))) && CharArray::full(a@pre,a_read_extent(kc@pre),A) * packed_matrix(kc@pre,w@pre,Ps) * qd8_rvv_prefix(c@pre,nc@pre,nc@pre-nc,kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) */"
+    }
+  ]
+}
