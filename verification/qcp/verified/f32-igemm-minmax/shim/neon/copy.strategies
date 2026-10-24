@@ -1,0 +1,30 @@
+#include "copy.h"
+id : 1
+priority : core(0)
+left : UndefStructPredfloat32x4_t(?p) at 0
+right : undef_data_at(field_addr(?q,float32x4_t,s0),float) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,float32x4_t,s0),float));
+         left_add(undef_data_at(field_addr(p,float32x4_t,s1),float));
+         left_add(undef_data_at(field_addr(p,float32x4_t,s2),float));
+         left_add(undef_data_at(field_addr(p,float32x4_t,s3),float));
+
+id : 2
+priority : core(0)
+left : UndefStructPredfloat32x2_t(?p) at 0
+right : undef_data_at(field_addr(?q,float32x2_t,s0),float) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,float32x2_t,s0),float));
+         left_add(undef_data_at(field_addr(p,float32x2_t,s1),float));
+
+id : 3
+priority : core(1)
+left : FloatArray::full(?p,?n,?l) at 0
+right : FloatArray::full(?q,?m,?r) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l == r);

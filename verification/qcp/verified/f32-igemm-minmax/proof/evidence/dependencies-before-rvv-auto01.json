@@ -1,0 +1,981 @@
+{
+  "external_flags": [
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/flocq/src",
+      "Flocq"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/SeparationLogic",
+      "SimpleC.SL"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/unifysl",
+      "Logic"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/sets",
+      "SetsClass"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/compcert_lib",
+      "compcert.lib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/auxlibs",
+      "AUXLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/examples",
+      "SimpleC.EE"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/stdlib",
+      "SimpleC.StdLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/StrategyLib",
+      "SimpleC.StrategyLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/Common",
+      "SimpleC.Common"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/cdcllib",
+      "CDCLLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/fixedpoints",
+      "FP"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/MonadLib",
+      "MonadLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/listlib",
+      "ListLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/MaxMinLib",
+      "MaxMinLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/GraphLib",
+      "GraphLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/SumLib",
+      "SumLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/tracelib",
+      "TraceLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/coq-record-update/src",
+      "RecordUpdate"
+    ],
+    [
+      "-Q",
+      "/tmp/qcp214-src/Rocq/algorithms",
+      "Algorithms"
+    ]
+  ],
+  "namespaces": {
+    "F32Admission": "proof/coq/F32Admission",
+    "FloatAutomation": "proof/coq/FloatAutomation",
+    "FloatIgCaller": "proof/coq/FloatIgCaller",
+    "FloatIgOrdinary": "proof/coq/FloatIgOrdinary",
+    "FloatIndirect": "proof/coq/FloatIndirect",
+    "FullDomainRvv": "proof/coq/FullDomainRvv",
+    "GemmNeon": "proof/coq/GemmNeon",
+    "GemmRepair": "proof/coq/GemmRepair",
+    "GemmRvv": "proof/coq/GemmRvv",
+    "GemmSpec": "proof/coq/GemmSpec",
+    "NanBridge": "proof/coq/NanBridge",
+    "VaddComparator": "proof/coq/VaddComparator"
+  },
+  "source_paths": [
+    "proof/coq/F32Admission/Boundary.v",
+    "proof/coq/FloatAutomation/FastFrame.v",
+    "proof/coq/FloatAutomation/Frame.v",
+    "proof/coq/FloatIgCaller/CallerChecked.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_1_pure.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_2_pure.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_3.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_3_pure.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_4.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_4_pure.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_return_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_3.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_4.v",
+    "proof/coq/FloatIgCaller/Proof_equivalent_which_implies_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_entail_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_entail_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_1_pure.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_2_pure.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_3.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_3_pure.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_return_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_return_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_3.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_which_implies_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_which_implies_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_preserve_float_return_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_partial_solve_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_partial_solve_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_3.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_4.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_1.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_2.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_3.v",
+    "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_4.v",
+    "proof/coq/FloatIgCaller/caller_goal.v",
+    "proof/coq/FloatIgOrdinary/OrdinaryChecked.v",
+    "proof/coq/FloatIgOrdinary/ordinary_goal.v",
+    "proof/coq/FloatIndirect/ApiModel.v",
+    "proof/coq/FloatIndirect/ClampRepair.v",
+    "proof/coq/FloatIndirect/InputMapping.v",
+    "proof/coq/FloatIndirect/MatrixModel.v",
+    "proof/coq/FloatIndirect/PublicModel.v",
+    "proof/coq/FloatIndirect/ReadOnlyFloatPool.v",
+    "proof/coq/FullDomainRvv/FullModel.v",
+    "proof/coq/GemmNeon/KernelModel.v",
+    "proof/coq/GemmNeon/LayoutModel.v",
+    "proof/coq/GemmRepair/ClampRepair.v",
+    "proof/coq/GemmRepair/Observation.v",
+    "proof/coq/GemmRvv/Model.v",
+    "proof/coq/GemmRvv/SLBounds.v",
+    "proof/coq/GemmSpec/FmaModel.v",
+    "proof/coq/GemmSpec/IntrinsicModel.v",
+    "proof/coq/NanBridge/BridgeLogic.v",
+    "proof/coq/NanBridge/ListBridge.v",
+    "proof/coq/VaddComparator/ComparatorLogic.v"
+  ],
+  "roots": [
+    "proof/coq/FloatIgOrdinary/OrdinaryChecked.v",
+    "proof/coq/FloatIgCaller/CallerChecked.v"
+  ],
+  "modules": [
+    {
+      "path": "proof/coq/F32Admission/Boundary.v",
+      "namespace": "F32Admission",
+      "sha256": "a4700856f455b5c611110d7064a8939bfb2e5afed6e139c251788415b29615d7",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/BinarySingleNaN.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/GemmRepair/ClampRepair.v",
+        "proof/coq/GemmRepair/Observation.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatAutomation/FastFrame.v",
+      "namespace": "FloatAutomation",
+      "sha256": "8424b7b64ba1c698a29402c9af987e3adbfc9df41a940910ede17ccf7bc78348",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatAutomation/Frame.v",
+      "namespace": "FloatAutomation",
+      "sha256": "b3837f0d1cd100445a5f5bcec4f6aad8cb8fe36522e554b74e2c7423cfe2736e",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/FastFrame.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/CallerChecked.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "cf19bc8cb96974b7aa888b077c570742c87566f2b08bcb42e93993ca702cd68d",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIgCaller/Proof_ig_preserve_float_return_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_3.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_4.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_3.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_4.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_partial_solve_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_same_lane_partial_solve_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_3.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_entail_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_entail_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_return_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_return_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_1_pure.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_2_pure.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_3_pure.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_3.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_which_implies_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_which_implies_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_3.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_4.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_return_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_1_pure.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_1.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_2_pure.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_2.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_3_pure.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_3.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_4_pure.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_4.v",
+        "proof/coq/FloatIgCaller/Proof_equivalent_which_implies_wit_1.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "dc915578f5ce15cb2a6e1ad8c0fc9c32b98a4f42040adf92397e5e3a2822d7b0",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_1_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "64ce5c28578a09228ce8b928199a4a006e7e6515291863413edb7cef8e9ff4c2",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "9b3a992e96c4e8ecb252105bbe6843ec8eb62bf2c44e2830406b13c517430e0b",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_2_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "45c6323cec1100f0daec3d3dc1f21e97728ee770ee84f20a5413230425aa3a59",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_3.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "b509a478ebce01f1b559aac2c4f8000cce7c27cf5340e1e36cded592a594765b",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_3_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "cd77fffc2956301a11a60feecaffb83950b343e459e88184264b284d6d1eec28",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_4.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "105df2b31565f721560bec5f7156e0cfce85d30f2e643c0f952ded93f8ea2d6d",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_partial_solve_wit_4_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "3ac45dcff6a602e7beef3e80cca1d7f40d3bf996714032e908eb88d5450f305d",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_return_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "dc9cbb547164bb54656491655dd9babf991ac283210289464bf3a46881e18d1a",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "41392eca85049eccf7b8508d76104f0c572462de3d9d35039feb48f8cc7ca2ba",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "78559358c2e21b501d01e499b12d88df4b3c774ed480b9cbacc10ddd8d60d613",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_3.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "c172869f4970b42447a314af271f91c947a7e99e0f70b2523e822fec8b8c10ad",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_safety_wit_4.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "17036da7126dcb7d730c93513233172e4ac0ccaf732f9e11fb9e7cb00a0276af",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_equivalent_which_implies_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "32868baf51fc32b1b6f96534fd934ab2b9455a578cacce7da048e504f44ed9f9",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_entail_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "ce9f0c4dfcfbd3b40a98a6d90ec0c848b13423092aa9f620f1f5686ca4ed625a",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_entail_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "75637840e6eeaf7d5ad9211e021398ff27243a03063d1e2571d8c089027ff670",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "7d1c35e00f750fbdeb19e8c27430fb1d21ca4eae6dc2e727780857b689d57b68",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_1_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "4fc3455f6d1a88c96255c40a3a22294b098c95f9e3dee70388fc7f0791608633",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "c44fb955d5e25403319210311198cad2eb8ff48c95840d8ab22ab3215ac49827",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_2_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "d599b79b1eb2341f5c6faf7e03aee7c7d6a9c4b03a442fb88554e0e848cdda05",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_3.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "604a32045965eecad2aaffdbdec915c0dbbb5d157a61d425a5448757643e5b96",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_partial_solve_wit_3_pure.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "0f1bcd04f0c5375d617b3c04ce4d2910b114092f04ae45d597e81a350149b59e",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_return_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "eec0207abdd000133e7101a038e2590b0549284fd0243eae2a41f72ced88a462",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_return_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "1526a98aac0597174a545628483eabd45b0cfbbd4c0e9ff4b9a4ca348678e1f1",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "0762a5a26289f41798dbacfa0243a847d7eec9619ee77814f02ed4b7b7dc2fc8",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "8aa446212919d4e9dc3c70d5c6e4a643e8d91a3f65539806b76711b23205b63c",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_safety_wit_3.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "41ae84dad51a4e7c0e5f6eee2a7d7cb847ca86771f13d92fb75705e4347acd52",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_which_implies_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "a40a02756f82824ac2ce11eba49d697a85a39c06bd1c3b257a220d52ddca09d3",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_compare_outputs_which_implies_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "8c9265e5f8eb807470bd37aed346d6101b4ebb0c6b1d484a1cf389caee5686b1",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_preserve_float_return_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "85ca89d9a25d6721bda1beefdac739fc9e6fe680f67d16cc93cbbb84ce21467c",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_partial_solve_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "c6b63a4b917a354d7b376d3d31fe94f57f861d966e1bf884a2849f9c99ef865c",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_partial_solve_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "4fc3090c5da881823feb1cc9844acb37f78a0dc63b3522d153765f637c38e4bd",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "b48eccd5621844c1f5f39891ed2f024506339f110d6a8fcb5a2f61841b9a150d",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "433dd07a7164cabc551c6d3cff703ad0a8532eae176b7df721532f610839fa90",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_3.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "1e0886e1966869825b822d1f979b904d9de250a9f4c640167d84adc110a63d23",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_return_wit_4.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "0281635d34b0df181bccb4d8199c110bc72b501709532ab6618f6a7b9781ff5a",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_1.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "9c7d1a872b4bf90a117f7181c8828134451a851911626c73c61617de99ac7d87",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_2.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "ff4bbba61baefc183b73389e3b3763f05af3252bed77f7ea37f6d6e43ce56110",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_3.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "4af3c6358f0b387ff886c3194b283e1882562bd2679696f3365ded1a463b36c5",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/Proof_ig_same_lane_safety_wit_4.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "db469d5b0c6d3fdaaedd931a84e0e183f92647ecf5f41cf5cc19fc8879ce13ad",
+      "dependencies": [
+        "proof/coq/FloatIgCaller/caller_goal.v",
+        "proof/coq/FloatIndirect/ApiModel.v",
+        "proof/coq/FloatAutomation/Frame.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgCaller/caller_goal.v",
+      "namespace": "FloatIgCaller",
+      "sha256": "593a4d8e4b69a32d2100714f1556a505aac125aab10ec8a9ab4ade7595883906",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/auxlibs/int_auto.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/Axioms.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/Feq.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/Idents.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/ListLib.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/VMap.v",
+        "/tmp/qcp214-src/Rocq/sets/SetsClass.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/unifysl/LogicGenerator/demo932/Interface.v",
+        "proof/coq/FloatIndirect/ApiModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgOrdinary/OrdinaryChecked.v",
+      "namespace": "FloatIgOrdinary",
+      "sha256": "138b020c4123f537407fb22be41ec58e29d9fabecb45b832dc05a39f2258637b",
+      "dependencies": [
+        "proof/coq/FloatIgOrdinary/ordinary_goal.v",
+        "proof/coq/FloatAutomation/Frame.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIgOrdinary/ordinary_goal.v",
+      "namespace": "FloatIgOrdinary",
+      "sha256": "64bf48521ba4950e7f7b475e58d1c47e71bea9992ea90a07c8a6f07a38999f92",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/auxlibs/int_auto.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/Axioms.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/Feq.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/Idents.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/ListLib.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/VMap.v",
+        "/tmp/qcp214-src/Rocq/sets/SetsClass.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/unifysl/LogicGenerator/demo932/Interface.v",
+        "proof/coq/FloatIndirect/ApiModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/ApiModel.v",
+      "namespace": "FloatIndirect",
+      "sha256": "4b75a06851830ac65643a77876aa6aba9351ef6df16b90f1280d3eaf51a19bda",
+      "dependencies": [
+        "proof/coq/FloatIndirect/PublicModel.v",
+        "proof/coq/GemmRvv/Model.v",
+        "proof/coq/GemmRvv/SLBounds.v",
+        "proof/coq/GemmNeon/KernelModel.v",
+        "proof/coq/GemmNeon/LayoutModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/ClampRepair.v",
+      "namespace": "FloatIndirect",
+      "sha256": "fe602e0729a8d2f0918280fa02dba277499ad1352c03fe74b9856976d9583481",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/GemmRepair/ClampRepair.v",
+        "proof/coq/GemmRepair/Observation.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/InputMapping.v",
+      "namespace": "FloatIndirect",
+      "sha256": "22b75061bae6f93572dd548c4e5021f44400c1fe9051906bfab84c51e2131c2c",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "proof/coq/FloatIndirect/ReadOnlyFloatPool.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/MatrixModel.v",
+      "namespace": "FloatIndirect",
+      "sha256": "d438b17d0d69fddf680c5e585f3e0a46487a05ba9b34e02c8f74eef35bb34b94",
+      "dependencies": [
+        "proof/coq/FloatIndirect/InputMapping.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/FullDomainRvv/FullModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/PublicModel.v",
+      "namespace": "FloatIndirect",
+      "sha256": "055343a878b8337edf7a81d0e4614c1370e94e1e52adabe9da35a5c5acf06908",
+      "dependencies": [
+        "proof/coq/FloatIndirect/MatrixModel.v",
+        "proof/coq/FloatIndirect/ClampRepair.v",
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/VaddComparator/ComparatorLogic.v",
+        "proof/coq/GemmRepair/ClampRepair.v",
+        "proof/coq/GemmRepair/Observation.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/ReadOnlyFloatPool.v",
+      "namespace": "FloatIndirect",
+      "sha256": "4372288b7009c34dfddaa980232fb66cb68ee17f19f39d27e1f3f6f1d8e8b257",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FullDomainRvv/FullModel.v",
+      "namespace": "FullDomainRvv",
+      "sha256": "3576cecc65131a1afccba36c7f9f7c283e464804158225ca50e1570cb7aa6ec5",
+      "dependencies": []
+    },
+    {
+      "path": "proof/coq/GemmNeon/KernelModel.v",
+      "namespace": "GemmNeon",
+      "sha256": "7f5848d1722560f3ccabdb6db23b2d5a44ed0458a6db0c06a2692c62c1360085",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmNeon/LayoutModel.v",
+      "namespace": "GemmNeon",
+      "sha256": "425be8e43ca08d23f090cf82895c0db7ffc4c135a208f356e3964c043b5f1e0f",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmRepair/ClampRepair.v",
+      "namespace": "GemmRepair",
+      "sha256": "f2699ca84bfee3c72aa387b370509ee8ffa48e33d87dd711fd59e966acc2041a",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/BinarySingleNaN.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmRepair/Observation.v",
+      "namespace": "GemmRepair",
+      "sha256": "37aeb803651e3154f17ead354bf1506ea8154ee9872d506827a0c145d2bb041e",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/GemmRepair/ClampRepair.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmRvv/Model.v",
+      "namespace": "GemmRvv",
+      "sha256": "9075c1e7cca2066b080b620644f659adb1e95c053f68fdb92d1254cac141b075",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmRvv/SLBounds.v",
+      "namespace": "GemmRvv",
+      "sha256": "e1cdb4e365353230e8b0622a54c8a2b0b12568751d6f1260515d8c7397055896",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/auxlibs/ListLib.v",
+        "proof/coq/GemmRvv/Model.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmSpec/FmaModel.v",
+      "namespace": "GemmSpec",
+      "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+      "namespace": "GemmSpec",
+      "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "proof/coq/GemmSpec/FmaModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/NanBridge/BridgeLogic.v",
+      "namespace": "NanBridge",
+      "sha256": "8474ccdad394b796a5c13009e0c925ec1f6ce2155d71ce1780faa4f54a10b59d",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/Core/Raux.v"
+      ]
+    },
+    {
+      "path": "proof/coq/NanBridge/ListBridge.v",
+      "namespace": "NanBridge",
+      "sha256": "f464a12080ffea42b8dab7ccca982e67288770eff5eed69d2d0c466eb4a08dc9",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/auxlibs/ListLib.v"
+      ]
+    },
+    {
+      "path": "proof/coq/VaddComparator/ComparatorLogic.v",
+      "namespace": "VaddComparator",
+      "sha256": "2b3a64fa4a88378ea74507682afdb6f768084b09227647671dddac7a6822dd17",
+      "dependencies": [
+        "proof/coq/NanBridge/BridgeLogic.v",
+        "proof/coq/NanBridge/ListBridge.v",
+        "/tmp/qcp214-src/Rocq/auxlibs/ListLib.v"
+      ]
+    }
+  ],
+  "scope": "Public float IGEMM model, input/output ownership and arithmetic; whole C kernel open"
+}

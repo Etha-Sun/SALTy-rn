@@ -1,0 +1,35 @@
+--- original/testRVV.c
++++ impl/testRVV.c
+@@ -45,7 +45,8 @@
+ 
+       size_t k = kc;
+       while (k > 0) {
+-        float va = *a0++;
++        float va = *a0;
++        a0++;
+         vfloat32m4_t vb = __riscv_vle32_v_f32m4(w, vl);
+         w += 8;
+         vacc = __riscv_vfmacc_vf_f32m4(vacc, va, vb, vl);
+@@ -54,13 +55,19 @@
+       p -= 1 * sizeof(void*);
+     } while (p != 0);
+ 
+-    vacc = __riscv_vfmin_vf_f32m4(vacc, params->scalar.max, vl);
+-    vacc = __riscv_vfmax_vf_f32m4(vacc, params->scalar.min, vl);
++    if (__builtin_isnan(params->scalar.max) || __builtin_isnan(params->scalar.min)) {
++      vacc = __riscv_vfmv_v_f_f32m4(__builtin_nanf(""), vl);
++    } else {
++      vbool8_t was_nan = __riscv_vmfne_vv_f32m4_b8(vacc, vacc, vl);
++      vacc = __riscv_vfmin_vf_f32m4(vacc, params->scalar.max, vl);
++      vacc = __riscv_vfmax_vf_f32m4(vacc, params->scalar.min, vl);
++      vacc = __riscv_vfmerge_vfm_f32m4(vacc, __builtin_nanf(""), was_nan, vl);
++    }
+ 
+     __riscv_vse32_v_f32m4(c0, vacc, vl);
+     c0 = (float*) ((uintptr_t) c0 + cn_stride);
+ 
+-    a = (const float**restrict) ((uintptr_t) a - ks);
++    a = (const float**) ((uintptr_t) a - ks);
+     nc -= vl;
+   } while (nc != 0);
+ }

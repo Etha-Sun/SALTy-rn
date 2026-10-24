@@ -1,0 +1,236 @@
+{
+  "external_flags": [
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/flocq/src",
+      "Flocq"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/SeparationLogic",
+      "SimpleC.SL"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/unifysl",
+      "Logic"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/sets",
+      "SetsClass"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/compcert_lib",
+      "compcert.lib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/auxlibs",
+      "AUXLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/examples",
+      "SimpleC.EE"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/stdlib",
+      "SimpleC.StdLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/StrategyLib",
+      "SimpleC.StrategyLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/Common",
+      "SimpleC.Common"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/cdcllib",
+      "CDCLLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/fixedpoints",
+      "FP"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/MonadLib",
+      "MonadLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/listlib",
+      "ListLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/MaxMinLib",
+      "MaxMinLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/GraphLib",
+      "GraphLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/SumLib",
+      "SumLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/tracelib",
+      "TraceLib"
+    ],
+    [
+      "-R",
+      "/tmp/qcp214-src/Rocq/coq-record-update/src",
+      "RecordUpdate"
+    ],
+    [
+      "-Q",
+      "/tmp/qcp214-src/Rocq/algorithms",
+      "Algorithms"
+    ]
+  ],
+  "namespaces": {
+    "FloatIndirect": "proof/coq/FloatIndirect",
+    "GemmSpec": "proof/coq/GemmSpec",
+    "GemmRepair": "proof/coq/GemmRepair",
+    "F32Admission": "proof/coq/F32Admission",
+    "FullDomainRvv": "proof/coq/FullDomainRvv"
+  },
+  "source_paths": [
+    "proof/coq/FloatIndirect/ReadOnlyFloatPool.v",
+    "proof/coq/GemmSpec/FmaModel.v",
+    "proof/coq/GemmSpec/IntrinsicModel.v",
+    "proof/coq/GemmRepair/ClampRepair.v",
+    "proof/coq/GemmRepair/Observation.v",
+    "proof/coq/F32Admission/Boundary.v",
+    "proof/coq/FullDomainRvv/FullModel.v",
+    "proof/coq/FloatIndirect/InputMapping.v",
+    "proof/coq/FloatIndirect/MatrixModel.v",
+    "proof/coq/FloatIndirect/ClampRepair.v"
+  ],
+  "roots": [
+    "proof/coq/FloatIndirect/MatrixModel.v",
+    "proof/coq/FloatIndirect/ClampRepair.v",
+    "proof/coq/F32Admission/Boundary.v"
+  ],
+  "modules": [
+    {
+      "path": "proof/coq/FloatIndirect/ReadOnlyFloatPool.v",
+      "namespace": "FloatIndirect",
+      "sha256": "4372288b7009c34dfddaa980232fb66cb68ee17f19f39d27e1f3f6f1d8e8b257",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmSpec/FmaModel.v",
+      "namespace": "GemmSpec",
+      "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+      "namespace": "GemmSpec",
+      "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "proof/coq/GemmSpec/FmaModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmRepair/ClampRepair.v",
+      "namespace": "GemmRepair",
+      "sha256": "f2699ca84bfee3c72aa387b370509ee8ffa48e33d87dd711fd59e966acc2041a",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/BinarySingleNaN.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/GemmRepair/Observation.v",
+      "namespace": "GemmRepair",
+      "sha256": "37aeb803651e3154f17ead354bf1506ea8154ee9872d506827a0c145d2bb041e",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/GemmRepair/ClampRepair.v"
+      ]
+    },
+    {
+      "path": "proof/coq/F32Admission/Boundary.v",
+      "namespace": "F32Admission",
+      "sha256": "a4700856f455b5c611110d7064a8939bfb2e5afed6e139c251788415b29615d7",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/BinarySingleNaN.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/GemmRepair/ClampRepair.v",
+        "proof/coq/GemmRepair/Observation.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FullDomainRvv/FullModel.v",
+      "namespace": "FullDomainRvv",
+      "sha256": "3576cecc65131a1afccba36c7f9f7c283e464804158225ca50e1570cb7aa6ec5",
+      "dependencies": []
+    },
+    {
+      "path": "proof/coq/FloatIndirect/InputMapping.v",
+      "namespace": "FloatIndirect",
+      "sha256": "22b75061bae6f93572dd548c4e5021f44400c1fe9051906bfab84c51e2131c2c",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/Mem.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/SeparationLogic.v",
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "proof/coq/FloatIndirect/ReadOnlyFloatPool.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/MatrixModel.v",
+      "namespace": "FloatIndirect",
+      "sha256": "d438b17d0d69fddf680c5e585f3e0a46487a05ba9b34e02c8f74eef35bb34b94",
+      "dependencies": [
+        "proof/coq/FloatIndirect/InputMapping.v",
+        "proof/coq/GemmSpec/FmaModel.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/FullDomainRvv/FullModel.v"
+      ]
+    },
+    {
+      "path": "proof/coq/FloatIndirect/ClampRepair.v",
+      "namespace": "FloatIndirect",
+      "sha256": "fe602e0729a8d2f0918280fa02dba277499ad1352c03fe74b9856976d9583481",
+      "dependencies": [
+        "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+        "/tmp/qcp214-src/Rocq/flocq/src/IEEE754/Binary.v",
+        "proof/coq/GemmSpec/IntrinsicModel.v",
+        "proof/coq/GemmRepair/ClampRepair.v",
+        "proof/coq/GemmRepair/Observation.v"
+      ]
+    }
+  ],
+  "scope": "Typed indirect input memory, exact FMA order, packed indices and joint NaN repair; not whole C kernel"
+}

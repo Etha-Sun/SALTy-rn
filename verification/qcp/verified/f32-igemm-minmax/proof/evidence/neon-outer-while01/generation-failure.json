@@ -1,0 +1,80 @@
+{
+  "unit": "neon",
+  "utc": "2026-10-24T10:06:45.742508+00:00",
+  "configured_jobs": 32,
+  "generation_passed": false,
+  "whole_kernel_proved": false,
+  "generation_exit": -11,
+  "vc_fields": 0,
+  "goal_sha256": null,
+  "seconds": 18.090841795084998,
+  "input_hashes": {
+    "spec.c": "6b42cf54a7b1cf7015cde762b5d76756530ad436fea8ef929948e1c717176256",
+    "proof/prepare.py": "132e83193b5bed5e684a878874294d0e6206f00669c47f0e97a46b4c88d012fa",
+    "proof/generate.py": "925bdc557a97f49af930a25ca3f7313f27c13ba7ee3b4fc3d2c7f5cbc116b23d",
+    "impl/testNEON.c": "b85256de23c613fde96f42295ff39356b5282870302bb2b153bfa19b765da73b",
+    "impl/testRVV.c": "b998b2a62062cc505fb99b64f30cc2b5d1d219af51163e8169ac94c2fc4939fe",
+    "shim/ordinary.c": "8cb817e069fa304160dc833f02586a96b6a5f236998be1446058d7d47513c29e",
+    "shim/types.h": "64f694548ddb3ce0cb951ab597f793c8701555d4861b69c64bce1eb24ea028c0",
+    "shim/neon/copy.strategies": "fb4da6d126ad89f0b3e5ee8dac464699d91954fad866b2c9d85d7b8f83f8d2ed",
+    "shim/neon/copy.h": "f7bc52be90af5c210a2f45e475aedae2704d038b57ba600493bb8b0cc58c717c",
+    "shim/neon/api.h": "30ca3d66d26c4f48c21696502a76b0eee98f3ad7010a63eaeddab136c86dde21",
+    "shim/rvv/copy.strategies": "a3150e9600302c95dc97f34de767758f4b5fe35d77979a6b693a60964bb7ff50",
+    "shim/rvv/copy.h": "1da6b3ecfe61a49fce404991147d2bf428407159c7de841ba61b2ad26ecbdbd4",
+    "shim/rvv/api.h": "5b01402d35ef4bc0cb890a55dc288190d7e5488589c64dc1608b5f7ee7488f1c",
+    "contracts/model.h": "02165d054cd05a832b9f2f02df756456f74741c997562e2974ede832f83f08e5",
+    "proof/c/rvv.json": "229760a7e4817e8748d704364e4f8f5fe6f4c6aa645a4f50e82ecf1a1114b484",
+    "proof/c/neon.json": "89072eae9ed275a6d880de4cd0544522c9ce192a3dcf2cdab19478079abfad7e"
+  },
+  "inputs_unchanged": true,
+  "commands": [
+    {
+      "label": "cpp",
+      "command": [
+        "/usr/bin/prlimit",
+        "--as=68719476736",
+        "--cpu=21600",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax/shim",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax/.build/actual06/generation/neon/annotated.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax/.build/actual06/generation/neon/neon.c"
+      ],
+      "exit": 0,
+      "seconds": 0.04510306683368981
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "/usr/bin/prlimit",
+        "--as=68719476736",
+        "--cpu=21600",
+        "--",
+        "/tmp/qcp214-src/linux-binary/symexec",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--no-record-strategies",
+        "--strategy-application-limit",
+        "4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax/.build/actual06/generation/neon/neon.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax/.build/actual06/generation/neon",
+        "--coq-logic-path=FloatIgNeon",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-igemm-minmax/shim/neon",
+        "GemmNeon"
+      ],
+      "exit": -11,
+      "seconds": 18.044974772026762
+    }
+  ]
+}

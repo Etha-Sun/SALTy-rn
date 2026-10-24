@@ -2,7 +2,7 @@
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
-当前 **26/40**，目标至少 **36/40**。最新新增 [qu8-vadd-minmax](qu8-vadd-minmax/README.md) 两侧修复版及 [QD8 QC8W IGEMM](qd8-f32-qc8w-igemm-minmax/README.md)；包含 [u8-vclamp](u8-vclamp/README.md)。
+当前 **28/40**，目标至少 **36/40**。最新新增 [qu8-vadd-minmax](qu8-vadd-minmax/README.md) 两侧修复版及 [QD8 QC8W IGEMM](qd8-f32-qc8w-igemm-minmax/README.md)；包含 [u8-vclamp](u8-vclamp/README.md)。
 
 本目录收录完整模块化等价性检查通过的 kernel；清单见 manifest.json。后续 intrinsic 可以采用与原始规范对应的公开 spec，C 实现证明可选；实际 kernel、内存、普通 helper/caller 与 spec 绑定仍须完整检查。详见 [规范边界](../docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。
@@ -36,3 +36,5 @@ QU8 RDSUM 两侧大行数修复版完整收录：[审核入口](qu8-rdsum/README
 2026-10-24：QD8 F32 QC8W GEMM补齐真实StrategyCheck目标绑定并完成独立全案复核。策略DSL具体类型改为I16，原kernel/spec SHA不变；1455个fresh模块及1941项假设报告通过，旧封存证据保留。此项是既有核复核，总数仍25/40。
 
 QD8 F32 QC8W IGEMM 完整兼容版已收录：[审核入口](qd8-f32-qc8w-igemm-minmax/README.md)。6实际C单元/1381字段、15策略字段、1398freshCoq模块及1409假设报告全部通过。合法正K/N/entries、全binary32、重复与重叠只读输入窗口保留；配置32路。固定VLEN128，intrinsic语义人工审核pending，不声称ISA/物理ABI或独立终止性。
+
+F32 IGEMM 完整修复版已收录：[审核入口](f32-igemm-minmax/README.md)。4实际C单元/593字段、7策略字段、687freshCoq模块和604假设报告全部通过；32路。任意合法正K/N/E、全binary32与重复/重叠只读窗口保留。固定VLEN128；intrinsic语义人工审核pending，不声称ISA/物理ABI或独立终止性。

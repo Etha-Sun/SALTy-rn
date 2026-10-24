@@ -1,0 +1,104 @@
+{
+  "source_token_sha256": "395ac997b513502edeed458f9d324641aae705245b224a0c3f52654da3930e44",
+  "annotations": [
+    {
+      "before_token": 54,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 87,
+      "kind": "annotation",
+      "text": "/*@ emp which implies sizeof(float)==4 && sizeof(void*)==8 && emp */"
+    },
+    {
+      "before_token": 196,
+      "kind": "annotation",
+      "text": "/*@ where base=w@pre,n=packed_length(nc@pre,total_depth((kc@pre/4),Refs)),j=8*(total_depth((kc@pre/4),Refs)+1)*((nc@pre-nc)/8),L=W */"
+    },
+    {
+      "before_token": 209,
+      "kind": "annotation",
+      "text": "/*@ a==pointer_offset(a@pre,((ks@pre-p)/8),float*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::full(a@pre,ks@pre/8,Entries) which implies a==pointer_offset(a@pre,((ks@pre-p)/8),float*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::missing_i(a@pre,((ks@pre-p)/8),0,ks@pre/8,Entries) * store(a,float*,Entries[((ks@pre-p)/8)]) */"
+    },
+    {
+      "before_token": 220,
+      "kind": "annotation",
+      "text": "/*@ igemm_shape(mr@pre,nc@pre,(kc@pre/4),ks@pre,Entries,Refs,Blocks,zero@pre,a_offset@pre,W) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && emp which implies igemm_shape(mr@pre,nc@pre,(kc@pre/4),ks@pre,Entries,Refs,Blocks,zero@pre,a_offset@pre,W) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && Entries[((ks@pre-p)/8)]!=0 && emp */"
+    },
+    {
+      "before_token": 228,
+      "kind": "annotation",
+      "text": "/*@ a==pointer_offset(a@pre,((ks@pre-p)/8),float*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::missing_i(a@pre,((ks@pre-p)/8),0,ks@pre/8,Entries) * store(a,float*,Entries[((ks@pre-p)/8)]) which implies a==pointer_offset(a@pre,((ks@pre-p)/8),float*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::full(a@pre,ks@pre/8,Entries) */"
+    },
+    {
+      "before_token": 253,
+      "kind": "annotation",
+      "text": "/*@ input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && a0==selected_address(Entries[((ks@pre-p)/8)],zero@pre,a_offset@pre) && input_pool(Blocks) which implies input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && a0==input_address(Blocks,Refs,((ks@pre-p)/8)) && FloatArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) * input_window_frame(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8)) */"
+    },
+    {
+      "before_token": 263,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) (z4:fp32) (z5:fp32) (z6:fp32) (z7:fp32), mr==mr@pre && kc==kc@pre && ks==ks@pre && c==c@pre && params==params@pre && cm_stride==cm_stride@pre && a_offset==a_offset@pre && zero==zero@pre && cn_stride==32 && mr==1 && 0<nc@pre && nc@pre<=4611686018427387903 && 0<kc@pre && kc@pre%4==0 && 0<ks@pre && ks@pre%8==0 && a_offset@pre%4==0 && Zlength(Refs)==ks@pre/8 && Zlength(Entries)==Zlength(Refs) && Zlength(W)==packed_length(nc@pre,total_depth((kc@pre/4),Refs)) && igemm_shape(mr@pre,nc@pre,(kc@pre/4),ks@pre,Entries,Refs,Blocks,zero@pre,a_offset@pre,W) && input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && igemm_capacity(nc@pre,(kc@pre/4),a@pre,w@pre,c@pre,Blocks,Refs) && sizeof(float)==4 && sizeof(void*)==8 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<panel_count(nc@pre) && c0==pointer_offset(c@pre,(nc@pre-nc),float) && 1<=vl && vl<=8 && vl<=nc && (vl==8 || vl==nc) && 0<p && p<=ks@pre && p%8==0 && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && a==pointer_offset(a@pre,((ks@pre-p)/8)+1,float*) && 0<=k && k<=kc@pre && k%4==0 && a0==pointer_offset(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),float) && w==pointer_offset(w@pre,8*(total_depth((kc@pre/4),Refs)+1)*((nc@pre-nc)/8)+8+8*(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4)),float) && active_value(vl,0,z0,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+0,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,1,z1,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+1,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,2,z2,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+2,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,3,z3,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+3,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,4,z4,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+4,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,5,z5,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+5,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,6,z6,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+6,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,7,z7,igemm_acc(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+7,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && FloatArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) * input_window_frame(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8)) * PtrArray::full(a@pre,ks@pre/8,Entries) * FloatArray::full(w@pre,packed_length(nc@pre,total_depth((kc@pre/4),Refs)),W) * ig_output_prefix(c@pre,nc@pre,(nc@pre-nc),total_depth((kc@pre/4),Refs),flat_inputs(Blocks,Refs,(kc@pre/4)),W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vacc.s0),float,z0) * store(&(vacc.s1),float,z1) * store(&(vacc.s2),float,z2) * store(&(vacc.s3),float,z3) * store(&(vacc.s4),float,z4) * store(&(vacc.s5),float,z5) * store(&(vacc.s6),float,z6) * store(&(vacc.s7),float,z7) */"
+    },
+    {
+      "before_token": 270,
+      "kind": "annotation",
+      "text": "/*@ a0==pointer_offset(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),float) && 0<=((kc@pre-k)/4) && ((kc@pre-k)/4)<(kc@pre/4) && FloatArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) which implies a0==pointer_offset(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),float) && 0<=((kc@pre-k)/4) && ((kc@pre-k)/4)<(kc@pre/4) && FloatArray::missing_i(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),0,(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) * store(a0,float,input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))[((kc@pre-k)/4)]) */"
+    },
+    {
+      "before_token": 276,
+      "kind": "annotation",
+      "text": "/*@ a0==pointer_offset(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),float) && 0<=((kc@pre-k)/4) && ((kc@pre-k)/4)<(kc@pre/4) && FloatArray::missing_i(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),0,(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) * store(a0,float,input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))[((kc@pre-k)/4)]) which implies a0==pointer_offset(input_address(Blocks,Refs,((ks@pre-p)/8)),((kc@pre-k)/4),float) && 0<=((kc@pre-k)/4) && ((kc@pre-k)/4)<(kc@pre/4) && FloatArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) */"
+    },
+    {
+      "before_token": 289,
+      "kind": "annotation",
+      "text": "/*@ where base=w@pre,n=packed_length(nc@pre,total_depth((kc@pre/4),Refs)),j=8*(total_depth((kc@pre/4),Refs)+1)*((nc@pre-nc)/8)+8+8*(((ks@pre-p)/8)*(kc@pre/4)+((kc@pre-k)/4)),L=W */"
+    },
+    {
+      "before_token": 307,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc, b=&vb */"
+    },
+    {
+      "before_token": 317,
+      "kind": "annotation",
+      "text": "/*@ input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && FloatArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),(kc@pre/4),input_window(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8))) * input_window_frame(Blocks,Refs,(kc@pre/4),((ks@pre-p)/8)) which implies input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && input_pool(Blocks) */"
+    },
+    {
+      "before_token": 329,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) (z4:fp32) (z5:fp32) (z6:fp32) (z7:fp32), mr==mr@pre && kc==kc@pre && ks==ks@pre && c==c@pre && params==params@pre && cm_stride==cm_stride@pre && a_offset==a_offset@pre && zero==zero@pre && cn_stride==32 && mr==1 && 0<nc@pre && nc@pre<=4611686018427387903 && 0<kc@pre && kc@pre%4==0 && 0<ks@pre && ks@pre%8==0 && a_offset@pre%4==0 && Zlength(Refs)==ks@pre/8 && Zlength(Entries)==Zlength(Refs) && Zlength(W)==packed_length(nc@pre,total_depth((kc@pre/4),Refs)) && igemm_shape(mr@pre,nc@pre,(kc@pre/4),ks@pre,Entries,Refs,Blocks,zero@pre,a_offset@pre,W) && input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && igemm_capacity(nc@pre,(kc@pre/4),a@pre,w@pre,c@pre,Blocks,Refs) && sizeof(float)==4 && sizeof(void*)==8 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<panel_count(nc@pre) && c0==pointer_offset(c@pre,(nc@pre-nc),float) && 1<=vl && vl<=8 && vl<=nc && (vl==8 || vl==nc) && 0<=p && p<=ks@pre && p%8==0 && a==pointer_offset(a@pre,((ks@pre-p)/8),float*) && w==pointer_offset(w@pre,8*(total_depth((kc@pre/4),Refs)+1)*((nc@pre-nc)/8)+8+8*(((ks@pre-p)/8)*(kc@pre/4)),float) && active_value(vl,0,z0,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+0,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,1,z1,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+1,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,2,z2,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+2,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,3,z3,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+3,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,4,z4,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+4,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,5,z5,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+5,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,6,z6,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+6,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && active_value(vl,7,z7,igemm_acc(((ks@pre-p)/8)*(kc@pre/4),total_depth((kc@pre/4),Refs),(nc@pre-nc)+7,flat_inputs(Blocks,Refs,(kc@pre/4)),W)) && input_pool(Blocks) * PtrArray::full(a@pre,ks@pre/8,Entries) * FloatArray::full(w@pre,packed_length(nc@pre,total_depth((kc@pre/4),Refs)),W) * ig_output_prefix(c@pre,nc@pre,(nc@pre-nc),total_depth((kc@pre/4),Refs),flat_inputs(Blocks,Refs,(kc@pre/4)),W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vacc.s0),float,z0) * store(&(vacc.s1),float,z1) * store(&(vacc.s2),float,z2) * store(&(vacc.s3),float,z3) * store(&(vacc.s4),float,z4) * store(&(vacc.s5),float,z5) * store(&(vacc.s6),float,z6) * store(&(vacc.s7),float,z7) */"
+    },
+    {
+      "before_token": 404,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 420,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 437,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc, mask=&was_nan */"
+    },
+    {
+      "before_token": 439,
+      "kind": "annotation",
+      "text": "/*@ ig_output_prefix(c@pre,nc@pre,(nc@pre-nc),total_depth((kc@pre/4),Refs),flat_inputs(Blocks,Refs,(kc@pre/4)),W,lo,hi) which implies ig_write_state(c@pre,nc@pre,(nc@pre-nc),igemm_output((nc@pre-nc),total_depth((kc@pre/4),Refs),flat_inputs(Blocks,Refs,(kc@pre/4)),W,lo,hi)) */"
+    },
+    {
+      "before_token": 447,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc) */"
+    },
+    {
+      "before_token": 486,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (wp:Z) (cp:Z), mr==mr@pre && kc==kc@pre && ks==ks@pre && c==c@pre && params==params@pre && cm_stride==cm_stride@pre && a_offset==a_offset@pre && zero==zero@pre && cn_stride==32 && mr==1 && 0<nc@pre && nc@pre<=4611686018427387903 && 0<kc@pre && kc@pre%4==0 && 0<ks@pre && ks@pre%8==0 && a_offset@pre%4==0 && Zlength(Refs)==ks@pre/8 && Zlength(Entries)==Zlength(Refs) && Zlength(W)==packed_length(nc@pre,total_depth((kc@pre/4),Refs)) && igemm_shape(mr@pre,nc@pre,(kc@pre/4),ks@pre,Entries,Refs,Blocks,zero@pre,a_offset@pre,W) && input_mapping((kc@pre/4),zero@pre,a_offset@pre,Entries,Refs,Blocks) && igemm_capacity(nc@pre,(kc@pre/4),a@pre,w@pre,c@pre,Blocks,Refs) && sizeof(float)==4 && sizeof(void*)==8 && 0<=nc && nc<=nc@pre && a==a@pre && w==wp && c0==cp && (nc==0 || (0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<panel_count(nc@pre) && cp==pointer_offset(c@pre,(nc@pre-nc),float) && wp==pointer_offset(w@pre,8*(total_depth((kc@pre/4),Refs)+1)*((nc@pre-nc)/8),float))) && input_pool(Blocks) * PtrArray::full(a@pre,ks@pre/8,Entries) * FloatArray::full(w@pre,packed_length(nc@pre,total_depth((kc@pre/4),Refs)),W) * ig_output_prefix(c@pre,nc@pre,(nc@pre-nc),total_depth((kc@pre/4),Refs),flat_inputs(Blocks,Refs,(kc@pre/4)),W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) */"
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+#include "copy.h"
+id : 1
+priority : core(0)
+left : UndefStructPredvfloat32m4_t(?p) at 0
+right : undef_data_at(field_addr(?q,vfloat32m4_t,s0),float) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s0),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s1),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s2),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s3),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s4),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s5),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s6),float));
+         left_add(undef_data_at(field_addr(p,vfloat32m4_t,s7),float));
+
+id : 2
+priority : core(0)
+left : UndefStructPredvbool8_t(?p) at 0
+right : undef_data_at(field_addr(?q,vbool8_t,s0),I32) at 1
+check : infer(q == p);
+action : left_erase(0);
+         left_add(undef_data_at(field_addr(p,vbool8_t,s0),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s1),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s2),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s3),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s4),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s5),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s6),I32));
+         left_add(undef_data_at(field_addr(p,vbool8_t,s7),I32));
+
+id : 3
+priority : core(1)
+left : FloatArray::full(?p,?n,?l) at 0
+right : FloatArray::undef_full(?q,?m) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+id : 4
+priority : core(1)
+left : FloatArray::full(?p,?n,?l) at 0
+right : FloatArray::full(?q,?m,?r) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l == r);
