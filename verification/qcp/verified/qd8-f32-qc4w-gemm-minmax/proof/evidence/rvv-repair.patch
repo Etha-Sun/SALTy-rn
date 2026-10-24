@@ -1,0 +1,38 @@
+--- upstream/testRVV.c
++++ impl/testRVV.c
+@@ -25,7 +25,7 @@
+ 
+   kc = round_up_po2(kc, 2);
+ 
+-  do {
++  while (nc != 0) {
+     // The weights are packed in fixed blocks of NR=16.
+     // We limit vl to 16 to process exactly one block per iteration,
+     // but we always advance the `w` pointer by the full block size (16 elements)
+@@ -81,13 +81,22 @@
+     // Fused multiply-add: vout = vbias + vout * vfilter_output_scale
+     vout = __riscv_vfmacc_vv_f32m8(vbias, vout, vfilter_output_scale, vl);
+ 
+-    vout = __riscv_vfmax_vf_f32m8(vout, params->scalar.min, vl);
+-    vout = __riscv_vfmin_vf_f32m8(vout, params->scalar.max, vl);
++    const float output_min = params->scalar.min;
++    const float output_max = params->scalar.max;
++    if (__builtin_isnan(output_min) || __builtin_isnan(output_max)) {
++      vout = __riscv_vfmv_v_f_f32m8(__builtin_nanf(""), vl);
++    } else {
++      vbool4_t was_nan = __riscv_vmfne_vv_f32m8_b4(vout, vout, vl);
++      vout = __riscv_vfmax_vf_f32m8(vout, output_min, vl);
++      vout = __riscv_vfmin_vf_f32m8(vout, output_max, vl);
++      vfloat32m8_t nan_value = __riscv_vfmv_v_f_f32m8(__builtin_nanf(""), vl);
++      vout = __riscv_vmerge_vvm_f32m8(vout, nan_value, was_nan, vl);
++    }
+ 
+     __riscv_vse32_v_f32m8(c0, vout, vl);
+ 
+     a0 = (const int8_t*) ((uintptr_t) a0 - kc);
+     c0 = (float*) ((uintptr_t) c0 + cn_stride);
+     nc -= vl;
+-  } while (nc != 0);
++  }
+ }
+\ No newline at end of file

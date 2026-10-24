@@ -1,0 +1,149 @@
+{
+  "source_token_sha256": "65d84bd6a3703169093945c8cb0126a05ef77b36ba1d6044c3c13e1d354f1783",
+  "annotations": [
+    {
+      "before_token": 53,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 54,
+      "kind": "annotation",
+      "text": "/*@ qc4_domain_shape(mr,nc,kc,Ps) which implies qc4_domain_shape(mr,nc,kc,Ps) && mr==1 && 0<nc && 0<kc && Zlength(Ps)==qc4_panels(nc) && qc4_matrix_wf(kc,Ps) */"
+    },
+    {
+      "before_token": 86,
+      "kind": "annotation",
+      "text": "/*@ emp which implies kc@pre%sizeof(int8_t)==0 && sizeof(int8_t)==1 && sizeof(int32_t)==4 && sizeof(float)==4 && emp */"
+    },
+    {
+      "before_token": 145,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (wp:Z) (cp:Z), mr==mr@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==64 && kc==rounded_depth(kc@pre) && qc4_domain_shape(mr@pre,nc@pre,kc@pre,Ps) && qc4_data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && mr==1 && 0<kc@pre && 0<rounded_depth(kc@pre) && rounded_depth(kc@pre)%2==0 && 0<nc@pre && Zlength(Ps)==qc4_panels(nc@pre) && qc4_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(int32_t)==4 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && a0==a@pre && w==wp && c0==cp && (nc==0 || (0<nc && (nc@pre-nc)%16==0 && 0<=((nc@pre-nc)/16) && ((nc@pre-nc)/16)<qc4_panels(nc@pre) && cp==pointer_offset(c@pre,(nc@pre-nc),float) && wp==pointer_offset(w@pre,((nc@pre-nc)/16)*panel_bytes(kc@pre),char))) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) * qc4_packed(kc@pre,w@pre,Ps) * qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) */"
+    },
+    {
+      "before_token": 181,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,tile=((nc@pre-nc)/16),j=0,Ps=Ps */"
+    },
+    {
+      "before_token": 214,
+      "kind": "annotation",
+      "text": "/*@ where a=&vksum */"
+    },
+    {
+      "before_token": 220,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (z0:Z) (z1:Z) (z2:Z) (z3:Z) (z4:Z) (z5:Z) (z6:Z) (z7:Z) (z8:Z) (z9:Z) (z10:Z) (z11:Z) (z12:Z) (z13:Z) (z14:Z) (z15:Z) (s0:Z) (s1:Z) (s2:Z) (s3:Z) (s4:Z) (s5:Z) (s6:Z) (s7:Z) (s8:Z) (s9:Z) (s10:Z) (s11:Z) (s12:Z) (s13:Z) (s14:Z) (s15:Z), mr==mr@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==64 && kc==rounded_depth(kc@pre) && qc4_domain_shape(mr@pre,nc@pre,kc@pre,Ps) && qc4_data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && mr==1 && 0<kc@pre && 0<rounded_depth(kc@pre) && rounded_depth(kc@pre)%2==0 && 0<nc@pre && Zlength(Ps)==qc4_panels(nc@pre) && qc4_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(int32_t)==4 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%16==0 && 0<=((nc@pre-nc)/16) && ((nc@pre-nc)/16)<qc4_panels(nc@pre) && c0==pointer_offset(c@pre,(nc@pre-nc),float) && 1<=vl && vl<=16 && vl<=nc && (vl==16 || vl==nc) && 0<=k && k<=kc && k%2==0 && a0==a@pre+(rounded_depth(kc@pre)-k) && w==pointer_offset(w@pre,((nc@pre-nc)/16)*panel_bytes(kc@pre)+64+8*(rounded_depth(kc@pre)-k),char) && zp0==zp && qc4_active_z(vl,0,z0,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),0,zp,A,Ps)) && qc4_active_z(vl,1,z1,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),1,zp,A,Ps)) && qc4_active_z(vl,2,z2,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),2,zp,A,Ps)) && qc4_active_z(vl,3,z3,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),3,zp,A,Ps)) && qc4_active_z(vl,4,z4,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),4,zp,A,Ps)) && qc4_active_z(vl,5,z5,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),5,zp,A,Ps)) && qc4_active_z(vl,6,z6,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),6,zp,A,Ps)) && qc4_active_z(vl,7,z7,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),7,zp,A,Ps)) && qc4_active_z(vl,8,z8,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),8,zp,A,Ps)) && qc4_active_z(vl,9,z9,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),9,zp,A,Ps)) && qc4_active_z(vl,10,z10,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),10,zp,A,Ps)) && qc4_active_z(vl,11,z11,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),11,zp,A,Ps)) && qc4_active_z(vl,12,z12,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),12,zp,A,Ps)) && qc4_active_z(vl,13,z13,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),13,zp,A,Ps)) && qc4_active_z(vl,14,z14,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),14,zp,A,Ps)) && qc4_active_z(vl,15,z15,qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),15,zp,A,Ps)) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) * qc4_packed(kc@pre,w@pre,Ps) * qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) * store(&(vacc.s0),int,z0) * store(&(vacc.s1),int,z1) * store(&(vacc.s2),int,z2) * store(&(vacc.s3),int,z3) * store(&(vacc.s4),int,z4) * store(&(vacc.s5),int,z5) * store(&(vacc.s6),int,z6) * store(&(vacc.s7),int,z7) * store(&(vacc.s8),int,z8) * store(&(vacc.s9),int,z9) * store(&(vacc.s10),int,z10) * store(&(vacc.s11),int,z11) * store(&(vacc.s12),int,z12) * store(&(vacc.s13),int,z13) * store(&(vacc.s14),int,z14) * store(&(vacc.s15),int,z15) * store(&(vksum.s0),int,s0) * store(&(vksum.s1),int,s1) * store(&(vksum.s2),int,s2) * store(&(vksum.s3),int,s3) * store(&(vksum.s4),int,s4) * store(&(vksum.s5),int,s5) * store(&(vksum.s6),int,s6) * store(&(vksum.s7),int,s7) * store(&(vksum.s8),int,s8) * store(&(vksum.s9),int,s9) * store(&(vksum.s10),int,s10) * store(&(vksum.s11),int,s11) * store(&(vksum.s12),int,s12) * store(&(vksum.s13),int,s13) * store(&(vksum.s14),int,s14) * store(&(vksum.s15),int,s15) */"
+    },
+    {
+      "before_token": 227,
+      "kind": "annotation",
+      "text": "/*@ a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+0) && ((rounded_depth(kc@pre)-k)+0)<qc4_a_extent(kc@pre) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) which implies a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+0) && ((rounded_depth(kc@pre)-k)+0)<qc4_a_extent(kc@pre) && CharArray::missing_i(a@pre,((rounded_depth(kc@pre)-k)+0),0,qc4_a_extent(kc@pre),A) * store(a0,char,A[((rounded_depth(kc@pre)-k)+0)]) */"
+    },
+    {
+      "before_token": 238,
+      "kind": "annotation",
+      "text": "/*@ a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+0) && ((rounded_depth(kc@pre)-k)+0)<qc4_a_extent(kc@pre) && CharArray::missing_i(a@pre,((rounded_depth(kc@pre)-k)+0),0,qc4_a_extent(kc@pre),A) * store(a0,char,A[((rounded_depth(kc@pre)-k)+0)]) which implies a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+0) && ((rounded_depth(kc@pre)-k)+0)<qc4_a_extent(kc@pre) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) */"
+    },
+    {
+      "before_token": 238,
+      "kind": "annotation",
+      "text": "/*@ a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+1) && ((rounded_depth(kc@pre)-k)+1)<qc4_a_extent(kc@pre) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) which implies a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+1) && ((rounded_depth(kc@pre)-k)+1)<qc4_a_extent(kc@pre) && CharArray::missing_i(a@pre,((rounded_depth(kc@pre)-k)+1),0,qc4_a_extent(kc@pre),A) * store(pointer_offset(a@pre,(rounded_depth(kc@pre)-k)+1,int8_t),char,A[((rounded_depth(kc@pre)-k)+1)]) */"
+    },
+    {
+      "before_token": 249,
+      "kind": "annotation",
+      "text": "/*@ a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+1) && ((rounded_depth(kc@pre)-k)+1)<qc4_a_extent(kc@pre) && CharArray::missing_i(a@pre,((rounded_depth(kc@pre)-k)+1),0,qc4_a_extent(kc@pre),A) * store(pointer_offset(a@pre,(rounded_depth(kc@pre)-k)+1,int8_t),char,A[((rounded_depth(kc@pre)-k)+1)]) which implies a0==a@pre+(rounded_depth(kc@pre)-k) && 0<=((rounded_depth(kc@pre)-k)+1) && ((rounded_depth(kc@pre)-k)+1)<qc4_a_extent(kc@pre) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) */"
+    },
+    {
+      "before_token": 268,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,tile=((nc@pre-nc)/16),j=8*(rounded_depth(kc@pre)-k),Ps=Ps */"
+    },
+    {
+      "before_token": 291,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb_c01 */"
+    },
+    {
+      "before_token": 306,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb_c01 */"
+    },
+    {
+      "before_token": 316,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb_c0 */"
+    },
+    {
+      "before_token": 326,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb_c1 */"
+    },
+    {
+      "before_token": 339,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc,b=&vxb_c0 */"
+    },
+    {
+      "before_token": 352,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc,b=&vxb_c1 */"
+    },
+    {
+      "before_token": 369,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 379,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 400,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 415,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,tile=((nc@pre-nc)/16),j=0,kind=0,Ps=Ps */"
+    },
+    {
+      "before_token": 441,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,tile=((nc@pre-nc)/16),j=0,kind=1,Ps=Ps */"
+    },
+    {
+      "before_token": 465,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vbias,a=&vout,b=&vfilter_output_scale */"
+    },
+    {
+      "before_token": 540,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 551,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 578,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout,b=&nan_value,m=&was_nan */"
+    },
+    {
+      "before_token": 580,
+      "kind": "annotation",
+      "text": "/*@ qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) which implies qc4_write_state(c@pre,nc@pre,(nc@pre-nc),qc4_values(kc@pre,(nc@pre-nc),zp,A,Ps,inv,lo,hi)) */"
+    },
+    {
+      "before_token": 588,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc) */"
+    }
+  ]
+}

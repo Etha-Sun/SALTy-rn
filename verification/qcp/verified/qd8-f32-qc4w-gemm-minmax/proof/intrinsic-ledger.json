@@ -1,0 +1,1989 @@
+{
+  "schema": 1,
+  "kernel": "qd8-f32-qc4w-gemm-minmax",
+  "basis": "source-reviewed intrinsic specifications; actual full C, ordinary helper, caller and memory proofs required separately",
+  "reviewer": "assistant source review; final human review pending",
+  "reviewed_utc": "2026-10-24T15:02:13.883056+00:00",
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "cn_stride_bytes": 64,
+    "unused_row_strides": "MR1; a_stride and cm_stride are unused by the kernel body",
+    "NEON": "AArch64; signed int8 narrowing keeps low8 bits; FPCR RNE,FZ=0,AH=0; flags unobserved",
+    "RVV": {
+      "VLEN_bits": 128,
+      "SEW_LMUL": [
+        [
+          8,
+          2
+        ],
+        [
+          16,
+          4
+        ],
+        [
+          32,
+          8
+        ]
+      ],
+      "physical_VLMAX": 32,
+      "represented_lanes": 16,
+      "active_VL": "min(nc,16)",
+      "rounding": "RNE; gradual underflow",
+      "vstart": 0,
+      "tail": "tail-agnostic, inactive values never observed"
+    },
+    "integer_accumulation": "signed4 weights scaled by16; each MAC wrap32; signed ASR4 only after full rounded K",
+    "floating_point_pipeline": "RNE int-to-float; ordinary RNE multiply by inverse input scale; FMA with filter scale and bias; max(lo),min(hi)",
+    "domain": "MR1, fixed NR16; arbitrary positive legal N/K and full binary32 fields; rounded/padded extents in public domain; no finite-only restriction",
+    "observation": "numeric value or both NaN; payload/sign/quieting/flags unobserved"
+  },
+  "entries": [
+    {
+      "intrinsic": "__builtin_nanf",
+      "ISA": "compiler builtin",
+      "call_symbol": "qcp_nanf",
+      "C_signature": "float qcp_nanf(void)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 42,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "9a319e486069dfa5e1d6b6e17611bac933b2b283ba814bcf4dfb06a6e0d4ece9",
+        "text": "/*@ Require emp Ensure qc4_bit_same(__return,canonical_qnan) && emp */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.canonical_qnan",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 9,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "QC4W.PublicModel.qc4_bit_same",
+          "path": "proof/coq/QC4W/PublicModel.v",
+          "line": 13,
+          "sha256": "71eb24e8a8a6469a5ebe74238e4e8b727806b5192a0431e94f360fb7099c2da8"
+        }
+      ],
+      "reviewed_value_semantics": "Empty payload tag produces a quiet NaN; canonical_qnan is the chosen representative, with payload/sign/flags unobserved.",
+      "official_sources": [
+        {
+          "url": "https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Other-Builtins.html",
+          "version": "12.1.0",
+          "section": "__builtin_nan and __builtin_nanf"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vand_vx_i8m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vand_vx_i8m2",
+      "C_signature": "vint8m2_t __riscv_vand_vx_i8m2(vint8m2_t a,int8_t mask,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 54,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "fa2bd8fa53da22ed8c77b3fd624d8cc595f7fdd72c49a21bd062f90b9b41d196",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)\n Require 1<=vl && vl<=16 && mask==(-16) && store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7) * store(&(a.s8),char,x8) * store(&(a.s9),char,x9) * store(&(a.s10),char,x10) * store(&(a.s11),char,x11) * store(&(a.s12),char,x12) * store(&(a.s13),char,x13) * store(&(a.s14),char,x14) * store(&(a.s15),char,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,high_bitop(x0),high_bitop(x1),high_bitop(x2),high_bitop(x3),high_bitop(x4),high_bitop(x5),high_bitop(x6),high_bitop(x7),high_bitop(x8),high_bitop(x9),high_bitop(x10),high_bitop(x11),high_bitop(x12),high_bitop(x13),high_bitop(x14),high_bitop(x15)) && store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.high_bitop",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 11,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active byte lanes AND with signed8 -16/0xF0, giving high nibble times16.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vfcvt_f_x_v_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfcvt_f_x_v_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfcvt_f_x_v_f32m8(vint32m8_t a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 70,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "7e08bf3916dc5461dced7c630f49d83de4c36da212d721b1cdfc89be7099c75c",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)\n Require 1<=vl && vl<=16 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(a.s4),int,x4) * store(&(a.s5),int,x5) * store(&(a.s6),int,x6) * store(&(a.s7),int,x7) * store(&(a.s8),int,x8) * store(&(a.s9),int,x9) * store(&(a.s10),int,x10) * store(&(a.s11),int,x11) * store(&(a.s12),int,x12) * store(&(a.s13),int,x13) * store(&(a.s14),int,x14) * store(&(a.s15),int,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,fp32_of_Z(x0),fp32_of_Z(x1),fp32_of_Z(x2),fp32_of_Z(x3),fp32_of_Z(x4),fp32_of_Z(x5),fp32_of_Z(x6),fp32_of_Z(x7),fp32_of_Z(x8),fp32_of_Z(x9),fp32_of_Z(x10),fp32_of_Z(x11),fp32_of_Z(x12),fp32_of_Z(x13),fp32_of_Z(x14),fp32_of_Z(x15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32_of_Z",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 293,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active signed32 integer to binary32 conversion with RNE.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vfmacc_vv_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmacc_vv_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmacc_vv_f32m8(vfloat32m8_t acc,vfloat32m8_t a,vfloat32m8_t b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 86,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "36c42e03b361e31eccfba1349c934fa38ca5edbd714fac1d06624b28be524f4e",
+        "text": "/*@ With (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) (z4:fp32) (z5:fp32) (z6:fp32) (z7:fp32) (z8:fp32) (z9:fp32) (z10:fp32) (z11:fp32) (z12:fp32) (z13:fp32) (z14:fp32) (z15:fp32) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32)\n Require 1<=vl && vl<=16 && store(&(acc.s0),float,z0) * store(&(acc.s1),float,z1) * store(&(acc.s2),float,z2) * store(&(acc.s3),float,z3) * store(&(acc.s4),float,z4) * store(&(acc.s5),float,z5) * store(&(acc.s6),float,z6) * store(&(acc.s7),float,z7) * store(&(acc.s8),float,z8) * store(&(acc.s9),float,z9) * store(&(acc.s10),float,z10) * store(&(acc.s11),float,z11) * store(&(acc.s12),float,z12) * store(&(acc.s13),float,z13) * store(&(acc.s14),float,z14) * store(&(acc.s15),float,z15) * store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,fma_rne(x0,y0,z0),fma_rne(x1,y1,z1),fma_rne(x2,y2,z2),fma_rne(x3,y3,z3),fma_rne(x4,y4,z4),fma_rne(x5,y5,z5),fma_rne(x6,y6,z6),fma_rne(x7,y7,z7),fma_rne(x8,y8,z8),fma_rne(x9,y9,z9),fma_rne(x10,y10,z10),fma_rne(x11,y11,z11),fma_rne(x12,y12,z12),fma_rne(x13,y13,z13),fma_rne(x14,y14,z14),fma_rne(x15,y15,z15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        },
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active result=fma_rne(a_i,b_i,acc_i), one rounding.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vfmax_vf_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmax_vf_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmax_vf_f32m8(vfloat32m8_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 82,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "3ca7aa4970c8818f0c084f80e26392b4e41282f728f22d2107f5b491d9e8e02f",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32)\n Require 1<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,fp32_max_number(x0,scalar),fp32_max_number(x1,scalar),fp32_max_number(x2,scalar),fp32_max_number(x3,scalar),fp32_max_number(x4,scalar),fp32_max_number(x5,scalar),fp32_max_number(x6,scalar),fp32_max_number(x7,scalar),fp32_max_number(x8,scalar),fp32_max_number(x9,scalar),fp32_max_number(x10,scalar),fp32_max_number(x11,scalar),fp32_max_number(x12,scalar),fp32_max_number(x13,scalar),fp32_max_number(x14,scalar),fp32_max_number(x15,scalar)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_max_number",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 20,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "RISC-V maximumNumber, including numeric selection when exactly one input is NaN and positive-zero maximum.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vfmin_vf_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmin_vf_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmin_vf_f32m8(vfloat32m8_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 78,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "bac25c4785f2f78fbc8faefe923e3476b40627a3023df2f6f93aa59a3b83c8d8",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32)\n Require 1<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,fp32_min_number(x0,scalar),fp32_min_number(x1,scalar),fp32_min_number(x2,scalar),fp32_min_number(x3,scalar),fp32_min_number(x4,scalar),fp32_min_number(x5,scalar),fp32_min_number(x6,scalar),fp32_min_number(x7,scalar),fp32_min_number(x8,scalar),fp32_min_number(x9,scalar),fp32_min_number(x10,scalar),fp32_min_number(x11,scalar),fp32_min_number(x12,scalar),fp32_min_number(x13,scalar),fp32_min_number(x14,scalar),fp32_min_number(x15,scalar)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_min_number",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 12,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "RISC-V minimumNumber, including numeric selection when exactly one input is NaN and negative-zero minimum.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vfmul_vf_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmul_vf_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmul_vf_f32m8(vfloat32m8_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 74,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "b91a8ecd100b4918ddb17a55a1e17a5eb214f2425fa7ebdb97be63663b22b794",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32)\n Require 1<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_fp32_mul(x0,scalar),qc4_fp32_mul(x1,scalar),qc4_fp32_mul(x2,scalar),qc4_fp32_mul(x3,scalar),qc4_fp32_mul(x4,scalar),qc4_fp32_mul(x5,scalar),qc4_fp32_mul(x6,scalar),qc4_fp32_mul(x7,scalar),qc4_fp32_mul(x8,scalar),qc4_fp32_mul(x9,scalar),qc4_fp32_mul(x10,scalar),qc4_fp32_mul(x11,scalar),qc4_fp32_mul(x12,scalar),qc4_fp32_mul(x13,scalar),qc4_fp32_mul(x14,scalar),qc4_fp32_mul(x15,scalar)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_fp32_mul",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 71,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active binary32 lane times scalar with RNE, independently rounded before FMA.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vfmv_v_f_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vfmv_v_f_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmv_v_f_f32m8(float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 90,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "ccd7fa4a012d1246f2ccdaf34732dd21841a2d316aa139a4ada659d60dc60c0c",
+        "text": "/*@ Require 1<=vl && vl<=16 && emp\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Replicate scalar into active lanes.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vle32_v_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vle32_v_f32m8(const float*p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 110,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "54c22631256b47acd7ed96156a9e6a5603505623c01832b5c27e4ff9b385c1ea",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (j:Z) (kind:Z) (Ps:list qc4_panel)\n Require 1<=vl && vl<=16 && 0<K && 0<=tile && tile<Zlength(Ps) && 0<=j && qc4_matrix_wf(K,Ps) && 0<=kind && kind<=1 && j+vl<=16 && p==wb+tile*panel_bytes(K)+64+8*rounded_depth(K)+64*kind+4*j && qc4_packed(K,wb,Ps)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_float_field(kind,tile,j+0,Ps),qc4_float_field(kind,tile,j+1,Ps),qc4_float_field(kind,tile,j+2,Ps),qc4_float_field(kind,tile,j+3,Ps),qc4_float_field(kind,tile,j+4,Ps),qc4_float_field(kind,tile,j+5,Ps),qc4_float_field(kind,tile,j+6,Ps),qc4_float_field(kind,tile,j+7,Ps),qc4_float_field(kind,tile,j+8,Ps),qc4_float_field(kind,tile,j+9,Ps),qc4_float_field(kind,tile,j+10,Ps),qc4_float_field(kind,tile,j+11,Ps),qc4_float_field(kind,tile,j+12,Ps),qc4_float_field(kind,tile,j+13,Ps),qc4_float_field(kind,tile,j+14,Ps),qc4_float_field(kind,tile,j+15,Ps)) && qc4_packed(K,wb,Ps) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.panel_bytes",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 57,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_float_field",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 12,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_matrix_wf",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 14,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_packed",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 21,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        },
+        {
+          "qualified_name": "QC4W.NibbleModel.rounded_depth",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 48,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "Read exactly VL consecutive binary32 scale/bias cells from the selected panel, preserving packed memory.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_i32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vle32_v_i32m8",
+      "C_signature": "vint32m8_t __riscv_vle32_v_i32m8(const int*p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 102,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "6b9b674fe0a2d9dff37a1c71dfc9a760ebed41ca2793f1d527e7f30828ae3d64",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (j:Z) (Ps:list qc4_panel)\n Require 1<=vl && vl<=16 && 0<K && 0<=tile && tile<Zlength(Ps) && 0<=j && qc4_matrix_wf(K,Ps) && j+vl<=16 && p==wb+tile*panel_bytes(K)+4*j && qc4_packed(K,wb,Ps)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_ks(tile,j+0,Ps),qc4_ks(tile,j+1,Ps),qc4_ks(tile,j+2,Ps),qc4_ks(tile,j+3,Ps),qc4_ks(tile,j+4,Ps),qc4_ks(tile,j+5,Ps),qc4_ks(tile,j+6,Ps),qc4_ks(tile,j+7,Ps),qc4_ks(tile,j+8,Ps),qc4_ks(tile,j+9,Ps),qc4_ks(tile,j+10,Ps),qc4_ks(tile,j+11,Ps),qc4_ks(tile,j+12,Ps),qc4_ks(tile,j+13,Ps),qc4_ks(tile,j+14,Ps),qc4_ks(tile,j+15,Ps)) && qc4_packed(K,wb,Ps) * store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.panel_bytes",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 57,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_ks",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 11,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_matrix_wf",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 14,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_packed",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 21,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        }
+      ],
+      "reviewed_value_semantics": "Read exactly VL signed32 sums from the selected panel, preserving packed memory.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vle8_v_i8m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vle8_v_i8m2",
+      "C_signature": "vint8m2_t __riscv_vle8_v_i8m2(const int8_t*p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 106,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "c61ab0791f292fd89be379104418028d88ca47f117eea1dc9b79d63326768a39",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (j:Z) (Ps:list qc4_panel)\n Require 1<=vl && vl<=16 && 0<K && 0<=tile && tile<Zlength(Ps) && 0<=j && qc4_matrix_wf(K,Ps) && j+vl<=8*rounded_depth(K) && p==wb+tile*panel_bytes(K)+64+j && qc4_packed(K,wb,Ps)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_zget(j+0,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+1,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+2,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+3,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+4,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+5,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+6,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+7,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+8,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+9,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+10,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+11,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+12,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+13,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+14,qc4_weights(qc4_panel_at(Ps,tile))),qc4_zget(j+15,qc4_weights(qc4_panel_at(Ps,tile)))) && qc4_packed(K,wb,Ps) * store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.panel_bytes",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 57,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_matrix_wf",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 14,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_packed",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 21,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_panel_at",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 10,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_zget",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 8,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.NibbleModel.rounded_depth",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 48,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "Read exactly VL signed byte cells from the selected packed-weight window, preserving packed memory.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vmerge_vvm_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vmerge_vvm_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t m,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 93,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "fed18916ddebeed2ccd9a977bc609104ea8019a6557575415c2c411d9efdc627",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z)\n Require 1<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(m.s0),int,m0) * store(&(m.s1),int,m1) * store(&(m.s2),int,m2) * store(&(m.s3),int,m3) * store(&(m.s4),int,m4) * store(&(m.s5),int,m5) * store(&(m.s6),int,m6) * store(&(m.s7),int,m7) * store(&(m.s8),int,m8) * store(&(m.s9),int,m9) * store(&(m.s10),int,m10) * store(&(m.s11),int,m11) * store(&(m.s12),int,m12) * store(&(m.s13),int,m13) * store(&(m.s14),int,m14) * store(&(m.s15),int,m15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_f(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_merge(x0,y0,m0),qc4_merge(x1,y1,m1),qc4_merge(x2,y2,m2),qc4_merge(x3,y3,m3),qc4_merge(x4,y4,m4),qc4_merge(x5,y5,m5),qc4_merge(x6,y6,m6),qc4_merge(x7,y7,m7),qc4_merge(x8,y8,m8),qc4_merge(x9,y9,m9),qc4_merge(x10,y10,m10),qc4_merge(x11,y11,m11),qc4_merge(x12,y12,m12),qc4_merge(x13,y13,m13),qc4_merge(x14,y14,m14),qc4_merge(x15,y15,m15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_f",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 41,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_merge",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 20,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active mask0 selects first vector, mask1 selects second vector; preserves binary32 value.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vmfne_vv_f32m8_b4",
+      "ISA": "rvv",
+      "call_symbol": "qcp_nanmask",
+      "C_signature": "vbool4_t qcp_nanmask(const vfloat32m8_t*a,const vfloat32m8_t*b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 97,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "b9c6e5c5e0c103b71b8b64730e05cdcec811227e1236ccb1e3197c7cbb856b6f",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32)\n Require 1<=vl && vl<=16 && a==b && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_nan_flag(x0),qc4_nan_flag(x1),qc4_nan_flag(x2),qc4_nan_flag(x3),qc4_nan_flag(x4),qc4_nan_flag(x5),qc4_nan_flag(x6),qc4_nan_flag(x7),qc4_nan_flag(x8),qc4_nan_flag(x9),qc4_nan_flag(x10),qc4_nan_flag(x11),qc4_nan_flag(x12),qc4_nan_flag(x13),qc4_nan_flag(x14),qc4_nan_flag(x15)) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_nan_flag",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 19,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Actual use is self-comparison. Active mask equals1 iff input is NaN. Borrow the same vector owner once; a==b is required.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "borrow vector lvalue once"
+    },
+    {
+      "intrinsic": "__riscv_vmul_vx_i32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vmul_vx_i32m8",
+      "C_signature": "vint32m8_t __riscv_vmul_vx_i32m8(vint32m8_t a,int scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 46,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "5fcb0881ce2782328289fa083287126971f2f7364e71b0b0950ac636f335708b",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)\n Require 1<=vl && vl<=16 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(a.s4),int,x4) * store(&(a.s5),int,x5) * store(&(a.s6),int,x6) * store(&(a.s7),int,x7) * store(&(a.s8),int,x8) * store(&(a.s9),int,x9) * store(&(a.s10),int,x10) * store(&(a.s11),int,x11) * store(&(a.s12),int,x12) * store(&(a.s13),int,x13) * store(&(a.s14),int,x14) * store(&(a.s15),int,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_wrap_signed(x0*scalar),qc4_wrap_signed(x1*scalar),qc4_wrap_signed(x2*scalar),qc4_wrap_signed(x3*scalar),qc4_wrap_signed(x4*scalar),qc4_wrap_signed(x5*scalar),qc4_wrap_signed(x6*scalar),qc4_wrap_signed(x7*scalar),qc4_wrap_signed(x8*scalar),qc4_wrap_signed(x9*scalar),qc4_wrap_signed(x10*scalar),qc4_wrap_signed(x11*scalar),qc4_wrap_signed(x12*scalar),qc4_wrap_signed(x13*scalar),qc4_wrap_signed(x14*scalar),qc4_wrap_signed(x15*scalar)) && store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_wrap_signed",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 15,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active lanes retain low32 bits of signed32 lane times scalar, then interpret signed32.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vse32_v_f32m8",
+      "ISA": "rvv",
+      "call_symbol": "qcp_store",
+      "C_signature": "void qcp_store(float*p,const vfloat32m8_t*a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 116,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "64b57c284ed8012a3ef05e5e53d3eab01f6bcc6fa514d36bda5656d7047b607e",
+        "text": "/*@ With (base:Z) (N:Z) (done:Z) (L:list fp32) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32)\n Require 1<=vl && vl<=16 && 0<=done && done+vl<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * qc4_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * qc4_write_state(base,N,done+vl,qc4_fappend(L,sublist(0,vl,cons(x0,cons(x1,cons(x2,cons(x3,cons(x4,cons(x5,cons(x6,cons(x7,cons(x8,cons(x9,cons(x10,cons(x11,cons(x12,cons(x13,cons(x14,cons(x15,nil))))))))))))))))))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_fappend",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 21,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.PublicModel.qc4_write_state",
+          "path": "proof/coq/QC4W/PublicModel.v",
+          "line": 60,
+          "sha256": "71eb24e8a8a6469a5ebe74238e4e8b727806b5192a0431e94f360fb7099c2da8"
+        }
+      ],
+      "reviewed_value_semantics": "Write exactly VL consecutive binary32 cells from active prefix; source and remaining output frame preserved.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "borrow vector lvalue once"
+    },
+    {
+      "intrinsic": "__riscv_vsetvl_e32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vsetvl_e32m8",
+      "C_signature": "size_t __riscv_vsetvl_e32m8(size_t n)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 114,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "dc5893e23411eb52176f2abf3df7604941b9960657b6eede7784a4cd7c79e040",
+        "text": "/*@ Require 1<=n && n<=16 && emp Ensure __return==n && emp */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "Request is1..16, below physical VLMAX32; returned VL equals the request.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vsext_vf2_i16m4",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vsext_vf2_i16m4",
+      "C_signature": "vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 58,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "d7de62fb84bea01efe9ffc55757f02889392e888a0e5e02def65c6baa7113392",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)\n Require 1<=vl && vl<=16 && store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7) * store(&(a.s8),char,x8) * store(&(a.s9),char,x9) * store(&(a.s10),char,x10) * store(&(a.s11),char,x11) * store(&(a.s12),char,x12) * store(&(a.s13),char,x13) * store(&(a.s14),char,x14) * store(&(a.s15),char,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15) && store(&(__return.s0),short,r0) * store(&(__return.s1),short,r1) * store(&(__return.s2),short,r2) * store(&(__return.s3),short,r3) * store(&(__return.s4),short,r4) * store(&(__return.s5),short,r5) * store(&(__return.s6),short,r6) * store(&(__return.s7),short,r7) * store(&(__return.s8),short,r8) * store(&(__return.s9),short,r9) * store(&(__return.s10),short,r10) * store(&(__return.s11),short,r11) * store(&(__return.s12),short,r12) * store(&(__return.s13),short,r13) * store(&(__return.s14),short,r14) * store(&(__return.s15),short,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active signed8 lanes extend to signed16 without changing integer value.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vsll_vx_i8m2",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vsll_vx_i8m2",
+      "C_signature": "vint8m2_t __riscv_vsll_vx_i8m2(vint8m2_t a,size_t shift,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 50,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "ecb572760a50d0b3ea190069fa3e4bc405f4589498a729a5b8256239649a2b0d",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)\n Require 1<=vl && vl<=16 && shift==4 && store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7) * store(&(a.s8),char,x8) * store(&(a.s9),char,x9) * store(&(a.s10),char,x10) * store(&(a.s11),char,x11) * store(&(a.s12),char,x12) * store(&(a.s13),char,x13) * store(&(a.s14),char,x14) * store(&(a.s15),char,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,low_bitop(x0),low_bitop(x1),low_bitop(x2),low_bitop(x3),low_bitop(x4),low_bitop(x5),low_bitop(x6),low_bitop(x7),low_bitop(x8),low_bitop(x9),low_bitop(x10),low_bitop(x11),low_bitop(x12),low_bitop(x13),low_bitop(x14),low_bitop(x15)) && store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.low_bitop",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 10,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active byte lanes shift left4 and retain low8 bits; signed interpretation gives low nibble times16.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vsra_vx_i32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vsra_vx_i32m8",
+      "C_signature": "vint32m8_t __riscv_vsra_vx_i32m8(vint32m8_t a,size_t shift,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 66,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "840453af3ba099c26e6c596fece6e9662c0509d94a183f2b5ad8edcbb777eb89",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z)\n Require 1<=vl && vl<=16 && shift==4 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(a.s4),int,x4) * store(&(a.s5),int,x5) * store(&(a.s6),int,x6) * store(&(a.s7),int,x7) * store(&(a.s8),int,x8) * store(&(a.s9),int,x9) * store(&(a.s10),int,x10) * store(&(a.s11),int,x11) * store(&(a.s12),int,x12) * store(&(a.s13),int,x13) * store(&(a.s14),int,x14) * store(&(a.s15),int,x15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,shifted_accumulator(x0),shifted_accumulator(x1),shifted_accumulator(x2),shifted_accumulator(x3),shifted_accumulator(x4),shifted_accumulator(x5),shifted_accumulator(x6),shifted_accumulator(x7),shifted_accumulator(x8),shifted_accumulator(x9),shifted_accumulator(x10),shifted_accumulator(x11),shifted_accumulator(x12),shifted_accumulator(x13),shifted_accumulator(x14),shifted_accumulator(x15)) && store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.NibbleModel.shifted_accumulator",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 36,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "Active signed32 lanes arithmetic-right-shift by4; non-rounding, non-saturating.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "__riscv_vwmacc_vx_i32m8",
+      "ISA": "rvv",
+      "call_symbol": "__riscv_vwmacc_vx_i32m8",
+      "C_signature": "vint32m8_t __riscv_vwmacc_vx_i32m8(vint32m8_t a,short scalar,vint16m4_t b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv/api.h",
+        "line": 62,
+        "file_sha256": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+        "signature_and_contract_sha256": "b9086037e88e16d16f54996eccbd605244204ef1e7f924de2f65e490fe8e05d1",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (x8:Z) (x9:Z) (x10:Z) (x11:Z) (x12:Z) (x13:Z) (x14:Z) (x15:Z) (y0:Z) (y1:Z) (y2:Z) (y3:Z) (y4:Z) (y5:Z) (y6:Z) (y7:Z) (y8:Z) (y9:Z) (y10:Z) (y11:Z) (y12:Z) (y13:Z) (y14:Z) (y15:Z)\n Require 1<=vl && vl<=16 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(a.s4),int,x4) * store(&(a.s5),int,x5) * store(&(a.s6),int,x6) * store(&(a.s7),int,x7) * store(&(a.s8),int,x8) * store(&(a.s9),int,x9) * store(&(a.s10),int,x10) * store(&(a.s11),int,x11) * store(&(a.s12),int,x12) * store(&(a.s13),int,x13) * store(&(a.s14),int,x14) * store(&(a.s15),int,x15) * store(&(b.s0),short,y0) * store(&(b.s1),short,y1) * store(&(b.s2),short,y2) * store(&(b.s3),short,y3) * store(&(b.s4),short,y4) * store(&(b.s5),short,y5) * store(&(b.s6),short,y6) * store(&(b.s7),short,y7) * store(&(b.s8),short,y8) * store(&(b.s9),short,y9) * store(&(b.s10),short,y10) * store(&(b.s11),short,y11) * store(&(b.s12),short,y12) * store(&(b.s13),short,y13) * store(&(b.s14),short,y14) * store(&(b.s15),short,y15)\n Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, qc4_active16_z(vl,r0,r1,r2,r3,r4,r5,r6,r7,r8,r9,r10,r11,r12,r13,r14,r15,qc4_mac_signed(x0,scalar,y0),qc4_mac_signed(x1,scalar,y1),qc4_mac_signed(x2,scalar,y2),qc4_mac_signed(x3,scalar,y3),qc4_mac_signed(x4,scalar,y4),qc4_mac_signed(x5,scalar,y5),qc4_mac_signed(x6,scalar,y6),qc4_mac_signed(x7,scalar,y7),qc4_mac_signed(x8,scalar,y8),qc4_mac_signed(x9,scalar,y9),qc4_mac_signed(x10,scalar,y10),qc4_mac_signed(x11,scalar,y11),qc4_mac_signed(x12,scalar,y12),qc4_mac_signed(x13,scalar,y13),qc4_mac_signed(x14,scalar,y14),qc4_mac_signed(x15,scalar,y15)) && store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_active16_z",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 24,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_mac_signed",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 16,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Active signed16 lane times signed16 scalar, added to signed32 accumulator modulo2^32.",
+      "official_sources": [
+        {
+          "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+          "version": "20260120; V1.0",
+          "section": "30.1.7 loads/stores;30.1.11 integer operations;30.1.13 floating-point operations"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "typed EEW/EMUL; VL; tail-agnostic policy; rounding; naming and operand order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "only lane<VL constrained; other represented lanes arbitrary; physical lanes16..31 unobserved",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vand_s8",
+      "ISA": "neon",
+      "call_symbol": "vand_s8",
+      "C_signature": "int8x8_t vand_s8(int8x8_t a,int8x8_t b)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 147,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "a2183f5c9306347f5cb5e568fe9855957a35e1bf825fe6aaac7c1e3157fc259a",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z) (y0:Z) (y1:Z) (y2:Z) (y3:Z) (y4:Z) (y5:Z) (y6:Z) (y7:Z)\n Require y0==(-16) && y1==(-16) && y2==(-16) && y3==(-16) && y4==(-16) && y5==(-16) && y6==(-16) && y7==(-16) && store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7) * store(&(b.s0),char,y0) * store(&(b.s1),char,y1) * store(&(b.s2),char,y2) * store(&(b.s3),char,y3) * store(&(b.s4),char,y4) * store(&(b.s5),char,y5) * store(&(b.s6),char,y6) * store(&(b.s7),char,y7)\n Ensure store(&(__return.s0),char,high_bitop(x0)) * store(&(__return.s1),char,high_bitop(x1)) * store(&(__return.s2),char,high_bitop(x2)) * store(&(__return.s3),char,high_bitop(x3)) * store(&(__return.s4),char,high_bitop(x4)) * store(&(__return.s5),char,high_bitop(x5)) * store(&(__return.s6),char,high_bitop(x6)) * store(&(__return.s7),char,high_bitop(x7)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.high_bitop",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 11,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "The actual second vector has every lane -16 (0xF0). Bitwise AND extracts the high signed nibble times16.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vcvtq_f32_s32",
+      "ISA": "neon",
+      "call_symbol": "vcvtq_f32_s32",
+      "C_signature": "float32x4_t vcvtq_f32_s32(int32x4_t a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 97,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "c6a58d7e215b822179322500712bbb7e2fe06538bf1f52e8e7b1b3887a9e414f",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z)\n Require store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3)\n Ensure store(&(__return.s0),float,fp32_of_Z(x0)) * store(&(__return.s1),float,fp32_of_Z(x1)) * store(&(__return.s2),float,fp32_of_Z(x2)) * store(&(__return.s3),float,fp32_of_Z(x3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32_of_Z",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 293,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "Convert each signed32 integer to binary32 with RNE.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vdupq_n_f32",
+      "ISA": "neon",
+      "call_symbol": "vdupq_n_f32",
+      "C_signature": "float32x4_t vdupq_n_f32(float x)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 74,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "ec137708574eba4b050338053ec72fd07419e1949e8c0bfcfbc216b756d61f52",
+        "text": "/*@ Require emp\n Ensure store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "Copy the binary32 scalar into four lanes.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vfmaq_f32",
+      "ISA": "neon",
+      "call_symbol": "vfmaq_f32",
+      "C_signature": "float32x4_t vfmaq_f32(float32x4_t acc,float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 117,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "592b92dce9251c43bd53449e002dfd39d0a4b8e5c6c22c99d54a407afc262648",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32)\n Require store(&(acc.s0),float,z0) * store(&(acc.s1),float,z1) * store(&(acc.s2),float,z2) * store(&(acc.s3),float,z3) * store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fma_rne(x0,y0,z0)) * store(&(__return.s1),float,fma_rne(x1,y1,z1)) * store(&(__return.s2),float,fma_rne(x2,y2,z2)) * store(&(__return.s3),float,fma_rne(x3,y3,z3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        },
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "Result=fma_rne(a_i,b_i,acc_i), one rounding.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vget_high_f32",
+      "ISA": "neon",
+      "call_symbol": "vget_high_f32",
+      "C_signature": "float32x2_t vget_high_f32(float32x4_t a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 89,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "cdc41a77cd0242b5f187a4508a9ee08100098e7e75adb599d8da009164473dc6",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3)\n Ensure store(&(__return.s0),float,x2) * store(&(__return.s1),float,x3) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "Select source lanes2,3 in order.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vget_high_s16",
+      "ISA": "neon",
+      "call_symbol": "vget_high_s16",
+      "C_signature": "int16x4_t vget_high_s16(int16x8_t a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 81,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "589bb0fff011682ae372c92a33af7d330f2903620bf9be185c675962b4d347a5",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require store(&(a.s0),short,x0) * store(&(a.s1),short,x1) * store(&(a.s2),short,x2) * store(&(a.s3),short,x3) * store(&(a.s4),short,x4) * store(&(a.s5),short,x5) * store(&(a.s6),short,x6) * store(&(a.s7),short,x7)\n Ensure store(&(__return.s0),short,x4) * store(&(__return.s1),short,x5) * store(&(__return.s2),short,x6) * store(&(__return.s3),short,x7) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "Select source lanes4..7 in order.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vget_low_f32",
+      "ISA": "neon",
+      "call_symbol": "vget_low_f32",
+      "C_signature": "float32x2_t vget_low_f32(float32x4_t a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 85,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "d4989b3e59320b90381c2ebd9ed21544121a11baac793e86766bd1d558152d03",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3)\n Ensure store(&(__return.s0),float,x0) * store(&(__return.s1),float,x1) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "Select source lanes0,1 in order.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vget_low_s16",
+      "ISA": "neon",
+      "call_symbol": "vget_low_s16",
+      "C_signature": "int16x4_t vget_low_s16(int16x8_t a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 77,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "fca12498feb5cad04cbb0565f14fe1129b6c5a9557f38607f8cde731e116368f",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require store(&(a.s0),short,x0) * store(&(a.s1),short,x1) * store(&(a.s2),short,x2) * store(&(a.s3),short,x3) * store(&(a.s4),short,x4) * store(&(a.s5),short,x5) * store(&(a.s6),short,x6) * store(&(a.s7),short,x7)\n Ensure store(&(__return.s0),short,x0) * store(&(__return.s1),short,x1) * store(&(__return.s2),short,x2) * store(&(__return.s3),short,x3) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "Select source lanes0..3 in order.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vld1_s8",
+      "ISA": "neon",
+      "call_symbol": "vld1_s8",
+      "C_signature": "int8x8_t vld1_s8(const void *p)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 54,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "3e054b4cad7bcff49cd81036ac0d35c2c70d35124e268bc41d1baa0a7dab7832",
+        "text": "/*@ With (K:Z) (ab:Z) (wb:Z) (tile:Z) (j:Z) (mode:Z) (A:list Z) (Ps:list qc4_panel)\n Require 0<K && qc4_matrix_wf(K,Ps) && qc4_i8_address_ok(mode,p,ab,wb,K,tile,j,Ps) && CharArray::full(ab,qc4_a_extent(K),A) * qc4_packed(K,wb,Ps)\n Ensure CharArray::full(ab,qc4_a_extent(K),A) * qc4_packed(K,wb,Ps) * store(&(__return.s0),char,qc4_char_field(mode,tile,j,0,A,Ps)) * store(&(__return.s1),char,qc4_char_field(mode,tile,j,1,A,Ps)) * store(&(__return.s2),char,qc4_char_field(mode,tile,j,2,A,Ps)) * store(&(__return.s3),char,qc4_char_field(mode,tile,j,3,A,Ps)) * store(&(__return.s4),char,qc4_char_field(mode,tile,j,4,A,Ps)) * store(&(__return.s5),char,qc4_char_field(mode,tile,j,5,A,Ps)) * store(&(__return.s6),char,qc4_char_field(mode,tile,j,6,A,Ps)) * store(&(__return.s7),char,qc4_char_field(mode,tile,j,7,A,Ps)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_a_extent",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 13,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        },
+        {
+          "qualified_name": "QC4W.NeonModel.qc4_char_field",
+          "path": "proof/coq/QC4W/NeonModel.v",
+          "line": 5,
+          "sha256": "cd96c219f02c8aadecb17e295346be48b45d553dfd01537300870d18c2251e70"
+        },
+        {
+          "qualified_name": "QC4W.NeonModel.qc4_i8_address_ok",
+          "path": "proof/coq/QC4W/NeonModel.v",
+          "line": 7,
+          "sha256": "cd96c219f02c8aadecb17e295346be48b45d553dfd01537300870d18c2251e70"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_matrix_wf",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 14,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_packed",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 21,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        }
+      ],
+      "reviewed_value_semantics": "Read eight signed byte cells from the owned input extent or packed-weight byte window; preserve both owners. Address-mode and bounds are proved by the caller.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vld1q_dup_f32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_dup_f32",
+      "C_signature": "float32x4_t vld1q_dup_f32(const float *p)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 70,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "e62a010e4d292c0b645c5abc8e77778371a5aaeb3b667d50d3724f6928d1309c",
+        "text": "/*@ With (x:fp32)\n Require store(p,float,x)\n Ensure store(p,float,x) * store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        }
+      ],
+      "reviewed_value_semantics": "Read one binary32 cell and replicate it into four lanes.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vld1q_dup_s32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_dup_s32",
+      "C_signature": "int32x4_t vld1q_dup_s32(const int *p)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 66,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "1efb6981d5f49313a16eec65f2d003dd8e74b053bc9f0d8c734fb437d5e9abc2",
+        "text": "/*@ With (x:Z)\n Require store(p,int,x)\n Ensure store(p,int,x) * store(&(__return.s0),int,x) * store(&(__return.s1),int,x) * store(&(__return.s2),int,x) * store(&(__return.s3),int,x) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "Read one signed32 zero-point cell and replicate it into four lanes.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vld1q_f32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_f32",
+      "C_signature": "float32x4_t vld1q_f32(const void *p)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 62,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "6f52a7626c74a31671494fc2dfabdd3f27a41782059559285261a5c67cf4c1c4",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (kind:Z) (j:Z) (Ps:list qc4_panel)\n Require 0<K && qc4_matrix_wf(K,Ps) && 0<=tile && tile<Zlength(Ps) && 0<=kind && kind<=1 && 0<=j && j+4<=16 && p==wb+tile*panel_bytes(K)+64+8*rounded_depth(K)+64*kind+4*j && qc4_packed(K,wb,Ps)\n Ensure qc4_packed(K,wb,Ps) * store(&(__return.s0),float,qc4_float_field(kind,tile,j+0,Ps)) * store(&(__return.s1),float,qc4_float_field(kind,tile,j+1,Ps)) * store(&(__return.s2),float,qc4_float_field(kind,tile,j+2,Ps)) * store(&(__return.s3),float,qc4_float_field(kind,tile,j+3,Ps)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.panel_bytes",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 57,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_float_field",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 12,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_matrix_wf",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 14,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_packed",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 21,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        },
+        {
+          "qualified_name": "QC4W.NibbleModel.rounded_depth",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 48,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "Read four consecutive binary32 scale or bias cells from the selected panel.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vld1q_s32",
+      "ISA": "neon",
+      "call_symbol": "vld1q_s32",
+      "C_signature": "int32x4_t vld1q_s32(const void *p)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 58,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "5fb93c15a8f3510601faae3b2a4926c0ed0c187aa08610bc4a64857f042c479d",
+        "text": "/*@ With (K:Z) (wb:Z) (tile:Z) (j:Z) (Ps:list qc4_panel)\n Require 0<K && qc4_matrix_wf(K,Ps) && 0<=tile && tile<Zlength(Ps) && 0<=j && j+4<=16 && p==wb+tile*panel_bytes(K)+4*j && qc4_packed(K,wb,Ps)\n Ensure qc4_packed(K,wb,Ps) * store(&(__return.s0),int,qc4_ks(tile,j+0,Ps)) * store(&(__return.s1),int,qc4_ks(tile,j+1,Ps)) * store(&(__return.s2),int,qc4_ks(tile,j+2,Ps)) * store(&(__return.s3),int,qc4_ks(tile,j+3,Ps)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.panel_bytes",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 57,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_ks",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 11,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_matrix_wf",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 14,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.MatrixModel.qc4_packed",
+          "path": "proof/coq/QC4W/MatrixModel.v",
+          "line": 21,
+          "sha256": "fca052c07794c06d958cbe0d72c95f3327767b7e09b301a3dbaf473f687fb17a"
+        }
+      ],
+      "reviewed_value_semantics": "Read four consecutive signed32 weight sums from the selected 16-column panel.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vmaxq_f32",
+      "ISA": "neon",
+      "call_symbol": "vmaxq_f32",
+      "C_signature": "float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 113,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "da653fe4bc3051065bba5a4cef0ee13b6206b63866745e466c3b376190837aa5",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_neon_max(x0,y0)) * store(&(__return.s1),float,fp32_neon_max(x1,y1)) * store(&(__return.s2),float,fp32_neon_max(x2,y2)) * store(&(__return.s3),float,fp32_neon_max(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_max",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 31,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "ARM NaN-propagating FMAX including signed-zero maximum; NaN representative is abstracted.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vminq_f32",
+      "ISA": "neon",
+      "call_symbol": "vminq_f32",
+      "C_signature": "float32x4_t vminq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 109,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "20de05f25e68f5d82dbf314c64eece1cd6795bfca2e9f144b70c66da199c4d1e",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_neon_min(x0,y0)) * store(&(__return.s1),float,fp32_neon_min(x1,y1)) * store(&(__return.s2),float,fp32_neon_min(x2,y2)) * store(&(__return.s3),float,fp32_neon_min(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_min",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 28,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "ARM NaN-propagating FMIN including signed-zero minimum; NaN representative is abstracted.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vmlal_lane_s16",
+      "ISA": "neon",
+      "call_symbol": "vmlal_lane_s16",
+      "C_signature": "int32x4_t vmlal_lane_s16(int32x4_t acc,int16x4_t b,int16x4_t a,int lane)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 121,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "646efba4d40cf5ec867f9c1677207e22e42a8ce1979843215e979c25ac16c860",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (y0:Z) (y1:Z) (y2:Z) (y3:Z) (z0:Z) (z1:Z) (z2:Z) (z3:Z)\n Require 0<=lane && lane<4 && store(&(acc.s0),int,z0) * store(&(acc.s1),int,z1) * store(&(acc.s2),int,z2) * store(&(acc.s3),int,z3) * store(&(b.s0),short,y0) * store(&(b.s1),short,y1) * store(&(b.s2),short,y2) * store(&(b.s3),short,y3) * store(&(a.s0),short,x0) * store(&(a.s1),short,x1) * store(&(a.s2),short,x2) * store(&(a.s3),short,x3)\n Ensure store(&(__return.s0),int,qc4_mac_signed(z0,y0,qc4_i16_lane(lane,x0,x1,x2,x3))) * store(&(__return.s1),int,qc4_mac_signed(z1,y1,qc4_i16_lane(lane,x0,x1,x2,x3))) * store(&(__return.s2),int,qc4_mac_signed(z2,y2,qc4_i16_lane(lane,x0,x1,x2,x3))) * store(&(__return.s3),int,qc4_mac_signed(z3,y3,qc4_i16_lane(lane,x0,x1,x2,x3))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NeonModel.qc4_i16_lane",
+          "path": "proof/coq/QC4W/NeonModel.v",
+          "line": 11,
+          "sha256": "cd96c219f02c8aadecb17e295346be48b45d553dfd01537300870d18c2251e70"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_mac_signed",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 16,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Signed16 vector lane times the selected signed16 scalar lane, accumulated with wrap32. Selector0..3 is proved at each call.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vmov_n_s8",
+      "ISA": "neon",
+      "call_symbol": "vmov_n_s8",
+      "C_signature": "int8x8_t vmov_n_s8(int value)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 140,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "3ce16fb56dbcec553d64feaa68a8a80252c1d0ce456df6c99b9aaa6c8ec5c09f",
+        "text": "/*@ Require emp\n Ensure store(&(__return.s0),char,qc4_narrow8(value)) * store(&(__return.s1),char,qc4_narrow8(value)) * store(&(__return.s2),char,qc4_narrow8(value)) * store(&(__return.s3),char,qc4_narrow8(value)) * store(&(__return.s4),char,qc4_narrow8(value)) * store(&(__return.s5),char,qc4_narrow8(value)) * store(&(__return.s6),char,qc4_narrow8(value)) * store(&(__return.s7),char,qc4_narrow8(value)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NeonModel.qc4_narrow8",
+          "path": "proof/coq/QC4W/NeonModel.v",
+          "line": 14,
+          "sha256": "cd96c219f02c8aadecb17e295346be48b45d553dfd01537300870d18c2251e70"
+        }
+      ],
+      "reviewed_value_semantics": "Model the original implicit int8 conversion explicitly as signed8(low8(value)), then duplicate eight lanes. INT8_C(0xF0) becomes -16 in the chosen AArch64 C environment.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "explicit int8 narrowing of original implicit conversion"
+    },
+    {
+      "intrinsic": "vmovl_s8",
+      "ISA": "neon",
+      "call_symbol": "vmovl_s8",
+      "C_signature": "int16x8_t vmovl_s8(int8x8_t a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 93,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "b65b714f7c8169cb537d65c0e7c60b7df88df1f931da951f3ca8e9c2b9f01804",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7)\n Ensure store(&(__return.s0),short,x0) * store(&(__return.s1),short,x1) * store(&(__return.s2),short,x2) * store(&(__return.s3),short,x3) * store(&(__return.s4),short,x4) * store(&(__return.s5),short,x5) * store(&(__return.s6),short,x6) * store(&(__return.s7),short,x7) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "Signed8 to signed16 extension preserves the signed mathematical integer in each lane.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vmulq_f32",
+      "ISA": "neon",
+      "call_symbol": "vmulq_f32",
+      "C_signature": "float32x4_t vmulq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 105,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "797bc5fa966ec0a038adaea31e0d8cd39bb227e7808b178d52a7e6c791b1addf",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,qc4_fp32_mul(x0,y0)) * store(&(__return.s1),float,qc4_fp32_mul(x1,y1)) * store(&(__return.s2),float,qc4_fp32_mul(x2,y2)) * store(&(__return.s3),float,qc4_fp32_mul(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_fp32_mul",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 71,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Ordinary lane-wise binary32 multiplication with RNE, separate from following FMA.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vmulq_s32",
+      "ISA": "neon",
+      "call_symbol": "vmulq_s32",
+      "C_signature": "int32x4_t vmulq_s32(int32x4_t a,int32x4_t b)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 101,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "cb4268006ce66b173333ff712d5bb33240771995ff3171ec99209794de199f35",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (y0:Z) (y1:Z) (y2:Z) (y3:Z)\n Require store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3) * store(&(b.s0),int,y0) * store(&(b.s1),int,y1) * store(&(b.s2),int,y2) * store(&(b.s3),int,y3)\n Ensure store(&(__return.s0),int,qc4_wrap_signed(x0*y0)) * store(&(__return.s1),int,qc4_wrap_signed(x1*y1)) * store(&(__return.s2),int,qc4_wrap_signed(x2*y2)) * store(&(__return.s3),int,qc4_wrap_signed(x3*y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_wrap_signed",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 15,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        }
+      ],
+      "reviewed_value_semantics": "Multiply lane-wise and retain low32 bits, then interpret signed32; no saturation.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vshl_n_s8",
+      "ISA": "neon",
+      "call_symbol": "vshl_n_s8",
+      "C_signature": "int8x8_t vshl_n_s8(int8x8_t a,int shift)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 143,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "e1f74bf2d56be131ba417cf9657ba7d5fd53da27b482c72832907381d55918dc",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require shift==4 && store(&(a.s0),char,x0) * store(&(a.s1),char,x1) * store(&(a.s2),char,x2) * store(&(a.s3),char,x3) * store(&(a.s4),char,x4) * store(&(a.s5),char,x5) * store(&(a.s6),char,x6) * store(&(a.s7),char,x7)\n Ensure store(&(__return.s0),char,low_bitop(x0)) * store(&(__return.s1),char,low_bitop(x1)) * store(&(__return.s2),char,low_bitop(x2)) * store(&(__return.s3),char,low_bitop(x3)) * store(&(__return.s4),char,low_bitop(x4)) * store(&(__return.s5),char,low_bitop(x5)) * store(&(__return.s6),char,low_bitop(x6)) * store(&(__return.s7),char,low_bitop(x7)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.low_bitop",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 10,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "The actual call uses shift4. Keep the low8 bits of x<<4 and interpret signed8, i.e. low signed nibble times16.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vshrq_n_s32",
+      "ISA": "neon",
+      "call_symbol": "vshrq_n_s32",
+      "C_signature": "int32x4_t vshrq_n_s32(int32x4_t a,int shift)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 151,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "2e3f3399c5bcaf55dd6f436520461352c036cf3b3f1d5848e43f5bfb83ddf0ca",
+        "text": "/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z)\n Require shift==4 && store(&(a.s0),int,x0) * store(&(a.s1),int,x1) * store(&(a.s2),int,x2) * store(&(a.s3),int,x3)\n Ensure store(&(__return.s0),int,shifted_accumulator(x0)) * store(&(__return.s1),int,shifted_accumulator(x1)) * store(&(__return.s2),int,shifted_accumulator(x2)) * store(&(__return.s3),int,shifted_accumulator(x3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "QC4W.NibbleModel.shifted_accumulator",
+          "path": "proof/coq/QC4W/NibbleModel.v",
+          "line": 36,
+          "sha256": "240146e2640d73d15a50dff47d0f0ff69847f0178273de64ca7bc79f8e6122a7"
+        }
+      ],
+      "reviewed_value_semantics": "The actual immediate is4. Arithmetic right shift of the signed32 accumulator, after wrap32 MAC; no rounding/saturation.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "per-lane intrinsic contract"
+    },
+    {
+      "intrinsic": "vst1_f32",
+      "ISA": "neon",
+      "call_symbol": "qcp_vst1_f32",
+      "C_signature": "void qcp_vst1_f32(float *p,const float32x2_t *a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 130,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "6431419d0a6c462dc32382423c397e00db3036ac5315599578bd04ef57422851",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (base:Z) (N:Z) (done:Z) (L:list fp32)\n Require 0<=done && done+2<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qc4_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qc4_write_state(base,N,done+2,qc4_fappend(L,cons(x0,cons(x1,nil)))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_fappend",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 21,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.PublicModel.qc4_write_state",
+          "path": "proof/coq/QC4W/PublicModel.v",
+          "line": 60,
+          "sha256": "71eb24e8a8a6469a5ebe74238e4e8b727806b5192a0431e94f360fb7099c2da8"
+        }
+      ],
+      "reviewed_value_semantics": "Write two consecutive binary32 cells and extend the owned output prefix; preserve source/frame.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "borrow vector lvalue once"
+    },
+    {
+      "intrinsic": "vst1_lane_f32",
+      "ISA": "neon",
+      "call_symbol": "qcp_vst1_lane_f32",
+      "C_signature": "void qcp_vst1_lane_f32(float *p,const float32x2_t *a,int lane)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 135,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "569580de6ef9b4324adf37739a59ff849b4b304e6eb03e47a4d9fa3c77829279",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (base:Z) (N:Z) (done:Z) (L:list fp32)\n Require lane==0 && 0<=done && done+1<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qc4_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * qc4_write_state(base,N,done+1,qc4_fappend(L,cons(x0,nil))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_fappend",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 21,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.PublicModel.qc4_write_state",
+          "path": "proof/coq/QC4W/PublicModel.v",
+          "line": 60,
+          "sha256": "71eb24e8a8a6469a5ebe74238e4e8b727806b5192a0431e94f360fb7099c2da8"
+        }
+      ],
+      "reviewed_value_semantics": "Write one binary32 cell from lane0; lane=0 is proved at actual calls.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "borrow vector lvalue once"
+    },
+    {
+      "intrinsic": "vst1q_f32",
+      "ISA": "neon",
+      "call_symbol": "qcp_vst1q_f32",
+      "C_signature": "void qcp_vst1q_f32(float *p,const float32x4_t *a)",
+      "contract": {
+        "path": "shim/neon/api.h",
+        "line": 125,
+        "file_sha256": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+        "signature_and_contract_sha256": "814f8e83ecc3427fa815f7712201562c2632568df11cd20c9a16d426627a0b6f",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (base:Z) (N:Z) (done:Z) (L:list fp32)\n Require 0<=done && done+4<=N && p==base+4*done && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * qc4_write_state(base,N,done,L)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * qc4_write_state(base,N,done+4,qc4_fappend(L,cons(x0,cons(x1,cons(x2,cons(x3,nil)))))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SimpleC.SL.FloatLib.fp32",
+          "toolchain_path": "Rocq/SeparationLogic/FloatLib.v",
+          "line": 13,
+          "sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5"
+        },
+        {
+          "qualified_name": "QC4W.ApiModel.qc4_fappend",
+          "path": "proof/coq/QC4W/ApiModel.v",
+          "line": 21,
+          "sha256": "6dacf2e6872eca929e15e9280dc43bacce6555a4f7be0054a33e4ff5be63a452"
+        },
+        {
+          "qualified_name": "QC4W.PublicModel.qc4_write_state",
+          "path": "proof/coq/QC4W/PublicModel.v",
+          "line": 60,
+          "sha256": "71eb24e8a8a6469a5ebe74238e4e8b727806b5192a0431e94f360fb7099c2da8"
+        }
+      ],
+      "reviewed_value_semantics": "Write four consecutive binary32 cells and extend the owned output prefix; preserve source/frame.",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "named intrinsic entry, AArch64 instruction and operands"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "ISA_correspondence_checked": false,
+      "formal_C_body_required": false,
+      "tail_semantics": "all fixed lanes",
+      "adaptation": "borrow vector lvalue once"
+    }
+  ],
+  "ordinary_helpers": {
+    "qcp_assert": "QC4Ordinary",
+    "round_up_po2": "QC4Ordinary",
+    "qcp_identity": "QC4Scalar.Checked",
+    "qcp_isnan": "QC4Scalar.Checked"
+  },
+  "unproved_boundaries": [
+    "QCP frontend and VC-generation soundness",
+    "formal ISA/compiler/physical ABI correspondence",
+    "arbitrary hardware VLEN",
+    "independent termination theorem",
+    "FP exception flags and NaN payload equality",
+    "ISO C provenance beyond the declared QCP address model"
+  ],
+  "kernel_verification_evidence": "This ledger is only intrinsic source review; consult proof/status.json for the eventual complete kernel result."
+}

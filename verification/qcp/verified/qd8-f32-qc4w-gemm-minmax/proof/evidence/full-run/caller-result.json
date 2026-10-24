@@ -1,0 +1,78 @@
+{
+  "unit": "caller",
+  "utc": "2026-10-24T15:55:32.927518+00:00",
+  "configured_jobs": 32,
+  "generation_passed": true,
+  "whole_kernel_proved": false,
+  "generation_exit": 0,
+  "vc_fields": 42,
+  "goal_sha256": "415a9f8ee97555e9d9a0d0308751e20a9dc54fc98ae0de98078c9589a14f6758",
+  "seconds": 0.42507443600334227,
+  "input_hashes": {
+    "spec.c": "e8b667ee3590f52a8957a562d53cfb146a858beec134fd03d54302dcbad0f0a1",
+    "proof/prepare.py": "cd248fe05134bcb6fc47a26c7e6e80354d964ffd69ea0dd90a7e34ac4ea34bcf",
+    "proof/generate.py": "925bdc557a97f49af930a25ca3f7313f27c13ba7ee3b4fc3d2c7f5cbc116b23d",
+    "impl/testNEON.c": "3a234e610298f7998ea073c3c75940beece0ad5d4f5506394465fd902a647b40",
+    "impl/testRVV.c": "58e91e14ded15e779c15d7c2c2a8d3e2f43b8ebb8a27911c982b7ced7d57b32d",
+    "shim/scalar_nan.c": "0933a92a7e80ef6d649b677d4cf4324d105392959a8d5c4f36d8c007328d2405",
+    "shim/ordinary.c": "fa21c59bb23c022f92539cc7c3121cd0195d216b5e92088a0bb076ca4bc04f8f",
+    "shim/types.h": "01888230793eeff51491e80d8f1fd28dae794313e732d8da2ece3a6e4e34dc2b",
+    "shim/neon/copy.strategies": "884b181541dafc75a7e442e9111edcec35b29c566ff64665284783016072a657",
+    "shim/neon/copy.h": "0a25f66483279fbcfcd0cbc01850f271be59e9129add50e11919a4f3a94d08d5",
+    "shim/neon/api.h": "04fa96b81652f753762c23eb45bdcfeba6de5d37c92c208a37022593ce12d604",
+    "shim/rvv/copy.strategies": "884b181541dafc75a7e442e9111edcec35b29c566ff64665284783016072a657",
+    "shim/rvv/copy.h": "0a25f66483279fbcfcd0cbc01850f271be59e9129add50e11919a4f3a94d08d5",
+    "shim/rvv/api.h": "7bef09822519fb6d9e6153b3e08f484f585423e79ddd35931b555796f8de1f4c",
+    "contracts/model.h": "cf96cf02a6a9fcc736c578b39cce3c0d927c0e8dc05ad01781f8b26caf75388c",
+    "proof/c/rvv.json": "d86461784b086b0656893b4ff25b7ec31bf9565805b5ed329e50b882b05af7c3",
+    "proof/c/neon.json": "7d726e90d86fe707985e5999da77785b155fbe9a8ea0190b9e73a1e688404eb6"
+  },
+  "inputs_unchanged": true,
+  "commands": [
+    {
+      "label": "cpp",
+      "command": [
+        "/usr/bin/prlimit",
+        "--as=68719476736",
+        "--cpu=21600",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/shim",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admission02/generation/caller/annotated.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admission02/generation/caller/caller.c"
+      ],
+      "exit": 0,
+      "seconds": 0.008288413984701037
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "/usr/bin/prlimit",
+        "--as=68719476736",
+        "--cpu=21600",
+        "--",
+        "/tmp/qcp214-src/linux-binary/symexec",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--no-record-strategies",
+        "--strategy-application-limit",
+        "4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admission02/generation/caller/caller.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admission02/generation/caller",
+        "--coq-logic-path=QC4Caller"
+      ],
+      "exit": 0,
+      "seconds": 0.4150298710446805
+    }
+  ]
+}

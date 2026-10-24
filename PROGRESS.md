@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**29/40**。新目标：**至少 36/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**30/40**。新目标：**至少 36/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
@@ -41,6 +41,8 @@
 
 - [f32-igemm-minmax](verification/qcp/verified/f32-igemm-minmax/README.md)（其他 worker 完成，修复版）
 - [f32-dwconv-minmax](verification/qcp/verified/f32-dwconv-minmax/README.zh-CN.md)（packed4 布局及 NaN 修复版）
+
+- [qd8-f32-qc4w-gemm-minmax](verification/qcp/verified/qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)（RVV NaN恢复修复版，完整intrinsic spec边界）
 
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
@@ -138,3 +140,5 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 - 2026-10-24（洛杉矶）：Argmax 公开调用入口6项C义务及17份源码重放通过；入口双sanitizer独立oracle回归通过，主核仍在验证。最新额度94%，继续推进；完整计数仍 **29/40**，目标 **36/40**。
 
 - 2026-10-24（洛杉矶）：DWCHW 公开入口6项C/4项程序数学及双sanitizer各128520case通过；Maxpool 两核组件442/268及新版NaN helper70完整接口通过，尚未整核重放。额度97%，按要求收尾，正式仍 **29/40**。
+
+2026-10-24 matrix worker：QD8-F32-QC4W GEMM完整修复版入verified，5C/1531VC/12策略/1610fresh模块/1567假设报告；native1881cases/31977outputs，3项负控制，45项intrinsic-spec。清单30/40。本worker已完成本轮全部已开工矩阵核，按用户要求停止扩展。

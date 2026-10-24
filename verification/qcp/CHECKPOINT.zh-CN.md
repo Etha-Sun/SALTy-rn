@@ -1,3 +1,5 @@
+2026-10-24 matrix worker更新：完整清单 **30/40**，新收录[QD8-F32-QC4W GEMM](verified/qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)。5C/1531字段、12策略、1610fresh Coq与1567假设报告通过，32配置workers。用户指定的当前矩阵核已收尾；以下旧快照保留原时间含义。
+
 2026-10-24 当前清单 **28/40**；最新QU8加法与QD8 QC8W IGEMM已完整收录。目标至少36，额度规则见下文；历史快照保留。
 
 # VADD 当前 checkpoint（2026-10-22）

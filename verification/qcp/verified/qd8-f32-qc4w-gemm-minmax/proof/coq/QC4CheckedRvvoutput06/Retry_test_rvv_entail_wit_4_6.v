@@ -1,0 +1,22 @@
+From QC4CheckedRvvoutput06 Require Import Facts.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Lemma proof_of_test_rvv_entail_wit_4_6:test_rvv_entail_wit_4_6.
+Proof. unfold test_rvv_entail_wit_4_6;intros quantization_params_pre params_pre c_pre w_pre a_pre kc_pre nc_pre mr_pre hi lo inv zp Ps A z15 z14 z13 z12 z11 z10 z9 z8 z7 z6 z5 z4 z3 z2 z1 z0 w a0 k vl c0 nc kc cn_stride r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15 r0_2 r1_2 r2_2 r3_2 r4_2 r5_2 r6_2 r7_2 r8_2 r9_2 r10_2 r11_2 r12_2 r13_2 r14_2 r15_2 r0_3 r1_3 r2_3 r3_3 r4_3 r5_3 r6_3 r7_3 r8_3 r9_3 r10_3 r11_3 r12_3 r13_3 r14_3 r15_3 r0_4 r1_4 r2_4 r3_4 r4_4 r5_4 r6_4 r7_4 r8_4 r9_4 r10_4 r11_4 r12_4 r13_4 r14_4 r15_4 r0_5 r1_5 r2_5 r3_5 r4_5 r5_5 r6_5 r7_5 r8_5 r9_5 r10_5 r11_5 r12_5 r13_5 r14_5 r15_5 r0_6 r1_6 r2_6 r3_6 r4_6 r5_6 r6_6 r7_6 r8_6 r9_6 r10_6 r11_6 r12_6 r13_6 r14_6 r15_6 retval retval_2 r0_7 r1_7 r2_7 r3_7 r4_7 r5_7 r6_7 r7_7 r8_7 r9_7 r10_7 r11_7 r12_7 r13_7 r14_7 r15_7 r0_8 r1_8 r2_8 r3_8 r4_8 r5_8 r6_8 r7_8 r8_8 r9_8 r10_8 r11_8 r12_8 r13_8 r14_8 r15_8 r0_9 r1_9 r2_9 r3_9 r4_9 r5_9 r6_9 r7_9 r8_9 r9_9 r10_9 r11_9 r12_9 r13_9 r14_9 r15_9 retval_3 r0_10 r1_10 r2_10 r3_10 r4_10 r5_10 r6_10 r7_10 r8_10 r9_10 r10_10 r11_10 r12_10 r13_10 r14_10 r15_10 r0_11 r1_11 r2_11 r3_11 r4_11 r5_11 r6_11 r7_11 r8_11 r9_11 r10_11 r11_11 r12_11 r13_11 r14_11 r15_11 PreH1 PreH2 PreH3 PreH4 PreH5 PreH6 PreH7 PreH8 PreH9 PreH10 PreH11 PreH12 PreH13 PreH14 PreH15 PreH16 PreH17 PreH18 PreH19 PreH20 PreH21 PreH22 PreH23 PreH24 PreH25 PreH26 PreH27 PreH28 PreH29 PreH30 PreH31 PreH32 PreH33 PreH34 PreH35 PreH36 PreH37 PreH38 PreH39 PreH40 PreH41 PreH42 PreH43 PreH44 PreH45 PreH46 PreH47 PreH48 PreH49 PreH50 PreH51 PreH52 PreH53 PreH54 PreH55 PreH56 PreH57 PreH58 PreH59 PreH60 PreH61 PreH62 PreH63.
+qc_normalize;qc_bounds.
+assert(Hk:k=0)by qc_linear;subst k;qc_normalize.
+unfold qc4_bit_same in *.
+assert(Hout:qc4_active16_f vl r0_11 r1_11 r2_11 r3_11 r4_11 r5_11 r6_11 r7_11 r8_11 r9_11 r10_11 r11_11 r12_11 r13_11 r14_11 r15_11 (qc4_output kc_pre(nc_pre-nc+0)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+1)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+2)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+3)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+4)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+5)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+6)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+7)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+8)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+9)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+10)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+11)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+12)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+13)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+14)zp A Ps inv lo hi) (qc4_output kc_pre(nc_pre-nc+15)zp A Ps inv lo hi)).
+{ unfold qc4_active16_f,qc4_active16_z in *;repeat match goal with H:_ /\ _ |- _=>destruct H end.
+  repeat apply conj;qc_output_lane. }
+rewrite(qc_write_lanes c_pre nc_pre(nc_pre-nc)vl kc_pre zp A Ps inv lo hi r0_11 r1_11 r2_11 r3_11 r4_11 r5_11 r6_11 r7_11 r8_11 r9_11 r10_11 r11_11 r12_11 r13_11 r14_11 r15_11 ltac:(qc_linear) ltac:(qc_linear) Hout).
+replace(nc_pre-nc+vl)with(nc_pre-(nc-vl))by qc_linear.
+qc_subst;qc_normalize;qc_unwrap;qc_normalize.
+replace(a_pre+rounded_depth kc_pre-rounded_depth kc_pre)with a_pre by qc_linear.
+destruct(Z.eq_dec nc 16)as[Hdone|Hmore].
+- Left. qc_output_frame.
+- Right.
+pose proof(qc_next_facts nc_pre nc ltac:(qc_linear)ltac:(qc_linear)ltac:(qc_linear))as Hnext.
+decompose[and]Hnext;clear Hnext.
+qc_output_frame.
+Qed.
+Print Assumptions proof_of_test_rvv_entail_wit_4_6.

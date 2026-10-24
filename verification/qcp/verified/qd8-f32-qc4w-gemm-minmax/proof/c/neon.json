@@ -1,0 +1,1544 @@
+{
+  "source_token_sha256": "42b55a64322e2311e6bd097d4ad61f02c67dc756094897b2a5e2f7d4f7871462",
+  "annotations": [
+    {
+      "before_token": 53,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 54,
+      "kind": "annotation",
+      "text": "/*@ qc4_domain_shape(mr,nc,kc,Ps) which implies qc4_domain_shape(mr,nc,kc,Ps) && mr==1 && 0<nc && 0<kc && Zlength(Ps)==qc4_panels(nc) && qc4_matrix_wf(kc,Ps) */"
+    },
+    {
+      "before_token": 86,
+      "kind": "annotation",
+      "text": "/*@ emp which implies sizeof(int8_t)==1 && kc@pre%sizeof(int8_t)==0 && sizeof(int32_t)==4 && sizeof(float)==4 && emp */"
+    },
+    {
+      "before_token": 166,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),j=0 */"
+    },
+    {
+      "before_token": 185,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),j=4 */"
+    },
+    {
+      "before_token": 204,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),j=8 */"
+    },
+    {
+      "before_token": 223,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),j=12 */"
+    },
+    {
+      "before_token": 249,
+      "kind": "annotation",
+      "text": "/*@ where x=zp */"
+    },
+    {
+      "before_token": 259,
+      "kind": "annotation",
+      "text": "/*@ where a=&vksum0123,b=&vzp0 */"
+    },
+    {
+      "before_token": 269,
+      "kind": "annotation",
+      "text": "/*@ where a=&vksum4567,b=&vzp0 */"
+    },
+    {
+      "before_token": 279,
+      "kind": "annotation",
+      "text": "/*@ where a=&vksum89AB,b=&vzp0 */"
+    },
+    {
+      "before_token": 289,
+      "kind": "annotation",
+      "text": "/*@ where a=&vksumCDEF,b=&vzp0 */"
+    },
+    {
+      "before_token": 295,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (z0:Z) (z1:Z) (z2:Z) (z3:Z) (z4:Z) (z5:Z) (z6:Z) (z7:Z) (z8:Z) (z9:Z) (z10:Z) (z11:Z) (z12:Z) (z13:Z) (z14:Z) (z15:Z), mr==mr@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==64 && kc==rounded_depth(kc@pre) && qc4_domain_shape(mr@pre,nc@pre,kc@pre,Ps) && qc4_data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && mr==1 && 0<kc@pre && 0<rounded_depth(kc@pre) && rounded_depth(kc@pre)%2==0 && 0<nc@pre && Zlength(Ps)==qc4_panels(nc@pre) && qc4_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(int32_t)==4 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%16==0 && 0<=((nc@pre-nc)/16) && ((nc@pre-nc)/16)<qc4_panels(nc@pre) && c0==pointer_offset(c@pre,(nc@pre-nc),float) && 0<=k && k<=kc && k%2==0 && (rounded_depth(kc@pre)-k)%8==0 && a0==pointer_offset(a@pre,(rounded_depth(kc@pre)-k),char) && w==pointer_offset(w@pre,((nc@pre-nc)/16)*panel_bytes(kc@pre)+64+8*(rounded_depth(kc@pre)-k),char) && z0==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),0,zp,A,Ps) && z1==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),1,zp,A,Ps) && z2==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),2,zp,A,Ps) && z3==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),3,zp,A,Ps) && z4==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),4,zp,A,Ps) && z5==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),5,zp,A,Ps) && z6==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),6,zp,A,Ps) && z7==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),7,zp,A,Ps) && z8==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),8,zp,A,Ps) && z9==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),9,zp,A,Ps) && z10==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),10,zp,A,Ps) && z11==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),11,zp,A,Ps) && z12==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),12,zp,A,Ps) && z13==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),13,zp,A,Ps) && z14==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),14,zp,A,Ps) && z15==qc4_acc_signed((rounded_depth(kc@pre)-k),((nc@pre-nc)/16),15,zp,A,Ps) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) * qc4_packed(kc@pre,w@pre,Ps) * qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) * store(&(vmask.s0),char,-16) * store(&(vmask.s1),char,-16) * store(&(vmask.s2),char,-16) * store(&(vmask.s3),char,-16) * store(&(vmask.s4),char,-16) * store(&(vmask.s5),char,-16) * store(&(vmask.s6),char,-16) * store(&(vmask.s7),char,-16) * store(&(vacc0x0123.s0),int,z0) * store(&(vacc0x0123.s1),int,z1) * store(&(vacc0x0123.s2),int,z2) * store(&(vacc0x0123.s3),int,z3) * store(&(vacc0x4567.s0),int,z4) * store(&(vacc0x4567.s1),int,z5) * store(&(vacc0x4567.s2),int,z6) * store(&(vacc0x4567.s3),int,z7) * store(&(vacc0x89AB.s0),int,z8) * store(&(vacc0x89AB.s1),int,z9) * store(&(vacc0x89AB.s2),int,z10) * store(&(vacc0x89AB.s3),int,z11) * store(&(vacc0xCDEF.s0),int,z12) * store(&(vacc0xCDEF.s1),int,z13) * store(&(vacc0xCDEF.s2),int,z14) * store(&(vacc0xCDEF.s3),int,z15) * store(&(vksum0123.s0),int,qc4_ks(((nc@pre-nc)/16),0,Ps)) * store(&(vksum0123.s1),int,qc4_ks(((nc@pre-nc)/16),1,Ps)) * store(&(vksum0123.s2),int,qc4_ks(((nc@pre-nc)/16),2,Ps)) * store(&(vksum0123.s3),int,qc4_ks(((nc@pre-nc)/16),3,Ps)) * store(&(vksum4567.s0),int,qc4_ks(((nc@pre-nc)/16),4,Ps)) * store(&(vksum4567.s1),int,qc4_ks(((nc@pre-nc)/16),5,Ps)) * store(&(vksum4567.s2),int,qc4_ks(((nc@pre-nc)/16),6,Ps)) * store(&(vksum4567.s3),int,qc4_ks(((nc@pre-nc)/16),7,Ps)) * store(&(vksum89AB.s0),int,qc4_ks(((nc@pre-nc)/16),8,Ps)) * store(&(vksum89AB.s1),int,qc4_ks(((nc@pre-nc)/16),9,Ps)) * store(&(vksum89AB.s2),int,qc4_ks(((nc@pre-nc)/16),10,Ps)) * store(&(vksum89AB.s3),int,qc4_ks(((nc@pre-nc)/16),11,Ps)) * store(&(vksumCDEF.s0),int,qc4_ks(((nc@pre-nc)/16),12,Ps)) * store(&(vksumCDEF.s1),int,qc4_ks(((nc@pre-nc)/16),13,Ps)) * store(&(vksumCDEF.s2),int,qc4_ks(((nc@pre-nc)/16),14,Ps)) * store(&(vksumCDEF.s3),int,qc4_ks(((nc@pre-nc)/16),15,Ps)) * store(&(vzp0.s0),int,zp) * store(&(vzp0.s1),int,zp) * store(&(vzp0.s2),int,zp) * store(&(vzp0.s3),int,zp) */"
+    },
+    {
+      "before_token": 316,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=0,j=(rounded_depth(kc@pre)-k) */"
+    },
+    {
+      "before_token": 330,
+      "kind": "annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 339,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+0)+0 */"
+    },
+    {
+      "before_token": 359,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+0)+8 */"
+    },
+    {
+      "before_token": 379,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+2)+0 */"
+    },
+    {
+      "before_token": 399,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+2)+8 */"
+    },
+    {
+      "before_token": 419,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+4)+0 */"
+    },
+    {
+      "before_token": 439,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+4)+8 */"
+    },
+    {
+      "before_token": 459,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+6)+0 */"
+    },
+    {
+      "before_token": 479,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+6)+8 */"
+    },
+    {
+      "before_token": 501,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c01 */"
+    },
+    {
+      "before_token": 512,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c01,b=&vmask */"
+    },
+    {
+      "before_token": 523,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc01 */"
+    },
+    {
+      "before_token": 534,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc01,b=&vmask */"
+    },
+    {
+      "before_token": 545,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c23 */"
+    },
+    {
+      "before_token": 556,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c23,b=&vmask */"
+    },
+    {
+      "before_token": 567,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc23 */"
+    },
+    {
+      "before_token": 578,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc23,b=&vmask */"
+    },
+    {
+      "before_token": 589,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c45 */"
+    },
+    {
+      "before_token": 600,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c45,b=&vmask */"
+    },
+    {
+      "before_token": 611,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc45 */"
+    },
+    {
+      "before_token": 622,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc45,b=&vmask */"
+    },
+    {
+      "before_token": 633,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c67 */"
+    },
+    {
+      "before_token": 644,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c67,b=&vmask */"
+    },
+    {
+      "before_token": 655,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc67 */"
+    },
+    {
+      "before_token": 666,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc67,b=&vmask */"
+    },
+    {
+      "before_token": 675,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c0 */"
+    },
+    {
+      "before_token": 684,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc0 */"
+    },
+    {
+      "before_token": 693,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c1 */"
+    },
+    {
+      "before_token": 702,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc1 */"
+    },
+    {
+      "before_token": 711,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c2 */"
+    },
+    {
+      "before_token": 720,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc2 */"
+    },
+    {
+      "before_token": 729,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c3 */"
+    },
+    {
+      "before_token": 738,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc3 */"
+    },
+    {
+      "before_token": 747,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c4 */"
+    },
+    {
+      "before_token": 756,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc4 */"
+    },
+    {
+      "before_token": 765,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c5 */"
+    },
+    {
+      "before_token": 774,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc5 */"
+    },
+    {
+      "before_token": 783,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c6 */"
+    },
+    {
+      "before_token": 792,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc6 */"
+    },
+    {
+      "before_token": 801,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c7 */"
+    },
+    {
+      "before_token": 810,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc7 */"
+    },
+    {
+      "before_token": 821,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 826,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 829,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 840,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 845,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 848,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 859,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc0 */"
+    },
+    {
+      "before_token": 864,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 867,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 878,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc0 */"
+    },
+    {
+      "before_token": 883,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 886,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 897,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 902,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 905,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 916,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 921,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 924,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 935,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc1 */"
+    },
+    {
+      "before_token": 940,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 943,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 954,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc1 */"
+    },
+    {
+      "before_token": 959,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 962,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 973,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 978,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 981,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 992,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 997,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1000,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1011,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc2 */"
+    },
+    {
+      "before_token": 1016,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1019,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1030,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc2 */"
+    },
+    {
+      "before_token": 1035,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1038,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1049,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1054,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1057,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1068,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1073,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1076,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1087,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc3 */"
+    },
+    {
+      "before_token": 1092,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1095,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1106,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc3 */"
+    },
+    {
+      "before_token": 1111,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1114,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1125,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 1130,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1133,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1144,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 1149,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1152,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1163,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc4 */"
+    },
+    {
+      "before_token": 1168,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1171,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1182,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc4 */"
+    },
+    {
+      "before_token": 1187,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1190,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1201,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 1206,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1209,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1220,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 1225,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1228,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1239,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc5 */"
+    },
+    {
+      "before_token": 1244,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1247,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1258,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc5 */"
+    },
+    {
+      "before_token": 1263,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1266,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1277,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 1282,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1285,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1296,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 1301,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1304,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1315,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc6 */"
+    },
+    {
+      "before_token": 1320,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1323,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1334,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc6 */"
+    },
+    {
+      "before_token": 1339,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1342,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1353,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c7 */"
+    },
+    {
+      "before_token": 1358,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1361,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1372,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c7 */"
+    },
+    {
+      "before_token": 1377,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1380,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1391,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc7 */"
+    },
+    {
+      "before_token": 1396,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1399,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1410,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc7 */"
+    },
+    {
+      "before_token": 1415,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1418,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1430,
+      "kind": "annotation",
+      "text": "/*@ 0<=k && k<8 && k%2==0 && emp which implies 0<=k && k<8 && k%2==0 && (k==0 || k==2 || k==4 || k==6) && emp */"
+    },
+    {
+      "before_token": 1447,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=0,j=(rounded_depth(kc@pre)-k) */"
+    },
+    {
+      "before_token": 1472,
+      "kind": "annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 1481,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+0)+0 */"
+    },
+    {
+      "before_token": 1501,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+0)+8 */"
+    },
+    {
+      "before_token": 1523,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c01 */"
+    },
+    {
+      "before_token": 1534,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c01,b=&vmask */"
+    },
+    {
+      "before_token": 1545,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc01 */"
+    },
+    {
+      "before_token": 1556,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc01,b=&vmask */"
+    },
+    {
+      "before_token": 1565,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c0 */"
+    },
+    {
+      "before_token": 1574,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc0 */"
+    },
+    {
+      "before_token": 1585,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 1590,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1593,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1604,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 1609,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1612,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1623,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc0 */"
+    },
+    {
+      "before_token": 1628,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1631,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1642,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc0 */"
+    },
+    {
+      "before_token": 1647,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1650,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1672,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c1 */"
+    },
+    {
+      "before_token": 1681,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc1 */"
+    },
+    {
+      "before_token": 1692,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 1697,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1700,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1711,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 1716,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1719,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1730,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc1 */"
+    },
+    {
+      "before_token": 1735,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1738,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1749,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc1 */"
+    },
+    {
+      "before_token": 1754,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1757,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1778,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+2)+0 */"
+    },
+    {
+      "before_token": 1798,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+2)+8 */"
+    },
+    {
+      "before_token": 1820,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c23 */"
+    },
+    {
+      "before_token": 1831,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c23,b=&vmask */"
+    },
+    {
+      "before_token": 1842,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc23 */"
+    },
+    {
+      "before_token": 1853,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc23,b=&vmask */"
+    },
+    {
+      "before_token": 1862,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c2 */"
+    },
+    {
+      "before_token": 1871,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc2 */"
+    },
+    {
+      "before_token": 1882,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 1887,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1890,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 1901,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 1906,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1909,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 1920,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc2 */"
+    },
+    {
+      "before_token": 1925,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1928,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 1939,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc2 */"
+    },
+    {
+      "before_token": 1944,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1947,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 1969,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c3 */"
+    },
+    {
+      "before_token": 1978,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc3 */"
+    },
+    {
+      "before_token": 1989,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1994,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1997,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 2008,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 2013,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2016,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 2027,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc3 */"
+    },
+    {
+      "before_token": 2032,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2035,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 2046,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc3 */"
+    },
+    {
+      "before_token": 2051,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2054,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 2075,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+4)+0 */"
+    },
+    {
+      "before_token": 2095,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),ab=a@pre,A=A,mode=1,j=8*((rounded_depth(kc@pre)-k)+4)+8 */"
+    },
+    {
+      "before_token": 2117,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c45 */"
+    },
+    {
+      "before_token": 2128,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c45,b=&vmask */"
+    },
+    {
+      "before_token": 2139,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc45 */"
+    },
+    {
+      "before_token": 2150,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc45,b=&vmask */"
+    },
+    {
+      "before_token": 2159,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c4 */"
+    },
+    {
+      "before_token": 2168,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc4 */"
+    },
+    {
+      "before_token": 2179,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 2184,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2187,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 2198,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 2203,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2206,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 2217,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc4 */"
+    },
+    {
+      "before_token": 2222,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2225,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 2236,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc4 */"
+    },
+    {
+      "before_token": 2241,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2244,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 2266,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb01234567c5 */"
+    },
+    {
+      "before_token": 2275,
+      "kind": "annotation",
+      "text": "/*@ where a=&vb89ABCDEFc5 */"
+    },
+    {
+      "before_token": 2286,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 2291,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2294,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x0123,a=0,b=0 */"
+    },
+    {
+      "before_token": 2305,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 2310,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2313,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x4567,a=0,b=0 */"
+    },
+    {
+      "before_token": 2324,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc5 */"
+    },
+    {
+      "before_token": 2329,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2332,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0x89AB,a=0,b=0 */"
+    },
+    {
+      "before_token": 2343,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxb89ABCDEFc5 */"
+    },
+    {
+      "before_token": 2348,
+      "kind": "annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 2351,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vacc0xCDEF,a=0,b=0 */"
+    },
+    {
+      "before_token": 2358,
+      "kind": "annotation",
+      "text": "/*@ Assert exists (z0:Z) (z1:Z) (z2:Z) (z3:Z) (z4:Z) (z5:Z) (z6:Z) (z7:Z) (z8:Z) (z9:Z) (z10:Z) (z11:Z) (z12:Z) (z13:Z) (z14:Z) (z15:Z), mr==mr@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==64 && kc==rounded_depth(kc@pre) && qc4_domain_shape(mr@pre,nc@pre,kc@pre,Ps) && qc4_data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && mr==1 && 0<kc@pre && 0<rounded_depth(kc@pre) && rounded_depth(kc@pre)%2==0 && 0<nc@pre && Zlength(Ps)==qc4_panels(nc@pre) && qc4_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(int32_t)==4 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%16==0 && 0<=((nc@pre-nc)/16) && ((nc@pre-nc)/16)<qc4_panels(nc@pre) && c0==pointer_offset(c@pre,(nc@pre-nc),float) && 0<=k && k<8 && k%2==0 && a0==pointer_offset(a@pre,rounded_depth(kc@pre),char) && w==pointer_offset(w@pre,((nc@pre-nc)/16)*panel_bytes(kc@pre)+64+8*rounded_depth(kc@pre),char) && z0==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),0,zp,A,Ps) && z1==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),1,zp,A,Ps) && z2==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),2,zp,A,Ps) && z3==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),3,zp,A,Ps) && z4==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),4,zp,A,Ps) && z5==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),5,zp,A,Ps) && z6==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),6,zp,A,Ps) && z7==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),7,zp,A,Ps) && z8==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),8,zp,A,Ps) && z9==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),9,zp,A,Ps) && z10==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),10,zp,A,Ps) && z11==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),11,zp,A,Ps) && z12==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),12,zp,A,Ps) && z13==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),13,zp,A,Ps) && z14==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),14,zp,A,Ps) && z15==qc4_acc_signed(rounded_depth(kc@pre),((nc@pre-nc)/16),15,zp,A,Ps) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) * qc4_packed(kc@pre,w@pre,Ps) * qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) * store(&(vmask.s0),char,-16) * store(&(vmask.s1),char,-16) * store(&(vmask.s2),char,-16) * store(&(vmask.s3),char,-16) * store(&(vmask.s4),char,-16) * store(&(vmask.s5),char,-16) * store(&(vmask.s6),char,-16) * store(&(vmask.s7),char,-16) * store(&(vacc0x0123.s0),int,z0) * store(&(vacc0x0123.s1),int,z1) * store(&(vacc0x0123.s2),int,z2) * store(&(vacc0x0123.s3),int,z3) * store(&(vacc0x4567.s0),int,z4) * store(&(vacc0x4567.s1),int,z5) * store(&(vacc0x4567.s2),int,z6) * store(&(vacc0x4567.s3),int,z7) * store(&(vacc0x89AB.s0),int,z8) * store(&(vacc0x89AB.s1),int,z9) * store(&(vacc0x89AB.s2),int,z10) * store(&(vacc0x89AB.s3),int,z11) * store(&(vacc0xCDEF.s0),int,z12) * store(&(vacc0xCDEF.s1),int,z13) * store(&(vacc0xCDEF.s2),int,z14) * store(&(vacc0xCDEF.s3),int,z15) * store(&(vksum0123.s0),int,qc4_ks(((nc@pre-nc)/16),0,Ps)) * store(&(vksum0123.s1),int,qc4_ks(((nc@pre-nc)/16),1,Ps)) * store(&(vksum0123.s2),int,qc4_ks(((nc@pre-nc)/16),2,Ps)) * store(&(vksum0123.s3),int,qc4_ks(((nc@pre-nc)/16),3,Ps)) * store(&(vksum4567.s0),int,qc4_ks(((nc@pre-nc)/16),4,Ps)) * store(&(vksum4567.s1),int,qc4_ks(((nc@pre-nc)/16),5,Ps)) * store(&(vksum4567.s2),int,qc4_ks(((nc@pre-nc)/16),6,Ps)) * store(&(vksum4567.s3),int,qc4_ks(((nc@pre-nc)/16),7,Ps)) * store(&(vksum89AB.s0),int,qc4_ks(((nc@pre-nc)/16),8,Ps)) * store(&(vksum89AB.s1),int,qc4_ks(((nc@pre-nc)/16),9,Ps)) * store(&(vksum89AB.s2),int,qc4_ks(((nc@pre-nc)/16),10,Ps)) * store(&(vksum89AB.s3),int,qc4_ks(((nc@pre-nc)/16),11,Ps)) * store(&(vksumCDEF.s0),int,qc4_ks(((nc@pre-nc)/16),12,Ps)) * store(&(vksumCDEF.s1),int,qc4_ks(((nc@pre-nc)/16),13,Ps)) * store(&(vksumCDEF.s2),int,qc4_ks(((nc@pre-nc)/16),14,Ps)) * store(&(vksumCDEF.s3),int,qc4_ks(((nc@pre-nc)/16),15,Ps)) * store(&(vzp0.s0),int,zp) * store(&(vzp0.s1),int,zp) * store(&(vzp0.s2),int,zp) * store(&(vzp0.s3),int,zp) */"
+    },
+    {
+      "before_token": 2369,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc0x0123 */"
+    },
+    {
+      "before_token": 2370,
+      "kind": "annotation",
+      "text": "/*@ where a=0 */"
+    },
+    {
+      "before_token": 2382,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc0x4567 */"
+    },
+    {
+      "before_token": 2383,
+      "kind": "annotation",
+      "text": "/*@ where a=0 */"
+    },
+    {
+      "before_token": 2395,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc0x89AB */"
+    },
+    {
+      "before_token": 2396,
+      "kind": "annotation",
+      "text": "/*@ where a=0 */"
+    },
+    {
+      "before_token": 2408,
+      "kind": "annotation",
+      "text": "/*@ where a=&vacc0xCDEF */"
+    },
+    {
+      "before_token": 2409,
+      "kind": "annotation",
+      "text": "/*@ where a=0 */"
+    },
+    {
+      "before_token": 2424,
+      "kind": "annotation",
+      "text": "/*@ where x=inv */"
+    },
+    {
+      "before_token": 2433,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x0123,b=&vinput_scale0 */"
+    },
+    {
+      "before_token": 2442,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x4567,b=&vinput_scale0 */"
+    },
+    {
+      "before_token": 2451,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x89AB,b=&vinput_scale0 */"
+    },
+    {
+      "before_token": 2460,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0xCDEF,b=&vinput_scale0 */"
+    },
+    {
+      "before_token": 2469,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=0,j=0 */"
+    },
+    {
+      "before_token": 2489,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=0,j=4 */"
+    },
+    {
+      "before_token": 2509,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=0,j=8 */"
+    },
+    {
+      "before_token": 2529,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=0,j=12 */"
+    },
+    {
+      "before_token": 2549,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=1,j=0 */"
+    },
+    {
+      "before_token": 2574,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vbias0123,a=&vout0x0123,b=&vfilter_output_scale0123 */"
+    },
+    {
+      "before_token": 2598,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=1,j=4 */"
+    },
+    {
+      "before_token": 2623,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vbias4567,a=&vout0x4567,b=&vfilter_output_scale4567 */"
+    },
+    {
+      "before_token": 2647,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=1,j=8 */"
+    },
+    {
+      "before_token": 2672,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vbias89AB,a=&vout0x89AB,b=&vfilter_output_scale89AB */"
+    },
+    {
+      "before_token": 2696,
+      "kind": "annotation",
+      "text": "/*@ where K=kc@pre,wb=w@pre,Ps=Ps,tile=((nc@pre-nc)/16),kind=1,j=12 */"
+    },
+    {
+      "before_token": 2721,
+      "kind": "annotation",
+      "text": "/*@ where acc=&vbiasCDEF,a=&vout0xCDEF,b=&vfilter_output_scaleCDEF */"
+    },
+    {
+      "before_token": 2759,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x0123,b=&voutput_min */"
+    },
+    {
+      "before_token": 2768,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x4567,b=&voutput_min */"
+    },
+    {
+      "before_token": 2777,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x89AB,b=&voutput_min */"
+    },
+    {
+      "before_token": 2786,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0xCDEF,b=&voutput_min */"
+    },
+    {
+      "before_token": 2809,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x0123,b=&voutput_max */"
+    },
+    {
+      "before_token": 2818,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x4567,b=&voutput_max */"
+    },
+    {
+      "before_token": 2827,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x89AB,b=&voutput_max */"
+    },
+    {
+      "before_token": 2836,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0xCDEF,b=&voutput_max */"
+    },
+    {
+      "before_token": 2837,
+      "kind": "annotation",
+      "text": "/*@ qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) which implies qc4_write_state(c@pre,nc@pre,(nc@pre-nc),qc4_values(kc@pre,(nc@pre-nc),zp,A,Ps,inv,lo,hi)) */"
+    },
+    {
+      "before_token": 2856,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+0 */"
+    },
+    {
+      "before_token": 2867,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+4 */"
+    },
+    {
+      "before_token": 2878,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+8 */"
+    },
+    {
+      "before_token": 2889,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+12 */"
+    },
+    {
+      "before_token": 2929,
+      "kind": "annotation",
+      "text": "/*@ 0<nc && nc<16 && emp which implies 0<nc && nc<16 && 0<=(nc&8) && (nc&8)<=nc && 0<=(nc&12) && (nc&12)<=nc && 0<=(nc&14) && (nc&14)<=nc && (nc&12)==(nc&8)+(nc&4) && (nc&14)==(nc&12)+(nc&2) && emp */"
+    },
+    {
+      "before_token": 2936,
+      "kind": "annotation",
+      "text": "/*@ 0<nc && nc<16 && (nc&8)!=0 && emp which implies 0<nc && nc<16 && (nc&8)!=0 && (nc&8)==8 && 8<=nc && emp */"
+    },
+    {
+      "before_token": 2942,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+0 */"
+    },
+    {
+      "before_token": 2958,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+4 */"
+    },
+    {
+      "before_token": 2976,
+      "kind": "annotation",
+      "text": "/*@ 0<nc && nc<16 && (nc&4)!=0 && emp which implies 0<nc && nc<16 && (nc&4)!=0 && (nc&4)==4 && (nc&8)+4<=nc && emp */"
+    },
+    {
+      "before_token": 2982,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+(nc&8) */"
+    },
+    {
+      "before_token": 3000,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x0123 */"
+    },
+    {
+      "before_token": 3008,
+      "kind": "annotation",
+      "text": "/*@ 0<nc && nc<16 && (nc&2)!=0 && emp which implies 0<nc && nc<16 && (nc&2)!=0 && (nc&2)==2 && (nc&12)+2<=nc && emp */"
+    },
+    {
+      "before_token": 3014,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+(nc&12) */"
+    },
+    {
+      "before_token": 3026,
+      "kind": "annotation",
+      "text": "/*@ where a=&vout0x0123 */"
+    },
+    {
+      "before_token": 3035,
+      "kind": "annotation",
+      "text": "/*@ 0<nc && nc<16 && (nc&1)!=0 && emp which implies 0<nc && nc<16 && (nc&1)!=0 && (nc&1)==1 && (nc&14)+1==nc && emp */"
+    },
+    {
+      "before_token": 3043,
+      "kind": "annotation",
+      "text": "/*@ where base=c@pre,N=nc@pre,done=(nc@pre-nc)+(nc&14) */"
+    },
+    {
+      "before_token": 3051,
+      "kind": "annotation",
+      "text": "/*@ Inv Assert exists (wp:Z) (cp:Z) (ap:Z), mr==mr@pre && a==a@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==64 && kc==rounded_depth(kc@pre) && qc4_domain_shape(mr@pre,nc@pre,kc@pre,Ps) && qc4_data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && mr==1 && 0<kc@pre && 0<rounded_depth(kc@pre) && rounded_depth(kc@pre)%2==0 && 0<nc@pre && Zlength(Ps)==qc4_panels(nc@pre) && qc4_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(int32_t)==4 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && w==wp && c0==cp && a0==ap && (nc==0 || (0<nc && (nc@pre-nc)%16==0 && 0<=((nc@pre-nc)/16) && ((nc@pre-nc)/16)<qc4_panels(nc@pre) && ap==a@pre && cp==pointer_offset(c@pre,(nc@pre-nc),float) && wp==pointer_offset(w@pre,((nc@pre-nc)/16)*panel_bytes(kc@pre),char))) && CharArray::full(a@pre,qc4_a_extent(kc@pre),A) * qc4_packed(kc@pre,w@pre,Ps) * qc4_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,zp,A,Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,zero_point),int,zp) * store(field_addr(pointer_offset(quantization_params,0,struct xnn_qd8_quantization_params),xnn_qd8_quantization_params,inv_scale),float,inv) * store(&(vmask.s0),char,-16) * store(&(vmask.s1),char,-16) * store(&(vmask.s2),char,-16) * store(&(vmask.s3),char,-16) * store(&(vmask.s4),char,-16) * store(&(vmask.s5),char,-16) * store(&(vmask.s6),char,-16) * store(&(vmask.s7),char,-16) */"
+    }
+  ]
+}

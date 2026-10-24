@@ -1,0 +1,89 @@
+{
+  "passed": true,
+  "configured_jobs": 32,
+  "scope": "native actual original-counterexample and repaired kernels vs independent scalar packed/nibble/mod32/shift/FMA oracle; not full formal proof",
+  "sources": {
+    "impl/testNEON.c": "3a234e610298f7998ea073c3c75940beece0ad5d4f5506394465fd902a647b40",
+    "impl/testRVV.c": "58e91e14ded15e779c15d7c2c2a8d3e2f43b8ebb8a27911c982b7ced7d57b32d",
+    "proof/native/counterexample.c": "951945cd47324460d5b8f56a7e1b6c31d4f4760f4463b956461e7b394fb67e45",
+    "proof/native/driver.c": "bcf84293fd733544a014d62ca54b6adfdf79c2fe22546bd652d1c190c7d7db36",
+    "proof/native/repaired.c": "49d388308c9ed561372860f6b870b7f605e5ddfa31f9e4ee7f5433acab37c0d2",
+    "proof/native/original.c": "b77783e13ff41a225df59f54672182bd732b91f3bbe65734e14f961f8232ce14",
+    "proof/native/shim.h": "ab8287e7447e2993c21385ec5ce4e01d0a0afe208d7de6c6b23cb8690f790a93",
+    "proof/evidence/original-rvv.c": "94971a31dcc1bbf276c4bf024e93f86b618d011b28816342040dc40e1aa22627",
+    "proof/source-identity.json": "90073bf4d429f73a62d141537725715948ca167d5c10c45f531099f4c3debf3e",
+    "proof/native.py": "34e77ec340a78b8071524b4ab17eaa5fea5dda123d6179ed54b3a1a1de520a8f"
+  },
+  "inputs_unchanged": true,
+  "results": {
+    "original": {
+      "neon_bits": 2143289344,
+      "rvv_bits": 3212836864,
+      "same": false
+    },
+    "repaired": {
+      "passed": true,
+      "cases": 1881,
+      "output_cells": 31977
+    }
+  },
+  "records": [
+    {
+      "mode": "original",
+      "phase": "build",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-builtin-fmaf",
+        "-fsanitize=address,undefined",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/proof/native/counterexample.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/nativefinal03/original"
+      ],
+      "exit": 0,
+      "seconds": 2.449654869036749
+    },
+    {
+      "mode": "original",
+      "phase": "execute",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/nativefinal03/original"
+      ],
+      "exit": 0,
+      "seconds": 0.004847722826525569
+    },
+    {
+      "mode": "repaired",
+      "phase": "build",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-builtin-fmaf",
+        "-fsanitize=address,undefined",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/proof/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/nativefinal03/repaired"
+      ],
+      "exit": 0,
+      "seconds": 2.8118131670635194
+    },
+    {
+      "mode": "repaired",
+      "phase": "execute",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/nativefinal03/repaired"
+      ],
+      "exit": 0,
+      "seconds": 0.04269430902786553
+    }
+  ],
+  "whole_kernel_proved": false
+}

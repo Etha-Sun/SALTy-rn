@@ -1,0 +1,79 @@
+{
+  "passed": true,
+  "configured_jobs": 32,
+  "independent_controls": 3,
+  "false_goal_rejected": true,
+  "source_tamper_rejected": true,
+  "both_ISAs_zero_FMA_rejected_by_independent_oracle": true,
+  "live_inputs_unchanged": true,
+  "input_sha256": {
+    "impl/testNEON.c": "3a234e610298f7998ea073c3c75940beece0ad5d4f5506394465fd902a647b40",
+    "impl/testRVV.c": "58e91e14ded15e779c15d7c2c2a8d3e2f43b8ebb8a27911c982b7ced7d57b32d",
+    "proof/native/counterexample.c": "951945cd47324460d5b8f56a7e1b6c31d4f4760f4463b956461e7b394fb67e45",
+    "proof/native/driver.c": "bcf84293fd733544a014d62ca54b6adfdf79c2fe22546bd652d1c190c7d7db36",
+    "proof/native/repaired.c": "49d388308c9ed561372860f6b870b7f605e5ddfa31f9e4ee7f5433acab37c0d2",
+    "proof/native/original.c": "b77783e13ff41a225df59f54672182bd732b91f3bbe65734e14f961f8232ce14",
+    "proof/native/shim.h": "ab8287e7447e2993c21385ec5ce4e01d0a0afe208d7de6c6b23cb8690f790a93",
+    "proof/c/neon.json": "7d726e90d86fe707985e5999da77785b155fbe9a8ea0190b9e73a1e688404eb6",
+    "proof/prepare.py": "cd248fe05134bcb6fc47a26c7e6e80354d964ffd69ea0dd90a7e34ac4ea34bcf",
+    "spec.c": "e8b667ee3590f52a8957a562d53cfb146a858beec134fd03d54302dcbad0f0a1",
+    "proof/negative.py": "22499c51a85fa1b2d938ecd30c9798fd81481f801980c742b3effa3d5549b981"
+  },
+  "records": [
+    {
+      "label": "source-tamper",
+      "command": [
+        "python3",
+        "-c",
+        "import sys;sys.path.insert(0,sys.argv[1]);import prepare;prepare.source('neon')",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admissionaux02/negative/mutant/proof"
+      ],
+      "exit": 1,
+      "cpu_seconds": 30,
+      "virtual_memory_limit_gib": 16,
+      "physical_memory_budget": "enclosing finite16GiB cgroup lease; ASan reserves large virtual shadow"
+    },
+    {
+      "label": "false",
+      "command": [
+        "/tmp/qcp-coq820-install/bin/coqc",
+        "-q",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admissionaux02/negative/RejectFalse.v"
+      ],
+      "exit": 1,
+      "cpu_seconds": 120,
+      "virtual_memory_limit_gib": 16,
+      "physical_memory_budget": "enclosing finite16GiB cgroup lease; ASan reserves large virtual shadow"
+    },
+    {
+      "label": "both-wrong-build",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-builtin-fmaf",
+        "-fsanitize=address,undefined",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admissionaux02/negative/BothWrong.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admissionaux02/negative/both-wrong"
+      ],
+      "exit": 0,
+      "cpu_seconds": 600,
+      "virtual_memory_limit_gib": 16,
+      "physical_memory_budget": "enclosing finite16GiB cgroup lease; ASan reserves large virtual shadow"
+    },
+    {
+      "label": "both-wrong",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc4w-gemm-minmax/.build/admissionaux02/negative/both-wrong"
+      ],
+      "exit": 21,
+      "cpu_seconds": 600,
+      "virtual_memory_limit_gib": null,
+      "physical_memory_budget": "enclosing finite16GiB cgroup lease; ASan reserves large virtual shadow"
+    }
+  ]
+}
