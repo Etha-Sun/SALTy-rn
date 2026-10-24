@@ -1,6 +1,8 @@
 # 已验证的 kernel
 
-当前 **25/40**，目标至少 **31/40**。最新新增 [qu8-rdsum](qu8-rdsum/README.md) 两侧修复版；包含 [u8-vclamp](u8-vclamp/README.md)。
+2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
+
+当前 **25/40**，目标至少 **36/40**。最新新增 [qu8-rdsum](qu8-rdsum/README.md) 两侧修复版；包含 [u8-vclamp](u8-vclamp/README.md)。
 
 本目录收录完整模块化等价性检查通过的 kernel；清单见 manifest.json。后续 intrinsic 可以采用与原始规范对应的公开 spec，C 实现证明可选；实际 kernel、内存、普通 helper/caller 与 spec 绑定仍须完整检查。详见 [规范边界](../docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。

@@ -1,5 +1,7 @@
 2026-10-23 用户更新：intrinsic 不再强制提供 C implementation/body 证明，可直接采用与原始规范对应、公开定义并逐项登记的 spec；完整 kernel 证明和最终人工 spec 审核保留。详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。下文早期 body 必选要求仅保留历史含义，已发布证据不改写。
 
+2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
+
 当前 **25/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
 最新收录 [F32→F16 常量兼容版](verified/f32-f16-vcvt/README.zh-CN.md)：56实际C单元、2672 C字段+36策略、374普通Coq、2708假设报告及发布复核通过。完整FP32输入域、半精度输出位相等，原件及精确同值常量兼容记录保留。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
@@ -7,7 +9,7 @@
 
 最新 [QS8 激活修复版](verified/qs8-vlrelu/README.md) 完整64位统一门禁已通过：34实际C单元、2192 C字段+15策略字段、297次普通Coq、2207项最终假设审计；四项原取负UB反例和精确补丁保留。
 
-此前新增 [QU8→FP32 修复／兼容版](verified/qu8-f32-vcvt/README.zh-CN.md) 通过完整统一门禁；当前目标至少31个。QS8 转换已修正类型并完成全64位完整重验，见 verified/qs8-vcvt/。
+此前新增 [QU8→FP32 修复／兼容版](verified/qu8-f32-vcvt/README.zh-CN.md) 通过完整统一门禁；当前目标至少36个。QS8 转换已修正类型并完成全64位完整重验，见 verified/qs8-vcvt/。
 
 2026-10-23 集成了环境 PR #5、GEMM 模型 PR #6、前端复现 PR #7 和 u8 尾存储 PR #8。
 独立重放与本次 GEMM 推进见 [集成记录](audit/integration-20261023/README.zh-CN.md)。

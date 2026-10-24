@@ -1,6 +1,8 @@
 # QCP 工作记忆入口
 
-最新：正式 **25/40**，目标至少31。QU8 RDSUM 两侧大行数修复版完整门禁、归档和干净发布复核通过：37实际C单元/62函数体/1854字段/893普通Coq/2034最终Print（含180数学报告），11既有假设，无新项目公理。H SHA `62f174d2cbd87f37904ac0c8d51dfdb6dbe44077505547f63db41320baae0251`，full SHA `6a9ef4f083644351a0a2ace6a8e94b97937f4e60853a0c19839c94c9efe4d977`。32工作槽配置、16GiB普通/32GiB重型，978冻结输入身份核对；完整64位行数、stride零及输入/zero只读别名域保留，VLEN128/VLMAX32和非回绕内存契约下部分正确性。发布复核37CPP/62body，UBSan与实际16GiB/swap0 ASan各11664case/269730lane/side，独立列求和与helper oracle、两侧同错负控均通过。原件、逐侧patch、反例和更强intrinsic C-body证据保留。QUADD仍完整重放中，Argmax/Maxpool/DWConv/QS8mul组件不计数。
+2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
+
+最新：正式 **25/40**，目标至少36。QU8 RDSUM 两侧大行数修复版完整门禁、归档和干净发布复核通过：37实际C单元/62函数体/1854字段/893普通Coq/2034最终Print（含180数学报告），11既有假设，无新项目公理。H SHA `62f174d2cbd87f37904ac0c8d51dfdb6dbe44077505547f63db41320baae0251`，full SHA `6a9ef4f083644351a0a2ace6a8e94b97937f4e60853a0c19839c94c9efe4d977`。32工作槽配置、16GiB普通/32GiB重型，978冻结输入身份核对；完整64位行数、stride零及输入/zero只读别名域保留，VLEN128/VLMAX32和非回绕内存契约下部分正确性。发布复核37CPP/62body，UBSan与实际16GiB/swap0 ASan各11664case/269730lane/side，独立列求和与helper oracle、两侧同错负控均通过。原件、逐侧patch、反例和更强intrinsic C-body证据保留。QUADD仍完整重放中，Argmax/Maxpool/DWConv/QS8mul组件不计数。
 
 上一里程碑（24/40）的记录：，目标至少31。F32→F16 `compatible-exact-decimal-literals` 完整通过并收录：56实际C单元/119函数体/2672 C字段，13策略组36字段，87BASE+269本案+17typed/audit+Final=374普通Coq全fresh，2708最终Print仅14既有假设，完整463外部对象/373fresh源加载路径已核。H SHA `7bf0317bbc4edb23fd7786f6b8de8adb5f885e5009a5200f3906bb8a3ba62a0d`，full SHA `5ddd4a92b774abefa1f5c340f48ed1d26e3bee200fd8a479fd3e8df673712855`；369源输入全匹配。仅两种浮点literal每侧各两处改成编译器/Coq确认的精确同值十进制，非数值bug修复，不称原token不变。公开全部FP32、正64位N、输入N+3/ushort输出N且仅2字节对齐、nullable params、half输出位相等；固定VLEN128/e32m8/e16m4/VLMAX32、VL=min(AVL,32)，不宣称IEEE16抽象规范全域精化/ISA/ABI/终止性。原48intrinsics/51providers精确定义台账保留，既有C-body完整边界未因新规则跳过。干净56 CPP/119body/全部源日志归档核对，83递归native输入（8共享头按原相对路径拷贝）零漂移，UBSan与实际16GiB/swap0 ASan各2304case/295775lane/side，独立GCC12 _Float16 RNE oracle与共错负控通过；发布复核不计第二次证明。root继续ArgmaxPool，agent继续DWConv/Maxpool/QS8mul；QU8 RDSUM与QUADD仍live，不能在旧21目标处结束。
 
@@ -27,7 +29,7 @@
 
 - 2026-10-23 最新统一边界：intrinsic 无需另建或证明 C implementation；可直接用与原始 NEON/RVV spec 对应的公开合同和 Coq 定义，逐项保留官方版本/配置/语义台账供最终人工审核。实际 kernel/循环/内存/普通 helper/caller 仍完整证明，不增未证Coq公理，不隐去spec信任边界；详见 `verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md`。旧必选intrinsic-body规则被覆盖，live/frozen/已发布证据保持原状。
 
-- 用户最新将目标提高为：从当前 25/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
+- 用户最新将目标提高为：从当前 25/40 推进到至少 **36 个完整 verified kernel**。这取代原先的21及31目标；不可在旧目标处宣称本轮完成。从简单到难，积极并行推进。
 - 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
