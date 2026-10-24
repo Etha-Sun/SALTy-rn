@@ -1,0 +1,83 @@
+{
+  "unit": "caller",
+  "utc": "2026-10-24T05:34:34.844107+00:00",
+  "configured_jobs": 32,
+  "per_process_memory_gib": 16,
+  "seconds": 0.6438002740032971,
+  "commands": [
+    {
+      "label": "cpp",
+      "command": [
+        "/usr/bin/prlimit",
+        "--as=17179869184",
+        "--cpu=21600",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/shim",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/generation/caller/annotated.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/generation/caller/caller.c"
+      ],
+      "exit": 0,
+      "seconds": 0.01664370996877551
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "/usr/bin/prlimit",
+        "--as=17179869184",
+        "--cpu=21600",
+        "--",
+        "/tmp/qcp214-src/linux-binary/symexec",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--no-record-strategies",
+        "--strategy-application-limit",
+        "4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/generation/caller/caller.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/generation/caller",
+        "--coq-logic-path=Qd8Caller",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/shim",
+        "Qd8API"
+      ],
+      "exit": 0,
+      "seconds": 0.6260705119930208
+    }
+  ],
+  "generation_exit": 0,
+  "vc_fields": 42,
+  "expected_vc_fields": 42,
+  "goal_sha256": "e6a6ce4588ee982602deaf9a4804040bdc60f7c2a470b14b8c04e57437a10b14",
+  "expected_goal_sha256": "e6a6ce4588ee982602deaf9a4804040bdc60f7c2a470b14b8c04e57437a10b14",
+  "exact_goal_match": true,
+  "input_hashes": {
+    "spec.c": "bd344d9e725c1b0f51e0ea60c57aa814ef82792ada1c9ef9f0fdc53e1189b417",
+    "impl/testNEON.c": "b530f0bda521448501d686ac8d045974a4e1cfcaa9542e937198373255310dc6",
+    "impl/testRVV.c": "944c5e81b5b1c9ee1d0264d532f9dbf6d801737613401a0c1aab9e6f9af1f3d9",
+    "shim/semantic-models.h": "6c62363d34d5de256b02fced132778e5609ebe88dc0ec8397fd43f9b61b2399f",
+    "shim/scalar_nan.c": "75253ab6cb5a117ce22944ede94fdb2edfaf0698d3838a7b7baf1748f6a81c92",
+    "shim/rvv-api.h": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+    "shim/neon-basic.c": "28bc93b4181057b69c1e3e2c163d6fa40e5b27def517d9ef63f60dc42bc9b5e4",
+    "shim/copy.strategies": "08b5297e7562f6764a0fbd61b5a4abd85fac207edb1a06b17e82f053e733ecc1",
+    "shim/copy.h": "912efd3ff5c7eff41fae58d07b5763930ccae1cbdf43eda0ad278e28daa83aef",
+    "shim/neon-api.h": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+    "shim/types.h": "d0139b54d0131b212583091c417581249b1aa0d52a0c4777158720414d30231c",
+    "contracts/model.h": "06482bb051570536fa643c254e5e2cdf9c93dcfe331b73e2d4fdeaa24daf8977",
+    "proof/c/rvv.json": "43127853f95c5742e4acc80db4491dc4e617ad78a4ac8d48969bb092b2ad59eb",
+    "proof/c/neon.json": "1f1174bdb4bcbfa056706aef8da1a6dd7b815f6fdf3b3cd78ecf281b1acbb162",
+    "proof/generate.py": "1ce1933adaa03a57278aab4f271b71aff26f4bc261b3c574d9b96437b2557c5d",
+    "proof/prepare.py": "5ec77023ec7e4041ace4191c27a156d03e03ada7b373b234b9dc55d0542b8422"
+  },
+  "inputs_unchanged": true,
+  "passed": true
+}

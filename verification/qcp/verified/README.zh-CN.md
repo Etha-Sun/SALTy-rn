@@ -30,3 +30,5 @@ F32 VSQRT 两侧原始实现完整收录：[审核入口](f32-vsqrt/README.zh-CN
 F32→F16 精确同值 literal 兼容版完整收录：[审核入口](f32-f16-vcvt/README.zh-CN.md)。56实际C单元/2672字段+36策略/374普通Coq/2708假设报告及干净发布复核全部通过；保持原完整intrinsic C-body证明，不因新规则改写证据。
 
 QU8 RDSUM 两侧大行数修复版完整收录：[审核入口](qu8-rdsum/README.md)。37实际C单元/62函数体/1854字段、893普通Coq、2034最终假设报告及干净发布复核全部通过；完整合法64位行数、重叠只读行和stride零保留。固定VLEN128/VLMAX32、非回绕内存契约下的部分正确性；原intrinsic C-body证明与11个继承假设完整保留。
+
+2026-10-24：QD8 F32 QC8W GEMM补齐真实StrategyCheck目标绑定并完成独立全案复核。策略DSL具体类型改为I16，原kernel/spec SHA不变；1455个fresh模块及1941项假设报告通过，旧封存证据保留。此项是既有核复核，总数仍25/40。

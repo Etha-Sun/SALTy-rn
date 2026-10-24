@@ -109,3 +109,5 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 - 2026-10-23：目标提高到至少 **21/40**，新一批简单 kernel 已并行启动；当时仍 **11/40**。
 
 - 2026-10-23：qu8-f32 转换修复／兼容版完整验收并直接收录；当时 **12/40**，继续推进至少 **21/40**。
+
+2026-10-24 matrix worker：QD8 QC8W GEMM策略绑定复核完成，1914C/12策略/1455freshCoq/1941假设报告；原impl/spec不变，旧证据另存，verified仍25/40。IGEMM与QC4W仍candidate，不计整核。

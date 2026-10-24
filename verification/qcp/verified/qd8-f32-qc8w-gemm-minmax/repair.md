@@ -9,3 +9,5 @@
 5. **采用 intrinsic spec 边界。** 按用户纠正和项目新规则，不要求补齐软件 FMA C 实现。历史辅助软件实现 1007/1015 保留，未伪报完整。新包直接审核 Flocq FMA/乘法、两 ISA 的 min/max、活动 lane 与内存合同；NaN 策略和活动前缀的观察保持另有 Coq 定理。C body 计数仅含真正检查的 kernel/helper/caller，不把 spec 项计作实现证明。
 
 performance 未实测。NEON 多一个 prefetch 条件，RVV 是上述局部表达式改写；不据此承诺具体性能增减。
+
+2026-10-24：修正证明用策略DSL的类型绑定（23处`short`→`I16`），并新增实际StrategyCheck目标精确比对。不是kernel或输入域修复；impl/spec SHA不变。独立全案strategy-admission02已通过，原封存记录另行保留。

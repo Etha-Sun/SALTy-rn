@@ -56,3 +56,9 @@ python3 proof/check.py --run fresh01 --jobs 32 \
 C 程序解释还信任当前 QCP parser、预处理、符号执行路径覆盖和 VC 生成／合同实例化；本包检查其实际生成的完整接口，未把生成器本身的 soundness 当成已经形式化证明。
 
 未声称：ISA/编译器/物理 struct ABI 到模型的形式对应，任意硬件 VLEN，浮点异常标志/NaN payload 相等，独立完整终止性，或超出 QCP 整数地址模型的 ISO C 对象 provenance 性质。
+
+## 2026-10-24 策略绑定独立复核
+
+本次重新运行真实 StrategyCheck，发现策略DSL中的`short`会作为自由类型参数；将23处拼写改为具体类型`I16`，并精确绑定实际生成的12项策略目标。原 kernel 实现及公开 spec 的SHA保持不变。五个C单元的1914项字段重新生成并逐字匹配，1453个依赖源从空目录编译通过，两个最终模块及1941项假设报告通过；只继承既有14项框架假设。4992例ASan/UBSan独立oracle回归、双方同错负控制、False目标和源篡改拒绝均通过。
+
+新入口`proof/check.py`和`proof/seal.py`把实际策略生成/字节身份纳入门禁。新证据为`proof/evidence/full-run/`，原发布提交3c334f710的封存证据保留在`proof/evidence/published-3c334f710/`；旧记录不被改写成此次运行。新批配置32路，最终接口检查按依赖顺序执行。此复核不增加kernel数量，不改变intrinsic-spec/ISA、VLEN或终止性边界。

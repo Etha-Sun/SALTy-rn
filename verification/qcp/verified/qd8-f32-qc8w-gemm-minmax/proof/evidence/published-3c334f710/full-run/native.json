@@ -1,0 +1,105 @@
+{
+  "passed": true,
+  "utc": "2026-10-24T05:44:54.585391+00:00",
+  "configured_jobs": 32,
+  "ready_tasks": 2,
+  "cases": 4992,
+  "output_cells": 70272,
+  "sanitizers": [
+    "address",
+    "undefined"
+  ],
+  "independent_reference": "scalar modular32 dot product + separate RNE mul + libm fused fmaf + NaN-propagating max then min; no vector helper used by oracle",
+  "both_wrong_control": "both vector FMA adapters return zero; independent oracle must reject although caller accepts equality",
+  "native_not_formal_evidence": true,
+  "hardware_ISA_execution": false,
+  "source_hashes": {
+    "impl/testNEON.c": "b530f0bda521448501d686ac8d045974a4e1cfcaa9542e937198373255310dc6",
+    "impl/testRVV.c": "944c5e81b5b1c9ee1d0264d532f9dbf6d801737613401a0c1aab9e6f9af1f3d9",
+    "shim/semantic-models.h": "6c62363d34d5de256b02fced132778e5609ebe88dc0ec8397fd43f9b61b2399f",
+    "shim/scalar_nan.c": "75253ab6cb5a117ce22944ede94fdb2edfaf0698d3838a7b7baf1748f6a81c92",
+    "shim/rvv-api.h": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+    "shim/neon-basic.c": "28bc93b4181057b69c1e3e2c163d6fa40e5b27def517d9ef63f60dc42bc9b5e4",
+    "shim/copy.strategies": "08b5297e7562f6764a0fbd61b5a4abd85fac207edb1a06b17e82f053e733ecc1",
+    "shim/copy.h": "912efd3ff5c7eff41fae58d07b5763930ccae1cbdf43eda0ad278e28daa83aef",
+    "shim/neon-api.h": "641d5723abb9fe2ac028b91f831b614c611fd74d5772b51f31738c3f4039fb8a",
+    "shim/types.h": "d0139b54d0131b212583091c417581249b1aa0d52a0c4777158720414d30231c",
+    "contracts/model.h": "06482bb051570536fa643c254e5e2cdf9c93dcfe331b73e2d4fdeaa24daf8977",
+    "proof/native/support-provenance.json": "2b8ec27ae66a930b423afa1d49efa60ec5a938ef2fe9873edb5a0e0b7781eac1",
+    "proof/native/check.c": "b24182c6d661b67c20dd85adaff963708bee0fcc0e06533cbe585ec403348c03",
+    "proof/native/fma.c": "fa51c800f76f8e9f328fac60dc5495a28691b0cdffe9c7e4fcc8b6e0193c7a41",
+    "proof/native/support.c": "4f87998f15383f60f17f2c798a63b46fbed6fe806b7705f8501c095c77c97a08",
+    "spec.c": "bd344d9e725c1b0f51e0ea60c57aa814ef82792ada1c9ef9f0fdc53e1189b417",
+    "proof/native.py": "1afa571112ac5888733f350c314261f2ab461509d1404f42c9e6fc8a39935875"
+  },
+  "inputs_unchanged": true,
+  "results": [
+    {
+      "variant": "positive",
+      "step": "compile",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fno-strict-aliasing",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/proof/native/check.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/native/positive"
+      ],
+      "exit": 0,
+      "seconds": 0.8565710820257664,
+      "expected_exit": 0
+    },
+    {
+      "variant": "positive",
+      "step": "execute",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/native/positive"
+      ],
+      "exit": 0,
+      "seconds": 0.1147322990000248,
+      "expected_exit": 0
+    },
+    {
+      "variant": "both_wrong",
+      "step": "compile",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fno-strict-aliasing",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-DBOTH_WRONG",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/proof/native/check.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/native/both_wrong"
+      ],
+      "exit": 0,
+      "seconds": 0.6435099530499429,
+      "expected_exit": 0
+    },
+    {
+      "variant": "both_wrong",
+      "step": "execute",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-gemm-minmax/.build/admission01/native/both_wrong"
+      ],
+      "exit": 21,
+      "seconds": 0.008133318042382598,
+      "expected_exit": 21
+    }
+  ]
+}

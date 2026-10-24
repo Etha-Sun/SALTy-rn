@@ -12,6 +12,7 @@ def invoke(cmd,label,memory=None):
  out={'phase':label,'exit':r.returncode,'seconds':time.monotonic()-t,'command':cmd};records.append(out);return r.returncode
 assert invoke(['python3',str(ROOT/'proof/environment.py'),'--run',a.run],'environment')==0
 assert invoke(['python3',str(ROOT/'proof/dependency_audit.py'),'--run',a.run],'dependencies')==0
+assert invoke(['python3',str(ROOT/'proof/strategy_binding.py'),'--run',a.run,'--jobs','32'],'strategy',16)==0
 with concurrent.futures.ThreadPoolExecutor(max_workers=a.jobs) as pool:
  jobs=[pool.submit(invoke,['python3',str(ROOT/'proof/generate.py'),unit,'--run',a.run,'--jobs','32','--memory-gib','64' if unit=='neon' else '16'],'generate-'+unit,64 if unit=='neon' else 16) for unit in UNITS]
  codes=[f.result() for f in jobs]
