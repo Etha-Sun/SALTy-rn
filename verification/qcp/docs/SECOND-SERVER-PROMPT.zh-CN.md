@@ -1,5 +1,7 @@
 # 给另一台服务器 agent 的完整接续 prompt
 
+2026-10-23 用户统一更新：intrinsic 可直接采用与原始 NEON/RVV 规范对应的 spec，不要求另建或证明 C implementation。逐项公开官方版本、配置、合同与 Coq 定义供最终审核；实际 kernel、循环、内存和非 intrinsic helper/caller 仍须完整证明。新验收边界详见 [Intrinsic 规范边界](INTRINSIC-SPEC-POLICY.zh-CN.md)，覆盖下文旧的所有 intrinsic 必须 body-checked 条款。已发布和已冻结证据保留原样。
+
 2026-10-23 用户最新更新：本轮目标已提高到 **至少31/40** 个完整 verified kernel；当前仍18/40。后续未冻结批次默认32并发，普通任务16GiB、重型32GiB，长生成最多6小时；按整机内存协调，现有live/frozen任务保留原设置和真实记录，不为新默认重启。此更新覆盖下文旧21目标与16默认，证明标准和直接提交政策不变。
 
 2026-10-23 最新完整数量为18/40，包含U8 clamp、全64位重新验收的QS8转换和本次QS8激活修复版；权威清单为 verified/manifest.json。QS8激活全部34实际C单元、297普通Coq、2207项最终假设审计通过，四个原raw int32参数与64位长度域不收缩。继续已有owner的QS8/QU8加法、FP16和RDSUM，默认16并发/每进程16GiB；不要用下面历史9/40表覆盖新清单。
@@ -38,7 +40,7 @@
 
 VMULC关键证据：`verified/f32-vmulc/proof/status.json` → `full-status.json`；原NEON111 VC、原RVV42 VC、新primitive102 VC分别通过，最终全调用闭包也通过。其B缓冲区仅需一个float，不能误套成第二个n元素输入。605包含多个实际C单元，不能再把各分项重复加进去。
 
-`candidates/f32-vsqrt`仍未验证：模型编译与native156例通过，但当前QCP缺checked sqrt原语/实现；仅声明外部sqrtf合同能产生VC，不能消除实现义务。
+`candidates/f32-vsqrt`仍未验证。旧记录中的 sqrt C 实现缺口按新 intrinsic-spec 边界重新评估：可以使用与原指令规范对应、定义公开的 sqrt intrinsic spec；仍须完成两侧实际 kernel、循环/内存/入口与最终门禁，不能仅因新增合同便计通过。
 
 旧Frama-C/CSim有效清单为16项，另有隔离旧结果；这些只能供参考，不能转记为QCP通过。最初五项此前也有Frama-C结果，本次为独立QCP检查。CSim引用路径、模型修复和原版/修复版差异见 `catalog.json`、`docs/CSIM-REPAIRS.zh-CN.md`。
 
@@ -53,7 +55,7 @@ VMULC关键证据：`verified/f32-vmulc/proof/status.json` → `full-status.json
     testRVV.c               原始或明确记录修复后的RVV实现
   spec.c                    唯一公开函数与kernel契约入口
   contracts/                可选：短逻辑绑定头；不复制spec里的函数合同
-  shim/                     本案公开的类型、intrinsic实现/合同、调用适配
+  shim/                     本案公开的类型、intrinsic spec/可选实现、调用适配
   README.md                 输入域、观察标准、硬件配置、命令、完成与开放边界
   proof/
     c/                      仅Inv/Assert注释位置与策略；不放旧C函数体/旧合同
@@ -103,9 +105,9 @@ pointer-store的真实C函数体和合同都已检查。原kernel仍调用原sto
 
 ## 5. Shim语义来源与禁止reward hack的规则
 
-每个新增intrinsic或新配置都要在一个短语义台账里记录：原始intrinsic名、参数/返回类型、NEON或RVV来源、官方文档版本/章节或伪代码链接、所选ISA配置、C实现/合同、对应Coq定义、body proof与ISA对应状态。优先依据Arm官方ACLE/指令伪代码以及RISC-V官方Vector/浮点规范，必要时查固定版本Sail；独立查证两边，不凭相似名字推断相同语义。
+每个新增intrinsic或新配置都要在一个短语义台账里记录：原始intrinsic名、参数/返回类型、NEON或RVV来源、官方文档版本/章节或伪代码链接、所选ISA配置、公开合同、可选C实现、对应Coq定义及来源对照/body proof/ISA对应状态。优先依据Arm官方ACLE/指令伪代码以及RISC-V官方Vector/浮点规范，必要时查固定版本Sail；独立查证两边，不凭相似名字推断相同语义。
 
-**C body满足合同**与**合同忠实描述ISA**是两个问题。前者完整闭合才能计C-shim验证通过；后者需要来源审核和明确剩余形式化边界。不得将未经证实的ISA语义选择隐藏在“已证明”标签中。分别记录 `spec-only`、`body-checked`、`ISA-correspondence-checked`；早期extern合同只能帮助探索caller，不能计完整kernel。
+**Intrinsic spec 对应原始规范**是必需的语义审查项，**C body 满足合同**是可选的额外证据。允许直接在已登记的 intrinsic spec 下证明完整 kernel；分别记录 `source-reviewed-spec`、`body-checked` 和 `ISA-correspondence-checked`，不把来源对照或 C body 证明冒充 ISA 对应证明。普通非 intrinsic helper 不适用这个例外；调用契约、公开定义和未证边界仍需完整列出。
 
 必须保留的真实差别包括：
 
@@ -121,7 +123,7 @@ pointer-store的真实C函数体和合同都已检查。原kernel仍调用原sto
 2. 把post关系定义为True、从前提直接假定最终输出等价、给不可能满足的Require、复制冲突heap资源再用False消去。
 3. 未说明地排除NaN/Inf/零、增加非零除数、固定n=1、限制矩阵为1x8，然后宣称整个原kernel已完成。真实内存/参数/溢出约束需要有接口依据并公开；有限子情况另行标识。
 4. 为消除VC改原始C、改变FMA/归约顺序、移除分支、把完整kernel换成手写功能模型。若必须lower原调用，需独立source-to-model语义桥；仅token对照/native不等于该桥完成。
-5. 用Admitted、新增未证公理、未闭合extern/libm合同、只定义VC_Correct ModuleType、仅生成VC或仅跑native代替完整实现证明。
+5. 用Admitted、新增未证公理、未登记或未经规范对照的extern/libm合同、只定义VC_Correct ModuleType、仅生成VC或仅跑native代替完整kernel证明。已登记且来源对照的intrinsic spec按新边界处理。
 6. 把其他ISA的模型当当前ISA规范；照抄CSim旧shim/修复target而不查来源与原反例。
 
 最小验证既要跨两侧对照，也要与独立scalar/位语义oracle或可信语义源对照，防止双方同错。增加有效输入上的错误结果/错误模型控制、源篡改拒绝控制和false目标控制；保留实际结果。它们是回归与身份防线，不是模型一致性或ISA形式对应的完整证明。
@@ -167,7 +169,7 @@ catalog已记录旧CSim中4个与当前上游target不同的已收录版本：u8
 
 1. 原source/target来源与hash，impl逐字相同；原始/加注释两路C token及同frontend CPP token一致。额外预处理指令、宏注入、私有Require/Ensure替换必须拒绝。
 2. 简单公开spec，输入输出对象/长度/单位、padding、alias、参数域、overflow、frame、硬件配置与最终观察明确；模型定义有审查入口。比较器合同不偷偷承担原kernel证明。
-3. 所有实际kernel、intrinsic、helper、compare/wrapper的真实C unit清单。遍历全部call，callee合同与已证明body精确绑定，不能只信extern声明；新的assert/vsetvl helper也要覆盖。
+3. 列出实际 kernel、普通 helper、compare/wrapper 的 C 单元，以及独立的 intrinsic-spec 清单。遍历全部 call：普通 callee 合同精确绑定已证 body；intrinsic 精确绑定已对照原始规范的公开合同/Coq 定义，不要求其 C body。assert 等普通 helper 仍需覆盖；vsetvl 可作为配置明确的 intrinsic spec。
 4. 用该次实际C重新生成QCP goals与策略目标；核对checked Coq目标就是这次生成目标。`--no-float-finite-vc`用于当前完整IEEE域路径，不得借有限性默认检查无意缩小域。
 5. 所需Coq依赖先编译，新C VC/策略全部闭合；最终真正实例化每个unit的 `Module ... : <fresh_goal>.VC_Correct := <checked_module>`。ModuleType里有Axiom列表只是接口，不是证明。
 6. 统一fresh依赖环境下的完整门禁，核查生成目标、source/模型hash与logical module一致性。既有共享依赖若复用，必须有精确来源和完整已检查身份；发布验收需fresh重放必要闭包，不使用任意旧实验.vo伪装当前检查。不得把Model/FastFrame同名而不同编译实例混用。
@@ -210,7 +212,7 @@ EVIDENCE: 实际命令、结果文件、输入/模型身份、精确通过范围
 OPEN: spec问题 / proof缺口 / 工具限制 / 环境失败 / 实际反例，逐项区分
 ```
 
-现在开始：先同步和读取最新协调信息，保护已有GEMM/环境成果，重放环境与一个verified样例，再将剩余35项按能力分给无冲突agent并持续推进。不要停在计划、native结果或条件性caller；逐项完成真实kernel与全部实现闭包。遇到实际不等价或工具缺口，保存可复现证据并转向其他可推进kernel，不为40/40改写事实。
+现在开始：先同步和读取最新协调信息，保护已有GEMM/环境成果，重放环境与一个verified样例，再将剩余35项按能力分给无冲突agent并持续推进。不要停在计划、native结果或只假设两侧kernel已正确的caller；逐项完成真实kernel及已声明intrinsic-spec边界下的完整调用闭包。遇到实际不等价或工具缺口，保存可复现证据并转向其他可推进kernel，不为40/40改写事实。
 
 本次最新正式清单为14/40，新增qu8-rsum（NEON语法兼容版）：21实际C/890字段/34 body，2策略字段，257普通Coq，892项最终假设及463个外部依赖身份核对通过；固定VLEN128、公开mod32域及padding要求见对应README。当前目标至少21；局部组件不计数。
 

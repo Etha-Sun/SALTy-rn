@@ -11,6 +11,8 @@
 
 ## 用户当前要求
 
+- 2026-10-23 最新统一边界：intrinsic 无需另建或证明 C implementation；可直接用与原始 NEON/RVV spec 对应的公开合同和 Coq 定义，逐项保留官方版本/配置/语义台账供最终人工审核。实际 kernel/循环/内存/普通 helper/caller 仍完整证明，不增未证Coq公理，不隐去spec信任边界；详见 `verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md`。旧必选intrinsic-body规则被覆盖，live/frozen/已发布证据保持原状。
+
 - 用户最新将目标提高为：从当前 18/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
 - 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。

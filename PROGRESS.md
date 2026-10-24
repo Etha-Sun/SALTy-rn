@@ -23,14 +23,18 @@
 
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
+最新约定：intrinsic 只需采用与原始规范对应、可审核的 spec；C 实现及其证明可选。完整 kernel 仍须验证。见 [规范边界](verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
+
 ## 当前工作
 
 - FP32→FP16：NEON 端 419 项通过；RVV 新目标的 5 项内存完整接口已通过，继续汇总。
 - QS8/QU8 加法：QS8 两侧完整组件通过，正在重新生成全部 C 目标；QU8 的 NEON 780 项通过，继续 RVV。
-- QS8 RDSUM：两侧完整组件已通过；35 个实际 C 单元重新生成通过，正在重编全部证明。
+- QS8 RDSUM：35 个实际 C 单元、全部证明与最终门禁已通过，正在归档和入库；尚未增加正式计数。
 - QU8 RDSUM：两侧循环分项通过；修正无符号单元注释后，新 NEON 596 项目标已生成，继续完整接口检查。
 
-以上组件进展尚未计入 18 个完整通过的 kernel。
+- ArgmaxPool：大尺寸计数错误已修复，独立 oracle 与 ASan/UBSan 回归通过；开始形式化证明。
+
+以上待收录或组件进展尚未计入 18 个完整通过的 kernel。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
