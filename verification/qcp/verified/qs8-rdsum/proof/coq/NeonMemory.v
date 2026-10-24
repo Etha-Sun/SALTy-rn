@@ -1,0 +1,19 @@
+From Qs8Rdsum Require Import NeonMemoryPart00 NeonMemoryPart01 NeonMemoryPart02 NeonMemoryPart03 NeonMemoryPart04 NeonMemoryPart05 NeonMemoryPart06 NeonMemoryPart07 NeonMemoryPart08 NeonMemoryPart09 NeonMemoryPart10 NeonMemoryPart11 NeonMemoryPart12 NeonMemoryPart13 NeonMemoryPart14 NeonMemoryPart15.
+Module CheckedNeonMemory.
+ Include CheckedNeonMemoryPart00.
+ Include CheckedNeonMemoryPart01.
+ Include CheckedNeonMemoryPart02.
+ Include CheckedNeonMemoryPart03.
+ Include CheckedNeonMemoryPart04.
+ Include CheckedNeonMemoryPart05.
+ Include CheckedNeonMemoryPart06.
+ Include CheckedNeonMemoryPart07.
+ Include CheckedNeonMemoryPart08.
+ Include CheckedNeonMemoryPart09.
+ Include CheckedNeonMemoryPart10.
+ Include CheckedNeonMemoryPart11.
+ Include CheckedNeonMemoryPart12.
+ Include CheckedNeonMemoryPart13.
+ Include CheckedNeonMemoryPart14.
+ Include CheckedNeonMemoryPart15.
+End CheckedNeonMemory.

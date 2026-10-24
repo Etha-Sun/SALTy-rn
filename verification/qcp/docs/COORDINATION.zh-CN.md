@@ -1,5 +1,7 @@
 # 双服务器协作约定
 
+2026-10-23 最新收录：QS8 RDSUM 两侧修复版，35实际C单元/1590 C字段/703普通Coq/1771假设报告及发布身份与双sanitizer独立oracle复核通过，当前19/40，目标至少31。新intrinsic规则不改写本案已经冻结的更强C-body证据。
+
 2026-10-23 用户统一更新：intrinsic 可直接采用与原始 NEON/RVV 规范对应的 spec，不要求另建或证明 C implementation。逐项公开官方版本、配置、合同与 Coq 定义供最终审核；实际 kernel、循环、内存和非 intrinsic helper/caller 仍须完整证明。新验收边界详见 [Intrinsic 规范边界](INTRINSIC-SPEC-POLICY.zh-CN.md)，覆盖下文旧的所有 intrinsic 必须 body-checked 条款。已发布和已冻结证据保留原样。
 
 2026-10-23 最新：QS8激活两侧修复版完整64位门禁通过并收录，当前有效18/40（包含U8 clamp）。34实际C单元/2192 C字段+15策略/297普通Coq/2207最终假设报告；四个raw int32参数与64位长度域保留，原件/四项INT32_MIN反例/精确补丁/类型失效历史均归档。QS8/QU8加法、FP16和RDSUM仍由原owner并行推进，组件不增加计数。

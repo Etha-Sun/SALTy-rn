@@ -1,0 +1,22 @@
+{
+  "variant": "both-sides-repaired-neon-loop-compatible-v2",
+  "reason": "Full-size_t row count replaces signed32 truncation; NEON ceil uses overflow-free integer quotient/remainder and full size_t batches. Bounded inner batch remains signed int so final subtraction by7 may become negative instead of unsigned underflow. Signed NEON scalar tail uses modulo32 addition for all initialized outputs. NEON guarded do-while rewritten as while with identical normal body to avoid a reproduced QCP record initialization SIGSEGV; this compatibility change is not an original C semantic counterexample.",
+  "original_counterexamples": "proof/original-counterexamples.json",
+  "rows_domain": "all positive uint64 values subject to the existing rd_inputs and owned rd_mem: unwrapped base+row*stride+col footprints, no cyclic numeric-address wrapping; no rows<2^31 restriction",
+  "sides": {
+    "neon": {
+      "original_sha256": "63798158b69457fe965a29a3b3371fa3dd7785c13182b75aa4b9c09704dd4d20",
+      "actual_sha256": "e942dc042c92acd10f6677c7ff98be55159f5d1c30801c24ffe3aab04421cabe",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "79371da8f3f5e8570b814a3011037654de93232454652e5594bc68d9c793a386"
+    },
+    "rvv": {
+      "original_sha256": "338f2b3574d4f206854e67bbe7fe26eba69e699c063171ae1df9654d49e112e4",
+      "actual_sha256": "adceec77eac8ccbbfc4beb6a644d1382d5920e7634b9392dddb4efc810360207",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "22aeb09b93c159b982d8bacd08f80695ada786c52cbeff567dfd95cfde36fef2"
+    }
+  },
+  "semantic_repair_not_original_proof": true,
+  "compatibility_record": "proof/loop-compatibility.json"
+}

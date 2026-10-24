@@ -1,5 +1,7 @@
 # 给另一台服务器 agent 的完整接续 prompt
 
+2026-10-23 最新完整数量 **19/40**，新收录QS8 RDSUM两侧修复版：35实际C单元/1590 C字段、703普通Coq、1771最终假设报告，11个既有框架假设；完整正uint64行数与显式内存边界保留，发布复核通过。目标仍至少31。下文18及更早数字是历史快照；当前以verified/manifest.json为准。
+
 2026-10-23 用户统一更新：intrinsic 可直接采用与原始 NEON/RVV 规范对应的 spec，不要求另建或证明 C implementation。逐项公开官方版本、配置、合同与 Coq 定义供最终审核；实际 kernel、循环、内存和非 intrinsic helper/caller 仍须完整证明。新验收边界详见 [Intrinsic 规范边界](INTRINSIC-SPEC-POLICY.zh-CN.md)，覆盖下文旧的所有 intrinsic 必须 body-checked 条款。已发布和已冻结证据保留原样。
 
 2026-10-23 用户最新更新：本轮目标已提高到 **至少31/40** 个完整 verified kernel；当前仍18/40。后续未冻结批次默认32并发，普通任务16GiB、重型32GiB，长生成最多6小时；按整机内存协调，现有live/frozen任务保留原设置和真实记录，不为新默认重启。此更新覆盖下文旧21目标与16默认，证明标准和直接提交政策不变。

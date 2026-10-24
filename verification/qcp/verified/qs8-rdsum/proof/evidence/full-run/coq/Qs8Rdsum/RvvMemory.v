@@ -1,0 +1,11 @@
+From Qs8Rdsum Require Import RvvMemoryPart00 RvvMemoryPart01 RvvMemoryPart02 RvvMemoryPart03.
+Module CheckedRvvMemory.
+ Include CheckedRvvMemoryPart00.
+ Include CheckedRvvMemoryPart01.
+ Include CheckedRvvMemoryPart02.
+ Include CheckedRvvMemoryPart03.
+End CheckedRvvMemory.
+Print Assumptions CheckedRvvMemory.proof_of_test_rvv_entail_wit_1.
+Print Assumptions CheckedRvvMemory.proof_of_test_rvv_entail_wit_12.
+Print Assumptions CheckedRvvMemory.proof_of_test_rvv_entail_wit_13.
+Print Assumptions CheckedRvvMemory.proof_of_test_rvv_return_wit_1.

@@ -1,0 +1,39 @@
+#include "vector_primitives.h"
+vint16m4_t __riscv_vwadd_wv_i16m4(vint16m4_t a,vint8m2_t b,size_t vl)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z) (b8:Z) (b9:Z) (b10:Z) (b11:Z) (b12:Z) (b13:Z) (b14:Z) (b15:Z) (b16:Z) (b17:Z) (b18:Z) (b19:Z) (b20:Z) (b21:Z) (b22:Z) (b23:Z) (b24:Z) (b25:Z) (b26:Z) (b27:Z) (b28:Z) (b29:Z) (b30:Z) (b31:Z) Require -32768<=a0 && a0<=32767 && -32768<=a1 && a1<=32767 && -32768<=a2 && a2<=32767 && -32768<=a3 && a3<=32767 && -32768<=a4 && a4<=32767 && -32768<=a5 && a5<=32767 && -32768<=a6 && a6<=32767 && -32768<=a7 && a7<=32767 && -32768<=a8 && a8<=32767 && -32768<=a9 && a9<=32767 && -32768<=a10 && a10<=32767 && -32768<=a11 && a11<=32767 && -32768<=a12 && a12<=32767 && -32768<=a13 && a13<=32767 && -32768<=a14 && a14<=32767 && -32768<=a15 && a15<=32767 && -32768<=a16 && a16<=32767 && -32768<=a17 && a17<=32767 && -32768<=a18 && a18<=32767 && -32768<=a19 && a19<=32767 && -32768<=a20 && a20<=32767 && -32768<=a21 && a21<=32767 && -32768<=a22 && a22<=32767 && -32768<=a23 && a23<=32767 && -32768<=a24 && a24<=32767 && -32768<=a25 && a25<=32767 && -32768<=a26 && a26<=32767 && -32768<=a27 && a27<=32767 && -32768<=a28 && a28<=32767 && -32768<=a29 && a29<=32767 && -32768<=a30 && a30<=32767 && -32768<=a31 && a31<=32767 && -128<=b0 && b0<=127 && -128<=b1 && b1<=127 && -128<=b2 && b2<=127 && -128<=b3 && b3<=127 && -128<=b4 && b4<=127 && -128<=b5 && b5<=127 && -128<=b6 && b6<=127 && -128<=b7 && b7<=127 && -128<=b8 && b8<=127 && -128<=b9 && b9<=127 && -128<=b10 && b10<=127 && -128<=b11 && b11<=127 && -128<=b12 && b12<=127 && -128<=b13 && b13<=127 && -128<=b14 && b14<=127 && -128<=b15 && b15<=127 && -128<=b16 && b16<=127 && -128<=b17 && b17<=127 && -128<=b18 && b18<=127 && -128<=b19 && b19<=127 && -128<=b20 && b20<=127 && -128<=b21 && b21<=127 && -128<=b22 && b22<=127 && -128<=b23 && b23<=127 && -128<=b24 && b24<=127 && -128<=b25 && b25<=127 && -128<=b26 && b26<=127 && -128<=b27 && b27<=127 && -128<=b28 && b28<=127 && -128<=b29 && b29<=127 && -128<=b30 && b30<=127 && -128<=b31 && b31<=127 && 0<=vl && vl<=32 && store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7) * store(&(a.s8),short,a8) * store(&(a.s9),short,a9) * store(&(a.s10),short,a10) * store(&(a.s11),short,a11) * store(&(a.s12),short,a12) * store(&(a.s13),short,a13) * store(&(a.s14),short,a14) * store(&(a.s15),short,a15) * store(&(a.s16),short,a16) * store(&(a.s17),short,a17) * store(&(a.s18),short,a18) * store(&(a.s19),short,a19) * store(&(a.s20),short,a20) * store(&(a.s21),short,a21) * store(&(a.s22),short,a22) * store(&(a.s23),short,a23) * store(&(a.s24),short,a24) * store(&(a.s25),short,a25) * store(&(a.s26),short,a26) * store(&(a.s27),short,a27) * store(&(a.s28),short,a28) * store(&(a.s29),short,a29) * store(&(a.s30),short,a30) * store(&(a.s31),short,a31) * store(&(b.s0),char,b0) * store(&(b.s1),char,b1) * store(&(b.s2),char,b2) * store(&(b.s3),char,b3) * store(&(b.s4),char,b4) * store(&(b.s5),char,b5) * store(&(b.s6),char,b6) * store(&(b.s7),char,b7) * store(&(b.s8),char,b8) * store(&(b.s9),char,b9) * store(&(b.s10),char,b10) * store(&(b.s11),char,b11) * store(&(b.s12),char,b12) * store(&(b.s13),char,b13) * store(&(b.s14),char,b14) * store(&(b.s15),char,b15) * store(&(b.s16),char,b16) * store(&(b.s17),char,b17) * store(&(b.s18),char,b18) * store(&(b.s19),char,b19) * store(&(b.s20),char,b20) * store(&(b.s21),char,b21) * store(&(b.s22),char,b22) * store(&(b.s23),char,b23) * store(&(b.s24),char,b24) * store(&(b.s25),char,b25) * store(&(b.s26),char,b26) * store(&(b.s27),char,b27) * store(&(b.s28),char,b28) * store(&(b.s29),char,b29) * store(&(b.s30),char,b30) * store(&(b.s31),char,b31) Ensure store(&(__return.s0),short,rd_active_wadd16(a0,b0,0,vl)) * store(&(__return.s1),short,rd_active_wadd16(a1,b1,1,vl)) * store(&(__return.s2),short,rd_active_wadd16(a2,b2,2,vl)) * store(&(__return.s3),short,rd_active_wadd16(a3,b3,3,vl)) * store(&(__return.s4),short,rd_active_wadd16(a4,b4,4,vl)) * store(&(__return.s5),short,rd_active_wadd16(a5,b5,5,vl)) * store(&(__return.s6),short,rd_active_wadd16(a6,b6,6,vl)) * store(&(__return.s7),short,rd_active_wadd16(a7,b7,7,vl)) * store(&(__return.s8),short,rd_active_wadd16(a8,b8,8,vl)) * store(&(__return.s9),short,rd_active_wadd16(a9,b9,9,vl)) * store(&(__return.s10),short,rd_active_wadd16(a10,b10,10,vl)) * store(&(__return.s11),short,rd_active_wadd16(a11,b11,11,vl)) * store(&(__return.s12),short,rd_active_wadd16(a12,b12,12,vl)) * store(&(__return.s13),short,rd_active_wadd16(a13,b13,13,vl)) * store(&(__return.s14),short,rd_active_wadd16(a14,b14,14,vl)) * store(&(__return.s15),short,rd_active_wadd16(a15,b15,15,vl)) * store(&(__return.s16),short,rd_active_wadd16(a16,b16,16,vl)) * store(&(__return.s17),short,rd_active_wadd16(a17,b17,17,vl)) * store(&(__return.s18),short,rd_active_wadd16(a18,b18,18,vl)) * store(&(__return.s19),short,rd_active_wadd16(a19,b19,19,vl)) * store(&(__return.s20),short,rd_active_wadd16(a20,b20,20,vl)) * store(&(__return.s21),short,rd_active_wadd16(a21,b21,21,vl)) * store(&(__return.s22),short,rd_active_wadd16(a22,b22,22,vl)) * store(&(__return.s23),short,rd_active_wadd16(a23,b23,23,vl)) * store(&(__return.s24),short,rd_active_wadd16(a24,b24,24,vl)) * store(&(__return.s25),short,rd_active_wadd16(a25,b25,25,vl)) * store(&(__return.s26),short,rd_active_wadd16(a26,b26,26,vl)) * store(&(__return.s27),short,rd_active_wadd16(a27,b27,27,vl)) * store(&(__return.s28),short,rd_active_wadd16(a28,b28,28,vl)) * store(&(__return.s29),short,rd_active_wadd16(a29,b29,29,vl)) * store(&(__return.s30),short,rd_active_wadd16(a30,b30,30,vl)) * store(&(__return.s31),short,rd_active_wadd16(a31,b31,31,vl)) */
+{
+vint16m4_t r;
+r.s0=rdsum_active_wadd16(a.s0,b.s0,0,vl);
+r.s1=rdsum_active_wadd16(a.s1,b.s1,1,vl);
+r.s2=rdsum_active_wadd16(a.s2,b.s2,2,vl);
+r.s3=rdsum_active_wadd16(a.s3,b.s3,3,vl);
+r.s4=rdsum_active_wadd16(a.s4,b.s4,4,vl);
+r.s5=rdsum_active_wadd16(a.s5,b.s5,5,vl);
+r.s6=rdsum_active_wadd16(a.s6,b.s6,6,vl);
+r.s7=rdsum_active_wadd16(a.s7,b.s7,7,vl);
+r.s8=rdsum_active_wadd16(a.s8,b.s8,8,vl);
+r.s9=rdsum_active_wadd16(a.s9,b.s9,9,vl);
+r.s10=rdsum_active_wadd16(a.s10,b.s10,10,vl);
+r.s11=rdsum_active_wadd16(a.s11,b.s11,11,vl);
+r.s12=rdsum_active_wadd16(a.s12,b.s12,12,vl);
+r.s13=rdsum_active_wadd16(a.s13,b.s13,13,vl);
+r.s14=rdsum_active_wadd16(a.s14,b.s14,14,vl);
+r.s15=rdsum_active_wadd16(a.s15,b.s15,15,vl);
+r.s16=rdsum_active_wadd16(a.s16,b.s16,16,vl);
+r.s17=rdsum_active_wadd16(a.s17,b.s17,17,vl);
+r.s18=rdsum_active_wadd16(a.s18,b.s18,18,vl);
+r.s19=rdsum_active_wadd16(a.s19,b.s19,19,vl);
+r.s20=rdsum_active_wadd16(a.s20,b.s20,20,vl);
+r.s21=rdsum_active_wadd16(a.s21,b.s21,21,vl);
+r.s22=rdsum_active_wadd16(a.s22,b.s22,22,vl);
+r.s23=rdsum_active_wadd16(a.s23,b.s23,23,vl);
+r.s24=rdsum_active_wadd16(a.s24,b.s24,24,vl);
+r.s25=rdsum_active_wadd16(a.s25,b.s25,25,vl);
+r.s26=rdsum_active_wadd16(a.s26,b.s26,26,vl);
+r.s27=rdsum_active_wadd16(a.s27,b.s27,27,vl);
+r.s28=rdsum_active_wadd16(a.s28,b.s28,28,vl);
+r.s29=rdsum_active_wadd16(a.s29,b.s29,29,vl);
+r.s30=rdsum_active_wadd16(a.s30,b.s30,30,vl);
+r.s31=rdsum_active_wadd16(a.s31,b.s31,31,vl);
+return r;
+}

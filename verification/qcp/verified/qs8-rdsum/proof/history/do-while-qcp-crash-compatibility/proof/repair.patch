@@ -1,0 +1,60 @@
+--- a/testNEON.c
++++ b/testNEON.c
+@@ -36,11 +36,11 @@
+     // 256 int8s may be summed into an int16 before overflowing
+     // To prevent handling the tails of the inner 256 loop, we round 256 down to
+     // the nearest integer multiple of ACCUMULATORS.
+-    int r = rows;
++    size_t r = rows;
+     while (r > 0) {
+       int16x8_t vacc16_0 = vmovq_n_s16(0);
+       int16x8_t vacc16_8 = vmovq_n_s16(0);
+-      for (int current_batch = min(r, 252); current_batch > 0; current_batch -= 7) {
++      for (int current_batch = rdsum_min252(r); current_batch > 0; current_batch -= 7) {
+         if XNN_UNPREDICTABLE(current_batch < 2) {
+           i1 = zero;
+         }
+@@ -124,8 +124,8 @@
+     input_increment = 7 * input_stride;
+     // 256 int8s may be summed into an int16 before overflowing.
+     do {
+-      int num_batches = floor((rows + 251) / 252);
+-      int r = rows;
++      size_t num_batches = rdsum_ceil252(rows);
++      size_t r = rows;
+       const int8_t* i0 = input;
+       const int8_t* i1 = (const int8_t*) ((uintptr_t) input + 1 * input_stride);
+       const int8_t* i2 = (const int8_t*) ((uintptr_t) input + 2 * input_stride);
+@@ -139,7 +139,7 @@
+ 
+       for (; num_batches > 0; --num_batches) {
+         int16x8_t vacc16 = vmovq_n_s16(0);
+-        for (int current_batch = min(r, 252); current_batch > 0; current_batch -= 7) {
++        for (int current_batch = rdsum_min252(r); current_batch > 0; current_batch -= 7) {
+           if XNN_UNPREDICTABLE(current_batch < 2) {
+             i1 = zero;
+           }
+@@ -209,7 +209,7 @@
+           vacc0 = vextq_s32(vacc0, vacc0, 2);
+         }
+         if (channels & 1) {
+-          *output += vgetq_lane_s32(vacc0, 0);
++          *output = (int32_t)((uint32_t)*output + (uint32_t)vgetq_lane_s32(vacc0, 0));
+         }
+         channels = 0;
+       }
+--- a/testRVV.c
++++ b/testRVV.c
+@@ -27,10 +27,10 @@
+ 
+     vint32m8_t vacc = __riscv_vmv_v_x_i32m8(0, vl);
+ 
+-    int r = rows;
++    size_t r = rows;
+     while (r > 0) {
+       vint16m4_t vacc16 = __riscv_vmv_v_x_i16m4(0, vl);
+-      for (int current_batch = r < 252 ? r : 252; current_batch > 0; current_batch -= 7) {
++      for (int current_batch = rdsum_min252(r); current_batch > 0; current_batch -= 7) {
+         if XNN_UNPREDICTABLE(current_batch < 2) {
+           i1 = zero;
+         }

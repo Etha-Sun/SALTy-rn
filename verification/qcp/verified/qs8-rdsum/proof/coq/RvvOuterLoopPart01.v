@@ -1,0 +1,14 @@
+From Coq Require Import ZArith Lia.
+From Qs8Rdsum Require Import RvvOuterTactics rvv_unit_goal.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_test_rvv_entail_wit_11_2 : Qs8Rdsum.rvv_unit_goal.test_rvv_entail_wit_11_2.
+Proof.
+ unfold Qs8Rdsum.rvv_unit_goal.test_rvv_entail_wit_11_2;try left;intros;rd_limits;subst input output input_increment.
+ rd_mem_facts_owned.
+ rd_rvv_outer_values.
+ rd_outer_finish.
+ all:try(match goal with |- ?G=>idtac "REMAINING" G end).
+Qed.
+Print Assumptions proof_of_test_rvv_entail_wit_11_2.

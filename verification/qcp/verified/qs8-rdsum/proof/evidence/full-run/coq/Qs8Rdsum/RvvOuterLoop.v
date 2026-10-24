@@ -1,0 +1,7 @@
+From Qs8Rdsum Require Import rvv_unit_goal RvvOuterLoopPart00 RvvOuterLoopPart01.
+Module CheckedRvvOuterLoop.
+Definition proof_of_test_rvv_entail_wit_11_1 : Qs8Rdsum.rvv_unit_goal.test_rvv_entail_wit_11_1 := Qs8Rdsum.RvvOuterLoopPart00.proof_of_test_rvv_entail_wit_11_1.
+Definition proof_of_test_rvv_entail_wit_11_2 : Qs8Rdsum.rvv_unit_goal.test_rvv_entail_wit_11_2 := Qs8Rdsum.RvvOuterLoopPart01.proof_of_test_rvv_entail_wit_11_2.
+End CheckedRvvOuterLoop.
+Print Assumptions CheckedRvvOuterLoop.proof_of_test_rvv_entail_wit_11_1.
+Print Assumptions CheckedRvvOuterLoop.proof_of_test_rvv_entail_wit_11_2.

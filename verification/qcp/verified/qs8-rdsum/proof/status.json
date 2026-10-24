@@ -1,0 +1,99 @@
+{
+  "schema": 2,
+  "kernel": "qs8-rdsum",
+  "scope": "full",
+  "status": "proved",
+  "passed": true,
+  "whole_kernel_verified": true,
+  "whole_kernel_proved": true,
+  "implementation_variant": "repaired",
+  "verification_scope": "Complete actual C-shim closure and public observation caller; partial correctness under explicit memory and fixed-configuration contracts.",
+  "checked_c_units": 35,
+  "checked_c_vcs": 1590,
+  "checked_strategy_fields": 0,
+  "ordinary_modules_including_final": 703,
+  "assumption_reports": 1771,
+  "mathematical_support_reports": 181,
+  "unique_c_functions_with_bodies": 60,
+  "unit_vc_counting": "Translation-unit VC_Correct fields; not unique semantic obligations or additional kernels.",
+  "full_evidence": "full-status.json",
+  "full_evidence_sha256": "2e2a0ec244b319c124397ae785513c9e523a61e6395999b66b9165f32b1864cd",
+  "immutable_full_archive": "evidence/full-run/status.json",
+  "manifest_sha256": "14c510bf68fa5b87091440c3a7b54eb542c62890a5d5e43068f4875040c17383",
+  "native_evidence": [
+    {
+      "path": "proof/formal-native-status.json",
+      "sha256": "65ffa9020d6ae226fa240f772d45a7404615070710e4c39d55a2ba63817dc63a",
+      "checked_input_files": 53
+    },
+    {
+      "path": "proof/native-asan-status.json",
+      "sha256": "3c2d06d4a101f410f21f8eb6f44f44288db0d2b7cdf7d8ca968899e3c54ae35e",
+      "checked_input_files": 55
+    },
+    {
+      "path": "proof/type-width-status.json",
+      "sha256": "deabb38c677775e2b5b3d3d490c491b8f596d15729b838002ee1da02210fb84e",
+      "checked_input_files": 5
+    }
+  ],
+  "repair_evidence_sha256": "211cac830565a38ee7c53f3ac85b269f2ce8cdf82430ac1752d64dcf9e763971",
+  "assumption_audit_sha256": "916c776410c12d1c8f608ae14ab477c2aa3347556df23aef413a44984bb9bff1",
+  "inherited_assumption_names": [
+    "CNotation.LE_arrow_field_congr",
+    "CNotation.RE_addr_of_congr",
+    "CNotation.eval_addr_expr",
+    "CNotation.eval_addr_expr_congr",
+    "CNotation.sizeof_alias_type",
+    "CNotation.sizeof_enum_type",
+    "CNotation.sizeof_struct_type",
+    "CNotation.sizeof_union_type",
+    "FunctionalExtensionality.functional_extensionality_dep",
+    "PropExtensionality.propositional_extensionality",
+    "SeparationLogic.Snaive_C_Rules64.eval_addr"
+  ],
+  "limits": {
+    "kernel": "qs8-rdsum",
+    "variant": "both-sides-repaired-neon-loop-compatible-v2",
+    "verification_scope": "C-shim partial correctness under the explicit public memory contract; completion is determined by proof/status.json",
+    "pointer_bits": 64,
+    "size_t_definition": "unsigned long long, selected 64-bit model",
+    "endian": "little",
+    "input_values": "all signed int8",
+    "initial_output_values": "all signed int32 values represented by the owned IntArray",
+    "observation": "s32(Init[column] + sum over all rows of RDMap[base + row * stride + column])",
+    "rows_domain": "1..2^64-1, subject to rd_inputs and owned readable memory",
+    "channels_domain": "1..2^62-1, subject to readable input and writable output capacity",
+    "stride_domain": "0..2^64-1, subject to the explicit nonwrapping row-footprint condition",
+    "input_row_footprint_bytes": "channels + 7",
+    "address_formula": "unwrapped mathematical integer base + row * stride + column",
+    "memory_domain": "Every rd_inputs address belongs to the single owned rd_mem; row read footprints cannot cross the 64-bit address boundary. Numeric pointer wrapping and cyclic address layouts are outside this contract.",
+    "read_aliases": "stride zero, overlapping rows, and zero/input aliases are allowed through one RDMap",
+    "outputs": "Owned IntArray resources are separate from rd_mem; public equivalent has two separate outputs with the same Init",
+    "zero_condition": "rows mod 7 = 0, or rd_zeros over max(8,min(32,channels)) bytes in the same map",
+    "params": "unused; no read of params memory",
+    "inner_row_batch_maximum": 252,
+    "rvv": {
+      "vlen_bits": 128,
+      "configurations": [
+        "e8m2",
+        "e16m4",
+        "e32m8"
+      ],
+      "vlmax": 32,
+      "selected_vl": "min(AVL,32)",
+      "inactive_lanes": "as specified by the scalar-field C-shim helper contracts"
+    },
+    "repair_provenance": "proof/repair.json and exact per-side patches; original counterexamples are retained separately",
+    "native_evidence": "finite independent helper and column-sum oracles, current actual scalar-field C, public equivalent, canaries, and both-wrong rejection; not additional formal proof credit",
+    "isa_refinement": "not claimed",
+    "physical_struct_abi_refinement": "not claimed",
+    "termination_theorem": "not claimed",
+    "new_axioms_allowed": false,
+    "intrinsic_ledger": "proof/intrinsic-ledger.json",
+    "intrinsic_ledger_sha256": "24790dde793b524d093b0eb54c8a954d65c78448d7b4f994538bbaa0be73d858"
+  },
+  "remaining": [],
+  "verified_manifest_changed": false,
+  "formal_proof_replayed_by_writer": false
+}

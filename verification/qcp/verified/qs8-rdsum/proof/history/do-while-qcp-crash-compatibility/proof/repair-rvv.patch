@@ -1,0 +1,15 @@
+--- a/testRVV.c
++++ b/testRVV.c
+@@ -27,10 +27,10 @@
+ 
+     vint32m8_t vacc = __riscv_vmv_v_x_i32m8(0, vl);
+ 
+-    int r = rows;
++    size_t r = rows;
+     while (r > 0) {
+       vint16m4_t vacc16 = __riscv_vmv_v_x_i16m4(0, vl);
+-      for (int current_batch = r < 252 ? r : 252; current_batch > 0; current_batch -= 7) {
++      for (int current_batch = rdsum_min252(r); current_batch > 0; current_batch -= 7) {
+         if XNN_UNPREDICTABLE(current_batch < 2) {
+           i1 = zero;
+         }

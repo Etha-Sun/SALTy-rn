@@ -1,0 +1,82 @@
+{
+  "passed": true,
+  "scope": "finite repaired native array diagnostic; not formal scalar-field closure",
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rdsum/.build/repaired-array-kw_e0g_p",
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rdsum/proof/native/repaired_regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rdsum/.build/repaired-array-kw_e0g_p/test"
+      ],
+      "exit_code": 0,
+      "expected_zero": true,
+      "accepted": true,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "native",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rdsum/.build/repaired-array-kw_e0g_p/test"
+      ],
+      "exit_code": 0,
+      "expected_zero": true,
+      "accepted": true,
+      "log_sha256": "d1d35c9af59779717175a38043104dd92b4646e9958ad2299c930c39914e3140"
+    },
+    {
+      "label": "negative-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rdsum/.build/repaired-array-kw_e0g_p/test",
+        "--negative-one"
+      ],
+      "exit_code": 2,
+      "expected_zero": false,
+      "accepted": true,
+      "log_sha256": "04ebde9182167efb4d7c93a97a4a0209f38cedf0bfd9a327c3bb7a85cb0087fc"
+    },
+    {
+      "label": "negative-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-rdsum/.build/repaired-array-kw_e0g_p/test",
+        "--negative-both"
+      ],
+      "exit_code": 2,
+      "expected_zero": false,
+      "accepted": true,
+      "log_sha256": "589ae8be8de3b16d24ba4f824246c5527d8846876a447122e47d0236c6ed1fd6"
+    }
+  ],
+  "cases": 11616,
+  "lanes_per_side": 268620,
+  "failures": 0,
+  "inputs": {
+    "proof/native/repaired_regression.c": "5c72ae9a7036f7f5a2e023a696265f6ffac34aa1411037dc6d9af5cf630f1542",
+    "proof/native/control_native.h": "ebe792c9f41816abb72aecde374c2ae30c4397f04a0629573a729f97f280edd7",
+    "proof/native/shim.h": "262569eb45845bbd51517892a46d7f2b6669e52e977003b8da3e6bd20dafcf30",
+    "proof/native/isa_arrays.c": "2a08be6589057e9872c800d78a434977571086543d1bafa058b071595e530ac4",
+    "impl/testNEON.c": "beb50a9022d6a2795249c8f0e545463de408acc66d088cff01ac00b8bf0c2e02",
+    "impl/testRVV.c": "adceec77eac8ccbbfc4beb6a644d1382d5920e7634b9392dddb4efc810360207"
+  }
+}

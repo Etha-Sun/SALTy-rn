@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "scope": "exact side-effect-free source call shapes only; pure semantic bridges and actual helper body proofs separately required",
+  "findings": [],
+  "rules": {
+    "vget_low_s16": {
+      "occurrences": 3,
+      "guarded_occurrences": 3,
+      "expected": 3,
+      "literal_matches": [
+        "vaddw_s16(vacc0, vget_low_s16(vacc16_0))",
+        "vaddw_s16(vacc8, vget_low_s16(vacc16_8))",
+        "vaddw_s16(vacc0, vget_low_s16(vacc16))"
+      ]
+    },
+    "vget_high_s16": {
+      "occurrences": 3,
+      "guarded_occurrences": 3,
+      "expected": 3,
+      "literal_matches": [
+        "vaddw_s16(vacc4, vget_high_s16(vacc16_0))",
+        "vaddw_s16(vacc12, vget_high_s16(vacc16_8))",
+        "vaddw_s16(vacc1, vget_high_s16(vacc16))"
+      ]
+    },
+    "vget_low_s32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vadd_s32(vo, vget_low_s32(vacc0))"
+      ]
+    },
+    "vextq_s32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vextq_s32(vacc0, vacc0, 2)"
+      ]
+    },
+    "vgetq_lane_s32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vgetq_lane_s32(vacc0, 0)"
+      ]
+    },
+    "vst1_s32": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "vst1_s32(output, vo)"
+      ],
+      "adapter": "const vector pointer borrow, every original expression evaluated once"
+    },
+    "vst1q_s32": {
+      "occurrences": 7,
+      "guarded_occurrences": 7,
+      "expected": 7,
+      "literal_matches": [
+        "vst1q_s32(output, vacc0)",
+        "vst1q_s32(output, vacc4)",
+        "vst1q_s32(output, vacc8)",
+        "vst1q_s32(output, vacc12)",
+        "vst1q_s32(output, vo0)",
+        "vst1q_s32(output, vo1)",
+        "vst1q_s32(output, vo)"
+      ],
+      "adapter": "const vector pointer borrow, every original expression evaluated once"
+    },
+    "__riscv_vse32_v_i32m8": {
+      "occurrences": 1,
+      "guarded_occurrences": 1,
+      "expected": 1,
+      "literal_matches": [
+        "__riscv_vse32_v_i32m8(output, vo, vl)"
+      ],
+      "adapter": "const vector pointer borrow, every original expression evaluated once"
+    }
+  },
+  "source_sha256": "e942dc042c92acd10f6677c7ff98be55159f5d1c30801c24ffe3aab04421cabe",
+  "rvv_source_sha256": "adceec77eac8ccbbfc4beb6a644d1382d5920e7634b9392dddb4efc810360207",
+  "rvv_frontend_sha256": "90114de03d6fa8c7c16e47f9d9b6075c243dc5211993d0230425f451becaad41",
+  "frontend_sha256": "9fc91c3b1b3d5b6b568a30cbe003e49a17bb87d088f4c5ec1ee983f7860cb09d"
+}

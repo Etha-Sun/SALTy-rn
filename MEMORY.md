@@ -1,6 +1,9 @@
 # QCP 工作记忆入口
 
-最新：QS8-VLRELU 两侧取负 UB 修复版已完成全64位统一验收，收录 `verification/qcp/verified/qs8-vlrelu/`；当前有效 **18/40**，包含 U8 clamp。34实际C单元/85函数体/2192 C字段+15策略，296依赖源+最终门禁共297次普通Coq，2207项最终假设报告仅既有14项；完整SHA `67e148d97ca3901fe4a6e265c1110bf2fb36df5de629b039e6433b7c684e870d`。公开四个raw int32参数和64位长度域均保留，原四项INT32_MIN反例、补丁与旧32位失效记录归档。干净发布目录重核34 CPP/85函数体和全部源日志，31实际字段provider及公开caller的ASan/UBSan各17940用例、7187700 lane/side，共错负控拒绝；发布检查不计第二次形式化证明。继续 QS8/QU8 加法、FP16 转换及多行归约。
+最新：QS8 RDSUM 两侧修复版完整验收并收录，当前 **19/40**，目标至少31。35实际C单元/60函数体/1590 C字段，685本地源+18接口/假设/最终模块共703普通Coq，1771项Print含181数学支持，仅11个既有框架假设。完整SHA `2e2a0ec244b319c124397ae785513c9e523a61e6395999b66b9165f32b1864cd`。保留全部正uint64行数、同一RDMap中的stride0/行重叠/zero别名，输入每行channels+7、zero条件、非回绕地址footprint与可写输出分离；固定VLEN128/VLMAX32，不宣称真实ISA对应或终止性。clean发布再次核35 CPP/60body/703源及全归档，34实际C单元独立UBSan/实际16GiB cgroup ASan均11664case/269730lane/side，helper101376case/1579776lane，wrong-one/both均拒绝；发布审计不计第二次证明。
+
+
+上一项收录：QS8-VLRELU 两侧取负 UB 修复版已完成全64位统一验收，收录 `verification/qcp/verified/qs8-vlrelu/`；当时有效 **18/40**，包含 U8 clamp。34实际C单元/85函数体/2192 C字段+15策略，296依赖源+最终门禁共297次普通Coq，2207项最终假设报告仅既有14项；完整SHA `67e148d97ca3901fe4a6e265c1110bf2fb36df5de629b039e6433b7c684e870d`。公开四个raw int32参数和64位长度域均保留，原四项INT32_MIN反例、补丁与旧32位失效记录归档。干净发布目录重核34 CPP/85函数体和全部源日志，31实际字段provider及公开caller的ASan/UBSan各17940用例、7187700 lane/side，共错负控拒绝；发布检查不计第二次形式化证明。继续 QS8/QU8 加法、FP16 转换及多行归约。
 
 类型宽度更正已完成：旧 QS8 转换准入因 QCP UInt32/native64 不符而撤回；本次使用明确 unsigned64 类型，八个实际 sizeof C 函数及完整26单元/1672 C字段+15策略字段重新生成，240次 fresh 普通 Coq、1687项最终假设审计全部通过，不复用旧32位 C 对象、不缩长度域。已恢复到 `verification/qcp/verified/qs8-vcvt/`。原失效记录与本次 resolution 均保留；QLR 的相关64位重验也已完成，ADD 继续推进。这一段记录恢复QS8转换时的17/40。
 
@@ -13,7 +16,7 @@
 
 - 2026-10-23 最新统一边界：intrinsic 无需另建或证明 C implementation；可直接用与原始 NEON/RVV spec 对应的公开合同和 Coq 定义，逐项保留官方版本/配置/语义台账供最终人工审核。实际 kernel/循环/内存/普通 helper/caller 仍完整证明，不增未证Coq公理，不隐去spec信任边界；详见 `verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md`。旧必选intrinsic-body规则被覆盖，live/frozen/已发布证据保持原状。
 
-- 用户最新将目标提高为：从当前 18/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
+- 用户最新将目标提高为：从当前 19/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
 - 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。

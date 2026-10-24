@@ -1,0 +1,34 @@
+{
+  "kind": "proof_annotation_strengthening",
+  "not_a_C_semantic_counterexample": true,
+  "C_implementation_unchanged": true,
+  "public_contract_unchanged": true,
+  "readonly_alias_domain_unchanged": true,
+  "counterexample": "old gate(cb=0,p=0,expected=352) is true but next outer gate(live=1,p=0,expected=352) is false; r=rows=253,stride=1,input=100 is a pointer-fragment counterexample to the invariant implication",
+  "new_predicate": "rd_inner_gate(r,cb,p,e) := (r<=252 /\\ cb<=0) \\/ p=e",
+  "unsigned_rvv_parameter": "orig_r, because actual C subtracts the bounded block size before its inner for loop",
+  "math_source": "proof/coq/ProgressFacts.v",
+  "actual_C_probe": "../qs8-rdsum/proof/diagnostics/progress/pointer_step.c",
+  "actual_probe_status": "../qs8-rdsum/proof/progress-probe-status.json",
+  "historical_status_sha256": {
+    "proof/c/neon.annotations.json": "f3a8feb5f75f41f333d09e6bd0a1e859044d29851e3fbb65455b6cedbd8e37d7",
+    "proof/c/rvv.annotations.json": "f3171c052748179d7fca8aa5d81b255bf6158b7af2ced13816ff315082179324",
+    "proof/neon-generation-status.json": "77b5951a759d5c086085300f8843618090211b441a3bc7ea18c557063ffe1fde",
+    "proof/rvv-generation-status.json": "3ced7f32dd76c5d3a177b694b21106a55ab244bf9a2bb07bd5df347b812358e2",
+    "proof/neon-core-status.json": "c054dcbb19f3ff4f9a6cd18bd94a9056b926ada9eaab0c54247528dddf82f0a7",
+    "proof/neon-calls-status.json": "c289252121b3679cb27b8d092142bbfeb16b2666a86aa93277e56f5b4835014a",
+    "proof/RvvSelect-status.json": "7e6ad2f3a84b0824e0c9653bba5ef0ab57022b74b09c74ee8c31a1ae0f0eb3cb"
+  },
+  "annotations": {
+    "neon": {
+      "changed_pointer_gates": 14,
+      "annotation_sha256": "691f344a775eb8c3da5b82624185d449bc95031a50be75427a2213c88a8ddb5c"
+    },
+    "rvv": {
+      "changed_pointer_gates": 7,
+      "annotation_sha256": "69903c9806569bc340e987f43c8b6e3356c3ffb7dfc8ec7ffaa75695dc6788e6"
+    }
+  },
+  "history_directory": "proof/history/inner-progress-gate-before-a772c1e68eac5a2b",
+  "whole_kernel_verified": false
+}
