@@ -1,0 +1,252 @@
+--- old-UINT32-rvv_active_goal.v
++++ new-UINT64-rvv_active_goal.v
+@@ -28,8 +28,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-128) <= a_pre)) (PreH7 : (a_pre <= 127)) (PreH8 : ((-128) <= b_pre)) (PreH9 : (b_pre <= 127)) ,
+   ((( &( "a" ) )) # Char  |-> a_pre)
+   **  ((( &( "b" ) )) # Char  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -85,8 +85,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-128) <= a_pre)) (PreH7 : (a_pre <= 127)) (PreH8 : ((-128) <= b_pre)) (PreH9 : (b_pre <= 127)) ,
+   ((( &( "a" ) )) # Char  |-> a_pre)
+   **  ((( &( "b" ) )) # Char  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((-128) <= a_pre) ” 
+   &&  “ (a_pre <= 127) ” 
+@@ -121,8 +121,8 @@
+ Definition qcp_qa_active_sext_safety_wit_1 := 
+ forall (vl_pre: Z) (i_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-32768) <= a_pre)) (PreH7 : (a_pre <= 32767)) ,
+   ((( &( "a" ) )) # Short  |-> a_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -180,8 +180,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) (PreH8 : ((INT_MIN) <= b_pre)) (PreH9 : (b_pre <= INT_MAX)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+   **  ((( &( "b" ) )) # Int  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -237,8 +237,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) (PreH8 : ((INT_MIN) <= b_pre)) (PreH9 : (b_pre <= INT_MAX)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+   **  ((( &( "b" ) )) # Int  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((INT_MIN) <= a_pre) ” 
+   &&  “ (a_pre <= INT_MAX) ” 
+@@ -275,8 +275,8 @@
+   ((( &( "a" ) )) # Int  |-> a_pre)
+   **  ((( &( "c" ) )) # Int  |-> c_pre)
+   **  ((( &( "b" ) )) # Int  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -333,8 +333,8 @@
+   ((( &( "a" ) )) # Int  |-> a_pre)
+   **  ((( &( "c" ) )) # Int  |-> c_pre)
+   **  ((( &( "b" ) )) # Int  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((INT_MIN) <= a_pre) ” 
+   &&  “ (a_pre <= INT_MAX) ” 
+@@ -375,8 +375,8 @@
+ Definition qcp_qa_active_mov_safety_wit_1 := 
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= b_pre)) (PreH7 : (b_pre <= INT_MAX)) ,
+   ((( &( "b" ) )) # Int  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -433,9 +433,9 @@
+ Definition qcp_qa_active_rnu_safety_wit_1 := 
+ forall (vl_pre: Z) (i_pre: Z) (d_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) (PreH8 : (0 <= d_pre)) (PreH9 : (d_pre <= 31)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+-  **  ((( &( "d" ) )) # UInt  |-> d_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "d" ) )) # UInt64  |-> d_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -490,9 +490,9 @@
+ Definition qcp_qa_active_rnu_partial_solve_wit_1_pure := 
+ forall (vl_pre: Z) (i_pre: Z) (d_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) (PreH8 : (0 <= d_pre)) (PreH9 : (d_pre <= 31)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+-  **  ((( &( "d" ) )) # UInt  |-> d_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "d" ) )) # UInt64  |-> d_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((INT_MIN) <= a_pre) ” 
+   &&  “ (a_pre <= INT_MAX) ” 
+@@ -527,9 +527,9 @@
+ Definition qcp_qa_active_sll_safety_wit_1 := 
+ forall (vl_pre: Z) (i_pre: Z) (d_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) (PreH8 : (0 <= d_pre)) (PreH9 : (d_pre <= 31)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+-  **  ((( &( "d" ) )) # UInt  |-> d_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "d" ) )) # UInt64  |-> d_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -584,9 +584,9 @@
+ Definition qcp_qa_active_sll_partial_solve_wit_1_pure := 
+ forall (vl_pre: Z) (i_pre: Z) (d_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) (PreH8 : (0 <= d_pre)) (PreH9 : (d_pre <= 31)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+-  **  ((( &( "d" ) )) # UInt  |-> d_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "d" ) )) # UInt64  |-> d_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((INT_MIN) <= a_pre) ” 
+   &&  “ (a_pre <= INT_MAX) ” 
+@@ -621,8 +621,8 @@
+ Definition qcp_qa_active_clip16_safety_wit_1 := 
+ forall (vl_pre: Z) (i_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -677,8 +677,8 @@
+ Definition qcp_qa_active_clip16_partial_solve_wit_1_pure := 
+ forall (vl_pre: Z) (i_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((INT_MIN) <= a_pre)) (PreH7 : (a_pre <= INT_MAX)) ,
+   ((( &( "a" ) )) # Int  |-> a_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (((-INT64_MAX) - 1 ) <= a_pre) ” 
+   &&  “ (a_pre <= INT64_MAX) ”
+@@ -708,8 +708,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-32768) <= a_pre)) (PreH7 : (a_pre <= 32767)) (PreH8 : ((-32768) <= b_pre)) (PreH9 : (b_pre <= 32767)) ,
+   ((( &( "a" ) )) # Short  |-> a_pre)
+   **  ((( &( "b" ) )) # Short  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -765,8 +765,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-32768) <= a_pre)) (PreH7 : (a_pre <= 32767)) (PreH8 : ((-32768) <= b_pre)) (PreH9 : (b_pre <= 32767)) ,
+   ((( &( "a" ) )) # Short  |-> a_pre)
+   **  ((( &( "b" ) )) # Short  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((-32768) <= a_pre) ” 
+   &&  “ (a_pre <= 32767) ” 
+@@ -801,8 +801,8 @@
+ Definition qcp_qa_active_clip8_safety_wit_1 := 
+ forall (vl_pre: Z) (i_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-32768) <= a_pre)) (PreH7 : (a_pre <= 32767)) ,
+   ((( &( "a" ) )) # Short  |-> a_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -857,8 +857,8 @@
+ Definition qcp_qa_active_clip8_partial_solve_wit_1_pure := 
+ forall (vl_pre: Z) (i_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-32768) <= a_pre)) (PreH7 : (a_pre <= 32767)) ,
+   ((( &( "a" ) )) # Short  |-> a_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((-32768) <= a_pre) ” 
+   &&  “ (a_pre <= 32767) ”
+@@ -888,8 +888,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-128) <= a_pre)) (PreH7 : (a_pre <= 127)) (PreH8 : ((-128) <= b_pre)) (PreH9 : (b_pre <= 127)) ,
+   ((( &( "a" ) )) # Char  |-> a_pre)
+   **  ((( &( "b" ) )) # Char  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -945,8 +945,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-128) <= a_pre)) (PreH7 : (a_pre <= 127)) (PreH8 : ((-128) <= b_pre)) (PreH9 : (b_pre <= 127)) ,
+   ((( &( "a" ) )) # Char  |-> a_pre)
+   **  ((( &( "b" ) )) # Char  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((-128) <= a_pre) ” 
+   &&  “ (a_pre <= 127) ” 
+@@ -982,8 +982,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre >= vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-128) <= a_pre)) (PreH7 : (a_pre <= 127)) (PreH8 : ((-128) <= b_pre)) (PreH9 : (b_pre <= 127)) ,
+   ((( &( "a" ) )) # Char  |-> a_pre)
+   **  ((( &( "b" ) )) # Char  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ (0 <= INT_MAX) ” 
+   &&  “ ((INT_MIN) <= 0) ”
+@@ -1039,8 +1039,8 @@
+ forall (vl_pre: Z) (i_pre: Z) (b_pre: Z) (a_pre: Z) (PreH1 : (i_pre < vl_pre)) (PreH2 : (0 <= i_pre)) (PreH3 : (i_pre < 32)) (PreH4 : (0 <= vl_pre)) (PreH5 : (vl_pre <= 32)) (PreH6 : ((-128) <= a_pre)) (PreH7 : (a_pre <= 127)) (PreH8 : ((-128) <= b_pre)) (PreH9 : (b_pre <= 127)) ,
+   ((( &( "a" ) )) # Char  |-> a_pre)
+   **  ((( &( "b" ) )) # Char  |-> b_pre)
+-  **  ((( &( "i" ) )) # UInt  |-> i_pre)
+-  **  ((( &( "vl" ) )) # UInt  |-> vl_pre)
++  **  ((( &( "i" ) )) # UInt64  |-> i_pre)
++  **  ((( &( "vl" ) )) # UInt64  |-> vl_pre)
+ |--
+   “ ((-128) <= a_pre) ” 
+   &&  “ (a_pre <= 127) ” 

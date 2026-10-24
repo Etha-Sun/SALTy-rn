@@ -1,0 +1,32 @@
+{
+  "variant": "repaired",
+  "authorization": "User authorized direct implementation repair with original hashes/exact patch/counterexamples; root assigned this case and all raw parameter domains.",
+  "created_utc": "2026-10-23T19:57:10.349437+00:00",
+  "original_neon_sha256": "01a0bdcc9344c5f095a47a79ce0d346bd44e937ceceefd1f12e275f9091456f3",
+  "original_rvv_sha256": "1e8af584a849673c663f114ba74cc436dbd4eb33819113a80424d67bc0abddb1",
+  "repaired_neon_sha256": "753839325770ec264cbf8d743758773f05256e9a8ec8d058a14deea9772090f9",
+  "repaired_rvv_sha256": "5746c4d479e88f763da87702585e7558ccb6e4e92e3de61aefb71d87dfd7cd09",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "fcd310ec31aa32f1352da96822a64d2047fbf8a041f2614668eeda8115a388ed",
+  "purposes": [
+    "NEON canonical signed low-byte negated control avoids INT32_MIN negation UB and preserves the exact SRSHL-observed count for every int32 raw, using defined int32 remainder/negation/adjustment; high24 broadcast bits are unobserved only by SRSHL.",
+    "RVV decodes signed low byte of negated raw count, selects zero beyond (-32,32), RNU arithmetic right for negative control, wrapping left otherwise. Raw256 is valid and acts as count zero."
+  ],
+  "counterexamples_pending_actual_replay": false,
+  "qcp_verified_at_creation": false,
+  "counterexamples": {
+    "evidence": "proof/evidence/original-counterexamples.json",
+    "evidence_sha256": "e77c164020dde160d97a0513bbeebcabf9918eb0a1d62c708d5413607e133a64",
+    "summary": "5 concrete original mismatches including rawshift32, negative and large counts. Original NEON INT32_MIN negation UBSan; original QS8 RVV defined there. Both repaired sides defined and 256 low-byte controls replayed."
+  },
+  "canonical_control_rewrite": {
+    "reason": "Actual QCP probes elide certain UInt32-to-SInt32/expression casts and produce false targets; explicit bounded arithmetic avoids this frontend gap without changing either ISA primitive interpretation.",
+    "body": "int32_t right_shift = -(params->scalar.shift % 256);\n  if (right_shift > 127) right_shift -= 256;\n  if (right_shift < -128) right_shift += 256;",
+    "prior_repaired_history": "proof/history/before-canonical-control",
+    "universal_bridge": "proof/coq/ControlFacts.v",
+    "universal_bridge_sha256": "ff787b2f7e357982167c98008fa1f6f20b8084e43b2b18a6dc0d719d9e92c5ad",
+    "actual_control_probe": "proof/control-status.json",
+    "actual_control_probe_sha256": "f633435f6a0818baf04c375ba5b6d6edea31865d5105fb5fc09514624d3de81c",
+    "scope": "Only the repaired RVV count and NEON SRSHL count; no other scalar/instruction operand substituted; all raw int32 values retained."
+  }
+}

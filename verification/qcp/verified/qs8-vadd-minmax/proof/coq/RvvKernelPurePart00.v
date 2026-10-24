@@ -1,0 +1,16 @@
+From Qs8Add Require Import RvvKernelArithmeticAutomation.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_test_rvv_safety_wit_1 : Qs8Add.rvv_unit_goal.test_rvv_safety_wit_1.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_safety_wit_1,Qs8Add.rvv_unit_goal_chunk00.test_rvv_safety_wit_1;try left;intros;subst;qa_rvv_kernel_arith_pure. Qed.
+Lemma proof_of_test_rvv_safety_wit_17 : Qs8Add.rvv_unit_goal.test_rvv_safety_wit_17.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_safety_wit_17,Qs8Add.rvv_unit_goal_chunk01.test_rvv_safety_wit_17;try left;intros;subst;qa_rvv_kernel_arith_pure. Qed.
+Lemma proof_of_test_rvv_safety_wit_33 : Qs8Add.rvv_unit_goal.test_rvv_safety_wit_33.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_safety_wit_33,Qs8Add.rvv_unit_goal_chunk01.test_rvv_safety_wit_33;try left;intros;subst;qa_rvv_kernel_arith_pure. Qed.
+Lemma proof_of_test_rvv_safety_wit_49 : Qs8Add.rvv_unit_goal.test_rvv_safety_wit_49.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_safety_wit_49,Qs8Add.rvv_unit_goal_chunk01.test_rvv_safety_wit_49;try left;intros;subst;qa_rvv_kernel_arith_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_17_pure : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_17_pure.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_17_pure,Qs8Add.rvv_unit_goal_chunk10.test_rvv_partial_solve_wit_17_pure;try left;intros;subst;qa_rvv_kernel_arith_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_48_pure : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_48_pure.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_48_pure,Qs8Add.rvv_unit_goal_chunk09.test_rvv_partial_solve_wit_48_pure;try left;intros;subst;qa_rvv_kernel_arith_pure. Qed.

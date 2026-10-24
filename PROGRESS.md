@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**19/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**22/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 - f32-vadd
 - f32-vsub
@@ -22,22 +22,32 @@
 - [u8-vclamp](verification/qcp/verified/u8-vclamp/README.md)（两侧原始实现，可选 AVL128 版同计一项）
 - [qs8-rdsum](verification/qcp/verified/qs8-rdsum/README.md)（两侧行数与溢出修复版，完整64位）
 
+- [qd8-f32-qc8w-gemm-minmax](verification/qcp/verified/qd8-f32-qc8w-gemm-minmax/README.md)（其他 worker 完成，两侧修复版）
+- [f32-gemm-minmax](verification/qcp/verified/f32-gemm-minmax/README.md)（其他 worker 完成，修复版）
+- [qs8-vadd-minmax](verification/qcp/verified/qs8-vadd-minmax/README.md)（修复版，完整64位）
+
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
 最新约定：intrinsic 只需采用与原始规范对应、可审核的 spec；C 实现及其证明可选。完整 kernel 仍须验证。见 [规范边界](verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
 
 - 2026-10-23（洛杉矶）：QS8 多行归约修复版完整验证通过并收录；有效 **19/40**。
 
+- 2026-10-24（洛杉矶）：两项 GEMM 已收录；QS8 加法修复版完整验证、归档和发布复核通过，当前 **22/40**。
+
 ## 当前工作
 
-- FP32→FP16：NEON 端 419 项通过；RVV 新目标的 5 项内存完整接口已通过，继续汇总。
-- QS8/QU8 加法：QS8 两侧完整组件通过，正在重新生成全部 C 目标；QU8 的 NEON 780 项通过，继续 RVV。
+- FP32→FP16：56 个实际 C 目标已全部重新生成并精确匹配，正在完整编译 Coq 证明。
+- QS8 加法已完整收录；QU8 加法两侧完整组件通过，正在整案新鲜重放。
 - QS8 RDSUM 已完整通过并收录；继续 QU8 多行归约。
-- QU8 RDSUM：两侧循环分项通过；修正无符号单元注释后，新 NEON 596 项目标已生成，继续完整接口检查。
+- QU8 RDSUM：37 个实际 C 目标已全部重新生成通过，正在完整编译证明。
 
-- ArgmaxPool：大尺寸计数错误已修复，独立 oracle 与 ASan/UBSan 回归通过；开始形式化证明。
+- ArgmaxPool：大尺寸计数错误已修复，回归及指针表调用探针通过，继续完整形式化。
 
-上述其余候选与组件进展尚未计入 19 个完整通过的 kernel。
+- FP32 sqrt：浮点数学及两侧大部分实际 C 字段通过，继续内存接口与整案门禁。
+- QS8 乘法：magic-bias 与负 NaN 修复后的全 binary32 逐元素等价证明通过，继续实际 kernel 验证。
+- FP32 maxpool：修复计数与 NaN 顺序问题，回归通过，继续实际 C 验证。
+
+上述其余候选与组件进展尚未计入 22 个完整通过的 kernel。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。

@@ -1,0 +1,10 @@
+From Qs8Add Require Import RvvKernelArithmeticAutomation3 KernelArrayProps.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_test_rvv_partial_solve_wit_11 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_11.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_11,Qs8Add.rvv_unit_goal_chunk04.test_rvv_partial_solve_wit_11,Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_11_aux,Qs8Add.rvv_unit_goal_chunk04.test_rvv_partial_solve_wit_11_aux;try left;intros;subst;qa_array_values input_a_pre (batch_pre+7) A HAValues;qa_rvv_kernel_arith_frame. Qed.
+Print Assumptions proof_of_test_rvv_partial_solve_wit_11.
+Lemma proof_of_test_rvv_partial_solve_wit_13 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_13.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_13,Qs8Add.rvv_unit_goal_chunk06.test_rvv_partial_solve_wit_13,Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_13_aux,Qs8Add.rvv_unit_goal_chunk06.test_rvv_partial_solve_wit_13_aux;try left;intros;subst;qa_array_values input_b_pre (batch_pre+7) B HBValues;qa_rvv_kernel_arith_frame. Qed.
+Print Assumptions proof_of_test_rvv_partial_solve_wit_13.

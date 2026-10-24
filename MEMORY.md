@@ -1,6 +1,9 @@
 # QCP 工作记忆入口
 
-最新：QS8 RDSUM 两侧修复版完整验收并收录，当前 **19/40**，目标至少31。35实际C单元/60函数体/1590 C字段，685本地源+18接口/假设/最终模块共703普通Coq，1771项Print含181数学支持，仅11个既有框架假设。完整SHA `2e2a0ec244b319c124397ae785513c9e523a61e6395999b66b9165f32b1864cd`。保留全部正uint64行数、同一RDMap中的stride0/行重叠/zero别名，输入每行channels+7、zero条件、非回绕地址footprint与可写输出分离；固定VLEN128/VLMAX32，不宣称真实ISA对应或终止性。clean发布再次核35 CPP/60body/703源及全归档，34实际C单元独立UBSan/实际16GiB cgroup ASan均11664case/269730lane/side，helper101376case/1579776lane，wrong-one/both均拒绝；发布审计不计第二次证明。
+最新：正式清单 **22/40**，目标至少31。fetch 后接入其他 worker 的 `qd8-f32-qc8w-gemm-minmax`（3c334f710）与 `f32-gemm-minmax`（a8baa14c2）；两案全部1112/1491清单文件哈希、完整通过标记和注册表status哈希已核对，人工intrinsic规格审核仍pending，不声称本机重新运行它们的证明。新增 QS8 VADD-MINMAX 修复版：27实际C单元/103函数体/4300 C字段+15策略、492普通Coq全fresh、4496最终假设报告。full SHA `b9c6fda5551c663164d7c5b89956357e533fde1abd8d32008f3542889b35a93e`，H `cd3e965b1bc42daeda1935495b995d450cbfee1cb5d209b0310888d1863bc027`。原件/补丁/反例完整保存；45intrinsics/38模型定义公开，保持既有C-body证明边界。干净发布核对27 CPP/103body/全部源与归档，UBSan和实际16GiB/swap0 ASan各21472次公开caller/2665773lane/side、共同错误负控拒绝；发布检查不计第二次形式化证明。
+
+
+此前：QS8 RDSUM 两侧修复版完整验收并收录，当前 **19/40**，目标至少31。35实际C单元/60函数体/1590 C字段，685本地源+18接口/假设/最终模块共703普通Coq，1771项Print含181数学支持，仅11个既有框架假设。完整SHA `2e2a0ec244b319c124397ae785513c9e523a61e6395999b66b9165f32b1864cd`。保留全部正uint64行数、同一RDMap中的stride0/行重叠/zero别名，输入每行channels+7、zero条件、非回绕地址footprint与可写输出分离；固定VLEN128/VLMAX32，不宣称真实ISA对应或终止性。clean发布再次核35 CPP/60body/703源及全归档，34实际C单元独立UBSan/实际16GiB cgroup ASan均11664case/269730lane/side，helper101376case/1579776lane，wrong-one/both均拒绝；发布审计不计第二次证明。
 
 
 上一项收录：QS8-VLRELU 两侧取负 UB 修复版已完成全64位统一验收，收录 `verification/qcp/verified/qs8-vlrelu/`；当时有效 **18/40**，包含 U8 clamp。34实际C单元/85函数体/2192 C字段+15策略，296依赖源+最终门禁共297次普通Coq，2207项最终假设报告仅既有14项；完整SHA `67e148d97ca3901fe4a6e265c1110bf2fb36df5de629b039e6433b7c684e870d`。公开四个raw int32参数和64位长度域均保留，原四项INT32_MIN反例、补丁与旧32位失效记录归档。干净发布目录重核34 CPP/85函数体和全部源日志，31实际字段provider及公开caller的ASan/UBSan各17940用例、7187700 lane/side，共错负控拒绝；发布检查不计第二次形式化证明。继续 QS8/QU8 加法、FP16 转换及多行归约。
@@ -16,7 +19,7 @@
 
 - 2026-10-23 最新统一边界：intrinsic 无需另建或证明 C implementation；可直接用与原始 NEON/RVV spec 对应的公开合同和 Coq 定义，逐项保留官方版本/配置/语义台账供最终人工审核。实际 kernel/循环/内存/普通 helper/caller 仍完整证明，不增未证Coq公理，不隐去spec信任边界；详见 `verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md`。旧必选intrinsic-body规则被覆盖，live/frozen/已发布证据保持原状。
 
-- 用户最新将目标提高为：从当前 19/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
+- 用户最新将目标提高为：从当前 22/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
 - 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -28,16 +31,16 @@
 - 我们的主工作树：`/srv/home/yuechunsun/tools/qcp-simple-kernels`，分支 `codex/worker-simple-kernels`。
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
-- `neon_kernel_resume`：f32-vrndne 已交付并正式收录，独占 f32-f16-vcvt。
-- `minmax_repair_finish`：qs8-vcvt 全案已交付；独占后续 qs8-vadd-minmax、qu8-vadd-minmax。
-- `rvv_kernel_resume`：完成两项 rsum 后，独占 qs8-rdsum、qu8-rdsum；qu8-f32-vcvt 已完整发布。
+- `neon_kernel_resume`：f32-vrndne 已交付并正式收录，监控 f32-f16-vcvt 完整重放，独占 f32-vsqrt；root 协助 RVV 内存6项及完整准入工具。
+- `minmax_repair_finish`：qs8-vcvt 全案已交付；QS8 加法已交付；监控 QU8 加法完整重放，独占 f32-maxpool。
+- `rvv_kernel_resume`：完成两项 rsum 后，已交付 qs8-rdsum、qu8-rdsum（root重放），现独占 qs8-vmul-minmax-fp32；qu8-f32-vcvt 已完整发布。
 - root：qs8-vcvt 与 qs8-vlrelu 全64位验收已完成；帮助独立数学义务，统一归档、发布、progress/memory。
 - worker-server 已拥有 u8-clamp 整案和 `u8-tail-memory`，只读复用并通过 PR1 协调，禁止重复领取。
 
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-23 当前已验收 **18/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-24 当前已验收 **22/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 

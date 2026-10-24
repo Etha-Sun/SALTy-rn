@@ -1,7 +1,7 @@
 2026-10-23 用户更新：intrinsic 不再强制提供 C implementation/body 证明，可直接采用与原始规范对应、公开定义并逐项登记的 spec；完整 kernel 证明和最终人工 spec 审核保留。详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。下文早期 body 必选要求仅保留历史含义，已发布证据不改写。
 
-当前 **19/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
-最新收录 [QS8 多行归约修复版](verified/qs8-rdsum/README.md)：35实际C单元、1590 C字段、703普通Coq，完整接口、假设审计及发布复核通过。
+当前 **22/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
+最新收录 [QS8 加法修复版](verified/qs8-vadd-minmax/README.md)：27实际C单元、4300 C字段+15策略、492普通Coq，完整接口、假设审计及发布复核通过。其他 worker 新提交的两项 GEMM 也已纳入清单。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
 

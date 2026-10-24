@@ -1,0 +1,20 @@
+From Qs8Add Require Import rvv_load_goal S8ArraysStrategy RvvLoadPart00 RvvLoadPart01 RvvLoadPart02 RvvLoadPart03 RvvLoadPart04 RvvLoadPart05 RvvLoadPart06 RvvLoadPart07 RvvLoadPart08 RvvLoadPart09 RvvLoadPart10 RvvLoadPart11 RvvLoadPart12 RvvLoadPart13 RvvLoadPart14 RvvLoadPart15.
+Module CheckedRvvLoad : Qs8Add.rvv_load_goal.VC_Correct.
+Include Qs8Add.S8ArraysStrategy.CheckedS8Arrays.
+Include Qs8Add.RvvLoadPart00.CheckedRvvLoadPart00.
+Include Qs8Add.RvvLoadPart01.CheckedRvvLoadPart01.
+Include Qs8Add.RvvLoadPart02.CheckedRvvLoadPart02.
+Include Qs8Add.RvvLoadPart03.CheckedRvvLoadPart03.
+Include Qs8Add.RvvLoadPart04.CheckedRvvLoadPart04.
+Include Qs8Add.RvvLoadPart05.CheckedRvvLoadPart05.
+Include Qs8Add.RvvLoadPart06.CheckedRvvLoadPart06.
+Include Qs8Add.RvvLoadPart07.CheckedRvvLoadPart07.
+Include Qs8Add.RvvLoadPart08.CheckedRvvLoadPart08.
+Include Qs8Add.RvvLoadPart09.CheckedRvvLoadPart09.
+Include Qs8Add.RvvLoadPart10.CheckedRvvLoadPart10.
+Include Qs8Add.RvvLoadPart11.CheckedRvvLoadPart11.
+Include Qs8Add.RvvLoadPart12.CheckedRvvLoadPart12.
+Include Qs8Add.RvvLoadPart13.CheckedRvvLoadPart13.
+Include Qs8Add.RvvLoadPart14.CheckedRvvLoadPart14.
+Include Qs8Add.RvvLoadPart15.CheckedRvvLoadPart15.
+End CheckedRvvLoad.

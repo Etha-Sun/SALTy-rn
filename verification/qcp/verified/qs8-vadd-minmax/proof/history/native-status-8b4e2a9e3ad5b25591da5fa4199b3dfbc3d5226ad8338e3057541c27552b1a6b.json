@@ -1,0 +1,77 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "finite raw repaired C with array-valued instruction runtime; formal scalar-field frontend still required",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3",
+  "input_sha256": {
+    "shim/native_runtime.h": "6b3e0842fee458850a067c22b01713500389903fbe240ccb14064febe5a0bf4c",
+    "shim/native_kernel.c": "c0991cfaa011ad702545283c61419828cb93c2eb9cca979eaa9f0050b521bc8b",
+    "impl/testNEON.c": "42747395d8b4c116f31ebd3c7da14612e893c817496a12f09bc38b2f08becadb",
+    "impl/testRVV.c": "49aae80f53a5d37b1a817e1eeb8a7480a3a963264077eeca1a68113e53de909c",
+    "proof/semantics.json": "3d9392507fcca2347b8e41d6c95072452f10bb817c109cd2c89b96951036a7b9",
+    "proof/coq/Model.v": "ef2ce3192f63bb5ab03b63c284aac1db7df0af16285bc4f9ad972fe488e890ea",
+    "proof/coq/ShiftFacts.v": "68c110d6ac635bf615026065777fae0292ce7c8c835d84f20ff9fe918e557db0",
+    "proof/check_native.py": "9a59eb8b4303722fc7447296cace8063401bd246eda5252510cd7561e5f01501",
+    "proof/repair.patch": "bc6bc2de2ff4a056de3020d0ad095d768b3c58858908ebc8c36c31a8d5696d12"
+  },
+  "records": [
+    {
+      "label": "correct-compile",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3/correct/shim/native_kernel.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3/correct/test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.4696328940335661,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "correct-run",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3/correct/test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.41599713801406324,
+      "log_sha256": "2aea83a652b5d0fd69ba602dac290b08a1496f7deb2c6e430df62d8138419592"
+    },
+    {
+      "label": "shared-wrap-bug-compile",
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3/shared-wrap-bug/shim/native_kernel.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3/shared-wrap-bug/test"
+      ],
+      "exit_code": 0,
+      "seconds": 0.5159504211042076,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "shared-wrap-bug-run",
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vadd-minmax/.build/native-d4vifwu3/shared-wrap-bug/test"
+      ],
+      "exit_code": 3,
+      "seconds": 0.11479597282595932,
+      "log_sha256": "b1c22e837f82f7a9e96fd7f2b111fba5ca966f839ffd222127f361fef4614cc6"
+    }
+  ],
+  "cases": 21472,
+  "lanes_per_side": 2665773,
+  "all256_controls": true,
+  "offset_canaries": true,
+  "unordered_bounds_sampled": true,
+  "shared_wrong_wrap_rejected": true
+}

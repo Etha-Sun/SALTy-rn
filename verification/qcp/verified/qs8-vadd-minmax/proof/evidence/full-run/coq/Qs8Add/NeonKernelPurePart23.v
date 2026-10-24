@@ -1,0 +1,34 @@
+From Qs8Add Require Import NeonKernelArrayAutomation.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_test_neon_safety_wit_24 : Qs8Add.neon_unit_goal.test_neon_safety_wit_24.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_safety_wit_24,Qs8Add.neon_unit_goal_chunk08.test_neon_safety_wit_24;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_safety_wit_88 : Qs8Add.neon_unit_goal.test_neon_safety_wit_88.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_safety_wit_88,Qs8Add.neon_unit_goal_chunk08.test_neon_safety_wit_88;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_safety_wit_152 : Qs8Add.neon_unit_goal.test_neon_safety_wit_152.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_safety_wit_152,Qs8Add.neon_unit_goal_chunk08.test_neon_safety_wit_152;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_safety_wit_216 : Qs8Add.neon_unit_goal.test_neon_safety_wit_216.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_safety_wit_216,Qs8Add.neon_unit_goal_chunk08.test_neon_safety_wit_216;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_safety_wit_280 : Qs8Add.neon_unit_goal.test_neon_safety_wit_280.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_safety_wit_280,Qs8Add.neon_unit_goal_chunk08.test_neon_safety_wit_280;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_79_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_79_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_79_pure,Qs8Add.neon_unit_goal_chunk10.test_neon_partial_solve_wit_79_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_185_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_185_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_185_pure,Qs8Add.neon_unit_goal_chunk04.test_neon_partial_solve_wit_185_pure;try left;intros;subst;prop_apply(qa_full_values input_a_pre(batch_pre+7)A);Intros_p HAValues;qa_kernel_pure_with_arrays. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_294_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_294_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_294_pure,Qs8Add.neon_unit_goal_chunk01.test_neon_partial_solve_wit_294_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_379_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_379_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_379_pure,Qs8Add.neon_unit_goal_chunk06.test_neon_partial_solve_wit_379_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_465_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_465_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_465_pure,Qs8Add.neon_unit_goal_chunk12.test_neon_partial_solve_wit_465_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_561_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_561_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_561_pure,Qs8Add.neon_unit_goal_chunk12.test_neon_partial_solve_wit_561_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_663_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_663_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_663_pure,Qs8Add.neon_unit_goal_chunk02.test_neon_partial_solve_wit_663_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_799_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_799_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_799_pure,Qs8Add.neon_unit_goal_chunk10.test_neon_partial_solve_wit_799_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_898_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_898_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_898_pure,Qs8Add.neon_unit_goal_chunk13.test_neon_partial_solve_wit_898_pure;try left;intros;subst;qa_kernel_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_1002_pure : Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_1002_pure.
+Proof. unfold Qs8Add.neon_unit_goal.test_neon_partial_solve_wit_1002_pure,Qs8Add.neon_unit_goal_chunk05.test_neon_partial_solve_wit_1002_pure;try left;intros;subst;qa_kernel_pure. Qed.

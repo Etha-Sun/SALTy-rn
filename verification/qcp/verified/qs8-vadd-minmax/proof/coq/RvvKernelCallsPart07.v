@@ -1,0 +1,14 @@
+From Qs8Add Require Import RvvKernelCallResource.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_test_rvv_partial_solve_wit_8 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_8.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_8,Qs8Add.rvv_unit_goal_chunk01.test_rvv_partial_solve_wit_8;try left;intros;subst;qa_rvv_kernel_arith_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_24 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_24.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_24,Qs8Add.rvv_unit_goal_chunk01.test_rvv_partial_solve_wit_24;try left;intros;subst;qa_rvv_kernel_arith_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_40 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_40.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_40,Qs8Add.rvv_unit_goal_chunk01.test_rvv_partial_solve_wit_40;try left;intros;subst;qa_rvv_kernel_arith_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_56 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_56.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_56,Qs8Add.rvv_unit_goal_chunk01.test_rvv_partial_solve_wit_56;try left;intros;subst;qa_rvv_kernel_arith_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_72 : Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_72.
+Proof. unfold Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_72,Qs8Add.rvv_unit_goal_chunk01.test_rvv_partial_solve_wit_72,Qs8Add.rvv_unit_goal.test_rvv_partial_solve_wit_72_aux,Qs8Add.rvv_unit_goal_chunk01.test_rvv_partial_solve_wit_72_aux;try left;intros;subst;qa_call_store_frame. Qed.

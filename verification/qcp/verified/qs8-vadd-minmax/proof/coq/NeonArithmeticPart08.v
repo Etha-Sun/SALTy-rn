@@ -1,0 +1,45 @@
+From Qs8Add Require Import NeonFastFrame.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_vsubl_s8_return_wit_1 : Qs8Add.neon_arithmetic_goal.vsubl_s8_return_wit_1.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vsubl_s8_return_wit_1;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vsubl_s8_partial_solve_wit_8 : Qs8Add.neon_arithmetic_goal.vsubl_s8_partial_solve_wit_8.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vsubl_s8_partial_solve_wit_8,Qs8Add.neon_arithmetic_goal.vsubl_s8_partial_solve_wit_8_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vmulq_s32_partial_solve_wit_3 : Qs8Add.neon_arithmetic_goal.vmulq_s32_partial_solve_wit_3.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vmulq_s32_partial_solve_wit_3,Qs8Add.neon_arithmetic_goal.vmulq_s32_partial_solve_wit_3_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vmlaq_s32_partial_solve_wit_1 : Qs8Add.neon_arithmetic_goal.vmlaq_s32_partial_solve_wit_1.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vmlaq_s32_partial_solve_wit_1,Qs8Add.neon_arithmetic_goal.vmlaq_s32_partial_solve_wit_1_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vqmovn_s32_partial_solve_wit_4 : Qs8Add.neon_arithmetic_goal.vqmovn_s32_partial_solve_wit_4.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vqmovn_s32_partial_solve_wit_4,Qs8Add.neon_arithmetic_goal.vqmovn_s32_partial_solve_wit_4_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vqmovn_s16_partial_solve_wit_7 : Qs8Add.neon_arithmetic_goal.vqmovn_s16_partial_solve_wit_7.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vqmovn_s16_partial_solve_wit_7,Qs8Add.neon_arithmetic_goal.vqmovn_s16_partial_solve_wit_7_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vqaddq_s16_partial_solve_wit_6 : Qs8Add.neon_arithmetic_goal.vqaddq_s16_partial_solve_wit_6.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vqaddq_s16_partial_solve_wit_6,Qs8Add.neon_arithmetic_goal.vqaddq_s16_partial_solve_wit_6_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vmin_s8_partial_solve_wit_2 : Qs8Add.neon_arithmetic_goal.vmin_s8_partial_solve_wit_2.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vmin_s8_partial_solve_wit_2,Qs8Add.neon_arithmetic_goal.vmin_s8_partial_solve_wit_2_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vminq_s8_partial_solve_wit_1 : Qs8Add.neon_arithmetic_goal.vminq_s8_partial_solve_wit_1.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vminq_s8_partial_solve_wit_1,Qs8Add.neon_arithmetic_goal.vminq_s8_partial_solve_wit_1_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vminq_s8_partial_solve_wit_9 : Qs8Add.neon_arithmetic_goal.vminq_s8_partial_solve_wit_9.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vminq_s8_partial_solve_wit_9,Qs8Add.neon_arithmetic_goal.vminq_s8_partial_solve_wit_9_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_qcp_qa_max8_return_wit_1 : Qs8Add.neon_arithmetic_goal.qcp_qa_max8_return_wit_1.
+Proof. unfold Qs8Add.neon_arithmetic_goal.qcp_qa_max8_return_wit_1;try left;intros;subst;unfold qa_min,qa_max; qa_fast_vector. Qed.
+
+Lemma proof_of_vmax_s8_partial_solve_wit_7 : Qs8Add.neon_arithmetic_goal.vmax_s8_partial_solve_wit_7.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vmax_s8_partial_solve_wit_7,Qs8Add.neon_arithmetic_goal.vmax_s8_partial_solve_wit_7_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vmaxq_s8_partial_solve_wit_6 : Qs8Add.neon_arithmetic_goal.vmaxq_s8_partial_solve_wit_6.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vmaxq_s8_partial_solve_wit_6,Qs8Add.neon_arithmetic_goal.vmaxq_s8_partial_solve_wit_6_aux;try left;intros;subst;qa_fast_vector. Qed.
+
+Lemma proof_of_vmaxq_s8_partial_solve_wit_14 : Qs8Add.neon_arithmetic_goal.vmaxq_s8_partial_solve_wit_14.
+Proof. unfold Qs8Add.neon_arithmetic_goal.vmaxq_s8_partial_solve_wit_14,Qs8Add.neon_arithmetic_goal.vmaxq_s8_partial_solve_wit_14_aux;try left;intros;subst;qa_fast_vector. Qed.

@@ -1,0 +1,24 @@
+From Qs8Add Require Import ScalarAutomation.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma proof_of_qcp_qa_s8_return_wit_1 : Qs8Add.scalar_goal.qcp_qa_s8_return_wit_1.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_s8_return_wit_1;try left;intros;subst;pose proof(qa_s8_range x_pre);unfold qa_s8 in *;qa_core. Qed.
+
+Lemma proof_of_qcp_qa_sat16_safety_wit_2 : Qs8Add.scalar_goal.qcp_qa_sat16_safety_wit_2.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_sat16_safety_wit_2;try left;intros;subst;qa_core. Qed.
+
+Lemma proof_of_qcp_qa_sat8_return_wit_3 : Qs8Add.scalar_goal.qcp_qa_sat8_return_wit_3.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_sat8_return_wit_3;try left;intros;subst;qa_core. Qed.
+
+Lemma proof_of_qcp_qa_rvv_macc_safety_wit_1 : Qs8Add.scalar_goal.qcp_qa_rvv_macc_safety_wit_1.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_rvv_macc_safety_wit_1;try left;intros;subst;pose proof(qa_mul_bound31 b_pre c_pre ltac:(lia)ltac:(lia));qa_core. Qed.
+
+Lemma proof_of_qcp_qa_neon_shift_return_wit_1 : Qs8Add.scalar_goal.qcp_qa_neon_shift_return_wit_1.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_neon_shift_return_wit_1;try left;intros;subst;pose proof(qa_s8_range b_pre);qa_core. Qed.
+
+Lemma proof_of_qcp_qa_rvv_rnu_safety_wit_3 : Qs8Add.scalar_goal.qcp_qa_rvv_rnu_safety_wit_3.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_rvv_rnu_safety_wit_3;try left;intros;subst;qa_core. Qed.
+
+Lemma proof_of_qcp_qa_rvv_add16_safety_wit_1 : Qs8Add.scalar_goal.qcp_qa_rvv_add16_safety_wit_1.
+Proof. unfold Qs8Add.scalar_goal.qcp_qa_rvv_add16_safety_wit_1;try left;intros;subst;qa_core. Qed.

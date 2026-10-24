@@ -1,0 +1,34 @@
+{
+  "scope": "Counterexamples to actual QCP generated target; not C runtime errors or admitted kernel claims",
+  "probes": [
+    {
+      "run": "cast-width-diagnostic-3k6jkaon",
+      "files": {
+        "cast_probe_goal.v": "8c3353f01f750aa2560f63d7e8ae1a5b0af4cf5f898c16fc1699e8e025578023",
+        "input.c": "750b4dfa42656089605afbabb86ef21eb0e59c39399940ce7a07e1e3c7d28d97"
+      }
+    },
+    {
+      "run": "staged-negation-z5o9pp66",
+      "files": {
+        "staged_probe_goal.v": "c27e5c82bece37ad2f8bb74bcc8f7f5484a4db38555b2495d072c12a7f1fdf9c",
+        "input.c": "bdcc0d92a19117011198883804fccc7a86ccdfa1547b8929a15dd4a239a72983"
+      }
+    }
+  ],
+  "counterexamples": [
+    {
+      "source": "UInt32-to-SInt32 direct cast",
+      "x": 4294967295,
+      "native_result": -1,
+      "wrong_target": "x = qa_s32 x"
+    },
+    {
+      "source": "int32 result cast of negated widened int32 expression",
+      "x": -2147483648,
+      "native_result": -2147483648,
+      "wrong_target": "-x = qa_s32(-x)"
+    }
+  ],
+  "resolution": "Explicit signed low8 remainder decoder proved on full Z plus actual16 C fields; distinct ISA primitives unchanged."
+}

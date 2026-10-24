@@ -1,0 +1,581 @@
+{
+  "tail_entry_cut": "/*@ Assert Zlength(A)==batch@pre+7 && Zlength(B)==batch@pre+7 && sizeof(int8_t)==1 && 0<batch@pre && batch@pre<=18446744073709551608 && 0<=batch && batch<=batch@pre && 0<=(batch@pre-batch) && params==params@pre && params!=0 && (-128)<=Az && Az<=127 && (-128)<=Bz && Bz<=127 && (-2147483648)<=RawBias && RawBias<=2147483647 && (-2147483648)<=Ma && Ma<=2147483647 && (-2147483648)<=Mb && Mb<=2147483647 && (-2147483648)<=RawShift && RawShift<=2147483647 && (-32768)<=Oz && Oz<=32767 && (-128)<=Lo && Lo<=127 && (-128)<=Hi && Hi<=127 && (batch>0 && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && output==output@pre+(batch@pre-batch)) && right_shift==qa_ctrl(RawShift) && input_a@pre<=input_a && input_a<=input_a@pre+batch@pre+7 && input_b@pre<=input_b && input_b<=input_b@pre+batch@pre+7 && batch<16 && ((batch==1 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==2 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==3 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1) || (batch==4 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==0) || (batch==5 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==6 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==7 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1) || (batch==8 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==0) || (batch==9 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==10 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==11 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1) || (batch==12 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==0) || (batch==13 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==14 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==15 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1)) && CharArray::full(input_a@pre,batch@pre+7,A) * CharArray::full(input_b@pre,batch@pre+7,B) * CharArray::full(output@pre,(batch@pre-batch),qa_values((batch@pre-batch),Az,Bz,Ma,Mb,RawShift,Oz,Lo,Hi,A,B)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,Az) * store(&(params->scalar.b_zero_point),char,Bz) * store(&(params->scalar.bias),int,RawBias) * store(&(params->scalar.a_multiplier),int,Ma) * store(&(params->scalar.b_multiplier),int,Mb) * store(&(params->scalar.shift),int,RawShift) * store(&(params->scalar.output_zero_point),short,Oz) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(va_zero_point.s0),char,Az) * store(&(va_zero_point.s1),char,Az) * store(&(va_zero_point.s2),char,Az) * store(&(va_zero_point.s3),char,Az) * store(&(va_zero_point.s4),char,Az) * store(&(va_zero_point.s5),char,Az) * store(&(va_zero_point.s6),char,Az) * store(&(va_zero_point.s7),char,Az) * store(&(vb_zero_point.s0),char,Bz) * store(&(vb_zero_point.s1),char,Bz) * store(&(vb_zero_point.s2),char,Bz) * store(&(vb_zero_point.s3),char,Bz) * store(&(vb_zero_point.s4),char,Bz) * store(&(vb_zero_point.s5),char,Bz) * store(&(vb_zero_point.s6),char,Bz) * store(&(vb_zero_point.s7),char,Bz) * store(&(va_multiplier.s0),int,Ma) * store(&(va_multiplier.s1),int,Ma) * store(&(va_multiplier.s2),int,Ma) * store(&(va_multiplier.s3),int,Ma) * store(&(vb_multiplier.s0),int,Mb) * store(&(vb_multiplier.s1),int,Mb) * store(&(vb_multiplier.s2),int,Mb) * store(&(vb_multiplier.s3),int,Mb) * store(&(vright_shift.s0),int,qa_ctrl(RawShift)) * store(&(vright_shift.s1),int,qa_ctrl(RawShift)) * store(&(vright_shift.s2),int,qa_ctrl(RawShift)) * store(&(vright_shift.s3),int,qa_ctrl(RawShift)) * store(&(voutput_zero_point.s0),short,Oz) * store(&(voutput_zero_point.s1),short,Oz) * store(&(voutput_zero_point.s2),short,Oz) * store(&(voutput_zero_point.s3),short,Oz) * store(&(voutput_zero_point.s4),short,Oz) * store(&(voutput_zero_point.s5),short,Oz) * store(&(voutput_zero_point.s6),short,Oz) * store(&(voutput_zero_point.s7),short,Oz) * store(&(voutput_min.s0),char,Lo) * store(&(voutput_min.s1),char,Lo) * store(&(voutput_min.s2),char,Lo) * store(&(voutput_min.s3),char,Lo) * store(&(voutput_min.s4),char,Lo) * store(&(voutput_min.s5),char,Lo) * store(&(voutput_min.s6),char,Lo) * store(&(voutput_min.s7),char,Lo) * store(&(voutput_min.s8),char,Lo) * store(&(voutput_min.s9),char,Lo) * store(&(voutput_min.s10),char,Lo) * store(&(voutput_min.s11),char,Lo) * store(&(voutput_min.s12),char,Lo) * store(&(voutput_min.s13),char,Lo) * store(&(voutput_min.s14),char,Lo) * store(&(voutput_min.s15),char,Lo) * store(&(voutput_max.s0),char,Hi) * store(&(voutput_max.s1),char,Hi) * store(&(voutput_max.s2),char,Hi) * store(&(voutput_max.s3),char,Hi) * store(&(voutput_max.s4),char,Hi) * store(&(voutput_max.s5),char,Hi) * store(&(voutput_max.s6),char,Hi) * store(&(voutput_max.s7),char,Hi) * store(&(voutput_max.s8),char,Hi) * store(&(voutput_max.s9),char,Hi) * store(&(voutput_max.s10),char,Hi) * store(&(voutput_max.s11),char,Hi) * store(&(voutput_max.s12),char,Hi) * store(&(voutput_max.s13),char,Hi) * store(&(voutput_max.s14),char,Hi) * store(&(voutput_max.s15),char,Hi) */",
+  "entry_cut": "/*@ Assert Zlength(A)==batch@pre+7 && Zlength(B)==batch@pre+7 && sizeof(int8_t)==1 && 0<batch@pre && batch@pre<=18446744073709551608 && 0<=batch && batch<=batch@pre && 0<=(batch@pre-batch) && params==params@pre && params!=0 && (-128)<=Az && Az<=127 && (-128)<=Bz && Bz<=127 && (-2147483648)<=RawBias && RawBias<=2147483647 && (-2147483648)<=Ma && Ma<=2147483647 && (-2147483648)<=Mb && Mb<=2147483647 && (-2147483648)<=RawShift && RawShift<=2147483647 && (-32768)<=Oz && Oz<=32767 && (-128)<=Lo && Lo<=127 && (-128)<=Hi && Hi<=127 && batch%sizeof(int8_t)==0 && input_a!=0 && input_b!=0 && output!=0 && batch==batch@pre && input_a==input_a@pre && input_b==input_b@pre && output==output@pre && CharArray::full(input_a@pre,batch@pre+7,A) * CharArray::full(input_b@pre,batch@pre+7,B) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,Az) * store(&(params->scalar.b_zero_point),char,Bz) * store(&(params->scalar.bias),int,RawBias) * store(&(params->scalar.a_multiplier),int,Ma) * store(&(params->scalar.b_multiplier),int,Mb) * store(&(params->scalar.shift),int,RawShift) * store(&(params->scalar.output_zero_point),short,Oz) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) */",
+  "bulk_invariant": "/*@ Inv Assert Zlength(A)==batch@pre+7 && Zlength(B)==batch@pre+7 && sizeof(int8_t)==1 && 0<batch@pre && batch@pre<=18446744073709551608 && 0<=batch && batch<=batch@pre && 0<=(batch@pre-batch) && params==params@pre && params!=0 && (-128)<=Az && Az<=127 && (-128)<=Bz && Bz<=127 && (-2147483648)<=RawBias && RawBias<=2147483647 && (-2147483648)<=Ma && Ma<=2147483647 && (-2147483648)<=Mb && Mb<=2147483647 && (-2147483648)<=RawShift && RawShift<=2147483647 && (-32768)<=Oz && Oz<=32767 && (-128)<=Lo && Lo<=127 && (-128)<=Hi && Hi<=127 && ((batch>0 && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && output==output@pre+(batch@pre-batch)) || batch==0) && right_shift==qa_ctrl(RawShift) && input_a@pre<=input_a && input_a<=input_a@pre+batch@pre+7 && input_b@pre<=input_b && input_b<=input_b@pre+batch@pre+7 && CharArray::full(input_a@pre,batch@pre+7,A) * CharArray::full(input_b@pre,batch@pre+7,B) * CharArray::full(output@pre,(batch@pre-batch),qa_values((batch@pre-batch),Az,Bz,Ma,Mb,RawShift,Oz,Lo,Hi,A,B)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,Az) * store(&(params->scalar.b_zero_point),char,Bz) * store(&(params->scalar.bias),int,RawBias) * store(&(params->scalar.a_multiplier),int,Ma) * store(&(params->scalar.b_multiplier),int,Mb) * store(&(params->scalar.shift),int,RawShift) * store(&(params->scalar.output_zero_point),short,Oz) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(va_zero_point.s0),char,Az) * store(&(va_zero_point.s1),char,Az) * store(&(va_zero_point.s2),char,Az) * store(&(va_zero_point.s3),char,Az) * store(&(va_zero_point.s4),char,Az) * store(&(va_zero_point.s5),char,Az) * store(&(va_zero_point.s6),char,Az) * store(&(va_zero_point.s7),char,Az) * store(&(vb_zero_point.s0),char,Bz) * store(&(vb_zero_point.s1),char,Bz) * store(&(vb_zero_point.s2),char,Bz) * store(&(vb_zero_point.s3),char,Bz) * store(&(vb_zero_point.s4),char,Bz) * store(&(vb_zero_point.s5),char,Bz) * store(&(vb_zero_point.s6),char,Bz) * store(&(vb_zero_point.s7),char,Bz) * store(&(va_multiplier.s0),int,Ma) * store(&(va_multiplier.s1),int,Ma) * store(&(va_multiplier.s2),int,Ma) * store(&(va_multiplier.s3),int,Ma) * store(&(vb_multiplier.s0),int,Mb) * store(&(vb_multiplier.s1),int,Mb) * store(&(vb_multiplier.s2),int,Mb) * store(&(vb_multiplier.s3),int,Mb) * store(&(vright_shift.s0),int,qa_ctrl(RawShift)) * store(&(vright_shift.s1),int,qa_ctrl(RawShift)) * store(&(vright_shift.s2),int,qa_ctrl(RawShift)) * store(&(vright_shift.s3),int,qa_ctrl(RawShift)) * store(&(voutput_zero_point.s0),short,Oz) * store(&(voutput_zero_point.s1),short,Oz) * store(&(voutput_zero_point.s2),short,Oz) * store(&(voutput_zero_point.s3),short,Oz) * store(&(voutput_zero_point.s4),short,Oz) * store(&(voutput_zero_point.s5),short,Oz) * store(&(voutput_zero_point.s6),short,Oz) * store(&(voutput_zero_point.s7),short,Oz) * store(&(voutput_min.s0),char,Lo) * store(&(voutput_min.s1),char,Lo) * store(&(voutput_min.s2),char,Lo) * store(&(voutput_min.s3),char,Lo) * store(&(voutput_min.s4),char,Lo) * store(&(voutput_min.s5),char,Lo) * store(&(voutput_min.s6),char,Lo) * store(&(voutput_min.s7),char,Lo) * store(&(voutput_min.s8),char,Lo) * store(&(voutput_min.s9),char,Lo) * store(&(voutput_min.s10),char,Lo) * store(&(voutput_min.s11),char,Lo) * store(&(voutput_min.s12),char,Lo) * store(&(voutput_min.s13),char,Lo) * store(&(voutput_min.s14),char,Lo) * store(&(voutput_min.s15),char,Lo) * store(&(voutput_max.s0),char,Hi) * store(&(voutput_max.s1),char,Hi) * store(&(voutput_max.s2),char,Hi) * store(&(voutput_max.s3),char,Hi) * store(&(voutput_max.s4),char,Hi) * store(&(voutput_max.s5),char,Hi) * store(&(voutput_max.s6),char,Hi) * store(&(voutput_max.s7),char,Hi) * store(&(voutput_max.s8),char,Hi) * store(&(voutput_max.s9),char,Hi) * store(&(voutput_max.s10),char,Hi) * store(&(voutput_max.s11),char,Hi) * store(&(voutput_max.s12),char,Hi) * store(&(voutput_max.s13),char,Hi) * store(&(voutput_max.s14),char,Hi) * store(&(voutput_max.s15),char,Hi) */",
+  "tail_post_invariant": "/*@ Inv Assert Zlength(A)==batch@pre+7 && Zlength(B)==batch@pre+7 && sizeof(int8_t)==1 && 0<batch@pre && batch@pre<=18446744073709551608 && 0<=batch && batch<=batch@pre && 0<=(batch@pre-batch) && params==params@pre && params!=0 && (-128)<=Az && Az<=127 && (-128)<=Bz && Bz<=127 && (-2147483648)<=RawBias && RawBias<=2147483647 && (-2147483648)<=Ma && Ma<=2147483647 && (-2147483648)<=Mb && Mb<=2147483647 && (-2147483648)<=RawShift && RawShift<=2147483647 && (-32768)<=Oz && Oz<=32767 && (-128)<=Lo && Lo<=127 && (-128)<=Hi && Hi<=127 && ((batch>0 && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && output==output@pre+(batch@pre-batch)) || batch==0) && right_shift==qa_ctrl(RawShift) && input_a@pre<=input_a && input_a<=input_a@pre+batch@pre+7 && input_b@pre<=input_b && input_b<=input_b@pre+batch@pre+7 && batch<16 && ((batch==0 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==0) || (batch==1 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==2 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==3 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1) || (batch==4 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==0) || (batch==5 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==6 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==7 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1)) && CharArray::full(input_a@pre,batch@pre+7,A) * CharArray::full(input_b@pre,batch@pre+7,B) * CharArray::full(output@pre,(batch@pre-batch),qa_values((batch@pre-batch),Az,Bz,Ma,Mb,RawShift,Oz,Lo,Hi,A,B)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,Az) * store(&(params->scalar.b_zero_point),char,Bz) * store(&(params->scalar.bias),int,RawBias) * store(&(params->scalar.a_multiplier),int,Ma) * store(&(params->scalar.b_multiplier),int,Mb) * store(&(params->scalar.shift),int,RawShift) * store(&(params->scalar.output_zero_point),short,Oz) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(va_zero_point.s0),char,Az) * store(&(va_zero_point.s1),char,Az) * store(&(va_zero_point.s2),char,Az) * store(&(va_zero_point.s3),char,Az) * store(&(va_zero_point.s4),char,Az) * store(&(va_zero_point.s5),char,Az) * store(&(va_zero_point.s6),char,Az) * store(&(va_zero_point.s7),char,Az) * store(&(vb_zero_point.s0),char,Bz) * store(&(vb_zero_point.s1),char,Bz) * store(&(vb_zero_point.s2),char,Bz) * store(&(vb_zero_point.s3),char,Bz) * store(&(vb_zero_point.s4),char,Bz) * store(&(vb_zero_point.s5),char,Bz) * store(&(vb_zero_point.s6),char,Bz) * store(&(vb_zero_point.s7),char,Bz) * store(&(va_multiplier.s0),int,Ma) * store(&(va_multiplier.s1),int,Ma) * store(&(va_multiplier.s2),int,Ma) * store(&(va_multiplier.s3),int,Ma) * store(&(vb_multiplier.s0),int,Mb) * store(&(vb_multiplier.s1),int,Mb) * store(&(vb_multiplier.s2),int,Mb) * store(&(vb_multiplier.s3),int,Mb) * store(&(vright_shift.s0),int,qa_ctrl(RawShift)) * store(&(vright_shift.s1),int,qa_ctrl(RawShift)) * store(&(vright_shift.s2),int,qa_ctrl(RawShift)) * store(&(vright_shift.s3),int,qa_ctrl(RawShift)) * store(&(voutput_zero_point.s0),short,Oz) * store(&(voutput_zero_point.s1),short,Oz) * store(&(voutput_zero_point.s2),short,Oz) * store(&(voutput_zero_point.s3),short,Oz) * store(&(voutput_zero_point.s4),short,Oz) * store(&(voutput_zero_point.s5),short,Oz) * store(&(voutput_zero_point.s6),short,Oz) * store(&(voutput_zero_point.s7),short,Oz) * store(&(voutput_min.s0),char,Lo) * store(&(voutput_min.s1),char,Lo) * store(&(voutput_min.s2),char,Lo) * store(&(voutput_min.s3),char,Lo) * store(&(voutput_min.s4),char,Lo) * store(&(voutput_min.s5),char,Lo) * store(&(voutput_min.s6),char,Lo) * store(&(voutput_min.s7),char,Lo) * store(&(voutput_min.s8),char,Lo) * store(&(voutput_min.s9),char,Lo) * store(&(voutput_min.s10),char,Lo) * store(&(voutput_min.s11),char,Lo) * store(&(voutput_min.s12),char,Lo) * store(&(voutput_min.s13),char,Lo) * store(&(voutput_min.s14),char,Lo) * store(&(voutput_min.s15),char,Lo) * store(&(voutput_max.s0),char,Hi) * store(&(voutput_max.s1),char,Hi) * store(&(voutput_max.s2),char,Hi) * store(&(voutput_max.s3),char,Hi) * store(&(voutput_max.s4),char,Hi) * store(&(voutput_max.s5),char,Hi) * store(&(voutput_max.s6),char,Hi) * store(&(voutput_max.s7),char,Hi) * store(&(voutput_max.s8),char,Hi) * store(&(voutput_max.s9),char,Hi) * store(&(voutput_max.s10),char,Hi) * store(&(voutput_max.s11),char,Hi) * store(&(voutput_max.s12),char,Hi) * store(&(voutput_max.s13),char,Hi) * store(&(voutput_max.s14),char,Hi) * store(&(voutput_max.s15),char,Hi) && batch<8 */",
+  "call_bindings": [
+    {
+      "function": "vld1_s8",
+      "arguments": [
+        "input_a"
+      ],
+      "where": "base=input_a@pre,count=batch@pre+7,idx=batch@pre-batch,L=A"
+    },
+    {
+      "function": "vld1_s8",
+      "arguments": [
+        "input_b"
+      ],
+      "where": "base=input_b@pre,count=batch@pre+7,idx=batch@pre-batch,L=B"
+    },
+    {
+      "function": "vld1_s8",
+      "arguments": [
+        "input_a"
+      ],
+      "where": "base=input_a@pre,count=batch@pre+7,idx=batch@pre-batch+8,L=A"
+    },
+    {
+      "function": "vld1_s8",
+      "arguments": [
+        "input_b"
+      ],
+      "where": "base=input_b@pre,count=batch@pre+7,idx=batch@pre-batch+8,L=B"
+    },
+    {
+      "function": "vsubl_s8",
+      "arguments": [
+        "va01234567",
+        "va_zero_point"
+      ],
+      "where": "a=&va01234567,b=&va_zero_point"
+    },
+    {
+      "function": "vsubl_s8",
+      "arguments": [
+        "vb01234567",
+        "vb_zero_point"
+      ],
+      "where": "a=&vb01234567,b=&vb_zero_point"
+    },
+    {
+      "function": "vsubl_s8",
+      "arguments": [
+        "va89ABCDEF",
+        "va_zero_point"
+      ],
+      "where": "a=&va89ABCDEF,b=&va_zero_point"
+    },
+    {
+      "function": "vsubl_s8",
+      "arguments": [
+        "vb89ABCDEF",
+        "vb_zero_point"
+      ],
+      "where": "a=&vb89ABCDEF,b=&vb_zero_point"
+    },
+    {
+      "function": "vmulq_s32",
+      "arguments": [
+        "vmovl_s16(vget_low_s16(vxa01234567))",
+        "va_multiplier"
+      ],
+      "where": "a=0,b=&va_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_low_s16(vxa01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_low_s16",
+      "arguments": [
+        "vxa01234567"
+      ],
+      "where": "a=&vxa01234567"
+    },
+    {
+      "function": "vmulq_s32",
+      "arguments": [
+        "vmovl_s16(vget_high_s16(vxa01234567))",
+        "va_multiplier"
+      ],
+      "where": "a=0,b=&va_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_high_s16(vxa01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_high_s16",
+      "arguments": [
+        "vxa01234567"
+      ],
+      "where": "a=&vxa01234567"
+    },
+    {
+      "function": "vmulq_s32",
+      "arguments": [
+        "vmovl_s16(vget_low_s16(vxa89ABCDEF))",
+        "va_multiplier"
+      ],
+      "where": "a=0,b=&va_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_low_s16(vxa89ABCDEF)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_low_s16",
+      "arguments": [
+        "vxa89ABCDEF"
+      ],
+      "where": "a=&vxa89ABCDEF"
+    },
+    {
+      "function": "vmulq_s32",
+      "arguments": [
+        "vmovl_s16(vget_high_s16(vxa89ABCDEF))",
+        "va_multiplier"
+      ],
+      "where": "a=0,b=&va_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_high_s16(vxa89ABCDEF)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_high_s16",
+      "arguments": [
+        "vxa89ABCDEF"
+      ],
+      "where": "a=&vxa89ABCDEF"
+    },
+    {
+      "function": "vmlaq_s32",
+      "arguments": [
+        "vacc0123",
+        "vmovl_s16(vget_low_s16(vxb01234567))",
+        "vb_multiplier"
+      ],
+      "where": "a=&vacc0123,b=0,c=&vb_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_low_s16(vxb01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_low_s16",
+      "arguments": [
+        "vxb01234567"
+      ],
+      "where": "a=&vxb01234567"
+    },
+    {
+      "function": "vmlaq_s32",
+      "arguments": [
+        "vacc4567",
+        "vmovl_s16(vget_high_s16(vxb01234567))",
+        "vb_multiplier"
+      ],
+      "where": "a=&vacc4567,b=0,c=&vb_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_high_s16(vxb01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_high_s16",
+      "arguments": [
+        "vxb01234567"
+      ],
+      "where": "a=&vxb01234567"
+    },
+    {
+      "function": "vmlaq_s32",
+      "arguments": [
+        "vacc89AB",
+        "vmovl_s16(vget_low_s16(vxb89ABCDEF))",
+        "vb_multiplier"
+      ],
+      "where": "a=&vacc89AB,b=0,c=&vb_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_low_s16(vxb89ABCDEF)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_low_s16",
+      "arguments": [
+        "vxb89ABCDEF"
+      ],
+      "where": "a=&vxb89ABCDEF"
+    },
+    {
+      "function": "vmlaq_s32",
+      "arguments": [
+        "vaccCDEF",
+        "vmovl_s16(vget_high_s16(vxb89ABCDEF))",
+        "vb_multiplier"
+      ],
+      "where": "a=&vaccCDEF,b=0,c=&vb_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_high_s16(vxb89ABCDEF)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_high_s16",
+      "arguments": [
+        "vxb89ABCDEF"
+      ],
+      "where": "a=&vxb89ABCDEF"
+    },
+    {
+      "function": "vrshlq_s32",
+      "arguments": [
+        "vacc0123",
+        "vright_shift"
+      ],
+      "where": "a=&vacc0123,b=&vright_shift"
+    },
+    {
+      "function": "vrshlq_s32",
+      "arguments": [
+        "vacc4567",
+        "vright_shift"
+      ],
+      "where": "a=&vacc4567,b=&vright_shift"
+    },
+    {
+      "function": "vrshlq_s32",
+      "arguments": [
+        "vacc89AB",
+        "vright_shift"
+      ],
+      "where": "a=&vacc89AB,b=&vright_shift"
+    },
+    {
+      "function": "vrshlq_s32",
+      "arguments": [
+        "vaccCDEF",
+        "vright_shift"
+      ],
+      "where": "a=&vaccCDEF,b=&vright_shift"
+    },
+    {
+      "function": "vqaddq_s16",
+      "arguments": [
+        "vcombine_s16(vqmovn_s32(vacc0123), vqmovn_s32(vacc4567))",
+        "voutput_zero_point"
+      ],
+      "where": "a=0,b=&voutput_zero_point"
+    },
+    {
+      "function": "vcombine_s16",
+      "arguments": [
+        "vqmovn_s32(vacc0123)",
+        "vqmovn_s32(vacc4567)"
+      ],
+      "where": "a=0,b=0"
+    },
+    {
+      "function": "vqmovn_s32",
+      "arguments": [
+        "vacc0123"
+      ],
+      "where": "a=&vacc0123"
+    },
+    {
+      "function": "vqmovn_s32",
+      "arguments": [
+        "vacc4567"
+      ],
+      "where": "a=&vacc4567"
+    },
+    {
+      "function": "vqaddq_s16",
+      "arguments": [
+        "vcombine_s16(vqmovn_s32(vacc89AB), vqmovn_s32(vaccCDEF))",
+        "voutput_zero_point"
+      ],
+      "where": "a=0,b=&voutput_zero_point"
+    },
+    {
+      "function": "vcombine_s16",
+      "arguments": [
+        "vqmovn_s32(vacc89AB)",
+        "vqmovn_s32(vaccCDEF)"
+      ],
+      "where": "a=0,b=0"
+    },
+    {
+      "function": "vqmovn_s32",
+      "arguments": [
+        "vacc89AB"
+      ],
+      "where": "a=&vacc89AB"
+    },
+    {
+      "function": "vqmovn_s32",
+      "arguments": [
+        "vaccCDEF"
+      ],
+      "where": "a=&vaccCDEF"
+    },
+    {
+      "function": "vcombine_s8",
+      "arguments": [
+        "vqmovn_s16(vacc01234567)",
+        "vqmovn_s16(vacc89ABCDEF)"
+      ],
+      "where": "a=0,b=0"
+    },
+    {
+      "function": "vqmovn_s16",
+      "arguments": [
+        "vacc01234567"
+      ],
+      "where": "a=&vacc01234567"
+    },
+    {
+      "function": "vqmovn_s16",
+      "arguments": [
+        "vacc89ABCDEF"
+      ],
+      "where": "a=&vacc89ABCDEF"
+    },
+    {
+      "function": "vmaxq_s8",
+      "arguments": [
+        "vout0123456789ABCDEF",
+        "voutput_min"
+      ],
+      "where": "a=&vout0123456789ABCDEF,b=&voutput_min"
+    },
+    {
+      "function": "vminq_s8",
+      "arguments": [
+        "vout0123456789ABCDEF",
+        "voutput_max"
+      ],
+      "where": "a=&vout0123456789ABCDEF,b=&voutput_max"
+    },
+    {
+      "function": "vld1_s8",
+      "arguments": [
+        "input_a"
+      ],
+      "where": "base=input_a@pre,count=batch@pre+7,idx=batch@pre-batch,L=A"
+    },
+    {
+      "function": "vld1_s8",
+      "arguments": [
+        "input_b"
+      ],
+      "where": "base=input_b@pre,count=batch@pre+7,idx=batch@pre-batch,L=B"
+    },
+    {
+      "function": "vsubl_s8",
+      "arguments": [
+        "va01234567",
+        "va_zero_point"
+      ],
+      "where": "a=&va01234567,b=&va_zero_point"
+    },
+    {
+      "function": "vsubl_s8",
+      "arguments": [
+        "vb01234567",
+        "vb_zero_point"
+      ],
+      "where": "a=&vb01234567,b=&vb_zero_point"
+    },
+    {
+      "function": "vmulq_s32",
+      "arguments": [
+        "vmovl_s16(vget_low_s16(vxa01234567))",
+        "va_multiplier"
+      ],
+      "where": "a=0,b=&va_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_low_s16(vxa01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_low_s16",
+      "arguments": [
+        "vxa01234567"
+      ],
+      "where": "a=&vxa01234567"
+    },
+    {
+      "function": "vmulq_s32",
+      "arguments": [
+        "vmovl_s16(vget_high_s16(vxa01234567))",
+        "va_multiplier"
+      ],
+      "where": "a=0,b=&va_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_high_s16(vxa01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_high_s16",
+      "arguments": [
+        "vxa01234567"
+      ],
+      "where": "a=&vxa01234567"
+    },
+    {
+      "function": "vmlaq_s32",
+      "arguments": [
+        "vacc0123",
+        "vmovl_s16(vget_low_s16(vxb01234567))",
+        "vb_multiplier"
+      ],
+      "where": "a=&vacc0123,b=0,c=&vb_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_low_s16(vxb01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_low_s16",
+      "arguments": [
+        "vxb01234567"
+      ],
+      "where": "a=&vxb01234567"
+    },
+    {
+      "function": "vmlaq_s32",
+      "arguments": [
+        "vacc4567",
+        "vmovl_s16(vget_high_s16(vxb01234567))",
+        "vb_multiplier"
+      ],
+      "where": "a=&vacc4567,b=0,c=&vb_multiplier"
+    },
+    {
+      "function": "vmovl_s16",
+      "arguments": [
+        "vget_high_s16(vxb01234567)"
+      ],
+      "where": "a=0"
+    },
+    {
+      "function": "vget_high_s16",
+      "arguments": [
+        "vxb01234567"
+      ],
+      "where": "a=&vxb01234567"
+    },
+    {
+      "function": "vrshlq_s32",
+      "arguments": [
+        "vacc0123",
+        "vright_shift"
+      ],
+      "where": "a=&vacc0123,b=&vright_shift"
+    },
+    {
+      "function": "vrshlq_s32",
+      "arguments": [
+        "vacc4567",
+        "vright_shift"
+      ],
+      "where": "a=&vacc4567,b=&vright_shift"
+    },
+    {
+      "function": "vqaddq_s16",
+      "arguments": [
+        "vcombine_s16(vqmovn_s32(vacc0123), vqmovn_s32(vacc4567))",
+        "voutput_zero_point"
+      ],
+      "where": "a=0,b=&voutput_zero_point"
+    },
+    {
+      "function": "vcombine_s16",
+      "arguments": [
+        "vqmovn_s32(vacc0123)",
+        "vqmovn_s32(vacc4567)"
+      ],
+      "where": "a=0,b=0"
+    },
+    {
+      "function": "vqmovn_s32",
+      "arguments": [
+        "vacc0123"
+      ],
+      "where": "a=&vacc0123"
+    },
+    {
+      "function": "vqmovn_s32",
+      "arguments": [
+        "vacc4567"
+      ],
+      "where": "a=&vacc4567"
+    },
+    {
+      "function": "vqmovn_s16",
+      "arguments": [
+        "vacc01234567"
+      ],
+      "where": "a=&vacc01234567"
+    },
+    {
+      "function": "vmax_s8",
+      "arguments": [
+        "vout01234567",
+        "vget_low_s8(voutput_min)"
+      ],
+      "where": "a=&vout01234567,b=0"
+    },
+    {
+      "function": "vget_low_s8",
+      "arguments": [
+        "voutput_min"
+      ],
+      "where": "a=&voutput_min"
+    },
+    {
+      "function": "vmin_s8",
+      "arguments": [
+        "vout01234567",
+        "vget_low_s8(voutput_max)"
+      ],
+      "where": "a=&vout01234567,b=0"
+    },
+    {
+      "function": "vget_low_s8",
+      "arguments": [
+        "voutput_max"
+      ],
+      "where": "a=&voutput_max"
+    }
+  ]
+}

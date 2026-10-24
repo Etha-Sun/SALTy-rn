@@ -1,0 +1,22 @@
+{
+  "variant": "repaired",
+  "authorization": "User authorized direct implementation repair with original hashes/exact patch/counterexamples; root assigned this case and all raw parameter domains.",
+  "created_utc": "2026-10-23T19:57:10.349437+00:00",
+  "original_neon_sha256": "01a0bdcc9344c5f095a47a79ce0d346bd44e937ceceefd1f12e275f9091456f3",
+  "original_rvv_sha256": "1e8af584a849673c663f114ba74cc436dbd4eb33819113a80424d67bc0abddb1",
+  "repaired_neon_sha256": "42747395d8b4c116f31ebd3c7da14612e893c817496a12f09bc38b2f08becadb",
+  "repaired_rvv_sha256": "49aae80f53a5d37b1a817e1eeb8a7480a3a963264077eeca1a68113e53de909c",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "bc6bc2de2ff4a056de3020d0ad095d768b3c58858908ebc8c36c31a8d5696d12",
+  "purposes": [
+    "NEON unsigned32 negation avoids INT32_MIN UB and preserves every previously defined right-shift vector value.",
+    "RVV decodes signed low byte of negated raw count, selects zero beyond (-32,32), RNU arithmetic right for negative control, wrapping left otherwise. Raw256 is valid and acts as count zero."
+  ],
+  "counterexamples_pending_actual_replay": false,
+  "qcp_verified_at_creation": false,
+  "counterexamples": {
+    "evidence": "proof/evidence/original-counterexamples.json",
+    "evidence_sha256": "d1b850a2f0edf5c622a80e4e0d699a7595f115a28fd4a94c5ca52189f99dd23c",
+    "summary": "5 concrete original mismatches including rawshift32, negative and large counts. Original NEON INT32_MIN negation UBSan; original QS8 RVV defined there. Both repaired sides defined and 256 low-byte controls replayed."
+  }
+}

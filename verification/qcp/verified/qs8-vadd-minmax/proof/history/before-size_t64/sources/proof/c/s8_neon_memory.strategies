@@ -1,0 +1,46 @@
+#include "../../shim/array_model.h"
+/*@ Import Coq Require Import Qs8Add.ByteBridge */
+id : 1
+priority : core(0)
+left : CharArray::undef_full(?p, ?n) at 0
+right : CharArray::undef_full(?q, ?m) at 1
+check : infer(q == p);
+        infer(0 <= m);
+        infer(m <= n);
+action : right_erase(1);
+         left_erase(0);
+         left_add(CharArray::undef_full(pointer_offset(p,m,char), n-m));
+
+id : 2
+priority : core(0)
+left : undef_data_at(?p,I8) at 0
+right : undef_data_at(?q,U8) at 1
+check : infer(q == p);
+action : left_erase(0);
+         right_erase(1);
+id : 3
+priority : core(0)
+left : undef_data_at(?p + (?i * sizeof(U8)),U8) at 0
+right : undef_data_at((?q + (?k * sizeof(I8))) + (?j * sizeof(U8)),U8) at 1
+check : infer(p == q);
+        infer(i == k+j);
+action : left_erase(0);
+         right_erase(1);
+
+id : 4
+priority : core(0)
+left : undef_data_at(?p + (?i * sizeof(I8)),I8) at 0
+right : undef_data_at(?q + (?j * sizeof(I8)),I8) at 1
+check : infer(p == q);
+        infer(i == j);
+action : left_erase(0);
+         right_erase(1);
+
+id : 5
+priority : core(0)
+left : undef_data_at(?p + (?i * sizeof(I8)),I8) at 0
+right : undef_data_at(?q,I8) at 1
+check : infer(p == q);
+        infer(i == 0);
+action : left_erase(0);
+         right_erase(1);

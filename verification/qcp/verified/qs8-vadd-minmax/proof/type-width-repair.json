@@ -1,0 +1,29 @@
+{
+  "kind": "C-shim type interpretation repair; not a change to original kernel C",
+  "created_utc": "2026-10-23T21:34:08.695535+00:00",
+  "scope": "Explicit unsigned64 value model for original LP64 size_t; no restriction to32-bit counts; ISA/ABI refinement remains unproved",
+  "old_header_sha256": "29fb3763207c2fd57a9eec90b78478bb0b8c5b5f157e3771204f2295397f5830",
+  "new_header_sha256": "655d56a4d5e12ad6564b1ec900bc5f6f457642b2d5020ac9609dfd5aef1cf4f4",
+  "old_declaration": "typedef unsigned long size_t;",
+  "new_declaration": "typedef unsigned long long size_t;",
+  "reason": "Actual --arch64 QCP parses unsigned long as UINT32; explicit unsigned long long parses UINT64. Native GCC LP64 reports both long and long long as64.",
+  "wrong_model_history": "proof/history/before-size_t64",
+  "withdrawn_components": [
+    "neon-arithmetic-status.json",
+    "ext-status.json",
+    "rvv-memory-status.json",
+    "neon-composed-status.json",
+    "rvv-active-status.json",
+    "wrapper-proof-status.json",
+    "scalar-status.json",
+    "setvl-status.json",
+    "load-status.json",
+    "neon-memory-strategy-status.json",
+    "store-status.json",
+    "signed-tail-status.json"
+  ],
+  "fresh_width_check_pending": false,
+  "fresh_width_status": "proof/type-width-status.json",
+  "fresh_width_status_sha256": "090eade3d0ec806e597feffe84380c45d734552845492b5cf90f13f46fb4c5ab",
+  "native_interface_policy": "separate self-contained native TU with matching explicit ULL size_t prototypes; raw-source array-runtime backend separately uses native LP64 stddef; no mixed system typedefs or C ABI theorem"
+}
