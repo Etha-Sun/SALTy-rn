@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**18/40**。新目标：**至少 21/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**18/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 - f32-vadd
 - f32-vsub
@@ -25,9 +25,12 @@
 
 ## 当前工作
 
-- QU8→FP32：完整验证通过；继续 signed/unsigned rsum。
-- FP32 取整已完成；继续 FP32→FP16。
-- QS8 转换与激活已完成完整64位验收；继续 QS8/QU8 加法。
+- FP32→FP16：NEON 端 419 项通过；RVV 新目标的 5 项内存完整接口已通过，继续汇总。
+- QS8/QU8 加法：QS8 两侧完整组件通过，正在重新生成全部 C 目标；QU8 的 NEON 780 项通过，继续 RVV。
+- QS8 RDSUM：两侧完整组件已通过；35 个实际 C 单元重新生成通过，正在重编全部证明。
+- QU8 RDSUM：两侧循环分项通过；修正无符号单元注释后，新 NEON 596 项目标已生成，继续完整接口检查。
+
+以上组件进展尚未计入 18 个完整通过的 kernel。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
@@ -72,7 +75,7 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 
 后续发布：完整验证通过后，先 fetch，再直接提交到 `c-shim-v2` 的 `verified/`；不再开 PR。
 
-资源：新批次默认 **16 并发、每进程 16 GiB**，按任务设置时限。修复主动参考 Frama-C 与 Arcadia-y，说明原因并验证修复后等价性。
+资源：后续新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，按整机内存协调。现有运行保留原预算。修复主动参考 Frama-C 与 Arcadia-y，说明原因并验证修复后等价性。
 恢复入口：[MEMORY.md](MEMORY.md)。
 
 - 2026-10-23：目标提高到至少 **21/40**，新一批简单 kernel 已并行启动；当时仍 **11/40**。

@@ -11,8 +11,8 @@
 
 ## 用户当前要求
 
-- 目标：从当前 18/40 推进到至少 **21 个完整 verified kernel**。从简单到难，积极并行推进。
-- 新验证批次默认 **16 并发、每进程 16 GiB**，按复杂度设置有限时限；结合服务器可用内存和其他 worker 的实际占用安排多个批次。
+- 用户最新将目标提高为：从当前 18/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
+- 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
 - 大进展用简单语句更新 PROGRESS 和已验证列表。零件/数学/条件 caller 通过都不能单独增加 kernel 数。
@@ -85,3 +85,5 @@ QS8-RSUM 本次收录 `verification/qcp/verified/qs8-rsum/`：21实际C单元/89
 F32-VRNDNE 本次收录 `verification/qcp/verified/f32-vrndne/`：28实际C单元/1560字段/71body，10组策略30字段，231本地源+Final共232次普通Coq，1590项最终假设仅既有14项。原始实现/全FP32/RNE/3个float padding/固定VLEN128 e32m8 VLMAX32/nullable且unused params，观察关系为数值相等或两侧均NaN；不额外声称ISA/ABI、终止性或对抽象RNE规格的全域精化。全案SHA `84a792232793d615668c55b909446f8c38151663e29f83c88ad4ce15d20cc9a1`。干净目录再核28 CPP/232 compiled源/71body，52原生输入重编，UBSan16GiB地址空间与ASan真实16GiB cgroup各6300用例/378600元素；双侧同错仍相等而独立nearbyintf oracle拒绝。旧native无可核16GiB记录，补充证据明确独立。最初ASan负控因early return泄漏未过，保留失败；只在私有负控harness加free/flush后实际通过，没有改冻结程序或证明。
 
 U8-vclamp 由独立worker完成，root核对458份实际普通编译源、archive/log身份、13实时CPP/17 RVV helper绑定及当前锁定输入，重做迁移检查与封存。原版939C字段，可选controller版本973C字段，共31策略字段，不相加、不重复计kernel。该case明确报告16个既有框架依赖（较此前14个多LE_dot_field_congr和addr_of_arrow_field，均来自原QCP地址/field模型），不是新加项目axiom。接口采用显式unsignedlonglong size_t。当前15项有效旧结果+新U8共16；旧QS8转换是撤回项，不可重复算成17。
+
+2026-10-23 最新收口：有效18/40、目标至少31。QS8 RDSUM full-x8f7acjj已35当前实际C生成0，32并发从源重编中，H冻结不可改。FP32→FP16 valid115 RVV的5memory全ordinary/typed/Print通过，root两文件已冻结交回neon agent；memory-closure-k_yacv1w不是整案信用。QU8 RDSUM root工具真实prepare-only37TU/1854VC/62body，ASan36TU及13字段真实sizeof/unsigned64投影通过；unsigned域+8padding/zero40正确记录，25intrinsic ledger和两数学根ordinary0；两侧完整组件齐全前不冻结不计数。
