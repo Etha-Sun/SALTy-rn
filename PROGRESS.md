@@ -125,3 +125,5 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 2026-10-24 matrix worker：F32 IGEMM完整修复版入verified，4C/593VC/7策略/687fresh模块/604假设报告；native24375cases/316875outputs，3项负控制通过，公开22项intrinsic-spec边界。清单28/40。本轮仅余已开工QD8 QC4W GEMM，完成后停止。
 
 - 2026-10-24（洛杉矶）：F32 IGEMM 已由其他 worker 完整验证并收录，复核通过，当前 **28/40**，目标 **36/40**。DWConv NEON 整体接口及 RVV 新增11项内存证明通过，继续整核验收。
+
+- 2026-10-24（洛杉矶）：Maxpool NEON 442项完整接口从124份源码重放通过，RVV 50项内存证明通过；DWConv 正跑整核门禁。完整已验证仍 **28/40**，目标 **36/40**。
