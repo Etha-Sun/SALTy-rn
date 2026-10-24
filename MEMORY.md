@@ -9,7 +9,7 @@
 F32 IGEMM 已由其他 worker 完整验证并发布；根代理核对732清单文件、69完整证据文件、687普通Coq成功记录及604最终假设报告，不冒充再次形式化重放。目标仍至少36。
 
 QS8乘法NEON完整528字段已通过，主RVV生成仍未闭合。DWConv已完整验收：11实际C/15普通body/487字段+9策略，179源码fresh普通Coq及501 Print全部通过；H d1060258305f07010f760cd6ad2eb549d0772c33e8e3405572de493f13dec4ef，full 2ad49538f530374493974fcda27d4d25de7ac9f3a2817bb05a933cb9716a8f1e。干净发布11CPP/15body与全部归档身份核对，UBSan及真实16GiB/swap0 ASan各18720case/1544400lane/side；独立oracle与同错负控通过。保留24 intrinsic 公开spec边界，人审/ISA/ABI/终止性未建立。原冻结发行器有清单文件路径错误，保留全部257输入原字节，V2发行器仅修正元数据路径；失败、精确补丁和SHA见ADMISSION_REPAIR.zh-CN.md，不声称第二次形式化重放。
-Maxpool NEON442及RVV218非内存/50内存组件均通过，仍需NaN普通helper和最终整核。DWCHW完成真实9次FMA顺序数学及普通helper组件。Argmax v4已修复计数截断和NEON尾部未初始化padding读取；当前两侧native与独立oracle、原2^31计数反例重放、普通reader4、存储caller34和lane-insert caller12通过，主C证明正在生成，未计整核。以上局部结果不增加完整计数。
+Maxpool NEON442及RVV218非内存/50内存组件均通过，仍需NaN普通helper和最终整核。DWCHW完成真实9次FMA顺序数学及普通helper组件。Argmax v4已修复计数截断和NEON尾部未初始化padding读取；当前两侧native与独立oracle、原2^31计数反例重放、普通reader4、存储caller34和lane-insert caller12通过，新增公开两核调用入口6项真实C/6Print及17源码fresh模块全部通过，任意不同初态的写入位值和索引通过显式地址对应关联；实际入口UBSan与16GiB/swap0 ASan各4320case/197640lane/side通过，共错oracle拒绝。两侧主C证明仍在生成，未计整核。以上局部结果不增加完整计数。
 
 此前25/40里程碑：**25/40**，目标至少36。QU8 RDSUM 两侧大行数修复版完整门禁、归档和干净发布复核通过：37实际C单元/62函数体/1854字段/893普通Coq/2034最终Print（含180数学报告），11既有假设，无新项目公理。H SHA `62f174d2cbd87f37904ac0c8d51dfdb6dbe44077505547f63db41320baae0251`，full SHA `6a9ef4f083644351a0a2ace6a8e94b97937f4e60853a0c19839c94c9efe4d977`。32工作槽配置、16GiB普通/32GiB重型，978冻结输入身份核对；完整64位行数、stride零及输入/zero只读别名域保留，VLEN128/VLMAX32和非回绕内存契约下部分正确性。发布复核37CPP/62body，UBSan与实际16GiB/swap0 ASan各11664case/269730lane/side，独立列求和与helper oracle、两侧同错负控均通过。原件、逐侧patch、反例和更强intrinsic C-body证据保留。QUADD仍完整重放中，Argmax/Maxpool/DWConv/QS8mul组件不计数。
 
