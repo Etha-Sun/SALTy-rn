@@ -1,0 +1,11 @@
+--- original/testNEON.c
++++ impl/testNEON.c
+@@ -199,7 +199,7 @@
+       vst1q_f32(&c0[0], vout0x0123);
+       vst1q_f32(&c0[4], vout0x4567);
+ 
+-      a = (const int8_t**restrict) ((uintptr_t) a - ks);
++      a = (const int8_t**) ((uintptr_t) a - ks);
+ 
+       c0 = (float*) ((uintptr_t) c0 + cn_stride);
+ 

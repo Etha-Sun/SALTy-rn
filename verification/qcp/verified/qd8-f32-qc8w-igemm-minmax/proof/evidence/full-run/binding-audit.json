@@ -1,0 +1,292 @@
+{
+  "passed": true,
+  "units": [
+    {
+      "unit": "neon",
+      "generation_run": "admission01",
+      "goal_sha256": "91c05b1b71c37e8b35893122e465ba25d81551b86919ee479a95ce6f22060d95",
+      "C_fields": 580,
+      "bodies": [
+        "test_neon"
+      ]
+    },
+    {
+      "unit": "rvv",
+      "generation_run": "admission01",
+      "goal_sha256": "fd08f129219ac93447e8279b332d98cb0898be24876837c86422507099bcedc9",
+      "C_fields": 719,
+      "bodies": [
+        "test_rvv"
+      ]
+    },
+    {
+      "unit": "caller",
+      "generation_run": "admission01",
+      "goal_sha256": "b38a09d682d932e4b7cc379be95c7f269d7cfc00bdafbbb1805005ec3254a311",
+      "C_fields": 40,
+      "bodies": [
+        "equivalent",
+        "qd8_compare_outputs",
+        "qd8_preserve_float",
+        "qd8_same_lane"
+      ]
+    },
+    {
+      "unit": "scalar_nan",
+      "generation_run": "admissionhelpers02",
+      "goal_sha256": "fcf59b60d38de3b474aaaf6e99bcd165b6102b2eac87ca5fb25d686070e0c090",
+      "C_fields": 9,
+      "bodies": [
+        "bounds_probe",
+        "qcp_qd8_identity",
+        "qcp_qd8_isnan"
+      ]
+    },
+    {
+      "unit": "neon_basic",
+      "generation_run": "admissionhelpers02",
+      "goal_sha256": "7740b18a019143aba6a6442d387fd86b7a60ce5626702fb93dd1298f58fb2910",
+      "C_fields": 22,
+      "bodies": [
+        "qcp_assert",
+        "vcvtq_f32_s32",
+        "vdupq_n_f32",
+        "vget_high_f32",
+        "vget_high_s16",
+        "vget_low_f32",
+        "vget_low_s16",
+        "vld1q_dup_f32",
+        "vld1q_dup_s32",
+        "vmovl_s8",
+        "vmulq_f32",
+        "xnn_prefetch_to_l1"
+      ]
+    },
+    {
+      "unit": "indirection",
+      "generation_run": "admission01",
+      "goal_sha256": "41273f855f0aecc89550fc7c27983901a31fbc7b50cdb4231c45164d662d7254",
+      "C_fields": 11,
+      "bodies": [
+        "qd8_read_indirect",
+        "qd8_read_selected_byte",
+        "qd8_select_input"
+      ]
+    }
+  ],
+  "unit_vc_fields": 1381,
+  "body_functions": 24,
+  "reachable_functions": [
+    "__riscv_vfcvt_f_x_v_f32m2",
+    "__riscv_vfmacc_vv_f32m2",
+    "__riscv_vfmax_vf_f32m2",
+    "__riscv_vfmin_vf_f32m2",
+    "__riscv_vfmul_vf_f32m2",
+    "__riscv_vfmv_v_f_f32m2",
+    "__riscv_vle32_v_f32m2",
+    "__riscv_vle32_v_i32m2",
+    "__riscv_vle8_v_i8mf2",
+    "__riscv_vmerge_vvm_f32m2",
+    "__riscv_vmul_vx_i32m2",
+    "__riscv_vsetvl_e32m2",
+    "__riscv_vsext_vf2_i16m1",
+    "__riscv_vwmacc_vx_i32m2",
+    "equivalent",
+    "qcp_assert",
+    "qcp_qd8_identity",
+    "qcp_qd8_isnan",
+    "qcp_qd8_nanf",
+    "qcp_qd8_self_nan",
+    "qcp_qd8_store",
+    "qcp_vst1_f32",
+    "qcp_vst1_lane_f32",
+    "qcp_vst1q_f32",
+    "qd8_compare_outputs",
+    "qd8_preserve_float",
+    "qd8_same_lane",
+    "test_neon",
+    "test_rvv",
+    "vcvtq_f32_s32",
+    "vdupq_n_f32",
+    "vfmaq_f32",
+    "vget_high_f32",
+    "vget_high_s16",
+    "vget_low_f32",
+    "vget_low_s16",
+    "vld1_s8",
+    "vld1q_dup_f32",
+    "vld1q_dup_s32",
+    "vld1q_f32",
+    "vld1q_s32",
+    "vmaxq_f32",
+    "vminq_f32",
+    "vmlal_lane_s16",
+    "vmovl_s8",
+    "vmulq_f32",
+    "vmulq_s32"
+  ],
+  "call_graph": {
+    "test_neon": [
+      "qcp_assert",
+      "qcp_vst1_f32",
+      "qcp_vst1_lane_f32",
+      "qcp_vst1q_f32",
+      "vcvtq_f32_s32",
+      "vdupq_n_f32",
+      "vfmaq_f32",
+      "vget_high_f32",
+      "vget_high_s16",
+      "vget_low_f32",
+      "vget_low_s16",
+      "vld1_s8",
+      "vld1q_dup_f32",
+      "vld1q_dup_s32",
+      "vld1q_f32",
+      "vld1q_s32",
+      "vmaxq_f32",
+      "vminq_f32",
+      "vmlal_lane_s16",
+      "vmovl_s8",
+      "vmulq_f32",
+      "vmulq_s32"
+    ],
+    "test_rvv": [
+      "__riscv_vfcvt_f_x_v_f32m2",
+      "__riscv_vfmacc_vv_f32m2",
+      "__riscv_vfmax_vf_f32m2",
+      "__riscv_vfmin_vf_f32m2",
+      "__riscv_vfmul_vf_f32m2",
+      "__riscv_vfmv_v_f_f32m2",
+      "__riscv_vle32_v_f32m2",
+      "__riscv_vle32_v_i32m2",
+      "__riscv_vle8_v_i8mf2",
+      "__riscv_vmerge_vvm_f32m2",
+      "__riscv_vmul_vx_i32m2",
+      "__riscv_vsetvl_e32m2",
+      "__riscv_vsext_vf2_i16m1",
+      "__riscv_vwmacc_vx_i32m2",
+      "qcp_assert",
+      "qcp_qd8_isnan",
+      "qcp_qd8_nanf",
+      "qcp_qd8_self_nan",
+      "qcp_qd8_store"
+    ],
+    "qd8_preserve_float": [],
+    "qd8_same_lane": [
+      "qd8_preserve_float"
+    ],
+    "qd8_compare_outputs": [
+      "qd8_same_lane"
+    ],
+    "equivalent": [
+      "qd8_compare_outputs",
+      "test_neon",
+      "test_rvv"
+    ],
+    "qcp_qd8_identity": [],
+    "qcp_qd8_isnan": [
+      "qcp_qd8_identity"
+    ],
+    "bounds_probe": [
+      "qcp_qd8_isnan"
+    ],
+    "vld1q_dup_s32": [],
+    "vld1q_dup_f32": [],
+    "vdupq_n_f32": [],
+    "vget_low_s16": [],
+    "vget_high_s16": [],
+    "vget_low_f32": [],
+    "vget_high_f32": [],
+    "vmovl_s8": [],
+    "vcvtq_f32_s32": [],
+    "vmulq_f32": [],
+    "qcp_assert": [],
+    "xnn_prefetch_to_l1": [],
+    "qd8_select_input": [],
+    "qd8_read_indirect": [
+      "qd8_select_input"
+    ],
+    "qd8_read_selected_byte": [
+      "qd8_select_input"
+    ]
+  },
+  "intrinsic_spec_calls": [
+    "__riscv_vfcvt_f_x_v_f32m2",
+    "__riscv_vfmacc_vv_f32m2",
+    "__riscv_vfmax_vf_f32m2",
+    "__riscv_vfmin_vf_f32m2",
+    "__riscv_vfmul_vf_f32m2",
+    "__riscv_vfmv_v_f_f32m2",
+    "__riscv_vle32_v_f32m2",
+    "__riscv_vle32_v_i32m2",
+    "__riscv_vle8_v_i8mf2",
+    "__riscv_vmerge_vvm_f32m2",
+    "__riscv_vmul_vx_i32m2",
+    "__riscv_vsetvl_e32m2",
+    "__riscv_vsext_vf2_i16m1",
+    "__riscv_vwmacc_vx_i32m2",
+    "qcp_qd8_nanf",
+    "qcp_qd8_self_nan",
+    "qcp_qd8_store",
+    "qcp_vst1_f32",
+    "qcp_vst1_lane_f32",
+    "qcp_vst1q_f32",
+    "vcvtq_f32_s32",
+    "vdupq_n_f32",
+    "vfmaq_f32",
+    "vget_high_f32",
+    "vget_high_s16",
+    "vget_low_f32",
+    "vget_low_s16",
+    "vld1_s8",
+    "vld1q_dup_f32",
+    "vld1q_dup_s32",
+    "vld1q_f32",
+    "vld1q_s32",
+    "vmaxq_f32",
+    "vminq_f32",
+    "vmlal_lane_s16",
+    "vmovl_s8",
+    "vmulq_f32",
+    "vmulq_s32"
+  ],
+  "ordinary_body_calls": [
+    "equivalent",
+    "qcp_assert",
+    "qcp_qd8_identity",
+    "qcp_qd8_isnan",
+    "qd8_compare_outputs",
+    "qd8_preserve_float",
+    "qd8_same_lane",
+    "test_neon",
+    "test_rvv",
+    "vcvtq_f32_s32",
+    "vdupq_n_f32",
+    "vget_high_f32",
+    "vget_high_s16",
+    "vget_low_f32",
+    "vget_low_s16",
+    "vld1q_dup_f32",
+    "vld1q_dup_s32",
+    "vmovl_s8",
+    "vmulq_f32"
+  ],
+  "unresolved_calls": [],
+  "kernel_caller_contract_bindings": [
+    {
+      "callee": "test_neon",
+      "public_contract_source": "spec.c",
+      "body_contract": "token-identical public precondition and postcondition",
+      "postcondition_identical": true
+    },
+    {
+      "callee": "test_rvv",
+      "public_contract_source": "spec.c",
+      "body_contract": "token-identical public precondition and postcondition",
+      "postcondition_identical": true
+    }
+  ],
+  "intrinsic_definitions_verified": true,
+  "intrinsic_ledger_sha256": "7fe42604fb7939b1321ce19c8bc9239e982e2ef352c52829004d18f5a9b570c8",
+  "limitations": "Call extraction/identity audit is a source binding check; actual body correctness is established separately by complete Coq interfaces."
+}

@@ -1,0 +1,84 @@
+{
+  "generated": true,
+  "fields": 40,
+  "goal_sha256": "b38a09d682d932e4b7cc379be95c7f269d7cfc00bdafbbb1805005ec3254a311",
+  "configured_jobs": 32,
+  "source_hashes": {
+    "shim/semantic-models.h": "6c62363d34d5de256b02fced132778e5609ebe88dc0ec8397fd43f9b61b2399f",
+    "shim/scalar_nan.c": "75253ab6cb5a117ce22944ede94fdb2edfaf0698d3838a7b7baf1748f6a81c92",
+    "shim/rvv-api.h": "8e4148a398884055e04cf518129ea25714d439bacbc1ec555565ef922494e7f3",
+    "shim/indirection.strategies": "098f4eb7fe1650016fdf5f8bd26d472edd34142be761d568ebc4373962b1b14a",
+    "shim/neon-basic.c": "28bc93b4181057b69c1e3e2c163d6fa40e5b27def517d9ef63f60dc42bc9b5e4",
+    "shim/indirection.c": "799db39a616913a93b263437623a023047acec4097cd743b7f2db61d960cc009",
+    "shim/copy.strategies": "08b5297e7562f6764a0fbd61b5a4abd85fac207edb1a06b17e82f053e733ecc1",
+    "shim/indirection.h": "1fa7f7bf9e5c897bb43d49d87b4c67328c032d2b47b76e6095806abcb43b5b98",
+    "shim/copy.h": "912efd3ff5c7eff41fae58d07b5763930ccae1cbdf43eda0ad278e28daa83aef",
+    "shim/types.h": "672bc22b1088cbda3db5cc9576dd23d98ea502f507bc8a9c81c9d33e20efd8c7",
+    "contracts/model.h": "de3a99649d61778df7875596dd693aeff9a16c0d826d8f21dd4f2a24785df838",
+    "spec.c": "1925bc686d1af39e927e5be977b4cdb383302a10950cadb23b3b5b7a4c4cb45b"
+  },
+  "inputs_unchanged": true,
+  "records": [
+    {
+      "phase": "strategy",
+      "exit": 0,
+      "seconds": 0.008650179952383041,
+      "command": [
+        "/tmp/qcp214-src/linux-binary/StrategyCheck",
+        "--input-file",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/shim/copy.strategies",
+        "--coq-output-dir",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/caller04/caller",
+        "--coq-logic-path",
+        "Qd8API",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info"
+      ]
+    },
+    {
+      "phase": "cpp",
+      "exit": 0,
+      "seconds": 0.01659098593518138,
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/shim",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/spec.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/caller04/caller/caller.c"
+      ]
+    },
+    {
+      "phase": "c",
+      "exit": 0,
+      "seconds": 1.2275575259700418,
+      "command": [
+        "/tmp/qcp214-src/linux-binary/symexec",
+        "--input-file",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/caller04/caller/caller.c",
+        "--coq-output-dir",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/caller04/caller",
+        "--coq-logic-path",
+        "IGemmCaller",
+        "--no-record-strategies",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/shim",
+        "Qd8API",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info"
+      ]
+    }
+  ],
+  "whole_kernel_proved": false,
+  "scope": "fresh caller goals; caller and kernels not yet checked"
+}

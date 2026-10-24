@@ -1,0 +1,252 @@
+{
+  "passed": true,
+  "utc": "2026-10-24T09:29:49.306299+00:00",
+  "configured_jobs": 32,
+  "source_hashes": {
+    "impl/testNEON.c": "21be5f7b659453a8694e91169b62e6383b207a4ba12af9820cc52b45b3c2ed5b",
+    "impl/testRVV.c": "670a67e8ab2cd27db986156d38dae7cea20c7d58d71f521103b5ae7d4d5556a3",
+    "spec.c": "1925bc686d1af39e927e5be977b4cdb383302a10950cadb23b3b5b7a4c4cb45b",
+    "proof/native.py": "55040b90d4db0ce0f78d741bba85a762b56096d730ad8043f2657e14a6ba6adf",
+    "proof/native/driver.c": "6408655e702b3c265fc616090216e41ece25b962cadd0f35b88a75b406316aea",
+    "proof/native/shim.h": "5292713420f3296158b079862ce3297daaaf7edd456a5f3505d1cd1b01d1f709"
+  },
+  "inputs_unchanged": true,
+  "records": [
+    {
+      "label": "positive-compile",
+      "exit": 0,
+      "seconds": 1.594893901143223,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/positive"
+      ]
+    },
+    {
+      "label": "positive-execute",
+      "exit": 0,
+      "seconds": 0.7382141058333218,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/positive"
+      ]
+    },
+    {
+      "label": "zero-offset-compile",
+      "exit": 0,
+      "seconds": 1.488439304055646,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/zero-offset"
+      ]
+    },
+    {
+      "label": "zero-offset-execute",
+      "exit": 1,
+      "seconds": 0.008380058920010924,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/zero-offset"
+      ]
+    },
+    {
+      "label": "skip-offset-compile",
+      "exit": 0,
+      "seconds": 1.3833005339838564,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/skip-offset"
+      ]
+    },
+    {
+      "label": "skip-offset-execute",
+      "exit": 1,
+      "seconds": 0.1542374601121992,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/skip-offset"
+      ]
+    },
+    {
+      "label": "packed-tail-compile",
+      "exit": 0,
+      "seconds": 1.461564782075584,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/packed-tail"
+      ]
+    },
+    {
+      "label": "packed-tail-execute",
+      "exit": 1,
+      "seconds": 0.008146445034071803,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/packed-tail"
+      ]
+    },
+    {
+      "label": "table-reset-compile",
+      "exit": 0,
+      "seconds": 1.2898378300014883,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/table-reset"
+      ]
+    },
+    {
+      "label": "table-reset-execute",
+      "exit": 1,
+      "seconds": 0.41669913311488926,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/table-reset"
+      ]
+    },
+    {
+      "label": "ks-unit-compile",
+      "exit": 0,
+      "seconds": 1.5394021121319383,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/ks-unit"
+      ]
+    },
+    {
+      "label": "ks-unit-execute",
+      "exit": 1,
+      "seconds": 0.12420658487826586,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/ks-unit"
+      ]
+    },
+    {
+      "label": "both-wrong-compile",
+      "exit": 0,
+      "seconds": 1.3367888468783349,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/both-wrong"
+      ]
+    },
+    {
+      "label": "both-wrong-execute",
+      "exit": 1,
+      "seconds": 0.01732580899260938,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/admission01/native/both-wrong"
+      ]
+    }
+  ],
+  "negative_controls": {
+    "zero-offset": true,
+    "skip-offset": true,
+    "packed-tail": true,
+    "table-reset": true,
+    "ks-unit": true,
+    "both-wrong-oracle": true
+  },
+  "cases": 41310,
+  "logical_output_cells": 371790,
+  "whole_kernel_proved": false,
+  "scope": "native current impl/caller, ASan/UBSan, independent scalar oracle, six repeated/overlapping/zero-table patterns; not a formal kernel proof"
+}

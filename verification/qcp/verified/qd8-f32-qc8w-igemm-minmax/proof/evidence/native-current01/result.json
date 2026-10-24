@@ -1,0 +1,219 @@
+{
+  "passed": true,
+  "utc": "2026-10-24T07:35:51.056921+00:00",
+  "configured_jobs": 32,
+  "source_hashes": {
+    "impl/testNEON.c": "21be5f7b659453a8694e91169b62e6383b207a4ba12af9820cc52b45b3c2ed5b",
+    "impl/testRVV.c": "670a67e8ab2cd27db986156d38dae7cea20c7d58d71f521103b5ae7d4d5556a3",
+    "spec.c": "1925bc686d1af39e927e5be977b4cdb383302a10950cadb23b3b5b7a4c4cb45b",
+    "proof/native.py": "4bce776d567a92c2dffce9e499f040ada998c8b06a2fb17d48b4a471c42f98e6",
+    "proof/native/driver.c": "6408655e702b3c265fc616090216e41ece25b962cadd0f35b88a75b406316aea",
+    "proof/native/shim.h": "5292713420f3296158b079862ce3297daaaf7edd456a5f3505d1cd1b01d1f709"
+  },
+  "inputs_unchanged": true,
+  "records": [
+    {
+      "label": "positive-compile",
+      "exit": 0,
+      "seconds": 1.6280696759931743,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/positive"
+      ]
+    },
+    {
+      "label": "positive-execute",
+      "exit": 0,
+      "seconds": 0.7736936840228736,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/positive"
+      ]
+    },
+    {
+      "label": "zero-offset-compile",
+      "exit": 0,
+      "seconds": 1.5375392897985876,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/zero-offset"
+      ]
+    },
+    {
+      "label": "zero-offset-execute",
+      "exit": 1,
+      "seconds": 0.008277439046651125,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/zero-offset"
+      ]
+    },
+    {
+      "label": "skip-offset-compile",
+      "exit": 0,
+      "seconds": 1.9531347630545497,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/skip-offset"
+      ]
+    },
+    {
+      "label": "skip-offset-execute",
+      "exit": 1,
+      "seconds": 0.008078054059296846,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/skip-offset"
+      ]
+    },
+    {
+      "label": "packed-tail-compile",
+      "exit": 0,
+      "seconds": 1.3222234048880637,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/packed-tail"
+      ]
+    },
+    {
+      "label": "packed-tail-execute",
+      "exit": 1,
+      "seconds": 0.00826923898421228,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/packed-tail"
+      ]
+    },
+    {
+      "label": "table-reset-compile",
+      "exit": 0,
+      "seconds": 1.3244752590544522,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/table-reset"
+      ]
+    },
+    {
+      "label": "table-reset-execute",
+      "exit": 1,
+      "seconds": 0.41563186701387167,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/table-reset"
+      ]
+    },
+    {
+      "label": "ks-unit-compile",
+      "exit": 0,
+      "seconds": 1.525317540159449,
+      "command": [
+        "clang",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-Wall",
+        "-Wextra",
+        "-Wno-unused-parameter",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-frounding-math",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/driver.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/ks-unit"
+      ]
+    },
+    {
+      "label": "ks-unit-execute",
+      "exit": 1,
+      "seconds": 0.11472718813456595,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qd8-f32-qc8w-igemm-minmax/.build/current01/native/ks-unit"
+      ]
+    }
+  ],
+  "negative_controls": {
+    "zero-offset": true,
+    "skip-offset": true,
+    "packed-tail": true,
+    "table-reset": true,
+    "ks-unit": true
+  },
+  "cases": 41310,
+  "logical_output_cells": 371790,
+  "whole_kernel_proved": false,
+  "scope": "native current impl/caller, ASan/UBSan, independent scalar oracle, six repeated/overlapping/zero-table patterns; not a formal kernel proof"
+}

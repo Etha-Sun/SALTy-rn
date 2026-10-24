@@ -1,0 +1,32 @@
+--- original/testRVV.c
++++ impl/testRVV.c
+@@ -26,8 +26,8 @@
+   assert(c != NULL);
+ 
+   float* c0 = c;
+-  const int bounds_nan = params->scalar.min != params->scalar.min ||
+-                         params->scalar.max != params->scalar.max;
++  const int bounds_nan = __builtin_isnan(params->scalar.min) ||
++                         __builtin_isnan(params->scalar.max);
+ 
+   do {
+     // The weights are packed in fixed blocks of NR=8:
+@@ -50,7 +50,8 @@
+ 
+       size_t k = kc;
+       do {
+-        const int16_t va0 = (int16_t) *a0++;
++        const int16_t va0 = (int16_t) *a0;
++        a0++;
+ 
+         vint8mf2_t vb = __riscv_vle8_v_i8mf2((const int8_t*) w, vl);
+         w = (const int8_t*) w + 8;
+@@ -87,7 +88,7 @@
+ 
+     __riscv_vse32_v_f32m2(c0, vout, vl);
+ 
+-    a = (const int8_t**restrict) ((uintptr_t) a - ks);
++    a = (const int8_t**) ((uintptr_t) a - ks);
+     c0 = (float*) ((uintptr_t) c0 + cn_stride);
+     nc -= vl;
+   } while (nc != 0);

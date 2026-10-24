@@ -1,0 +1,5 @@
+From Qd8Indirect Require Import indirection_strategy_goal indirection_strategy_proof.
+
+Module indirection_Strategy_Correctness : indirection_Strategy_Correct.
+  Include indirection_strategy_proof.
+End indirection_Strategy_Correctness.

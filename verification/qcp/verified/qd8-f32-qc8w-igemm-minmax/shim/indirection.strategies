@@ -1,0 +1,23 @@
+#include "indirection.h"
+id : 1
+priority : core(1)
+left : PtrArray::full(?p,?n,?xs) at 0
+right : data_at(?p+(?i*sizeof(PTR)),PTR,?v) at 1
+check : infer(0 <= i); infer(i < n);
+action : right_erase(1); left_erase(0);
+ left_add(PtrArray::missing_i(p,i,0,n,xs)); right_add(v == zget(i,xs));
+id : 2
+priority : core(1)
+left : CharArray::full(?p,?n,?xs) at 0
+right : data_at(?p+(?i*sizeof(char)),char,?v) at 1
+check : infer(0 <= i); infer(i < n);
+action : right_erase(1); left_erase(0);
+ left_add(CharArray::missing_i(p,i,0,n,xs)); right_add(v == zget(i,xs));
+id : 3
+priority : core(0)
+left : CharArray::full(?p,?n,?xs) at 0
+ ?q == p at 1
+right : data_at(pointer_offset(q,?i,sizeof(char),char),char,?v) at 2
+check : infer(0 <= i); infer(i < n);
+action : right_erase(2); left_erase(0);
+ left_add(CharArray::missing_i(p,i,0,n,xs)); right_add(v == zget(i,xs));

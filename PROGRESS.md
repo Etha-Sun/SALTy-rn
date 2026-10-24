@@ -113,3 +113,5 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 - 2026-10-23：qu8-f32 转换修复／兼容版完整验收并直接收录；当时 **12/40**，继续推进至少 **21/40**。
 
 2026-10-24 matrix worker：QD8 QC8W GEMM策略绑定复核完成，1914C/12策略/1455freshCoq/1941假设报告；原impl/spec不变，旧证据另存，verified仍25/40。IGEMM与QC4W仍candidate，不计整核。
+
+2026-10-24 matrix worker：QD8 QC8W IGEMM完整入verified，6C/1381VC/15策略/1398fresh模块/1409假设报告；native41310cases/371790outputs/6negative controls，公开intrinsic-spec边界。当前清单26/40。本轮仅余已开工F32 IGEMM与QC4W GEMM，完成后停止。

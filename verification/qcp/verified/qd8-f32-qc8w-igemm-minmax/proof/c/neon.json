@@ -1,0 +1,830 @@
+{
+  "source_token_sha256": "467d6a01ae0cc358489bad7420e330f02572a9a5854ef17ec42c33483d1853e5",
+  "annotations": [
+    {
+      "before_token": 67,
+      "kind": "public_kernel_contract",
+      "text": ""
+    },
+    {
+      "before_token": 108,
+      "kind": "proof_annotation",
+      "text": "/*@ emp which implies sizeof(void*)==8 && sizeof(int8_t)==1 && sizeof(float)==4 && a_offset@pre%sizeof(int8_t)==0 && emp */"
+    },
+    {
+      "before_token": 178,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, j=0 */"
+    },
+    {
+      "before_token": 197,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, j=4 */"
+    },
+    {
+      "before_token": 221,
+      "kind": "proof_annotation",
+      "text": "/*@ where x=zp */"
+    },
+    {
+      "before_token": 231,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vksum0123, b=&vinput_zero_point */"
+    },
+    {
+      "before_token": 241,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vksum4567, b=&vinput_zero_point */"
+    },
+    {
+      "before_token": 249,
+      "kind": "proof_annotation",
+      "text": "/*@ a==pointer_offset(a@pre,((ks@pre-p)/8),char*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::full(a@pre,ks@pre/8,Entries) which implies a==pointer_offset(a@pre,((ks@pre-p)/8),char*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::missing_i(a@pre,((ks@pre-p)/8),0,ks@pre/8,Entries) * store(a,char*,Entries[((ks@pre-p)/8)]) */"
+    },
+    {
+      "before_token": 260,
+      "kind": "proof_annotation",
+      "text": "/*@ a==pointer_offset(a@pre,((ks@pre-p)/8),char*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::missing_i(a@pre,((ks@pre-p)/8),0,ks@pre/8,Entries) * store(a,char*,Entries[((ks@pre-p)/8)]) which implies a==pointer_offset(a@pre,((ks@pre-p)/8),char*) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<ks@pre/8 && PtrArray::full(a@pre,ks@pre/8,Entries) */"
+    },
+    {
+      "before_token": 293,
+      "kind": "proof_annotation",
+      "text": "/*@ input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && a0==selected_address(Entries[((ks@pre-p)/8)],zero@pre,zero_data@pre,a_offset@pre) && input_pool(Blocks) which implies input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && a0==input_address(Blocks,Refs,((ks@pre-p)/8)) && CharArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),a_read_extent(kc@pre),input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8))) * input_window_frame(Blocks,Refs,kc@pre,((ks@pre-p)/8)) */"
+    },
+    {
+      "before_token": 303,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert mr==mr@pre && kc==kc@pre && ks==ks@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && cm_stride==cm_stride@pre && a_offset==a_offset@pre && zero==zero@pre && zero_data==zero_data@pre && cn_stride==32 && mr==1 && 0<nc@pre && 0<kc@pre && 0<ks@pre && ks@pre%8==0 && Zlength(Refs)==ks@pre/8 && Zlength(Entries)==Zlength(Refs) && igemm_shape(mr@pre,nc@pre,kc@pre,ks@pre,Entries,Refs,Blocks,zero@pre,zero_data@pre,a_offset@pre,Ps) && igemm_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre,Blocks,Refs) && input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && qd8_matrix_wf(total_depth(kc@pre,Refs),Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && sizeof(void*)==8 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && c0==pointer_offset(c@pre,nc@pre-nc,float) && 0<p && p<=ks@pre && p%8==0 && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && a==pointer_offset(a@pre,((ks@pre-p)/8)+1,char*) && 0<=k && k<=kc@pre && (kc@pre-k)%8==0 && a0==pointer_offset(input_address(Blocks,Refs,((ks@pre-p)/8)),(kc@pre-k),char) && w==pointer_offset(w@pre,((nc@pre-nc)/8)*(96+8*total_depth(kc@pre,Refs))+32+8*(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),char) && CharArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),a_read_extent(kc@pre),input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8))) * input_window_frame(Blocks,Refs,kc@pre,((ks@pre-p)/8)) * PtrArray::full(a@pre,ks@pre/8,Entries) * packed_matrix(total_depth(kc@pre,Refs),w@pre,Ps) * qd8_output_prefix(c@pre,nc@pre,nc@pre-nc,total_depth(kc@pre,Refs),zp,flat_inputs(Blocks,Refs,kc@pre),Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(quantization_params->zero_point),int,zp) * store(&(quantization_params->inv_scale),float,inv) * store(&(vksum0123.s0),int,qd8_ks(((nc@pre-nc)/8),0,Ps)) * store(&(vksum0123.s1),int,qd8_ks(((nc@pre-nc)/8),1,Ps)) * store(&(vksum0123.s2),int,qd8_ks(((nc@pre-nc)/8),2,Ps)) * store(&(vksum0123.s3),int,qd8_ks(((nc@pre-nc)/8),3,Ps)) * store(&(vksum4567.s0),int,qd8_ks(((nc@pre-nc)/8),4,Ps)) * store(&(vksum4567.s1),int,qd8_ks(((nc@pre-nc)/8),5,Ps)) * store(&(vksum4567.s2),int,qd8_ks(((nc@pre-nc)/8),6,Ps)) * store(&(vksum4567.s3),int,qd8_ks(((nc@pre-nc)/8),7,Ps)) * store(&(vinput_zero_point.s0),int,zp) * store(&(vinput_zero_point.s1),int,zp) * store(&(vinput_zero_point.s2),int,zp) * store(&(vinput_zero_point.s3),int,zp) * store(&(vacc0x0123.s0),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),0,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x0123.s1),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),1,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x0123.s2),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),2,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x0123.s3),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),3,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s0),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),4,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s1),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),5,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s2),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),6,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s3),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre+(kc@pre-k)),((nc@pre-nc)/8),7,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) */"
+    },
+    {
+      "before_token": 324,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=0, j=kc@pre-k */"
+    },
+    {
+      "before_token": 338,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 347,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+0) */"
+    },
+    {
+      "before_token": 367,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c0 */"
+    },
+    {
+      "before_token": 378,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 383,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 386,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 397,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 402,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 405,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 414,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+1) */"
+    },
+    {
+      "before_token": 434,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c1 */"
+    },
+    {
+      "before_token": 445,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 450,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 453,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 464,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 469,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 472,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 481,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+2) */"
+    },
+    {
+      "before_token": 501,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c2 */"
+    },
+    {
+      "before_token": 512,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 517,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 520,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 531,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 536,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 539,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 548,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+3) */"
+    },
+    {
+      "before_token": 568,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c3 */"
+    },
+    {
+      "before_token": 579,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 584,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 587,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 598,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 603,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 606,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 615,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+4) */"
+    },
+    {
+      "before_token": 635,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c4 */"
+    },
+    {
+      "before_token": 646,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 651,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 654,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 665,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 670,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 673,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 682,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+5) */"
+    },
+    {
+      "before_token": 702,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c5 */"
+    },
+    {
+      "before_token": 713,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 718,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 721,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 732,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 737,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 740,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 749,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+6) */"
+    },
+    {
+      "before_token": 769,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c6 */"
+    },
+    {
+      "before_token": 780,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 785,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 788,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 799,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 804,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 807,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 816,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+7) */"
+    },
+    {
+      "before_token": 836,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c7 */"
+    },
+    {
+      "before_token": 847,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c7 */"
+    },
+    {
+      "before_token": 852,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 855,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 866,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c7 */"
+    },
+    {
+      "before_token": 871,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 874,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 903,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=0, j=kc@pre-k */"
+    },
+    {
+      "before_token": 928,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 937,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+0) */"
+    },
+    {
+      "before_token": 957,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c0 */"
+    },
+    {
+      "before_token": 968,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 973,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 976,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 987,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 992,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 995,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1017,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+1) */"
+    },
+    {
+      "before_token": 1037,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c1 */"
+    },
+    {
+      "before_token": 1048,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 1053,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1056,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1067,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 1072,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1075,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1096,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+2) */"
+    },
+    {
+      "before_token": 1116,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c2 */"
+    },
+    {
+      "before_token": 1127,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 1132,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1135,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1146,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 1151,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1154,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1176,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+3) */"
+    },
+    {
+      "before_token": 1196,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c3 */"
+    },
+    {
+      "before_token": 1207,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1212,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1215,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1226,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1231,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1234,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1255,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+4) */"
+    },
+    {
+      "before_token": 1275,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c4 */"
+    },
+    {
+      "before_token": 1286,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 1291,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1294,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1305,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 1310,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1313,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1335,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+5) */"
+    },
+    {
+      "before_token": 1355,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c5 */"
+    },
+    {
+      "before_token": 1366,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 1371,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1374,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1385,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 1390,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1393,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1414,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, ab=input_address(Blocks,Refs,((ks@pre-p)/8)), extent=a_read_extent(kc@pre), A=input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8)), mode=1, j=8*(((ks@pre-p)/8)*kc@pre+kc@pre-k+6) */"
+    },
+    {
+      "before_token": 1434,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c6 */"
+    },
+    {
+      "before_token": 1445,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 1450,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1453,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1464,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 1469,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1472,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1480,
+      "kind": "proof_annotation",
+      "text": "/*@ input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && CharArray::full(input_address(Blocks,Refs,((ks@pre-p)/8)),a_read_extent(kc@pre),input_window(Blocks,Refs,kc@pre,((ks@pre-p)/8))) * input_window_frame(Blocks,Refs,kc@pre,((ks@pre-p)/8)) which implies input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && 0<=((ks@pre-p)/8) && ((ks@pre-p)/8)<Zlength(Refs) && input_pool(Blocks) */"
+    },
+    {
+      "before_token": 1492,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert mr==mr@pre && kc==kc@pre && ks==ks@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && cm_stride==cm_stride@pre && a_offset==a_offset@pre && zero==zero@pre && zero_data==zero_data@pre && cn_stride==32 && mr==1 && 0<nc@pre && 0<kc@pre && 0<ks@pre && ks@pre%8==0 && Zlength(Refs)==ks@pre/8 && Zlength(Entries)==Zlength(Refs) && igemm_shape(mr@pre,nc@pre,kc@pre,ks@pre,Entries,Refs,Blocks,zero@pre,zero_data@pre,a_offset@pre,Ps) && igemm_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre,Blocks,Refs) && input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && qd8_matrix_wf(total_depth(kc@pre,Refs),Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && sizeof(void*)==8 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && c0==pointer_offset(c@pre,nc@pre-nc,float) && 0<=p && p<=ks@pre && p%8==0 && a==pointer_offset(a@pre,((ks@pre-p)/8),char*) && w==pointer_offset(w@pre,((nc@pre-nc)/8)*(96+8*total_depth(kc@pre,Refs))+32+8*(((ks@pre-p)/8)*kc@pre),char) && input_pool(Blocks) * PtrArray::full(a@pre,ks@pre/8,Entries) * packed_matrix(total_depth(kc@pre,Refs),w@pre,Ps) * qd8_output_prefix(c@pre,nc@pre,nc@pre-nc,total_depth(kc@pre,Refs),zp,flat_inputs(Blocks,Refs,kc@pre),Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(quantization_params->zero_point),int,zp) * store(&(quantization_params->inv_scale),float,inv) * store(&(vksum0123.s0),int,qd8_ks(((nc@pre-nc)/8),0,Ps)) * store(&(vksum0123.s1),int,qd8_ks(((nc@pre-nc)/8),1,Ps)) * store(&(vksum0123.s2),int,qd8_ks(((nc@pre-nc)/8),2,Ps)) * store(&(vksum0123.s3),int,qd8_ks(((nc@pre-nc)/8),3,Ps)) * store(&(vksum4567.s0),int,qd8_ks(((nc@pre-nc)/8),4,Ps)) * store(&(vksum4567.s1),int,qd8_ks(((nc@pre-nc)/8),5,Ps)) * store(&(vksum4567.s2),int,qd8_ks(((nc@pre-nc)/8),6,Ps)) * store(&(vksum4567.s3),int,qd8_ks(((nc@pre-nc)/8),7,Ps)) * store(&(vinput_zero_point.s0),int,zp) * store(&(vinput_zero_point.s1),int,zp) * store(&(vinput_zero_point.s2),int,zp) * store(&(vinput_zero_point.s3),int,zp) * store(&(vacc0x0123.s0),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),0,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x0123.s1),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),1,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x0123.s2),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),2,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x0123.s3),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),3,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s0),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),4,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s1),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),5,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s2),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),6,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) * store(&(vacc0x4567.s3),int,qd8_acc_signed(total_depth(kc@pre,Refs),(((ks@pre-p)/8)*kc@pre),((nc@pre-nc)/8),7,zp,flat_inputs(Blocks,Refs,kc@pre),Ps)) */"
+    },
+    {
+      "before_token": 1507,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0123 */"
+    },
+    {
+      "before_token": 1515,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x4567 */"
+    },
+    {
+      "before_token": 1528,
+      "kind": "proof_annotation",
+      "text": "/*@ where x=inv */"
+    },
+    {
+      "before_token": 1537,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x0123, b=&vinput_scale */"
+    },
+    {
+      "before_token": 1546,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x4567, b=&vinput_scale */"
+    },
+    {
+      "before_token": 1555,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, kind=0, j=0 */"
+    },
+    {
+      "before_token": 1575,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, kind=0, j=4 */"
+    },
+    {
+      "before_token": 1595,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, kind=1, j=0 */"
+    },
+    {
+      "before_token": 1620,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vbias0123, a=&vout0x0123, b=&vfilter_output_scale0123 */"
+    },
+    {
+      "before_token": 1644,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=total_depth(kc@pre,Refs), wb=w@pre, Ps=Ps, tile=(nc@pre-nc)/8, kind=1, j=4 */"
+    },
+    {
+      "before_token": 1669,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vbias4567, a=&vout0x4567, b=&vfilter_output_scale4567 */"
+    },
+    {
+      "before_token": 1707,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x0123, b=&voutput_min */"
+    },
+    {
+      "before_token": 1716,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x4567, b=&voutput_min */"
+    },
+    {
+      "before_token": 1739,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x0123, b=&voutput_max */"
+    },
+    {
+      "before_token": 1748,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x4567, b=&voutput_max */"
+    },
+    {
+      "before_token": 1749,
+      "kind": "proof_annotation",
+      "text": "/*@ qd8_output_prefix(c@pre,nc@pre,nc@pre-nc,total_depth(kc@pre,Refs),zp,flat_inputs(Blocks,Refs,kc@pre),Ps,inv,lo,hi) which implies qd8_write_state(c@pre,nc@pre,nc@pre-nc,completed_values(total_depth(kc@pre,Refs),nc@pre-nc,zp,flat_inputs(Blocks,Refs,kc@pre),Ps,inv,lo,hi)) */"
+    },
+    {
+      "before_token": 1768,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=nc@pre-nc */"
+    },
+    {
+      "before_token": 1779,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=nc@pre-nc+4 */"
+    },
+    {
+      "before_token": 1820,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && nc<8 && emp which implies 0<nc && nc<8 && 0<=(nc&4) && (nc&4)<=nc && 0<=(nc&6) && (nc&6)<=nc && (nc&6)==(nc&4)+(nc&2) && emp */"
+    },
+    {
+      "before_token": 1827,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && nc<8 && (nc&4)!=0 && emp which implies 0<nc && nc<8 && (nc&4)!=0 && (nc&4)==4 && 4<=nc && emp */"
+    },
+    {
+      "before_token": 1833,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=nc@pre-nc */"
+    },
+    {
+      "before_token": 1851,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x0123 */"
+    },
+    {
+      "before_token": 1859,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && nc<8 && (nc&2)!=0 && emp which implies 0<nc && nc<8 && (nc&2)!=0 && (nc&2)==2 && (nc&4)+2<=nc && emp */"
+    },
+    {
+      "before_token": 1865,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=nc@pre-nc+(nc&4) */"
+    },
+    {
+      "before_token": 1877,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x0123 */"
+    },
+    {
+      "before_token": 1886,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && nc<8 && (nc&1)!=0 && emp which implies 0<nc && nc<8 && (nc&1)!=0 && (nc&1)==1 && (nc&6)+1==nc && emp */"
+    },
+    {
+      "before_token": 1894,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=nc@pre-nc+(nc&6) */"
+    },
+    {
+      "before_token": 1902,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert exists (ap:Z) (wp:Z) (cp:Z), mr==mr@pre && kc==kc@pre && ks==ks@pre && c==c@pre && params==params@pre && quantization_params==quantization_params@pre && cm_stride==cm_stride@pre && a_offset==a_offset@pre && zero==zero@pre && zero_data==zero_data@pre && cn_stride==32 && mr==1 && 0<nc@pre && 0<kc@pre && 0<ks@pre && ks@pre%8==0 && Zlength(Refs)==ks@pre/8 && Zlength(Entries)==Zlength(Refs) && igemm_shape(mr@pre,nc@pre,kc@pre,ks@pre,Entries,Refs,Blocks,zero@pre,zero_data@pre,a_offset@pre,Ps) && igemm_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre,Blocks,Refs) && input_mapping(kc@pre,zero@pre,zero_data@pre,a_offset@pre,Entries,Refs,Blocks) && qd8_matrix_wf(total_depth(kc@pre,Refs),Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && sizeof(void*)==8 && 0<=nc && nc<=nc@pre && a==ap && w==wp && c0==cp && (nc==0 || (0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && cp==pointer_offset(c@pre,nc@pre-nc,float) && ap==a@pre && wp==pointer_offset(w@pre,((nc@pre-nc)/8)*(96+8*total_depth(kc@pre,Refs)),char))) && input_pool(Blocks) * PtrArray::full(a@pre,ks@pre/8,Entries) * packed_matrix(total_depth(kc@pre,Refs),w@pre,Ps) * qd8_output_prefix(c@pre,nc@pre,nc@pre-nc,total_depth(kc@pre,Refs),zp,flat_inputs(Blocks,Refs,kc@pre),Ps,inv,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(quantization_params->zero_point),int,zp) * store(&(quantization_params->inv_scale),float,inv) */"
+    }
+  ]
+}

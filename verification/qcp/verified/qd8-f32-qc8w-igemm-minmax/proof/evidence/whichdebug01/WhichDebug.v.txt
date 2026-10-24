@@ -1,0 +1,15 @@
+From Coq Require Import ZArith List Lia.
+From SimpleC.SL Require Import Mem SeparationLogic.
+From IGemmRvv Require Import rvv_goal.
+From Qd8RvvMath Require Import RvvMath.
+From IGemmSupport Require Import IGemmFacts.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Check PtrArray.missing_i_merge_to_full.
+Print StorePtrAsElement.storeA.
+Print Snaive_C_Rules64.ptr_size_Z.
+Goal rvv_goal.test_rvv_which_implies_wit_3.
+unfold rvv_goal.test_rvv_which_implies_wit_3;left;intros;subst a;rewrite ?sizeof_ptr.
+Show.
+Abort.

@@ -1,0 +1,172 @@
+ 
+forall (quantization_params_pre: Z) (params_pre: Z) (zero_data_pre: Z) (zero_pre: Z) (a_offset_pre: Z) (c_pre: Z) (w_pre: Z) (a_pre: Z) (ks_pre: Z) (kc_pre: Z) (nc_pre: Z) (mr_pre: Z) (hi: fp32) (lo: fp32) (inv: fp32) (zp: Z) (Ps: (@list panel_data)) (Blocks: (@list input_block)) (Refs: (@list input_reference)) (Entries: (@list Z)) (s7_2: Z) (s6_2: Z) (s5_2: Z) (s4_2: Z) (s3_2: Z) (s2_2: Z) (s1_2: Z) (s0_2: Z) (z7_2: Z) (z6_2: Z) (z5_2: Z) (z4_2: Z) (z3_2: Z) (z2_2: Z) (z1_2: Z) (z0_2: Z) (w: Z) (a0: Z) (k: Z) (a: Z) (p: Z) (vl: Z) (c0: Z) (bounds_nan: Z) (nc: Z) (cn_stride: Z) (PreH1 : (0 <= (kc_pre - k ))) (PreH2 : ((kc_pre - k ) < (a_read_extent (kc_pre)))) (PreH3 : (0 <= (kc_pre - k ))) (PreH4 : ((kc_pre - k ) < (a_read_extent (kc_pre)))) (PreH5 : (k <> 0)) (PreH6 : (cn_stride = 32)) (PreH7 : (mr_pre = 1)) (PreH8 : (0 < nc_pre)) (PreH9 : (0 < kc_pre)) (PreH10 : (0 < ks_pre)) (PreH11 : ((ks_pre % ( 8 ) ) = 0)) (PreH12 : ((Zlength (Refs)) = (ks_pre ÷ 8 ))) (PreH13 : ((Zlength (Entries)) = (Zlength (Refs)))) (PreH14 : (igemm_shape mr_pre nc_pre kc_pre ks_pre Entries Refs Blocks zero_pre zero_data_pre a_offset_pre Ps )) (PreH15 : (igemm_capacity nc_pre kc_pre a_pre w_pre c_pre Blocks Refs )) (PreH16 : (input_mapping kc_pre zero_pre zero_data_pre a_offset_pre Entries Refs Blocks )) (PreH17 : (qd8_matrix_wf (total_depth (kc_pre) (Refs)) Ps )) (PreH18 : (sizeof(CHAR) = 1)) (PreH19 : (sizeof(FLOAT) = 4)) (PreH20 : (sizeof(PTR) = 8)) (PreH21 : (0 <= nc)) (PreH22 : (nc <= nc_pre)) (PreH23 : (bounds_nan = (qd8_bounds_flag (lo) (hi)))) (PreH24 : (0 < nc)) (PreH25 : (((nc_pre - nc ) % ( 8 ) ) = 0)) (PreH26 : (0 <= ((nc_pre - nc ) ÷ 8 ))) (PreH27 : (((nc_pre - nc ) ÷ 8 ) < (Zlength (Ps)))) (PreH28 : (c0 = (c_pre + ((nc_pre - nc ) * sizeof(FLOAT))))) (PreH29 : (1 <= vl)) (PreH30 : (vl <= 8)) (PreH31 : (vl <= nc)) (PreH32 : (vl = nc)) (PreH33 : (0 < p)) (PreH34 : (p <= ks_pre)) (PreH35 : ((p % ( 8 ) ) = 0)) (PreH36 : (0 <= ((ks_pre - p ) ÷ 8 ))) (PreH37 : (((ks_pre - p ) ÷ 8 ) < (Zlength (Refs)))) (PreH38 : (a = (a_pre + ((((ks_pre - p ) ÷ 8 ) + 1 ) * sizeof(PTR))))) (PreH39 : (0 <= k)) (PreH40 : (k <= kc_pre)) (PreH41 : (a0 = ((input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) + ((kc_pre - k ) * sizeof(CHAR))))) (PreH42 : (w = (w_pre + ((((((nc_pre - nc ) ÷ 8 ) * (96 + (8 * (total_depth (kc_pre) (Refs)) ) ) ) + 32 ) + (8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) ) * sizeof(CHAR))))) (PreH43 : (qd8_active_z vl 0 z0_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (0) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH44 : (qd8_active_z vl 1 z1_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (1) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH45 : (qd8_active_z vl 2 z2_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (2) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH46 : (qd8_active_z vl 3 z3_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (3) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH47 : (qd8_active_z vl 4 z4_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (4) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH48 : (qd8_active_z vl 5 z5_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (5) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH49 : (qd8_active_z vl 6 z6_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (6) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) (PreH50 : (qd8_active_z vl 7 z7_2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) )) (((nc_pre - nc ) ÷ 8 )) (7) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) )) ,
+  ((&(( &( "vacc" ) )->ₛ "s7")) # Int  |-> (qd8_selected_z (vl) (7) ((qd8_mac_signed (z7_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (7) ((qd8_selected_z (vl) (7) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 7 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s6")) # Int  |-> (qd8_selected_z (vl) (6) ((qd8_mac_signed (z6_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (6) ((qd8_selected_z (vl) (6) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 6 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s5")) # Int  |-> (qd8_selected_z (vl) (5) ((qd8_mac_signed (z5_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (5) ((qd8_selected_z (vl) (5) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 5 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s4")) # Int  |-> (qd8_selected_z (vl) (4) ((qd8_mac_signed (z4_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (4) ((qd8_selected_z (vl) (4) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 4 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s3")) # Int  |-> (qd8_selected_z (vl) (3) ((qd8_mac_signed (z3_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (3) ((qd8_selected_z (vl) (3) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 3 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s2")) # Int  |-> (qd8_selected_z (vl) (2) ((qd8_mac_signed (z2_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (2) ((qd8_selected_z (vl) (2) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 2 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s1")) # Int  |-> (qd8_selected_z (vl) (1) ((qd8_mac_signed (z1_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (1) ((qd8_selected_z (vl) (1) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 1 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  ((&(( &( "vacc" ) )->ₛ "s0")) # Int  |-> (qd8_selected_z (vl) (0) ((qd8_mac_signed (z0_2) ((Znth (kc_pre - k ) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) 0)) ((qd8_selected_z (vl) (0) ((qd8_selected_z (vl) (0) ((qd8_zget (((8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - k ) ) ) + 0 )) ((weights ((panel_at (Ps) (((nc_pre - nc ) ÷ 8 ))))))))))))))))
+  **  (packed_matrix (total_depth (kc_pre) (Refs)) w_pre Ps )
+  **  (CharArray.full (input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) (a_read_extent (kc_pre)) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) )
+  **  (input_window_frame Blocks Refs kc_pre ((ks_pre - p ) ÷ 8 ) )
+  **  (PtrArray.full a_pre (ks_pre ÷ 8 ) Entries )
+  **  (qd8_rvv_prefix c_pre nc_pre (nc_pre - nc ) (total_depth (kc_pre) (Refs)) zp (flat_inputs (Blocks) (Refs) (kc_pre)) Ps inv lo hi )
+  **  ((&((params_pre)  # "xnn_f32_minmax_params" ->ₛ "scalar" .ₛ "min")) # Float  |-> lo)
+  **  ((&((params_pre)  # "xnn_f32_minmax_params" ->ₛ "scalar" .ₛ "max")) # Float  |-> hi)
+  **  ((&((quantization_params_pre)  # "xnn_qd8_quantization_params" ->ₛ "zero_point")) # Int  |-> zp)
+  **  ((&((quantization_params_pre)  # "xnn_qd8_quantization_params" ->ₛ "inv_scale")) # Float  |-> inv)
+  **  ((&(( &( "vksum" ) )->ₛ "s0")) # Int  |-> s0_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s1")) # Int  |-> s1_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s2")) # Int  |-> s2_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s3")) # Int  |-> s3_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s4")) # Int  |-> s4_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s5")) # Int  |-> s5_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s6")) # Int  |-> s6_2)
+  **  ((&(( &( "vksum" ) )->ₛ "s7")) # Int  |-> s7_2)
+|--
+  (EX (s7: Z)  (s6: Z)  (s5: Z)  (s4: Z)  (s3: Z)  (s2: Z)  (s1: Z)  (s0: Z)  (z7: Z)  (z6: Z)  (z5: Z)  (z4: Z)  (z3: Z)  (z2: Z)  (z1: Z)  (z0: Z) ,
+  “ (cn_stride = 32) ” 
+  &&  “ (mr_pre = 1) ” 
+  &&  “ (0 < nc_pre) ” 
+  &&  “ (0 < kc_pre) ” 
+  &&  “ (0 < ks_pre) ” 
+  &&  “ ((ks_pre % ( 8 ) ) = 0) ” 
+  &&  “ ((Zlength (Refs)) = (ks_pre ÷ 8 )) ” 
+  &&  “ ((Zlength (Entries)) = (Zlength (Refs))) ” 
+  &&  “ (igemm_shape mr_pre nc_pre kc_pre ks_pre Entries Refs Blocks zero_pre zero_data_pre a_offset_pre Ps ) ” 
+  &&  “ (igemm_capacity nc_pre kc_pre a_pre w_pre c_pre Blocks Refs ) ” 
+  &&  “ (input_mapping kc_pre zero_pre zero_data_pre a_offset_pre Entries Refs Blocks ) ” 
+  &&  “ (qd8_matrix_wf (total_depth (kc_pre) (Refs)) Ps ) ” 
+  &&  “ (sizeof(CHAR) = 1) ” 
+  &&  “ (sizeof(FLOAT) = 4) ” 
+  &&  “ (sizeof(PTR) = 8) ” 
+  &&  “ (0 <= nc) ” 
+  &&  “ (nc <= nc_pre) ” 
+  &&  “ (bounds_nan = (qd8_bounds_flag (lo) (hi))) ” 
+  &&  “ (0 < nc) ” 
+  &&  “ (((nc_pre - nc ) % ( 8 ) ) = 0) ” 
+  &&  “ (0 <= ((nc_pre - nc ) ÷ 8 )) ” 
+  &&  “ (((nc_pre - nc ) ÷ 8 ) < (Zlength (Ps))) ” 
+  &&  “ (c0 = (c_pre + ((nc_pre - nc ) * sizeof(FLOAT)))) ” 
+  &&  “ (1 <= vl) ” 
+  &&  “ (vl <= 8) ” 
+  &&  “ (vl <= nc) ” 
+  &&  “ (vl = 8) ” 
+  &&  “ (0 < p) ” 
+  &&  “ (p <= ks_pre) ” 
+  &&  “ ((p % ( 8 ) ) = 0) ” 
+  &&  “ (0 <= ((ks_pre - p ) ÷ 8 )) ” 
+  &&  “ (((ks_pre - p ) ÷ 8 ) < (Zlength (Refs))) ” 
+  &&  “ (a = (a_pre + ((((ks_pre - p ) ÷ 8 ) + 1 ) * sizeof(PTR)))) ” 
+  &&  “ (0 <= (k - sizeof(CHAR) )) ” 
+  &&  “ ((k - sizeof(CHAR) ) <= kc_pre) ” 
+  &&  “ (((input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) + (((kc_pre - k ) + 1 ) * sizeof(CHAR))) = ((input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) + ((kc_pre - (k - sizeof(CHAR) ) ) * sizeof(CHAR)))) ” 
+  &&  “ ((w + (8 * sizeof(CHAR))) = (w_pre + ((((((nc_pre - nc ) ÷ 8 ) * (96 + (8 * (total_depth (kc_pre) (Refs)) ) ) ) + 32 ) + (8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) ) ) ) * sizeof(CHAR)))) ” 
+  &&  “ (qd8_active_z vl 0 z0 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (0) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 1 z1 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (1) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 2 z2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (2) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 3 z3 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (3) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 4 z4 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (4) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 5 z5 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (5) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 6 z6 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (6) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 7 z7 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (7) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ”
+  &&  (CharArray.full (input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) (a_read_extent (kc_pre)) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) )
+  **  (input_window_frame Blocks Refs kc_pre ((ks_pre - p ) ÷ 8 ) )
+  **  (PtrArray.full a_pre (ks_pre ÷ 8 ) Entries )
+  **  (packed_matrix (total_depth (kc_pre) (Refs)) w_pre Ps )
+  **  (qd8_rvv_prefix c_pre nc_pre (nc_pre - nc ) (total_depth (kc_pre) (Refs)) zp (flat_inputs (Blocks) (Refs) (kc_pre)) Ps inv lo hi )
+  **  ((&((params_pre)  # "xnn_f32_minmax_params" ->ₛ "scalar" .ₛ "min")) # Float  |-> lo)
+  **  ((&((params_pre)  # "xnn_f32_minmax_params" ->ₛ "scalar" .ₛ "max")) # Float  |-> hi)
+  **  ((&((quantization_params_pre)  # "xnn_qd8_quantization_params" ->ₛ "zero_point")) # Int  |-> zp)
+  **  ((&((quantization_params_pre)  # "xnn_qd8_quantization_params" ->ₛ "inv_scale")) # Float  |-> inv)
+  **  ((&(( &( "vacc" ) )->ₛ "s0")) # Int  |-> z0)
+  **  ((&(( &( "vacc" ) )->ₛ "s1")) # Int  |-> z1)
+  **  ((&(( &( "vacc" ) )->ₛ "s2")) # Int  |-> z2)
+  **  ((&(( &( "vacc" ) )->ₛ "s3")) # Int  |-> z3)
+  **  ((&(( &( "vacc" ) )->ₛ "s4")) # Int  |-> z4)
+  **  ((&(( &( "vacc" ) )->ₛ "s5")) # Int  |-> z5)
+  **  ((&(( &( "vacc" ) )->ₛ "s6")) # Int  |-> z6)
+  **  ((&(( &( "vacc" ) )->ₛ "s7")) # Int  |-> z7)
+  **  ((&(( &( "vksum" ) )->ₛ "s0")) # Int  |-> s0)
+  **  ((&(( &( "vksum" ) )->ₛ "s1")) # Int  |-> s1)
+  **  ((&(( &( "vksum" ) )->ₛ "s2")) # Int  |-> s2)
+  **  ((&(( &( "vksum" ) )->ₛ "s3")) # Int  |-> s3)
+  **  ((&(( &( "vksum" ) )->ₛ "s4")) # Int  |-> s4)
+  **  ((&(( &( "vksum" ) )->ₛ "s5")) # Int  |-> s5)
+  **  ((&(( &( "vksum" ) )->ₛ "s6")) # Int  |-> s6)
+  **  ((&(( &( "vksum" ) )->ₛ "s7")) # Int  |-> s7))
+  ||
+  (EX (s7: Z)  (s6: Z)  (s5: Z)  (s4: Z)  (s3: Z)  (s2: Z)  (s1: Z)  (s0: Z)  (z7: Z)  (z6: Z)  (z5: Z)  (z4: Z)  (z3: Z)  (z2: Z)  (z1: Z)  (z0: Z) ,
+  “ (cn_stride = 32) ” 
+  &&  “ (mr_pre = 1) ” 
+  &&  “ (0 < nc_pre) ” 
+  &&  “ (0 < kc_pre) ” 
+  &&  “ (0 < ks_pre) ” 
+  &&  “ ((ks_pre % ( 8 ) ) = 0) ” 
+  &&  “ ((Zlength (Refs)) = (ks_pre ÷ 8 )) ” 
+  &&  “ ((Zlength (Entries)) = (Zlength (Refs))) ” 
+  &&  “ (igemm_shape mr_pre nc_pre kc_pre ks_pre Entries Refs Blocks zero_pre zero_data_pre a_offset_pre Ps ) ” 
+  &&  “ (igemm_capacity nc_pre kc_pre a_pre w_pre c_pre Blocks Refs ) ” 
+  &&  “ (input_mapping kc_pre zero_pre zero_data_pre a_offset_pre Entries Refs Blocks ) ” 
+  &&  “ (qd8_matrix_wf (total_depth (kc_pre) (Refs)) Ps ) ” 
+  &&  “ (sizeof(CHAR) = 1) ” 
+  &&  “ (sizeof(FLOAT) = 4) ” 
+  &&  “ (sizeof(PTR) = 8) ” 
+  &&  “ (0 <= nc) ” 
+  &&  “ (nc <= nc_pre) ” 
+  &&  “ (bounds_nan = (qd8_bounds_flag (lo) (hi))) ” 
+  &&  “ (0 < nc) ” 
+  &&  “ (((nc_pre - nc ) % ( 8 ) ) = 0) ” 
+  &&  “ (0 <= ((nc_pre - nc ) ÷ 8 )) ” 
+  &&  “ (((nc_pre - nc ) ÷ 8 ) < (Zlength (Ps))) ” 
+  &&  “ (c0 = (c_pre + ((nc_pre - nc ) * sizeof(FLOAT)))) ” 
+  &&  “ (1 <= vl) ” 
+  &&  “ (vl <= 8) ” 
+  &&  “ (vl <= nc) ” 
+  &&  “ (vl = nc) ” 
+  &&  “ (0 < p) ” 
+  &&  “ (p <= ks_pre) ” 
+  &&  “ ((p % ( 8 ) ) = 0) ” 
+  &&  “ (0 <= ((ks_pre - p ) ÷ 8 )) ” 
+  &&  “ (((ks_pre - p ) ÷ 8 ) < (Zlength (Refs))) ” 
+  &&  “ (a = (a_pre + ((((ks_pre - p ) ÷ 8 ) + 1 ) * sizeof(PTR)))) ” 
+  &&  “ (0 <= (k - sizeof(CHAR) )) ” 
+  &&  “ ((k - sizeof(CHAR) ) <= kc_pre) ” 
+  &&  “ (((input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) + (((kc_pre - k ) + 1 ) * sizeof(CHAR))) = ((input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) + ((kc_pre - (k - sizeof(CHAR) ) ) * sizeof(CHAR)))) ” 
+  &&  “ ((w + (8 * sizeof(CHAR))) = (w_pre + ((((((nc_pre - nc ) ÷ 8 ) * (96 + (8 * (total_depth (kc_pre) (Refs)) ) ) ) + 32 ) + (8 * ((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) ) ) ) * sizeof(CHAR)))) ” 
+  &&  “ (qd8_active_z vl 0 z0 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (0) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 1 z1 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (1) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 2 z2 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (2) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 3 z3 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (3) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 4 z4 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (4) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 5 z5 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (5) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 6 z6 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (6) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ” 
+  &&  “ (qd8_active_z vl 7 z7 (qd8_acc_signed ((total_depth (kc_pre) (Refs))) (((((ks_pre - p ) ÷ 8 ) * kc_pre ) + (kc_pre - (k - sizeof(CHAR) ) ) )) (((nc_pre - nc ) ÷ 8 )) (7) (zp) ((flat_inputs (Blocks) (Refs) (kc_pre))) (Ps)) ) ”
+  &&  (CharArray.full (input_address (Blocks) (Refs) (((ks_pre - p ) ÷ 8 ))) (a_read_extent (kc_pre)) (input_window (Blocks) (Refs) (kc_pre) (((ks_pre - p ) ÷ 8 ))) )
+  **  (input_window_frame Blocks Refs kc_pre ((ks_pre - p ) ÷ 8 ) )
+  **  (PtrArray.full a_pre (ks_pre ÷ 8 ) Entries )
+  **  (packed_matrix (total_depth (kc_pre) (Refs)) w_pre Ps )
+  **  (qd8_rvv_prefix c_pre nc_pre (nc_pre - nc ) (total_depth (kc_pre) (Refs)) zp (flat_inputs (Blocks) (Refs) (kc_pre)) Ps inv lo hi )
+  **  ((&((params_pre)  # "xnn_f32_minmax_params" ->ₛ "scalar" .ₛ "min")) # Float  |-> lo)
+  **  ((&((params_pre)  # "xnn_f32_minmax_params" ->ₛ "scalar" .ₛ "max")) # Float  |-> hi)
+  **  ((&((quantization_params_pre)  # "xnn_qd8_quantization_params" ->ₛ "zero_point")) # Int  |-> zp)
+  **  ((&((quantization_params_pre)  # "xnn_qd8_quantization_params" ->ₛ "inv_scale")) # Float  |-> inv)
+  **  ((&(( &( "vacc" ) )->ₛ "s0")) # Int  |-> z0)
+  **  ((&(( &( "vacc" ) )->ₛ "s1")) # Int  |-> z1)
+  **  ((&(( &( "vacc" ) )->ₛ "s2")) # Int  |-> z2)
+  **  ((&(( &( "vacc" ) )->ₛ "s3")) # Int  |-> z3)
+  **  ((&(( &( "vacc" ) )->ₛ "s4")) # Int  |-> z4)
+  **  ((&(( &( "vacc" ) )->ₛ "s5")) # Int  |-> z5)
+  **  ((&(( &( "vacc" ) )->ₛ "s6")) # Int  |-> z6)
+  **  ((&(( &( "vacc" ) )->ₛ "s7")) # Int  |-> z7)
+  **  ((&(( &( "vksum" ) )->ₛ "s0")) # Int  |-> s0)
+  **  ((&(( &( "vksum" ) )->ₛ "s1")) # Int  |-> s1)
+  **  ((&(( &( "vksum" ) )->ₛ "s2")) # Int  |-> s2)
+  **  ((&(( &( "vksum" ) )->ₛ "s3")) # Int  |-> s3)
+  **  ((&(( &( "vksum" ) )->ₛ "s4")) # Int  |-> s4)
+  **  ((&(( &( "vksum" ) )->ₛ "s5")) # Int  |-> s5)
+  **  ((&(( &( "vksum" ) )->ₛ "s6")) # Int  |-> s6)
+  **  ((&(( &( "vksum" ) )->ₛ "s7")) # Int  |-> s7))
+.
