@@ -1,0 +1,84 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -25,7 +25,7 @@
+ 
+   const float32x4_t vmax = vdupq_n_f32(params->scalar.max);
+   const float32x4_t vmin = vdupq_n_f32(params->scalar.min);
+-  do {
++  while (output_width != 0) {
+     const float* i0 = input[0];
+     assert(i0 != NULL);
+     if XNN_UNPREDICTABLE(i0 != zero) {
+@@ -104,5 +104,6 @@
+ 
+     input_offset += input_pixel_stride;
+     output = (float*) ((uintptr_t) output + output_increment);
+-  } while (--output_width != 0);
++    --output_width;
++  }
+ }
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -14,7 +14,7 @@
+   assert(channels != 0);
+   assert(output_width != 0);
+ 
+-  do {
++  while (output_width != 0) {
+     const float* i0 = input[0];
+     assert(i0 != NULL);
+     if XNN_UNPREDICTABLE(i0 != zero) {
+@@ -37,26 +37,37 @@
+     const float* w = weights;
+ 
+     while (c > 0) {
+-      size_t vl = __riscv_vsetvl_e32m4(c);
++      size_t vl = __riscv_vsetvl_e32m4(c < 4 ? c : 4);
+ 
+-      vfloat32m4_t vacc = __riscv_vle32_v_f32m4(w, vl); w += vl;
++      vfloat32m4_t vacc = __riscv_vle32_v_f32m4(w, vl); w += 4;
+ 
+       vfloat32m4_t vi0 = __riscv_vle32_v_f32m4(i0, vl); i0 += vl;
+-      vfloat32m4_t vk0 = __riscv_vle32_v_f32m4(w, vl); w += vl;
++      vfloat32m4_t vk0 = __riscv_vle32_v_f32m4(w, vl); w += 4;
+       vacc = __riscv_vfmacc_vv_f32m4(vacc, vi0, vk0, vl);
+ 
+       vfloat32m4_t vi1 = __riscv_vle32_v_f32m4(i1, vl); i1 += vl;
+-      vfloat32m4_t vk1 = __riscv_vle32_v_f32m4(w, vl); w += vl;
++      vfloat32m4_t vk1 = __riscv_vle32_v_f32m4(w, vl); w += 4;
+       vfloat32m4_t vacc1 = __riscv_vfmul_vv_f32m4(vi1, vk1, vl);
+ 
+       vfloat32m4_t vi2 = __riscv_vle32_v_f32m4(i2, vl); i2 += vl;
+-      vfloat32m4_t vk2 = __riscv_vle32_v_f32m4(w, vl); w += vl;
++      vfloat32m4_t vk2 = __riscv_vle32_v_f32m4(w, vl); w += 4;
+       vacc = __riscv_vfmacc_vv_f32m4(vacc, vi2, vk2, vl);
+ 
+       vacc = __riscv_vfadd_vv_f32m4(vacc, vacc1, vl);
+ 
+-      vacc = __riscv_vfmax_vf_f32m4(vacc, params->scalar.min, vl);
+-      vacc = __riscv_vfmin_vf_f32m4(vacc, params->scalar.max, vl);
++      vbool8_t nan_acc = __riscv_vmfne_vv_f32m4_b8(vacc, vacc, vl);
++      vfloat32m4_t vlo = __riscv_vfmv_v_f_f32m4(params->scalar.min, vl);
++      vbool8_t nan_lo = __riscv_vmfne_vv_f32m4_b8(vlo, vlo, vl);
++      vfloat32m4_t vmaxed = __riscv_vfmax_vf_f32m4(vacc, params->scalar.min, vl);
++      vmaxed = __riscv_vmerge_vvm_f32m4(vmaxed, vacc, nan_acc, vl);
++      vacc = __riscv_vmerge_vvm_f32m4(vmaxed, vlo, nan_lo, vl);
++
++      vbool8_t nan_maxed = __riscv_vmfne_vv_f32m4_b8(vacc, vacc, vl);
++      vfloat32m4_t vhi = __riscv_vfmv_v_f_f32m4(params->scalar.max, vl);
++      vbool8_t nan_hi = __riscv_vmfne_vv_f32m4_b8(vhi, vhi, vl);
++      vfloat32m4_t vminned = __riscv_vfmin_vf_f32m4(vacc, params->scalar.max, vl);
++      vminned = __riscv_vmerge_vvm_f32m4(vminned, vacc, nan_maxed, vl);
++      vacc = __riscv_vmerge_vvm_f32m4(vminned, vhi, nan_hi, vl);
+ 
+       __riscv_vse32_v_f32m4(output, vacc, vl); output += vl;
+       c -= vl;
+@@ -64,5 +75,6 @@
+ 
+     input_offset += input_pixel_stride;
+     output = (float*) ((uintptr_t) output + output_increment);
+-  } while (--output_width != 0);
++    --output_width;
++  }
+ }
+\ No newline at end of file

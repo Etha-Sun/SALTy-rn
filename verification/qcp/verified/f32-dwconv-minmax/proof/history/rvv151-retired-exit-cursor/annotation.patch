@@ -1,0 +1,20 @@
+--- before/generate_rvv.py
++++ current/generate_rvv.py
+@@ -18,6 +18,8 @@
+ def inner(isa,body=False,tail=None):
+  p='(dw_width(D)-output_width)';k='(channels-c)'
+  pure=common()+['0<output_width','output_width<=dw_width(D)','input==dw_table(D,'+p+'+1)','input_offset==dw_offset_at(D,'+p+')','0<=c','c<=channels',('('+k+')%4==0'if isa=='neon'or body else'dw_aligned_cursor(channels,c)'),'output==dw_output_at(D,'+p+')+4*'+k,'w==pointer_offset(weights,4*'+k+',float)']
++ if isa=='rvv'and not body:
++  pure[-1]='dw_rvv_weight_cursor(channels,c,w,weights)'
+  pure+=['i'+str(t)+'==dw_input_row(P,D,'+p+','+str(t)+')+4*'+k for t in range(3)]
+  if body:
+   lim='4'if isa=='neon'else'vl'
+@@ -71,7 +73,7 @@
+    ('__riscv_vfmin_vf_f32m4','a=0'),
+    ('__riscv_vmerge_vvm_f32m4','a=0,b=0,mask=0')]:
+    t=re.sub(r'('+name+r'\([^;\n]+\))\s*;',lambda m:m[1]+' /*@ where '+args+' */;',t)
+- return '#include "'+str(C/'shim/program.h')+'"\n'+t
++ return '#include "'+str(C/('shim/rvv_program.h'if isa=='rvv'else'shim/program.h'))+'"\n'+t
+ 
+ def main():
+  ap=argparse.ArgumentParser();ap.add_argument('--isa',choices=['neon','rvv'],required=True);ap.add_argument('--timeout',type=int,default=21600);a=ap.parse_args();r=Path(tempfile.mkdtemp(prefix=a.isa+'-kernel-',dir=C/'.build'));(r/'generated').mkdir();src=r/(a.isa+'_unit.c');src.write_text(render(a.isa));env=os.environ.copy();R=next(p for p in C.parents if(p/'.git').exists());env['PATH']=str(R/'.build/simple-kernels-bootstrap/bin')+':/tmp/qcp-coq820-install/bin:'+env['PATH'];records=[];status=dict(passed=False,whole_kernel_verified=False,isa=a.isa,run_directory=str(r),records=records);paths=[Path(__file__),C/'spec.c',C/'proof/c/contracts.json',C/'impl/testNEON.c',C/'impl/testRVV.c',*sorted((C/'shim').glob('*.h')),*sorted((C/'proof/c').glob('*.strategies'))];identity={str(x.relative_to(C)):hashlib.sha256(x.read_bytes()).hexdigest()for x in paths};status['input_sha256']=identity;sn=r/'input-source-snapshot';sn.mkdir();[( (sn/x.relative_to(C)).parent.mkdir(parents=True,exist_ok=True),(sn/x.relative_to(C)).write_bytes(x.read_bytes()))for x in paths]

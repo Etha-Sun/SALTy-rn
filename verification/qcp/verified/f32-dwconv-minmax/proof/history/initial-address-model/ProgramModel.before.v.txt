@@ -1,0 +1,49 @@
+From Coq Require Import ZArith List Bool Lia.
+From Dwconv Require Export VectorModel.
+Import ListNotations.
+Local Open Scope Z_scope.
+
+(* Unsigned address computations are the C uintptr_t operations. The signed
+   table stride is converted by the usual unsigned arithmetic conversion. *)
+Definition dw_word(x:Z):Z:=x mod 18446744073709551616.
+Record DwProgram:Type:=dw_program {
+ dw_channels:Z; dw_width:Z; dw_input:Z; dw_weights:Z; dw_out:Z;
+ dw_input_stride:Z; dw_out_increment:Z; dw_offset:Z;
+ dw_pixel_stride:Z; dw_zero_ptr:Z
+}.
+Definition dw_table(D:DwProgram)(pixel:Z):Z:=dw_word(dw_input D+pixel*dw_input_stride D).
+Definition dw_offset_at(D:DwProgram)(pixel:Z):Z:=dw_word(dw_offset D+pixel*dw_pixel_stride D).
+Definition dw_output_at(D:DwProgram)(pixel:Z):Z:=dw_word(dw_out D+pixel*(4*dw_channels D+dw_out_increment D)).
+Definition dw_raw_row(P:DwPtrMap)(D:DwProgram)(pixel tap:Z):Z:=dw_ptr_get P(dw_table D pixel+8*tap).
+Definition dw_input_row(P:DwPtrMap)(D:DwProgram)(pixel tap:Z):Z:=
+ let raw:=dw_raw_row P D pixel tap in
+ if Z.eqb raw(dw_zero_ptr D)then raw else dw_word(raw+dw_offset_at D pixel).
+Definition dw_weight(F:DwROMap)(D:DwProgram)(channel tap:Z):fp32:=
+ dw_get F(dw_weights D+64*(channel/4)+16*(tap+1)+4*(channel mod 4)).
+Definition dw_input_value(F:DwROMap)(P:DwPtrMap)(D:DwProgram)(pixel channel tap:Z):fp32:=
+ dw_load_lane F(dw_input_row P D pixel tap)channel.
+Definition dw_value(isa:bool)(F:DwROMap)(P:DwPtrMap)(D:DwProgram)(pixel channel:Z)(lo hi:fp32):fp32:=
+ (if isa then dw_neon_lane else dw_rvv_lane)
+ (dw_weight F D channel (-1))
+ (dw_input_value F P D pixel channel 0)(dw_weight F D channel 0)
+ (dw_input_value F P D pixel channel 1)(dw_weight F D channel 1)
+ (dw_input_value F P D pixel channel 2)(dw_weight F D channel 2)lo hi.
+Definition dw_valid(F:DwROMap)(P:DwPtrMap)(W:list Z)(D:DwProgram):Prop:=
+ 0<dw_channels D /\ 0<dw_width D /\
+ dw_window F(dw_weights D)(16*((dw_channels D+3)/4)) /\
+ forall pixel,0<=pixel<dw_width D ->
+ dw_ptr_window P(dw_table D pixel)3 /\
+ (forall tap,0<=tap<3 -> dw_raw_row P D pixel tap<>0 /\
+ dw_window F(dw_input_row P D pixel tap)(dw_channels D+3)) /\
+ dw_write_window W(dw_output_at D pixel)(dw_channels D).
+Definition dw_channel_state(isa:bool)(F:DwROMap)(P:DwPtrMap)(D:DwProgram)
+ (pixel count:Z)(lo hi:fp32)(O:DwOutput):DwOutput:=
+ fold_left(fun state i=>dw_output_put state(dw_output_at D pixel+4*Z.of_nat i)
+ (dw_value isa F P D pixel(Z.of_nat i)lo hi))(seq 0(Z.to_nat count))O.
+Definition dw_full_state(isa:bool)(F:DwROMap)(P:DwPtrMap)(D:DwProgram)
+ (count:Z)(lo hi:fp32)(O:DwOutput):DwOutput:=
+ fold_left(fun state pixel=>dw_channel_state isa F P D(Z.of_nat pixel)(dw_channels D)lo hi state)
+ (seq 0(Z.to_nat count))O.
+Definition dw_progress(isa:bool)(F:DwROMap)(P:DwPtrMap)(D:DwProgram)
+ (pixel channel:Z)(lo hi:fp32)(O:DwOutput):DwOutput:=
+ dw_channel_state isa F P D pixel channel lo hi(dw_full_state isa F P D pixel lo hi O).

@@ -1,0 +1,57 @@
+// FPMulAdd()
+// ==========
+bits(N) FPMulAdd(bits(N) addend, bits(N) op1, bits(N) op2, FPCR_Type fpcr)
+constant boolean fpexc = TRUE;       // Generate floating-point exceptions
+return FPMulAdd(addend, op1, op2, fpcr, fpexc);
+// FPMulAdd()
+// ==========
+//
+// Calculates addend + op1*op2 with a single rounding. The 'fpcr' argument
+// supplies the FPCR control bits, and 'fpexc' controls the generation of
+// floating-point exceptions.
+bits(N) FPMulAdd(bits(N) addend, bits(N) op1, bits(N) op2,
+FPCR_Type fpcr, boolean fpexc)
+assert N IN {16,32,64};
+(typeA,signA,valueA) = FPUnpack(addend, fpcr, fpexc);
+(type1,sign1,value1) = FPUnpack(op1, fpcr, fpexc);
+(type2,sign2,value2) = FPUnpack(op2, fpcr, fpexc);
+rounding = FPRoundingMode(fpcr);
+inf1 = (type1 == FPType_Infinity); zero1 = (type1 == FPType_Zero);
+inf2 = (type2 == FPType_Infinity); zero2 = (type2 == FPType_Zero);
+(done,result) = FPProcessNaNs3(typeA, type1, type2, addend, op1, op2, fpcr, fpexc);
+if !(IsFeatureImplemented(FEAT_AFP) && !UsingAArch32() && fpcr.AH == '1') then
+if typeA == FPType_QNaN && ((inf1 && zero2) || (zero1 && inf2)) then
+result = FPDefaultNaN(fpcr, N);
+if fpexc then FPProcessException(FPExc_InvalidOp, fpcr);
+if !done then
+infA = (typeA == FPType_Infinity); zeroA = (typeA == FPType_Zero);
+// Determine sign and type product will have if it does not cause an
+// Invalid Operation.
+signP = sign1 EOR sign2;
+infP  = inf1 || inf2;
+zeroP = zero1 || zero2;
+// Non SNaN-generated Invalid Operation cases are multiplies of zero
+// by infinity and additions of opposite-signed infinities.
+invalidop = (inf1 && zero2) || (zero1 && inf2) || (infA && infP && signA != signP);
+if invalidop then
+result = FPDefaultNaN(fpcr, N);
+if fpexc then FPProcessException(FPExc_InvalidOp, fpcr);
+// Other cases involving infinities produce an infinity of the same sign.
+elsif (infA && signA == '0') || (infP && signP == '0') then
+result = FPInfinity('0', N);
+elsif (infA && signA == '1') || (infP && signP == '1') then
+result = FPInfinity('1', N);
+// Cases where the result is exactly zero and its sign is not determined by the
+// rounding mode are additions of same-signed zeros.
+elsif zeroA && zeroP && signA == signP then
+result = FPZero(signA, N);
+// Otherwise calculate numerical result and round it.
+else
+result_value = valueA + (value1 * value2);
+if result_value == 0.0 then  // Sign of exact zero result depends on rounding mode
+result_sign = if rounding == FPRounding_NEGINF then '1' else '0';
+result = FPZero(result_sign, N);
+else
+result = FPRound(result_value, fpcr, rounding, fpexc, N);
+if !invalidop && fpexc then
+Shared Pseudocode Functions Page 5883

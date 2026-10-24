@@ -2,13 +2,14 @@
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
-最新：正式 **28/40**，目标至少36。其他 worker 新完成 QD8 QC8W IGEMM：6实际C单元/1381字段+15策略、1398普通Coq、1409假设报告；根代理核对全部1444清单文件、60份完整证据、编译和最终记录，不声称重新运行其形式化证明。QD8 QC8W GEMM 的策略绑定修订也核过1493清单文件及1455普通模块、1941报告。两案均保留公开 intrinsic spec 边界，人工规格审核尚待进行。
+最新：正式 **29/40**，目标至少36。其他 worker 新完成 QD8 QC8W IGEMM：6实际C单元/1381字段+15策略、1398普通Coq、1409假设报告；根代理核对全部1444清单文件、60份完整证据、编译和最终记录，不声称重新运行其形式化证明。QD8 QC8W GEMM 的策略绑定修订也核过1493清单文件及1455普通模块、1941报告。两案均保留公开 intrinsic spec 边界，人工规格审核尚待进行。
 
 新增 QU8 VADD-MINMAX 两侧修复版完整收录：31实际C单元/109函数体/3151C字段+15策略、416普通Coq全fresh、3344最终假设报告（含178数学报告），仅14既有框架假设。H `032d7da4af4a14a08de76a01898648c4835c0350eaeb90cf9142337b475c977c`，full `4b35c1cee449c15040f473d90bbb9eb2234f60e427b3ff90106f1855307e2013`。所有raw int32控制参数（含INT_MIN）、int16输出零点、无序clamp、64位长度与N+7 padding保留，固定VLEN128/VLMAX32；原件、补丁、原始UB/数值反例保留。发布复核31CPP/109body及全部冻结输入一致；UBSan与实际16GiB/swap0 ASan各21472公开调用/2665773lane/side，共错负控拒绝。发布身份与有限重放不计第二次形式化证明。
 
 F32 IGEMM 已由其他 worker 完整验证并发布；根代理核对732清单文件、69完整证据文件、687普通Coq成功记录及604最终假设报告，不冒充再次形式化重放。目标仍至少36。
 
-QS8乘法NEON完整528字段已通过，主RVV生成仍未闭合；DWConv NEON283完整接口通过，RVV135非内存已fresh聚合通过，新增11项RVV入口/行内存证明已交付，最后回边及151整体接口待验收。Maxpool NEON442完整接口与最终逐项假设审计已从124份本案源码重放通过，RVV50内存也已完整聚合通过；RVV另218项及NaN普通helper仍在推进，整案尚未通过。DWCHW新增真实9次FMA顺序数学与4项存储内存证明。Argmax当前修复版native与34项存储调用探针通过，整核证明仍未建立，尾部padding初始化问题未解决。以上局部结果不增加完整计数。
+QS8乘法NEON完整528字段已通过，主RVV生成仍未闭合。DWConv已完整验收：11实际C/15普通body/487字段+9策略，179源码fresh普通Coq及501 Print全部通过；H d1060258305f07010f760cd6ad2eb549d0772c33e8e3405572de493f13dec4ef，full 2ad49538f530374493974fcda27d4d25de7ac9f3a2817bb05a933cb9716a8f1e。干净发布11CPP/15body与全部归档身份核对，UBSan及真实16GiB/swap0 ASan各18720case/1544400lane/side；独立oracle与同错负控通过。保留24 intrinsic 公开spec边界，人审/ISA/ABI/终止性未建立。原冻结发行器有清单文件路径错误，保留全部257输入原字节，V2发行器仅修正元数据路径；失败、精确补丁和SHA见ADMISSION_REPAIR.zh-CN.md，不声称第二次形式化重放。
+Maxpool NEON442及RVV218非内存/50内存组件均通过，仍需NaN普通helper和最终整核。DWCHW完成真实9次FMA顺序数学及普通helper组件。Argmax v4已修复计数截断和NEON尾部未初始化padding读取；当前两侧native与独立oracle、原2^31计数反例重放、普通reader4、存储caller34和lane-insert caller12通过，主C证明正在生成，未计整核。以上局部结果不增加完整计数。
 
 此前25/40里程碑：**25/40**，目标至少36。QU8 RDSUM 两侧大行数修复版完整门禁、归档和干净发布复核通过：37实际C单元/62函数体/1854字段/893普通Coq/2034最终Print（含180数学报告），11既有假设，无新项目公理。H SHA `62f174d2cbd87f37904ac0c8d51dfdb6dbe44077505547f63db41320baae0251`，full SHA `6a9ef4f083644351a0a2ace6a8e94b97937f4e60853a0c19839c94c9efe4d977`。32工作槽配置、16GiB普通/32GiB重型，978冻结输入身份核对；完整64位行数、stride零及输入/zero只读别名域保留，VLEN128/VLMAX32和非回绕内存契约下部分正确性。发布复核37CPP/62body，UBSan与实际16GiB/swap0 ASan各11664case/269730lane/side，独立列求和与helper oracle、两侧同错负控均通过。原件、逐侧patch、反例和更强intrinsic C-body证据保留。QUADD仍完整重放中，Argmax/Maxpool/DWConv/QS8mul组件不计数。
 
@@ -37,7 +38,7 @@ QS8乘法NEON完整528字段已通过，主RVV生成仍未闭合；DWConv NEON28
 
 - 2026-10-23 最新统一边界：intrinsic 无需另建或证明 C implementation；可直接用与原始 NEON/RVV spec 对应的公开合同和 Coq 定义，逐项保留官方版本/配置/语义台账供最终人工审核。实际 kernel/循环/内存/普通 helper/caller 仍完整证明，不增未证Coq公理，不隐去spec信任边界；详见 `verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md`。旧必选intrinsic-body规则被覆盖，live/frozen/已发布证据保持原状。
 
-- 用户最新将目标提高为：从当前 27/40 推进到至少 **36 个完整 verified kernel**。这取代原先的21及31目标；不可在旧目标处宣称本轮完成。从简单到难，积极并行推进。
+- 用户最新将目标提高为：从当前 29/40 推进到至少 **36 个完整 verified kernel**。这取代原先的21及31目标；不可在旧目标处宣称本轮完成。从简单到难，积极并行推进。
 - 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -49,7 +50,7 @@ QS8乘法NEON完整528字段已通过，主RVV生成仍未闭合；DWConv NEON28
 - 我们的主工作树：`/srv/home/yuechunsun/tools/qcp-simple-kernels`，分支 `codex/worker-simple-kernels`。
 - 专用发布工作树：`/srv/home/yuechunsun/tools/qcp-simple-integration`。fetch 后核对实际 HEAD，保留别人的新增提交。
 - `/srv/home/yuechunsun/tools/lean` 和 GEMM/ENV 其他工作树保持原样。
-- `neon_kernel_resume`：f32-vrndne 已交付并正式收录，F16和sqrt均已交付，独占 f32-dwconv-minmax；root 协助 RVV 内存6项及完整准入工具。
+- `neon_kernel_resume`：f32-vrndne 已交付并正式收录，F16和sqrt均已交付，DWConv已交付并完整发布，现独占Argmax两侧主C/程序模型；root完成尾部修复、普通helper、数学观察与统一准入。
 - `minmax_repair_finish`：qs8-vcvt 全案已交付；QS8 加法已交付；QU8加法完整交付后冻结，独占 f32-maxpool。
 - `rvv_kernel_resume`：完成两项 rsum 后，已交付 qs8-rdsum、qu8-rdsum（root重放），现独占 qs8-vmul-minmax-fp32 并开展 f32-dwconv2d-chw；qu8-f32-vcvt 已完整发布。
 - root：qs8-vcvt 与 qs8-vlrelu 全64位验收已完成；帮助独立数学义务，统一归档、发布、progress/memory。
@@ -58,7 +59,7 @@ QS8乘法NEON完整528字段已通过，主RVV生成仍未闭合；DWConv NEON28
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-24 当前已验收 **27/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-24 当前已验收 **29/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 

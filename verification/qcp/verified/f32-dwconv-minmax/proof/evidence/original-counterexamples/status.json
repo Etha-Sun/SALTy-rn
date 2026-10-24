@@ -1,0 +1,55 @@
+{
+  "passed": true,
+  "scope": "three actual-original finite counterexamples with separate scalar oracle; not formal proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/original-probes-mpg4559h",
+  "records": [
+    {
+      "label": "packed_c1",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/original-probes-mpg4559h/probe"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "output": "counterexample c=0 channels=1 neon=40000000 rvv=00000000 oracle=40000000\n",
+      "log_sha256": "017514d63c40d1c40a27ed7889d12447bf04260c60c2569725ae3e4cc769aa7c"
+    },
+    {
+      "label": "nan_acc_c4",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/original-probes-mpg4559h/probe",
+        "nan"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "output": "counterexample c=0 channels=4 neon=7fc12345 rvv=bf800000 oracle=7fc00000\n",
+      "log_sha256": "b590d18c812870d5fcb8a00f91610e26e0643aebabc7ea7ac1d31c8f36befa40"
+    },
+    {
+      "label": "nan_bound_c4",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/original-probes-mpg4559h/probe",
+        "nan",
+        "bound"
+      ],
+      "exit_code": 1,
+      "expected_exit_code": 1,
+      "output": "counterexample c=0 channels=4 neon=7fc12345 rvv=3f800000 oracle=7fc00000\ncounterexample c=1 channels=4 neon=7fc12345 rvv=3f800000 oracle=7fc00000\ncounterexample c=2 channels=4 neon=7fc12345 rvv=3f800000 oracle=7fc00000\ncounterexample c=3 channels=4 neon=7fc12345 rvv=3f800000 oracle=7fc00000\n",
+      "log_sha256": "9e0dab62b9a5a4e02f6857b1f9bafdd89c324fb1e4bc012cd0bfad6d414bfe30"
+    }
+  ],
+  "original_sha256": {
+    "testNEON.c": "bdb7f141b37fc1f90c29f7ad39b40f34f5c67d44feac1c56529ea995b0fc177e",
+    "testRVV.c": "6141be2793eb0f0d30ab23eb4bc4e36b9b9e027b9ed9627d685876208f7d0864"
+  },
+  "memory_GiB": 16,
+  "isa_simulation_boundary": "host scalar field functions; official intrinsic spec review/model proof is separate"
+}

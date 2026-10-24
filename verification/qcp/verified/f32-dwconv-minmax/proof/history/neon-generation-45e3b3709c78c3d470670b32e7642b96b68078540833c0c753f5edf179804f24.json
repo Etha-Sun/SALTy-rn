@@ -1,0 +1,47 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "isa": "neon",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-o4px3fba",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-o4px3fba/neon_unit.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-o4px3fba/neon_unit.i"
+      ],
+      "exit_code": 0,
+      "seconds": 0.016554119996726513,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=8192",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-o4px3fba/neon_unit.i",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-o4px3fba/generated",
+        "--coq-logic-path=Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/shim",
+        "Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/c",
+        "Dwconv"
+      ],
+      "exit_code": 1,
+      "seconds": 3.0996385200414807,
+      "log_sha256": "378e318becbceb60f29fe3172c1c916502c1b1aa33167d23f8c5d756ef1cc2c8"
+    }
+  ]
+}

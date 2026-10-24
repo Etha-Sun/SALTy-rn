@@ -1,0 +1,10 @@
+#ifndef DWCONV_PUBLIC_WRAPPER_H
+#define DWCONV_PUBLIC_WRAPPER_H
+#include "program.h"
+#include "public_compare.h"
+int equivalent(size_t channels,size_t output_width,const float **input,
+ const float *weights,float *left,float *right,intptr_t input_stride,
+ size_t output_increment,size_t input_offset,size_t input_pixel_stride,
+ const float *zero,const struct xnn_f32_minmax_params *params)
+/*@ With (D:DwProgram) (F:DwROMap) (P:DwPtrMap) (out2:Z) (W1:list Z) (W2:list Z) (O1:DwOutput) (O2:DwOutput) (lo:fp32) (hi:fp32) Require params!=0 && channels>0 && output_width>0 && channels==dw_channels(D) && output_width==dw_width(D) && input==dw_input(D) && weights==dw_weights(D) && left==dw_out(D) && right==out2 && input_stride==dw_input_stride(D) && output_increment==dw_out_increment(D) && input_offset==dw_offset(D) && input_pixel_stride==dw_pixel_stride(D) && zero==dw_zero_ptr(D) && dw_valid(F,P,W1,D) && dw_valid(F,P,W2,dw_rebase(D,out2)) && dw_distinct(W1) && dw_distinct(W2) && dw_present(F,&(params->scalar.min)) && dw_present(F,&(params->scalar.max)) && dw_same(lo,dw_get(F,&(params->scalar.min))) && dw_same(hi,dw_get(F,&(params->scalar.max))) && dw_data(F) * dw_ptr_data(P) * dw_output(W1,O1) * dw_output(W2,O2) Ensure __return==1 && dw_pair_observed(D,out2,dw_neon_result(F,P,D,lo,hi,O1),dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2)) && dw_data(F) * dw_ptr_data(P) * dw_output(W1,dw_neon_result(F,P,D,lo,hi,O1)) * dw_output(W2,dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2)) */;
+#endif

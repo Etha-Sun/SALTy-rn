@@ -1,0 +1,26 @@
+From Coq Require Import ZArith Lia.
+From Dwconv Require Import KernelRetrySupport RvvRewriteFrame rvv_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Local Opaque Dwconv.Model.dw_rvv_add Dwconv.Model.dw_rvv_mul Dwconv.Model.dw_rvv_fma Dwconv.Model.fp32_min_number Dwconv.Model.fp32_max_number Dwconv.Model.dw_rvv_merge Dwconv.Model.dw_rvv_nanmask Dwconv.FmaModel.fma_rne fp32_add fp32_mul.
+Module CheckedRvvKernelPart23.
+Lemma proof_of_test_rvv_partial_solve_wit_38 : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_38.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_38;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_37 : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_37.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_37,Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_37_aux;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_29 : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_29.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_29,Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_29_aux;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_63_pure : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_63_pure.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_63_pure;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_53_pure : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_53_pure.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_53_pure;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_11 : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_11.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_11;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_33_pure : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_33_pure.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_33_pure;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_safety_wit_6 : Dwconv.rvv_unit_goal.test_rvv_safety_wit_6.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_safety_wit_6;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_18 : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_18.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_18;dw_retry_finish. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_8_pure : Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_8_pure.
+Proof. unfold Dwconv.rvv_unit_goal.test_rvv_partial_solve_wit_8_pure;dw_retry_finish. Qed.
+End CheckedRvvKernelPart23.

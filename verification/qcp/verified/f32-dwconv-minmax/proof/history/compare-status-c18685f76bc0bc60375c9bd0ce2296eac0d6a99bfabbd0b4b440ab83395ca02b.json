@@ -1,0 +1,238 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "actual16 comparator component only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/compare-fresh-p56os918",
+  "input_sha256": {
+    "proof/check_compare.py": "cb077a9aceb8e185bff8d6dc80a6c0cae52c130a5560d1126d1f0ce7d814b3ca",
+    "proof/check_coq.py": "b91a0bfb2c487636158fa7c2939728f993f0be18624523ca812368d93d9c7565",
+    "shim/public_compare.c": "056a2400b859ebbb74a1b4d303abe71cfefcfe931a32352e1120e8fd3f12a3f9",
+    "shim/public_compare.h": "ae0269a7bda64be780c2fb132d1e6cfe9f3953a23ea5fa9e6c87e1cfa67e624a",
+    "shim/written_read.h": "b875cf3e6cd78c8104e07b3eb22b23bf5615fcf23cccc75aec7092e636908c17",
+    "shim/output_read.h": "9e4bf326eea4ed1af2a9245b76ab55f1f6778f131b14b4b2fcf4c14faa3d622a",
+    "shim/memory.h": "8a9ce56b46e810d5a083be33c7566ca8d7bfd0070488f96e3940561b1a5518ee",
+    "shim/types.h": "4997da9fab44810ac71db764a1d165cc16c25e225aedb1dc8b4eba2f984a47d1",
+    "shim/observation.h": "22c60c1b6996014911105e17c8e3bcd3056027c3143682cd237af52a88ff279d",
+    "proof/c/public_contracts.json": "02b7d1129b6ce1e85c7ee353cba28553653067a60a18a5560a69da61b8416f19",
+    "proof/coq/CompareChecked.v": "16be26165f02580a068e77ba845ce81cc01d71e8f31222d009ca45b1bebc1ae7",
+    "proof/coq/CompareSupport.v": "3b638988182f1c0ee241c0ac8403f73510a8db532f94b4071de053a79b3272c3",
+    "proof/coq/PublicModel.v": "9b1cbe806ea932e2912461a9d20d3f434242e1278d86e10d118acdddad36be30",
+    "proof/coq/OutputRangeFacts.v": "f07f138a3c3c46ebbd8491009430d70d2e50d93ec246328b02d945d319167f68",
+    "proof/coq/WrittenReadModel.v": "e552c2f00ab560325c7c8e89b89c2bc6d1ae2433a85ed36789d1c32048b1f3c7",
+    "proof/coq/public_compare_goal.v": "95fe4089df24d6fc9c74226ba54f57343da306694933d21a0cff00339debc26a"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/shim/public_compare.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/compare-fresh-p56os918/public_compare.i"
+      ],
+      "exit_code": 0,
+      "seconds": 0.016726972069591284,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/compare-fresh-p56os918/public_compare.i",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/compare-fresh-p56os918/generated",
+        "--coq-logic-path=Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/shim",
+        "Dwconv"
+      ],
+      "exit_code": 0,
+      "seconds": 0.616363215027377,
+      "log_sha256": "c3159155718f17d96adfe5e395f47c185bdd3aff50a722d091a1f8adb66066ba"
+    },
+    {
+      "label": "ordinary-closure",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "python3",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/check_coq.py",
+        "--targets",
+        "CompareChecked",
+        "--jobs",
+        "32",
+        "--max-live",
+        "2",
+        "--timeout",
+        "7200"
+      ],
+      "exit_code": 0,
+      "seconds": 87.43735730508342,
+      "log_sha256": "cc43f9900dbcd320e35aebcceeab48961321c56744c96e7c20df9c1f74eaffd0"
+    }
+  ],
+  "configured_jobs": 32,
+  "max_live_processes": 2,
+  "per_process_memory_GiB": 16,
+  "ownership_audit": {
+    "passed": true,
+    "scope": "generated VC premise ownership multiplicity audit only; not proof credit",
+    "goal": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/compare-fresh-p56os918/generated/public_compare_goal.v",
+    "goal_sha256": "95fe4089df24d6fc9c74226ba54f57343da306694933d21a0cff00339debc26a",
+    "predicate": "dw_output",
+    "maximum_owned_output_predicates": 2,
+    "audited_premises": 22,
+    "violations": [],
+    "records": [
+      {
+        "definition": "compare_outputs_safety_wit_1",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_safety_wit_2",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_safety_wit_3",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_safety_wit_4",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_entail_wit_1",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_entail_wit_1",
+        "branch": 1,
+        "owned_output_predicates": 0
+      },
+      {
+        "definition": "compare_outputs_entail_wit_2",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_entail_wit_3",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_entail_wit_3",
+        "branch": 1,
+        "owned_output_predicates": 0
+      },
+      {
+        "definition": "compare_outputs_entail_wit_4",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_entail_wit_4",
+        "branch": 1,
+        "owned_output_predicates": 0
+      },
+      {
+        "definition": "compare_outputs_entail_wit_5",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_entail_wit_5",
+        "branch": 1,
+        "owned_output_predicates": 0
+      },
+      {
+        "definition": "compare_outputs_return_wit_1",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_1_pure",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_1_aux",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_2_pure",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_2_aux",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_3_pure",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_3_pure",
+        "branch": 1,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_3_pure_split_goal_1",
+        "branch": 0,
+        "owned_output_predicates": 2
+      },
+      {
+        "definition": "compare_outputs_partial_solve_wit_3_aux",
+        "branch": 0,
+        "owned_output_predicates": 2
+      }
+    ]
+  },
+  "actual_c_vcs": 16,
+  "fields": [
+    "compare_outputs_safety_wit_1",
+    "compare_outputs_safety_wit_2",
+    "compare_outputs_safety_wit_3",
+    "compare_outputs_safety_wit_4",
+    "compare_outputs_entail_wit_1",
+    "compare_outputs_entail_wit_2",
+    "compare_outputs_entail_wit_3",
+    "compare_outputs_entail_wit_4",
+    "compare_outputs_entail_wit_5",
+    "compare_outputs_return_wit_1",
+    "compare_outputs_partial_solve_wit_1_pure",
+    "compare_outputs_partial_solve_wit_1",
+    "compare_outputs_partial_solve_wit_2_pure",
+    "compare_outputs_partial_solve_wit_2",
+    "compare_outputs_partial_solve_wit_3_pure",
+    "compare_outputs_partial_solve_wit_3"
+  ],
+  "checked_module": "Dwconv.CompareChecked.CheckedCompare",
+  "goal_sha256": "95fe4089df24d6fc9c74226ba54f57343da306694933d21a0cff00339debc26a",
+  "cpp_sha256": "81d0a764bfc36db204d6a95b02cf5040704ccdbc225a815ac1b1e0372b8ac305",
+  "ordinary_closure": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/coq-closure-60ytkdn4",
+  "own_sources_fresh": true,
+  "external_BASE_object_reuse_component_only": true
+}

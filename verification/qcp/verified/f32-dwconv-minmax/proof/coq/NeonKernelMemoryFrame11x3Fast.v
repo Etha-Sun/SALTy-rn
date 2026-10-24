@@ -1,0 +1,6 @@
+From Coq Require Import ZArith.
+From Dwconv Require Import NeonKernelMemoryFastFrame.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Lemma proof_of_test_neon_entail_wit_11_3:Dwconv.neon_unit_goal.test_neon_entail_wit_11_3.
+Proof. unfold test_neon_entail_wit_11_3;try left;dwm_fast_simple_frame. Qed.
+Print Assumptions proof_of_test_neon_entail_wit_11_3.

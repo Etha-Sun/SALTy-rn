@@ -1,0 +1,63 @@
+--- before/ProgramModel.v
++++ current/ProgramModel.v
+@@ -11,9 +11,12 @@
+  dw_input_stride:Z; dw_out_increment:Z; dw_offset:Z;
+  dw_pixel_stride:Z; dw_zero_ptr:Z
+ }.
+-Definition dw_table(D:DwProgram)(pixel:Z):Z:=dw_word(dw_input D+pixel*dw_input_stride D).
+-Definition dw_offset_at(D:DwProgram)(pixel:Z):Z:=dw_word(dw_offset D+pixel*dw_pixel_stride D).
+-Definition dw_output_at(D:DwProgram)(pixel:Z):Z:=dw_word(dw_out D+pixel*(4*dw_channels D+dw_out_increment D)).
++Definition dw_table(D:DwProgram)(pixel:Z):Z:=
++ if Z.eqb pixel 0 then dw_input D else dw_word(dw_input D+pixel*dw_input_stride D).
++Definition dw_offset_at(D:DwProgram)(pixel:Z):Z:=
++ if Z.eqb pixel 0 then dw_offset D else dw_word(dw_offset D+pixel*dw_pixel_stride D).
++Definition dw_output_at(D:DwProgram)(pixel:Z):Z:=
++ if Z.eqb pixel 0 then dw_out D else dw_word(dw_out D+pixel*(4*dw_channels D+dw_out_increment D)).
+ Definition dw_raw_row(P:DwPtrMap)(D:DwProgram)(pixel tap:Z):Z:=dw_ptr_get P(dw_table D pixel+8*tap).
+ Definition dw_input_row(P:DwPtrMap)(D:DwProgram)(pixel tap:Z):Z:=
+  let raw:=dw_raw_row P D pixel tap in
+--- before/ProgramFacts.v
++++ current/ProgramFacts.v
+@@ -8,15 +8,36 @@
+ Proof. intro;unfold dw_word;apply Z.mod_pos_bound;lia. Qed.
+ Lemma dw_word_small:forall x,0<=x<18446744073709551616->dw_word x=x.
+ Proof. unfold dw_word;intros;apply Z.mod_small;assumption. Qed.
+-Lemma dw_table_step:forall D p,
++Lemma dw_table_step:forall D p,0<=p->
+  dw_word(dw_table D p+dw_input_stride D)=dw_table D(p+1).
+-Proof. intros;unfold dw_table;rewrite dw_word_add_l;f_equal;ring. Qed.
+-Lemma dw_offset_step:forall D p,
++Proof.
++ intros D p Hp;unfold dw_table.
++ assert(Hnext:Z.eqb(p+1)0=false)by(apply Z.eqb_neq;lia).
++ rewrite Hnext.
++ destruct(Z.eqb_spec p 0)as[H|H].
++ - subst p;f_equal;ring.
++ - rewrite dw_word_add_l;f_equal;ring.
++Qed.
++Lemma dw_offset_step:forall D p,0<=p->
+  dw_word(dw_offset_at D p+dw_pixel_stride D)=dw_offset_at D(p+1).
+-Proof. intros;unfold dw_offset_at;rewrite dw_word_add_l;f_equal;ring. Qed.
+-Lemma dw_output_step:forall D p,
++Proof.
++ intros D p Hp;unfold dw_offset_at.
++ assert(Hnext:Z.eqb(p+1)0=false)by(apply Z.eqb_neq;lia).
++ rewrite Hnext.
++ destruct(Z.eqb_spec p 0)as[H|H].
++ - subst p;f_equal;ring.
++ - rewrite dw_word_add_l;f_equal;ring.
++Qed.
++Lemma dw_output_step:forall D p,0<=p->
+  dw_word(dw_output_at D p+4*dw_channels D+dw_out_increment D)=dw_output_at D(p+1).
+-Proof. intros;unfold dw_output_at;rewrite <- Z.add_assoc,dw_word_add_l;f_equal;ring. Qed.
++Proof.
++ intros D p Hp;unfold dw_output_at.
++ assert(Hnext:Z.eqb(p+1)0=false)by(apply Z.eqb_neq;lia).
++ rewrite Hnext.
++ destruct(Z.eqb_spec p 0)as[H|H].
++ - subst p;f_equal;ring.
++ - rewrite <-Z.add_assoc,dw_word_add_l;f_equal;ring.
++Qed.
+ Lemma dw_window_shift:forall F p n k r,
+  dw_window F p n->0<=k->0<=r->k+r<=n->dw_window F(p+4*k)r.
+ Proof.

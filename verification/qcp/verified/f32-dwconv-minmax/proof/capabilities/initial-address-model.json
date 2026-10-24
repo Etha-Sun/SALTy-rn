@@ -1,0 +1,15 @@
+{
+  "scope": "logical model initialization repair; no C implementation or ISA contract change",
+  "cause": "The initial implementation variables contain their raw C argument before any uintptr_t arithmetic. Mapping pixel0 to word(argument) imposed unprovable literal equalities after QCP abstracted away typed argument cells.",
+  "change": "At pixel0 keep dw_input/dw_offset/dw_out; at positive pixels use the existing word64 expression. Step lemmas explicitly require pixel>=0.",
+  "public_preconditions_strengthened": false,
+  "actual_C_source_changed": false,
+  "active_RVV_CPP_or_generator_changed": false,
+  "retired_evidence_snapshot": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/before-initial-address-model-tt05no28",
+  "source_sha256": {
+    "proof/coq/ProgramModel.v": "8b39e3dda768aef1d909ceb7f11267d971b784ff1316123c1625bdba2bd20631",
+    "proof/coq/ProgramFacts.v": "ad27f584b6eff5ce7ab965fd34bf1daceedb308999703e566ae80b710e65827e"
+  },
+  "whole_kernel_verified": false,
+  "public_history": "proof/history/initial-address-model/record.json"
+}

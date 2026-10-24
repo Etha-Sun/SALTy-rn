@@ -1,0 +1,202 @@
+/* The actual public caller body and contract have one review location. */
+typedef unsigned long long size_t;
+typedef unsigned long long uintptr_t;
+typedef long long intptr_t;
+struct scalar_bounds {float min;float max;};
+struct xnn_f32_minmax_params {struct scalar_bounds scalar;};
+typedef struct float32x4_t {float s0; float s1; float s2; float s3;} float32x4_t;
+typedef struct float32x2_t {float s0; float s1;} float32x2_t;
+typedef struct vfloat32m4_t {float s0; float s1; float s2; float s3; float s4; float s5; float s6; float s7; float s8; float s9; float s10; float s11; float s12; float s13; float s14; float s15;} vfloat32m4_t;
+typedef struct vbool8_t {int s0; int s1; int s2; int s3; int s4; int s5; int s6; int s7; int s8; int s9; int s10; int s11; int s12; int s13; int s14; int s15;} vbool8_t;
+/*@ Import Coq Require Import Dwconv.VectorModel */
+/*@ Extern Coq (DwROMap :: *) (DwOutput :: *) */
+/*@ Extern Coq (dw_data:DwROMap->Assertion) (dw_window:DwROMap->Z->Z->Prop)
+ (dw_load_lane:DwROMap->Z->Z->fp32) (dw_active:Z->Z->fp32->fp32->Prop)
+ (dw_active_mask:Z->Z->Z->Z->Prop) (dw_vl_allowed:Z->Z->Prop)
+ (dw_rvv_nanmask:fp32->Z) (dw_rvv_merge:fp32->fp32->Z->fp32)
+ (dw_arm_fma:fp32->fp32->fp32->fp32)
+ (dw_arm_add:fp32->fp32->fp32)
+ (dw_arm_mul:fp32->fp32->fp32)
+ (dw_arm_max:fp32->fp32->fp32)
+ (dw_arm_min:fp32->fp32->fp32)
+ (dw_rvv_fma:fp32->fp32->fp32->fp32)
+ (dw_rvv_add:fp32->fp32->fp32)
+ (dw_rvv_mul:fp32->fp32->fp32)
+ (fp32_min_number:fp32->fp32->fp32)
+ (fp32_max_number:fp32->fp32->fp32)
+ (UndefStructPredfloat32x4_t:Z->Assertion)
+ (UndefStructPredfloat32x2_t:Z->Assertion)
+ (UndefStructPredvfloat32m4_t:Z->Assertion)
+ (UndefStructPredvbool8_t:Z->Assertion)
+ */
+float32x4_t vdupq_n_f32(float value)
+/*@ Require emp Ensure store(&(__return.s0),float,value) * store(&(__return.s1),float,value) * store(&(__return.s2),float,value) * store(&(__return.s3),float,value) */;
+float32x4_t vld1q_f32(const float*p)
+/*@ With (F:DwROMap) Require dw_window(F,p,4) && dw_data(F) Ensure dw_data(F) * store(&(__return.s0),float,dw_load_lane(F,p,0)) * store(&(__return.s1),float,dw_load_lane(F,p,1)) * store(&(__return.s2),float,dw_load_lane(F,p,2)) * store(&(__return.s3),float,dw_load_lane(F,p,3)) */;
+float32x4_t vfmaq_f32(float32x4_t a,float32x4_t b,float32x4_t c)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(c.s0),float,z0) * store(&(c.s1),float,z1) * store(&(c.s2),float,z2) * store(&(c.s3),float,z3) Ensure store(&(__return.s0),float,dw_arm_fma(x0,y0,z0)) * store(&(__return.s1),float,dw_arm_fma(x1,y1,z1)) * store(&(__return.s2),float,dw_arm_fma(x2,y2,z2)) * store(&(__return.s3),float,dw_arm_fma(x3,y3,z3)) */;
+float32x4_t vmulq_f32(float32x4_t a,float32x4_t b)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) Ensure store(&(__return.s0),float,dw_arm_mul(x0,y0)) * store(&(__return.s1),float,dw_arm_mul(x1,y1)) * store(&(__return.s2),float,dw_arm_mul(x2,y2)) * store(&(__return.s3),float,dw_arm_mul(x3,y3)) */;
+float32x4_t vaddq_f32(float32x4_t a,float32x4_t b)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) Ensure store(&(__return.s0),float,dw_arm_add(x0,y0)) * store(&(__return.s1),float,dw_arm_add(x1,y1)) * store(&(__return.s2),float,dw_arm_add(x2,y2)) * store(&(__return.s3),float,dw_arm_add(x3,y3)) */;
+float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) Ensure store(&(__return.s0),float,dw_arm_max(x0,y0)) * store(&(__return.s1),float,dw_arm_max(x1,y1)) * store(&(__return.s2),float,dw_arm_max(x2,y2)) * store(&(__return.s3),float,dw_arm_max(x3,y3)) */;
+float32x4_t vminq_f32(float32x4_t a,float32x4_t b)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) Ensure store(&(__return.s0),float,dw_arm_min(x0,y0)) * store(&(__return.s1),float,dw_arm_min(x1,y1)) * store(&(__return.s2),float,dw_arm_min(x2,y2)) * store(&(__return.s3),float,dw_arm_min(x3,y3)) */;
+float32x2_t vdup_n_f32(float value)
+/*@ Require emp Ensure store(&(__return.s0),float,value) * store(&(__return.s1),float,value) */;
+float32x2_t vget_low_f32(float32x4_t a)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) Ensure store(&(__return.s0),float,x0) * store(&(__return.s1),float,x1) */;
+float32x2_t vget_high_f32(float32x4_t a)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) Ensure store(&(__return.s0),float,x2) * store(&(__return.s1),float,x3) */;
+size_t __riscv_vsetvl_e32m4(size_t n) /*@ Require emp Ensure dw_vl_allowed(n,__return) && emp */;
+vfloat32m4_t __riscv_vle32_v_f32m4(const float*p,size_t vl)
+/*@ With (F:DwROMap) Require 1<=vl && vl<=16 && dw_window(F,p,vl) && dw_data(F) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,dw_load_lane(F,p,0)) && dw_active(vl,1,r1,dw_load_lane(F,p,1)) && dw_active(vl,2,r2,dw_load_lane(F,p,2)) && dw_active(vl,3,r3,dw_load_lane(F,p,3)) && dw_active(vl,4,r4,dw_load_lane(F,p,4)) && dw_active(vl,5,r5,dw_load_lane(F,p,5)) && dw_active(vl,6,r6,dw_load_lane(F,p,6)) && dw_active(vl,7,r7,dw_load_lane(F,p,7)) && dw_active(vl,8,r8,dw_load_lane(F,p,8)) && dw_active(vl,9,r9,dw_load_lane(F,p,9)) && dw_active(vl,10,r10,dw_load_lane(F,p,10)) && dw_active(vl,11,r11,dw_load_lane(F,p,11)) && dw_active(vl,12,r12,dw_load_lane(F,p,12)) && dw_active(vl,13,r13,dw_load_lane(F,p,13)) && dw_active(vl,14,r14,dw_load_lane(F,p,14)) && dw_active(vl,15,r15,dw_load_lane(F,p,15)) && dw_data(F) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vfloat32m4_t __riscv_vfmacc_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,vfloat32m4_t c,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) (z4:fp32) (z5:fp32) (z6:fp32) (z7:fp32) (z8:fp32) (z9:fp32) (z10:fp32) (z11:fp32) (z12:fp32) (z13:fp32) (z14:fp32) (z15:fp32) Require 0<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(c.s0),float,z0) * store(&(c.s1),float,z1) * store(&(c.s2),float,z2) * store(&(c.s3),float,z3) * store(&(c.s4),float,z4) * store(&(c.s5),float,z5) * store(&(c.s6),float,z6) * store(&(c.s7),float,z7) * store(&(c.s8),float,z8) * store(&(c.s9),float,z9) * store(&(c.s10),float,z10) * store(&(c.s11),float,z11) * store(&(c.s12),float,z12) * store(&(c.s13),float,z13) * store(&(c.s14),float,z14) * store(&(c.s15),float,z15) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,dw_rvv_fma(x0,y0,z0)) && dw_active(vl,1,r1,dw_rvv_fma(x1,y1,z1)) && dw_active(vl,2,r2,dw_rvv_fma(x2,y2,z2)) && dw_active(vl,3,r3,dw_rvv_fma(x3,y3,z3)) && dw_active(vl,4,r4,dw_rvv_fma(x4,y4,z4)) && dw_active(vl,5,r5,dw_rvv_fma(x5,y5,z5)) && dw_active(vl,6,r6,dw_rvv_fma(x6,y6,z6)) && dw_active(vl,7,r7,dw_rvv_fma(x7,y7,z7)) && dw_active(vl,8,r8,dw_rvv_fma(x8,y8,z8)) && dw_active(vl,9,r9,dw_rvv_fma(x9,y9,z9)) && dw_active(vl,10,r10,dw_rvv_fma(x10,y10,z10)) && dw_active(vl,11,r11,dw_rvv_fma(x11,y11,z11)) && dw_active(vl,12,r12,dw_rvv_fma(x12,y12,z12)) && dw_active(vl,13,r13,dw_rvv_fma(x13,y13,z13)) && dw_active(vl,14,r14,dw_rvv_fma(x14,y14,z14)) && dw_active(vl,15,r15,dw_rvv_fma(x15,y15,z15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vfloat32m4_t __riscv_vfmul_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) Require 0<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,dw_rvv_mul(x0,y0)) && dw_active(vl,1,r1,dw_rvv_mul(x1,y1)) && dw_active(vl,2,r2,dw_rvv_mul(x2,y2)) && dw_active(vl,3,r3,dw_rvv_mul(x3,y3)) && dw_active(vl,4,r4,dw_rvv_mul(x4,y4)) && dw_active(vl,5,r5,dw_rvv_mul(x5,y5)) && dw_active(vl,6,r6,dw_rvv_mul(x6,y6)) && dw_active(vl,7,r7,dw_rvv_mul(x7,y7)) && dw_active(vl,8,r8,dw_rvv_mul(x8,y8)) && dw_active(vl,9,r9,dw_rvv_mul(x9,y9)) && dw_active(vl,10,r10,dw_rvv_mul(x10,y10)) && dw_active(vl,11,r11,dw_rvv_mul(x11,y11)) && dw_active(vl,12,r12,dw_rvv_mul(x12,y12)) && dw_active(vl,13,r13,dw_rvv_mul(x13,y13)) && dw_active(vl,14,r14,dw_rvv_mul(x14,y14)) && dw_active(vl,15,r15,dw_rvv_mul(x15,y15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vfloat32m4_t __riscv_vfadd_vv_f32m4(vfloat32m4_t a,vfloat32m4_t b,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) Require 0<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,dw_rvv_add(x0,y0)) && dw_active(vl,1,r1,dw_rvv_add(x1,y1)) && dw_active(vl,2,r2,dw_rvv_add(x2,y2)) && dw_active(vl,3,r3,dw_rvv_add(x3,y3)) && dw_active(vl,4,r4,dw_rvv_add(x4,y4)) && dw_active(vl,5,r5,dw_rvv_add(x5,y5)) && dw_active(vl,6,r6,dw_rvv_add(x6,y6)) && dw_active(vl,7,r7,dw_rvv_add(x7,y7)) && dw_active(vl,8,r8,dw_rvv_add(x8,y8)) && dw_active(vl,9,r9,dw_rvv_add(x9,y9)) && dw_active(vl,10,r10,dw_rvv_add(x10,y10)) && dw_active(vl,11,r11,dw_rvv_add(x11,y11)) && dw_active(vl,12,r12,dw_rvv_add(x12,y12)) && dw_active(vl,13,r13,dw_rvv_add(x13,y13)) && dw_active(vl,14,r14,dw_rvv_add(x14,y14)) && dw_active(vl,15,r15,dw_rvv_add(x15,y15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vfloat32m4_t __riscv_vfmax_vf_f32m4(vfloat32m4_t a,float bound,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) Require 0<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,fp32_max_number(x0,bound)) && dw_active(vl,1,r1,fp32_max_number(x1,bound)) && dw_active(vl,2,r2,fp32_max_number(x2,bound)) && dw_active(vl,3,r3,fp32_max_number(x3,bound)) && dw_active(vl,4,r4,fp32_max_number(x4,bound)) && dw_active(vl,5,r5,fp32_max_number(x5,bound)) && dw_active(vl,6,r6,fp32_max_number(x6,bound)) && dw_active(vl,7,r7,fp32_max_number(x7,bound)) && dw_active(vl,8,r8,fp32_max_number(x8,bound)) && dw_active(vl,9,r9,fp32_max_number(x9,bound)) && dw_active(vl,10,r10,fp32_max_number(x10,bound)) && dw_active(vl,11,r11,fp32_max_number(x11,bound)) && dw_active(vl,12,r12,fp32_max_number(x12,bound)) && dw_active(vl,13,r13,fp32_max_number(x13,bound)) && dw_active(vl,14,r14,fp32_max_number(x14,bound)) && dw_active(vl,15,r15,fp32_max_number(x15,bound)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vfloat32m4_t __riscv_vfmin_vf_f32m4(vfloat32m4_t a,float bound,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) Require 0<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,fp32_min_number(x0,bound)) && dw_active(vl,1,r1,fp32_min_number(x1,bound)) && dw_active(vl,2,r2,fp32_min_number(x2,bound)) && dw_active(vl,3,r3,fp32_min_number(x3,bound)) && dw_active(vl,4,r4,fp32_min_number(x4,bound)) && dw_active(vl,5,r5,fp32_min_number(x5,bound)) && dw_active(vl,6,r6,fp32_min_number(x6,bound)) && dw_active(vl,7,r7,fp32_min_number(x7,bound)) && dw_active(vl,8,r8,fp32_min_number(x8,bound)) && dw_active(vl,9,r9,fp32_min_number(x9,bound)) && dw_active(vl,10,r10,fp32_min_number(x10,bound)) && dw_active(vl,11,r11,fp32_min_number(x11,bound)) && dw_active(vl,12,r12,fp32_min_number(x12,bound)) && dw_active(vl,13,r13,fp32_min_number(x13,bound)) && dw_active(vl,14,r14,fp32_min_number(x14,bound)) && dw_active(vl,15,r15,fp32_min_number(x15,bound)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vfloat32m4_t __riscv_vfmv_v_f_f32m4(float value,size_t vl)
+/*@ Require 0<=vl && vl<=16 && emp Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,value) && dw_active(vl,1,r1,value) && dw_active(vl,2,r2,value) && dw_active(vl,3,r3,value) && dw_active(vl,4,r4,value) && dw_active(vl,5,r5,value) && dw_active(vl,6,r6,value) && dw_active(vl,7,r7,value) && dw_active(vl,8,r8,value) && dw_active(vl,9,r9,value) && dw_active(vl,10,r10,value) && dw_active(vl,11,r11,value) && dw_active(vl,12,r12,value) && dw_active(vl,13,r13,value) && dw_active(vl,14,r14,value) && dw_active(vl,15,r15,value) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+vbool8_t dw_nanmask(const vfloat32m4_t*a,const vfloat32m4_t*b,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) Require 0<=vl && vl<=16 && a==b && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) Ensure exists m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15, dw_active_mask(vl,0,m0,dw_rvv_nanmask(x0)) && dw_active_mask(vl,1,m1,dw_rvv_nanmask(x1)) && dw_active_mask(vl,2,m2,dw_rvv_nanmask(x2)) && dw_active_mask(vl,3,m3,dw_rvv_nanmask(x3)) && dw_active_mask(vl,4,m4,dw_rvv_nanmask(x4)) && dw_active_mask(vl,5,m5,dw_rvv_nanmask(x5)) && dw_active_mask(vl,6,m6,dw_rvv_nanmask(x6)) && dw_active_mask(vl,7,m7,dw_rvv_nanmask(x7)) && dw_active_mask(vl,8,m8,dw_rvv_nanmask(x8)) && dw_active_mask(vl,9,m9,dw_rvv_nanmask(x9)) && dw_active_mask(vl,10,m10,dw_rvv_nanmask(x10)) && dw_active_mask(vl,11,m11,dw_rvv_nanmask(x11)) && dw_active_mask(vl,12,m12,dw_rvv_nanmask(x12)) && dw_active_mask(vl,13,m13,dw_rvv_nanmask(x13)) && dw_active_mask(vl,14,m14,dw_rvv_nanmask(x14)) && dw_active_mask(vl,15,m15,dw_rvv_nanmask(x15)) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * store(&(__return.s0),int,m0) * store(&(__return.s1),int,m1) * store(&(__return.s2),int,m2) * store(&(__return.s3),int,m3) * store(&(__return.s4),int,m4) * store(&(__return.s5),int,m5) * store(&(__return.s6),int,m6) * store(&(__return.s7),int,m7) * store(&(__return.s8),int,m8) * store(&(__return.s9),int,m9) * store(&(__return.s10),int,m10) * store(&(__return.s11),int,m11) * store(&(__return.s12),int,m12) * store(&(__return.s13),int,m13) * store(&(__return.s14),int,m14) * store(&(__return.s15),int,m15) */;
+vfloat32m4_t __riscv_vmerge_vvm_f32m4(vfloat32m4_t a,vfloat32m4_t b,vbool8_t mask,size_t vl)
+/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z) Require 0<=vl && vl<=16 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(mask.s0),int,m0) * store(&(mask.s1),int,m1) * store(&(mask.s2),int,m2) * store(&(mask.s3),int,m3) * store(&(mask.s4),int,m4) * store(&(mask.s5),int,m5) * store(&(mask.s6),int,m6) * store(&(mask.s7),int,m7) * store(&(mask.s8),int,m8) * store(&(mask.s9),int,m9) * store(&(mask.s10),int,m10) * store(&(mask.s11),int,m11) * store(&(mask.s12),int,m12) * store(&(mask.s13),int,m13) * store(&(mask.s14),int,m14) * store(&(mask.s15),int,m15) Ensure exists r0 r1 r2 r3 r4 r5 r6 r7 r8 r9 r10 r11 r12 r13 r14 r15, dw_active(vl,0,r0,dw_rvv_merge(x0,y0,m0)) && dw_active(vl,1,r1,dw_rvv_merge(x1,y1,m1)) && dw_active(vl,2,r2,dw_rvv_merge(x2,y2,m2)) && dw_active(vl,3,r3,dw_rvv_merge(x3,y3,m3)) && dw_active(vl,4,r4,dw_rvv_merge(x4,y4,m4)) && dw_active(vl,5,r5,dw_rvv_merge(x5,y5,m5)) && dw_active(vl,6,r6,dw_rvv_merge(x6,y6,m6)) && dw_active(vl,7,r7,dw_rvv_merge(x7,y7,m7)) && dw_active(vl,8,r8,dw_rvv_merge(x8,y8,m8)) && dw_active(vl,9,r9,dw_rvv_merge(x9,y9,m9)) && dw_active(vl,10,r10,dw_rvv_merge(x10,y10,m10)) && dw_active(vl,11,r11,dw_rvv_merge(x11,y11,m11)) && dw_active(vl,12,r12,dw_rvv_merge(x12,y12,m12)) && dw_active(vl,13,r13,dw_rvv_merge(x13,y13,m13)) && dw_active(vl,14,r14,dw_rvv_merge(x14,y14,m14)) && dw_active(vl,15,r15,dw_rvv_merge(x15,y15,m15)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) */;
+/*@ Extern Coq (dw_distinct:list Z->Prop) (dw_write_window:list Z->Z->Z->Prop) (dw_output:list Z->DwOutput->Assertion) (dw_output_put:DwOutput->Z->fp32->DwOutput) (dw_write_values:DwOutput->Z->list fp32->DwOutput)
+ (dw_pack2:fp32->fp32->list fp32)
+ (dw_pack4:fp32->fp32->fp32->fp32->list fp32)
+ (dw_pack16:fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->list fp32)
+ (sublist:{A}->Z->Z->list A->list A) */
+void dw_store4_view(float*p,const float32x4_t*a)
+/*@ With (W:list Z) (O:DwOutput) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) Require dw_distinct(W) && dw_write_window(W,p,4) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * dw_output(W,O) Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * dw_output(W,dw_write_values(O,p,dw_pack4(x0,x1,x2,x3))) */;
+void dw_store2_view(float*p,const float32x2_t*a)
+/*@ With (W:list Z) (O:DwOutput) (x0:fp32) (x1:fp32) Require dw_distinct(W) && dw_write_window(W,p,2) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * dw_output(W,O) Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * dw_output(W,dw_write_values(O,p,dw_pack2(x0,x1))) */;
+void dw_store1_view(float*p,const float32x2_t*a,int lane)
+/*@ With (W:list Z) (O:DwOutput) (x0:fp32) (x1:fp32) Require lane==0 && dw_distinct(W) && dw_write_window(W,p,1) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * dw_output(W,O) Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * dw_output(W,dw_output_put(O,p,x0)) */;
+void dw_rvv_store_view(float*p,const vfloat32m4_t*a,size_t vl)
+/*@ With (W:list Z) (O:DwOutput) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) Require 1<=vl && vl<=16 && dw_distinct(W) && dw_write_window(W,p,vl) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * dw_output(W,O) Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * dw_output(W,dw_write_values(O,p,sublist(0,vl,dw_pack16(x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15)))) */;
+/*@ Import Coq Require Import Dwconv.MemoryInterface */
+/*@ Extern Coq (DwROMap :: *) (DwPtrMap :: *) */
+/*@ Extern Coq (dw_same:fp32->fp32->Prop) (dw_data:DwROMap->Assertion)
+ (dw_get:DwROMap->Z->fp32) (dw_present:DwROMap->Z->Prop) (dw_pop:DwROMap->Z->DwROMap)
+ (dw_ptr_data:DwPtrMap->Assertion) (dw_ptr_get:DwPtrMap->Z->Z)
+ (dw_ptr_present:DwPtrMap->Z->Prop) (dw_ptr_pop:DwPtrMap->Z->DwPtrMap) */
+/*@ include strategies "../proof/c/dw_maps.strategies" */
+void dw_assert(int condition) /*@ Require condition!=0 && emp Ensure emp */;
+/*@ Import Coq Require Import Dwconv.ProgramInterface */
+/*@ Extern Coq (DwProgram :: *) */
+/*@ Extern Coq
+ (dw_channels:DwProgram->Z)
+ (dw_width:DwProgram->Z)
+ (dw_input:DwProgram->Z)
+ (dw_weights:DwProgram->Z)
+ (dw_out:DwProgram->Z)
+ (dw_input_stride:DwProgram->Z)
+ (dw_out_increment:DwProgram->Z)
+ (dw_offset:DwProgram->Z)
+ (dw_pixel_stride:DwProgram->Z)
+ (dw_zero_ptr:DwProgram->Z)
+ (dw_table:DwProgram->Z->Z)
+ (dw_offset_at:DwProgram->Z->Z)
+ (dw_output_at:DwProgram->Z->Z)
+ (dw_aligned_cursor:Z->Z->Prop) (dw_word:Z->Z) (dw_take:Z->Z)
+ (dw_valid:DwROMap->DwPtrMap->list Z->DwProgram->Prop)
+ (dw_input_row:DwPtrMap->DwProgram->Z->Z->Z)
+ (dw_neon_progress:DwROMap->DwPtrMap->DwProgram->Z->Z->fp32->fp32->DwOutput->DwOutput)
+ (dw_neon_result:DwROMap->DwPtrMap->DwProgram->fp32->fp32->DwOutput->DwOutput)
+ (dw_rvv_progress:DwROMap->DwPtrMap->DwProgram->Z->Z->fp32->fp32->DwOutput->DwOutput)
+ (dw_rvv_result:DwROMap->DwPtrMap->DwProgram->fp32->fp32->DwOutput->DwOutput)
+ */
+void test_neon(
+    size_t channels,
+    size_t output_width,
+    const float** input,
+    const float* weights,
+    float* output,
+    intptr_t input_stride,
+    size_t output_increment,
+    size_t input_offset,
+    size_t input_pixel_stride,
+    const float* zero,
+    const struct xnn_f32_minmax_params* restrict params)
+/*@ With (D:DwProgram) (F:DwROMap) (P:DwPtrMap) (W:list Z) (O:DwOutput) (lo:fp32) (hi:fp32) Require params!=0 && channels>0 && output_width>0 && channels==dw_channels(D) && output_width==dw_width(D) && input==dw_input(D) && weights==dw_weights(D) && output==dw_out(D) && input_stride==dw_input_stride(D) && output_increment==dw_out_increment(D) && input_offset==dw_offset(D) && input_pixel_stride==dw_pixel_stride(D) && zero==dw_zero_ptr(D) && dw_valid(F,P,W,D) && dw_distinct(W) && dw_present(F,&(params->scalar.min)) && dw_present(F,&(params->scalar.max)) && dw_same(lo,dw_get(F,&(params->scalar.min))) && dw_same(hi,dw_get(F,&(params->scalar.max))) && dw_data(F) * dw_ptr_data(P) * dw_output(W,O) Ensure dw_data(F) * dw_ptr_data(P) * dw_output(W,dw_neon_result(F,P,D,lo,hi,O)) */;
+void test_rvv(
+    size_t channels,
+    size_t output_width,
+    const float** input,
+    const float* weights,
+    float* output,
+    intptr_t input_stride,
+    size_t output_increment,
+    size_t input_offset,
+    size_t input_pixel_stride,
+    const float* zero,
+    const struct xnn_f32_minmax_params* restrict params)
+/*@ With (D:DwProgram) (F:DwROMap) (P:DwPtrMap) (W:list Z) (O:DwOutput) (lo:fp32) (hi:fp32) Require params!=0 && channels>0 && output_width>0 && channels==dw_channels(D) && output_width==dw_width(D) && input==dw_input(D) && weights==dw_weights(D) && output==dw_out(D) && input_stride==dw_input_stride(D) && output_increment==dw_out_increment(D) && input_offset==dw_offset(D) && input_pixel_stride==dw_pixel_stride(D) && zero==dw_zero_ptr(D) && dw_valid(F,P,W,D) && dw_distinct(W) && dw_present(F,&(params->scalar.min)) && dw_present(F,&(params->scalar.max)) && dw_same(lo,dw_get(F,&(params->scalar.min))) && dw_same(hi,dw_get(F,&(params->scalar.max))) && dw_data(F) * dw_ptr_data(P) * dw_output(W,O) Ensure dw_data(F) * dw_ptr_data(P) * dw_output(W,dw_rvv_result(F,P,D,lo,hi,O)) */;
+/*@ Import Coq Require Import Dwconv.MemoryInterface */
+/*@ Extern Coq (DwROMap :: *) (DwOutput :: *) */
+/*@ Extern Coq (dw_same:fp32->fp32->Prop) (dw_data:DwROMap->Assertion)
+ (dw_get:DwROMap->Z->fp32) (dw_present:DwROMap->Z->Prop)
+ (dw_pop:DwROMap->Z->DwROMap) (dw_output:list Z->DwOutput->Assertion)
+ (dw_distinct:list Z->Prop) (dw_owned:list Z->Z->Prop)
+ (dw_removed:list Z->Z->list Z) (dw_at:DwOutput->Z->option fp32)
+ (dw_output_cell:Z->option fp32->Assertion)
+ (dw_output_put:DwOutput->Z->fp32->DwOutput) */
+float dw_read_float(const float* p)
+/*@ With (F:DwROMap) Require p!=0 && dw_present(F,p) && dw_data(F)
+ Ensure dw_same(__return,dw_get(F,p)) && dw_data(F) */;
+void dw_store_float(float* p,float v)
+/*@ With (W:list Z) (O:DwOutput)
+ Require p!=0 && dw_distinct(W) && dw_owned(W,p) && dw_output(W,O)
+ Ensure dw_output(W,dw_output_put(O,p,v)) */;
+/*@ Import Coq Require Import Dwconv.OutputReadModel */
+/*@ Extern Coq (dw_initialized:DwOutput->Z->fp32->Prop) */
+float dw_read_output(const float *p)
+/*@ With (W:list Z) (O:DwOutput) (v:fp32)
+ Require p!=0 && dw_distinct(W) && dw_owned(W,p) && dw_initialized(O,p,v) && dw_output(W,O)
+ Ensure dw_same(__return,v) && dw_output(W,O) */;
+/*@ Import Coq Require Import Dwconv.WrittenReadModel */
+/*@ Extern Coq (dw_output_ready:DwOutput->Z->Prop) */
+float dw_read_written(const float *p)
+/*@ With (W:list Z) (O:DwOutput)
+ Require p!=0 && dw_distinct(W) && dw_owned(W,p) && dw_output_ready(O,p) && dw_output(W,O)
+ Ensure dw_initialized(O,p,__return) && dw_output(W,O) */;
+/*@ Import Coq Require Import NanBridge.BridgeLogic */
+/*@ Extern Coq (bit_same:fp32->fp32->Prop)
+ (same_value:fp32->fp32->Prop) (returned_one:Z->Prop) */
+float preserve_float(float x)
+/*@ Require emp Ensure bit_same(__return,x) && emp */;
+int check_observation(float x,float y)
+/*@ Require same_value(x,y) && emp Ensure returned_one(__return) && emp */;
+int same_lane(float x,float y)
+/*@ Require same_value(x,y) && emp Ensure __return==1 && emp */;
+/*@ Import Coq Require Import Dwconv.PublicModel */
+/*@ Extern Coq (DwProgram :: *) */
+/*@ Extern Coq (dw_channels:DwProgram->Z) (dw_width:DwProgram->Z)
+ (dw_out:DwProgram->Z) (dw_out_increment:DwProgram->Z)
+ (dw_rebase:DwProgram->Z->DwProgram) (dw_output_at:DwProgram->Z->Z)
+ (dw_output_domain:list Z->DwProgram->Prop)
+ (dw_observed_pair:DwOutput->DwOutput->Z->Z->Prop)
+ (dw_pair_observed:DwProgram->Z->DwOutput->DwOutput->Prop) */
+int compare_outputs(size_t channels,size_t output_width,const float *left,const float *right,size_t output_increment)
+/*@ With (D:DwProgram) (out2:Z) (W1:list Z) (W2:list Z) (O1:DwOutput) (O2:DwOutput) Require channels==dw_channels(D) && output_width==dw_width(D) && output_increment==dw_out_increment(D) && 0<channels && 0<output_width && dw_distinct(W1) && dw_distinct(W2) && dw_output_domain(W1,D) && dw_output_domain(W2,dw_rebase(D,out2)) && dw_pair_observed(D,out2,O1,O2) && left==dw_out(D) && right==out2 && dw_output(W1,O1) * dw_output(W2,O2) Ensure __return==1 && dw_output(W1,O1) * dw_output(W2,O2) */;
+int equivalent(size_t channels,size_t output_width,const float **input,
+ const float *weights,float *left,float *right,intptr_t input_stride,
+ size_t output_increment,size_t input_offset,size_t input_pixel_stride,
+ const float *zero,const struct xnn_f32_minmax_params *params)
+/*@ With (D:DwProgram) (F:DwROMap) (P:DwPtrMap) (out2:Z) (W1:list Z) (W2:list Z) (O1:DwOutput) (O2:DwOutput) (lo:fp32) (hi:fp32) Require params!=0 && channels>0 && output_width>0 && channels==dw_channels(D) && output_width==dw_width(D) && input==dw_input(D) && weights==dw_weights(D) && left==dw_out(D) && right==out2 && input_stride==dw_input_stride(D) && output_increment==dw_out_increment(D) && input_offset==dw_offset(D) && input_pixel_stride==dw_pixel_stride(D) && zero==dw_zero_ptr(D) && dw_valid(F,P,W1,D) && dw_valid(F,P,W2,dw_rebase(D,out2)) && dw_distinct(W1) && dw_distinct(W2) && dw_present(F,&(params->scalar.min)) && dw_present(F,&(params->scalar.max)) && dw_same(lo,dw_get(F,&(params->scalar.min))) && dw_same(hi,dw_get(F,&(params->scalar.max))) && dw_data(F) * dw_ptr_data(P) * dw_output(W1,O1) * dw_output(W2,O2) Ensure __return==1 && dw_pair_observed(D,out2,dw_neon_result(F,P,D,lo,hi,O1),dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2)) && dw_data(F) * dw_ptr_data(P) * dw_output(W1,dw_neon_result(F,P,D,lo,hi,O1)) * dw_output(W2,dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2)) */
+{
+ test_neon(channels,output_width,input,weights,left,input_stride,output_increment,input_offset,input_pixel_stride,zero,params)
+ /*@ where D=D,F=F,P=P,W=W1,O=O1,lo=lo,hi=hi */;
+ test_rvv(channels,output_width,input,weights,right,input_stride,output_increment,input_offset,input_pixel_stride,zero,params)
+ /*@ where D=dw_rebase(D,out2),F=F,P=P,W=W2,O=O2,lo=lo,hi=hi */;
+ /*@ Assert params!=0 && channels>0 && output_width>0 && channels==dw_channels(D) && output_width==dw_width(D) && input==dw_input(D) && weights==dw_weights(D) && left==dw_out(D) && right==out2 && input_stride==dw_input_stride(D) && output_increment==dw_out_increment(D) && input_offset==dw_offset(D) && input_pixel_stride==dw_pixel_stride(D) && zero==dw_zero_ptr(D) && dw_valid(F,P,W1,D) && dw_valid(F,P,W2,dw_rebase(D,out2)) && dw_distinct(W1) && dw_distinct(W2) && dw_present(F,&(params->scalar.min)) && dw_present(F,&(params->scalar.max)) && dw_same(lo,dw_get(F,&(params->scalar.min))) && dw_same(hi,dw_get(F,&(params->scalar.max))) && dw_output_domain(W1,D) && dw_output_domain(W2,dw_rebase(D,out2)) && dw_pair_observed(D,out2,dw_neon_result(F,P,D,lo,hi,O1),dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2)) && dw_data(F) * dw_ptr_data(P) * dw_output(W1,dw_neon_result(F,P,D,lo,hi,O1)) * dw_output(W2,dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2)) */
+ return compare_outputs(channels,output_width,left,right,output_increment)
+ /*@ where D=D,out2=out2,W1=W1,W2=W2,O1=dw_neon_result(F,P,D,lo,hi,O1),O2=dw_rvv_result(F,P,dw_rebase(D,out2),lo,hi,O2) */;
+}

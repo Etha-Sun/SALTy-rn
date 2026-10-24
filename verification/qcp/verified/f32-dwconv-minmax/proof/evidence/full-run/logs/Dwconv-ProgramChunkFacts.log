@@ -1,0 +1,75 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.242 secs (0.163u,0.079s)
+Chars 41 - 81 [From~Dwconv~Require~Export~Pro...] 2.941 secs (2.552u,0.388s)
+Chars 82 - 103 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 104 - 129 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 131 - 356 [Lemma~dw_write_values_sequence...] 0.001 secs (0.001u,0.s)
+Chars 357 - 363 [Proof.] 0. secs (0.u,0.s)
+Chars 365 - 421 [(intros~f~len;~induction~len~a...] 0. secs (0.u,0.s)
+Chars 423 - 424 [-] 0. secs (0.u,0.s)
+Chars 425 - 437 [reflexivity.] 0. secs (0.u,0.s)
+Chars 439 - 440 [-] 0. secs (0.u,0.s)
+Chars 441 - 480 [(cbn[seq~map~dw_write_values~f...] 0. secs (0.u,0.s)
+Chars 484 - 547 [replace~(p~+~4~*~Z.of_nat~star...] 0.002 secs (0.002u,0.s)
+Chars 551 - 560 [(apply~IH).] 0. secs (0.u,0.s)
+Chars 561 - 565 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 567 - 889 [Lemma~dw_channel_state_chunk~:...] 0. secs (0.u,0.s)
+Chars 890 - 896 [Proof.] 0. secs (0.u,0.s)
+Chars 898 - 939 [(intros~isa~F~P~D~pixel~k~r~lo...] 0. secs (0.u,0.s)
+Chars 941 - 965 [(unfold~dw_channel_state).] 0. secs (0.u,0.s)
+Chars 967 - 1003 [(rewrite~Z2Nat.inj_add~by~assu...] 0. secs (0.u,0.s)
+Chars 1005 - 1047 [(rewrite~seq_app,~fold_left_ap...] 0.001 secs (0.u,0.001s)
+Chars 1049 - 1107 [(rewrite~<-~dw_write_values_se...] 0. secs (0.u,0.s)
+Chars 1109 - 1121 [reflexivity.] 0. secs (0.u,0.s)
+Chars 1122 - 1126 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1128 - 1435 [Lemma~dw_progress_chunk~:~~~fo...] 0. secs (0.u,0.s)
+Chars 1436 - 1442 [Proof.] 0. secs (0.u,0.s)
+Chars 1443 - 1502 [(intros;~unfold~dw_progress;~n...] 0. secs (0.u,0.s)
+Chars 1503 - 1507 [Qed.] 0. secs (0.u,0.s)
+Chars 1509 - 1583 [Lemma~dw_take_positive~:~~~for...] 0. secs (0.u,0.s)
+Chars 1584 - 1590 [Proof.] 0. secs (0.u,0.s)
+Chars 1591 - 1617 [(unfold~dw_take;~intros;~lia).] 0.001 secs (0.001u,0.s)
+Chars 1618 - 1622 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1624 - 1755 [Lemma~dw_aligned_after_take~:~...] 0. secs (0.u,0.s)
+Chars 1756 - 1762 [Proof.] 0. secs (0.u,0.s)
+Chars 1764 - 1837 [(unfold~dw_aligned_cursor,~dw_...] 0. secs (0.u,0.s)
+Chars 1839 - 1869 [(destruct~(Z_le_dec~4~c)~as~[H...] 0. secs (0.u,0.s)
+Chars 1871 - 1872 [-] 0. secs (0.u,0.s)
+Chars 1873 - 1901 [(rewrite~Z.min_r~by~lia;~left).] 0. secs (0.u,0.s)
+Chars 1905 - 1956 [replace~(channels~-~(c~-~4))~w...] 0.003 secs (0.003u,0.s)
+Chars 1960 - 2012 [(rewrite~Z.add_mod~by~lia;~rew...] 0.001 secs (0.001u,0.s)
+Chars 2014 - 2015 [-] 0. secs (0.u,0.s)
+Chars 2016 - 2049 [(rewrite~Z.min_l~by~lia;~right...] 0.001 secs (0.001u,0.s)
+Chars 2050 - 2054 [Qed.] 0.002 secs (0.002u,0.s)
+Chars 2056 - 2169 [Lemma~dw_packed_block_room~:~~...] 0. secs (0.u,0.s)
+Chars 2170 - 2176 [Proof.] 0. secs (0.u,0.s)
+Chars 2178 - 2208 [(intros~channels~k~Hk~Hlt~Hmod).] 0. secs (0.u,0.s)
+Chars 2210 - 2247 [(pose~proof~(Z.div_mod~k~4~lta...] 0. secs (0.u,0.s)
+Chars 2249 - 2297 [(pose~proof~(Z.div_mod~(channe...] 0. secs (0.u,0.s)
+Chars 2299 - 2357 [(pose~proof~(Z.mod_pos_bound~(...] 0.001 secs (0.001u,0.s)
+Chars 2358 - 2362 [Qed.] 0.001 secs (0.u,0.001s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2363 - 2404 [Print~Assumptions~dw_channel_s...] 0.631 secs (0.61u,0.021s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2405 - 2441 [Print~Assumptions~dw_progress_...] 0.961 secs (0.889u,0.072s)
+Closed under the global context
+Chars 2442 - 2482 [Print~Assumptions~dw_aligned_a...] 0.303 secs (0.174u,0.s)
+Closed under the global context
+Chars 2483 - 2522 [Print~Assumptions~dw_packed_bl...] 0.218 secs (0.218u,0.s)

@@ -1,0 +1,9 @@
+From Dwconv Require Import RvvKernelMemoryInitial RvvKernelMemoryWindows RvvKernelMemoryStep RvvKernelMemoryOuter RvvKernelMemoryReturn.
+Module CheckedRvvMemory.
+Include Dwconv.RvvKernelMemoryInitial.CheckedRvvMemoryInitial.
+Definition proof_of_test_rvv_entail_wit_5_1 : Dwconv.rvv_unit_goal.test_rvv_entail_wit_5_1 := Dwconv.RvvKernelMemoryWindows.proof_of_test_rvv_entail_wit_5_1.
+Definition proof_of_test_rvv_entail_wit_5_2 : Dwconv.rvv_unit_goal.test_rvv_entail_wit_5_2 := Dwconv.RvvKernelMemoryWindows.proof_of_test_rvv_entail_wit_5_2.
+Definition proof_of_test_rvv_entail_wit_6 : Dwconv.rvv_unit_goal.test_rvv_entail_wit_6 := Dwconv.RvvKernelMemoryStep.proof_of_test_rvv_entail_wit_6.
+Definition proof_of_test_rvv_entail_wit_7 : Dwconv.rvv_unit_goal.test_rvv_entail_wit_7 := Dwconv.RvvKernelMemoryOuter.proof_of_test_rvv_entail_wit_7.
+Definition proof_of_test_rvv_return_wit_1 : Dwconv.rvv_unit_goal.test_rvv_return_wit_1 := Dwconv.RvvKernelMemoryReturn.proof_of_test_rvv_return_wit_1.
+End CheckedRvvMemory.

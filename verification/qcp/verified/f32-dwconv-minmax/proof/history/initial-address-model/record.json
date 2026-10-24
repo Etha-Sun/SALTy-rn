@@ -1,0 +1,25 @@
+{
+  "scope": "faithful model-initialization repair; not a C semantic repair or new proof credit",
+  "reason": "Pixel zero is before any C uintptr_t arithmetic. The previous always-word model required raw initial C argument = word64(raw argument) in an actual initialization VC whose abstract pure context did not retain C storage ranges. Preserve the raw initial value and apply word64 only after the first pointer/unsigned update. Subsequent-step lemmas explicitly require nonnegative pixel.",
+  "no_C_or_intrinsic_contract_changes": true,
+  "no_public_precondition_strengthening": true,
+  "old_250_proofs_require_current_model_replay": true,
+  "sources": {
+    "ProgramModel": {
+      "historical_source": "proof/history/initial-address-model/ProgramModel.before.v.txt",
+      "before_sha256": "c23ac707a03d306cf5eca7ad1bb5dda9d2d199f328b224f8de147fc82e58fe7f",
+      "current_source": "proof/coq/ProgramModel.v",
+      "after_sha256": "8b39e3dda768aef1d909ceb7f11267d971b784ff1316123c1625bdba2bd20631"
+    },
+    "ProgramFacts": {
+      "historical_source": "proof/history/initial-address-model/ProgramFacts.before.v.txt",
+      "before_sha256": "1b445ab325fbb0827e0986fe1261ee646aac18597d3d4d303eacac52d1f43264",
+      "current_source": "proof/coq/ProgramFacts.v",
+      "after_sha256": "ad27f584b6eff5ce7ab965fd34bf1daceedb308999703e566ae80b710e65827e"
+    }
+  },
+  "patch_sha256": "6aa9a11e732386c7649b9eeda215a32f9c7d7ea76e953c9aa86b344dd4a4ee86",
+  "ordinary_current_math_replay": ".build/coq-closure-jp_t3bj8/status.json",
+  "current_250_replay": ".build/coq-closure-799a9al7",
+  "whole_kernel_verified": false
+}

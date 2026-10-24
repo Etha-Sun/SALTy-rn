@@ -1,0 +1,38 @@
+From Coq Require Import ZArith.
+From Dwconv Require Import KernelRetrySupport neon_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Local Opaque Dwconv.Model.dw_arm_add Dwconv.Model.dw_arm_mul Dwconv.Model.dw_arm_fma Dwconv.Model.dw_arm_min Dwconv.Model.dw_arm_max Dwconv.FmaModel.fma_rne fp32_add fp32_mul.
+Module CheckedNeonKernelPart09.
+Lemma proof_of_test_neon_safety_wit_10 : Dwconv.neon_unit_goal.test_neon_safety_wit_10.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_safety_wit_10;dw_call_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_26 : Dwconv.neon_unit_goal.test_neon_safety_wit_26.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_safety_wit_26;dw_call_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_42 : Dwconv.neon_unit_goal.test_neon_safety_wit_42.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_safety_wit_42;dw_call_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_58 : Dwconv.neon_unit_goal.test_neon_safety_wit_58.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_safety_wit_58;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_5 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_5.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_5;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_18 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_18.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_18;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_27 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_27.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_27,Dwconv.neon_unit_goal.test_neon_partial_solve_wit_27_aux;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_39 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_39.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_39,Dwconv.neon_unit_goal.test_neon_partial_solve_wit_39_aux;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_52_pure : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_52_pure.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_52_pure;dw_retry_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_63_pure : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_63_pure.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_63_pure;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_75 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_75.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_75,Dwconv.neon_unit_goal.test_neon_partial_solve_wit_75_aux;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_87 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_87.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_87;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_99_pure : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_99_pure.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_99_pure;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_113 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_113.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_113;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_129 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_129.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_129;dw_call_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_141 : Dwconv.neon_unit_goal.test_neon_partial_solve_wit_141.
+Proof. unfold Dwconv.neon_unit_goal.test_neon_partial_solve_wit_141,Dwconv.neon_unit_goal.test_neon_partial_solve_wit_141_aux;dw_call_finish. Qed.
+End CheckedNeonKernelPart09.

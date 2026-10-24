@@ -1,0 +1,22 @@
+From Dwconv Require Import MapStrategyChecked OutputStrategyChecked NeonKernelMemory NeonKernelPart00 NeonKernelPart01 NeonKernelPart02 NeonKernelPart03 NeonKernelPart04 NeonKernelPart05 NeonKernelPart06 NeonKernelPart07 NeonKernelPart08 NeonKernelPart09 NeonKernelPart10 NeonKernelPart11 NeonKernelPart12 NeonKernelPart13 NeonKernelPart14 NeonKernelPart15.
+Module CheckedNeonKernel : Dwconv.neon_unit_goal.VC_Correct.
+Include Dwconv.MapStrategyChecked.CheckedMaps.
+Include Dwconv.OutputStrategyChecked.CheckedOutputStrategy.
+Include Dwconv.NeonKernelPart00.CheckedNeonKernelPart00.
+Include Dwconv.NeonKernelPart01.CheckedNeonKernelPart01.
+Include Dwconv.NeonKernelPart02.CheckedNeonKernelPart02.
+Include Dwconv.NeonKernelPart03.CheckedNeonKernelPart03.
+Include Dwconv.NeonKernelPart04.CheckedNeonKernelPart04.
+Include Dwconv.NeonKernelPart05.CheckedNeonKernelPart05.
+Include Dwconv.NeonKernelPart06.CheckedNeonKernelPart06.
+Include Dwconv.NeonKernelPart07.CheckedNeonKernelPart07.
+Include Dwconv.NeonKernelPart08.CheckedNeonKernelPart08.
+Include Dwconv.NeonKernelPart09.CheckedNeonKernelPart09.
+Include Dwconv.NeonKernelPart10.CheckedNeonKernelPart10.
+Include Dwconv.NeonKernelPart11.CheckedNeonKernelPart11.
+Include Dwconv.NeonKernelPart12.CheckedNeonKernelPart12.
+Include Dwconv.NeonKernelPart13.CheckedNeonKernelPart13.
+Include Dwconv.NeonKernelPart14.CheckedNeonKernelPart14.
+Include Dwconv.NeonKernelPart15.CheckedNeonKernelPart15.
+Include Dwconv.NeonKernelMemory.CheckedNeonMemory.
+End CheckedNeonKernel.

@@ -2,7 +2,7 @@
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
-当前 **28/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
+当前 **29/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
 最新收录 [QU8 加法修复版](verified/qu8-vadd-minmax/README.md) 与 [QD8 QC8W IGEMM](verified/qd8-f32-qc8w-igemm-minmax/README.md)。完整 C-shim 门禁及发布证据已核对；具体输入域、repair 和 intrinsic spec 信任边界见各案说明。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。

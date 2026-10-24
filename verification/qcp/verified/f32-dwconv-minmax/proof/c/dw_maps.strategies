@@ -1,0 +1,61 @@
+#include "../../shim/maps.h"
+id : 1
+priority : core(2)
+left : dw_data(?F) at 0
+right : store(?p,float,?v) at 1
+check : infer(dw_present(F,p));
+action : left_erase(0);
+         left_add(dw_data(dw_pop(F,p)));
+         left_add(store(p,float,dw_get(F,p)));
+id : 2
+priority : core(1)
+left : dw_data(dw_pop(?F,?p)) at 0
+       store(?q,float,dw_get(F,p)) at 1
+check : infer(q == p);
+        infer(dw_present(F,p));
+action : left_erase(0);
+         left_erase(1);
+         left_add(dw_data(F));
+id : 3
+priority : core(2)
+left : dw_ptr_data(?P) at 0
+right : store(?p,PTR(float),?v) at 1
+check : infer(dw_ptr_present(P,p));
+action : left_erase(0);
+         left_add(dw_ptr_data(dw_ptr_pop(P,p)));
+         left_add(store(p,PTR(float),dw_ptr_get(P,p)));
+id : 4
+priority : core(1)
+left : dw_ptr_data(dw_ptr_pop(?P,?p)) at 0
+       store(?q,PTR(float),dw_ptr_get(P,p)) at 1
+check : infer(q == p);
+        infer(dw_ptr_present(P,p));
+action : left_erase(0);
+         left_erase(1);
+         left_add(dw_ptr_data(P));
+id : 5
+priority : core(0)
+left : dw_data(?F) at 0
+right : dw_data(F) at 1
+action : left_erase(0);
+         right_erase(1);
+id : 6
+priority : core(0)
+left : dw_ptr_data(?P) at 0
+right : dw_ptr_data(P) at 1
+action : left_erase(0);
+         right_erase(1);
+id : 7
+priority : core(0)
+left : store(?p,float,?v) at 0
+right : store(?q,float,v) at 1
+check : infer(p == q);
+action : left_erase(0);
+         right_erase(1);
+id : 8
+priority : core(0)
+left : store(?p,PTR(float),?v) at 0
+right : store(?q,PTR(float),v) at 1
+check : infer(p == q);
+action : left_erase(0);
+         right_erase(1);

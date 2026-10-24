@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "isa": "neon",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-1v5opflk",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-1v5opflk/neon_unit.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-1v5opflk/neon_unit.i"
+      ],
+      "exit_code": 0,
+      "seconds": 0.017109842970967293,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=8192",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-1v5opflk/neon_unit.i",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/neon-kernel-1v5opflk/generated",
+        "--coq-logic-path=Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/shim",
+        "Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/c",
+        "Dwconv"
+      ],
+      "exit_code": 0,
+      "seconds": 161.17930579115637,
+      "log_sha256": "90c13683d974456b472712e8fa101e80e4783498574b41e95136163c145b0bad"
+    }
+  ],
+  "input_sha256": {
+    "proof/generate_neon.py": "69a02c13331a800a18fef70f85dee186d04a61a5c0000be21111d8d754fd17c3",
+    "spec.c": "e4bf1dcc7a6cb177d468d18dfdc765d4edf92e84984da4289b7fcbc4676eeb43",
+    "proof/c/contracts.json": "e412fbb6f85c079818a4bb877053d43ff0510397826147e250d80ba9e821d369",
+    "impl/testNEON.c": "a446abf7aeca2ab9c35e361eda0b99c09186153f6f899582a95b910c26e67193",
+    "impl/testRVV.c": "e91c558083f823df960d089d58e481cc5c7047b1c54b4b0d9a9f892ea8618c41",
+    "shim/control.h": "1119ad4147a1405464337d5f683695b365021aabf27f8054686e0284026fe2fa",
+    "shim/intrinsics.h": "5d31367684c6a804bbd3a5591bbfaf02dad42a224d4c21f19f3377d07490521d",
+    "shim/maps.h": "a4256b69b9b73141e7422f1490fdd20080d19ee85c012ee7a2a5711eb3da03a4",
+    "shim/memory.h": "8a9ce56b46e810d5a083be33c7566ca8d7bfd0070488f96e3940561b1a5518ee",
+    "shim/output_rules.h": "bcdf5abadbba314d654989e905cdd9d9ae1a006d29fc259c42df1fe7d9577a29",
+    "shim/program.h": "85f02fa219d19e9f0e6f47828faaefa13a8e8caf5452e45b805271cf27f22ddc",
+    "shim/read_table.h": "79365294cef16bc484ece502a7f06f920ec6facec5c64538ed7f4974ddfd35f6",
+    "shim/types.h": "4997da9fab44810ac71db764a1d165cc16c25e225aedb1dc8b4eba2f984a47d1",
+    "proof/c/dw_maps.strategies": "5111fd4bf754ec77810b4cfe0776fcad8cc09c13a98415da64aea9f1282a26eb",
+    "proof/c/dw_output.strategies": "e3960fa2d2501bcd2651a3faeb3d77a294b6a4a7ceb5872a03287c29fdf6a752"
+  },
+  "goal_sha256": "fb2463ad54951e855ff8f540b39921f75a6af87256bd81a5fcf260b3b1d9a61f",
+  "actual_c_vcs": 283
+}

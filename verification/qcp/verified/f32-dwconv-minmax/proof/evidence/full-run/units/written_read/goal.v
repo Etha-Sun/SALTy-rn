@@ -1,0 +1,83 @@
+Require Import Coq.ZArith.ZArith.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Strings.String.
+Require Import Coq.Strings.Ascii.
+Require Import Coq.Lists.List.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Classes.Morphisms.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Sorting.Permutation.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
+Require Import SetsClass.SetsClass. Import SetsNotation.
+From SimpleC.SL Require Import Mem SeparationLogic.
+Require Import Logic.LogicGenerator.demo932.Interface.
+Local Open Scope Z_scope.
+Local Open Scope sets.
+Local Open Scope string_scope.
+Local Open Scope list.
+Import Snaive_C_Rules64.
+Require Import Dwconv.MemoryInterface.
+Require Import Dwconv.OutputReadModel.
+Require Import Dwconv.WrittenReadModel.
+Local Open Scope sac.
+
+(*----- Function dw_read_written -----*)
+
+Definition dw_read_written_entail_wit_1 := 
+(
+forall (p_pre: Z) (O: DwOutput) (W: (@list Z)) (PreH1 : (p_pre <> 0)) (PreH2 : (dw_distinct W )) (PreH3 : (dw_owned W p_pre )) (PreH4 : (dw_output_ready O p_pre )) ,
+  (dw_output W O )
+|--
+  EX (v: fp32) ,
+  “ (p_pre <> 0) ” 
+  &&  “ (dw_distinct W ) ” 
+  &&  “ (dw_owned W p_pre ) ” 
+  &&  “ (dw_initialized O p_pre v ) ”
+  &&  ((p_pre) # Float  |-> v)
+  **  (dw_output (dw_removed (W) (p_pre)) O )
+) \/
+(
+forall (p_pre: Z) (O: DwOutput) (W: (@list Z)) (PreH1 : (p_pre <> 0)) (PreH2 : (dw_distinct W )) (PreH3 : (dw_owned W p_pre )) (PreH4 : (dw_output_ready O p_pre )) ,
+  (dw_output W O )
+|--
+  EX (v: fp32) ,
+  “ (p_pre <> 0) ” 
+  &&  “ (dw_distinct W ) ” 
+  &&  “ (dw_owned W p_pre ) ” 
+  &&  “ (dw_initialized O p_pre v ) ”
+  &&  ((p_pre) # Float  |-> v)
+  **  (dw_output (dw_removed (W) (p_pre)) O )
+).
+
+Definition dw_read_written_return_wit_1 := 
+(
+forall (p_pre: Z) (O: DwOutput) (W: (@list Z)) (v: fp32) (PreH1 : (p_pre <> 0)) (PreH2 : (dw_distinct W )) (PreH3 : (dw_owned W p_pre )) (PreH4 : (dw_initialized O p_pre v )) ,
+  ((p_pre) # Float  |-> v)
+  **  (dw_output (dw_removed (W) (p_pre)) O )
+|--
+  “ (dw_initialized O p_pre v ) ”
+  &&  (dw_output W O )
+) \/
+(
+forall (p_pre: Z) (O: DwOutput) (W: (@list Z)) (v: fp32) (PreH1 : (p_pre <> 0)) (PreH2 : (dw_distinct W )) (PreH3 : (dw_owned W p_pre )) (PreH4 : (dw_initialized O p_pre v )) ,
+  ((p_pre) # Float  |-> v)
+  **  (dw_output (dw_removed (W) (p_pre)) O )
+|--
+  (dw_output W O )
+).
+
+Definition dw_read_written_return_wit_1_split_goal_spatial := 
+forall (p_pre: Z) (O: DwOutput) (W: (@list Z)) (v: fp32) (PreH1 : (p_pre <> 0)) (PreH2 : (dw_distinct W )) (PreH3 : (dw_owned W p_pre )) (PreH4 : (dw_initialized O p_pre v )) ,
+  ((p_pre) # Float  |-> v)
+  **  (dw_output (dw_removed (W) (p_pre)) O )
+|--
+  (dw_output W O )
+.
+
+Module Type VC_Correct.
+
+
+Axiom proof_of_dw_read_written_entail_wit_1 : dw_read_written_entail_wit_1.
+Axiom proof_of_dw_read_written_return_wit_1 : dw_read_written_return_wit_1.
+
+End VC_Correct.

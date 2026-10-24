@@ -1,0 +1,31 @@
+--- a/proof/record_status.py
++++ b/proof/record_status_v2.py
+@@ -165,7 +165,7 @@
+         artifacts.append((goal, Path('strategies') / goal.name))
+     coverage = module('issuer_actual_C_coverage', case / 'proof/full_call_coverage.py')
+     closure = coverage.audit_sources(expanded_paths, read(case / 'proof/component-unit-inventory.json'),
+-                                    read(case / 'proof/intrinsic-ledger.json'), case)
++                                    read(case / 'proof/semantics.json'), case)
+     require(closure == full['call_closure'] == handoff['call_closure'] and
+             closure['unique_ordinary_C_bodies'] == 15 and closure['target_inventory_complete'],
+             'Actual ordinary body/call/contract/intrinsic closure differs')
+--- a/proof/audit_relocation.py
++++ b/proof/audit_relocation_v2.py
+@@ -25,7 +25,7 @@
+     args = parser.parse_args()
+     here = Path(__file__).resolve().parent
+     case = here.parent
+-    engine = module('relocation_issuer', here / 'record_status.py')
++    engine = module('relocation_issuer', here / 'record_status_v2.py')
+     inputs = module('relocation_live_inputs', here / 'full_inputs.py')
+     work = Path(tempfile.mkdtemp(prefix='relocation-identity-', dir=case / '.build'))
+     report = dict(audit_passed=False, formal_proof_replayed=False,
+@@ -86,7 +86,7 @@
+                                               log_sha256=engine.sha(log), cpp_sha256=engine.sha(expanded)))
+         coverage = module('relocation_call_coverage', here / 'full_call_coverage.py')
+         closure = coverage.audit_sources(paths, engine.read(here / 'component-unit-inventory.json'),
+-                                        engine.read(here / 'intrinsic-ledger.json'), case)
++                                        engine.read(here / 'semantics.json'), case)
+         engine.require(closure == full['call_closure'], 'Live C body/contract/call/spec closure differs')
+         report.update(audit_passed=True, current_cpp_units=len(paths), ordinary_C_bodies=15,
+                       source_reviewed_terminals=closure['terminal_intrinsic_count'],

@@ -1,0 +1,593 @@
+{
+  "kernel": "f32-dwconv-minmax",
+  "scope": "candidate, source-reviewed intrinsic specifications; complete C proof not yet established",
+  "whole_kernel_verified": false,
+  "models": "ARM and RVV value/NaN definitions are separate; final observation numerical equality or both NaN; FP exception flags/traps, timing, ABI and physical register layout not observed",
+  "fp_environment": {
+    "rounding": "RNE",
+    "all_FP32": true,
+    "ARM_DN": 0,
+    "ARM_FZ": 0,
+    "ARM_FIZ": 0,
+    "ARM_AH": 0,
+    "RVV_VLEN": 128,
+    "RVV_SEW": 32,
+    "RVV_LMUL": 4,
+    "RVV_VLMAX": 16,
+    "inactive": "unconstrained",
+    "bounds_order_required": false
+  },
+  "arithmetic_schedule": "FMA(i0,k0,bias); separate-rounded MUL(i1,k1); FMA(i2,k2,acc0); ADD(acc0,product1); propagating MAX lower then MIN upper",
+  "memory_domain": "Signed full-int64 pointer-table stride; full uint64 offsets/advances; zero sentinel skips offset; repeated/overlapping read-only rows and weights/params/zero share one RO map; output functional map permits repeated/overlapping pixel writes, last write wins; ordinary valid owned float/pointer cells, no implicit alignment stronger than model validity",
+  "primary_sources": {
+    "acle": {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+      "relative_copy": "proof/evidence/official/acle.html",
+      "http_headers": {
+        "Connection": "close",
+        "Content-Length": "3587774",
+        "Server": "GitHub.com",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Wed, 14 Oct 2026 14:33:13 GMT",
+        "Access-Control-Allow-Origin": "*",
+        "ETag": "\"6acf92a9-36bebe\"",
+        "expires": "Sat, 24 Oct 2026 08:37:04 GMT",
+        "Cache-Control": "max-age=600",
+        "x-proxy-cache": "MISS",
+        "X-GitHub-Request-Id": "F658:EEAE6:F619:1193A:6ADC6BD8",
+        "x-github-edge-region": "westus3",
+        "Accept-Ranges": "bytes",
+        "Age": "0",
+        "Date": "Sat, 24 Oct 2026 08:27:04 GMT",
+        "Via": "1.1 varnish",
+        "X-Served-By": "cache-sjc1000116-SJC",
+        "X-Cache": "MISS",
+        "X-Cache-Hits": "0",
+        "X-Timer": "S1792830425.674927,VS0,VE144",
+        "Vary": "Accept-Encoding",
+        "X-Fastly-Request-ID": "81528c2db6f58515f041d9ddcf3e4033976170f7"
+      }
+    },
+    "rvv": {
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "sha256": "0ba80713c568dd16ded70c9725e47076bbdfd163080949a41476870deb3ab9f0",
+      "relative_copy": "proof/evidence/official/rvv.html",
+      "http_headers": {
+        "Connection": "close",
+        "Content-Length": "570257",
+        "Server": "GitHub.com",
+        "Content-Type": "text/html; charset=utf-8",
+        "x-origin-cache": "HIT",
+        "Last-Modified": "Tue, 29 Sep 2026 02:23:30 GMT",
+        "Access-Control-Allow-Origin": "*",
+        "Strict-Transport-Security": "max-age=31556952",
+        "ETag": "\"6abb2122-8b391\"",
+        "expires": "Sat, 24 Oct 2026 08:37:04 GMT",
+        "Cache-Control": "max-age=600",
+        "x-proxy-cache": "MISS",
+        "X-GitHub-Request-Id": "41B0:2A1559:FC00:11EDA:6ADC6BD8",
+        "x-github-edge-region": "westus3",
+        "Accept-Ranges": "bytes",
+        "Age": "0",
+        "Date": "Sat, 24 Oct 2026 08:27:04 GMT",
+        "Via": "1.1 varnish",
+        "X-Served-By": "cache-sjc10037-SJC",
+        "X-Cache": "MISS",
+        "X-Cache-Hits": "0",
+        "X-Timer": "S1792830425.792216,VS0,VE133",
+        "Vary": "Accept-Encoding",
+        "X-Fastly-Request-ID": "d99754e355107a9b4d21c2c324a9a6b531fd6980"
+      }
+    },
+    "rvf": {
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/f-st-ext.html",
+      "sha256": "32fab89e5095b41a276fe55ac0a5ba938afd301661037f2c45353ca9a0c0de68",
+      "relative_copy": "proof/evidence/official/rvf.html",
+      "http_headers": {
+        "Connection": "close",
+        "Content-Length": "70860",
+        "Server": "GitHub.com",
+        "Content-Type": "text/html; charset=utf-8",
+        "Last-Modified": "Tue, 29 Sep 2026 02:23:30 GMT",
+        "Access-Control-Allow-Origin": "*",
+        "Strict-Transport-Security": "max-age=31556952",
+        "ETag": "\"6abb2122-114cc\"",
+        "expires": "Sat, 24 Oct 2026 06:20:57 GMT",
+        "Cache-Control": "max-age=600",
+        "x-proxy-cache": "MISS",
+        "X-GitHub-Request-Id": "D6CA:1EC489:1DAF7B:20D98A:6ADC4BF1",
+        "x-github-edge-region": "sea",
+        "Accept-Ranges": "bytes",
+        "Age": "0",
+        "Date": "Sat, 24 Oct 2026 08:27:04 GMT",
+        "Via": "1.1 varnish",
+        "X-Served-By": "cache-sjc1000120-SJC",
+        "X-Cache": "HIT",
+        "X-Cache-Hits": "0",
+        "X-Timer": "S1792830425.792139,VS0,VE96",
+        "Vary": "Accept-Encoding",
+        "X-Fastly-Request-ID": "41f9af60d31d0730d3efa3c9f08142c8ebdc9213"
+      }
+    },
+    "arm_pdf": {
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "version": "AArch64 A-profile ISA XML/pseudocode v2025-03",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "pages": 6079,
+      "shared_pdf_indexes": {
+        "FPAdd": 5870,
+        "FPMax": 5880,
+        "FPMulAdd": 5885,
+        "FPProcessNaN": 5893,
+        "FPProcessNaNs": 5894,
+        "FPProcessNaNs3": 5895
+      }
+    }
+  },
+  "intrinsic_ledger": [
+    {
+      "original_intrinsic": "vfmaq_f32",
+      "isa": "ARM A64",
+      "instruction": "FMLA Vd.4S,Vn.4S,Vm.4S",
+      "model_definitions": [
+        "Dwconv.Model.dw_arm_fma"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "FPCR RNE,DN=0,FZ=0,FIZ=0,AH=0; signaling-NaN priority then quieting; FMA addend/op1/op2 ordering and QNaN-addend/0*Inf special case explicit.",
+      "formal_declaration_name": "vfmaq_f32"
+    },
+    {
+      "original_intrinsic": "vmulq_f32",
+      "isa": "ARM A64",
+      "instruction": "FMUL Vd.4S,Vn.4S,Vm.4S",
+      "model_definitions": [
+        "Dwconv.Model.dw_arm_mul"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "FPCR RNE,DN=0,FZ=0,FIZ=0,AH=0; signaling-NaN priority then quieting; FMA addend/op1/op2 ordering and QNaN-addend/0*Inf special case explicit.",
+      "formal_declaration_name": "vmulq_f32"
+    },
+    {
+      "original_intrinsic": "vaddq_f32",
+      "isa": "ARM A64",
+      "instruction": "FADD Vd.4S,Vn.4S,Vm.4S",
+      "model_definitions": [
+        "Dwconv.Model.dw_arm_add"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "FPCR RNE,DN=0,FZ=0,FIZ=0,AH=0; signaling-NaN priority then quieting; FMA addend/op1/op2 ordering and QNaN-addend/0*Inf special case explicit.",
+      "formal_declaration_name": "vaddq_f32"
+    },
+    {
+      "original_intrinsic": "vmaxq_f32",
+      "isa": "ARM A64",
+      "instruction": "FMAX Vd.4S,Vn.4S,Vm.4S",
+      "model_definitions": [
+        "Dwconv.Model.dw_arm_max"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "FPCR RNE,DN=0,FZ=0,FIZ=0,AH=0; signaling-NaN priority then quieting; FMA addend/op1/op2 ordering and QNaN-addend/0*Inf special case explicit.",
+      "formal_declaration_name": "vmaxq_f32"
+    },
+    {
+      "original_intrinsic": "vminq_f32",
+      "isa": "ARM A64",
+      "instruction": "FMIN Vd.4S,Vn.4S,Vm.4S",
+      "model_definitions": [
+        "Dwconv.Model.dw_arm_min"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "FPCR RNE,DN=0,FZ=0,FIZ=0,AH=0; signaling-NaN priority then quieting; FMA addend/op1/op2 ordering and QNaN-addend/0*Inf special case explicit.",
+      "formal_declaration_name": "vminq_f32"
+    },
+    {
+      "original_intrinsic": "vld1q_f32",
+      "isa": "ARM A64",
+      "instruction": "LD1 {Vt.4S},[Xn]",
+      "model_definitions": [
+        "Dwconv.MemoryModel.dw_load_lane",
+        "Dwconv.MemoryModel.dw_window",
+        "Dwconv.MemoryModel.dw_data"
+      ],
+      "source_files_sha256": {
+        "proof/coq/MemoryModel.v": "a539f3ff985c46a98466194f9123f851903a008ad53eedbdb68c15c2b9ead1c8"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Borrow exact p and four actual Float cells; all read-only views share one map, with no duplicate ownership.",
+      "formal_declaration_name": "vld1q_f32"
+    },
+    {
+      "original_intrinsic": "vdupq_n_f32",
+      "isa": "ARM A64",
+      "instruction": "DUP Vd.4S,Vn.S[0]",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_pack4"
+      ],
+      "source_files_sha256": {
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Bit-preserving lane copy; vdup_n_f32 declaration unused by this kernel.",
+      "formal_declaration_name": "vdupq_n_f32"
+    },
+    {
+      "original_intrinsic": "vdup_n_f32",
+      "isa": "ARM A64",
+      "instruction": "DUP Vd.2S,Vn.S[0]",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_pack2"
+      ],
+      "source_files_sha256": {
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Bit-preserving lane copy; vdup_n_f32 declaration unused by this kernel.",
+      "formal_declaration_name": "vdup_n_f32"
+    },
+    {
+      "original_intrinsic": "vget_low_f32",
+      "isa": "ARM A64",
+      "instruction": "low 64-bit view",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_pack4",
+        "Dwconv.VectorModel.dw_pack2"
+      ],
+      "source_files_sha256": {
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Bit-preserving extraction of lanes 0,1 or 2,3; no arithmetic or NaN quieting.",
+      "formal_declaration_name": "vget_low_f32"
+    },
+    {
+      "original_intrinsic": "vget_high_f32",
+      "isa": "ARM A64",
+      "instruction": "DUP Dd,Vn.D[1]",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_pack4",
+        "Dwconv.VectorModel.dw_pack2"
+      ],
+      "source_files_sha256": {
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Bit-preserving extraction of lanes 0,1 or 2,3; no arithmetic or NaN quieting.",
+      "formal_declaration_name": "vget_high_f32"
+    },
+    {
+      "original_intrinsic": "vst1q_f32",
+      "isa": "ARM A64",
+      "instruction": "ST1 {Vt.4S},[Xn]",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_write_values",
+        "Dwconv.OutputMemory.dw_output",
+        "Dwconv.OutputMemory.dw_write_window",
+        "Dwconv.VectorModel.dw_pack4"
+      ],
+      "source_files_sha256": {
+        "proof/coq/OutputMemory.v": "0aad6b271cdcab4d7d0019ec12f16ba17654dbd354966357c8969e01bf7ed904",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Actual contiguous cell updates; write windows may repeat across pixels. This is an ISA-store specification, with no ordinary C adapter introduced.",
+      "formal_declaration_name": "dw_store4_view",
+      "formal_representation": "borrowed vector pointer view of the original ISA store; named vector object evaluated once, all input fields preserved",
+      "ordinary_adapter_body_claim": false,
+      "representation_capability_evidence": "proof/capabilities/byvalue-output-ownership.json"
+    },
+    {
+      "original_intrinsic": "vst1_f32",
+      "isa": "ARM A64",
+      "instruction": "ST1 {Vt.2S},[Xn]",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_write_values",
+        "Dwconv.OutputMemory.dw_output",
+        "Dwconv.OutputMemory.dw_write_window",
+        "Dwconv.VectorModel.dw_pack2"
+      ],
+      "source_files_sha256": {
+        "proof/coq/OutputMemory.v": "0aad6b271cdcab4d7d0019ec12f16ba17654dbd354966357c8969e01bf7ed904",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Actual contiguous cell updates; write windows may repeat across pixels. This is an ISA-store specification, with no ordinary C adapter introduced.",
+      "formal_declaration_name": "dw_store2_view",
+      "formal_representation": "borrowed vector pointer view of the original ISA store; named vector object evaluated once, all input fields preserved",
+      "ordinary_adapter_body_claim": false,
+      "representation_capability_evidence": "proof/capabilities/byvalue-output-ownership.json"
+    },
+    {
+      "original_intrinsic": "vst1_lane_f32",
+      "isa": "ARM A64",
+      "instruction": "ST1 {Vt.S}[0],[Xn]",
+      "model_definitions": [
+        "Dwconv.OutputMemory.dw_output_put",
+        "Dwconv.OutputMemory.dw_output",
+        "Dwconv.OutputMemory.dw_write_window",
+        "Dwconv.VectorModel.dw_pack2"
+      ],
+      "source_files_sha256": {
+        "proof/coq/OutputMemory.v": "0aad6b271cdcab4d7d0019ec12f16ba17654dbd354966357c8969e01bf7ed904",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Specialized to the original literal lane 0; other lane requests fail the precondition.",
+      "formal_declaration_name": "dw_store1_view",
+      "formal_representation": "borrowed vector pointer view of the original ISA store; named vector object evaluated once, all input fields preserved",
+      "ordinary_adapter_body_claim": false,
+      "representation_capability_evidence": "proof/capabilities/byvalue-output-ownership.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vsetvl_e32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vsetvli e32,m4",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_vl_allowed"
+      ],
+      "source_files_sha256": {
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "All V1.0 legal AVL/VL choices at VLEN128/SEW32/LMUL4/VLMAX16. Repaired program requests AVL=min(c,4); this is a program change, not a hardware/domain restriction.",
+      "formal_declaration_name": "__riscv_vsetvl_e32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vle32_v_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vle32.v",
+      "model_definitions": [
+        "Dwconv.MemoryModel.dw_load_lane",
+        "Dwconv.MemoryModel.dw_window",
+        "Dwconv.MemoryModel.dw_data",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/MemoryModel.v": "a539f3ff985c46a98466194f9123f851903a008ad53eedbdb68c15c2b9ead1c8",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Use-site contract for 1<=VL<=16; exactly active cells borrowed, whole map preserved, inactive lanes unconstrained. Original repaired calls are strictly positive.",
+      "formal_declaration_name": "__riscv_vle32_v_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmacc_vv_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vfmacc.vv",
+      "model_definitions": [
+        "Dwconv.Model.dw_rvv_fma",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "RNE; canonical NaN for arithmetic/invalid operations; min/max use IEEE minimumNumber/maximumNumber. Active values only; no inactive content restrictions.",
+      "formal_declaration_name": "__riscv_vfmacc_vv_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmul_vv_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vfmul.vv",
+      "model_definitions": [
+        "Dwconv.Model.dw_rvv_mul",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "RNE; canonical NaN for arithmetic/invalid operations; min/max use IEEE minimumNumber/maximumNumber. Active values only; no inactive content restrictions.",
+      "formal_declaration_name": "__riscv_vfmul_vv_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vfadd_vv_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vfadd.vv",
+      "model_definitions": [
+        "Dwconv.Model.dw_rvv_add",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "RNE; canonical NaN for arithmetic/invalid operations; min/max use IEEE minimumNumber/maximumNumber. Active values only; no inactive content restrictions.",
+      "formal_declaration_name": "__riscv_vfadd_vv_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmax_vf_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vfmax.vf",
+      "model_definitions": [
+        "Dwconv.Model.fp32_max_number",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "RNE; canonical NaN for arithmetic/invalid operations; min/max use IEEE minimumNumber/maximumNumber. Active values only; no inactive content restrictions.",
+      "formal_declaration_name": "__riscv_vfmax_vf_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmin_vf_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vfmin.vf",
+      "model_definitions": [
+        "Dwconv.Model.fp32_min_number",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "RNE; canonical NaN for arithmetic/invalid operations; min/max use IEEE minimumNumber/maximumNumber. Active values only; no inactive content restrictions.",
+      "formal_declaration_name": "__riscv_vfmin_vf_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmv_v_f_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vfmv.v.f",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Bit-preserving scalar broadcast to active lanes; inactive fields unconstrained.",
+      "formal_declaration_name": "__riscv_vfmv_v_f_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vmfne_vv_f32m4_b8",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vmfne.vv",
+      "model_definitions": [
+        "Dwconv.Model.dw_rvv_nanmask",
+        "Dwconv.VectorModel.dw_active_mask"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Macro maps both same-object operands to dw_nanmask(&(a),&(b),VL); precondition a==b, one owned vector, preserves all fields. Active self-ne is exactly NaN classification. This precise intrinsic specialization is spec-only, not a false ordinary-helper body claim.",
+      "formal_declaration_name": "dw_nanmask"
+    },
+    {
+      "original_intrinsic": "__riscv_vmerge_vvm_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vmerge.vvm",
+      "model_definitions": [
+        "Dwconv.Model.dw_rvv_merge",
+        "Dwconv.VectorModel.dw_active"
+      ],
+      "source_files_sha256": {
+        "proof/coq/Model.v": "83b602b795d7da2cb4a77b196721b0f410ea985aa95d651c160213e2a6428a2d",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Select second source where mask true, first where false. No numerical FP equality, no NaN quieting.",
+      "formal_declaration_name": "__riscv_vmerge_vvm_f32m4"
+    },
+    {
+      "original_intrinsic": "__riscv_vse32_v_f32m4",
+      "isa": "RISC-V V 1.0",
+      "instruction": "vse32.v",
+      "model_definitions": [
+        "Dwconv.VectorModel.dw_write_values",
+        "Dwconv.OutputMemory.dw_output",
+        "Dwconv.OutputMemory.dw_write_window",
+        "Dwconv.VectorModel.dw_pack16"
+      ],
+      "source_files_sha256": {
+        "proof/coq/OutputMemory.v": "0aad6b271cdcab4d7d0019ec12f16ba17654dbd354966357c8969e01bf7ed904",
+        "proof/coq/VectorModel.v": "51555350e62be523669cddde2789574405994f7be649f64694608fb0fc431121"
+      },
+      "contract_source": "shim/intrinsics.h",
+      "intrinsic_c_body_checked": false,
+      "isa_refinement_proved": false,
+      "review_status": "official source reviewed; final human spec review pending",
+      "notes": "Exactly first VL lane writes at p+4*i; inactive elements not accessed, output address ownership retained. Prefix may alias earlier pixel writes.",
+      "formal_declaration_name": "dw_rvv_store_view",
+      "formal_representation": "borrowed vector pointer view of the original ISA store; named vector object evaluated once, all input fields preserved",
+      "ordinary_adapter_body_claim": false,
+      "representation_capability_evidence": "proof/capabilities/byvalue-output-ownership.json"
+    }
+  ],
+  "ordinary_helpers": "Every nonintrinsic actual callee must have checked actual C body in final closure; no current component proof is a whole-case certificate",
+  "termination": "QCP partial correctness; positive widths/channels progress lemmas do not claim certified execution/termination in ISA",
+  "source_to_ISA_correspondence": "Source review only; final human review pending; no mechanized ISA refinement",
+  "native_evidence": "proof/native-status.json; finite dual-sanitizer and independent oracle, not formal coverage",
+  "rejected_historical_byvalue_store_targets": "proof/capabilities/byvalue-output-ownership.json"
+}

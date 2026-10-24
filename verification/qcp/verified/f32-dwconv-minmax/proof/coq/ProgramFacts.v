@@ -1,0 +1,95 @@
+From Coq Require Import ZArith List Lia.
+From Dwconv Require Export ProgramInterface.
+Import ListNotations.
+Local Open Scope Z_scope.
+Lemma dw_word_add_l:forall x y,dw_word(dw_word x+y)=dw_word(x+y).
+Proof. intros;unfold dw_word;apply Z.add_mod_idemp_l;lia. Qed.
+Lemma dw_word_range:forall x,0<=dw_word x<18446744073709551616.
+Proof. intro;unfold dw_word;apply Z.mod_pos_bound;lia. Qed.
+Lemma dw_word_small:forall x,0<=x<18446744073709551616->dw_word x=x.
+Proof. unfold dw_word;intros;apply Z.mod_small;assumption. Qed.
+Lemma dw_table_step:forall D p,0<=p->
+ dw_word(dw_table D p+dw_input_stride D)=dw_table D(p+1).
+Proof.
+ intros D p Hp;unfold dw_table.
+ assert(Hnext:Z.eqb(p+1)0=false)by(apply Z.eqb_neq;lia).
+ rewrite Hnext.
+ destruct(Z.eqb_spec p 0)as[H|H].
+ - subst p;f_equal;ring.
+ - rewrite dw_word_add_l;f_equal;ring.
+Qed.
+Lemma dw_offset_step:forall D p,0<=p->
+ dw_word(dw_offset_at D p+dw_pixel_stride D)=dw_offset_at D(p+1).
+Proof.
+ intros D p Hp;unfold dw_offset_at.
+ assert(Hnext:Z.eqb(p+1)0=false)by(apply Z.eqb_neq;lia).
+ rewrite Hnext.
+ destruct(Z.eqb_spec p 0)as[H|H].
+ - subst p;f_equal;ring.
+ - rewrite dw_word_add_l;f_equal;ring.
+Qed.
+Lemma dw_output_step:forall D p,0<=p->
+ dw_word(dw_output_at D p+4*dw_channels D+dw_out_increment D)=dw_output_at D(p+1).
+Proof.
+ intros D p Hp;unfold dw_output_at.
+ assert(Hnext:Z.eqb(p+1)0=false)by(apply Z.eqb_neq;lia).
+ rewrite Hnext.
+ destruct(Z.eqb_spec p 0)as[H|H].
+ - subst p;f_equal;ring.
+ - rewrite <-Z.add_assoc,dw_word_add_l;f_equal;ring.
+Qed.
+Lemma dw_window_shift:forall F p n k r,
+ dw_window F p n->0<=k->0<=r->k+r<=n->dw_window F(p+4*k)r.
+Proof.
+ unfold dw_window;intros F p n k r[Hp[Hn Hwindow]]Hk Hr Hkr.
+ split;[lia|];split;[exact Hr|];intros i Hi.
+ replace(p+4*k+4*i)with(p+4*(k+i))by ring.
+ apply Hwindow;lia.
+Qed.
+Lemma dw_write_window_shift:forall W p n k r,
+ dw_write_window W p n->0<=k->0<=r->k+r<=n->dw_write_window W(p+4*k)r.
+Proof.
+ unfold dw_write_window;intros W p n k r[Hp[Hn Hwindow]]Hk Hr Hkr.
+ split;[lia|];split;[exact Hr|];intros i Hi.
+ replace(p+4*k+4*i)with(p+4*(k+i))by ring.
+ apply Hwindow;lia.
+Qed.
+Lemma dw_channel_state_zero:forall isa F P D pixel lo hi O,
+ dw_channel_state isa F P D pixel 0 lo hi O=O.
+Proof. reflexivity. Qed.
+Lemma dw_full_state_zero:forall isa F P D lo hi O,
+ dw_full_state isa F P D 0 lo hi O=O.
+Proof. reflexivity. Qed.
+Lemma dw_full_state_succ:forall isa F P D p lo hi O,0<=p->
+ dw_full_state isa F P D(p+1)lo hi O=
+ dw_channel_state isa F P D p(dw_channels D)lo hi(dw_full_state isa F P D p lo hi O).
+Proof.
+ intros isa F P D p lo hi O Hp;unfold dw_full_state.
+ replace(Z.to_nat(p+1))with(S(Z.to_nat p))by lia.
+ replace(S(Z.to_nat p))with(Z.to_nat p+1)%nat by lia.
+ rewrite seq_app,fold_left_app;cbn[seq fold_left].
+ rewrite Nat.add_0_l,Z2Nat.id by assumption;reflexivity.
+Qed.
+Lemma dw_progress_complete:forall isa F P D p lo hi O,0<=p->
+ dw_progress isa F P D p(dw_channels D)lo hi O=dw_full_state isa F P D(p+1)lo hi O.
+Proof. intros;unfold dw_progress;rewrite dw_full_state_succ by assumption;reflexivity. Qed.
+Lemma dw_progress_start:forall isa F P D p lo hi O,
+ dw_progress isa F P D p 0 lo hi O=dw_full_state isa F P D p lo hi O.
+Proof. reflexivity. Qed.
+Lemma dw_valid_row:forall F P W D pixel tap,
+ dw_valid F P W D->0<=pixel<dw_width D->0<=tap<3->
+ dw_raw_row P D pixel tap<>0 /\ dw_window F(dw_input_row P D pixel tap)(dw_channels D+3).
+Proof. unfold dw_valid;intros F P W D pixel tap[_[_[_ H]]]Hp Ht;specialize(H pixel Hp);destruct H as[Htable[Hrows Hout]];eauto. Qed.
+Lemma dw_valid_table:forall F P W D pixel,
+ dw_valid F P W D->0<=pixel<dw_width D->dw_ptr_window P(dw_table D pixel)3.
+Proof. unfold dw_valid;intros F P W D pixel[_[_[_ H]]]Hp;specialize(H pixel Hp);destruct H as[Htable[Hrows Hout]];eauto. Qed.
+Lemma dw_valid_output:forall F P W D pixel,
+ dw_valid F P W D->0<=pixel<dw_width D->dw_write_window W(dw_output_at D pixel)(dw_channels D).
+Proof. unfold dw_valid;intros F P W D pixel[_[_[_ H]]]Hp;specialize(H pixel Hp);destruct H as[Htable[Hrows Hout]];eauto. Qed.
+Print Assumptions dw_table_step.
+Print Assumptions dw_offset_step.
+Print Assumptions dw_output_step.
+Print Assumptions dw_window_shift.
+Print Assumptions dw_write_window_shift.
+Print Assumptions dw_full_state_succ.
+Print Assumptions dw_progress_complete.

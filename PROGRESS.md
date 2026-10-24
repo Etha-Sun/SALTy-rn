@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**28/40**。新目标：**至少 36/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**29/40**。新目标：**至少 36/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
@@ -36,6 +36,8 @@
 
 - [qd8-f32-qc8w-igemm-minmax](verification/qcp/verified/qd8-f32-qc8w-igemm-minmax/README.md)（其他 worker 完成，intrinsic spec 边界）
 - [qu8-vadd-minmax](verification/qcp/verified/qu8-vadd-minmax/README.md)（两侧修复版，完整64位）
+
+- [f32-dwconv-minmax](verification/qcp/verified/f32-dwconv-minmax/README.zh-CN.md)（packed4 布局及 NaN 修复版）
 
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
@@ -127,3 +129,5 @@ u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。
 - 2026-10-24（洛杉矶）：F32 IGEMM 已由其他 worker 完整验证并收录，复核通过，当前 **28/40**，目标 **36/40**。DWConv NEON 整体接口及 RVV 新增11项内存证明通过，继续整核验收。
 
 - 2026-10-24（洛杉矶）：Maxpool NEON 442项完整接口从124份源码重放通过，RVV 50项内存证明通过；DWConv 正跑整核门禁。完整已验证仍 **28/40**，目标 **36/40**。
+
+- 2026-10-24（洛杉矶）：DWConv 修复版完整验证及发布复核通过，当前 **29/40**，目标 **36/40**。Maxpool 两侧组件已通过，继续普通 NaN helper 和整核验收。

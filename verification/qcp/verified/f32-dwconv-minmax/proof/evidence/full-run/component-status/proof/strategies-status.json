@@ -1,0 +1,133 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/map-strategies-ovm2clig",
+  "records": [
+    {
+      "label": "dw_maps-StrategyCheck",
+      "command": [
+        "prlimit",
+        "--as=17179869184",
+        "--",
+        "/tmp/qcp214-src/linux-binary/StrategyCheck",
+        "--arch=64",
+        "--endian=little",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/c/dw_maps.strategies",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/map-strategies-ovm2clig/generated",
+        "--coq-logic-path=Dwconv"
+      ],
+      "exit_code": 0,
+      "seconds": 0.009831059956923127,
+      "log_sha256": "4a1b3bd84acb4d8837b19e15a5556bb810c0b9fd8f19d7070dc157633dc7f0ab"
+    },
+    {
+      "label": "dw_output-StrategyCheck",
+      "command": [
+        "prlimit",
+        "--as=17179869184",
+        "--",
+        "/tmp/qcp214-src/linux-binary/StrategyCheck",
+        "--arch=64",
+        "--endian=little",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/c/dw_output.strategies",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/map-strategies-ovm2clig/generated",
+        "--coq-logic-path=Dwconv"
+      ],
+      "exit_code": 0,
+      "seconds": 0.009896761970594525,
+      "log_sha256": "481eeaf7d165befbebc7d5e39e4c461b6415e95007165ef81db2e2dcbe3ee5b0"
+    },
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/shim/map_access.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/map-strategies-ovm2clig/map_probe.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.017054302850738168,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "QCP",
+      "command": [
+        "prlimit",
+        "--as=17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-exec-info",
+        "--no-float-finite-vc",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/map-strategies-ovm2clig/map_probe.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/map-strategies-ovm2clig/generated",
+        "--coq-logic-path=Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/shim",
+        "Dwconv",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/c",
+        "Dwconv"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03477546013891697,
+      "log_sha256": "6800aff79caf797934ad7f1b8a35a32f4ab064e7de615124632f15e1422f4b47"
+    },
+    {
+      "label": "fresh-ordinary-closure",
+      "command": [
+        "prlimit",
+        "--as=17179869184",
+        "--",
+        "python3",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/proof/check_coq.py",
+        "--targets",
+        "MapProbeChecked",
+        "OutputStrategyChecked",
+        "ProgramFacts",
+        "--jobs",
+        "32",
+        "--max-live",
+        "16",
+        "--timeout",
+        "7200"
+      ],
+      "exit_code": 0,
+      "seconds": 88.86615198710933,
+      "log_sha256": "d8445c7030ca13bd1774b7e50ecdcb6d029c8c826fc542c66ddd1dfff7d66fa8"
+    }
+  ],
+  "input_sha256": {
+    "proof/check_strategies.py": "3ef45f0e90e10854352e2ac0fe78d615c2a82f7cb042e8f35acddbc9191e8636",
+    "proof/check_coq.py": "b91a0bfb2c487636158fa7c2939728f993f0be18624523ca812368d93d9c7565",
+    "shim/maps.h": "a4256b69b9b73141e7422f1490fdd20080d19ee85c012ee7a2a5711eb3da03a4",
+    "shim/map_access.c": "8ced1dfc8dce8eca81d38d61c135c4951945017f5a1ffa20c8b6fd77ce9fd5c8",
+    "shim/output_rules.h": "bcdf5abadbba314d654989e905cdd9d9ae1a006d29fc259c42df1fe7d9577a29",
+    "proof/c/dw_maps.strategies": "5111fd4bf754ec77810b4cfe0776fcad8cc09c13a98415da64aea9f1282a26eb",
+    "proof/c/dw_output.strategies": "e3960fa2d2501bcd2651a3faeb3d77a294b6a4a7ceb5872a03287c29fdf6a752"
+  },
+  "actual_c_vcs": 4,
+  "strategy_fields": 9,
+  "no_new_axioms": true,
+  "ordinary_closure": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/coq-closure-muwupet5",
+  "goals_sha256": {
+    "dw_maps_strategy_goal.v": "a8927536dc4f7be39824df1e88d81716d62cf939ad31ca3bf87577bb5a142c13",
+    "dw_output_strategy_goal.v": "14100f2898163ca557bddc5af450a55f2183c1f904ae2afac99119d4fc079516",
+    "map_probe_goal.v": "294208b98fdf18faf2c1ce030206565657c9d10ac8625780254619b69cd81304"
+  },
+  "typed_modules": [
+    "Dwconv.MapProbeChecked.CheckedMapProbe",
+    "Dwconv.MapStrategyChecked.CheckedMaps",
+    "Dwconv.OutputStrategyChecked.CheckedOutputStrategy"
+  ]
+}

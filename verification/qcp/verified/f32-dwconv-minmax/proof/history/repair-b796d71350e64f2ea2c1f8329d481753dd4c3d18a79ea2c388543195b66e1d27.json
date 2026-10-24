@@ -1,0 +1,44 @@
+{
+  "kernel": "f32-dwconv-minmax",
+  "semantic_repair": true,
+  "variant": "rvv-packed4-nan-propagating-v1",
+  "neon_original_unchanged": true,
+  "original_rvv": "proof/original/testRVV.c",
+  "original_sha256": "6141be2793eb0f0d30ab23eb4bc4e36b9b9e027b9ed9627d685876208f7d0864",
+  "repaired_rvv": "impl/testRVV.c",
+  "repaired_sha256": "1616d4437bda48f11b18a38d3286c4744b45978df08beae7ecaf96acd75c7e79",
+  "patch": "proof/repair.patch",
+  "patch_sha256": "e1b1b24756946fdfdc603817ee098cb7376fd6a24f805287322d9eb2d9aaf4c9",
+  "reason": [
+    "Source and target consume different layouts on one shared fixed four-channel packed weight buffer: RVV requested a dynamic larger/smaller VL and advanced each weight block by VL.",
+    "ARM min/max propagate NaNs; RVV minimumNumber/maximumNumber discard a single NaN operand."
+  ],
+  "changes": [
+    "Request AVL=min(remaining_channels,4), while keeping VLEN128/e32m4/VLMAX16; channels/output_width domains remain arbitrary positive values.",
+    "Advance each packed bias/k0/k1/k2 weight block by exactly four floats.",
+    "Restore NaN accumulator/lower/upper lanes with real vector compare, broadcast and merge operations; no scalar self-comparison."
+  ],
+  "unchanged": [
+    "FMA(i0,k0,bias), separate MUL(i1,k1), FMA(i2,k2,acc0), ADD(acc0,product1), then lower/upper clamp order",
+    "signed input_stride, input_offset/input_pixel_stride, zero-pointer skip and repeated input pointer behavior",
+    "Original NEON body and all FP32 input/bound patterns including NaNs/Inf/signed zero/subnormal"
+  ],
+  "reference_repair_source": "/srv/home/yuechunsun/tools/lean/build/shim-c/experiments/shared-extension/complex/cases/f32-dwconv-minmax/rvv.c",
+  "reference_not_inherited": "Old Frama/CSim repair provides design context only; its scalar b!=b/__builtin_nanf helper is not copied and its proof/native records give no QCP credit.",
+  "counterexamples": ".build/original-probes-mpg4559h/status.json",
+  "whole_kernel_verified": false,
+  "control_flow_compatibility": {
+    "both_sides": true,
+    "source_transformation": "do BODY while (--output_width != 0) -> while(output_width != 0) {BODY; --output_width;}",
+    "precondition_source": "original assert(output_width != 0) before the loop",
+    "semantic_bug": false,
+    "reason": "QCP do/while invariant placement unsupported or rejects with unknown type tag",
+    "failed_actual_probes": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/do-invariant-probe-4vl40y8g/status.json",
+    "preserved": "body arithmetic/load/store/order and all unsigned/signed argument domain",
+    "prior_metadata_snapshot": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv-minmax/.build/before-loop-normalization-1ffiar8a"
+  },
+  "repaired_implementation_sha256": {
+    "NEON": "a446abf7aeca2ab9c35e361eda0b99c09186153f6f899582a95b910c26e67193",
+    "RVV": "e91c558083f823df960d089d58e481cc5c7047b1c54b4b0d9a9f892ea8618c41"
+  }
+}
