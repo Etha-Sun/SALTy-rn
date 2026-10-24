@@ -1,0 +1,25 @@
+From Coq Require Import ZArith Lia.
+From F32F16 Require Import RvvKernelCallsSupport rvv_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedRvvKernelPart27.
+Lemma proof_of_test_rvv_partial_solve_wit_54:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_54.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_54.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_19:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_19.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_19.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_55:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_55.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_55,F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_55_aux.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_37_pure:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_37_pure.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_37_pure.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_safety_wit_7:F32F16.rvv_unit_goal.test_rvv_safety_wit_7.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_safety_wit_7.
+f16_rvv_call_finish.
+Qed.
+End CheckedRvvKernelPart27.

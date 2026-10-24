@@ -1,0 +1,11 @@
+#include "../../shim/program_model.h"
+id : 1
+priority : core(0)
+left : UShortArray::undef_full(?p,?n) at 0
+right : UShortArray::undef_full(?q,?m) at 1
+check : infer(p == q);
+        infer(0 <= m);
+        infer(m <= n);
+action : left_erase(0);
+         right_erase(1);
+         left_add(UShortArray::undef_full(p+2*m,n-m));

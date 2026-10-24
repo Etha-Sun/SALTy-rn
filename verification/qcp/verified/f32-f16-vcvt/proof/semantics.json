@@ -1,0 +1,155 @@
+{
+  "kernel": "f32-f16-vcvt",
+  "status": "Source-audited semantic choices; formal proof status is separate in proof/status.json.",
+  "sources": [
+    {
+      "authority": "Arm ACLE",
+      "version": "aef52c2",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "sections": [
+        "Addition / multiplication",
+        "Bitwise select",
+        "Reinterpret casts",
+        "Narrow / shift-right-and-narrow",
+        "Combine / extract / lane store"
+      ]
+    },
+    {
+      "authority": "RISC-V V",
+      "version": "1.0, ratified ISA manual20260120",
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "sections": [
+        "30.1.11.7",
+        "30.1.11.1-30.1.11.4",
+        "30.1.11.15",
+        "30.1.13.2",
+        "30.1.13.4"
+      ]
+    },
+    {
+      "authority": "RISC-V F",
+      "version": "F2.2, official current chapter read2026-10-23",
+      "url": "https://docs.riscv.org/reference/isa/unpriv/f-st-ext.html",
+      "sections": [
+        "NaN generation/propagation",
+        "Rounding modes"
+      ]
+    }
+  ],
+  "environment": {
+    "binary32_rounding": "RNE",
+    "arm": "A64 DN=0 FZ=0 AH=0",
+    "rvv": "VLEN128 e32m8/e16m4 VLMAX32; selectedVLmin(AVL,32)",
+    "endian": "little",
+    "unused_params": "May beNULL",
+    "inactive": "Deterministic0 representative, unobserved; no real-ISA mandatory-zero claim",
+    "observed": "Output16-bit patterns, input preservation, output frame; FPflags/traps unobserved"
+  },
+  "groups": [
+    {
+      "isa": "Arm",
+      "intrinsics": [
+        "vabsq_f32",
+        "vmulq_f32",
+        "vaddq_f32",
+        "vreinterpretq_u32_f32",
+        "vreinterpretq_f32_u32"
+      ],
+      "meaning": "FABS clears sign without numerical cast; multiply and add each round once as separate binary32 operations. Arm NaN priority/quieting is modeled independently of RVV canonical NaNs. Reinterpret preserves bits.",
+      "c": "bits.c/scalar.c and scalar-field vector providers",
+      "coq": "Bits/Model/VectorModel",
+      "c_body_state": "Actual helper C bodies checked by typed ordinary Coq components; complete kernel status is reported separately in proof/status.json.",
+      "isa_formal_correspondence": "open"
+    },
+    {
+      "isa": "Arm",
+      "intrinsics": [
+        "vaddq_u32",
+        "vandq_u32",
+        "vmaxq_u32",
+        "vcgtq_u32",
+        "vmovn_u32",
+        "vshrn_n_u32",
+        "vcombine_u16",
+        "vget_low_u16",
+        "vandq_u16",
+        "vand_u16",
+        "vaddq_u16",
+        "vadd_u16",
+        "vbslq_u16",
+        "vbsl_u16",
+        "vorrq_u16",
+        "vorr_u16"
+      ],
+      "meaning": "Unsigned comparisons; width-modular addition; logical bit masks; XTN low16; SHRN logical shift then low16, supported immediate13/16. Combine preserves lane order. Select uses all mask bits.",
+      "c": "integer.c plus actual scalar-field providers",
+      "coq": "IntegerModel/Types/VectorModel",
+      "c_body_state": "Actual helper C bodies checked by typed ordinary Coq components; complete kernel status is reported separately in proof/status.json.",
+      "isa_formal_correspondence": "open"
+    },
+    {
+      "isa": "RVV",
+      "intrinsics": [
+        "__riscv_vfabs_v_f32m8",
+        "__riscv_vfmul_vf_f32m8",
+        "__riscv_vfadd_vv_f32m8",
+        "__riscv_vreinterpret_v_f32m8_u32m8",
+        "__riscv_vreinterpret_v_u32m8_f32m8"
+      ],
+      "meaning": "Sign-clear abs, independent scalar-F NaN canonicalization for add/mul, and raw-bit reinterpret; only active lanes observed.",
+      "c": "scalar.c/active.c and32-field providers",
+      "coq": "Model/VectorModel",
+      "c_body_state": "Actual helper C bodies checked by typed ordinary Coq components; complete kernel status is reported separately in proof/status.json.",
+      "isa_formal_correspondence": "open"
+    },
+    {
+      "isa": "RVV",
+      "intrinsics": [
+        "__riscv_vadd_vx_u32m8",
+        "__riscv_vand_vx_u32m8",
+        "__riscv_vmaxu_vx_u32m8",
+        "__riscv_vmsgtu_vx_u32m8_b4",
+        "__riscv_vnsrl_wx_u16m4",
+        "__riscv_vand_vx_u16m4",
+        "__riscv_vadd_vv_u16m4",
+        "__riscv_vmerge_vxm_u16m4",
+        "__riscv_vor_vv_u16m4"
+      ],
+      "meaning": "Unsigned arithmetic/compare; mask represented0/1. VNSRL logically shifts32 bits and extracts16, with low5 shift bits; supported fixed counts0/13/16. Merge chooses scalar on true mask and vector on false. No rounding/saturation/VXRM effect for these integer operations.",
+      "c": "integer.c/active.c plus fixed32-field providers",
+      "coq": "IntegerModel/VectorModel",
+      "c_body_state": "Actual helper C bodies checked by typed ordinary Coq components; complete kernel status is reported separately in proof/status.json.",
+      "isa_formal_correspondence": "open"
+    },
+    {
+      "isa": "Arm",
+      "intrinsics": [
+        "vreinterpret_u32_u16",
+        "vst1_lane_u32",
+        "vst1_lane_u16",
+        "vext_u16"
+      ],
+      "meaning": "Tail frontend supports a local4x16 view used only by lane0 store. Its unchanged8-byte view is borrowed once; lane0 writes two ushort cells, preserving exactly4 little-endian bytes without requiring4-byte alignment. Self-vext2 borrows one resource and rotates2 lanes from the concatenated identical vector. Unknown shift/lane/value shapes are unsupported.",
+      "c": "memory_neon.c and qcp_f16_vext_u16_2.c",
+      "coq": "Types / WordView / UShortArrayBridge / MemoryNeonChecked / StoreArraysChecked / VectorChecked",
+      "c_body_state": "Actual helper C bodies checked by typed ordinary Coq components; complete kernel status is reported separately in proof/status.json.",
+      "isa_formal_correspondence": "open"
+    }
+  ],
+  "compatibility": {
+    "record": "proof/compatibility.json",
+    "kind": "exact constant spelling only",
+    "original_kernels": "retained byte-for-byte in proof/original",
+    "current_tokens_changed": true,
+    "extra_heap_or_domain_restrictions": false,
+    "abstract_half_conversion_correctness": "Not established by operational cross-implementation equivalence."
+  },
+  "public_contract": "spec.c",
+  "public_memory": {
+    "positive_input_count": "n, bytebatch4*n",
+    "common_input": "n+3 readonlyfloat cells; input preserved",
+    "output": "n writableushort cells per side, no outputpadding",
+    "separation": "Input and two caller outputs are spatially separated; ushort output alignment2 only",
+    "params": "Unused, NULL allowed"
+  }
+}

@@ -1,6 +1,6 @@
 # 已验证的 kernel
 
-当前 **23/40**，目标至少 **31/40**。最新新增 [qs8-rdsum](qs8-rdsum/README.md) 两侧修复版；包含 [u8-vclamp](u8-vclamp/README.md)。
+当前 **24/40**，目标至少 **31/40**。最新新增 [qs8-rdsum](qs8-rdsum/README.md) 两侧修复版；包含 [u8-vclamp](u8-vclamp/README.md)。
 
 本目录收录完整模块化等价性检查通过的 kernel；清单见 manifest.json。后续 intrinsic 可以采用与原始规范对应的公开 spec，C 实现证明可选；实际 kernel、内存、普通 helper/caller 与 spec 绑定仍须完整检查。详见 [规范边界](../docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。
@@ -26,3 +26,5 @@ F32 GEMM 完整修复版：[审核入口](f32-gemm-minmax/README.md)。4实际C�
 QS8 VADD-MINMAX 修复版现已完整收录：[审核入口](qs8-vadd-minmax/README.md)。27实际C单元、4300 C字段+15策略、492普通Coq、4496假设报告及干净发布复核全部通过；原件、修复反例与逐项intrinsic清单保留。
 
 F32 VSQRT 两侧原始实现完整收录：[审核入口](f32-vsqrt/README.zh-CN.md)。9实际C单元/262字段+28策略/210普通Coq/290假设报告；7项intrinsic采用可审核spec，人工规格审核及正式ISA对应仍待完成。
+
+F32→F16 精确同值 literal 兼容版完整收录：[审核入口](f32-f16-vcvt/README.zh-CN.md)。56实际C单元/2672字段+36策略/374普通Coq/2708假设报告及干净发布复核全部通过；保持原完整intrinsic C-body证明，不因新规则改写证据。

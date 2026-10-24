@@ -1,0 +1,57 @@
+{
+  "kind": "exact_literal_spelling_compatibility",
+  "semantic_bug_repair": false,
+  "tokens_changed": true,
+  "public_input_domain_changed": false,
+  "rule": "Only the2 fixed hexadecimal FP32 literals are replaced with their exact same-value decimal f spellings; all other C tokens remain unchanged.",
+  "literal_replacements": [
+    {
+      "original": "0x1.0p+112f",
+      "compatible": "5192296858534827628530496329220096.0f",
+      "exact_rational": "5192296858534827628530496329220096"
+    },
+    {
+      "original": "0x1.0p-110f",
+      "compatible": "0.00000000000000000000000000000000077037197775489434122239117703397092741524065928615527809597551822662353515625f",
+      "exact_rational": "1/1298074214633706907132624082305024"
+    }
+  ],
+  "files": {
+    "testNEON.c": {
+      "original_sha256": "41a081db8c9503ca62f077ad790dd92d92f2fe374e554cef8a9baf35dabd2aaa",
+      "compatible_sha256": "0f42ea92920d062599f0d38520750a9eb47a9c6c3cbc95ebab1b30ae049d676c",
+      "replacements": 2
+    },
+    "testRVV.c": {
+      "original_sha256": "35730ec8f13c282e4b690536c738cce15a455f03eb649395253cf8be4712f851",
+      "compatible_sha256": "d72e5ac4b19cae432cbce6842905bd047ecb0262db8717115af6a6ac3e973a87",
+      "replacements": 2
+    }
+  },
+  "patch": "proof/compatibility.patch",
+  "patch_sha256": "f797a98e88caab1988fc76511103568e69ad1f244aa7c8199614c887e1a0a3a6",
+  "zero_fuzz_replay": {
+    "command": [
+      "patch",
+      "--batch",
+      "--fuzz=0",
+      "-p1",
+      "-d",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-f16-vcvt/.build/literal-compatibility-2i54sgs2",
+      "-i",
+      "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-f16-vcvt/proof/compatibility.patch"
+    ],
+    "exit_code": 0,
+    "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-f16-vcvt/.build/literal-compatibility-2i54sgs2",
+    "log_sha256": "9eb6cba3532f72dfca3735ef465e2bd2035abe9ab2228823109f277b4a479fde"
+  },
+  "diagnostics": {
+    "hex_literal": "proof/capabilities/hex-literal-parser/status.json",
+    "stringized_literal_rejected_no_global_heap_added": "proof/capabilities/rejected-stringized-literal/expanded-status.json"
+  },
+  "literal_coq_bridge_passed": true,
+  "independent_compiler_bits_passed": true,
+  "compiler_bits_evidence": "proof/capabilities/literal-compatibility/status.json",
+  "literal_coq_evidence": "proof/literal-status.json",
+  "literal_coq_evidence_sha256": "c484fe72c0587c0841a6b48d69d21e837be8465b20e8d8b5580176494a9a7dbd"
+}

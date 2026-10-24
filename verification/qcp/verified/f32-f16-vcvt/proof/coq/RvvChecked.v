@@ -1,0 +1,48 @@
+From F32F16 Require Import rvv_unit_goal F16Strategy KernelStrategies RvvKernelMemory RvvKernelPart0 RvvKernelPart1 RvvKernelPart2 RvvKernelPart3 RvvKernelPart4 RvvKernelPart5 RvvKernelPart6 RvvKernelPart7 RvvKernelPart8 RvvKernelPart9 RvvKernelPart10 RvvKernelPart11 RvvKernelPart12 RvvKernelPart13 RvvKernelPart14 RvvKernelPart15 RvvKernelPart16 RvvKernelPart17 RvvKernelPart18 RvvKernelPart19 RvvKernelPart20 RvvKernelPart21 RvvKernelPart22 RvvKernelPart23 RvvKernelPart24 RvvKernelPart25 RvvKernelPart26 RvvKernelPart27 RvvKernelPart28 RvvKernelPart29 RvvKernelPart30 RvvKernelPart31.
+From QcpVadd Require Import float_array_strategy_proof.
+From QcpNeon Require Import neon_bridge_strategy_proof.
+From QcpNeonLoop Require Import neon_tail_strategy_proof.
+From QcpRvv32 Require Import rvv_arrays_strategy_proof rvv_store_strategy_proof rvv_loop_strategy_proof.
+Module CheckedRvv : F32F16.rvv_unit_goal.VC_Correct.
+Include QcpVadd.float_array_strategy_proof.CheckedFloatArray.
+Include QcpNeon.neon_bridge_strategy_proof.CheckedNeonBridge.
+Include QcpNeonLoop.neon_tail_strategy_proof.CheckedNeonTail.
+Include QcpRvv32.rvv_arrays_strategy_proof.CheckedRvvArray.
+Include QcpRvv32.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include QcpRvv32.rvv_loop_strategy_proof.CheckedRvvLoopStrategy.
+Include F32F16.F16Strategy.CheckedF16Strategy.
+Include F32F16.KernelStrategies.CheckedF16KernelStrategy.
+Include F32F16.RvvKernelPart0.CheckedRvvKernelPart0.
+Include F32F16.RvvKernelPart1.CheckedRvvKernelPart1.
+Include F32F16.RvvKernelPart2.CheckedRvvKernelPart2.
+Include F32F16.RvvKernelPart3.CheckedRvvKernelPart3.
+Include F32F16.RvvKernelPart4.CheckedRvvKernelPart4.
+Include F32F16.RvvKernelPart5.CheckedRvvKernelPart5.
+Include F32F16.RvvKernelPart6.CheckedRvvKernelPart6.
+Include F32F16.RvvKernelPart7.CheckedRvvKernelPart7.
+Include F32F16.RvvKernelPart8.CheckedRvvKernelPart8.
+Include F32F16.RvvKernelPart9.CheckedRvvKernelPart9.
+Include F32F16.RvvKernelPart10.CheckedRvvKernelPart10.
+Include F32F16.RvvKernelPart11.CheckedRvvKernelPart11.
+Include F32F16.RvvKernelPart12.CheckedRvvKernelPart12.
+Include F32F16.RvvKernelPart13.CheckedRvvKernelPart13.
+Include F32F16.RvvKernelPart14.CheckedRvvKernelPart14.
+Include F32F16.RvvKernelPart15.CheckedRvvKernelPart15.
+Include F32F16.RvvKernelPart16.CheckedRvvKernelPart16.
+Include F32F16.RvvKernelPart17.CheckedRvvKernelPart17.
+Include F32F16.RvvKernelPart18.CheckedRvvKernelPart18.
+Include F32F16.RvvKernelPart19.CheckedRvvKernelPart19.
+Include F32F16.RvvKernelPart20.CheckedRvvKernelPart20.
+Include F32F16.RvvKernelPart21.CheckedRvvKernelPart21.
+Include F32F16.RvvKernelPart22.CheckedRvvKernelPart22.
+Include F32F16.RvvKernelPart23.CheckedRvvKernelPart23.
+Include F32F16.RvvKernelPart24.CheckedRvvKernelPart24.
+Include F32F16.RvvKernelPart25.CheckedRvvKernelPart25.
+Include F32F16.RvvKernelPart26.CheckedRvvKernelPart26.
+Include F32F16.RvvKernelPart27.CheckedRvvKernelPart27.
+Include F32F16.RvvKernelPart28.CheckedRvvKernelPart28.
+Include F32F16.RvvKernelPart29.CheckedRvvKernelPart29.
+Include F32F16.RvvKernelPart30.CheckedRvvKernelPart30.
+Include F32F16.RvvKernelPart31.CheckedRvvKernelPart31.
+Include F32F16.RvvKernelMemory.CheckedRvvKernelMemory.
+End CheckedRvv.

@@ -1,0 +1,1648 @@
+{
+  "kind": "original_intrinsic_to_exact_checked_contract_and_Coq_definition_review_ledger",
+  "kernel": "f32-f16-vcvt",
+  "official_sources": [
+    {
+      "authority": "Arm ACLE",
+      "version": "aef52c2",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "sections": [
+        "Addition / multiplication",
+        "Bitwise select",
+        "Reinterpret casts",
+        "Narrow / shift-right-and-narrow",
+        "Combine / extract / lane store"
+      ]
+    },
+    {
+      "authority": "RISC-V V",
+      "version": "1.0, ratified ISA manual20260120",
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "sections": [
+        "30.1.11.7",
+        "30.1.11.1-30.1.11.4",
+        "30.1.11.15",
+        "30.1.13.2",
+        "30.1.13.4"
+      ]
+    },
+    {
+      "authority": "RISC-V F",
+      "version": "F2.2, official current chapter read2026-10-23",
+      "url": "https://docs.riscv.org/reference/isa/unpriv/f-st-ext.html",
+      "sections": [
+        "NaN generation/propagation",
+        "Rounding modes"
+      ]
+    }
+  ],
+  "environment_record": "proof/semantics.json",
+  "environment_record_sha256": "73c8429545d26b9a34ab77f04e2e078178ce38bef2e652de4d34d9affa074c01",
+  "source_intrinsics": 48,
+  "source_domain": "All binary32 bit patterns including NaN/Inf/signed zero/subnormal, RNE; no finite/nonnegative restriction",
+  "trust_boundary": "Operational C-shim equivalence and actual helper proofs do not establish a physical ISA/ABI refinement, termination, FP flags/traps observations, or abstract binary16-conversion correctness. Human spec review remains required.",
+  "entries": [
+    {
+      "original_intrinsic": "__riscv_vadd_vv_u16m4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vadd_vv_u16m4",
+          "actual_source": "shim/__riscv_vadd_vv_u16m4.c",
+          "actual_source_sha256": "2a29860a84376d96c77884fa7411993ef8a89781cc93011d67567336a9797785",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vadd_vv_u16m4",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vadd_vv_u16m4_goal.__riscv_vadd_vv_u16m4_return_wit_1",
+              "file": "proof/coq/__riscv_vadd_vv_u16m4_goal.v",
+              "source_sha256": "7f6bb735e4b2e3e4ce327429a62fbd4daaec1cbaf5e24f15d9c27938f8b0333f"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vadd_vv_u16m4",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vadd_vx_u32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vadd_vx_u32m8",
+          "actual_source": "shim/__riscv_vadd_vx_u32m8.c",
+          "actual_source_sha256": "79e282164fe8d115b601e51519ab2711396034317013862b6e142233afb9d30b",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vadd_vx_u32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vadd_vx_u32m8_goal.__riscv_vadd_vx_u32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vadd_vx_u32m8_goal.v",
+              "source_sha256": "8389a4a0461def7f411dc45ebad2e25b2986e58fd6fe8c2e0b9f4006244c1546"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vadd_vx_u32m8",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vand_vx_u16m4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vand_vx_u16m4",
+          "actual_source": "shim/__riscv_vand_vx_u16m4.c",
+          "actual_source_sha256": "3681a2d4a76994044c15b22fadb8863ff49d35177f517b017b592a9d160e5d3c",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vand_vx_u16m4",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vand_vx_u16m4_goal.__riscv_vand_vx_u16m4_return_wit_1",
+              "file": "proof/coq/__riscv_vand_vx_u16m4_goal.v",
+              "source_sha256": "e45ead2f84d6cd5cc11762065444cf9dd2f01a1ddc27d3d27f39b3b3f3704039"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vand_vx_u16m4",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vand_vx_u32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vand_vx_u32m8",
+          "actual_source": "shim/__riscv_vand_vx_u32m8.c",
+          "actual_source_sha256": "3d63e9e58b2e06d69d62ee2b87b92df94e77ed6c357071a68047477a77dc4f5e",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vand_vx_u32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vand_vx_u32m8_goal.__riscv_vand_vx_u32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vand_vx_u32m8_goal.v",
+              "source_sha256": "93854b6f742410a5357ff086e0e382f16a510167b135aadad6a3b97b455b217e"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vand_vx_u32m8",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vfabs_v_f32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vfabs_v_f32m8",
+          "actual_source": "shim/__riscv_vfabs_v_f32m8.c",
+          "actual_source_sha256": "9b0a5fb4219a39be60603ed76b8ab1c8e8b7699028de55ba14494f2fb5aca26d",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vfabs_v_f32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vfabs_v_f32m8_goal.__riscv_vfabs_v_f32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vfabs_v_f32m8_goal.v",
+              "source_sha256": "e5b531544b70215e45a873afbcbbc011bd8cd7b034353b7037184e1ae15c7532"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vfabs_v_f32m8",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vfadd_vv_f32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vfadd_vv_f32m8",
+          "actual_source": "shim/__riscv_vfadd_vv_f32m8.c",
+          "actual_source_sha256": "978f5c2b9d1da19720440d4cd170320ca0c8a85ee72b0173473702cac6d0cbb9",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vfadd_vv_f32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vfadd_vv_f32m8_goal.__riscv_vfadd_vv_f32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vfadd_vv_f32m8_goal.v",
+              "source_sha256": "4447e2a3d1d0d92ca223704b1b5ff88946e65104384456891287ed7518ec106e"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vfadd_vv_f32m8",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmul_vf_f32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vfmul_vf_f32m8",
+          "actual_source": "shim/__riscv_vfmul_vf_f32m8.c",
+          "actual_source_sha256": "5232f5659084dfc3ceb7eb8e7005142dce1393652c0e91726bd515ccd49c8ff4",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vfmul_vf_f32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vfmul_vf_f32m8_goal.__riscv_vfmul_vf_f32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vfmul_vf_f32m8_goal.v",
+              "source_sha256": "f62e62ef42f6504ec98a873ea56fcbf0c8aea635254fb5a42c19ff402536b040"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vfmul_vf_f32m8",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vle32_v_f32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_byvalue_load",
+          "actual_source": "shim/memory_rvv_load.c",
+          "actual_source_sha256": "09462832ff49d53b245cf272978c6b3eef9127c35e7b0e13ef8b22b7d0197f07",
+          "component_typed_interface": "F32F16.MemoryRvvLoadChecked.Checked_memory_rvv_load",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.memory_rvv_load_goal.qcp_byvalue_load_return_wit_1",
+              "file": "proof/coq/memory_rvv_load_goal.v",
+              "source_sha256": "92d0871884036393611a5573a0676e5824d0b37dd6054bf61041a3a302603266"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "QcpRvv32.RvvLogic.rvv_read_value",
+              "file": "../../verified/f32-vadd/proof/coq/QcpRvv32/RvvLogic.v",
+              "source_sha256": "784fd9bf589eeeec83f74faf0704c4f3d2c4505dd6352485ea2d687a0a7aa24b"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vmaxu_vx_u32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vmaxu_vx_u32m8",
+          "actual_source": "shim/__riscv_vmaxu_vx_u32m8.c",
+          "actual_source_sha256": "185f408fc4a74cae3851bcc441d486fb475e50755893525d18e6a0009c43b5c6",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vmaxu_vx_u32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vmaxu_vx_u32m8_goal.__riscv_vmaxu_vx_u32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vmaxu_vx_u32m8_goal.v",
+              "source_sha256": "2fb97c21aab9e5948cde6950d9d3459b01ef0646cb16648f249a8f417152c6cc"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vmaxu_vx_u32m8",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vmerge_vxm_u16m4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vmerge_vxm_u16m4",
+          "actual_source": "shim/__riscv_vmerge_vxm_u16m4.c",
+          "actual_source_sha256": "ab134e643eab45fa2d4a2f204685c4683a79546ab8be7731bda91af5c18ec108",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vmerge_vxm_u16m4",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vmerge_vxm_u16m4_goal.__riscv_vmerge_vxm_u16m4_return_wit_1",
+              "file": "proof/coq/__riscv_vmerge_vxm_u16m4_goal.v",
+              "source_sha256": "187f2fe8ccf3fe884911f945051346ff8608f0e57e935a27ab957c15ccc5eaff"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vmerge_vxm_u16m4",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vmsgtu_vx_u32m8_b4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vmsgtu_vx_u32m8_b4",
+          "actual_source": "shim/__riscv_vmsgtu_vx_u32m8_b4.c",
+          "actual_source_sha256": "771fffef57b9937ad552e7411239c4b51cfc96324528d5cd3c5434572c6ed837",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vmsgtu_vx_u32m8_b4",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vmsgtu_vx_u32m8_b4_goal.__riscv_vmsgtu_vx_u32m8_b4_return_wit_1",
+              "file": "proof/coq/__riscv_vmsgtu_vx_u32m8_b4_goal.v",
+              "source_sha256": "609be4103296c550c5bbe611e2e285a279ffda6f3ff706a4ec2db370a049f0be"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vmsgtu_vx_u32m8_b4",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vnsrl_wx_u16m4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_rvv_shrn_0",
+          "actual_source": "shim/qcp_f16_rvv_shrn_0.c",
+          "actual_source_sha256": "630f0700ff45c69b97d9efb8e018352b2570aeb0c8bb4432a244fbf501804063",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_qcp_f16_rvv_shrn_0",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.qcp_f16_rvv_shrn_0_goal.qcp_f16_rvv_shrn_0_return_wit_1",
+              "file": "proof/coq/qcp_f16_rvv_shrn_0_goal.v",
+              "source_sha256": "3540341488ea5444b0f3d870efc64104f9997b37047a893e8d53f84d18ae2391"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active_qcp_f16_rvv_shrn_0",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        },
+        {
+          "actual_c_symbol": "qcp_f16_rvv_shrn_13",
+          "actual_source": "shim/qcp_f16_rvv_shrn_13.c",
+          "actual_source_sha256": "1596a9db19e1846d537cfe544a259ff59e76ae72818f60e297bcac6a4595feac",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_qcp_f16_rvv_shrn_13",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.qcp_f16_rvv_shrn_13_goal.qcp_f16_rvv_shrn_13_return_wit_1",
+              "file": "proof/coq/qcp_f16_rvv_shrn_13_goal.v",
+              "source_sha256": "6c2d770d01c741cd9c0bb942a38cd6a75598b31184dcc9f2c64f56a27a09c934"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active_qcp_f16_rvv_shrn_13",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        },
+        {
+          "actual_c_symbol": "qcp_f16_rvv_shrn_16",
+          "actual_source": "shim/qcp_f16_rvv_shrn_16.c",
+          "actual_source_sha256": "633b382bac5779cff1e29cb8aecf7fc8ba0085be8f290db3dbfc90eba97125ca",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_qcp_f16_rvv_shrn_16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.qcp_f16_rvv_shrn_16_goal.qcp_f16_rvv_shrn_16_return_wit_1",
+              "file": "proof/coq/qcp_f16_rvv_shrn_16_goal.v",
+              "source_sha256": "e3ac746e1667fb791d230a93788a2f9546b1fcc307edec43269c45160e34da59"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active_qcp_f16_rvv_shrn_16",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vor_vv_u16m4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vor_vv_u16m4",
+          "actual_source": "shim/__riscv_vor_vv_u16m4.c",
+          "actual_source_sha256": "8557a76cc8d1deb7a1c6cb763fa1144606f153193fb7d9fce7f8d0b469dde855",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vor_vv_u16m4",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vor_vv_u16m4_goal.__riscv_vor_vv_u16m4_return_wit_1",
+              "file": "proof/coq/__riscv_vor_vv_u16m4_goal.v",
+              "source_sha256": "dd217bbd035a02012f8c4d54e0296be72ee6844d4d3b129b0673a75bdf5b4b7d"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.VectorModel.f16_active___riscv_vor_vv_u16m4",
+              "file": "proof/coq/VectorModel.v",
+              "source_sha256": "8a7f4d02f6e060236c4a710e90599240d7a2378e9141ddd5dbda10ad5069733a"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vreinterpret_v_f32m8_u32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vreinterpret_v_f32m8_u32m8",
+          "actual_source": "shim/__riscv_vreinterpret_v_f32m8_u32m8.c",
+          "actual_source_sha256": "b14865456e86f016afc472feab7bb260fb27d992a4dd21137092c057a83fb146",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vreinterpret_v_f32m8_u32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vreinterpret_v_f32m8_u32m8_goal.__riscv_vreinterpret_v_f32m8_u32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vreinterpret_v_f32m8_u32m8_goal.v",
+              "source_sha256": "3b426b6c6bed8982f2cd2a6735a635c1ceea92bbf2e74c8e56224592190f2491"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vreinterpret_v_u32m8_f32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vreinterpret_v_u32m8_f32m8",
+          "actual_source": "shim/__riscv_vreinterpret_v_u32m8_f32m8.c",
+          "actual_source_sha256": "a33abe215784944c31181654c089abbc8f1ed4c488849e941c2b387c6cd2676b",
+          "component_typed_interface": "F32F16.VectorChecked.Checked___riscv_vreinterpret_v_u32m8_f32m8",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.__riscv_vreinterpret_v_u32m8_f32m8_goal.__riscv_vreinterpret_v_u32m8_f32m8_return_wit_1",
+              "file": "proof/coq/__riscv_vreinterpret_v_u32m8_f32m8_goal.v",
+              "source_sha256": "c212c46bbd2a7345308398352dbdcc20a9c4e662e56e8054f89b6703acd11c20"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vse16_v_u16m4",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_vse16",
+          "actual_source": "shim/memory_rvv_store.c",
+          "actual_source_sha256": "1dd68316eff7f30f990f6b6be9ba4fa8518f7846d595eea939bd353e63f945f1",
+          "component_typed_interface": "F32F16.UShortStoreChecked.CheckedUShortStore",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.memory_rvv_store_goal.qcp_f16_vse16_return_wit_1",
+              "file": "proof/coq/memory_rvv_store_goal.v",
+              "source_sha256": "e28e281d850c88afe38c094d40e4ed1eec9007c144566c78841874d13f9ed57c"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.UShortStoreModel.f16_pack32",
+              "file": "proof/coq/UShortStoreModel.v",
+              "source_sha256": "ca0a9d88237021f600d3e709ae614cd5c67e545cf3fca2cb95b8d0287d509a71"
+            },
+            {
+              "name": "F32F16.UShortStoreModel.f16_take",
+              "file": "proof/coq/UShortStoreModel.v",
+              "source_sha256": "ca0a9d88237021f600d3e709ae614cd5c67e545cf3fca2cb95b8d0287d509a71"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "__riscv_vsetvl_e32m8",
+      "isa": "RVV",
+      "official_source_indices": [
+        1,
+        2
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "__riscv_vsetvl_e32m8",
+          "actual_source": "shim/rvv_control.c",
+          "actual_source_sha256": "4b3e1edd12ae98aa8e4275af078a72463dc4642aba7a33196ef5b818890837d3",
+          "component_typed_interface": "F32F16.RvvControlChecked.Checked_rvv_control",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.rvv_control_goal.__riscv_vsetvl_e32m8_return_wit_1",
+              "file": "proof/coq/rvv_control_goal.v",
+              "source_sha256": "ee8913f863de52a87bcaabd4f943557709892eb75254cf7f456a1a07f860ff40"
+            },
+            {
+              "name": "F32F16.rvv_control_goal.__riscv_vsetvl_e32m8_return_wit_2",
+              "file": "proof/coq/rvv_control_goal.v",
+              "source_sha256": "ee8913f863de52a87bcaabd4f943557709892eb75254cf7f456a1a07f860ff40"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "QcpVadd.VaddBits.vadd_vl",
+              "file": "../../verified/f32-vadd/proof/coq/QcpVadd/VaddBits.v",
+              "source_sha256": "462ccfc07d3d2c1b3f0eb83684298a5d49183d2fa4545537ab15f7f2b5a3e482"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "Fixed VLEN128/e32m8/e16m4/VLMAX32, active VL=min(AVL,32); deterministic inactive representative unobserved",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vabsq_f32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vabsq_f32",
+          "actual_source": "shim/vabsq_f32.c",
+          "actual_source_sha256": "a7d5eeb78918916990c8622feff26ac20b63cc5bd0e59072f94bf8c867c89fab",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vabsq_f32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vabsq_f32_goal.vabsq_f32_return_wit_1",
+              "file": "proof/coq/vabsq_f32_goal.v",
+              "source_sha256": "dbbd241d448d65c9d0858bbe5a09bb6d073b3371ce92d9701e1e52dc28f263e5"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.Model.f16_abs",
+              "file": "proof/coq/Model.v",
+              "source_sha256": "d9f228ede6dd6da25004633d3485d7a5eb2b65cd07edf140549b012ee017c9f5"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vadd_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vadd_u16",
+          "actual_source": "shim/vadd_u16.c",
+          "actual_source_sha256": "1169fc826e47aef419aa2b35a3a097424a21e4d4b4c3d26dccb0d7317bea4279",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vadd_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vadd_u16_goal.vadd_u16_return_wit_1",
+              "file": "proof/coq/vadd_u16_goal.v",
+              "source_sha256": "9d1efe90feac5c3bd8275f133f8c73a636625086b67311b974b08ed76817f868"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_add16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vaddq_f32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vaddq_f32",
+          "actual_source": "shim/vaddq_f32.c",
+          "actual_source_sha256": "218b7fafb517df58dd5aa163bad0074a2c621c52d663f711bc738182287997fb",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vaddq_f32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vaddq_f32_goal.vaddq_f32_return_wit_1",
+              "file": "proof/coq/vaddq_f32_goal.v",
+              "source_sha256": "fafb1a188036a5672294f0355affbc5fdd500ed7ecc6f5fd2e71ad17331a9509"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.Model.f16_arm_add",
+              "file": "proof/coq/Model.v",
+              "source_sha256": "d9f228ede6dd6da25004633d3485d7a5eb2b65cd07edf140549b012ee017c9f5"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vaddq_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vaddq_u16",
+          "actual_source": "shim/vaddq_u16.c",
+          "actual_source_sha256": "d922e21ec12abd8fc37f0e07c2f4adea8f8f8eac44e40de0a0749529e9ee238e",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vaddq_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vaddq_u16_goal.vaddq_u16_return_wit_1",
+              "file": "proof/coq/vaddq_u16_goal.v",
+              "source_sha256": "5f2fade4512b168c2f63323f10e66a4cd68e3ee323fdc4047b83a88624026ee2"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_add16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vaddq_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vaddq_u32",
+          "actual_source": "shim/vaddq_u32.c",
+          "actual_source_sha256": "7e19e8b6c6481dfcd83a50a7817c397ec8a489fc5812eeba6010493eed4220bc",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vaddq_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vaddq_u32_goal.vaddq_u32_return_wit_1",
+              "file": "proof/coq/vaddq_u32_goal.v",
+              "source_sha256": "c16bd5bb687294446ad0982ee43d76ccc1f8d2179b2480b685cb113c37b763fc"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_add32",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vand_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vand_u16",
+          "actual_source": "shim/vand_u16.c",
+          "actual_source_sha256": "f524b8d9dcd2dd118c3f79c419ba5bc495d6ee7a441c3d30045b25816db6b9fd",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vand_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vand_u16_goal.vand_u16_return_wit_1",
+              "file": "proof/coq/vand_u16_goal.v",
+              "source_sha256": "e0debf08981c2d84f9ae65862396ebc9bb9b8e707dbe96c381ca0e2145e5292d"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_and16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vandq_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vandq_u16",
+          "actual_source": "shim/vandq_u16.c",
+          "actual_source_sha256": "d45fbdd13ce24075b7d0a269d8401c2c075aca5b3202dab7ebaefa41a9c201d2",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vandq_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vandq_u16_goal.vandq_u16_return_wit_1",
+              "file": "proof/coq/vandq_u16_goal.v",
+              "source_sha256": "0f739ca4233e2103160ac6306f2d8d80891c3a0330700be7d2ce2c4d7de181d1"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_and16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vandq_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vandq_u32",
+          "actual_source": "shim/vandq_u32.c",
+          "actual_source_sha256": "f308b0a32fb57795d6f3b676f6e363d9e38ed446738b10208855fbc73b6be793",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vandq_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vandq_u32_goal.vandq_u32_return_wit_1",
+              "file": "proof/coq/vandq_u32_goal.v",
+              "source_sha256": "54bfb8873510a73215cb1f7f6c19243c1e3834f3c077c6efe2370f9f32699516"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_and32",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vbsl_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vbsl_u16",
+          "actual_source": "shim/vbsl_u16.c",
+          "actual_source_sha256": "87713be32685c6bc946fb5c8ae272610a1aaa6d9ead25eb217abd0814fa0aaaf",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vbsl_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vbsl_u16_goal.vbsl_u16_return_wit_1",
+              "file": "proof/coq/vbsl_u16_goal.v",
+              "source_sha256": "545b88f37e3d6bcc3211b3ff9370700df8425523f6a49bc891df9eb1a3a71a2a"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_select16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vbslq_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vbslq_u16",
+          "actual_source": "shim/vbslq_u16.c",
+          "actual_source_sha256": "f983014fbe68547d8fbb0b103ea7fef69a0747ff1eec18a4e214b89163216341",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vbslq_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vbslq_u16_goal.vbslq_u16_return_wit_1",
+              "file": "proof/coq/vbslq_u16_goal.v",
+              "source_sha256": "1bbac6055a830f58d926e31168461c5fa56a4d195efff25ff96c9a70af09ac41"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_select16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vcgtq_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vcgtq_u32",
+          "actual_source": "shim/vcgtq_u32.c",
+          "actual_source_sha256": "2375b39240683e734f4c9fbdc6f8b7ba2d9d1f1d07e55b4e6e43ee934cb9b893",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vcgtq_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vcgtq_u32_goal.vcgtq_u32_return_wit_1",
+              "file": "proof/coq/vcgtq_u32_goal.v",
+              "source_sha256": "ed180a98edfa686f374d1820b293a041106dcd1ea97a984669aa3fea55c00115"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_gt32",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vcombine_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vcombine_u16",
+          "actual_source": "shim/vcombine_u16.c",
+          "actual_source_sha256": "e5e64224070a156c7bd963fd102b579bee570cace1d9b115bb74178623eb2a4f",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vcombine_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vcombine_u16_goal.vcombine_u16_return_wit_1",
+              "file": "proof/coq/vcombine_u16_goal.v",
+              "source_sha256": "96eb3def8ae168d9d51a4f9ab69402e06c310ac88d0f9146eaebf47dbb032eda"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vdupq_n_f32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vdupq_n_f32",
+          "actual_source": "shim/vdupq_n_f32.c",
+          "actual_source_sha256": "8ba30098bc71548d83d792c63baa0344a607009c37bb3092af2e710652a21e5b",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vdupq_n_f32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vdupq_n_f32_goal.vdupq_n_f32_return_wit_1",
+              "file": "proof/coq/vdupq_n_f32_goal.v",
+              "source_sha256": "343f7aedbe44718810bec97588d981a4c36986e6e59387a4619fd566943fe37e"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vdupq_n_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vdupq_n_u16",
+          "actual_source": "shim/vdupq_n_u16.c",
+          "actual_source_sha256": "c29f9cc14cfe655beda9650e5823e4ffe4d577b0f9533e5c2fbc642f6f4660fe",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vdupq_n_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vdupq_n_u16_goal.vdupq_n_u16_return_wit_1",
+              "file": "proof/coq/vdupq_n_u16_goal.v",
+              "source_sha256": "5973b7fe8f95d2edbc5db52122f66f45d1f3f58e06ba0ab746b9de27d9c1840e"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vdupq_n_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vdupq_n_u32",
+          "actual_source": "shim/vdupq_n_u32.c",
+          "actual_source_sha256": "d6f1e25da9d546374d6733edc9d09d4c5eb0f8ade276fdac18f4d401d92aa7b1",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vdupq_n_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vdupq_n_u32_goal.vdupq_n_u32_return_wit_1",
+              "file": "proof/coq/vdupq_n_u32_goal.v",
+              "source_sha256": "16aa38dbb94eeda5d349552d74cbc0cbae3bf903909022f508cddd6240e5e850"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vext_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_vext_u16_2",
+          "actual_source": "shim/qcp_f16_vext_u16_2.c",
+          "actual_source_sha256": "bc30d358662c49d856b726a550ac5c2f010d21a5c753224f0a56b989f22cf1a7",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_qcp_f16_vext_u16_2",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.qcp_f16_vext_u16_2_goal.qcp_f16_vext_u16_2_return_wit_1",
+              "file": "proof/coq/qcp_f16_vext_u16_2_goal.v",
+              "source_sha256": "f55170cd082b5c3411f2b5087dbfccc02caa0b9d7cdbbec99e20e260f185b220"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vget_low_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vget_low_u16",
+          "actual_source": "shim/vget_low_u16.c",
+          "actual_source_sha256": "490393c71ee836e5dbc1d4eae7a0afe4db8cb6f697924f68eb6544692bdba427",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vget_low_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vget_low_u16_goal.vget_low_u16_return_wit_1",
+              "file": "proof/coq/vget_low_u16_goal.v",
+              "source_sha256": "1b1e7ce42699a9054480f0f9bd52b483deb63e39e9cef58785a2737adf313518"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vld1q_f32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vld1q_f32",
+          "actual_source": "shim/memory_neon.c",
+          "actual_source_sha256": "12b839b5496616c3de83bb2c329c8f8981a8c0f5d06b4d831b8babdf359b3df1",
+          "component_typed_interface": "F32F16.MemoryNeonChecked.CheckedMemoryNeon",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.memory_neon_goal.vld1q_f32_return_wit_1",
+              "file": "proof/coq/memory_neon_goal.v",
+              "source_sha256": "02b8f11ef5cdf6b511e3077a84b5bbe129c1ecf713c859d3d8b07b10deec9d1b"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vmaxq_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vmaxq_u32",
+          "actual_source": "shim/vmaxq_u32.c",
+          "actual_source_sha256": "0438ec569db7bc9a01dda007aca9e47532283aeae9dfd96cb4d9d810c953a9ec",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vmaxq_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vmaxq_u32_goal.vmaxq_u32_return_wit_1",
+              "file": "proof/coq/vmaxq_u32_goal.v",
+              "source_sha256": "40baa21fb602dade6a6997d1780b1b6be06dd35e04e6488ea7c7a2caf0c49ae4"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_max32",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vmovn_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vmovn_u32",
+          "actual_source": "shim/vmovn_u32.c",
+          "actual_source_sha256": "ebf875fa1e1494e02892ebb6212a2b53b6bf43f6e24c2f02e5a301ef3d6a0e3d",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vmovn_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vmovn_u32_goal.vmovn_u32_return_wit_1",
+              "file": "proof/coq/vmovn_u32_goal.v",
+              "source_sha256": "bd14344c312fce9a779f4dcd48b84ea15adea7a6ee3e863293d7952b370be195"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_narrow16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vmulq_f32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vmulq_f32",
+          "actual_source": "shim/vmulq_f32.c",
+          "actual_source_sha256": "dce5af68fb450eb83dcce04cb30f312b89672979a91f1a142bc307a51b0a0d9f",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vmulq_f32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vmulq_f32_goal.vmulq_f32_return_wit_1",
+              "file": "proof/coq/vmulq_f32_goal.v",
+              "source_sha256": "4577a18b3893ae459d7fd53310815e5ad111b713088ed4193f61bb3ac2892203"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.Model.f16_arm_mul",
+              "file": "proof/coq/Model.v",
+              "source_sha256": "d9f228ede6dd6da25004633d3485d7a5eb2b65cd07edf140549b012ee017c9f5"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vorr_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vorr_u16",
+          "actual_source": "shim/vorr_u16.c",
+          "actual_source_sha256": "cef09caab532e2c9bf806eda75b5c546563c83fbb34f6d9e1501a6df597fe2e7",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vorr_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vorr_u16_goal.vorr_u16_return_wit_1",
+              "file": "proof/coq/vorr_u16_goal.v",
+              "source_sha256": "e11046fbea2f09a77c299dbdef11477556e3dd45636e6b3c27a3f00a969c1865"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_or16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vorrq_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vorrq_u16",
+          "actual_source": "shim/vorrq_u16.c",
+          "actual_source_sha256": "758cd4c5c1757623274a802908b3151ae3255c85ae37b0a27df411e1dc1e74f0",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vorrq_u16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vorrq_u16_goal.vorrq_u16_return_wit_1",
+              "file": "proof/coq/vorrq_u16_goal.v",
+              "source_sha256": "858b156e5b8d2b9107a8a0e6efb13b4e283540826de77f295abe93877cf1f80a"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_or16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vreinterpret_u32_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_u32_view",
+          "actual_source": "shim/memory_neon.c",
+          "actual_source_sha256": "12b839b5496616c3de83bb2c329c8f8981a8c0f5d06b4d831b8babdf359b3df1",
+          "component_typed_interface": "F32F16.MemoryNeonChecked.CheckedMemoryNeon",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.memory_neon_goal.qcp_f16_u32_view_return_wit_1",
+              "file": "proof/coq/memory_neon_goal.v",
+              "source_sha256": "02b8f11ef5cdf6b511e3077a84b5bbe129c1ecf713c859d3d8b07b10deec9d1b"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vreinterpretq_f32_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vreinterpretq_f32_u32",
+          "actual_source": "shim/vreinterpretq_f32_u32.c",
+          "actual_source_sha256": "e32484d7831dcbdddff5da99de0f230affaaec4f0b579838fd8790feb0be5757",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vreinterpretq_f32_u32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vreinterpretq_f32_u32_goal.vreinterpretq_f32_u32_return_wit_1",
+              "file": "proof/coq/vreinterpretq_f32_u32_goal.v",
+              "source_sha256": "7df622006af5cef415b8621c8f6f10ccc5a6be135aa3ece89871a5bfcec6cbc9"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vreinterpretq_u32_f32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "vreinterpretq_u32_f32",
+          "actual_source": "shim/vreinterpretq_u32_f32.c",
+          "actual_source_sha256": "adbc5dd339d7965cae4539362ae01ed1fba811279698a7a866bf00dfac07ea90",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_vreinterpretq_u32_f32",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.vreinterpretq_u32_f32_goal.vreinterpretq_u32_f32_return_wit_1",
+              "file": "proof/coq/vreinterpretq_u32_f32_goal.v",
+              "source_sha256": "a54c0fc1f642a745783d60fb5e5608fed95accb722c82796e31ae3970f3f19de"
+            }
+          ],
+          "value_definitions": [],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vshrn_n_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_vshrn_13",
+          "actual_source": "shim/qcp_f16_vshrn_13.c",
+          "actual_source_sha256": "e0657aede76fa66f04a70614feb47936d57681eac688a0b73ebac70caf0a4b55",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_qcp_f16_vshrn_13",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.qcp_f16_vshrn_13_goal.qcp_f16_vshrn_13_return_wit_1",
+              "file": "proof/coq/qcp_f16_vshrn_13_goal.v",
+              "source_sha256": "d47ef6586f6e5f6b56f18256d182e36c835890f4fe3f10435264d59fa7f3e92d"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_shrn13",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        },
+        {
+          "actual_c_symbol": "qcp_f16_vshrn_16",
+          "actual_source": "shim/qcp_f16_vshrn_16.c",
+          "actual_source_sha256": "0b53a5f1533df64688dd1d96773a114365faf35e9b6ad2f23282f004a54542ba",
+          "component_typed_interface": "F32F16.VectorChecked.Checked_qcp_f16_vshrn_16",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.qcp_f16_vshrn_16_goal.qcp_f16_vshrn_16_return_wit_1",
+              "file": "proof/coq/qcp_f16_vshrn_16_goal.v",
+              "source_sha256": "8bbf255d9e493234ec487316801622172bc95164c3ac226b9a9abec4f98142d5"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.IntegerModel.f16_shrn16",
+              "file": "proof/coq/IntegerModel.v",
+              "source_sha256": "ebd7a402019bf4eff2821f703229052cc8bdfe1e414bf18dbb17d153a6b8f522"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vst1_lane_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_store1_0_array",
+          "actual_source": "shim/store_arrays.c",
+          "actual_source_sha256": "e7b7cdefdbd3ff1385f17fdd145f9a995e25e58140fb27cdb4c1b45ab2110d0b",
+          "component_typed_interface": "F32F16.StoreArraysChecked.CheckedStoreArrays",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.store_arrays_goal.qcp_f16_store1_0_array_return_wit_1",
+              "file": "proof/coq/store_arrays_goal.v",
+              "source_sha256": "4cad9a305e4a964e0207bd169f2d79b0c67091e2ddce8e69b433145272d79f00"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.PackModel.f16_pack1",
+              "file": "proof/coq/PackModel.v",
+              "source_sha256": "53a3498f7b71a7301a58d5366b9d980deb031c24a0992d8b39dbae182c96e14b"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vst1_lane_u32",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_store2_0_array",
+          "actual_source": "shim/store_arrays.c",
+          "actual_source_sha256": "e7b7cdefdbd3ff1385f17fdd145f9a995e25e58140fb27cdb4c1b45ab2110d0b",
+          "component_typed_interface": "F32F16.StoreArraysChecked.CheckedStoreArrays",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.store_arrays_goal.qcp_f16_store2_0_array_return_wit_1",
+              "file": "proof/coq/store_arrays_goal.v",
+              "source_sha256": "4cad9a305e4a964e0207bd169f2d79b0c67091e2ddce8e69b433145272d79f00"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.PackModel.f16_pack2",
+              "file": "proof/coq/PackModel.v",
+              "source_sha256": "53a3498f7b71a7301a58d5366b9d980deb031c24a0992d8b39dbae182c96e14b"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vst1_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_store4_array",
+          "actual_source": "shim/store_arrays.c",
+          "actual_source_sha256": "e7b7cdefdbd3ff1385f17fdd145f9a995e25e58140fb27cdb4c1b45ab2110d0b",
+          "component_typed_interface": "F32F16.StoreArraysChecked.CheckedStoreArrays",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.store_arrays_goal.qcp_f16_store4_array_return_wit_1",
+              "file": "proof/coq/store_arrays_goal.v",
+              "source_sha256": "4cad9a305e4a964e0207bd169f2d79b0c67091e2ddce8e69b433145272d79f00"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.PackModel.f16_pack4",
+              "file": "proof/coq/PackModel.v",
+              "source_sha256": "53a3498f7b71a7301a58d5366b9d980deb031c24a0992d8b39dbae182c96e14b"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    },
+    {
+      "original_intrinsic": "vst1q_u16",
+      "isa": "Arm",
+      "official_source_indices": [
+        0
+      ],
+      "providers": [
+        {
+          "actual_c_symbol": "qcp_f16_store8_array",
+          "actual_source": "shim/store_arrays.c",
+          "actual_source_sha256": "e7b7cdefdbd3ff1385f17fdd145f9a995e25e58140fb27cdb4c1b45ab2110d0b",
+          "component_typed_interface": "F32F16.StoreArraysChecked.CheckedStoreArrays",
+          "exact_contract_return_definitions": [
+            {
+              "name": "F32F16.store_arrays_goal.qcp_f16_store8_array_return_wit_1",
+              "file": "proof/coq/store_arrays_goal.v",
+              "source_sha256": "4cad9a305e4a964e0207bd169f2d79b0c67091e2ddce8e69b433145272d79f00"
+            }
+          ],
+          "value_definitions": [
+            {
+              "name": "F32F16.PackModel.f16_pack8",
+              "file": "proof/coq/PackModel.v",
+              "source_sha256": "53a3498f7b71a7301a58d5366b9d980deb031c24a0992d8b39dbae182c96e14b"
+            }
+          ],
+          "value_interpretation": "Exact named scalar/packet definitions listed here; if none, the exact return contract supplies the direct lane, representation, memory or control expression and retained permissions."
+        }
+      ],
+      "configuration": "A64 little-endian DN=0 FZ=0 AH=0; fixed supported immediate/lane arguments from original kernel",
+      "isa_definition_review": "Source-reviewed mapping for final human review; no formal ISA-to-C/Coq correspondence theorem claimed",
+      "body_proof": "Actual C provider component typed proof passed; whole-case acceptance is separately recorded in proof/status.json"
+    }
+  ]
+}

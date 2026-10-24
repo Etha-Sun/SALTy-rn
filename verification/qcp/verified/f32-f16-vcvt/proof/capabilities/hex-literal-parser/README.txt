@@ -1,0 +1,1 @@
+Historical unsuccessful QCP frontend capability probe. Not a checked C obligation or kernel proof. Exact original command/source/log retained; relative includes belong to the historical private run context. No GlobalStrings heap was added to any public contract.

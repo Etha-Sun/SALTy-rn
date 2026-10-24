@@ -1,0 +1,55 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.346 secs (0.18u,0.165s)
+Chars 41 - 76 [From~AUXLib~Require~Import~Lis...] 0.135 secs (0.063u,0.07s)
+Chars 77 - 142 [From~F32F16~Require~Import~Pro...] 5.626 secs (4.275u,1.062s)
+Chars 143 - 188 [From~QcpRvv32~Require~Import~R...] 0. secs (0.u,0.s)
+Chars 189 - 228 [From~QcpNeon~Require~Import~Ne...] 0.679 secs (0.579u,0.099s)
+Chars 229 - 300 [From~QcpNeonLoop~Require~Impor...] 0.001 secs (0.001u,0.s)
+Chars 301 - 322 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 323 - 347 [Import~Snaive_C_Rules64.] 0.038 secs (0.035u,0.003s)
+Chars 348 - 373 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 374 - 395 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 396 - 731 [Lemma~f16_tail_four~:~~~forall...] 0.002 secs (0.002u,0.s)
+Chars 732 - 738 [Proof.] 0. secs (0.u,0.s)
+Chars 740 - 797 [(intros~k~r~a~d~Hk~Hr~Ha;~rewr...] 0.005 secs (0.001u,0.004s)
+Chars 799 - 849 [(rewrite~<-~(slice_to_skipn~k~...] 0. secs (0.u,0.s)
+Chars 851 - 1019 [(match~goal~with~~|~|-~firstn~...] 0.516 secs (0.004u,0.s)
+Chars 1021 - 1129 [(rewrite~firstn_map;~~~change~...] 0.002 secs (0.002u,0.s)
+Chars 1131 - 1222 [(rewrite~(slice_first_four~_~d...] 0.005 secs (0.005u,0.s)
+Chars 1223 - 1227 [Qed.] 0.042 secs (0.038u,0.003s)
+Chars 1228 - 1477 [Lemma~f16_output_append~:~~~fo...] 0.001 secs (0.001u,0.s)
+Chars 1478 - 1484 [Proof.] 0. secs (0.u,0.s)
+Chars 1486 - 1538 [(intros~p~k~r~n~a~chunk~Hk~Hr~...] 0. secs (0.u,0.s)
+Chars 1540 - 1571 [(assert~(Hbound~:~0~<=~k~<=~k~...] 0.001 secs (0.001u,0.s)
+Chars 1573 - 1683 [(pose~proof~~~(UShortArray.ful...] 0. secs (0.u,0.s)
+Chars 1685 - 1732 [(replace~(k~+~r~-~k)~with~r~in...] 0.033 secs (0.03u,0.003s)
+Chars 1734 - 1795 [(rewrite~f16_values_equal,~f16...] 0.001 secs (0.001u,0.s)
+Chars 1797 - 1840 [(rewrite~<-~f16_rvv_append~by~...] 0.003 secs (0.003u,0.s)
+Chars 1841 - 1845 [Qed.] 0.008 secs (0.008u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1846 - 1878 [Print~Assumptions~f16_tail_four.] 2.485 secs (1.33u,0.157s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+PropExtensionality.propositional_extensionality :
+  forall P Q : Prop, P <-> Q -> P = Q
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1879 - 1915 [Print~Assumptions~f16_output_a...] 1.833 secs (1.513u,0.184s)

@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**23/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**24/40**。新目标：**至少 31/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 - f32-vadd
 - f32-vsub
@@ -28,6 +28,8 @@
 
 - [f32-vsqrt](verification/qcp/verified/f32-vsqrt/README.zh-CN.md)（两侧原始实现，intrinsic spec 边界）
 
+- [f32-f16-vcvt](verification/qcp/verified/f32-f16-vcvt/README.zh-CN.md)（精确同值常量拼写兼容版）
+
 这里指公开契约和指定 C-shim 模型下的部分正确性；不包含真实 ISA 对应或完整终止性。
 
 最新约定：intrinsic 只需采用与原始规范对应、可审核的 spec；C 实现及其证明可选。完整 kernel 仍须验证。见 [规范边界](verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
@@ -38,20 +40,22 @@
 
 - 2026-10-24（洛杉矶）：平方根两侧原始实现完整验证及发布复核通过，当前 **23/40**。
 
+- 2026-10-24（洛杉矶）：FP32→FP16 完整验证、归档及发布复核通过，当前 **24/40**。
+
 ## 当前工作
 
-- FP32→FP16：完整门禁已通过，正在归档和发布复核。
+- FP32→FP16 已完整收录；原始范围和常量兼容记录保留。
 - QS8 加法已完整收录；QU8 加法两侧完整组件通过，正在整案新鲜重放。
 - QS8 RDSUM 已完整通过并收录；继续 QU8 多行归约。
 - QU8 RDSUM：37 个实际 C 目标已全部重新生成通过，正在完整编译证明。
 
-- ArgmaxPool：大尺寸计数错误已修复，回归及指针表调用探针通过，继续完整形式化。
+- ArgmaxPool：计数修复及回归通过；指针表读取、比较选择小调用和输出复用资源证明通过，继续完整 kernel。
 
 - FP32 sqrt 已完整收录；继续三输入 depthwise 卷积，先检查权重布局与 NaN 行为。
-- QS8 乘法：magic-bias 与负 NaN 修复后的全 binary32 逐元素等价证明通过，继续实际 kernel 验证。
+- QS8 乘法：全 binary32 数学关系通过；位级 NaN 检测兼容修复回归通过，继续实际 helper 和 kernel 验证。
 - FP32 maxpool：修复计数与 NaN 顺序问题，回归通过，继续实际 C 验证。
 
-上述其余候选与组件进展尚未计入 23 个完整通过的 kernel。
+上述其余候选与组件进展尚未计入 24 个完整通过的 kernel。
 - 两项整数求和已完成；推进多行归约 rdsum。
 
 u8-clamp、GEMM、ENV、layout 保持其他 worker 的现有分工。

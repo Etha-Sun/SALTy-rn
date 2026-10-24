@@ -1,0 +1,21 @@
+#include "../../shim/program_model.h"
+id : 1
+priority : core(0)
+left : FloatArray::seg(?p,?lo,?hi,?l) at 0
+right : store(pointer_offset(?q,0,float),float,?x0) at 1
+        store(pointer_offset(q,1,float),float,?x1) at 2
+        store(pointer_offset(q,2,float),float,?x2) at 3
+        store(pointer_offset(q,3,float),float,?x3) at 4
+check : infer(q == pointer_offset(p,lo,float));
+        infer(0 <= lo);
+        infer(lo+4 <= hi);
+action : left_erase(0);
+         right_erase(1);
+         right_erase(2);
+         right_erase(3);
+         right_erase(4);
+         left_add(FloatArray::seg(p,lo+4,hi,fp32_slice(4,hi-lo,l)));
+         right_add(x0 == l[0]);
+         right_add(x1 == l[1]);
+         right_add(x2 == l[2]);
+         right_add(x3 == l[3]);

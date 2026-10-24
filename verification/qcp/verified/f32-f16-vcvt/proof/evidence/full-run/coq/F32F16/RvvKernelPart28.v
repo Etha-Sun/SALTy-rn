@@ -1,0 +1,28 @@
+From Coq Require Import ZArith Lia.
+From F32F16 Require Import RvvCallerFrame rvv_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque f16_same_bits f16_rvv_named_core bits_of_fp32 fp32_of_bits fp32_of_real f16_scale_hi f16_scale_lo rvv_read_value f16_active___riscv_vfabs_v_f32m8 f16_active___riscv_vadd_vx_u32m8 f16_active___riscv_vand_vx_u32m8 f16_active___riscv_vmaxu_vx_u32m8 f16_active___riscv_vmsgtu_vx_u32m8_b4 f16_active___riscv_vfmul_vf_f32m8 f16_active___riscv_vfadd_vv_f32m8 f16_active_qcp_f16_rvv_shrn_0 f16_active_qcp_f16_rvv_shrn_13 f16_active_qcp_f16_rvv_shrn_16 f16_active___riscv_vand_vx_u16m4 f16_active___riscv_vadd_vv_u16m4 f16_active___riscv_vmerge_vxm_u16m4 f16_active___riscv_vor_vv_u16m4 sepcon store_float store_uint store_ushort store_int store_ptr store_uint64 undef_store_float undef_store_uint undef_store_ushort undef_store_int undef_store_ptr undef_store_uint64 FloatArray.full FloatArray.seg FloatArray.undef_full FloatArray.undef_seg UShortArray.full UShortArray.seg UShortArray.undef_full UShortArray.undef_seg F32F16.Types.UndefStructPredvfloat32m8_t F32F16.Types.UndefStructPredvuint32m8_t F32F16.Types.UndefStructPredvuint16m4_t F32F16.Types.UndefStructPredvbool4_t QcpRvv32.RvvLayout.UndefStructPredvfloat32m8_t.
+Module CheckedRvvKernelPart28.
+Lemma proof_of_test_rvv_partial_solve_wit_52:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_52.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_52.
+f16_rvv_intro_binders.
+f16_rvv_compact_prepare.
+Local Transparent F32F16.Types.UndefStructPredvuint16m4_t.
+unfold F32F16.Types.UndefStructPredvuint16m4_t at 1.
+Local Opaque F32F16.Types.UndefStructPredvuint16m4_t.
+rewrite ?f16_local_field_address.
+f16_rvv_compact_frame.
+
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_56:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_56.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_56.
+f16_rvv_intro_binders.
+f16_rvv_compact_prepare.
+Local Transparent F32F16.Types.UndefStructPredvuint16m4_t.
+unfold F32F16.Types.UndefStructPredvuint16m4_t at 1.
+Local Opaque F32F16.Types.UndefStructPredvuint16m4_t.
+rewrite ?f16_local_field_address.
+f16_rvv_compact_frame.
+
+Qed.
+End CheckedRvvKernelPart28.

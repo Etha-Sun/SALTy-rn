@@ -1,0 +1,28 @@
+From Coq Require Import ZArith Lia.
+From F32F16 Require Import RvvKernelCallsSupport rvv_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedRvvKernelPart12.
+Lemma proof_of_test_rvv_which_implies_wit_4:F32F16.rvv_unit_goal.test_rvv_which_implies_wit_4.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_which_implies_wit_4.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_22:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_22.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_22,F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_22_aux.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_which_implies_wit_3:F32F16.rvv_unit_goal.test_rvv_which_implies_wit_3.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_which_implies_wit_3.
+f16_rvv_intro_binders.
+Exists f16_old_core_31 f16_old_core_30 f16_old_core_29 f16_old_core_28 f16_old_core_27 f16_old_core_26 f16_old_core_25 f16_old_core_24 f16_old_core_23 f16_old_core_22 f16_old_core_21 f16_old_core_20 f16_old_core_19 f16_old_core_18 f16_old_core_17 f16_old_core_16.
+Exists f16_old_core_15 f16_old_core_14 f16_old_core_13 f16_old_core_12 f16_old_core_11 f16_old_core_10 f16_old_core_9 f16_old_core_8 f16_old_core_7 f16_old_core_6 f16_old_core_5 f16_old_core_4 f16_old_core_3 f16_old_core_2 f16_old_core_1 f16_old_core_0.
+f16_rvv_frame.
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_22_pure:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_22_pure.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_22_pure.
+f16_rvv_call_finish.
+Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_5:F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_5.
+Proof. unfold F32F16.rvv_unit_goal.test_rvv_partial_solve_wit_5.
+f16_rvv_call_finish.
+Qed.
+End CheckedRvvKernelPart12.

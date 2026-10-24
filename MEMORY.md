@@ -1,6 +1,9 @@
 # QCP 工作记忆入口
 
-最新：正式 **23/40**，目标至少31。原始 F32 VSQRT 在公开 intrinsic spec 边界下完整通过并直接收录：9实际C单元/262 C字段/15 ordinary bodies，7项spec-only intrinsics明确不计C-body信用；11策略组/28字段、210次普通Coq（87BASE+105本案+17typed/audit+Final）、290最终Print；仅14既有框架假设。H SHA `5ffef5c6e546ebe45056ceddd29118105353090c43670a5e570f6da36d076f45`，full SHA `6c3dd2608ef012636058d293c94b10927bd6c1e005c089ad63982a58546eb758`；463外部对象与209fresh源对象身份核对。全FP32、正uint64 byte-batch可整除4、输入padding3、输出恰N、unused params可NULL、全部合法VL；RNE/DN0/FZ0/FIZ0/AH0，数值相等或同为NaN。7spec exact合同/FQ定义/源版本台账公开，人审及正式ISA对应pending。干净9CPP/15body/源日志身份及UBSan和实际16GiB/swap0 ASan，各49536case/3219840lane/side/32VL模式、独立sqrtl oracle和共错负控通过。初次隔离native副本缺少相对共享头的环境失败已保留，按固定hash复制共享依赖后重跑通过，不改proof身份。FP16另一路完整56/2672/374门禁刚通过，root继续准入；QU8 RDSUM和QUADD仍live，neon agent新接独占f32-dwconv-minmax。
+最新：正式 **24/40**，目标至少31。F32→F16 `compatible-exact-decimal-literals` 完整通过并收录：56实际C单元/119函数体/2672 C字段，13策略组36字段，87BASE+269本案+17typed/audit+Final=374普通Coq全fresh，2708最终Print仅14既有假设，完整463外部对象/373fresh源加载路径已核。H SHA `7bf0317bbc4edb23fd7786f6b8de8adb5f885e5009a5200f3906bb8a3ba62a0d`，full SHA `5ddd4a92b774abefa1f5c340f48ed1d26e3bee200fd8a479fd3e8df673712855`；369源输入全匹配。仅两种浮点literal每侧各两处改成编译器/Coq确认的精确同值十进制，非数值bug修复，不称原token不变。公开全部FP32、正64位N、输入N+3/ushort输出N且仅2字节对齐、nullable params、half输出位相等；固定VLEN128/e32m8/e16m4/VLMAX32、VL=min(AVL,32)，不宣称IEEE16抽象规范全域精化/ISA/ABI/终止性。原48intrinsics/51providers精确定义台账保留，既有C-body完整边界未因新规则跳过。干净56 CPP/119body/全部源日志归档核对，83递归native输入（8共享头按原相对路径拷贝）零漂移，UBSan与实际16GiB/swap0 ASan各2304case/295775lane/side，独立GCC12 _Float16 RNE oracle与共错负控通过；发布复核不计第二次证明。root继续ArgmaxPool，agent继续DWConv/Maxpool/QS8mul；QU8 RDSUM与QUADD仍live，不能在旧21目标处结束。
+
+
+此前：正式 **23/40**，目标至少31。原始 F32 VSQRT 在公开 intrinsic spec 边界下完整通过并直接收录：9实际C单元/262 C字段/15 ordinary bodies，7项spec-only intrinsics明确不计C-body信用；11策略组/28字段、210次普通Coq（87BASE+105本案+17typed/audit+Final）、290最终Print；仅14既有框架假设。H SHA `5ffef5c6e546ebe45056ceddd29118105353090c43670a5e570f6da36d076f45`，full SHA `6c3dd2608ef012636058d293c94b10927bd6c1e005c089ad63982a58546eb758`；463外部对象与209fresh源对象身份核对。全FP32、正uint64 byte-batch可整除4、输入padding3、输出恰N、unused params可NULL、全部合法VL；RNE/DN0/FZ0/FIZ0/AH0，数值相等或同为NaN。7spec exact合同/FQ定义/源版本台账公开，人审及正式ISA对应pending。干净9CPP/15body/源日志身份及UBSan和实际16GiB/swap0 ASan，各49536case/3219840lane/side/32VL模式、独立sqrtl oracle和共错负控通过。初次隔离native副本缺少相对共享头的环境失败已保留，按固定hash复制共享依赖后重跑通过，不改proof身份。FP16另一路完整56/2672/374门禁刚通过，root继续准入；QU8 RDSUM和QUADD仍live，neon agent新接独占f32-dwconv-minmax。
 
 
 此前：正式清单 **22/40**，目标至少31。fetch 后接入其他 worker 的 `qd8-f32-qc8w-gemm-minmax`（3c334f710）与 `f32-gemm-minmax`（a8baa14c2）；两案全部1112/1491清单文件哈希、完整通过标记和注册表status哈希已核对，人工intrinsic规格审核仍pending，不声称本机重新运行它们的证明。新增 QS8 VADD-MINMAX 修复版：27实际C单元/103函数体/4300 C字段+15策略、492普通Coq全fresh、4496最终假设报告。full SHA `b9c6fda5551c663164d7c5b89956357e533fde1abd8d32008f3542889b35a93e`，H `cd3e965b1bc42daeda1935495b995d450cbfee1cb5d209b0310888d1863bc027`。原件/补丁/反例完整保存；45intrinsics/38模型定义公开，保持既有C-body证明边界。干净发布核对27 CPP/103body/全部源与归档，UBSan和实际16GiB/swap0 ASan各21472次公开caller/2665773lane/side、共同错误负控拒绝；发布检查不计第二次形式化证明。
@@ -22,7 +25,7 @@
 
 - 2026-10-23 最新统一边界：intrinsic 无需另建或证明 C implementation；可直接用与原始 NEON/RVV spec 对应的公开合同和 Coq 定义，逐项保留官方版本/配置/语义台账供最终人工审核。实际 kernel/循环/内存/普通 helper/caller 仍完整证明，不增未证Coq公理，不隐去spec信任边界；详见 `verification/qcp/docs/INTRINSIC-SPEC-POLICY.zh-CN.md`。旧必选intrinsic-body规则被覆盖，live/frozen/已发布证据保持原状。
 
-- 用户最新将目标提高为：从当前 23/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
+- 用户最新将目标提高为：从当前 24/40 推进到至少 **31 个完整 verified kernel**。这取代原先的至少 21 个目标；不可在 21 个时宣称本轮目标完成。从简单到难，积极并行推进。
 - 用户已提高后续资源：新批次默认 **32 并发，普通任务 16 GiB、重型任务 32 GiB**；长生成最多 6 小时，通常每个证明 2 小时、重型证明 4 小时。按整机可用内存协调，现有 live/frozen 批次保留原设置和记录。
 - 可主动修改实现，参考 Frama-C 与 Arcadia-y 修复，无需再批准；保留原因、原始身份、补丁和相关反例，证明修复后的等价性。
 - 完整验收后先 fetch，直接提交并 push 到 **`c-shim-v2` 的 `verification/qcp/verified/`**；不开 PR，不 force push。
@@ -43,7 +46,7 @@
 ## 证据和恢复
 
 当前正式数量以 [verified/manifest.json](verification/qcp/verified/manifest.json) 为准；先核对它引用的 status 哈希。
-2026-10-24 当前已验收 **23/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
+2026-10-24 当前已验收 **24/40**；此前 VLReLU 直接发布为 `bf106ba73e3c0b417c1d0532d13c32cd4108ceb0`（VLReLU）。
 
 已通过的全案证据（保持源和历史记录不变）：
 

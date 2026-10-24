@@ -1,0 +1,33 @@
+From F32F16 Require Import neon_unit_goal F16Strategy KernelStrategies NeonKernelMemory NeonKernelPart0 NeonKernelPart1 NeonKernelPart2 NeonKernelPart3 NeonKernelPart4 NeonKernelPart5 NeonKernelPart6 NeonKernelPart7 NeonKernelPart8 NeonKernelPart9 NeonKernelPart10 NeonKernelPart11 NeonKernelPart12 NeonKernelPart13 NeonKernelPart14 NeonKernelPart15.
+From QcpVadd Require Import float_array_strategy_proof.
+From QcpNeon Require Import neon_bridge_strategy_proof.
+From QcpNeonLoop Require Import neon_tail_strategy_proof.
+From QcpRvv32 Require Import rvv_arrays_strategy_proof rvv_store_strategy_proof rvv_loop_strategy_proof.
+Module CheckedNeon : F32F16.neon_unit_goal.VC_Correct.
+Include QcpVadd.float_array_strategy_proof.CheckedFloatArray.
+Include QcpNeon.neon_bridge_strategy_proof.CheckedNeonBridge.
+Include QcpNeonLoop.neon_tail_strategy_proof.CheckedNeonTail.
+Include QcpRvv32.rvv_arrays_strategy_proof.CheckedRvvArray.
+Include QcpRvv32.rvv_store_strategy_proof.CheckedRvvStoreStrategy.
+Include QcpRvv32.rvv_loop_strategy_proof.CheckedRvvLoopStrategy.
+Include F32F16.F16Strategy.CheckedF16Strategy.
+Include F32F16.KernelStrategies.CheckedF16KernelStrategy.
+Include F32F16.KernelStrategies.CheckedF16NeonLoadStrategy.
+Include F32F16.NeonKernelPart0.CheckedNeonKernelPart0.
+Include F32F16.NeonKernelPart1.CheckedNeonKernelPart1.
+Include F32F16.NeonKernelPart2.CheckedNeonKernelPart2.
+Include F32F16.NeonKernelPart3.CheckedNeonKernelPart3.
+Include F32F16.NeonKernelPart4.CheckedNeonKernelPart4.
+Include F32F16.NeonKernelPart5.CheckedNeonKernelPart5.
+Include F32F16.NeonKernelPart6.CheckedNeonKernelPart6.
+Include F32F16.NeonKernelPart7.CheckedNeonKernelPart7.
+Include F32F16.NeonKernelPart8.CheckedNeonKernelPart8.
+Include F32F16.NeonKernelPart9.CheckedNeonKernelPart9.
+Include F32F16.NeonKernelPart10.CheckedNeonKernelPart10.
+Include F32F16.NeonKernelPart11.CheckedNeonKernelPart11.
+Include F32F16.NeonKernelPart12.CheckedNeonKernelPart12.
+Include F32F16.NeonKernelPart13.CheckedNeonKernelPart13.
+Include F32F16.NeonKernelPart14.CheckedNeonKernelPart14.
+Include F32F16.NeonKernelPart15.CheckedNeonKernelPart15.
+Include F32F16.NeonKernelMemory.CheckedNeonKernelMemory.
+End CheckedNeon.

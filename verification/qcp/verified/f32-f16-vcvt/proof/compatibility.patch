@@ -1,0 +1,30 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -14,9 +14,9 @@
+   assert(output != NULL);
+ 
+   const uint32x4_t vexp_bias = vdupq_n_u32(UINT32_C(0x07800000));
+-  const float32x4_t vscale_to_inf = vdupq_n_f32(0x1.0p+112f);
++  const float32x4_t vscale_to_inf = vdupq_n_f32(5192296858534827628530496329220096.0f);
+   const uint32x4_t vexpw_max = vdupq_n_u32(UINT32_C(0x7F800000));
+-  const float32x4_t vscale_to_zero = vdupq_n_f32(0x1.0p-110f);
++  const float32x4_t vscale_to_zero = vdupq_n_f32(0.00000000000000000000000000000000077037197775489434122239117703397092741524065928615527809597551822662353515625f);
+   const uint32x4_t vbias_min = vdupq_n_u32(UINT32_C(0x40000000));
+   const uint16x8_t vexph_mask = vdupq_n_u16(UINT16_C(0x7C00));
+   const uint16x8_t vmanth_mask = vdupq_n_u16(UINT16_C(0x0FFF));
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -22,11 +22,11 @@
+ 
+     vuint32m8_t vbias = __riscv_vadd_vx_u32m8(vabsx_u, UINT32_C(0x07800000), vl);
+ 
+-    vfloat32m8_t vf = __riscv_vfmul_vf_f32m8(vabsx, 0x1.0p+112f, vl);
++    vfloat32m8_t vf = __riscv_vfmul_vf_f32m8(vabsx, 5192296858534827628530496329220096.0f, vl);
+     vbool4_t vnanmask = __riscv_vmsgtu_vx_u32m8_b4(vabsx_u, UINT32_C(0x7F800000), vl);
+ 
+     vbias = __riscv_vand_vx_u32m8(vbias, UINT32_C(0x7F800000), vl);
+-    vf = __riscv_vfmul_vf_f32m8(vf, 0x1.0p-110f, vl);
++    vf = __riscv_vfmul_vf_f32m8(vf, 0.00000000000000000000000000000000077037197775489434122239117703397092741524065928615527809597551822662353515625f, vl);
+ 
+     vbias = __riscv_vmaxu_vx_u32m8(vbias, UINT32_C(0x40000000), vl);
+ 

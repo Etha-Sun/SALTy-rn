@@ -1,0 +1,55 @@
+From Coq Require Import ZArith Lia.
+From F32F16 Require Import NeonKernelCallsSupport neon_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedNeonKernelPart6.
+Lemma proof_of_test_neon_partial_solve_wit_95:F32F16.neon_unit_goal.test_neon_partial_solve_wit_95.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_95; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_158:F32F16.neon_unit_goal.test_neon_partial_solve_wit_158.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_158; intros;f16_open_input_four;f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_25:F32F16.neon_unit_goal.test_neon_partial_solve_wit_25.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_25; intros;f16_open_input_four;f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_289:F32F16.neon_unit_goal.test_neon_partial_solve_wit_289.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_289; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_301:F32F16.neon_unit_goal.test_neon_partial_solve_wit_301.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_301; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_268:F32F16.neon_unit_goal.test_neon_partial_solve_wit_268.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_268; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_284:F32F16.neon_unit_goal.test_neon_partial_solve_wit_284.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_284; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_36:F32F16.neon_unit_goal.test_neon_partial_solve_wit_36.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_36; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_308:F32F16.neon_unit_goal.test_neon_partial_solve_wit_308.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_308,F32F16.neon_unit_goal.test_neon_partial_solve_wit_308_aux; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_209:F32F16.neon_unit_goal.test_neon_partial_solve_wit_209.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_209; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_122:F32F16.neon_unit_goal.test_neon_partial_solve_wit_122.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_122; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_212:F32F16.neon_unit_goal.test_neon_partial_solve_wit_212.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_212; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_72:F32F16.neon_unit_goal.test_neon_safety_wit_72.
+Proof. unfold F32F16.neon_unit_goal.test_neon_safety_wit_72; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_199:F32F16.neon_unit_goal.test_neon_partial_solve_wit_199.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_199; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_110:F32F16.neon_unit_goal.test_neon_partial_solve_wit_110.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_110; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_102:F32F16.neon_unit_goal.test_neon_partial_solve_wit_102.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_102; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_172:F32F16.neon_unit_goal.test_neon_partial_solve_wit_172.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_172; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_29:F32F16.neon_unit_goal.test_neon_safety_wit_29.
+Proof. unfold F32F16.neon_unit_goal.test_neon_safety_wit_29; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_6:F32F16.neon_unit_goal.test_neon_partial_solve_wit_6.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_6; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_239:F32F16.neon_unit_goal.test_neon_partial_solve_wit_239.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_239; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_69:F32F16.neon_unit_goal.test_neon_safety_wit_69.
+Proof. unfold F32F16.neon_unit_goal.test_neon_safety_wit_69; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_52:F32F16.neon_unit_goal.test_neon_safety_wit_52.
+Proof. unfold F32F16.neon_unit_goal.test_neon_safety_wit_52; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_9:F32F16.neon_unit_goal.test_neon_safety_wit_9.
+Proof. unfold F32F16.neon_unit_goal.test_neon_safety_wit_9; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_9:F32F16.neon_unit_goal.test_neon_partial_solve_wit_9.
+Proof. unfold F32F16.neon_unit_goal.test_neon_partial_solve_wit_9; f16_kernel_finish. Qed.
+Lemma proof_of_test_neon_safety_wit_33:F32F16.neon_unit_goal.test_neon_safety_wit_33.
+Proof. unfold F32F16.neon_unit_goal.test_neon_safety_wit_33; f16_kernel_finish. Qed.
+End CheckedNeonKernelPart6.
