@@ -1,0 +1,198 @@
+{
+  "passed": true,
+  "units": [
+    {
+      "unit": "neon",
+      "generation_run": "admission02",
+      "goal_sha256": "85e836a03859d16035de1f9e1fa16cb82c6eb6a1bef15e34b2b9b87d3dfef62a",
+      "C_fields": 459,
+      "bodies": [
+        "test_neon"
+      ],
+      "import_identity_recheck": false
+    },
+    {
+      "unit": "rvv",
+      "generation_run": "admission02",
+      "goal_sha256": "99e7450dafc7deaf474172c0ed3153b0a153ee23028de717f996430704cdbb99",
+      "C_fields": 391,
+      "bodies": [
+        "qcp_identity",
+        "test_rvv"
+      ],
+      "import_identity_recheck": true
+    },
+    {
+      "unit": "caller",
+      "generation_run": "admission02",
+      "goal_sha256": "21b40ce4d7428b2041713d5d2761ed7eebbfb98f777faad7ad0d31914a781450",
+      "C_fields": 44,
+      "bodies": [
+        "check_observation",
+        "compare_outputs",
+        "equivalent",
+        "preserve_float",
+        "qcp_vadd_read",
+        "same_lane"
+      ],
+      "import_identity_recheck": false
+    },
+    {
+      "unit": "ordinary",
+      "generation_run": "admission03",
+      "goal_sha256": "44eb19b54d936e8988a819d361c74e4068263bfe3d3704428ed9e69395e8666d",
+      "C_fields": 1,
+      "bodies": [
+        "qcp_assert"
+      ]
+    }
+  ],
+  "unit_vc_fields": 895,
+  "body_functions": 10,
+  "reachable_functions": [
+    "__riscv_vfmacc_vf_f32m4",
+    "__riscv_vfmax_vf_f32m4",
+    "__riscv_vfmerge_vfm_f32m4",
+    "__riscv_vfmin_vf_f32m4",
+    "__riscv_vfmv_v_f_f32m4",
+    "__riscv_vle32_v_f32m4",
+    "__riscv_vsetvl_e32m4",
+    "check_observation",
+    "compare_outputs",
+    "equivalent",
+    "preserve_float",
+    "qcp_assert",
+    "qcp_identity",
+    "qcp_nanf",
+    "qcp_nanmask",
+    "qcp_store",
+    "qcp_vadd_read",
+    "qcp_vst1_f32",
+    "qcp_vst1_lane_f32",
+    "qcp_vst1q_f32",
+    "same_lane",
+    "test_neon",
+    "test_rvv",
+    "vdupq_lane_f32",
+    "vdupq_n_f32",
+    "vfmaq_f32",
+    "vget_high_f32",
+    "vget_low_f32",
+    "vld1_f32",
+    "vld1q_dup_f32",
+    "vld1q_f32",
+    "vmaxq_f32",
+    "vminq_f32"
+  ],
+  "call_graph": {
+    "test_neon": [
+      "qcp_assert",
+      "qcp_vst1_f32",
+      "qcp_vst1_lane_f32",
+      "qcp_vst1q_f32",
+      "vdupq_lane_f32",
+      "vdupq_n_f32",
+      "vfmaq_f32",
+      "vget_high_f32",
+      "vget_low_f32",
+      "vld1_f32",
+      "vld1q_dup_f32",
+      "vld1q_f32",
+      "vmaxq_f32",
+      "vminq_f32"
+    ],
+    "qcp_identity": [],
+    "test_rvv": [
+      "__riscv_vfmacc_vf_f32m4",
+      "__riscv_vfmax_vf_f32m4",
+      "__riscv_vfmerge_vfm_f32m4",
+      "__riscv_vfmin_vf_f32m4",
+      "__riscv_vfmv_v_f_f32m4",
+      "__riscv_vle32_v_f32m4",
+      "__riscv_vsetvl_e32m4",
+      "qcp_assert",
+      "qcp_identity",
+      "qcp_nanf",
+      "qcp_nanmask",
+      "qcp_store"
+    ],
+    "qcp_vadd_read": [],
+    "preserve_float": [],
+    "check_observation": [
+      "preserve_float"
+    ],
+    "same_lane": [
+      "check_observation"
+    ],
+    "compare_outputs": [
+      "qcp_vadd_read",
+      "same_lane"
+    ],
+    "equivalent": [
+      "compare_outputs",
+      "test_neon",
+      "test_rvv"
+    ],
+    "qcp_assert": []
+  },
+  "intrinsic_spec_calls": [
+    "__riscv_vfmacc_vf_f32m4",
+    "__riscv_vfmax_vf_f32m4",
+    "__riscv_vfmerge_vfm_f32m4",
+    "__riscv_vfmin_vf_f32m4",
+    "__riscv_vfmv_v_f_f32m4",
+    "__riscv_vle32_v_f32m4",
+    "__riscv_vsetvl_e32m4",
+    "qcp_nanf",
+    "qcp_nanmask",
+    "qcp_store",
+    "qcp_vst1_f32",
+    "qcp_vst1_lane_f32",
+    "qcp_vst1q_f32",
+    "vdupq_lane_f32",
+    "vdupq_n_f32",
+    "vfmaq_f32",
+    "vget_high_f32",
+    "vget_low_f32",
+    "vld1_f32",
+    "vld1q_dup_f32",
+    "vld1q_f32",
+    "vmaxq_f32",
+    "vminq_f32"
+  ],
+  "ordinary_body_calls": [
+    "check_observation",
+    "compare_outputs",
+    "equivalent",
+    "preserve_float",
+    "qcp_assert",
+    "qcp_identity",
+    "qcp_vadd_read",
+    "same_lane",
+    "test_neon",
+    "test_rvv"
+  ],
+  "unresolved_calls": [],
+  "kernel_caller_contract_bindings": [
+    {
+      "callee": "test_neon",
+      "body_contract": "spec.c QCP_KERNEL_BODY_VIEW",
+      "caller_contract": "spec.c public default view",
+      "pre_consequence": "FullDomainConsequence.FullConsequence.caller_pre_to_neon_body_pre",
+      "post_consequence": "FullDomainConsequence.FullConsequence.neon_body_post_to_caller_post",
+      "scalar_identity": "mr/kc are unmodified by actual C; caller declaration sees call-entry scalar arguments; QCP generator interpretation is trusted",
+      "raw_neon_post_theorem": "FullDomainConsequence.FullConsequence.raw_neon_post_consequence_with_scalar_identity"
+    },
+    {
+      "callee": "test_rvv",
+      "body_contract": "spec.c QCP_KERNEL_BODY_VIEW",
+      "caller_contract": "spec.c public default view",
+      "pre_consequence": "FullDomainConsequence.FullConsequence.caller_pre_to_rvv_body_pre",
+      "post_consequence": "FullDomainConsequence.FullConsequence.rvv_body_post_to_caller_post",
+      "scalar_identity": "mr/kc are unmodified by actual C; caller declaration sees call-entry scalar arguments; QCP generator interpretation is trusted",
+      "raw_neon_post_theorem": null
+    }
+  ],
+  "intrinsic_ledger_sha256": "26a7a0965010a8b64e5f80680d976408b4c7e3865f8859f7a1d823bbd5e1aa43",
+  "interpretation": "Complete generated C VC interfaces plus checked logical consequences; QCP frontend/contract instantiation trusted, no ISA or generator-soundness theorem claimed"
+}

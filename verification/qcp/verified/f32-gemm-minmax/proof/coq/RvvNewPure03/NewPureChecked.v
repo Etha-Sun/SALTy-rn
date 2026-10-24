@@ -1,0 +1,53 @@
+From Coq Require Import ZArith Lia.
+From GemmRvv Require Import SafeFrame SLFacts.
+From FullDomainRvv Require Import FullState ActiveVector RowValues.
+From RvvOriginalVC03 Require Import unit_goal.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Local Opaque fma_rne full_acc full_cell fp32_neon_min fp32_neon_max fp32_min_number fp32_max_number rvv_merge rvv_nanth active8 mask8 row_acc_values row_result_values output_state output_panel output_frame.
+Module CheckedNewPure.
+Lemma proof_of_test_rvv_partial_solve_wit_18_pure : test_rvv_partial_solve_wit_18_pure.
+Proof. unfold test_rvv_partial_solve_wit_18_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_121_pure : test_rvv_partial_solve_wit_121_pure.
+Proof. unfold test_rvv_partial_solve_wit_121_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_135_pure : test_rvv_partial_solve_wit_135_pure.
+Proof. unfold test_rvv_partial_solve_wit_135_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_149_pure : test_rvv_partial_solve_wit_149_pure.
+Proof. unfold test_rvv_partial_solve_wit_149_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_163_pure : test_rvv_partial_solve_wit_163_pure.
+Proof. unfold test_rvv_partial_solve_wit_163_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_189_pure : test_rvv_partial_solve_wit_189_pure.
+Proof. unfold test_rvv_partial_solve_wit_189_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_190_pure : test_rvv_partial_solve_wit_190_pure.
+Proof. unfold test_rvv_partial_solve_wit_190_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_191_pure : test_rvv_partial_solve_wit_191_pure.
+Proof. unfold test_rvv_partial_solve_wit_191_pure;left;intros;subst;assert (Hal : (nc_pre-nc) mod 8=0) by (unfold outer_cursor_state in PreH19;destruct PreH19 as [Hz|[Ha Hr]];[lia|exact Ha]);
+assert (Hq : Z.quot (nc_pre-nc) 8 = (nc_pre-nc)/8) by (apply Z.quot_div_nonneg;lia);
+pose proof (Z.div_mod (nc_pre-nc) 8 ltac:(lia)) as Hd;
+assert (Hpc : panel_count (nc_pre-nc)=Z.quot (nc_pre-nc) 8) by (rewrite Hq;unfold panel_count;symmetry;apply Z.div_unique with(r:=7);lia);
+assert (Hcols : panel_cols nc_pre (Z.quot (nc_pre-nc) 8) = nc) by (unfold panel_cols;rewrite Hq;replace (nc_pre-8*((nc_pre-nc)/8)) with nc by lia;apply Z.min_r ;lia);
+assert (Hrem : Z.rem (nc_pre-nc) 8=0) by (rewrite Z.rem_mod_nonneg by lia;exact Hal);rewrite Hpc in *;rewrite Hcols in *;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_192_pure : test_rvv_partial_solve_wit_192_pure.
+Proof. unfold test_rvv_partial_solve_wit_192_pure;left;intros;subst;assert (Hal : (nc_pre-nc) mod 8=0) by (unfold outer_cursor_state in PreH19;destruct PreH19 as [Hz|[Ha Hr]];[lia|exact Ha]);
+assert (Hq : Z.quot (nc_pre-nc) 8 = (nc_pre-nc)/8) by (apply Z.quot_div_nonneg;lia);
+pose proof (Z.div_mod (nc_pre-nc) 8 ltac:(lia)) as Hd;
+assert (Hpc : panel_count (nc_pre-nc)=Z.quot (nc_pre-nc) 8) by (rewrite Hq;unfold panel_count;symmetry;apply Z.div_unique with(r:=7);lia);
+assert (Hcols : panel_cols nc_pre (Z.quot (nc_pre-nc) 8) = 8) by (unfold panel_cols;rewrite Hq;replace (nc_pre-8*((nc_pre-nc)/8)) with nc by lia;apply Z.min_l ;lia);
+assert (Hrem : Z.rem (nc_pre-nc) 8=0) by (rewrite Z.rem_mod_nonneg by lia;exact Hal);rewrite Hpc in *;rewrite Hcols in *;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_193_pure : test_rvv_partial_solve_wit_193_pure.
+Proof. unfold test_rvv_partial_solve_wit_193_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_194_pure : test_rvv_partial_solve_wit_194_pure.
+Proof. unfold test_rvv_partial_solve_wit_194_pure;intros;subst;repeat apply _derivable1_andp_intros;apply derivable1s_coq_prop_r;first[assumption|reflexivity|lia]. Qed.
+End CheckedNewPure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_18_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_121_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_135_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_149_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_163_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_189_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_190_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_191_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_192_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_193_pure.
+Print Assumptions CheckedNewPure.proof_of_test_rvv_partial_solve_wit_194_pure.

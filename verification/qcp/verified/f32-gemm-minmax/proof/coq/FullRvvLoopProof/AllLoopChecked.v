@@ -1,0 +1,36 @@
+From GemmFullRvvVC15 Require Import unit_goal.
+From FullRvvLoopProof Require Import BaseChecked Init1 Init2v2 Init3v2 Init4v2 KInit21v2 KInit22v2 KInit51v3 KInit52v3 OuterTailv2 KStep Clamp2v2 Clamp4Rows Clamp1Rows Clamp3Rows OuterFullv6.
+Module CheckedFullRvvLoop.
+Lemma proof_of_test_rvv_return_wit_1 : test_rvv_return_wit_1. Proof. exact BaseChecked.RvvBaseChecked.proof_of_test_rvv_return_wit_1. Qed.
+Lemma proof_of_test_rvv_entail_wit_1_1 : test_rvv_entail_wit_1_1. Proof. exact Init1.proof_of_test_rvv_entail_wit_1_1. Qed.
+Lemma proof_of_test_rvv_entail_wit_1_2 : test_rvv_entail_wit_1_2. Proof. exact Init2v2.proof_of_test_rvv_entail_wit_1_2. Qed.
+Lemma proof_of_test_rvv_entail_wit_1_3 : test_rvv_entail_wit_1_3. Proof. exact Init3v2.proof_of_test_rvv_entail_wit_1_3. Qed.
+Lemma proof_of_test_rvv_entail_wit_1_4 : test_rvv_entail_wit_1_4. Proof. exact Init4v2.proof_of_test_rvv_entail_wit_1_4. Qed.
+Lemma proof_of_test_rvv_entail_wit_2_1 : test_rvv_entail_wit_2_1. Proof. exact KInit21v2.proof_of_test_rvv_entail_wit_2_1. Qed.
+Lemma proof_of_test_rvv_entail_wit_2_2 : test_rvv_entail_wit_2_2. Proof. exact KInit22v2.proof_of_test_rvv_entail_wit_2_2. Qed.
+Lemma proof_of_test_rvv_entail_wit_5_1 : test_rvv_entail_wit_5_1. Proof. exact KInit51v3.proof_of_test_rvv_entail_wit_5_1. Qed.
+Lemma proof_of_test_rvv_entail_wit_5_2 : test_rvv_entail_wit_5_2. Proof. exact KInit52v3.proof_of_test_rvv_entail_wit_5_2. Qed.
+Lemma proof_of_test_rvv_entail_wit_6_2 : test_rvv_entail_wit_6_2. Proof. exact OuterTailv2.proof_of_test_rvv_entail_wit_6_2. Qed.
+Lemma proof_of_test_rvv_entail_wit_3 : test_rvv_entail_wit_3. Proof. exact KStep.proof_of_test_rvv_entail_wit_3. Qed.
+Lemma proof_of_test_rvv_entail_wit_4_2 : test_rvv_entail_wit_4_2. Proof. exact Clamp2v2.proof_of_test_rvv_entail_wit_4_2. Qed.
+Lemma proof_of_test_rvv_entail_wit_4_4 : test_rvv_entail_wit_4_4. Proof. exact Clamp4Rows.proof_of_test_rvv_entail_wit_4_4. Qed.
+Lemma proof_of_test_rvv_entail_wit_4_1 : test_rvv_entail_wit_4_1. Proof. exact Clamp1Rows.proof_of_test_rvv_entail_wit_4_1. Qed.
+Lemma proof_of_test_rvv_entail_wit_4_3 : test_rvv_entail_wit_4_3. Proof. exact Clamp3Rows.proof_of_test_rvv_entail_wit_4_3. Qed.
+Lemma proof_of_test_rvv_entail_wit_6_1 : test_rvv_entail_wit_6_1. Proof. exact OuterFullv6.proof_of_test_rvv_entail_wit_6_1. Qed.
+End CheckedFullRvvLoop.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_1_1.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_1_2.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_1_3.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_1_4.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_2_1.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_2_2.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_3.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_4_1.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_4_2.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_4_3.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_4_4.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_5_1.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_5_2.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_6_1.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_entail_wit_6_2.
+Print Assumptions CheckedFullRvvLoop.proof_of_test_rvv_return_wit_1.

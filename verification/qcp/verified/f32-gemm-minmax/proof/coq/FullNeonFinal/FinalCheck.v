@@ -1,0 +1,35 @@
+Require Import FullDomainNeonVC.neon_full_goal.
+From GemmNeon Require Import copy_strategy_goal copy_strategy_proof.
+Require Import FullGemmPureFinal.AllNeonPure.
+Require Import FullNeonSLFinal.AllSLChecked.
+Require Import FullNeonInitProof.AllInitChecked.
+Require Import FullNeonTailFinal.AllTailChecked.
+Require Import FullNeonLoopProof.BaseChecked.
+Require Import FullNeonLoopProof.InitialChecked.
+Require Import FullNeonLoopProof.KInit.
+Require Import FullNeonLoopProof.KStep.
+Require Import FullNeonLoopProof.Tail61Assoc.
+Require Import FullNeonOuterProof.OuterFull.
+Require Import FullNeonOuterProof.KFinishEven.
+Require Import FullNeonOuterProof.KFinishOdd.
+Module CheckedFullNeon <: FullDomainNeonVC.neon_full_goal.VC_Correct.
+Definition copy_strategy1_correctness : copy_strategy1 := copy_strategy_proof.copy_strategy1_correctness.
+Definition copy_strategy2_correctness : copy_strategy2 := copy_strategy_proof.copy_strategy2_correctness.
+Definition copy_strategy3_correctness : copy_strategy3 := copy_strategy_proof.copy_strategy3_correctness.
+Include FullGemmPureFinal.AllNeonPure.CheckedPure.
+Include FullNeonSLFinal.AllSLChecked.CheckedFullNeonSL.
+Include FullNeonInitProof.AllInitChecked.CheckedInitialBranches.
+Include FullNeonTailFinal.AllTailChecked.CheckedFullNeonTailFive.
+Include FullNeonLoopProof.BaseChecked.BaseChecked.
+Include FullNeonLoopProof.InitialChecked.InitialChecked.
+Definition proof_of_test_neon_entail_wit_3 : test_neon_entail_wit_3 := FullNeonLoopProof.KInit.proof_of_test_neon_entail_wit_3.
+Definition proof_of_test_neon_entail_wit_4 : test_neon_entail_wit_4 := FullNeonLoopProof.KStep.proof_of_test_neon_entail_wit_4.
+Definition proof_of_test_neon_entail_wit_6_1 : test_neon_entail_wit_6_1 := FullNeonLoopProof.Tail61Assoc.proof_of_test_neon_entail_wit_6_1.
+Definition proof_of_test_neon_entail_wit_9_1 : test_neon_entail_wit_9_1 := FullNeonOuterProof.OuterFull.proof_of_test_neon_entail_wit_9_1.
+Definition proof_of_test_neon_entail_wit_5_2 : test_neon_entail_wit_5_2 := FullNeonOuterProof.KFinishEven.proof_of_test_neon_entail_wit_5_2.
+Definition proof_of_test_neon_entail_wit_5_1 : test_neon_entail_wit_5_1 := FullNeonOuterProof.KFinishOdd.proof_of_test_neon_entail_wit_5_1.
+End CheckedFullNeon.
+Module FinalCheck : FullDomainNeonVC.neon_full_goal.VC_Correct := CheckedFullNeon.
+Print Assumptions FinalCheck.proof_of_test_neon_return_wit_1.
+Print Assumptions FinalCheck.proof_of_test_neon_entail_wit_5_1.
+Print Assumptions FinalCheck.proof_of_test_neon_entail_wit_9_1.

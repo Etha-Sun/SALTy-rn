@@ -1,0 +1,17 @@
+Require Import FullNeonFinal.FinalCheck.
+Require Import RvvSourceReviewFinal.FullKernelChecked03.
+Require Import FullDomainCallerProof.AllCallerChecked.
+From FullDomainConsequence Require Import FullConsequence.
+Module Neon : FullDomainNeonVC.neon_full_goal.VC_Correct := FullNeonFinal.FinalCheck.FinalCheck.
+Module Rvv : RvvOriginalVC03.unit_goal.VC_Correct := RvvSourceReviewFinal.FullKernelChecked03.CheckedFullRvvOriginal03.
+Module Caller : FullDomainCallerVC.spec_goal.VC_Correct := FullDomainCallerProof.AllCallerChecked.CheckedFullDomainCaller.
+Check FullConsequence.caller_pure_consequence.
+Check FullConsequence.caller_pre_to_neon_body_pre.
+Check FullConsequence.neon_body_post_to_caller_post.
+Check FullConsequence.caller_pre_to_rvv_body_pre.
+Check FullConsequence.rvv_body_post_to_caller_post.
+Check FullConsequence.raw_neon_post_consequence_with_scalar_identity.
+Print Assumptions Neon.proof_of_test_neon_return_wit_1.
+Print Assumptions Rvv.proof_of_test_rvv_return_wit_1.
+Print Assumptions Caller.proof_of_equivalent_return_wit_1.
+Print Assumptions FullConsequence.raw_neon_post_consequence_with_scalar_identity.

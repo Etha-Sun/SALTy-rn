@@ -1,0 +1,122 @@
+{
+  "passed": true,
+  "configured_jobs": 32,
+  "scope": "native current C kernels and public caller; independent scalar packed/FMA oracle; no formal or ISA evidence",
+  "source_hashes": {
+    "spec.c": "06ba318d6727954b30b1a6b865f7aa84d3beff5ad0e08b7dd67d051214a17342",
+    "impl/testNEON.c": "30c4e62099b586b573a50c6f056fd005590ecef6c7ae6248d9e62fa20497e019",
+    "impl/testRVV.c": "d40288b62c33f1f690eecfff4913e3f77ebe6c50793576a5cb7ec44cfeb2bcf2",
+    "contracts/caller.h": "4cdaf75bb46b63fb76000c3a45e73a4d7d99db8e13db396785024a008956653b",
+    "shim/neon/copy.h": "f7bc52be90af5c210a2f45e475aedae2704d038b57ba600493bb8b0cc58c717c",
+    "shim/neon/shim-undef.h": "9ea4d0b0fcda5bbb33fce42d4f69549296c241c3da8347a669da94336865b6fd",
+    "shim/QcpVadd/float_array_def.h": "2264b99db0dfc783fe2375cac4ed7d85bc43e3ee38e561b30aa186c31d0ae418",
+    "shim/comparator/comparator_def.h": "faff5100ece4b802cbac482282f307b66aeca3df48da5b6a94ab6d021f025a74",
+    "shim/cleanup/cleanup_v2.h": "d23e594557c407d98e968bbb2dd538a042cdacc010cbe6807169a9b7d6e68feb",
+    "shim/rvv/intrinsic-spec.h": "ee59ed37f2b3969a2efd590ce4e301b94ba88aa74fb8771a5a0225e140611033",
+    "shim/rvv/copy.h": "1da6b3ecfe61a49fce404991147d2bf428407159c7de841ba61b2ad26ecbdbd4",
+    "proof/native/native_types.h": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1",
+    "proof/native/fp_minmax.c": "92ea301e85f8ce7cf917bf21104087d7619cb8c5c674f4e7c32b879565a05381",
+    "proof/native/fp_minmax_m4.c": "8e499e6bf5216a9910cebda40218e06f2594e60e036c9e4c36d75007945217d2",
+    "proof/native/fp_primitives.h": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268",
+    "proof/native/driver.c": "20c750a964bf764e0f2e22f949334515d4b57d73713b6ce919eb0627b48fd7b0",
+    "proof/native/fp_memory.c": "c7705f7b7b21c50cf431934bb7945142ea5859b24aefa08cbbea054ea4a2c76b",
+    "proof/native/fp_arithmetic.c": "25f2245089bfed3eccbeb5d466d9b587e7322ca21e37b154373bbd348e702366",
+    "proof/native/fp_memory_m4.c": "70a9fb8d6ef08a7dc600c0759e6f06450ecf605ff855d0c22beb97e80b7cb2dd",
+    "proof/native/provenance.json": "68a4e15cfd7a96f93b48d373b5e47e9361d4ef890d113dbbe460e5c00d067ec6",
+    "proof/native/fp_masks_m4.c": "e07e40fd80d9b5fa7caa44aa57c0d88f7e1ec3e5e716f1f210db500387395d83",
+    "proof/native/fp_arithmetic_m4.c": "7579ba7fbf7e2dba508f5010ba4d5cb1c6906d298bbf83a80306351aa72b2e79",
+    "proof/native/unit.c": "8c04c723ba7e9a854653467d304de45da8e1426b746827040d85fa0407044a61",
+    "proof/native.py": "ebd01e97e5c03e6eb8808b21891ff33adee14421b15d96b6c597bf0553c42031"
+  },
+  "inputs_unchanged": true,
+  "geometry": {
+    "passed": true,
+    "cases": 6864,
+    "output_cells": 291720,
+    "input_and_inactive_output_frame_checked": true
+  },
+  "both_wrong_rejected_by_independent_oracle": true,
+  "records": [
+    {
+      "mode": "positive",
+      "phase": "build",
+      "exit": 0,
+      "seconds": 1.7737968929577619,
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-builtin-fmaf",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/driver.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_arithmetic.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_arithmetic_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_masks_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_memory.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_memory_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_minmax.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_minmax_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/unit.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/.build/admission02/native/positive"
+      ]
+    },
+    {
+      "mode": "positive",
+      "phase": "execute",
+      "exit": 0,
+      "seconds": 0.3174810621421784,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/.build/admission02/native/positive"
+      ]
+    },
+    {
+      "mode": "both_wrong",
+      "phase": "build",
+      "exit": 0,
+      "seconds": 1.5391469460446388,
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fno-builtin-fmaf",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax",
+        "-DBOTH_WRONG",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/driver.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_arithmetic.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_arithmetic_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_masks_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_memory.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_memory_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_minmax.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/fp_minmax_m4.c",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/proof/native/unit.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/.build/admission02/native/both_wrong"
+      ]
+    },
+    {
+      "mode": "both_wrong",
+      "phase": "execute",
+      "exit": 21,
+      "seconds": 0.00915551814250648,
+      "command": [
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-gemm-minmax/.build/admission02/native/both_wrong"
+      ]
+    }
+  ]
+}

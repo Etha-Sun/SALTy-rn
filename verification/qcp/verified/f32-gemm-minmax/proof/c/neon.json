@@ -1,0 +1,689 @@
+{
+  "source_token_sha256": "d99b80b852866d908c3c922ff71cc62033eb1ea735f495303a01fd8f0b466ad6",
+  "annotations": [
+    {
+      "before_token": 92,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 162,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && FloatArray::undef_full(c@pre,4*nc@pre) which implies 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),0,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 336,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 0<nc && 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && 1<=mr && mr<=4 && kc==kc@pre && params==params@pre && a==a@pre && c==c@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<=nc && nc<=nc@pre && fulln_outer_ptrs(nc,mr@pre,nc@pre,kc@pre/4,a@pre,c@pre,a0,a1,a2,a3,c0,c1,c2,c3) && w==w@pre+8*(kc@pre/4+1)*panel_count(nc@pre-nc) &&\nFloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*(kc@pre/4+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) */"
+    },
+    {
+      "before_token": 336,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && 1<=mr && mr<=4 && kc==kc@pre && params==params@pre && a==a@pre && c==c@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<=nc && nc<=nc@pre && fulln_outer_ptrs(nc,mr@pre,nc@pre,kc@pre/4,a@pre,c@pre,a0,a1,a2,a3,c0,c1,c2,c3) && w==w@pre+8*(kc@pre/4+1)*panel_count(nc@pre-nc) &&\nFloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*(kc@pre/4+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) */"
+    },
+    {
+      "before_token": 351,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 364,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 405,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && 1<=mr && mr<=4 && kc==kc@pre && params==params@pre && a==a@pre && c==c@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<nc && nc<=nc@pre && (nc@pre-nc)%8==0 && 0<=(kc@pre-k)/4 && (kc@pre-k)/4<=kc@pre/4 && ((kc@pre-k)/4)%2==0 && 0<=k && k<=kc@pre && k%4==0 && a0==a@pre+row_alias(mr@pre,0)*(kc@pre/4)+((kc@pre-k)/4) && a1==a@pre+row_alias(mr@pre,1)*(kc@pre/4)+((kc@pre-k)/4) && a2==a@pre+row_alias(mr@pre,2)*(kc@pre/4)+((kc@pre-k)/4) && a3==a@pre+row_alias(mr@pre,3)*(kc@pre/4)+((kc@pre-k)/4) && c0==c@pre+row_alias(mr@pre,0)*nc@pre+(nc@pre-nc) && c1==c@pre+row_alias(mr@pre,1)*nc@pre+(nc@pre-nc) && c2==c@pre+row_alias(mr@pre,2)*nc@pre+(nc@pre-nc) && c3==c@pre+row_alias(mr@pre,3)*nc@pre+(nc@pre-nc) && w==w@pre+8*(kc@pre/4+1)*((nc@pre-nc)/8)+8+8*((kc@pre-k)/4) &&\nFloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*(kc@pre/4+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vacc0x0.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+0,A,W)) * store(&(vacc0x0.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+1,A,W)) * store(&(vacc0x0.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+2,A,W)) * store(&(vacc0x0.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+3,A,W)) * store(&(vacc0x1.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+4,A,W)) * store(&(vacc0x1.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+5,A,W)) * store(&(vacc0x1.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+6,A,W)) * store(&(vacc0x1.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,0),(nc@pre-nc)+7,A,W)) * store(&(vacc1x0.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+0,A,W)) * store(&(vacc1x0.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+1,A,W)) * store(&(vacc1x0.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+2,A,W)) * store(&(vacc1x0.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+3,A,W)) * store(&(vacc1x1.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+4,A,W)) * store(&(vacc1x1.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+5,A,W)) * store(&(vacc1x1.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+6,A,W)) * store(&(vacc1x1.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,1),(nc@pre-nc)+7,A,W)) * store(&(vacc2x0.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+0,A,W)) * store(&(vacc2x0.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+1,A,W)) * store(&(vacc2x0.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+2,A,W)) * store(&(vacc2x0.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+3,A,W)) * store(&(vacc2x1.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+4,A,W)) * store(&(vacc2x1.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+5,A,W)) * store(&(vacc2x1.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+6,A,W)) * store(&(vacc2x1.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,2),(nc@pre-nc)+7,A,W)) * store(&(vacc3x0.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+0,A,W)) * store(&(vacc3x0.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+1,A,W)) * store(&(vacc3x0.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+2,A,W)) * store(&(vacc3x0.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+3,A,W)) * store(&(vacc3x1.s0),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+4,A,W)) * store(&(vacc3x1.s1),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+5,A,W)) * store(&(vacc3x1.s2),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+6,A,W)) * store(&(vacc3x1.s3),float,fulln_acc(((kc@pre-k)/4),kc@pre/4,row_alias(mr@pre,3),(nc@pre-nc)+7,A,W)) */"
+    },
+    {
+      "before_token": 437,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a0-a@pre) */"
+    },
+    {
+      "before_token": 451,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a1-a@pre) */"
+    },
+    {
+      "before_token": 465,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a2-a@pre) */"
+    },
+    {
+      "before_token": 479,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a3-a@pre) */"
+    },
+    {
+      "before_token": 493,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 507,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 521,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 535,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 551,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 562,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va1 */"
+    },
+    {
+      "before_token": 573,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va2 */"
+    },
+    {
+      "before_token": 584,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va3 */"
+    },
+    {
+      "before_token": 595,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0, a=&va0c0, b=&vb0123c0 */"
+    },
+    {
+      "before_token": 606,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc1x0, a=&va1c0, b=&vb0123c0 */"
+    },
+    {
+      "before_token": 617,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc2x0, a=&va2c0, b=&vb0123c0 */"
+    },
+    {
+      "before_token": 628,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc3x0, a=&va3c0, b=&vb0123c0 */"
+    },
+    {
+      "before_token": 639,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x1, a=&va0c0, b=&vb4567c0 */"
+    },
+    {
+      "before_token": 650,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc1x1, a=&va1c0, b=&vb4567c0 */"
+    },
+    {
+      "before_token": 661,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc2x1, a=&va2c0, b=&vb4567c0 */"
+    },
+    {
+      "before_token": 672,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc3x1, a=&va3c0, b=&vb4567c0 */"
+    },
+    {
+      "before_token": 683,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 694,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va1 */"
+    },
+    {
+      "before_token": 705,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va2 */"
+    },
+    {
+      "before_token": 716,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va3 */"
+    },
+    {
+      "before_token": 727,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0, a=&va0c1, b=&vb0123c1 */"
+    },
+    {
+      "before_token": 738,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc1x0, a=&va1c1, b=&vb0123c1 */"
+    },
+    {
+      "before_token": 749,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc2x0, a=&va2c1, b=&vb0123c1 */"
+    },
+    {
+      "before_token": 760,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc3x0, a=&va3c1, b=&vb0123c1 */"
+    },
+    {
+      "before_token": 771,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x1, a=&va0c1, b=&vb4567c1 */"
+    },
+    {
+      "before_token": 782,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc1x1, a=&va1c1, b=&vb4567c1 */"
+    },
+    {
+      "before_token": 793,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc2x1, a=&va2c1, b=&vb4567c1 */"
+    },
+    {
+      "before_token": 804,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc3x1, a=&va3c1, b=&vb4567c1 */"
+    },
+    {
+      "before_token": 823,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a0-a@pre) */"
+    },
+    {
+      "before_token": 837,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a1-a@pre) */"
+    },
+    {
+      "before_token": 851,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a2-a@pre) */"
+    },
+    {
+      "before_token": 865,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a@pre, n=kc@pre, L=A, j=(a3-a@pre) */"
+    },
+    {
+      "before_token": 879,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 893,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=w@pre, n=8*(kc@pre/4+1)*panel_count(nc@pre), L=W, j=(w-w@pre) */"
+    },
+    {
+      "before_token": 909,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0, a=&va0, b=&vb0123 */"
+    },
+    {
+      "before_token": 920,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc1x0, a=&va1, b=&vb0123 */"
+    },
+    {
+      "before_token": 931,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc2x0, a=&va2, b=&vb0123 */"
+    },
+    {
+      "before_token": 942,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc3x0, a=&va3, b=&vb0123 */"
+    },
+    {
+      "before_token": 953,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x1, a=&va0, b=&vb4567 */"
+    },
+    {
+      "before_token": 964,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc1x1, a=&va1, b=&vb4567 */"
+    },
+    {
+      "before_token": 975,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc2x1, a=&va2, b=&vb4567 */"
+    },
+    {
+      "before_token": 986,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc3x1, a=&va3, b=&vb4567 */"
+    },
+    {
+      "before_token": 1010,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0, b=&vmax */"
+    },
+    {
+      "before_token": 1019,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x0, b=&vmax */"
+    },
+    {
+      "before_token": 1028,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x0, b=&vmax */"
+    },
+    {
+      "before_token": 1037,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x0, b=&vmax */"
+    },
+    {
+      "before_token": 1046,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x1, b=&vmax */"
+    },
+    {
+      "before_token": 1055,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x1, b=&vmax */"
+    },
+    {
+      "before_token": 1064,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x1, b=&vmax */"
+    },
+    {
+      "before_token": 1073,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x1, b=&vmax */"
+    },
+    {
+      "before_token": 1096,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0, b=&vmin */"
+    },
+    {
+      "before_token": 1105,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x0, b=&vmin */"
+    },
+    {
+      "before_token": 1114,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x0, b=&vmin */"
+    },
+    {
+      "before_token": 1123,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x0, b=&vmin */"
+    },
+    {
+      "before_token": 1132,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x1, b=&vmin */"
+    },
+    {
+      "before_token": 1141,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x1, b=&vmin */"
+    },
+    {
+      "before_token": 1150,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x1, b=&vmin */"
+    },
+    {
+      "before_token": 1159,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x1, b=&vmin */"
+    },
+    {
+      "before_token": 1160,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<nc && nc<=nc@pre && (nc@pre-nc)%8==0 && a0==a@pre+row_alias(mr@pre,0)*(kc@pre/4)+(kc@pre/4) && a1==a@pre+row_alias(mr@pre,1)*(kc@pre/4)+(kc@pre/4) && a2==a@pre+row_alias(mr@pre,2)*(kc@pre/4)+(kc@pre/4) && a3==a@pre+row_alias(mr@pre,3)*(kc@pre/4)+(kc@pre/4) && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && w==w@pre+8*((kc@pre/4)+1)*(((nc@pre-nc)/8)+1) && FloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*((kc@pre/4)+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * UndefStructPredfloat32x4_t(&vmin) * UndefStructPredfloat32x4_t(&vmax) * store(&(vacc0x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+0,lo,hi)) * store(&(vacc0x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+1,lo,hi)) * store(&(vacc0x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+2,lo,hi)) * store(&(vacc0x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+3,lo,hi)) * store(&(vacc0x1.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+4,lo,hi)) * store(&(vacc0x1.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+5,lo,hi)) * store(&(vacc0x1.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+6,lo,hi)) * store(&(vacc0x1.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+7,lo,hi)) * store(&(vacc1x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+0,lo,hi)) * store(&(vacc1x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+1,lo,hi)) * store(&(vacc1x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+2,lo,hi)) * store(&(vacc1x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+3,lo,hi)) * store(&(vacc1x1.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+4,lo,hi)) * store(&(vacc1x1.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+5,lo,hi)) * store(&(vacc1x1.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+6,lo,hi)) * store(&(vacc1x1.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+7,lo,hi)) * store(&(vacc2x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+0,lo,hi)) * store(&(vacc2x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+1,lo,hi)) * store(&(vacc2x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+2,lo,hi)) * store(&(vacc2x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+3,lo,hi)) * store(&(vacc2x1.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+4,lo,hi)) * store(&(vacc2x1.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+5,lo,hi)) * store(&(vacc2x1.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+6,lo,hi)) * store(&(vacc2x1.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+7,lo,hi)) * store(&(vacc3x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+0,lo,hi)) * store(&(vacc3x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+1,lo,hi)) * store(&(vacc3x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+2,lo,hi)) * store(&(vacc3x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+3,lo,hi)) * store(&(vacc3x1.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+4,lo,hi)) * store(&(vacc3x1.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+5,lo,hi)) * store(&(vacc3x1.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+6,lo,hi)) * store(&(vacc3x1.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+7,lo,hi))  * has_permission(&k) */"
+    },
+    {
+      "before_token": 1169,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::undef_full(c0,4) * FloatArray::undef_full(pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0+4,float),4) */"
+    },
+    {
+      "before_token": 1175,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0 */"
+    },
+    {
+      "before_token": 1184,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x1 */"
+    },
+    {
+      "before_token": 1185,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::full(c0,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+3),lo,hi),nil))))) * FloatArray::full(pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0+4,float),4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(4+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(4+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(4+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(4+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,1,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1200,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,1,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::undef_full(c1,4) * FloatArray::undef_full(pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0+4,float),4) */"
+    },
+    {
+      "before_token": 1206,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x0 */"
+    },
+    {
+      "before_token": 1215,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x1 */"
+    },
+    {
+      "before_token": 1216,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::full(c1,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+3),lo,hi),nil))))) * FloatArray::full(pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0+4,float),4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(4+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(4+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(4+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(4+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,2,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1231,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,2,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::undef_full(c2,4) * FloatArray::undef_full(pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0+4,float),4) */"
+    },
+    {
+      "before_token": 1237,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x0 */"
+    },
+    {
+      "before_token": 1246,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x1 */"
+    },
+    {
+      "before_token": 1247,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::full(c2,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+3),lo,hi),nil))))) * FloatArray::full(pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0+4,float),4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(4+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(4+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(4+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(4+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,3,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1262,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,3,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::undef_full(c3,4) * FloatArray::undef_full(pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0+4,float),4) */"
+    },
+    {
+      "before_token": 1268,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x0 */"
+    },
+    {
+      "before_token": 1277,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x1 */"
+    },
+    {
+      "before_token": 1278,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::full(c3,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+3),lo,hi),nil))))) * FloatArray::full(pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0+4,float),4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(4+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(4+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(4+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(4+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc>=8 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,4,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1357,
+      "kind": "proof_annotation",
+      "text": "/*@ neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,8,4,A,W,lo,hi) which implies output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+8,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1372,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::undef_full(c0,4) */"
+    },
+    {
+      "before_token": 1378,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0 */"
+    },
+    {
+      "before_token": 1379,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::full(c0,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(0+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,1,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1384,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,1,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::undef_full(c1,4) */"
+    },
+    {
+      "before_token": 1390,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x0 */"
+    },
+    {
+      "before_token": 1391,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::full(c1,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(0+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,2,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1396,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,2,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::undef_full(c2,4) */"
+    },
+    {
+      "before_token": 1402,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x0 */"
+    },
+    {
+      "before_token": 1403,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::full(c2,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(0+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,3,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1408,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,3,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::undef_full(c3,4) */"
+    },
+    {
+      "before_token": 1414,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x0 */"
+    },
+    {
+      "before_token": 1415,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::full(c3,4,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+1),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+2),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(0+3),lo,hi),nil))))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&4)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+0,float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,4,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1415,
+      "kind": "proof_annotation",
+      "text": "/*@ neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),0,4,4,A,W,lo,hi) which implies output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+0+4,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1437,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<nc && nc<=nc@pre && (nc@pre-nc)%8==0 && nc<8 && a0==a@pre+row_alias(mr@pre,0)*(kc@pre/4)+(kc@pre/4) && a1==a@pre+row_alias(mr@pre,1)*(kc@pre/4)+(kc@pre/4) && a2==a@pre+row_alias(mr@pre,2)*(kc@pre/4)+(kc@pre/4) && a3==a@pre+row_alias(mr@pre,3)*(kc@pre/4)+(kc@pre/4) && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+(nc&4),float) && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+(nc&4),float) && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+(nc&4),float) && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+(nc&4),float) && w==w@pre+8*((kc@pre/4)+1)*(((nc@pre-nc)/8)+1) && FloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*((kc@pre/4)+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+(nc&4),A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * UndefStructPredfloat32x4_t(&vmin) * UndefStructPredfloat32x4_t(&vmax) * store(&(vacc0x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(nc&4)+0,lo,hi)) * store(&(vacc0x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(nc&4)+1,lo,hi)) * store(&(vacc0x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(nc&4)+2,lo,hi)) * store(&(vacc0x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(nc&4)+3,lo,hi)) * UndefStructPredfloat32x4_t(&vacc0x1) * store(&(vacc1x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(nc&4)+0,lo,hi)) * store(&(vacc1x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(nc&4)+1,lo,hi)) * store(&(vacc1x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(nc&4)+2,lo,hi)) * store(&(vacc1x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(nc&4)+3,lo,hi)) * UndefStructPredfloat32x4_t(&vacc1x1) * store(&(vacc2x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(nc&4)+0,lo,hi)) * store(&(vacc2x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(nc&4)+1,lo,hi)) * store(&(vacc2x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(nc&4)+2,lo,hi)) * store(&(vacc2x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(nc&4)+3,lo,hi)) * UndefStructPredfloat32x4_t(&vacc2x1) * store(&(vacc3x0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(nc&4)+0,lo,hi)) * store(&(vacc3x0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(nc&4)+1,lo,hi)) * store(&(vacc3x0.s2),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(nc&4)+2,lo,hi)) * store(&(vacc3x0.s3),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(nc&4)+3,lo,hi)) * UndefStructPredfloat32x4_t(&vacc3x1)  * has_permission(&k) */"
+    },
+    {
+      "before_token": 1444,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0 */"
+    },
+    {
+      "before_token": 1452,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x0 */"
+    },
+    {
+      "before_token": 1460,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x0 */"
+    },
+    {
+      "before_token": 1468,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x0 */"
+    },
+    {
+      "before_token": 1476,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+(nc&4),float) && output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+(nc&4),A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::undef_full(c0,2) */"
+    },
+    {
+      "before_token": 1482,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0 */"
+    },
+    {
+      "before_token": 1483,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::full(c0,2,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+((nc&4)+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+((nc&4)+1),lo,hi),nil))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,1,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1488,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,1,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::undef_full(c1,2) */"
+    },
+    {
+      "before_token": 1494,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1 */"
+    },
+    {
+      "before_token": 1495,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::full(c1,2,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+((nc&4)+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+((nc&4)+1),lo,hi),nil))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,2,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1500,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,2,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::undef_full(c2,2) */"
+    },
+    {
+      "before_token": 1506,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2 */"
+    },
+    {
+      "before_token": 1507,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::full(c2,2,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+((nc&4)+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+((nc&4)+1),lo,hi),nil))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,3,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1512,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,3,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::undef_full(c3,2) */"
+    },
+    {
+      "before_token": 1518,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3 */"
+    },
+    {
+      "before_token": 1519,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::full(c3,2,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+((nc&4)+0),lo,hi),cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+((nc&4)+1),lo,hi),nil))) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&2)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+(nc&4),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,4,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1519,
+      "kind": "proof_annotation",
+      "text": "/*@ neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),(nc&4),2,4,A,W,lo,hi) which implies output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+(nc&4)+2,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1530,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0 */"
+    },
+    {
+      "before_token": 1537,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1x0 */"
+    },
+    {
+      "before_token": 1544,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2x0 */"
+    },
+    {
+      "before_token": 1551,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3x0 */"
+    },
+    {
+      "before_token": 1553,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<nc && nc<=nc@pre && (nc@pre-nc)%8==0 && nc<8 && a0==a@pre+row_alias(mr@pre,0)*(kc@pre/4)+(kc@pre/4) && a1==a@pre+row_alias(mr@pre,1)*(kc@pre/4)+(kc@pre/4) && a2==a@pre+row_alias(mr@pre,2)*(kc@pre/4)+(kc@pre/4) && a3==a@pre+row_alias(mr@pre,3)*(kc@pre/4)+(kc@pre/4) && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && w==w@pre+8*((kc@pre/4)+1)*(((nc@pre-nc)/8)+1) && FloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*((kc@pre/4)+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+((nc&4)+(nc&2)),A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * UndefStructPredfloat32x4_t(&vmin) * UndefStructPredfloat32x4_t(&vmax) * UndefStructPredfloat32x4_t(&vacc0x0) * UndefStructPredfloat32x4_t(&vacc0x1) * store(&(vacc0.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+((nc&4)+(nc&2))+0,lo,hi)) * store(&(vacc0.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+((nc&4)+(nc&2))+1,lo,hi)) * UndefStructPredfloat32x4_t(&vacc1x0) * UndefStructPredfloat32x4_t(&vacc1x1) * store(&(vacc1.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+((nc&4)+(nc&2))+0,lo,hi)) * store(&(vacc1.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+((nc&4)+(nc&2))+1,lo,hi)) * UndefStructPredfloat32x4_t(&vacc2x0) * UndefStructPredfloat32x4_t(&vacc2x1) * store(&(vacc2.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+((nc&4)+(nc&2))+0,lo,hi)) * store(&(vacc2.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+((nc&4)+(nc&2))+1,lo,hi)) * UndefStructPredfloat32x4_t(&vacc3x0) * UndefStructPredfloat32x4_t(&vacc3x1) * store(&(vacc3.s0),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+((nc&4)+(nc&2))+0,lo,hi)) * store(&(vacc3.s1),float,full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+((nc&4)+(nc&2))+1,lo,hi))  * has_permission(&k) */"
+    },
+    {
+      "before_token": 1560,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+((nc&4)+(nc&2)),A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::undef_full(c0,1) */"
+    },
+    {
+      "before_token": 1568,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0 */"
+    },
+    {
+      "before_token": 1569,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,0,row_alias(mr@pre,0),A,W,lo,hi) * FloatArray::full(c0,1,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,0),(nc@pre-nc)+(((nc&4)+(nc&2))+0),lo,hi),nil)) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,1,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1569,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,1,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::undef_full(c1,1) */"
+    },
+    {
+      "before_token": 1577,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc1 */"
+    },
+    {
+      "before_token": 1578,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,1,row_alias(mr@pre,1),A,W,lo,hi) * FloatArray::full(c1,1,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,1),(nc@pre-nc)+(((nc&4)+(nc&2))+0),lo,hi),nil)) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,2,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1578,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,2,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::undef_full(c2,1) */"
+    },
+    {
+      "before_token": 1586,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc2 */"
+    },
+    {
+      "before_token": 1587,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,2,row_alias(mr@pre,2),A,W,lo,hi) * FloatArray::full(c2,1,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,2),(nc@pre-nc)+(((nc&4)+(nc&2))+0),lo,hi),nil)) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,3,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1587,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,3,A,W,lo,hi) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::undef_full(c3,1) */"
+    },
+    {
+      "before_token": 1595,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc3 */"
+    },
+    {
+      "before_token": 1596,
+      "kind": "proof_annotation",
+      "text": "/*@ 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_frame(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,3,row_alias(mr@pre,3),A,W,lo,hi) * FloatArray::full(c3,1,cons(full_cell(A,W,(kc@pre/4),row_alias(mr@pre,3),(nc@pre-nc)+(((nc&4)+(nc&2))+0),lo,hi),nil)) which implies 1<=mr@pre && mr@pre<=4 && 0<nc && nc<=nc@pre && nc<8 && (nc&1)!=0 && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,4,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1596,
+      "kind": "proof_annotation",
+      "text": "/*@ neon_phase_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc),((nc&4)+(nc&2)),1,4,A,W,lo,hi) which implies output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+((nc&4)+(nc&2))+1,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 1597,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 1<=mr@pre && mr@pre<=4 && 1<=nc@pre && 4<=kc@pre && kc@pre%4==0 && a_stride@pre==kc@pre && cm_stride@pre==4*nc@pre && cn_stride@pre==32 && a@pre!=0 && w@pre!=0 && c@pre!=0 && params@pre!=0 && 4*kc@pre<=18446744073709551615 && (uintptr_t)a@pre+4*kc@pre<=18446744073709551615 && 16*nc@pre<=18446744073709551615 && (uintptr_t)c@pre+16*nc@pre<=18446744073709551615 && 32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && (uintptr_t)w@pre+32*(kc@pre/4+1)*panel_count(nc@pre)<=18446744073709551615 && mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==kc@pre && cm_stride==4*nc@pre && cn_stride==32 && 0<nc && nc<=nc@pre && (nc@pre-nc)%8==0 && nc<8 && a0==a@pre+row_alias(mr@pre,0)*(kc@pre/4)+(kc@pre/4) && a1==a@pre+row_alias(mr@pre,1)*(kc@pre/4)+(kc@pre/4) && a2==a@pre+row_alias(mr@pre,2)*(kc@pre/4)+(kc@pre/4) && a3==a@pre+row_alias(mr@pre,3)*(kc@pre/4)+(kc@pre/4) && c0==pointer_offset(c@pre,row_alias(mr@pre,0)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && c1==pointer_offset(c@pre,row_alias(mr@pre,1)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && c2==pointer_offset(c@pre,row_alias(mr@pre,2)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && c3==pointer_offset(c@pre,row_alias(mr@pre,3)*nc@pre+(nc@pre-nc)+((nc&4)+(nc&2)),float) && w==w@pre+8*((kc@pre/4)+1)*(((nc@pre-nc)/8)+1) && FloatArray::full(a@pre,kc@pre,A) * FloatArray::full(w@pre,8*((kc@pre/4)+1)*panel_count(nc@pre),W) * output_state(c@pre,mr@pre,nc@pre,(kc@pre/4),(nc@pre-nc)+nc,A,W,lo,hi) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * UndefStructPredfloat32x4_t(&vmin) * UndefStructPredfloat32x4_t(&vmax) * UndefStructPredfloat32x4_t(&vacc0x0) * UndefStructPredfloat32x4_t(&vacc0x1) * UndefStructPredfloat32x2_t(&vacc0) * UndefStructPredfloat32x4_t(&vacc1x0) * UndefStructPredfloat32x4_t(&vacc1x1) * UndefStructPredfloat32x2_t(&vacc1) * UndefStructPredfloat32x4_t(&vacc2x0) * UndefStructPredfloat32x4_t(&vacc2x1) * UndefStructPredfloat32x2_t(&vacc2) * UndefStructPredfloat32x4_t(&vacc3x0) * UndefStructPredfloat32x4_t(&vacc3x1) * UndefStructPredfloat32x2_t(&vacc3)  * has_permission(&k) */"
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+From FullNeonInitProof Require Import Init2 Init3 Init4.
+Module CheckedInitialBranches.
+Include Init2.CheckedInit2.
+Include Init3.CheckedInit3.
+Include Init4.CheckedInit4.
+End CheckedInitialBranches.
+Print Assumptions CheckedInitialBranches.proof_of_test_neon_entail_wit_1_2.
+Print Assumptions CheckedInitialBranches.proof_of_test_neon_entail_wit_1_3.
+Print Assumptions CheckedInitialBranches.proof_of_test_neon_entail_wit_1_4.

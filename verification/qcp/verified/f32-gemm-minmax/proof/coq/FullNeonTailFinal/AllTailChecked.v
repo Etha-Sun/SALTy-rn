@@ -1,0 +1,18 @@
+From FullDomainNeonVC Require Import neon_full_goal.
+Require FullNeonTailProof.Tail62.
+Require FullNeonTailProof.Tail71.
+Require FullNeonTailProof.Tail72.
+Require FullNeonTailProof.Tail81.
+Require FullNeonTailProof.Tail82.
+Module CheckedFullNeonTailFive.
+Definition proof_of_test_neon_entail_wit_6_2 : test_neon_entail_wit_6_2 := FullNeonTailProof.Tail62.proof_of_test_neon_entail_wit_6_2.
+Definition proof_of_test_neon_entail_wit_7_1 : test_neon_entail_wit_7_1 := FullNeonTailProof.Tail71.proof_of_test_neon_entail_wit_7_1.
+Definition proof_of_test_neon_entail_wit_7_2 : test_neon_entail_wit_7_2 := FullNeonTailProof.Tail72.proof_of_test_neon_entail_wit_7_2.
+Definition proof_of_test_neon_entail_wit_8_1 : test_neon_entail_wit_8_1 := FullNeonTailProof.Tail81.proof_of_test_neon_entail_wit_8_1.
+Definition proof_of_test_neon_entail_wit_8_2 : test_neon_entail_wit_8_2 := FullNeonTailProof.Tail82.proof_of_test_neon_entail_wit_8_2.
+End CheckedFullNeonTailFive.
+Print Assumptions CheckedFullNeonTailFive.proof_of_test_neon_entail_wit_6_2.
+Print Assumptions CheckedFullNeonTailFive.proof_of_test_neon_entail_wit_7_1.
+Print Assumptions CheckedFullNeonTailFive.proof_of_test_neon_entail_wit_7_2.
+Print Assumptions CheckedFullNeonTailFive.proof_of_test_neon_entail_wit_8_1.
+Print Assumptions CheckedFullNeonTailFive.proof_of_test_neon_entail_wit_8_2.
