@@ -1,0 +1,22 @@
+From Qs8Mul Require Import store_body_goal Adapter_store_body_0 Adapter_store_body_1 Adapter_store_body_2 Adapter_store_body_3 Adapter_store_body_4 Adapter_store_body_5 Adapter_store_body_6 Adapter_store_body_7 Adapter_store_body_8.
+Module Checked : Qs8Mul.store_body_goal.VC_Correct.
+Definition proof_of_qm_store8_safety_wit_1 := Qs8Mul.Adapter_store_body_0.proof_of_qm_store8_safety_wit_1.
+Definition proof_of_qm_store8_safety_wit_2 := Qs8Mul.Adapter_store_body_1.proof_of_qm_store8_safety_wit_2.
+Definition proof_of_qm_store8_safety_wit_3 := Qs8Mul.Adapter_store_body_2.proof_of_qm_store8_safety_wit_3.
+Definition proof_of_qm_store8_safety_wit_4 := Qs8Mul.Adapter_store_body_3.proof_of_qm_store8_safety_wit_4.
+Definition proof_of_qm_store8_safety_wit_5 := Qs8Mul.Adapter_store_body_4.proof_of_qm_store8_safety_wit_5.
+Definition proof_of_qm_store8_safety_wit_6 := Qs8Mul.Adapter_store_body_5.proof_of_qm_store8_safety_wit_6.
+Definition proof_of_qm_store8_safety_wit_7 := Qs8Mul.Adapter_store_body_6.proof_of_qm_store8_safety_wit_7.
+Definition proof_of_qm_store8_safety_wit_8 := Qs8Mul.Adapter_store_body_7.proof_of_qm_store8_safety_wit_8.
+Definition proof_of_qm_store8_return_wit_1 := Qs8Mul.Adapter_store_body_8.proof_of_qm_store8_return_wit_1.
+End Checked.
+Module ExactChecked : Qs8Mul.store_body_goal.VC_Correct := Checked.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_1.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_2.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_3.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_4.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_5.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_6.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_7.
+Print Assumptions Checked.proof_of_qm_store8_safety_wit_8.
+Print Assumptions Checked.proof_of_qm_store8_return_wit_1.

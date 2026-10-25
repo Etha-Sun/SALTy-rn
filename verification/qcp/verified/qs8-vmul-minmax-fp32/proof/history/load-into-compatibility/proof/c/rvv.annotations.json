@@ -1,0 +1,225 @@
+{
+  "entry_cut": "/*@ Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && (batch==0 || output==output@pre+(batch@pre-batch)) && params==params@pre && batch==batch@pre && batch%sizeof(int8_t)==0 && input_a==input_a@pre && input_b==input_b@pre && output==output@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) */",
+  "loop_invariant": "/*@ Inv Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && (batch==0 || output==output@pre+(batch@pre-batch)) && params==params@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(a_zero_point),char,AZ) * store(&(b_zero_point),char,BZ) * store(&(scale),float,Scale) * store(&(output_zero_point),short,OZ) * store(&(output_min),char,Lo) * store(&(output_max),char,Hi) */",
+  "tail_cut": null,
+  "call_bindings": [
+    {
+      "name": "__riscv_vsetvl_e8m2",
+      "start": 706,
+      "end": 732,
+      "args": [
+        "batch"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vle8_v_i8m2",
+      "start": 754,
+      "end": 786,
+      "args": [
+        "input_a",
+        "vl"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vle8_v_i8m2",
+      "start": 807,
+      "end": 839,
+      "args": [
+        "input_b",
+        "vl"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vsub_vx_i16m4",
+      "start": 863,
+      "end": 953,
+      "args": [
+        "__riscv_vsext_vf2_i16m4(va, vl)",
+        "(int16_t)a_zero_point",
+        "vl"
+      ],
+      "where": "a=&va,A=qm_vec32(va.s0,va.s1,va.s2,va.s3,va.s4,va.s5,va.s6,va.s7,va.s8,va.s9,va.s10,va.s11,va.s12,va.s13,va.s14,va.s15,va.s16,va.s17,va.s18,va.s19,va.s20,va.s21,va.s22,va.s23,va.s24,va.s25,va.s26,va.s27,va.s28,va.s29,va.s30,va.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "__riscv_vsub_vx_i16m4",
+      "start": 976,
+      "end": 1066,
+      "args": [
+        "__riscv_vsext_vf2_i16m4(vb, vl)",
+        "(int16_t)b_zero_point",
+        "vl"
+      ],
+      "where": "a=&vb,A=qm_vec32(vb.s0,vb.s1,vb.s2,vb.s3,vb.s4,vb.s5,vb.s6,vb.s7,vb.s8,vb.s9,vb.s10,vb.s11,vb.s12,vb.s13,vb.s14,vb.s15,vb.s16,vb.s17,vb.s18,vb.s19,vb.s20,vb.s21,vb.s22,vb.s23,vb.s24,vb.s25,vb.s26,vb.s27,vb.s28,vb.s29,vb.s30,vb.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "__riscv_vwmul_vv_i32m8",
+      "start": 1091,
+      "end": 1127,
+      "args": [
+        "vxa",
+        "vxb",
+        "vl"
+      ],
+      "where": "a=&vxa,A=qm_vec32(vxa.s0,vxa.s1,vxa.s2,vxa.s3,vxa.s4,vxa.s5,vxa.s6,vxa.s7,vxa.s8,vxa.s9,vxa.s10,vxa.s11,vxa.s12,vxa.s13,vxa.s14,vxa.s15,vxa.s16,vxa.s17,vxa.s18,vxa.s19,vxa.s20,vxa.s21,vxa.s22,vxa.s23,vxa.s24,vxa.s25,vxa.s26,vxa.s27,vxa.s28,vxa.s29,vxa.s30,vxa.s31),b=&vxb,B=qm_vec32(vxb.s0,vxb.s1,vxb.s2,vxb.s3,vxb.s4,vxb.s5,vxb.s6,vxb.s7,vxb.s8,vxb.s9,vxb.s10,vxb.s11,vxb.s12,vxb.s13,vxb.s14,vxb.s15,vxb.s16,vxb.s17,vxb.s18,vxb.s19,vxb.s20,vxb.s21,vxb.s22,vxb.s23,vxb.s24,vxb.s25,vxb.s26,vxb.s27,vxb.s28,vxb.s29,vxb.s30,vxb.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vfcvt_f_x_v_f32m8",
+      "start": 1156,
+      "end": 1191,
+      "args": [
+        "vacc",
+        "vl"
+      ],
+      "where": "a=&vacc,A=qm_vec32(vacc.s0,vacc.s1,vacc.s2,vacc.s3,vacc.s4,vacc.s5,vacc.s6,vacc.s7,vacc.s8,vacc.s9,vacc.s10,vacc.s11,vacc.s12,vacc.s13,vacc.s14,vacc.s15,vacc.s16,vacc.s17,vacc.s18,vacc.s19,vacc.s20,vacc.s21,vacc.s22,vacc.s23,vacc.s24,vacc.s25,vacc.s26,vacc.s27,vacc.s28,vacc.s29,vacc.s30,vacc.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vfmul_vf_f32m8",
+      "start": 1206,
+      "end": 1247,
+      "args": [
+        "vfpacc",
+        "scale",
+        "vl"
+      ],
+      "where": "p=&vfpacc,a0=vfpacc.s0,a1=vfpacc.s1,a2=vfpacc.s2,a3=vfpacc.s3,a4=vfpacc.s4,a5=vfpacc.s5,a6=vfpacc.s6,a7=vfpacc.s7,a8=vfpacc.s8,a9=vfpacc.s9,a10=vfpacc.s10,a11=vfpacc.s11,a12=vfpacc.s12,a13=vfpacc.s13,a14=vfpacc.s14,a15=vfpacc.s15,a16=vfpacc.s16,a17=vfpacc.s17,a18=vfpacc.s18,a19=vfpacc.s19,a20=vfpacc.s20,a21=vfpacc.s21,a22=vfpacc.s22,a23=vfpacc.s23,a24=vfpacc.s24,a25=vfpacc.s25,a26=vfpacc.s26,a27=vfpacc.s27,a28=vfpacc.s28,a29=vfpacc.s29,a30=vfpacc.s30,a31=vfpacc.s31",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vfadd_vf_f32m8",
+      "start": 1263,
+      "end": 1310,
+      "args": [
+        "vfpacc",
+        "12582912.0f",
+        "vl"
+      ],
+      "where": "p=&vfpacc,a0=vfpacc.s0,a1=vfpacc.s1,a2=vfpacc.s2,a3=vfpacc.s3,a4=vfpacc.s4,a5=vfpacc.s5,a6=vfpacc.s6,a7=vfpacc.s7,a8=vfpacc.s8,a9=vfpacc.s9,a10=vfpacc.s10,a11=vfpacc.s11,a12=vfpacc.s12,a13=vfpacc.s13,a14=vfpacc.s14,a15=vfpacc.s15,a16=vfpacc.s16,a17=vfpacc.s17,a18=vfpacc.s18,a19=vfpacc.s19,a20=vfpacc.s20,a21=vfpacc.s21,a22=vfpacc.s22,a23=vfpacc.s23,a24=vfpacc.s24,a25=vfpacc.s25,a26=vfpacc.s26,a27=vfpacc.s27,a28=vfpacc.s28,a29=vfpacc.s29,a30=vfpacc.s30,a31=vfpacc.s31",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vfsgnj_vf_f32m8",
+      "start": 1538,
+      "end": 1580,
+      "args": [
+        "vfpacc",
+        "scale",
+        "vl"
+      ],
+      "where": "p=&vfpacc,a0=vfpacc.s0,a1=vfpacc.s1,a2=vfpacc.s2,a3=vfpacc.s3,a4=vfpacc.s4,a5=vfpacc.s5,a6=vfpacc.s6,a7=vfpacc.s7,a8=vfpacc.s8,a9=vfpacc.s9,a10=vfpacc.s10,a11=vfpacc.s11,a12=vfpacc.s12,a13=vfpacc.s13,a14=vfpacc.s14,a15=vfpacc.s15,a16=vfpacc.s16,a17=vfpacc.s17,a18=vfpacc.s18,a19=vfpacc.s19,a20=vfpacc.s20,a21=vfpacc.s21,a22=vfpacc.s22,a23=vfpacc.s23,a24=vfpacc.s24,a25=vfpacc.s25,a26=vfpacc.s26,a27=vfpacc.s27,a28=vfpacc.s28,a29=vfpacc.s29,a30=vfpacc.s30,a31=vfpacc.s31",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "start": 1599,
+      "end": 1641,
+      "args": [
+        "vfpacc"
+      ],
+      "where": "p=&vfpacc,a0=vfpacc.s0,a1=vfpacc.s1,a2=vfpacc.s2,a3=vfpacc.s3,a4=vfpacc.s4,a5=vfpacc.s5,a6=vfpacc.s6,a7=vfpacc.s7,a8=vfpacc.s8,a9=vfpacc.s9,a10=vfpacc.s10,a11=vfpacc.s11,a12=vfpacc.s12,a13=vfpacc.s13,a14=vfpacc.s14,a15=vfpacc.s15,a16=vfpacc.s16,a17=vfpacc.s17,a18=vfpacc.s18,a19=vfpacc.s19,a20=vfpacc.s20,a21=vfpacc.s21,a22=vfpacc.s22,a23=vfpacc.s23,a24=vfpacc.s24,a25=vfpacc.s25,a26=vfpacc.s26,a27=vfpacc.s27,a28=vfpacc.s28,a29=vfpacc.s29,a30=vfpacc.s30,a31=vfpacc.s31,vl=vl",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vssub_vx_i32m8",
+      "start": 1654,
+      "end": 1745,
+      "args": [
+        "vacc",
+        "INT32_C(0x4B400000) - (int32_t)output_zero_point",
+        "vl"
+      ],
+      "where": "a=&vacc,A=qm_vec32(vacc.s0,vacc.s1,vacc.s2,vacc.s3,vacc.s4,vacc.s5,vacc.s6,vacc.s7,vacc.s8,vacc.s9,vacc.s10,vacc.s11,vacc.s12,vacc.s13,vacc.s14,vacc.s15,vacc.s16,vacc.s17,vacc.s18,vacc.s19,vacc.s20,vacc.s21,vacc.s22,vacc.s23,vacc.s24,vacc.s25,vacc.s26,vacc.s27,vacc.s28,vacc.s29,vacc.s30,vacc.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vnclip_wx_i16m4",
+      "start": 1772,
+      "end": 1835,
+      "args": [
+        "vacc",
+        "0",
+        "__RISCV_VXRM_RDN",
+        "vl"
+      ],
+      "where": "a=&vacc,A=qm_vec32(vacc.s0,vacc.s1,vacc.s2,vacc.s3,vacc.s4,vacc.s5,vacc.s6,vacc.s7,vacc.s8,vacc.s9,vacc.s10,vacc.s11,vacc.s12,vacc.s13,vacc.s14,vacc.s15,vacc.s16,vacc.s17,vacc.s18,vacc.s19,vacc.s20,vacc.s21,vacc.s22,vacc.s23,vacc.s24,vacc.s25,vacc.s26,vacc.s27,vacc.s28,vacc.s29,vacc.s30,vacc.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vnclip_wx_i8m2",
+      "start": 1858,
+      "end": 1922,
+      "args": [
+        "vout16",
+        "0",
+        "__RISCV_VXRM_RDN",
+        "vl"
+      ],
+      "where": "a=&vout16,A=qm_vec32(vout16.s0,vout16.s1,vout16.s2,vout16.s3,vout16.s4,vout16.s5,vout16.s6,vout16.s7,vout16.s8,vout16.s9,vout16.s10,vout16.s11,vout16.s12,vout16.s13,vout16.s14,vout16.s15,vout16.s16,vout16.s17,vout16.s18,vout16.s19,vout16.s20,vout16.s21,vout16.s22,vout16.s23,vout16.s24,vout16.s25,vout16.s26,vout16.s27,vout16.s28,vout16.s29,vout16.s30,vout16.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vmax_vx_i8m2",
+      "start": 1936,
+      "end": 1978,
+      "args": [
+        "vout",
+        "output_min",
+        "vl"
+      ],
+      "where": "a=&vout,A=qm_vec32(vout.s0,vout.s1,vout.s2,vout.s3,vout.s4,vout.s5,vout.s6,vout.s7,vout.s8,vout.s9,vout.s10,vout.s11,vout.s12,vout.s13,vout.s14,vout.s15,vout.s16,vout.s17,vout.s18,vout.s19,vout.s20,vout.s21,vout.s22,vout.s23,vout.s24,vout.s25,vout.s26,vout.s27,vout.s28,vout.s29,vout.s30,vout.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vmin_vx_i8m2",
+      "start": 1991,
+      "end": 2033,
+      "args": [
+        "vout",
+        "output_max",
+        "vl"
+      ],
+      "where": "a=&vout,A=qm_vec32(vout.s0,vout.s1,vout.s2,vout.s3,vout.s4,vout.s5,vout.s6,vout.s7,vout.s8,vout.s9,vout.s10,vout.s11,vout.s12,vout.s13,vout.s14,vout.s15,vout.s16,vout.s17,vout.s18,vout.s19,vout.s20,vout.s21,vout.s22,vout.s23,vout.s24,vout.s25,vout.s26,vout.s27,vout.s28,vout.s29,vout.s30,vout.s31)",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vse8_v_i8m2",
+      "start": 2040,
+      "end": 2077,
+      "args": [
+        "output",
+        "vout",
+        "vl"
+      ],
+      "where": "x0=vout.s0,x1=vout.s1,x2=vout.s2,x3=vout.s3,x4=vout.s4,x5=vout.s5,x6=vout.s6,x7=vout.s7,x8=vout.s8,x9=vout.s9,x10=vout.s10,x11=vout.s11,x12=vout.s12,x13=vout.s13,x14=vout.s14,x15=vout.s15,x16=vout.s16,x17=vout.s17,x18=vout.s18,x19=vout.s19,x20=vout.s20,x21=vout.s21,x22=vout.s22,x23=vout.s23,x24=vout.s24,x25=vout.s25,x26=vout.s26,x27=vout.s27,x28=vout.s28,x29=vout.s29,x30=vout.s30,x31=vout.s31",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    }
+  ],
+  "same_raw_tokens": true,
+  "scope": "Current actual repaired C, fullscale/fullint16zero, single byte map permits input aliases, no complete proof from generation."
+}

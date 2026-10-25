@@ -1,0 +1,34 @@
+{
+  "kernel": "qs8-vmul-minmax-fp32",
+  "variant": "repaired",
+  "neon_changed": false,
+  "original_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "repaired_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "original_rvv_sha256": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528",
+  "repaired_rvv_sha256": "4d55087480a4b8540c5ba89c05bbe4a4c60573c2a9503d0fd4c76f49f7b3c99a",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "03b76faf593b9b12e38cf43288f098be2dd3b52141cc5ee6aebb057e2a1ecbdb",
+  "causes": [
+    "Original numeric float-to-int conversion/add differs from NEON magic-bias reinterpret/saturating-subtract for large finite scale.",
+    "Frama reference magic-bias repair still differs for negative NaN scale under independently reviewed Arm-preserving/RVV-canonical arithmetic NaN rules."
+  ],
+  "changes": [
+    "Adopt Frama RVV magic-bias add/reinterpret/saturating-subtract.",
+    "If scale is NaN, vfsgnj.vf restores scale sign after final float add; no NaN/Inf/negative/zero/subnormal scale restriction."
+  ],
+  "reference_only": {
+    "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+    "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/rvv.c",
+    "sha256": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b",
+    "historical_credit_transferred": false
+  },
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "e5ee51bcd3063df631a57e3ba94fe8b1137b9e5a181a9ddaa8e101eb3330d4fb",
+  "whole_kernel_verified": false,
+  "fix_validated_by_native": true,
+  "native_evidence": {
+    "native-undefined-status.json": "a812cbc998026ecf61f9da45929eb09cc33bad0b72c4e8e72057d1e9b8856765",
+    "native-address-status.json": "24e59f0001b2f82ff36eb0815444a9704657678846a2521b69caf6658e82afcd"
+  },
+  "native_scope": "Finite actual C execution in distinct ISA emulation, not hardware execution or formal proof"
+}

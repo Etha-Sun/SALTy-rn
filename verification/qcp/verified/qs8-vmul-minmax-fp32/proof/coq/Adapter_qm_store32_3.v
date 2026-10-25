@@ -1,0 +1,3 @@
+From Qs8Mul Require Import Store32Memory qm_store32_goal.
+Definition proof_of_qm_store32_return_wit_1 : Qs8Mul.qm_store32_goal.qm_store32_return_wit_1 := Qs8Mul.Store32Memory.CheckedStore32Memory.proof_of_qm_store32_return_wit_1.
+Print Assumptions proof_of_qm_store32_return_wit_1.

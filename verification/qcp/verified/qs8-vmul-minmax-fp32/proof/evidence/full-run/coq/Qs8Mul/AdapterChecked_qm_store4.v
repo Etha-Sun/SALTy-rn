@@ -1,0 +1,14 @@
+From Qs8Mul Require Import qm_store4_goal Adapter_qm_store4_0 Adapter_qm_store4_1 Adapter_qm_store4_2 Adapter_qm_store4_3 Adapter_qm_store4_4.
+Module Checked : Qs8Mul.qm_store4_goal.VC_Correct.
+Definition proof_of_qm_store4_safety_wit_1 := Qs8Mul.Adapter_qm_store4_0.proof_of_qm_store4_safety_wit_1.
+Definition proof_of_qm_store4_safety_wit_2 := Qs8Mul.Adapter_qm_store4_1.proof_of_qm_store4_safety_wit_2.
+Definition proof_of_qm_store4_safety_wit_3 := Qs8Mul.Adapter_qm_store4_2.proof_of_qm_store4_safety_wit_3.
+Definition proof_of_qm_store4_safety_wit_4 := Qs8Mul.Adapter_qm_store4_3.proof_of_qm_store4_safety_wit_4.
+Definition proof_of_qm_store4_return_wit_1 := Qs8Mul.Adapter_qm_store4_4.proof_of_qm_store4_return_wit_1.
+End Checked.
+Module ExactChecked : Qs8Mul.qm_store4_goal.VC_Correct := Checked.
+Print Assumptions Checked.proof_of_qm_store4_safety_wit_1.
+Print Assumptions Checked.proof_of_qm_store4_safety_wit_2.
+Print Assumptions Checked.proof_of_qm_store4_safety_wit_3.
+Print Assumptions Checked.proof_of_qm_store4_safety_wit_4.
+Print Assumptions Checked.proof_of_qm_store4_return_wit_1.

@@ -1,3 +1,10 @@
+<!-- CURRENT_VERIFIED36_QS8_MUL_20261025 -->
+当前完整已验证 **36/40**，目标 **40/40**。新增 qs8-vmul-minmax-fp32：24个实际C单元、871条C义务、7策略字段、40个普通函数体、984个源码fresh Coq模块、1042命令全0、878最终Print；14项继承假设、0新增项目公理。57个原生intrinsic spec视图人工审核仍pending。本聊天23+外部8+基线5；外部SPMM及矩阵成果保留作者归属。剩余DWCHW、Argmax、Exp、HWC2CHW继续；组件不计新增核。
+
+QS8原件、实际反例、完整47目标精确补丁（main+46支持文件）保留，原NEON未修改。发布副本24单元CPP/归档身份和独立签发dry-run通过；私有副本数组/字段视图的UBSan及实16GiB ASan各278016例/12804556lane/side、独立oracle与单错/共错负控全通过。有限复查不算第二次形式证明。
+
+以下保留先前阶段记录。
+
 <!-- CURRENT_VERIFIED35_PACKW_20261025 -->
 当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
 

@@ -1,0 +1,201 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite independently distinct Arm/RVV emulation of actual repaired C kernels plus scalar oracle; not ISA execution or formal proof",
+  "sanitizer": "address",
+  "configured_parallel_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k",
+  "input_sha256": {
+    "proof/native/isa_arrays.h": "b19131275bbf9ed5fc0f88da0334a7a84103e3aaa2b5514cb891fc2ce2521543",
+    "proof/native/regression.c": "f20f6f2636c978c2f939442b7c6252a3d599cb449f5f83c9f704d33ead5da136",
+    "impl/testNEON.c": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+    "impl/testRVV.c": "5bd886a63c55b17f52967636b18449e5fe3bc5409e83aec41f3e2cf09309009a",
+    "proof/check_native.py": "0035874fffd7ab58a1c0242e5b2b2d895543b545c3d6358ad414e5187744e7de",
+    "shim/qm_scale_is_nan.c": "3743edb4489612e8c5132e36f5c082a367397857c894393d708543a57040ddda",
+    "shim/scalar_nan.h": "5a3b5ae076dd366e6315717373372f78f02db1223e4496f1dc13f129058ace3e"
+  },
+  "records": [
+    {
+      "label": "wrong-both-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/wrong-both/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/wrong-both/test"
+      ],
+      "exit_code": 0,
+      "seconds": 81.1608610029798,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "correct-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/correct/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/correct/test"
+      ],
+      "exit_code": 0,
+      "seconds": 81.21184239001013,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "wrong-both-run",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/wrong-both/test"
+      ],
+      "exit_code": 3,
+      "seconds": 0.1660802010446787,
+      "log_sha256": "dd26e174ca111dd43c6a819c7e9cfd2a7b89a48562a13b91d67f881a7ccf3953"
+    },
+    {
+      "label": "wrong-one-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=address,undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/wrong-one/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/wrong-one/test"
+      ],
+      "exit_code": 0,
+      "seconds": 81.81301571708173,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "wrong-one-run",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/wrong-one/test"
+      ],
+      "exit_code": 2,
+      "seconds": 0.11547497403807938,
+      "log_sha256": "4657746bc66d3f9bd80cf41edd7f13cf45d278070f8ab53f803cdaf54093bba8"
+    },
+    {
+      "label": "correct-run",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-address-b_fpxt_k/correct/test"
+      ],
+      "exit_code": 0,
+      "seconds": 5.17569901002571,
+      "log_sha256": "6d2f3f18e7b1d4e1f0f032a86cd8bd04733626cb4a93e5ef519ad22871140131"
+    }
+  ],
+  "variants": [
+    {
+      "kind": "correct",
+      "passed": true,
+      "exit_code": 0,
+      "mutation": null,
+      "generated_header_sha256": "b19131275bbf9ed5fc0f88da0334a7a84103e3aaa2b5514cb891fc2ce2521543",
+      "cases": 278016,
+      "lanes_per_side": 12804556,
+      "partial_alias_cases": 92444,
+      "identical_input_cases": 93167,
+      "exhaustive_pair_scales": 38,
+      "all65536_output_offsets": true
+    },
+    {
+      "kind": "wrong-one",
+      "passed": true,
+      "exit_code": 2,
+      "mutation": {
+        "function": "vqmovn_s16",
+        "old": "int8x8_t vqmovn_s16(int16x8_t a){int8x8_t r;for(size_t j=0;j<8;j++)r.v[j]=qm_sat8(a.v[j]);return r;}",
+        "new": "int8x8_t vqmovn_s16(int16x8_t a){int8x8_t r;for(size_t j=0;j<8;j++)r.v[j]=0;return r;}"
+      },
+      "generated_header_sha256": "d5912368a5d856e50bf395e531eb1b003d9ad186262b9f911535f48ad999c54d"
+    },
+    {
+      "kind": "wrong-both",
+      "passed": true,
+      "exit_code": 3,
+      "mutation": {
+        "function": "qm_sat8",
+        "old": "int8_t qm_sat8(int64_t x){return x>INT8_MAX?INT8_MAX:x<INT8_MIN?INT8_MIN:(int8_t)x;}",
+        "new": "int8_t qm_sat8(int64_t x){return 0;}"
+      },
+      "generated_header_sha256": "7ac6274f1961b14ffe8e99df7888ac8d00d921757ac643f8b9dae0e0142a707c"
+    }
+  ],
+  "cases": 278016,
+  "lanes_per_side": 12804556,
+  "partial_alias_cases": 92444,
+  "identical_input_cases": 93167,
+  "exhaustive_pair_scales": 38,
+  "all65536_output_offsets": true,
+  "ASan_UBSan": true,
+  "actual_memory_max": 17179869184,
+  "actual_memory_swap_max": 0
+}

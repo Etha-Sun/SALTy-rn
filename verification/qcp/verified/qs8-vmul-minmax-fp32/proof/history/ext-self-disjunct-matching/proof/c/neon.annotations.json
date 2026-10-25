@@ -1,0 +1,581 @@
+{
+  "entry_cut": "/*@ Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && (batch==0 || output==output@pre+(batch@pre-batch)) && params==params@pre && batch==batch@pre && batch%sizeof(int8_t)==0 && input_a==input_a@pre && input_b==input_b@pre && output==output@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) */",
+  "loop_invariant": "/*@ Inv Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && (batch==0 || output==output@pre+(batch@pre-batch)) && params==params@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(va_zero_point.s0),char,AZ) * store(&(va_zero_point.s1),char,AZ) * store(&(va_zero_point.s2),char,AZ) * store(&(va_zero_point.s3),char,AZ) * store(&(va_zero_point.s4),char,AZ) * store(&(va_zero_point.s5),char,AZ) * store(&(va_zero_point.s6),char,AZ) * store(&(va_zero_point.s7),char,AZ) * store(&(vb_zero_point.s0),char,BZ) * store(&(vb_zero_point.s1),char,BZ) * store(&(vb_zero_point.s2),char,BZ) * store(&(vb_zero_point.s3),char,BZ) * store(&(vb_zero_point.s4),char,BZ) * store(&(vb_zero_point.s5),char,BZ) * store(&(vb_zero_point.s6),char,BZ) * store(&(vb_zero_point.s7),char,BZ) * store(&(vscale.s0),float,Scale) * store(&(vscale.s1),float,Scale) * store(&(vscale.s2),float,Scale) * store(&(vscale.s3),float,Scale) * store(&(vmagic_bias.s0),float,qm_magic) * store(&(vmagic_bias.s1),float,qm_magic) * store(&(vmagic_bias.s2),float,qm_magic) * store(&(vmagic_bias.s3),float,qm_magic) * store(&(vmagic_bias_less_output_zero_point.s0),int,1262485504-OZ) * store(&(vmagic_bias_less_output_zero_point.s1),int,1262485504-OZ) * store(&(vmagic_bias_less_output_zero_point.s2),int,1262485504-OZ) * store(&(vmagic_bias_less_output_zero_point.s3),int,1262485504-OZ) * store(&(voutput_min.s0),char,Lo) * store(&(voutput_min.s1),char,Lo) * store(&(voutput_min.s2),char,Lo) * store(&(voutput_min.s3),char,Lo) * store(&(voutput_min.s4),char,Lo) * store(&(voutput_min.s5),char,Lo) * store(&(voutput_min.s6),char,Lo) * store(&(voutput_min.s7),char,Lo) * store(&(voutput_max.s0),char,Hi) * store(&(voutput_max.s1),char,Hi) * store(&(voutput_max.s2),char,Hi) * store(&(voutput_max.s3),char,Hi) * store(&(voutput_max.s4),char,Hi) * store(&(voutput_max.s5),char,Hi) * store(&(voutput_max.s6),char,Hi) * store(&(voutput_max.s7),char,Hi) */",
+  "tail_cut": "/*@ Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && output==output@pre+(batch@pre-batch) && params==params@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(va_zero_point.s0),char,AZ) * store(&(va_zero_point.s1),char,AZ) * store(&(va_zero_point.s2),char,AZ) * store(&(va_zero_point.s3),char,AZ) * store(&(va_zero_point.s4),char,AZ) * store(&(va_zero_point.s5),char,AZ) * store(&(va_zero_point.s6),char,AZ) * store(&(va_zero_point.s7),char,AZ) * store(&(vb_zero_point.s0),char,BZ) * store(&(vb_zero_point.s1),char,BZ) * store(&(vb_zero_point.s2),char,BZ) * store(&(vb_zero_point.s3),char,BZ) * store(&(vb_zero_point.s4),char,BZ) * store(&(vb_zero_point.s5),char,BZ) * store(&(vb_zero_point.s6),char,BZ) * store(&(vb_zero_point.s7),char,BZ) * store(&(vscale.s0),float,Scale) * store(&(vscale.s1),float,Scale) * store(&(vscale.s2),float,Scale) * store(&(vscale.s3),float,Scale) * store(&(vmagic_bias.s0),float,qm_magic) * store(&(vmagic_bias.s1),float,qm_magic) * store(&(vmagic_bias.s2),float,qm_magic) * store(&(vmagic_bias.s3),float,qm_magic) * store(&(vmagic_bias_less_output_zero_point.s0),int,1262485504-OZ) * store(&(vmagic_bias_less_output_zero_point.s1),int,1262485504-OZ) * store(&(vmagic_bias_less_output_zero_point.s2),int,1262485504-OZ) * store(&(vmagic_bias_less_output_zero_point.s3),int,1262485504-OZ) * store(&(voutput_min.s0),char,Lo) * store(&(voutput_min.s1),char,Lo) * store(&(voutput_min.s2),char,Lo) * store(&(voutput_min.s3),char,Lo) * store(&(voutput_min.s4),char,Lo) * store(&(voutput_min.s5),char,Lo) * store(&(voutput_min.s6),char,Lo) * store(&(voutput_min.s7),char,Lo) * store(&(voutput_max.s0),char,Hi) * store(&(voutput_max.s1),char,Hi) * store(&(voutput_max.s2),char,Hi) * store(&(voutput_max.s3),char,Hi) * store(&(voutput_max.s4),char,Hi) * store(&(voutput_max.s5),char,Hi) * store(&(voutput_max.s6),char,Hi) * store(&(voutput_max.s7),char,Hi) && 0<batch && batch<8 && rd_window(M,input_a,8) && rd_window(M,input_b,8) && ((batch==1 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==2 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==3 && (batch & (4 * sizeof(int8_t)))==0 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1) || (batch==4 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==0) || (batch==5 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==0 && (batch & (1 * sizeof(int8_t)))==1) || (batch==6 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==0) || (batch==7 && (batch & (4 * sizeof(int8_t)))==4 && (batch & (2 * sizeof(int8_t)))==2 && (batch & (1 * sizeof(int8_t)))==1)) */",
+  "call_bindings": [
+    {
+      "name": "vdup_n_s8",
+      "start": 882,
+      "end": 920,
+      "args": [
+        "params->scalar.a_zero_point"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vdup_n_s8",
+      "start": 955,
+      "end": 993,
+      "args": [
+        "params->scalar.b_zero_point"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vdupq_n_f32",
+      "start": 1024,
+      "end": 1057,
+      "args": [
+        "params->scalar.scale"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vdupq_n_f32",
+      "start": 1093,
+      "end": 1117,
+      "args": [
+        "12582912.0f"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vdupq_n_s32",
+      "start": 1174,
+      "end": 1251,
+      "args": [
+        "INT32_C(0x4B400000) - (int32_t) params->scalar.output_zero_point"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vdup_n_s8",
+      "start": 1284,
+      "end": 1320,
+      "args": [
+        "params->scalar.output_min"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vdup_n_s8",
+      "start": 1353,
+      "end": 1389,
+      "args": [
+        "params->scalar.output_max"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vld1_s8",
+      "start": 1493,
+      "end": 1509,
+      "args": [
+        "input_a"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vld1_s8",
+      "start": 1557,
+      "end": 1573,
+      "args": [
+        "input_b"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vsubl_s8",
+      "start": 1624,
+      "end": 1659,
+      "args": [
+        "va01234567",
+        "va_zero_point"
+      ],
+      "where": "a=&va01234567,a0=va01234567.s0,a1=va01234567.s1,a2=va01234567.s2,a3=va01234567.s3,a4=va01234567.s4,a5=va01234567.s5,a6=va01234567.s6,a7=va01234567.s7,b=&va_zero_point,b0=va_zero_point.s0,b1=va_zero_point.s1,b2=va_zero_point.s2,b3=va_zero_point.s3,b4=va_zero_point.s4,b5=va_zero_point.s5,b6=va_zero_point.s6,b7=va_zero_point.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vsubl_s8",
+      "start": 1695,
+      "end": 1730,
+      "args": [
+        "vb01234567",
+        "vb_zero_point"
+      ],
+      "where": "a=&vb01234567,a0=vb01234567.s0,a1=vb01234567.s1,a2=vb01234567.s2,a3=vb01234567.s3,a4=vb01234567.s4,a5=vb01234567.s5,a6=vb01234567.s6,a7=vb01234567.s7,b=&vb_zero_point,b0=vb_zero_point.s0,b1=vb_zero_point.s1,b2=vb_zero_point.s2,b3=vb_zero_point.s3,b4=vb_zero_point.s4,b5=vb_zero_point.s5,b6=vb_zero_point.s6,b7=vb_zero_point.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmull_s16",
+      "start": 1758,
+      "end": 1821,
+      "args": [
+        "vget_low_s16(vxa01234567)",
+        "vget_low_s16(vxb01234567)"
+      ],
+      "where": "a=&vxa01234567,a0=vxa01234567.s0,a1=vxa01234567.s1,a2=vxa01234567.s2,a3=vxa01234567.s3,a4=vxa01234567.s4,a5=vxa01234567.s5,a6=vxa01234567.s6,a7=vxa01234567.s7,b=&vxb01234567,b0=vxb01234567.s0,b1=vxb01234567.s1,b2=vxb01234567.s2,b3=vxb01234567.s3,b4=vxb01234567.s4,b5=vxb01234567.s5,b6=vxb01234567.s6,b7=vxb01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vmull_s16",
+      "start": 1848,
+      "end": 1913,
+      "args": [
+        "vget_high_s16(vxa01234567)",
+        "vget_high_s16(vxb01234567)"
+      ],
+      "where": "a=&vxa01234567,a0=vxa01234567.s0,a1=vxa01234567.s1,a2=vxa01234567.s2,a3=vxa01234567.s3,a4=vxa01234567.s4,a5=vxa01234567.s5,a6=vxa01234567.s6,a7=vxa01234567.s7,b=&vxb01234567,b0=vxb01234567.s0,b1=vxb01234567.s1,b2=vxb01234567.s2,b3=vxb01234567.s3,b4=vxb01234567.s4,b5=vxb01234567.s5,b6=vxb01234567.s6,b7=vxb01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vcvtq_f32_s32",
+      "start": 1945,
+      "end": 1968,
+      "args": [
+        "vacc0123"
+      ],
+      "where": "a=&vacc0123,a0=vacc0123.s0,a1=vacc0123.s1,a2=vacc0123.s2,a3=vacc0123.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vcvtq_f32_s32",
+      "start": 1999,
+      "end": 2022,
+      "args": [
+        "vacc4567"
+      ],
+      "where": "a=&vacc4567,a0=vacc4567.s0,a1=vacc4567.s1,a2=vacc4567.s2,a3=vacc4567.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmulq_f32",
+      "start": 2042,
+      "end": 2071,
+      "args": [
+        "vfpacc0123",
+        "vscale"
+      ],
+      "where": "a=&vfpacc0123,a0=vfpacc0123.s0,a1=vfpacc0123.s1,a2=vfpacc0123.s2,a3=vfpacc0123.s3,b=&vscale,b0=vscale.s0,b1=vscale.s1,b2=vscale.s2,b3=vscale.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmulq_f32",
+      "start": 2090,
+      "end": 2119,
+      "args": [
+        "vfpacc4567",
+        "vscale"
+      ],
+      "where": "a=&vfpacc4567,a0=vfpacc4567.s0,a1=vfpacc4567.s1,a2=vfpacc4567.s2,a3=vfpacc4567.s3,b=&vscale,b0=vscale.s0,b1=vscale.s1,b2=vscale.s2,b3=vscale.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vreinterpretq_s32_f32",
+      "start": 2137,
+      "end": 2194,
+      "args": [
+        "vaddq_f32(vfpacc0123, vmagic_bias)"
+      ],
+      "where": "a=&vfpacc0123,a0=vfpacc0123.s0,a1=vfpacc0123.s1,a2=vfpacc0123.s2,a3=vfpacc0123.s3,b=&vmagic_bias,b0=vmagic_bias.s0,b1=vmagic_bias.s1,b2=vmagic_bias.s2,b3=vmagic_bias.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vreinterpretq_s32_f32",
+      "start": 2211,
+      "end": 2268,
+      "args": [
+        "vaddq_f32(vfpacc4567, vmagic_bias)"
+      ],
+      "where": "a=&vfpacc4567,a0=vfpacc4567.s0,a1=vfpacc4567.s1,a2=vfpacc4567.s2,a3=vfpacc4567.s3,b=&vmagic_bias,b0=vmagic_bias.s0,b1=vmagic_bias.s1,b2=vmagic_bias.s2,b3=vmagic_bias.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vqsubq_s32",
+      "start": 2286,
+      "end": 2342,
+      "args": [
+        "vacc0123",
+        "vmagic_bias_less_output_zero_point"
+      ],
+      "where": "a=&vacc0123,a0=vacc0123.s0,a1=vacc0123.s1,a2=vacc0123.s2,a3=vacc0123.s3,b=&vmagic_bias_less_output_zero_point,b0=vmagic_bias_less_output_zero_point.s0,b1=vmagic_bias_less_output_zero_point.s1,b2=vmagic_bias_less_output_zero_point.s2,b3=vmagic_bias_less_output_zero_point.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vqsubq_s32",
+      "start": 2359,
+      "end": 2415,
+      "args": [
+        "vacc4567",
+        "vmagic_bias_less_output_zero_point"
+      ],
+      "where": "a=&vacc4567,a0=vacc4567.s0,a1=vacc4567.s1,a2=vacc4567.s2,a3=vacc4567.s3,b=&vmagic_bias_less_output_zero_point,b0=vmagic_bias_less_output_zero_point.s0,b1=vmagic_bias_less_output_zero_point.s1,b2=vmagic_bias_less_output_zero_point.s2,b3=vmagic_bias_less_output_zero_point.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vqmovn_high_s32",
+      "start": 2472,
+      "end": 2519,
+      "args": [
+        "vqmovn_s32(vacc0123)",
+        "vacc4567"
+      ],
+      "where": "a=&vacc0123,a0=vacc0123.s0,a1=vacc0123.s1,a2=vacc0123.s2,a3=vacc0123.s3,b=&vacc4567,b0=vacc4567.s0,b1=vacc4567.s1,b2=vacc4567.s2,b3=vacc4567.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vqmovn_s16",
+      "start": 2686,
+      "end": 2710,
+      "args": [
+        "vacc01234567"
+      ],
+      "where": "a=&vacc01234567,a0=vacc01234567.s0,a1=vacc01234567.s1,a2=vacc01234567.s2,a3=vacc01234567.s3,a4=vacc01234567.s4,a5=vacc01234567.s5,a6=vacc01234567.s6,a7=vacc01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmax_s8",
+      "start": 2809,
+      "end": 2843,
+      "args": [
+        "vout01234567",
+        "voutput_min"
+      ],
+      "where": "a=&vout01234567,a0=vout01234567.s0,a1=vout01234567.s1,a2=vout01234567.s2,a3=vout01234567.s3,a4=vout01234567.s4,a5=vout01234567.s5,a6=vout01234567.s6,a7=vout01234567.s7,b=&voutput_min,b0=voutput_min.s0,b1=voutput_min.s1,b2=voutput_min.s2,b3=voutput_min.s3,b4=voutput_min.s4,b5=voutput_min.s5,b6=voutput_min.s6,b7=voutput_min.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmin_s8",
+      "start": 2865,
+      "end": 2899,
+      "args": [
+        "vout01234567",
+        "voutput_max"
+      ],
+      "where": "a=&vout01234567,a0=vout01234567.s0,a1=vout01234567.s1,a2=vout01234567.s2,a3=vout01234567.s3,a4=vout01234567.s4,a5=vout01234567.s5,a6=vout01234567.s6,a7=vout01234567.s7,b=&voutput_max,b0=voutput_max.s0,b1=voutput_max.s1,b2=voutput_max.s2,b3=voutput_max.s3,b4=voutput_max.s4,b5=voutput_max.s5,b6=voutput_max.s6,b7=voutput_max.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vst1_s8",
+      "start": 2906,
+      "end": 2935,
+      "args": [
+        "output",
+        "vout01234567"
+      ],
+      "where": "x0=vout01234567.s0,x1=vout01234567.s1,x2=vout01234567.s2,x3=vout01234567.s3,x4=vout01234567.s4,x5=vout01234567.s5,x6=vout01234567.s6,x7=vout01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vld1_s8",
+      "start": 3026,
+      "end": 3042,
+      "args": [
+        "input_a"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vld1_s8",
+      "start": 3078,
+      "end": 3094,
+      "args": [
+        "input_b"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vsubl_s8",
+      "start": 3133,
+      "end": 3168,
+      "args": [
+        "va01234567",
+        "va_zero_point"
+      ],
+      "where": "a=&va01234567,a0=va01234567.s0,a1=va01234567.s1,a2=va01234567.s2,a3=va01234567.s3,a4=va01234567.s4,a5=va01234567.s5,a6=va01234567.s6,a7=va01234567.s7,b=&va_zero_point,b0=va_zero_point.s0,b1=va_zero_point.s1,b2=va_zero_point.s2,b3=va_zero_point.s3,b4=va_zero_point.s4,b5=va_zero_point.s5,b6=va_zero_point.s6,b7=va_zero_point.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vsubl_s8",
+      "start": 3206,
+      "end": 3241,
+      "args": [
+        "vb01234567",
+        "vb_zero_point"
+      ],
+      "where": "a=&vb01234567,a0=vb01234567.s0,a1=vb01234567.s1,a2=vb01234567.s2,a3=vb01234567.s3,a4=vb01234567.s4,a5=vb01234567.s5,a6=vb01234567.s6,a7=vb01234567.s7,b=&vb_zero_point,b0=vb_zero_point.s0,b1=vb_zero_point.s1,b2=vb_zero_point.s2,b3=vb_zero_point.s3,b4=vb_zero_point.s4,b5=vb_zero_point.s5,b6=vb_zero_point.s6,b7=vb_zero_point.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmull_s16",
+      "start": 3271,
+      "end": 3334,
+      "args": [
+        "vget_low_s16(vxa01234567)",
+        "vget_low_s16(vxb01234567)"
+      ],
+      "where": "a=&vxa01234567,a0=vxa01234567.s0,a1=vxa01234567.s1,a2=vxa01234567.s2,a3=vxa01234567.s3,a4=vxa01234567.s4,a5=vxa01234567.s5,a6=vxa01234567.s6,a7=vxa01234567.s7,b=&vxb01234567,b0=vxb01234567.s0,b1=vxb01234567.s1,b2=vxb01234567.s2,b3=vxb01234567.s3,b4=vxb01234567.s4,b5=vxb01234567.s5,b6=vxb01234567.s6,b7=vxb01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vmull_s16",
+      "start": 3363,
+      "end": 3428,
+      "args": [
+        "vget_high_s16(vxa01234567)",
+        "vget_high_s16(vxb01234567)"
+      ],
+      "where": "a=&vxa01234567,a0=vxa01234567.s0,a1=vxa01234567.s1,a2=vxa01234567.s2,a3=vxa01234567.s3,a4=vxa01234567.s4,a5=vxa01234567.s5,a6=vxa01234567.s6,a7=vxa01234567.s7,b=&vxb01234567,b0=vxb01234567.s0,b1=vxb01234567.s1,b2=vxb01234567.s2,b3=vxb01234567.s3,b4=vxb01234567.s4,b5=vxb01234567.s5,b6=vxb01234567.s6,b7=vxb01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vcvtq_f32_s32",
+      "start": 3462,
+      "end": 3485,
+      "args": [
+        "vacc0123"
+      ],
+      "where": "a=&vacc0123,a0=vacc0123.s0,a1=vacc0123.s1,a2=vacc0123.s2,a3=vacc0123.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vcvtq_f32_s32",
+      "start": 3518,
+      "end": 3541,
+      "args": [
+        "vacc4567"
+      ],
+      "where": "a=&vacc4567,a0=vacc4567.s0,a1=vacc4567.s1,a2=vacc4567.s2,a3=vacc4567.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmulq_f32",
+      "start": 3563,
+      "end": 3592,
+      "args": [
+        "vfpacc0123",
+        "vscale"
+      ],
+      "where": "a=&vfpacc0123,a0=vfpacc0123.s0,a1=vfpacc0123.s1,a2=vfpacc0123.s2,a3=vfpacc0123.s3,b=&vscale,b0=vscale.s0,b1=vscale.s1,b2=vscale.s2,b3=vscale.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmulq_f32",
+      "start": 3613,
+      "end": 3642,
+      "args": [
+        "vfpacc4567",
+        "vscale"
+      ],
+      "where": "a=&vfpacc4567,a0=vfpacc4567.s0,a1=vfpacc4567.s1,a2=vfpacc4567.s2,a3=vfpacc4567.s3,b=&vscale,b0=vscale.s0,b1=vscale.s1,b2=vscale.s2,b3=vscale.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vreinterpretq_s32_f32",
+      "start": 3662,
+      "end": 3719,
+      "args": [
+        "vaddq_f32(vfpacc0123, vmagic_bias)"
+      ],
+      "where": "a=&vfpacc0123,a0=vfpacc0123.s0,a1=vfpacc0123.s1,a2=vfpacc0123.s2,a3=vfpacc0123.s3,b=&vmagic_bias,b0=vmagic_bias.s0,b1=vmagic_bias.s1,b2=vmagic_bias.s2,b3=vmagic_bias.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vreinterpretq_s32_f32",
+      "start": 3738,
+      "end": 3795,
+      "args": [
+        "vaddq_f32(vfpacc4567, vmagic_bias)"
+      ],
+      "where": "a=&vfpacc4567,a0=vfpacc4567.s0,a1=vfpacc4567.s1,a2=vfpacc4567.s2,a3=vfpacc4567.s3,b=&vmagic_bias,b0=vmagic_bias.s0,b1=vmagic_bias.s1,b2=vmagic_bias.s2,b3=vmagic_bias.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vqsubq_s32",
+      "start": 3815,
+      "end": 3871,
+      "args": [
+        "vacc0123",
+        "vmagic_bias_less_output_zero_point"
+      ],
+      "where": "a=&vacc0123,a0=vacc0123.s0,a1=vacc0123.s1,a2=vacc0123.s2,a3=vacc0123.s3,b=&vmagic_bias_less_output_zero_point,b0=vmagic_bias_less_output_zero_point.s0,b1=vmagic_bias_less_output_zero_point.s1,b2=vmagic_bias_less_output_zero_point.s2,b3=vmagic_bias_less_output_zero_point.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vqsubq_s32",
+      "start": 3890,
+      "end": 3946,
+      "args": [
+        "vacc4567",
+        "vmagic_bias_less_output_zero_point"
+      ],
+      "where": "a=&vacc4567,a0=vacc4567.s0,a1=vacc4567.s1,a2=vacc4567.s2,a3=vacc4567.s3,b=&vmagic_bias_less_output_zero_point,b0=vmagic_bias_less_output_zero_point.s0,b1=vmagic_bias_less_output_zero_point.s1,b2=vmagic_bias_less_output_zero_point.s2,b3=vmagic_bias_less_output_zero_point.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vqmovn_high_s32",
+      "start": 4007,
+      "end": 4054,
+      "args": [
+        "vqmovn_s32(vacc0123)",
+        "vacc4567"
+      ],
+      "where": "a=&vacc0123,a0=vacc0123.s0,a1=vacc0123.s1,a2=vacc0123.s2,a3=vacc0123.s3,b=&vacc4567,b0=vacc4567.s0,b1=vacc4567.s1,b2=vacc4567.s2,b3=vacc4567.s3",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vqmovn_s16",
+      "start": 4204,
+      "end": 4228,
+      "args": [
+        "vacc01234567"
+      ],
+      "where": "a=&vacc01234567,a0=vacc01234567.s0,a1=vacc01234567.s1,a2=vacc01234567.s2,a3=vacc01234567.s3,a4=vacc01234567.s4,a5=vacc01234567.s5,a6=vacc01234567.s6,a7=vacc01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmax_s8",
+      "start": 4252,
+      "end": 4286,
+      "args": [
+        "vout01234567",
+        "voutput_min"
+      ],
+      "where": "a=&vout01234567,a0=vout01234567.s0,a1=vout01234567.s1,a2=vout01234567.s2,a3=vout01234567.s3,a4=vout01234567.s4,a5=vout01234567.s5,a6=vout01234567.s6,a7=vout01234567.s7,b=&voutput_min,b0=voutput_min.s0,b1=voutput_min.s1,b2=voutput_min.s2,b3=voutput_min.s3,b4=voutput_min.s4,b5=voutput_min.s5,b6=voutput_min.s6,b7=voutput_min.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vmin_s8",
+      "start": 4309,
+      "end": 4343,
+      "args": [
+        "vout01234567",
+        "voutput_max"
+      ],
+      "where": "a=&vout01234567,a0=vout01234567.s0,a1=vout01234567.s1,a2=vout01234567.s2,a3=vout01234567.s3,a4=vout01234567.s4,a5=vout01234567.s5,a6=vout01234567.s6,a7=vout01234567.s7,b=&voutput_max,b0=voutput_max.s0,b1=voutput_max.s1,b2=voutput_max.s2,b3=voutput_max.s3,b4=voutput_max.s4,b5=voutput_max.s5,b6=voutput_max.s6,b7=voutput_max.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vst1_lane_u32",
+      "start": 4395,
+      "end": 4462,
+      "args": [
+        "(void*) output",
+        "vreinterpret_u32_s8(vout01234567)",
+        "0"
+      ],
+      "where": "x0=vout01234567.s0,x1=vout01234567.s1,x2=vout01234567.s2,x3=vout01234567.s3,x4=vout01234567.s4,x5=vout01234567.s5,x6=vout01234567.s6,x7=vout01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vext_s8",
+      "start": 4500,
+      "end": 4538,
+      "args": [
+        "vout01234567",
+        "vout01234567",
+        "4"
+      ],
+      "where": "x0=vout01234567.s0,x1=vout01234567.s1,x2=vout01234567.s2,x3=vout01234567.s3,x4=vout01234567.s4,x5=vout01234567.s5,x6=vout01234567.s6,x7=vout01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vst1_lane_u16",
+      "start": 4598,
+      "end": 4665,
+      "args": [
+        "(void*) output",
+        "vreinterpret_u16_s8(vout01234567)",
+        "0"
+      ],
+      "where": "x0=vout01234567.s0,x1=vout01234567.s1,x2=vout01234567.s2,x3=vout01234567.s3,x4=vout01234567.s4,x5=vout01234567.s5,x6=vout01234567.s6,x7=vout01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": true
+    },
+    {
+      "name": "vext_s8",
+      "start": 4703,
+      "end": 4741,
+      "args": [
+        "vout01234567",
+        "vout01234567",
+        "2"
+      ],
+      "where": "x0=vout01234567.s0,x1=vout01234567.s1,x2=vout01234567.s2,x3=vout01234567.s3,x4=vout01234567.s4,x5=vout01234567.s5,x6=vout01234567.s6,x7=vout01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "vst1_lane_s8",
+      "start": 4801,
+      "end": 4838,
+      "args": [
+        "output",
+        "vout01234567",
+        "0"
+      ],
+      "where": "x0=vout01234567.s0,x1=vout01234567.s1,x2=vout01234567.s2,x3=vout01234567.s3,x4=vout01234567.s4,x5=vout01234567.s5,x6=vout01234567.s6,x7=vout01234567.s7",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    }
+  ],
+  "same_raw_tokens": true,
+  "scope": "Current actual repaired C, fullscale/fullint16zero, single byte map permits input aliases, no complete proof from generation."
+}

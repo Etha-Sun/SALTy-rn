@@ -1,0 +1,23 @@
+#ifndef QS8MUL_RECORD_SDK_H
+#define QS8MUL_RECORD_SDK_H
+#include <stdint.h>
+#include <stddef.h>
+#ifndef QS8_MUL_NATIVE_ISA_ARRAYS_H
+#include <riscv_vector.h>
+#endif
+int qm_scale_is_nan(float);
+#define qm_isa_wmul_record_view __riscv_vwmul_vv_i32m8
+#define qm_isa_record_fmul __riscv_vfmul_vf_f32m8
+#define qm_isa_record_fadd __riscv_vfadd_vf_f32m8
+#define qm_isa_record_sgnj __riscv_vfsgnj_vf_f32m8
+#define qm_isa_record_reinterpret __riscv_vreinterpret_v_f32m8_i32m8
+#define qm_isa_record_cvt __riscv_vfcvt_f_x_v_f32m8
+#define qm_isa_record_load __riscv_vle8_v_i8m2
+#define qm_isa_record_sext __riscv_vsext_vf2_i16m4
+#define qm_isa_record_sub16 __riscv_vsub_vx_i16m4
+#define qm_isa_record_ssub __riscv_vssub_vx_i32m8
+#define qm_isa_record_clip16 __riscv_vnclip_wx_i16m4
+#define qm_isa_record_clip8 __riscv_vnclip_wx_i8m2
+#define qm_isa_record_max8 __riscv_vmax_vx_i8m2
+#define qm_isa_record_min8 __riscv_vmin_vx_i8m2
+#endif

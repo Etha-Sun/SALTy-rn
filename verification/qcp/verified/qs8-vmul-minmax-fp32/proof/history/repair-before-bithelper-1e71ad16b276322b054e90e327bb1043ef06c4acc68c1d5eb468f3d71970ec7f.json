@@ -1,0 +1,52 @@
+{
+  "kernel": "qs8-vmul-minmax-fp32",
+  "variant": "repaired",
+  "neon_changed": false,
+  "original_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "repaired_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "original_rvv_sha256": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528",
+  "repaired_rvv_sha256": "5bd886a63c55b17f52967636b18449e5fe3bc5409e83aec41f3e2cf09309009a",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "d68e6f68fb64d009ad10b296dfa8ce913b3bb0e87bfd161ce96ff9f617f973c8",
+  "causes": [
+    "Original numeric float-to-int conversion/add differs from NEON magic-bias reinterpret/saturating-subtract for large finite scale.",
+    "Frama reference magic-bias repair still differs for negative NaN scale under independently reviewed Arm-preserving/RVV-canonical arithmetic NaN rules."
+  ],
+  "changes": [
+    "Adopt Frama RVV magic-bias add/reinterpret/saturating-subtract.",
+    "If scale is NaN, vfsgnj.vf restores scale sign after final float add; no NaN/Inf/negative/zero/subnormal scale restriction.",
+    "QCP compatibility only: bit-exact RVV moves + integer mask classify every binary32 scale in an ordinary checked helper; no floating self-compare in actual kernel."
+  ],
+  "reference_only": {
+    "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+    "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/rvv.c",
+    "sha256": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b",
+    "historical_credit_transferred": false
+  },
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "e5ee51bcd3063df631a57e3ba94fe8b1137b9e5a181a9ddaa8e101eb3330d4fb",
+  "whole_kernel_verified": false,
+  "fix_validated_by_native": true,
+  "native_evidence": {
+    "native-undefined-status.json": "53b49a40f0439b9f0549cf807c199d5977603050254f79e11b5a75b7c8206fda",
+    "native-address-status.json": "d41b421a51d935d9bc6ff26927046c2862bcdf694440997a51da774a2351cc14"
+  },
+  "native_scope": "Finite actual C execution in distinct ISA emulation, not hardware execution or formal proof",
+  "compatibility_refactor": {
+    "previous_repaired_sha256": "4d55087480a4b8540c5ba89c05bbe4a4c60573c2a9503d0fd4c76f49f7b3c99a",
+    "reason": "QCP scalar FP self-compare NaN path creates False VC, demonstrated in preserved actual minimal goal. C is valid; no semantic counterexample asserted for this rewrite.",
+    "change": "Replace scalar scale!=scale with ordinary bit-copy/integer-mask helper qm_scale_is_nan.",
+    "helper_source": "shim/qm_scale_is_nan.c",
+    "helper_source_sha256": "3743edb4489612e8c5132e36f5c082a367397857c894393d708543a57040ddda",
+    "helper_contract": "shim/scalar_nan.h",
+    "helper_contract_sha256": "5a3b5ae076dd366e6315717373372f78f02db1223e4496f1dc13f129058ace3e",
+    "all_scale_domain_preserved": true,
+    "IEEE_flags": "Flags unobserved and traps disabled, including the original signaling-NaN compare invalid flag.",
+    "formal_math_bridge": "Qs8Mul.ScalarBitsFacts.qm_checked_nan_branch",
+    "formal_math_status": ".build/module-proof-t0ed511a/status.json",
+    "actual_helper_body_proof": "pending",
+    "history": "proof/history/scalar-self-ne-actual-C-tool-gap",
+    "exact_patch_receipt": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/repair-bit-classifier-0b052kvg/status.json"
+  },
+  "time_utc": "2026-10-24T07:38:56.248940+00:00"
+}

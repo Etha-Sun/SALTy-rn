@@ -1,0 +1,43 @@
+From Coq Require Import ZArith Lia.
+From Qs8Mul Require Import Types AddressFacts IntrinsicModel FastFrame numeric_probe_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque rd_mem rd_get qm_sat8.
+Module CheckedNumericProbe : Qs8Mul.numeric_probe_goal.VC_Correct.
+Lemma proof_of_qm_numeric_probe_return_wit_1 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_return_wit_1.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_return_wit_1;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_1_pure : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_1_pure.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_1_pure;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_1 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_1.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_1, Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_1_aux;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_2 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_2.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_2;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_3_pure : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_3_pure.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_3_pure;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_3 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_3.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_3, Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_3_aux;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_4 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_4.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_4;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_5 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_5.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_5;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_6 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_6.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_6;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_7 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_7.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_7;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_8 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_8.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_8;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+Lemma proof_of_qm_numeric_probe_partial_solve_wit_9 : Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_9.
+Proof. unfold Qs8Mul.numeric_probe_goal.qm_numeric_probe_partial_solve_wit_9;intros;try unfold UndefStructPredint8x8_t,UndefStructPredint16x8_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[entailer!|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[entailer!]]. Qed.
+End CheckedNumericProbe.
+Module ExactNumeric : Qs8Mul.numeric_probe_goal.VC_Correct := CheckedNumericProbe.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_return_wit_1.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_1_pure.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_1.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_2.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_3_pure.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_3.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_4.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_5.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_6.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_7.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_8.
+Print Assumptions CheckedNumericProbe.proof_of_qm_numeric_probe_partial_solve_wit_9.

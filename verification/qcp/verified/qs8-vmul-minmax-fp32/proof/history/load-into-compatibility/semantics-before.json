@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "kernel": "qs8-vmul-minmax-fp32",
+  "variant": "original NEON and disclosed repaired RVV",
+  "public_contract": "spec.c",
+  "input_domain": {
+    "batch": "1 <= batch <= 2^64-1",
+    "input_bytes": "Each input has N+7 readable bytes in one RDMap; input overlap allowed",
+    "output": "Exactly N signed-byte cells, with separation from readonly inputs and scalar parameter cells explicit in spec.c",
+    "AZ_BZ": "signed8",
+    "OZ": "signed16",
+    "Lo_Hi": "each signed8, no ordering premise",
+    "Scale": "all binary32 including NaN/Inf/zeros/subnormals",
+    "params": "non-null; scalar field values preserved"
+  },
+  "numeric_semantics": {
+    "integer": "signed8 differences widened signed16; exact signed32 product on source ranges",
+    "float": "binary32 RNE multiply then separate add of exact12582912, no fused replacement",
+    "quantization": "reinterpret bits as signed32; saturating subtract1262485504-OZ; signed16 then signed8 saturation; max Lo then min Hi",
+    "NaN": "Arm payload/sign propagation and RVV canonical NaN modeled separately; repaired RVV restores NaN Scale sign after final arithmetic before reinterpretation",
+    "classifier": "Ordinary C moves/reinterpret and integer-mask helper with checked binary32 bridge",
+    "observation": "signed byte outputs exactly equal; floating flags/traps unobserved"
+  },
+  "configuration": {
+    "NEON": "AArch64 AdvSIMD little-endian FPCR DN/FZ/FIZ/AH0",
+    "RVV": "RVV1.0 VLEN128 XLEN64 ELEN64, e8m2/e16m4/e32m8, VLMAX32",
+    "VL": "all legal architectural choices in qm_vl_allowed, not min-only",
+    "rounding": "RNE; narrow shift0 VXRM RDN2",
+    "inactive": "conservative arbitrary typed inactive lanes; unobserved",
+    "vstart": 0
+  },
+  "trust_boundary": {
+    "intrinsic_terminals": 43,
+    "ordinary_C_functions": 32,
+    "intrinsic_C_implementation_proof": "optional only for exact original-intrinsic reviewed specs",
+    "ordinary_C_proofs": "mandatory for both kernels, all19 ordinary helpers (including4 Float32 pointer-copy borrowers), compare_outputs/equivalent and9 width probes",
+    "human_semantic_review": "pending",
+    "formal_ISA_correspondence": false,
+    "physical_struct_ABI_refinement": false,
+    "independent_termination": false,
+    "ordinary_helpers": 19,
+    "inventory_TUs": 20
+  },
+  "intrinsic_ledger": "proof/intrinsic-ledger.json",
+  "intrinsic_ledger_sha256": "6f19b11cc15f91e02b8994e629803ca3012b1391dee082111a3469e3b20412b9",
+  "official_sources": {
+    "ARM_ACLE": {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+      "bytes": 3587774
+    },
+    "RVV_V1.0": {
+      "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "version": "1.0",
+      "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+      "bytes": 207611
+    }
+  },
+  "model_sources": {
+    "proof/coq/Model.v": "1a3389fc508edf6c08ec59a80ec418aeadbb09326762fd4181945267d18904b2",
+    "proof/coq/Bits.v": "6a1212a585c087bde1ee41ec322d6f96ea221de99e90ad343893c2db37c83849",
+    "proof/coq/NanFacts.v": "3bf0f800e664a688c995cd5ae849d58a1d87675bcb7624ded44903dea1371284",
+    "proof/coq/Pointwise.v": "1fd20cb35cee3a84c846d3c146714db44a8da02e054593dc3f21a776edb25092",
+    "proof/coq/ScalarBitsFacts.v": "4358340ae5284c466f98c0f6a55171fc093bbf1c0a0712d343fd69c9809ebedd",
+    "proof/coq/ScalarCompareFacts.v": "87e427bde7023b7dfc4bbc98f3343490dba3ecf95f21d2c2ec910b72c9a18f7b",
+    "proof/coq/MemoryModel.v": "15d497d1c8c127a73b7480bbaa475bc6bb40d79b8f20462cd1fe48bca5eeecb5",
+    "proof/coq/ProgramModel.v": "acb075e136ccae2565c7cb6a372de8ac950ac767a938647157de9a3aaa785113",
+    "proof/coq/Types.v": "744b8dc778334271a5080157d6896143f4999705efb9d3477b598bd555ac9f94"
+  },
+  "repair_evidence": [
+    "proof/originals.json",
+    "proof/repair.json",
+    "proof/repair-rvv.patch",
+    "proof/original-counterexamples.json"
+  ],
+  "evidence_rule": "Components and finite tests never add a kernel; actual complete fresh gate plus issuer and relocation audits required",
+  "artifact_kind": "public semantic boundary, not a verification certificate",
+  "float_pointer_borrow": {
+    "source_ledger": "proof/float-borrow-source-ledger.json",
+    "body": "shim/float_borrow.c",
+    "ordinary_C_fields_checked": 20,
+    "underlying_view_count": 4,
+    "underlying_views": "Original ISA operations with concrete scalar ghosts; active fields structurally equal to the same existing Coq operation, arbitrary typed inactive fields. Human ISA/ABI review pending.",
+    "kernel_raw_C_changed": false,
+    "numeric_models_changed": false,
+    "scale_domain_changed": false,
+    "all_input_cells_retained": true,
+    "scope": "C-shim pointer/copy representation only; no physical SIMD ABI or ISA refinement theorem claimed"
+  }
+}

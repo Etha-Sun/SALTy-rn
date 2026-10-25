@@ -1,0 +1,169 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite independently distinct Arm/RVV emulation of actual repaired C kernels plus scalar oracle; not ISA execution or formal proof",
+  "sanitizer": "undefined",
+  "configured_parallel_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30",
+  "input_sha256": {
+    "proof/native/isa_arrays.h": "410b9643e152e8297cb049940c52c2c3c73d51566b20199ba1f9c34205d7acfc",
+    "proof/native/regression.c": "f20f6f2636c978c2f939442b7c6252a3d599cb449f5f83c9f704d33ead5da136",
+    "impl/testNEON.c": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+    "impl/testRVV.c": "4d55087480a4b8540c5ba89c05bbe4a4c60573c2a9503d0fd4c76f49f7b3c99a",
+    "proof/check_native.py": "771a3109b721086415b8fbdf84c651d9917debb8f84206cc6dbae4b62fa080a6"
+  },
+  "records": [
+    {
+      "label": "correct-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/correct/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/correct/test"
+      ],
+      "exit_code": 0,
+      "seconds": 1.3685815888457,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "wrong-one-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/wrong-one/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/wrong-one/test"
+      ],
+      "exit_code": 0,
+      "seconds": 1.5057573299854994,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "wrong-one-run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/wrong-one/test"
+      ],
+      "exit_code": 2,
+      "seconds": 0.008689834037795663,
+      "log_sha256": "3a955ff269e70221387946f7d3ecfd425daa24e5c82a49543ac956c741624c8c"
+    },
+    {
+      "label": "wrong-both-compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-omit-frame-pointer",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/wrong-both/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/wrong-both/test"
+      ],
+      "exit_code": 0,
+      "seconds": 1.5385989570058882,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "wrong-both-run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/wrong-both/test"
+      ],
+      "exit_code": 3,
+      "seconds": 0.008898407919332385,
+      "log_sha256": "96c33e15db2a3465a2b46ed2ee8bbd1df71272aaa55a2eec5d4aba98fee8116a"
+    },
+    {
+      "label": "correct-run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/native-undefined-omtwxd30/correct/test"
+      ],
+      "exit_code": 0,
+      "seconds": 4.034183226991445,
+      "log_sha256": "ba32d46db25ac59b7a9ded4fe5485f756eb36f1f71b7289e11d1f49fec89e120"
+    }
+  ],
+  "variants": [
+    {
+      "kind": "correct",
+      "passed": true,
+      "exit_code": 0,
+      "mutation": null,
+      "generated_header_sha256": "410b9643e152e8297cb049940c52c2c3c73d51566b20199ba1f9c34205d7acfc",
+      "cases": 278016,
+      "lanes_per_side": 12804556,
+      "partial_alias_cases": 92444,
+      "identical_input_cases": 93167,
+      "exhaustive_pair_scales": 38,
+      "all65536_output_offsets": true
+    },
+    {
+      "kind": "wrong-one",
+      "passed": true,
+      "exit_code": 2,
+      "mutation": {
+        "function": "vqmovn_s16",
+        "old": "int8x8_t vqmovn_s16(int16x8_t a){int8x8_t r;for(size_t j=0;j<8;j++)r.v[j]=qm_sat8(a.v[j]);return r;}",
+        "new": "int8x8_t vqmovn_s16(int16x8_t a){int8x8_t r;for(size_t j=0;j<8;j++)r.v[j]=0;return r;}"
+      },
+      "generated_header_sha256": "7ee3e215b17b68428504763959932c314459121a707eb81a2f08a1799ff873cd"
+    },
+    {
+      "kind": "wrong-both",
+      "passed": true,
+      "exit_code": 3,
+      "mutation": {
+        "function": "qm_sat8",
+        "old": "int8_t qm_sat8(int64_t x){return x>INT8_MAX?INT8_MAX:x<INT8_MIN?INT8_MIN:(int8_t)x;}",
+        "new": "int8_t qm_sat8(int64_t x){return 0;}"
+      },
+      "generated_header_sha256": "5754c63b21269f5990c323f27291b37c062be908478dfae3108163c59f0a0ae5"
+    }
+  ],
+  "cases": 278016,
+  "lanes_per_side": 12804556,
+  "partial_alias_cases": 92444,
+  "identical_input_cases": 93167,
+  "exhaustive_pair_scales": 38,
+  "all65536_output_offsets": true
+}

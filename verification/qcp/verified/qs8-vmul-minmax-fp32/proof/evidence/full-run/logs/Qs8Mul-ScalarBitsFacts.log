@@ -1,0 +1,71 @@
+Chars 0 - 35 [From~Coq~Require~Import~ZArith...] 0.275 secs (0.15u,0.123s)
+Chars 36 - 118 [From~Qs8Mul~Require~Export~Mod...] 4.03 secs (3.349u,0.586s)
+Chars 119 - 144 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 145 - 185 [Definition~qm_copy_fp32~(x~:~f...] 0. secs (0.u,0.s)
+Chars 186 - 229 [Definition~qm_extract_i32~(F~:...] 0. secs (0.u,0.s)
+Chars 230 - 339 [Lemma~qm_signed_mask31~:~~~for...] 0. secs (0.u,0.s)
+Chars 340 - 346 [Proof.] 0. secs (0.u,0.s)
+Chars 348 - 431 [(intros~u~Hu;~unfold~qm_signed...] 0.002 secs (0.002u,0.s)
+Chars 433 - 468 [(change~2147483647~with~(Z.one...] 0. secs (0.u,0.s)
+Chars 470 - 498 [(rewrite~!Z.land_ones~by~lia).] 0.003 secs (0.003u,0.s)
+Chars 500 - 519 [(rewrite~Zminus_mod).] 0. secs (0.u,0.s)
+Chars 521 - 586 [replace~(4294967296~mod~2~^~31...] 0.001 secs (0.001u,0.s)
+Chars 588 - 635 [(rewrite~Z.sub_0_r,~Z.mod_mod~...] 0.001 secs (0.001u,0.s)
+Chars 636 - 640 [Qed.] 0.003 secs (0.003u,0.s)
+Chars 641 - 800 [Lemma~qm_integer_nan_classifie...] 0. secs (0.u,0.s)
+Chars 801 - 807 [Proof.] 0. secs (0.u,0.s)
+Chars 809 - 889 [(intro~scale;~~~rewrite~qm_sig...] 0.001 secs (0.001u,0.s)
+Chars 891 - 953 [(rewrite~qm_self_ne;~unfold~qm...] 0. secs (0.u,0.s)
+Chars 954 - 958 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 959 - 1075 [Lemma~qm_checked_nan_branch~:~...] 0. secs (0.u,0.s)
+Chars 1076 - 1082 [Proof.] 0. secs (0.u,0.s)
+Chars 1084 - 1139 [(intros~scale~result~Hr;~rewri...] 0.002 secs (0.002u,0.s)
+Chars 1141 - 1231 [(pose~proof~(qm_nan_cases~(bit...] 0.002 secs (0.002u,0.s)
+Chars 1232 - 1236 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1237 - 1325 [Lemma~qm_valid_qnan_self_ne~:~...] 0. secs (0.u,0.s)
+Chars 1326 - 1332 [Proof.] 0. secs (0.u,0.s)
+Chars 1334 - 1375 [(apply~(proj2~(qm_scalar_self_...] 0. secs (0.u,0.s)
+Chars 1377 - 1405 [(apply~(proj1~(qm_nan_fp32~_))).] 0. secs (0.u,0.s)
+Chars 1407 - 1466 [(rewrite~bits_of_fp32_of_bits~...] 0.001 secs (0.001u,0.s)
+Chars 1467 - 1471 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1472 - 1549 [Lemma~qm_self_ne_cannot_be_rej...] 0. secs (0.u,0.s)
+Chars 1550 - 1556 [Proof.] 0. secs (0.u,0.s)
+Chars 1557 - 1598 [(intro~H;~exact~(H~_~qm_valid_...] 0. secs (0.u,0.s)
+Chars 1599 - 1603 [Qed.] 0. secs (0.u,0.s)
+Closed under the global context
+Chars 1604 - 1639 [Print~Assumptions~qm_signed_ma...] 0.606 secs (0.579u,0.019s)
+Closed under the global context
+Chars 1640 - 1684 [Print~Assumptions~qm_integer_n...] 0.422 secs (0.414u,0.007s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1685 - 1725 [Print~Assumptions~qm_checked_n...] 0.706 secs (0.693u,0.012s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1726 - 1766 [Print~Assumptions~qm_valid_qna...] 1.35 secs (1.331u,0.015s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1767 - 1815 [Print~Assumptions~qm_self_ne_c...] 0.653 secs (0.641u,0.012s)

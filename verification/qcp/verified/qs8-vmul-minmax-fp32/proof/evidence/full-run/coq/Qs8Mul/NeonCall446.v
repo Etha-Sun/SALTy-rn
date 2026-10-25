@@ -1,0 +1,3 @@
+From Qs8Mul Require Import neon_unit_goal NeonCallStoreTail321.
+Definition proof_of_test_neon_partial_solve_wit_321 : Qs8Mul.neon_unit_goal.test_neon_partial_solve_wit_321 := Qs8Mul.NeonCallStoreTail321.proof_of_test_neon_partial_solve_wit_321.
+Print Assumptions proof_of_test_neon_partial_solve_wit_321.

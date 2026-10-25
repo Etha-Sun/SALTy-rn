@@ -1,0 +1,12 @@
+From Qs8Mul Require Import Model qm_exact_frame_strategy_goal.
+From SimpleC.SL Require Import SeparationLogic.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedExactFrame : Qs8Mul.qm_exact_frame_strategy_goal.qm_exact_frame_Strategy_Correct.
+Lemma qm_exact_frame_strategy1_correctness : Qs8Mul.qm_exact_frame_strategy_goal.qm_exact_frame_strategy1.
+Proof. pre_process_default;entailer!. Qed.
+Lemma qm_exact_frame_strategy2_correctness : Qs8Mul.qm_exact_frame_strategy_goal.qm_exact_frame_strategy2.
+Proof. pre_process_default;entailer!. Qed.
+End CheckedExactFrame.
+Module ExactFrameGate:Qs8Mul.qm_exact_frame_strategy_goal.qm_exact_frame_Strategy_Correct:=CheckedExactFrame.
+Print Assumptions ExactFrameGate.qm_exact_frame_strategy1_correctness.
+Print Assumptions ExactFrameGate.qm_exact_frame_strategy2_correctness.

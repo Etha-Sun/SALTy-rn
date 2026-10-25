@@ -1,0 +1,52 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Three finite real C counterexamples in separate Arm-preserving/RVV-canonical NaN emulation; no ISA execution or proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/original-counterexamples-7n76c5vf",
+  "input_sha256": {
+    "proof/native/isa_arrays.h": "410b9643e152e8297cb049940c52c2c3c73d51566b20199ba1f9c34205d7acfc",
+    "proof/native/counterexamples.c": "682ac9aa42bc7c99814f4ccc02afe3f24c237aa5f9f7861ecdd86603ccba3f4e",
+    "proof/native/frama-repaired-rvv.c": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b",
+    "proof/original/testNEON.c": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+    "proof/original/testRVV.c": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528"
+  },
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/proof/native/counterexamples.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/original-counterexamples-7n76c5vf/counterexamples"
+      ],
+      "exit_code": 0,
+      "seconds": 1.6754557071253657,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/original-counterexamples-7n76c5vf/counterexamples"
+      ],
+      "exit_code": 0,
+      "seconds": 0.004499860107898712,
+      "log_sha256": "0bd3d5514866d5a8e480bc23de156603a4c592bfbd9ccbfc4b6e5fe4da8cbba2"
+    }
+  ],
+  "finite_magic_bias_difference_reproduced": true,
+  "frama_repair_still_differs_on_negative_NaN": true
+}

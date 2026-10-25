@@ -1,0 +1,28 @@
+From Coq Require Import ZArith Lia.
+From Qs8Mul Require Import PrefixFacts rvv_prefix_probe_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque rd_mem qm_lane_match.
+Module CheckedPrefixProbe : Qs8Mul.rvv_prefix_probe_goal.VC_Correct.
+Lemma proof_of_qm_rvv_prefix_probe_return_wit_1 : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_return_wit_1.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_return_wit_1;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+Lemma proof_of_qm_rvv_prefix_probe_partial_solve_wit_1_pure : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_1_pure.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_1_pure;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+Lemma proof_of_qm_rvv_prefix_probe_partial_solve_wit_1 : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_1.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_1, Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_1_aux;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+Lemma proof_of_qm_rvv_prefix_probe_partial_solve_wit_2 : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_2.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_2;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+Lemma proof_of_qm_rvv_prefix_probe_partial_solve_wit_3_pure : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_3_pure.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_3_pure;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+Lemma proof_of_qm_rvv_prefix_probe_partial_solve_wit_3 : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_3.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_3, Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_3_aux;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+Lemma proof_of_qm_rvv_prefix_probe_partial_solve_wit_4 : Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_4.
+Proof. unfold Qs8Mul.rvv_prefix_probe_goal.qm_rvv_prefix_probe_partial_solve_wit_4;try left;intros;unfold qm_read in *;change (sizeof(CHAR)) with 1 in *;rewrite ?Z.mul_1_r,?Z.add_0_r in *;try unfold UndefStructPredvint8m2_t,UndefStructPredvint16m4_t;rewrite ?qm_local_field_address;repeat progress rewrite <-logic_equiv_andp_assoc;first[solve[apply _derivable1_andp_intros;[qm_pure|opaque_leaves;sepcon_assoc_change;fast_cancel]]|solve[opaque_leaves;sepcon_assoc_change;fast_cancel]|solve[qm_pure]|solve[qm_pure_fact]]. Qed.
+End CheckedPrefixProbe.
+Module ExactPrefix : Qs8Mul.rvv_prefix_probe_goal.VC_Correct := CheckedPrefixProbe.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_return_wit_1.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_partial_solve_wit_1_pure.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_partial_solve_wit_1.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_partial_solve_wit_2.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_partial_solve_wit_3_pure.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_partial_solve_wit_3.
+Print Assumptions CheckedPrefixProbe.proof_of_qm_rvv_prefix_probe_partial_solve_wit_4.

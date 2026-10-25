@@ -1,0 +1,63 @@
+{
+  "scope": "Independent review of NaN/rounding/sign injection relevant to actual counterexamples and proposed public math model. Full intrinsic contract ledger and kernel proof are not complete.",
+  "whole_kernel_verified": false,
+  "formal_ISA_correspondence_proved": false,
+  "final_human_review": "pending",
+  "environment": {
+    "ARM": "AArch64 binary32, RNE, DN=0, FZ=0, FIZ=0, AH=0, traps disabled, FP/QC flags not observed",
+    "RVV": "V1.0 + F2.2, RNE canonical arithmetic NaNs, VXRM RDN for shift0 clips, VLEN128 with VLMAX32 in e8m2/e32m8; no observation of inactive lanes"
+  },
+  "sources": {
+    "ARM": {
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "version": "aarchmrs/pseudocode v2025-03_rel 2025-03-21T17:41",
+      "pdf_sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "sections_pdf_page_indices": {
+        "FPAdd": 5870,
+        "FPMul": 5883,
+        "FPProcessNaNs": 5894,
+        "FPProcessNaN": 5893,
+        "FPDefaultNaN": 5875,
+        "FPUnpack": 5920
+      }
+    },
+    "RVV_V1.0": {
+      "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+      "bytes": 207611
+    },
+    "RISC_V_F2.2": {
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/f-st-ext.html",
+      "sha256": "32fab89e5095b41a276fe55ac0a5ba938afd301661037f2c45353ca9a0c0de68",
+      "bytes": 70860
+    }
+  },
+  "findings": {
+    "ARM": "With the stated FPCR and finite converted integer first operand, FPMul propagates the scale NaN and FPAdd retains it. Sign and payload remain, with signaling payload quieting. Invalid0*Inf produces positive default NaN.",
+    "RVV": "Vector arithmetic follows scalar NaN rules and produces positive canonical NaN. vfsgnj.vf copies scalar sign without arithmetic canonicalization. Place sign repair after the last vfadd.",
+    "repair": "Keep NEON unchanged. RVV uses magic-bias bit reinterpret and signed saturating subtraction, restoring the NaN scale sign after final arithmetic. Quantization then depends on NaN sign, while payload differences saturate away."
+  },
+  "proposed_model_file": "proof/coq/Model.v",
+  "proposed_model_sha256": "1a3389fc508edf6c08ec59a80ec418aeadbb09326762fd4181945267d18904b2",
+  "definitions": [
+    "Qs8Mul.Model.qm_arm_result",
+    "Qs8Mul.Model.qm_arm_mul",
+    "Qs8Mul.Model.qm_arm_add",
+    "Qs8Mul.Model.qm_rvv_result",
+    "Qs8Mul.Model.qm_rvv_mul",
+    "Qs8Mul.Model.qm_rvv_add",
+    "Qs8Mul.Model.qm_sign",
+    "Qs8Mul.Model.qm_quant_bits",
+    "Qs8Mul.Model.qm_neon_lane",
+    "Qs8Mul.Model.qm_rvv_lane"
+  ],
+  "missing": [
+    "Full per-intrinsic C contract and exact-call binding ledger",
+    "Actual annotated kernels, memory/ordinary-adapter/caller closure and full fresh gate"
+  ],
+  "mathematical_relation_evidence": {
+    "path": "proof/pointwise-math-status.json",
+    "sha256": "96e94ba9ff83889fb3da4a01937fe1015701bbc442d86a3ed0ab10fdab54e633",
+    "claim": "Actual public mathematical definitions match for every binary32 scale and signed16 zero point; still not actual C kernel or ISA correspondence proof"
+  }
+}

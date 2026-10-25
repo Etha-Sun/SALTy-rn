@@ -1,0 +1,47 @@
+{
+  "generation_passed": true,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/adapter-goals-ws2pk1sc",
+  "configured_parallel_jobs": 32,
+  "actual_live_cap": 1,
+  "per_process_memory_GiB": 16,
+  "units": [
+    {
+      "stem": "qm_ext_self",
+      "source": "shim/qm_ext_self.c",
+      "kind": "ordinary actual C same-operand extract adapter",
+      "contract": "int8x8_t qm_ext_self(const int8x8_t *a,int k)\n/*@ With (x0:Z) (x1:Z) (x2:Z) (x3:Z) (x4:Z) (x5:Z) (x6:Z) (x7:Z)\n Require (k-2)*(k-4)==0 && store(&(a->s0),char,x0) * store(&(a->s1),char,x1) * store(&(a->s2),char,x2) * store(&(a->s3),char,x3) * store(&(a->s4),char,x4) * store(&(a->s5),char,x5) * store(&(a->s6),char,x6) * store(&(a->s7),char,x7)\n Ensure store(&(a->s0),char,x0) * store(&(a->s1),char,x1) * store(&(a->s2),char,x2) * store(&(a->s3),char,x3) * store(&(a->s4),char,x4) * store(&(a->s5),char,x5) * store(&(a->s6),char,x6) * store(&(a->s7),char,x7) * store(&(__return.s0),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,0)) * store(&(__return.s1),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,1)) * store(&(__return.s2),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,2)) * store(&(__return.s3),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,3)) * store(&(__return.s4),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,4)) * store(&(__return.s5),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,5)) * store(&(__return.s6),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,6)) * store(&(__return.s7),char,qm_ext8(x0,x1,x2,x3,x4,x5,x6,x7,k,7)) */;\n",
+      "logical_precondition_encoding": "Equivalent integer polynomial zero avoids generated callee Require disjunction matching; no C expression executes here",
+      "generation_passed": true,
+      "exit_code": 0,
+      "seconds": 0.4165684077888727,
+      "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/adapter-goals-ws2pk1sc/qm_ext_self",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "stdbuf",
+        "-oL",
+        "-eL",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/adapter-goals-ws2pk1sc/qm_ext_self/qm_ext_self.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/adapter-goals-ws2pk1sc/qm_ext_self",
+        "--coq-logic-path=Qs8Mul",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/shim",
+        "Qs8Mul",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/proof/c",
+        "Qs8Mul"
+      ],
+      "source_sha256": "a59175ae5187c5a760e2213c6ba66955c158409075692705e4756123643a7b3d",
+      "cpp_sha256": "b859f8a04d18fa0b665c6c3f8a5e7f4e3d9e0c6c4fa7758a91f12a6616a2a658",
+      "goal": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/adapter-goals-ws2pk1sc/qm_ext_self/qm_ext_self_goal.v",
+      "goal_sha256": "2db4b60068509a6f57f53c784c88cb2a53194567e1aefe19c78c8ed638872dea",
+      "actual_C_fields": 5
+    }
+  ]
+}

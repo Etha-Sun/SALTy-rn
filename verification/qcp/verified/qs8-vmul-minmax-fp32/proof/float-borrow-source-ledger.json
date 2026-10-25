@@ -1,0 +1,79 @@
+{
+  "scope": "Four actual ordinary read-only pointer-copy helper bodies; each remains fully C-checked, original ISA declarations source-reviewed/manual-pending",
+  "kernel_raw_C_unchanged": true,
+  "old_6h_generation_preserved": "proof/history/before-float-borrow/proof/rvv-generation-status.json",
+  "private_minimal_checked_run": ".build/private-borrow-mul32-proof-8gcpxalv",
+  "private_minimal_generation_run": ".build/private-borrow-mul32-6o_ux5ob",
+  "views": [
+    {
+      "original_intrinsic": "__riscv_vfmul_vf_f32m8",
+      "source_reviewed_primitive_view": "qm_spec_vfmul_vf_f32m8",
+      "ordinary_body": "qm_borrow_vfmul_vf_f32m8",
+      "semantic_note": "Copy all32 input fields once, invoke the original ISA operation once, preserve all input cells; no finite/value restriction; inactive result arbitrary as original spec."
+    },
+    {
+      "original_intrinsic": "__riscv_vfadd_vf_f32m8",
+      "source_reviewed_primitive_view": "qm_spec_vfadd_vf_f32m8",
+      "ordinary_body": "qm_borrow_vfadd_vf_f32m8",
+      "semantic_note": "Copy all32 input fields once, invoke the original ISA operation once, preserve all input cells; no finite/value restriction; inactive result arbitrary as original spec."
+    },
+    {
+      "original_intrinsic": "__riscv_vfsgnj_vf_f32m8",
+      "source_reviewed_primitive_view": "qm_spec_vfsgnj_vf_f32m8",
+      "ordinary_body": "qm_borrow_vfsgnj_vf_f32m8",
+      "semantic_note": "Copy all32 input fields once, invoke the original ISA operation once, preserve all input cells; no finite/value restriction; inactive result arbitrary as original spec."
+    },
+    {
+      "original_intrinsic": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "source_reviewed_primitive_view": "qm_spec_vreinterpret_v_f32m8_i32m8",
+      "ordinary_body": "qm_borrow_vreinterpret_v_f32m8_i32m8",
+      "semantic_note": "Copy all32 input fields once, invoke the original ISA operation once, preserve all input cells; no finite/value restriction; inactive result arbitrary as original spec."
+    }
+  ],
+  "actual_sources": [
+    "shim/float_borrow.c",
+    "shim/float_borrow.h",
+    "shim/rvv_concrete_intrinsics.h"
+  ],
+  "same_full_scale_and_arbitrary_inactive_domain": true,
+  "ordinary_C_fields_checked": 20,
+  "ordinary_checked_instance": "Qs8Mul.FloatBorrowChecked.CheckedFloatBorrow",
+  "ordinary_proof_status": "proof/FloatBorrowChecked-status.json",
+  "ordinary_proof_status_sha256": "a09a5335bd9a607c29e22f3b4b0fc9dff0dd3acdce2c62a799d748e06f4a7c9e",
+  "current_frontend_sha256": "252f82f7315f813c90ce4846002356197a6127c93d601dd4054174ca37e9be14",
+  "native_replay_pending": false,
+  "whole_kernel_verified": false,
+  "native_evidence": {
+    "native-field-undefined-status.json": {
+      "passed": true,
+      "path": "proof/native-field-undefined-status.json",
+      "sha256": "6efc182a9705219271736f2b13c6efd68740100f4f9d1633f82f8787880ea718"
+    },
+    "native-field-address-status.json": {
+      "passed": true,
+      "path": "proof/native-field-address-status.json",
+      "sha256": "3fbb39d14379511e1f21c76ebdad6e7399ecd2c6b840dbeb2190315a7e313a71"
+    },
+    "native-undefined-status.json": {
+      "passed": true,
+      "path": "proof/native-undefined-status.json",
+      "sha256": "abc98e0b3f25b91881abb5df5796e641e2014e54b33715b33a3f2ad932ecfb2d"
+    },
+    "native-address-status.json": {
+      "passed": true,
+      "path": "proof/native-address-status.json",
+      "sha256": "f4e007bec7088511c9def1d246d88104c4c60b6d4c03d7b3d92ae21dca0f5eee"
+    },
+    "float-borrow-rv64-status.json": {
+      "passed": true,
+      "path": "proof/float-borrow-rv64-status.json",
+      "sha256": "81c6829f3a421094a18a07efeeab7be33989de8501f40e3fcd35ceed654869c8"
+    }
+  },
+  "formal_source_and_goal": {
+    "body_sha256": "5b7fe722aa5ae7a468b6ec304b3fc7257202cb2381a4a2c351f66b4043baeedb",
+    "public_header_sha256": "79295d59cc467752eed985fb75ae1ec25c662c53b6604a7e24e1854ef6bd30b2",
+    "original_ISA_view_header_sha256": "35c49b60d004c295b00b7c49a28772242027a736d1ad0b6e23a5ba6884885bd0",
+    "ordinary_goal_sha256": "34f63cf766e0d244572fce72393e402a2c75b45223c489398324cd5dbfefb687"
+  }
+}

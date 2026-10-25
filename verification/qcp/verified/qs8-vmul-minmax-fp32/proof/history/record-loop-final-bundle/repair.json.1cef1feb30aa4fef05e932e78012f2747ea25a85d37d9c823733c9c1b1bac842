@@ -1,0 +1,135 @@
+{
+  "kernel": "qs8-vmul-minmax-fp32",
+  "variant": "repaired",
+  "neon_changed": false,
+  "original_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "repaired_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "original_rvv_sha256": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528",
+  "repaired_rvv_sha256": "59799e1d640d7dde442b0260fa86a067c16e0b35f1ab5e2553b118a6b2f2483f",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "829446eb4a5cc5418224b95e985ebe5d9b058e14d17ef332589619b26ed2e5e2",
+  "causes": [
+    "Original numeric float-to-int conversion/add differs from NEON magic-bias reinterpret/saturating-subtract for large finite scale.",
+    "Frama reference magic-bias repair still differs for negative NaN scale under independently reviewed Arm-preserving/RVV-canonical arithmetic NaN rules."
+  ],
+  "changes": [
+    "Adopt Frama RVV magic-bias add/reinterpret/saturating-subtract.",
+    "If scale is NaN, vfsgnj.vf restores scale sign after final float add; no NaN/Inf/negative/zero/subnormal scale restriction.",
+    "QCP compatibility only: bit-exact RVV moves + integer mask classify every binary32 scale in an ordinary checked helper; no floating self-compare in actual kernel.",
+    "QCP compatibility: two input vector loads use an actual ordinary single-load output-parameter helper; exact old/new patch and finite direct comparison retained, no original-raw whole theorem claimed.",
+    "QCP compatibility: actual ordinary typed record input/FP consumers and72-field whole compute helper replace inline arithmetic, preserving operation order; original ISA views remain one-to-one SDK aliases. No new scale/VL/zero-point/bounds restriction."
+  ],
+  "reference_only": {
+    "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+    "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/rvv.c",
+    "sha256": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b",
+    "historical_credit_transferred": false
+  },
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "c2f32693cc0439eecc0c926ce6835102644e09ed5cfcdb3084d87944b281720f",
+  "whole_kernel_verified": false,
+  "fix_validated_by_native": false,
+  "native_evidence": {
+    "native-undefined-status.json": "3aba1384f19b014da90916255101a77cb5eb5a5eeedb6cafa5c58e27acf3135a",
+    "native-address-status.json": "04e01e788a5fa4767d824600f55642eda609de4eef79b0e595fc0eaedf172c0f",
+    "native-field-undefined-status.json": "b2f3cf9c4157c979486689f48871994ee1cb9699cc92c6634ccaa1391e360601",
+    "native-field-address-status.json": "f668eda01dad2854a61b74356c4540760f5579440a8a8ebfdda5a01876a2ecb4"
+  },
+  "native_scope": "Finite actual repaired kernels through public equivalent and comparator, independently distinct ISA emulation plus scalar oracle; not hardware execution or formal proof",
+  "compatibility_refactor": {
+    "previous_repaired_sha256": "4d55087480a4b8540c5ba89c05bbe4a4c60573c2a9503d0fd4c76f49f7b3c99a",
+    "reason": "QCP scalar FP self-compare NaN path creates False VC, demonstrated in preserved actual minimal goal. C is valid; no semantic counterexample asserted for this rewrite.",
+    "change": "Replace scalar scale!=scale with ordinary bit-copy/integer-mask helper qm_scale_is_nan.",
+    "helper_source": "shim/qm_scale_is_nan.c",
+    "helper_source_sha256": "3743edb4489612e8c5132e36f5c082a367397857c894393d708543a57040ddda",
+    "helper_contract": "shim/scalar_nan.h",
+    "helper_contract_sha256": "5a3b5ae076dd366e6315717373372f78f02db1223e4496f1dc13f129058ace3e",
+    "all_scale_domain_preserved": true,
+    "IEEE_flags": "Flags unobserved and traps disabled, including the original signaling-NaN compare invalid flag.",
+    "formal_math_bridge": "Qs8Mul.ScalarBitsFacts.qm_checked_nan_branch",
+    "formal_math_status": ".build/module-proof-t0ed511a/status.json",
+    "actual_helper_body_proof": {
+      "passed": true,
+      "status": "proof/scalar-nan-helper-status.json",
+      "sha256": "968b4becedca9089f894052430a9d8064ec1577fbba807d8e63958dcf68630b2",
+      "actual_C_fields": 13
+    },
+    "history": "proof/history/scalar-self-ne-actual-C-tool-gap",
+    "exact_patch_receipt": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/repair-bit-classifier-0b052kvg/status.json"
+  },
+  "time_utc": "2026-10-24T09:43:50.712569+00:00",
+  "native_public_wrapper_exercised": true,
+  "native_actual_recursive_case_includes": {
+    "original_intrinsic_view": 9,
+    "actual_scalar_field_C_shim_view": 38
+  },
+  "native_ordinary_helpers_actual_bodies": 20,
+  "frontend_positive_vl_adapter": {
+    "source": "shim/vl_control.c",
+    "source_sha256": "9c2828fab0a534831bc77b7ab093b1dcfb96c2610f22e7b8e1e91b8ff6e99818",
+    "effect": "Calls original setvl exactly once, retains all legal VL choices and exposes derived positive-AVL bounds; kernel raw tokens unchanged",
+    "formal_status": "proof/rvv-prefix-status.json",
+    "formal_status_sha256": "4d4848e29593d6066f64c7420a53d5ed4eba64edd86b9cd063c24fbb91d54e40"
+  },
+  "load_into_compatibility": {
+    "scope": "Transparent ordinary-C compatibility variant; no claim original physical C has been fully proved. Two original vector load initializers become distinct uninitialized locals followed by the actual single-load output-parameter helper.",
+    "previous_RVV_SHA256": "5bd886a63c55b17f52967636b18449e5fe3bc5409e83aec41f3e2cf09309009a",
+    "current_RVV_SHA256": "50052cf6066494a8ff553af5ac3ed0783919fce2cced7e746907a64b9fe5cd6a",
+    "helper": "shim/load_into.c",
+    "helper_SHA256": "607a238468824836a1eb252ca960c9a2c8667e527743c8ea6349919af23a2d27",
+    "header_SHA256": "e5aca10e0eb2f4f642403d7771e4acd5d09cfd0b1880faac198dea047b3d77c6",
+    "actual_primitive_calls_per_helper": 1,
+    "evaluation": "Each input pointer and VL is evaluated once; va/vb distinct local objects, readonly input map shared even for input aliasing; no numeric/FMA/order/scale/VL/tail domain changes.",
+    "private_body_typed_status": ".build/private-load-into32-proof-bzhamlv4/status.json",
+    "private_full_frame_two_call_typed_status": ".build/private-load-call32-proof-so9kgmvt/status.json",
+    "raw_compatibility_diff": "proof/history/load-into-compatibility/source.patch",
+    "complete_kernel_verified": false,
+    "native_replay_pending": false,
+    "actual_helper_typed_status": "proof/load-into-status.json",
+    "actual_helper_typed_status_sha256": "b9c30e239f1e3f0ed9f33f273af97b154dcfdd52e617a13329ec7b028fde7424",
+    "actual_helper_C_fields": 4,
+    "exact_patch_status": "proof/repair-preflight-status.json",
+    "direct_before_after_native": "proof/load-into-compatibility-native-status.json",
+    "native_current_source_four_backends_passed": true,
+    "direct_before_after_native_sha256": "2fb2852167b2ff4b30654e26dd04e861548f8b8661b328be85383d8613fbcc5f"
+  },
+  "native_current_replay_pending": true,
+  "record_loop_compatibility": {
+    "before_rvv_sha256": "50052cf6066494a8ff553af5ac3ed0783919fce2cced7e746907a64b9fe5cd6a",
+    "after_rvv_sha256": "59799e1d640d7dde442b0260fa86a067c16e0b35f1ab5e2553b118a6b2f2483f",
+    "old_source_history": "proof/history/record-loop-extraction/impl/testRVV.c",
+    "ordinary_source_bundle": {
+      "shim/record_input_consumers.c": "c23056116c2888da8a3e22f54ca8dd53e46b8fe8580bdc78316d0420b729d3db",
+      "shim/record_fp_consumers.c": "291f80cc6fdae87c7c02ebbe618d72bdb193c069c64c1d3026abc4743849c501",
+      "shim/record_compute.c": "0915344291428457c97d5d9091927b5bf38cbbe05d3f20ca56ca15e8ffd28c86",
+      "shim/record_compute.h": "18749ddcfe5b6c414ac1b7ac6f2c52b6ef840090e7b2cd2a3b65acdf75c90923",
+      "shim/record_sdk.h": "abeedb20f813dc164d22f4d422f10b27f55a7515367ae0ccf8104c12568198a6"
+    },
+    "ordinary_actual_typed_fields": [
+      12,
+      19,
+      72
+    ],
+    "fresh_public_goals_byte_identical": true,
+    "typed_straightline_caller_probe": {
+      "run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/module-proof-o_aui3_f",
+      "actual_fields": 10,
+      "full_VC_Correct": true,
+      "second_ascription": true
+    },
+    "before_after_native_undefined": {
+      "path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/record-compute-native-lzy2h8oj/case/proof/native-undefined-status.json",
+      "sha256": "2abcf57e104886c1a63c6a42d0c8cc034dae6d7bca544a9ff22897a8f7ca56e9"
+    },
+    "before_after_native_address": {
+      "path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/record-compute-native-lzy2h8oj/case/proof/native-field-address-status.json",
+      "sha256": "c24b55a06f2aa725ad3ef445cc31b0e567fdce78c02094018aac52d4df2d6a5d"
+    },
+    "before_after_cases_each": 278016,
+    "before_after_lanes_each": 12804556,
+    "formal_original_raw_refinement_proved": false,
+    "whole_repaired_kernel_proof_pending": true,
+    "patch_0_fuzz_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/record-loop-patch0-zq1v9yfr",
+    "patch_scope": "Main-file original\u2192current patch. Additional actual helper bundle independently frozen by explicit source hashes/ledger/current CPP-goal binding; no false claim patch creates helper files."
+  }
+}

@@ -1,0 +1,21 @@
+From Qs8Mul Require Import Model qm_exact_vectors_strategy_goal.
+From SimpleC.SL Require Import SeparationLogic.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedExactVectors : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_Strategy_Correct.
+Lemma qm_exact_vectors_strategy1_correctness : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_strategy1.
+Proof. pre_process_default;entailer!. Qed.
+Lemma qm_exact_vectors_strategy2_correctness : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_strategy2.
+Proof. pre_process_default;entailer!. Qed.
+Lemma qm_exact_vectors_strategy3_correctness : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_strategy3.
+Proof. pre_process_default;entailer!. Qed.
+Lemma qm_exact_vectors_strategy4_correctness : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_strategy4.
+Proof. pre_process_default;entailer!. Qed.
+Lemma qm_exact_vectors_strategy5_correctness : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_strategy5.
+Proof. pre_process_default;entailer!. Qed.
+End CheckedExactVectors.
+Module ExactVectorsGate : Qs8Mul.qm_exact_vectors_strategy_goal.qm_exact_vectors_Strategy_Correct := CheckedExactVectors.
+Print Assumptions ExactVectorsGate.qm_exact_vectors_strategy1_correctness.
+Print Assumptions ExactVectorsGate.qm_exact_vectors_strategy2_correctness.
+Print Assumptions ExactVectorsGate.qm_exact_vectors_strategy3_correctness.
+Print Assumptions ExactVectorsGate.qm_exact_vectors_strategy4_correctness.
+Print Assumptions ExactVectorsGate.qm_exact_vectors_strategy5_correctness.

@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "kernel": "qs8-vmul-minmax-fp32",
+  "variant": "original NEON and disclosed repaired RVV",
+  "public_contract": "spec.c",
+  "input_domain": {
+    "batch": "1 <= batch <= 2^64-1",
+    "input_bytes": "Each input has N+7 readable bytes in one RDMap; input overlap allowed",
+    "output": "Exactly N signed-byte cells, with separation from readonly inputs and scalar parameter cells explicit in spec.c",
+    "AZ_BZ": "signed8",
+    "OZ": "signed16",
+    "Lo_Hi": "each signed8, no ordering premise",
+    "Scale": "all binary32 including NaN/Inf/zeros/subnormals",
+    "params": "non-null; scalar field values preserved"
+  },
+  "numeric_semantics": {
+    "integer": "signed8 differences widened signed16; exact signed32 product on source ranges",
+    "float": "binary32 RNE multiply then separate add of exact12582912, no fused replacement",
+    "quantization": "reinterpret bits as signed32; saturating subtract1262485504-OZ; signed16 then signed8 saturation; max Lo then min Hi",
+    "NaN": "Arm payload/sign propagation and RVV canonical NaN modeled separately; repaired RVV restores NaN Scale sign after final arithmetic before reinterpretation",
+    "classifier": "Ordinary C moves/reinterpret and integer-mask helper with checked binary32 bridge",
+    "observation": "signed byte outputs exactly equal; floating flags/traps unobserved"
+  },
+  "configuration": {
+    "NEON": "AArch64 AdvSIMD little-endian FPCR DN/FZ/FIZ/AH0",
+    "RVV": "RVV1.0 VLEN128 XLEN64 ELEN64, e8m2/e16m4/e32m8, VLMAX32",
+    "VL": "all legal architectural choices in qm_vl_allowed, not min-only",
+    "rounding": "RNE; narrow shift0 VXRM RDN2",
+    "inactive": "conservative arbitrary typed inactive lanes; unobserved",
+    "vstart": 0
+  },
+  "trust_boundary": {
+    "intrinsic_terminals": 57,
+    "ordinary_C_functions": 40,
+    "intrinsic_C_implementation_proof": "optional only for exact original-intrinsic reviewed specs",
+    "ordinary_C_proofs": "Mandatory for both real kernels, all27 ordinary helper bodies (including record input/FP/compute consumers), compare_outputs/equivalent and9 width probes; source-reviewed single original ISA contracts are the explicit separate boundary.",
+    "human_semantic_review": "pending",
+    "formal_ISA_correspondence": false,
+    "physical_struct_ABI_refinement": false,
+    "independent_termination": false,
+    "ordinary_helpers": 27,
+    "inventory_TUs": 24
+  },
+  "intrinsic_ledger": "proof/intrinsic-ledger.json",
+  "intrinsic_ledger_sha256": "14c707e8b32e0a09821ff1d323c7d1f33bd6286f83e401e445939eae362f4125",
+  "official_sources": {
+    "ARM_ACLE": {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+      "bytes": 3587774
+    },
+    "RVV_V1.0": {
+      "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "version": "1.0",
+      "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+      "bytes": 207611
+    }
+  },
+  "model_sources": {
+    "proof/coq/Model.v": "1a3389fc508edf6c08ec59a80ec418aeadbb09326762fd4181945267d18904b2",
+    "proof/coq/Bits.v": "6a1212a585c087bde1ee41ec322d6f96ea221de99e90ad343893c2db37c83849",
+    "proof/coq/NanFacts.v": "3bf0f800e664a688c995cd5ae849d58a1d87675bcb7624ded44903dea1371284",
+    "proof/coq/Pointwise.v": "1fd20cb35cee3a84c846d3c146714db44a8da02e054593dc3f21a776edb25092",
+    "proof/coq/ScalarBitsFacts.v": "4358340ae5284c466f98c0f6a55171fc093bbf1c0a0712d343fd69c9809ebedd",
+    "proof/coq/ScalarCompareFacts.v": "87e427bde7023b7dfc4bbc98f3343490dba3ecf95f21d2c2ec910b72c9a18f7b",
+    "proof/coq/MemoryModel.v": "15d497d1c8c127a73b7480bbaa475bc6bb40d79b8f20462cd1fe48bca5eeecb5",
+    "proof/coq/ProgramModel.v": "acb075e136ccae2565c7cb6a372de8ac950ac767a938647157de9a3aaa785113",
+    "proof/coq/Types.v": "744b8dc778334271a5080157d6896143f4999705efb9d3477b598bd555ac9f94",
+    "proof/coq/RecordViews.v": "a550c3db7d3409c117be023cf2571e20aca0ee9654c4f483ce08358b4be28b7f",
+    "proof/coq/RecordStageViews.v": "fedbe3ab0562334d0d423a3b9d9c6b7109791587e1966a30fd4833fc998d62c3",
+    "proof/coq/RecordInputViews.v": "8aceb8530574e9b441324da6303737b0cf96bb9175c08f9d59446a1518341f84",
+    "proof/coq/RecordComputeModel.v": "577aff89e77edbff28da4472a8e5a644494405ebae21e3879193bd007e6d03b0",
+    "proof/coq/RecordLoopModel.v": "d7ba28d72f7054dd367741b609fa5fe8d6be0eb73c58000110ae39098ffa8de9"
+  },
+  "repair_evidence": [
+    "proof/originals.json",
+    "proof/repair.json",
+    "proof/repair-rvv.patch",
+    "proof/original-counterexamples.json"
+  ],
+  "evidence_rule": "Component/diagnostic successes never count as kernels. Current repaired actual main full VC_Correct and second typed ascription plus exact per-field Assumptions, fresh complete actual C/strategy goal and ordinary Coq dependency closure, current native dual sanitizers/oracle negatives and source identity audits are required before issue/publication. Historical same-goal identity bridges are explicit, never called new Coq runs.",
+  "artifact_kind": "public semantic boundary, not a verification certificate",
+  "float_pointer_borrow": {
+    "source_ledger": "proof/float-borrow-source-ledger.json",
+    "body": "shim/float_borrow.c",
+    "ordinary_C_fields_checked": 20,
+    "underlying_view_count": 4,
+    "underlying_views": "Original ISA operations with concrete scalar ghosts; active fields structurally equal to the same existing Coq operation, arbitrary typed inactive fields. Human ISA/ABI review pending.",
+    "kernel_raw_C_changed": false,
+    "numeric_models_changed": false,
+    "scale_domain_changed": false,
+    "all_input_cells_retained": true,
+    "scope": "C-shim pointer/copy representation only; no physical SIMD ABI or ISA refinement theorem claimed"
+  },
+  "load_into_compatibility": {
+    "source_ledger": "proof/load-into-source-ledger.json",
+    "source_ledger_sha256": "56032684db63d0052d1a44188b78bd91e03e714661579cae859653bd9670a5ca",
+    "current_impl_rvv_sha256": "50052cf6066494a8ff553af5ac3ed0783919fce2cced7e746907a64b9fe5cd6a",
+    "additional_actual_ordinary_body": 1,
+    "additional_actual_C_fields": 4,
+    "all_scale_and_alias_and_VL_domain_preserved": true,
+    "original_raw_whole_theorem_claimed": false
+  },
+  "ordinary_C_body_count": 40,
+  "ordinary_helper_body_count": 27,
+  "record_views": {
+    "ordinary_sources": {
+      "shim/record_input_consumers.c": "c23056116c2888da8a3e22f54ca8dd53e46b8fe8580bdc78316d0420b729d3db",
+      "shim/record_fp_consumers.c": "291f80cc6fdae87c7c02ebbe618d72bdb193c069c64c1d3026abc4743849c501",
+      "shim/record_compute.c": "0915344291428457c97d5d9091927b5bf38cbbe05d3f20ca56ca15e8ffd28c86",
+      "shim/record_compute.h": "18749ddcfe5b6c414ac1b7ac6f2c52b6ef840090e7b2cd2a3b65acdf75c90923",
+      "shim/record_sdk.h": "abeedb20f813dc164d22f4d422f10b27f55a7515367ae0ccf8104c12568198a6"
+    },
+    "ordinary_actual_fields": [
+      12,
+      19,
+      72
+    ],
+    "current_public_goal_identity": "proof/record-provider-current-identity.json",
+    "current_public_goal_identity_sha256": "034d54408068f99774a71b98b1b60d85fd787b6658dea2a3779511efe264233f",
+    "record_layout": "Canonical Char/Short/Int/fp32-Float scalar fields under explicit Snaive_C_Rules64. Generated default Arch32BE and floatR/Int definitions rejected; goal bytes unchanged. Physical SIMD ABI correspondence remains unproved and human-reviewed boundary.",
+    "single_ISA_aliases_added": 14,
+    "ledger_entries_total": 62,
+    "active_contracts": "All legal0<=VL<=32, all typed input/tail values and all binary32 scale. Output only constrains requested active lanes; no zero-tail guarantee. Reinterpret is exact all32 same-width bits with arbitrary input tail.",
+    "ordinary_helper_input_alias": "The compute adapter borrows two distinct local vector objects va/vb. Global input A/B remain represented by one RDMap and may overlap partially or completely. No new public A!=B premise.",
+    "operation_order": "Two signed16 wrap subtracts, signed widening multiply, int32-to-fp32 RNE, separate multiply/add, bit-classified NaN Scale sign restore, reinterpret, signed32 saturating subtract, shift0 signed16/signed8 clips, maxLo then minHi. No fused replacement or bounds ordering premise.",
+    "formal_previous_raw_refinement": false,
+    "native_compatibility_before_after": "proof/repair.json record_loop_compatibility; finite before/after output comparison plus independent scalar oracle is separate from formal repaired-main proof."
+  }
+}

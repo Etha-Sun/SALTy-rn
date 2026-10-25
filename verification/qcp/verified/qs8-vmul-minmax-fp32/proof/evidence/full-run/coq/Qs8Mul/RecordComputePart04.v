@@ -1,0 +1,4 @@
+From Qs8Mul Require Import RecordComputeSafety record_compute_goal.
+Lemma proof_of_qm_record_compute_safety_wit_5:Qs8Mul.record_compute_goal.qm_record_compute_safety_wit_5.
+Proof. exact Qs8Mul.RecordComputeSafety.proof_of_qm_record_compute_safety_wit_5. Qed.
+Print Assumptions proof_of_qm_record_compute_safety_wit_5.

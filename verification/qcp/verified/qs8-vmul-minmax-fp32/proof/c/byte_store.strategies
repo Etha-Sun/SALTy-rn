@@ -1,0 +1,50 @@
+#include "../../shim/array_model.h"
+id : 1
+priority : core(1)
+left : CharArray::undef_seg(?p,?lo,?hi) at 0
+right : undef_data_at(?q,char) at 1
+check : infer(q == pointer_offset(p,lo,char));
+        infer(lo < hi);
+action : left_erase(0);
+         right_erase(1);
+         left_add(CharArray::undef_seg(p,lo+1,hi));
+id : 2
+priority : core(1)
+left : CharArray::full(?p,?n,?l) at 0
+right : CharArray::full(?q,?m,?r) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l == r);
+id : 3
+priority : core(1)
+left : CharArray::undef_seg(?p,?lo,?hi) at 0
+right : CharArray::undef_seg(?q,?lo2,?hi2) at 1
+check : infer(p == q);
+        infer(lo == lo2);
+        infer(hi == hi2);
+action : left_erase(0);
+         right_erase(1);
+id : 4
+priority : core(0)
+left : CharArray::undef_full(?p,?n) at 0
+right : CharArray::undef_seg(?q,0,?m) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+id : 5
+priority : core(0)
+right : CharArray::full(?p,?n,qm_take32(n,?L)) at 0
+check : infer(n == 0);
+action : right_erase(0);
+id : 6
+priority : core(1)
+left : CharArray::undef_full(?p,?n) at 0
+right : undef_data_at(?q,char) at 1
+check : infer(p == q);
+        infer(0 < n);
+action : left_erase(0);
+         right_erase(1);
+         left_add(CharArray::undef_full(pointer_offset(p,1,char),n-1));

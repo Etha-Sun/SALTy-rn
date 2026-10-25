@@ -1,0 +1,78 @@
+{
+  "entry_cut": "/*@ Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && (batch==0 || output==output@pre+(batch@pre-batch)) && params==params@pre && batch==batch@pre && batch%sizeof(int8_t)==0 && input_a==input_a@pre && input_b==input_b@pre && output==output@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) */",
+  "loop_invariant": "/*@ Inv Assert 0<batch@pre && batch@pre<=18446744073709551615 && input_a@pre!=0 && input_b@pre!=0 && output@pre!=0 && params@pre!=0 && -128<=AZ && AZ<=127 && -128<=BZ && BZ<=127 && -32768<=OZ && OZ<=32767 && -128<=Lo && Lo<=127 && -128<=Hi && Hi<=127 && qm_inputs(M,input_a@pre,input_b@pre,batch@pre) && sizeof(int8_t)==1 && 0<=batch && batch<=batch@pre && input_a==input_a@pre+(batch@pre-batch) && input_b==input_b@pre+(batch@pre-batch) && (batch==0 || output==output@pre+(batch@pre-batch)) && params==params@pre && rd_mem(M) * CharArray::full(output@pre,(batch@pre-batch),qm_values((batch@pre-batch),M,input_a@pre,input_b@pre,AZ,BZ,Scale,OZ,Lo,Hi)) * CharArray::undef_full(output,batch) * store(&(params->scalar.a_zero_point),char,AZ) * store(&(params->scalar.b_zero_point),char,BZ) * store(&(params->scalar.scale),float,Scale) * store(&(params->scalar.output_zero_point),short,OZ) * store(&(params->scalar.output_min),char,Lo) * store(&(params->scalar.output_max),char,Hi) * store(&(a_zero_point),char,AZ) * store(&(b_zero_point),char,BZ) * store(&(scale),float,Scale) * store(&(output_zero_point),short,OZ) * store(&(output_min),char,Lo) * store(&(output_max),char,Hi) */",
+  "tail_cut": null,
+  "call_bindings": [
+    {
+      "name": "__riscv_vsetvl_e8m2",
+      "start": 742,
+      "end": 768,
+      "args": [
+        "batch"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "qm_record_load_into32",
+      "start": 793,
+      "end": 832,
+      "args": [
+        "&va",
+        "input_a",
+        "vl"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "qm_record_load_into32",
+      "start": 856,
+      "end": 895,
+      "args": [
+        "&vb",
+        "input_b",
+        "vl"
+      ],
+      "where": "M=M",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "qm_record_compute",
+      "start": 919,
+      "end": 1038,
+      "args": [
+        "&va",
+        "&vb",
+        "(int16_t)a_zero_point",
+        "(int16_t)b_zero_point",
+        "scale",
+        "output_zero_point",
+        "output_min",
+        "output_max",
+        "vl"
+      ],
+      "where": "",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    },
+    {
+      "name": "__riscv_vse8_v_i8m2",
+      "start": 1045,
+      "end": 1082,
+      "args": [
+        "output",
+        "vout",
+        "vl"
+      ],
+      "where": "x0=vout.s0,x1=vout.s1,x2=vout.s2,x3=vout.s3,x4=vout.s4,x5=vout.s5,x6=vout.s6,x7=vout.s7,x8=vout.s8,x9=vout.s9,x10=vout.s10,x11=vout.s11,x12=vout.s12,x13=vout.s13,x14=vout.s14,x15=vout.s15,x16=vout.s16,x17=vout.s17,x18=vout.s18,x19=vout.s19,x20=vout.s20,x21=vout.s21,x22=vout.s22,x23=vout.s23,x24=vout.s24,x25=vout.s25,x26=vout.s26,x27=vout.s27,x28=vout.s28,x29=vout.s29,x30=vout.s30,x31=vout.s31",
+      "supported_source_shape_checked": true,
+      "nested_ordinary_adapter": false
+    }
+  ],
+  "same_raw_tokens": true,
+  "scope": "Current actual repaired C, fullscale/fullint16zero, single byte map permits input aliases, no complete proof from generation."
+}

@@ -1,0 +1,4 @@
+From Qs8Mul Require Import RvvRecordStoreCall rvv_unit_goal.
+Lemma proof_of_test_rvv_partial_solve_wit_11:Qs8Mul.rvv_unit_goal.test_rvv_partial_solve_wit_11.
+Proof. exact Qs8Mul.RvvRecordStoreCall.proof_of_test_rvv_partial_solve_wit_11. Qed.
+Print Assumptions proof_of_test_rvv_partial_solve_wit_11.

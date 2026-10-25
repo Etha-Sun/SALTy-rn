@@ -1,0 +1,3 @@
+From Qs8Mul Require Import NeonLoopFast neon_unit_goal.
+Definition proof_of_test_neon_entail_wit_3 : Qs8Mul.neon_unit_goal.test_neon_entail_wit_3 := Qs8Mul.NeonLoopFast.proof_of_test_neon_entail_wit_3.
+Print Assumptions proof_of_test_neon_entail_wit_3.

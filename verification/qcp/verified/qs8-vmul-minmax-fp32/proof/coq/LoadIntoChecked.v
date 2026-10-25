@@ -1,0 +1,12 @@
+From Qs8Mul Require Import load_into_unit_goal LoadIntoPart0 LoadIntoPart1 LoadIntoPart2 LoadIntoPart3.
+Module Checked : Qs8Mul.load_into_unit_goal.VC_Correct.
+Definition proof_of_qm_load_into32_return_wit_1 : Qs8Mul.load_into_unit_goal.qm_load_into32_return_wit_1 := Qs8Mul.LoadIntoPart0.proof_of_qm_load_into32_return_wit_1.
+Definition proof_of_qm_load_into32_partial_solve_wit_1_pure : Qs8Mul.load_into_unit_goal.qm_load_into32_partial_solve_wit_1_pure := Qs8Mul.LoadIntoPart1.proof_of_qm_load_into32_partial_solve_wit_1_pure.
+Definition proof_of_qm_load_into32_partial_solve_wit_1 : Qs8Mul.load_into_unit_goal.qm_load_into32_partial_solve_wit_1 := Qs8Mul.LoadIntoPart2.proof_of_qm_load_into32_partial_solve_wit_1.
+Definition proof_of_qm_load_into32_partial_solve_wit_2 : Qs8Mul.load_into_unit_goal.qm_load_into32_partial_solve_wit_2 := Qs8Mul.LoadIntoPart3.proof_of_qm_load_into32_partial_solve_wit_2.
+End Checked.
+Module ExactChecked : Qs8Mul.load_into_unit_goal.VC_Correct := Checked.
+Print Assumptions Checked.proof_of_qm_load_into32_return_wit_1.
+Print Assumptions Checked.proof_of_qm_load_into32_partial_solve_wit_1_pure.
+Print Assumptions Checked.proof_of_qm_load_into32_partial_solve_wit_1.
+Print Assumptions Checked.proof_of_qm_load_into32_partial_solve_wit_2.

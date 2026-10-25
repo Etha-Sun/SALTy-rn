@@ -1,0 +1,72 @@
+{
+  "kernel": "qs8-vmul-minmax-fp32",
+  "variant": "repaired",
+  "neon_changed": false,
+  "original_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "repaired_neon_sha256": "cb4168849636fc68af462e57bcf80141316833b34dca0c7861f1b6dfa26cb390",
+  "original_rvv_sha256": "2d018286037d2bc6539c361907a8d8acc965d5d659b9eed327ca72cb6c4f9528",
+  "repaired_rvv_sha256": "5bd886a63c55b17f52967636b18449e5fe3bc5409e83aec41f3e2cf09309009a",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "d68e6f68fb64d009ad10b296dfa8ce913b3bb0e87bfd161ce96ff9f617f973c8",
+  "causes": [
+    "Original numeric float-to-int conversion/add differs from NEON magic-bias reinterpret/saturating-subtract for large finite scale.",
+    "Frama reference magic-bias repair still differs for negative NaN scale under independently reviewed Arm-preserving/RVV-canonical arithmetic NaN rules."
+  ],
+  "changes": [
+    "Adopt Frama RVV magic-bias add/reinterpret/saturating-subtract.",
+    "If scale is NaN, vfsgnj.vf restores scale sign after final float add; no NaN/Inf/negative/zero/subnormal scale restriction.",
+    "QCP compatibility only: bit-exact RVV moves + integer mask classify every binary32 scale in an ordinary checked helper; no floating self-compare in actual kernel."
+  ],
+  "reference_only": {
+    "commit": "0f11c9ad0ba513bcce3548d34004882ff2d2cfde",
+    "path": "experiments/shared-extension/integer/qs8-vmul-minmax-fp32/rvv.c",
+    "sha256": "c40a5830815e699ef38696fbe3d71a186f489916a1f7e8b69e5a6334f5db561b",
+    "historical_credit_transferred": false
+  },
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "c2f32693cc0439eecc0c926ce6835102644e09ed5cfcdb3084d87944b281720f",
+  "whole_kernel_verified": false,
+  "fix_validated_by_native": true,
+  "native_evidence": {
+    "native-undefined-status.json": "938e3de53c3460bd0174a4021a9bbc1393674f7ab584aef5116fdb41eabf11c7",
+    "native-address-status.json": "d68d9c9ed799ef3740e850efbc3ec65d183e3f7615876ae3b522ab3b9c7ce77a",
+    "native-field-undefined-status.json": "e6a4330b13efe92a22b115d3d3e1090dd162c936022c61985d95cd48b6f2b46b",
+    "native-field-address-status.json": "31c556ab5b726070a8d75955a00a0413c41fd2e7033df1936b1931abb7b3a0e6"
+  },
+  "native_scope": "Finite actual repaired kernels through public equivalent and comparator, independently distinct ISA emulation plus scalar oracle; not hardware execution or formal proof",
+  "compatibility_refactor": {
+    "previous_repaired_sha256": "4d55087480a4b8540c5ba89c05bbe4a4c60573c2a9503d0fd4c76f49f7b3c99a",
+    "reason": "QCP scalar FP self-compare NaN path creates False VC, demonstrated in preserved actual minimal goal. C is valid; no semantic counterexample asserted for this rewrite.",
+    "change": "Replace scalar scale!=scale with ordinary bit-copy/integer-mask helper qm_scale_is_nan.",
+    "helper_source": "shim/qm_scale_is_nan.c",
+    "helper_source_sha256": "3743edb4489612e8c5132e36f5c082a367397857c894393d708543a57040ddda",
+    "helper_contract": "shim/scalar_nan.h",
+    "helper_contract_sha256": "5a3b5ae076dd366e6315717373372f78f02db1223e4496f1dc13f129058ace3e",
+    "all_scale_domain_preserved": true,
+    "IEEE_flags": "Flags unobserved and traps disabled, including the original signaling-NaN compare invalid flag.",
+    "formal_math_bridge": "Qs8Mul.ScalarBitsFacts.qm_checked_nan_branch",
+    "formal_math_status": ".build/module-proof-t0ed511a/status.json",
+    "actual_helper_body_proof": {
+      "passed": true,
+      "status": "proof/scalar-nan-helper-status.json",
+      "sha256": "968b4becedca9089f894052430a9d8064ec1577fbba807d8e63958dcf68630b2",
+      "actual_C_fields": 13
+    },
+    "history": "proof/history/scalar-self-ne-actual-C-tool-gap",
+    "exact_patch_receipt": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/qs8-vmul-minmax-fp32/.build/repair-bit-classifier-0b052kvg/status.json"
+  },
+  "time_utc": "2026-10-24T09:43:50.712569+00:00",
+  "native_public_wrapper_exercised": true,
+  "native_actual_recursive_case_includes": {
+    "original_intrinsic_view": 7,
+    "actual_scalar_field_C_shim_view": 34
+  },
+  "native_ordinary_helpers_actual_bodies": 15,
+  "frontend_positive_vl_adapter": {
+    "source": "shim/vl_control.c",
+    "source_sha256": "9c2828fab0a534831bc77b7ab093b1dcfb96c2610f22e7b8e1e91b8ff6e99818",
+    "effect": "Calls original setvl exactly once, retains all legal VL choices and exposes derived positive-AVL bounds; kernel raw tokens unchanged",
+    "formal_status": "proof/rvv-prefix-status.json",
+    "formal_status_sha256": "4d4848e29593d6066f64c7420a53d5ed4eba64edd86b9cd063c24fbb91d54e40"
+  }
+}

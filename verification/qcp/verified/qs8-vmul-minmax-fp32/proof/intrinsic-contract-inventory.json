@@ -1,0 +1,686 @@
+{
+  "scope": "Draft source-reviewed contracts; exact official per-intrinsic ledger and actual callers still required. Ordinary adapters separately body checked.",
+  "whole_kernel_verified": false,
+  "numeric_contracts": [
+    {
+      "name": "vdup_n_s8",
+      "side": "NEON",
+      "return_type": "int8x8_t",
+      "arguments": [
+        [
+          "int8_t",
+          "x"
+        ]
+      ],
+      "contract": "int8x8_t vdup_n_s8(int8_t x)\n/*@ Require emp\n Ensure store(&(__return.s0),char,x) * store(&(__return.s1),char,x) * store(&(__return.s2),char,x) * store(&(__return.s3),char,x) * store(&(__return.s4),char,x) * store(&(__return.s5),char,x) * store(&(__return.s6),char,x) * store(&(__return.s7),char,x) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vdupq_n_s32",
+      "side": "NEON",
+      "return_type": "int32x4_t",
+      "arguments": [
+        [
+          "int32_t",
+          "x"
+        ]
+      ],
+      "contract": "int32x4_t vdupq_n_s32(int32_t x)\n/*@ Require emp\n Ensure store(&(__return.s0),int,x) * store(&(__return.s1),int,x) * store(&(__return.s2),int,x) * store(&(__return.s3),int,x) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vdupq_n_f32",
+      "side": "NEON",
+      "return_type": "float32x4_t",
+      "arguments": [
+        [
+          "float",
+          "x"
+        ]
+      ],
+      "contract": "float32x4_t vdupq_n_f32(float x)\n/*@ Require emp\n Ensure store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vsubl_s8",
+      "side": "NEON",
+      "return_type": "int16x8_t",
+      "arguments": [
+        [
+          "int8x8_t",
+          "a"
+        ],
+        [
+          "int8x8_t",
+          "b"
+        ]
+      ],
+      "contract": "int16x8_t vsubl_s8(int8x8_t a,int8x8_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z)\n Require store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(b.s0),char,b0) * store(&(b.s1),char,b1) * store(&(b.s2),char,b2) * store(&(b.s3),char,b3) * store(&(b.s4),char,b4) * store(&(b.s5),char,b5) * store(&(b.s6),char,b6) * store(&(b.s7),char,b7)\n Ensure store(&(__return.s0),short,a0-b0) * store(&(__return.s1),short,a1-b1) * store(&(__return.s2),short,a2-b2) * store(&(__return.s3),short,a3-b3) * store(&(__return.s4),short,a4-b4) * store(&(__return.s5),short,a5-b5) * store(&(__return.s6),short,a6-b6) * store(&(__return.s7),short,a7-b7) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vget_low_s16",
+      "side": "NEON",
+      "return_type": "int16x4_t",
+      "arguments": [
+        [
+          "int16x8_t",
+          "a"
+        ]
+      ],
+      "contract": "int16x4_t vget_low_s16(int16x8_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z)\n Require store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7)\n Ensure store(&(__return.s0),short,a0) * store(&(__return.s1),short,a1) * store(&(__return.s2),short,a2) * store(&(__return.s3),short,a3) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vget_high_s16",
+      "side": "NEON",
+      "return_type": "int16x4_t",
+      "arguments": [
+        [
+          "int16x8_t",
+          "a"
+        ]
+      ],
+      "contract": "int16x4_t vget_high_s16(int16x8_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z)\n Require store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7)\n Ensure store(&(__return.s0),short,a4) * store(&(__return.s1),short,a5) * store(&(__return.s2),short,a6) * store(&(__return.s3),short,a7) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vmull_s16",
+      "side": "NEON",
+      "return_type": "int32x4_t",
+      "arguments": [
+        [
+          "int16x4_t",
+          "a"
+        ],
+        [
+          "int16x4_t",
+          "b"
+        ]
+      ],
+      "contract": "int32x4_t vmull_s16(int16x4_t a,int16x4_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z)\n Require store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(b.s0),short,b0) * store(&(b.s1),short,b1) * store(&(b.s2),short,b2) * store(&(b.s3),short,b3)\n Ensure store(&(__return.s0),int,a0*b0) * store(&(__return.s1),int,a1*b1) * store(&(__return.s2),int,a2*b2) * store(&(__return.s3),int,a3*b3) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vcvtq_f32_s32",
+      "side": "NEON",
+      "return_type": "float32x4_t",
+      "arguments": [
+        [
+          "int32x4_t",
+          "a"
+        ]
+      ],
+      "contract": "float32x4_t vcvtq_f32_s32(int32x4_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z)\n Require store(&(a.s0),int,a0) * store(&(a.s1),int,a1) * store(&(a.s2),int,a2) * store(&(a.s3),int,a3)\n Ensure store(&(__return.s0),float,qm_of_int(a0)) * store(&(__return.s1),float,qm_of_int(a1)) * store(&(__return.s2),float,qm_of_int(a2)) * store(&(__return.s3),float,qm_of_int(a3)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vmulq_f32",
+      "side": "NEON",
+      "return_type": "float32x4_t",
+      "arguments": [
+        [
+          "float32x4_t",
+          "a"
+        ],
+        [
+          "float32x4_t",
+          "b"
+        ]
+      ],
+      "contract": "float32x4_t vmulq_f32(float32x4_t a,float32x4_t b)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)\n Ensure store(&(__return.s0),float,qm_arm_mul(a0,b0)) * store(&(__return.s1),float,qm_arm_mul(a1,b1)) * store(&(__return.s2),float,qm_arm_mul(a2,b2)) * store(&(__return.s3),float,qm_arm_mul(a3,b3)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vaddq_f32",
+      "side": "NEON",
+      "return_type": "float32x4_t",
+      "arguments": [
+        [
+          "float32x4_t",
+          "a"
+        ],
+        [
+          "float32x4_t",
+          "b"
+        ]
+      ],
+      "contract": "float32x4_t vaddq_f32(float32x4_t a,float32x4_t b)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)\n Ensure store(&(__return.s0),float,qm_arm_add(a0,b0)) * store(&(__return.s1),float,qm_arm_add(a1,b1)) * store(&(__return.s2),float,qm_arm_add(a2,b2)) * store(&(__return.s3),float,qm_arm_add(a3,b3)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vreinterpretq_s32_f32",
+      "side": "NEON",
+      "return_type": "int32x4_t",
+      "arguments": [
+        [
+          "float32x4_t",
+          "a"
+        ]
+      ],
+      "contract": "int32x4_t vreinterpretq_s32_f32(float32x4_t a)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)\n Ensure store(&(__return.s0),int,qm_signed_bits(bits_of_fp32(a0))) * store(&(__return.s1),int,qm_signed_bits(bits_of_fp32(a1))) * store(&(__return.s2),int,qm_signed_bits(bits_of_fp32(a2))) * store(&(__return.s3),int,qm_signed_bits(bits_of_fp32(a3))) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vqsubq_s32",
+      "side": "NEON",
+      "return_type": "int32x4_t",
+      "arguments": [
+        [
+          "int32x4_t",
+          "a"
+        ],
+        [
+          "int32x4_t",
+          "b"
+        ]
+      ],
+      "contract": "int32x4_t vqsubq_s32(int32x4_t a,int32x4_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z)\n Require store(&(a.s0),int,a0) * store(&(a.s1),int,a1) * store(&(a.s2),int,a2) * store(&(a.s3),int,a3) * store(&(b.s0),int,b0) * store(&(b.s1),int,b1) * store(&(b.s2),int,b2) * store(&(b.s3),int,b3)\n Ensure store(&(__return.s0),int,qm_sat32(a0-b0)) * store(&(__return.s1),int,qm_sat32(a1-b1)) * store(&(__return.s2),int,qm_sat32(a2-b2)) * store(&(__return.s3),int,qm_sat32(a3-b3)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vqmovn_s32",
+      "side": "NEON",
+      "return_type": "int16x4_t",
+      "arguments": [
+        [
+          "int32x4_t",
+          "a"
+        ]
+      ],
+      "contract": "int16x4_t vqmovn_s32(int32x4_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z)\n Require store(&(a.s0),int,a0) * store(&(a.s1),int,a1) * store(&(a.s2),int,a2) * store(&(a.s3),int,a3)\n Ensure store(&(__return.s0),short,qm_sat16(a0)) * store(&(__return.s1),short,qm_sat16(a1)) * store(&(__return.s2),short,qm_sat16(a2)) * store(&(__return.s3),short,qm_sat16(a3)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vqmovn_high_s32",
+      "side": "NEON",
+      "return_type": "int16x8_t",
+      "arguments": [
+        [
+          "int16x4_t",
+          "a"
+        ],
+        [
+          "int32x4_t",
+          "b"
+        ]
+      ],
+      "contract": "int16x8_t vqmovn_high_s32(int16x4_t a,int32x4_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z)\n Require store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(b.s0),int,b0) * store(&(b.s1),int,b1) * store(&(b.s2),int,b2) * store(&(b.s3),int,b3)\n Ensure store(&(__return.s0),short,a0) * store(&(__return.s1),short,a1) * store(&(__return.s2),short,a2) * store(&(__return.s3),short,a3) * store(&(__return.s4),short,qm_sat16(b0)) * store(&(__return.s5),short,qm_sat16(b1)) * store(&(__return.s6),short,qm_sat16(b2)) * store(&(__return.s7),short,qm_sat16(b3)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vcombine_s16",
+      "side": "NEON",
+      "return_type": "int16x8_t",
+      "arguments": [
+        [
+          "int16x4_t",
+          "a"
+        ],
+        [
+          "int16x4_t",
+          "b"
+        ]
+      ],
+      "contract": "int16x8_t vcombine_s16(int16x4_t a,int16x4_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z)\n Require store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(b.s0),short,b0) * store(&(b.s1),short,b1) * store(&(b.s2),short,b2) * store(&(b.s3),short,b3)\n Ensure store(&(__return.s0),short,a0) * store(&(__return.s1),short,a1) * store(&(__return.s2),short,a2) * store(&(__return.s3),short,a3) * store(&(__return.s4),short,b0) * store(&(__return.s5),short,b1) * store(&(__return.s6),short,b2) * store(&(__return.s7),short,b3) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vqmovn_s16",
+      "side": "NEON",
+      "return_type": "int8x8_t",
+      "arguments": [
+        [
+          "int16x8_t",
+          "a"
+        ]
+      ],
+      "contract": "int8x8_t vqmovn_s16(int16x8_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z)\n Require store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7)\n Ensure store(&(__return.s0),char,qm_sat8(a0)) * store(&(__return.s1),char,qm_sat8(a1)) * store(&(__return.s2),char,qm_sat8(a2)) * store(&(__return.s3),char,qm_sat8(a3)) * store(&(__return.s4),char,qm_sat8(a4)) * store(&(__return.s5),char,qm_sat8(a5)) * store(&(__return.s6),char,qm_sat8(a6)) * store(&(__return.s7),char,qm_sat8(a7)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vmin_s8",
+      "side": "NEON",
+      "return_type": "int8x8_t",
+      "arguments": [
+        [
+          "int8x8_t",
+          "a"
+        ],
+        [
+          "int8x8_t",
+          "b"
+        ]
+      ],
+      "contract": "int8x8_t vmin_s8(int8x8_t a,int8x8_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z)\n Require store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(b.s0),char,b0) * store(&(b.s1),char,b1) * store(&(b.s2),char,b2) * store(&(b.s3),char,b3) * store(&(b.s4),char,b4) * store(&(b.s5),char,b5) * store(&(b.s6),char,b6) * store(&(b.s7),char,b7)\n Ensure store(&(__return.s0),char,qm_min(a0,b0)) * store(&(__return.s1),char,qm_min(a1,b1)) * store(&(__return.s2),char,qm_min(a2,b2)) * store(&(__return.s3),char,qm_min(a3,b3)) * store(&(__return.s4),char,qm_min(a4,b4)) * store(&(__return.s5),char,qm_min(a5,b5)) * store(&(__return.s6),char,qm_min(a6,b6)) * store(&(__return.s7),char,qm_min(a7,b7)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vmax_s8",
+      "side": "NEON",
+      "return_type": "int8x8_t",
+      "arguments": [
+        [
+          "int8x8_t",
+          "a"
+        ],
+        [
+          "int8x8_t",
+          "b"
+        ]
+      ],
+      "contract": "int8x8_t vmax_s8(int8x8_t a,int8x8_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z)\n Require store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(b.s0),char,b0) * store(&(b.s1),char,b1) * store(&(b.s2),char,b2) * store(&(b.s3),char,b3) * store(&(b.s4),char,b4) * store(&(b.s5),char,b5) * store(&(b.s6),char,b6) * store(&(b.s7),char,b7)\n Ensure store(&(__return.s0),char,qm_max(a0,b0)) * store(&(__return.s1),char,qm_max(a1,b1)) * store(&(__return.s2),char,qm_max(a2,b2)) * store(&(__return.s3),char,qm_max(a3,b3)) * store(&(__return.s4),char,qm_max(a4,b4)) * store(&(__return.s5),char,qm_max(a5,b5)) * store(&(__return.s6),char,qm_max(a6,b6)) * store(&(__return.s7),char,qm_max(a7,b7)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vreinterpret_u32_s8",
+      "side": "NEON",
+      "return_type": "uint32x2_t",
+      "arguments": [
+        [
+          "int8x8_t",
+          "a"
+        ]
+      ],
+      "contract": "uint32x2_t vreinterpret_u32_s8(int8x8_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z)\n Require store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7)\n Ensure store(&(__return.s0),unsigned int,qm_pack32(a0,a1,a2,a3)) * store(&(__return.s1),unsigned int,qm_pack32(a4,a5,a6,a7)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vreinterpret_u16_s8",
+      "side": "NEON",
+      "return_type": "uint16x4_t",
+      "arguments": [
+        [
+          "int8x8_t",
+          "a"
+        ]
+      ],
+      "contract": "uint16x4_t vreinterpret_u16_s8(int8x8_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z)\n Require store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7)\n Ensure store(&(__return.s0),unsigned short,qm_pack16(a0,a1)) * store(&(__return.s1),unsigned short,qm_pack16(a2,a3)) * store(&(__return.s2),unsigned short,qm_pack16(a4,a5)) * store(&(__return.s3),unsigned short,qm_pack16(a6,a7)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vext_s8",
+      "side": "NEON",
+      "return_type": "int8x8_t",
+      "arguments": [
+        [
+          "int8x8_t",
+          "a"
+        ],
+        [
+          "int8x8_t",
+          "b"
+        ],
+        [
+          "int",
+          "k"
+        ]
+      ],
+      "contract": "int8x8_t vext_s8(int8x8_t a,int8x8_t b,int k)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z)\n Require 0<=k && k<=7 && store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(b.s0),char,b0) * store(&(b.s1),char,b1) * store(&(b.s2),char,b2) * store(&(b.s3),char,b3) * store(&(b.s4),char,b4) * store(&(b.s5),char,b5) * store(&(b.s6),char,b6) * store(&(b.s7),char,b7)\n Ensure store(&(__return.s0),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,0)) * store(&(__return.s1),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,1)) * store(&(__return.s2),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,2)) * store(&(__return.s3),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,3)) * store(&(__return.s4),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,4)) * store(&(__return.s5),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,5)) * store(&(__return.s6),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,6)) * store(&(__return.s7),char,qm_ext_pair(a0,a1,a2,a3,a4,a5,a6,a7,b0,b1,b2,b3,b4,b5,b6,b7,k,7)) */;\n",
+      "evidence": "draft-review-pending",
+      "ISA_correspondence_formally_proved": false
+    },
+    {
+      "name": "vld1_s8",
+      "side": "NEON",
+      "contract": "int8x8_t vld1_s8(const int8_t *p)\n/*@ With (M:RDMap)\n Require rd_window(M,p,8) && rd_mem(M)\n Ensure rd_mem(M) * store(&(__return.s0),char,rd_get(M,p+0)) * store(&(__return.s1),char,rd_get(M,p+1)) * store(&(__return.s2),char,rd_get(M,p+2)) * store(&(__return.s3),char,rd_get(M,p+3)) * store(&(__return.s4),char,rd_get(M,p+4)) * store(&(__return.s5),char,rd_get(M,p+5)) * store(&(__return.s6),char,rd_get(M,p+6)) * store(&(__return.s7),char,rd_get(M,p+7)) */;\n",
+      "evidence": "draft-review-pending",
+      "memory": "rd_window at exactly8 input bytes, one rd_mem preserved; aliases allowed"
+    },
+    {
+      "name": "__riscv_vsetvl_e8m2",
+      "side": "RVV",
+      "evidence": "draft-review-pending",
+      "contract": "size_t __riscv_vsetvl_e8m2(size_t avl)\n/*@ Require emp Ensure qm_vl_allowed(avl,__return) && emp */;\n",
+      "definition": "Qs8Mul.Model.qm_vl_allowed",
+      "VLEN": 128,
+      "VLMAX": 32,
+      "vl": "All RVV1.0 choices retained, not just min(avl,32)"
+    },
+    {
+      "name": "__riscv_vsext_vf2_i16m4",
+      "side": "RVV",
+      "return_type": "vint16m4_t",
+      "arguments": [
+        [
+          "vint8m2_t",
+          "a"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint16m4_t __riscv_vsext_vf2_i16m4(vint8m2_t a,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(a.s8),char,a8) * store(&(a.s9),char,a9) * store(&(a.s10),char,a10) * store(&(a.s11),char,a11) * store(&(a.s12),char,a12) * store(&(a.s13),char,a13) * store(&(a.s14),char,a14) * store(&(a.s15),char,a15) * store(&(a.s16),char,a16) * store(&(a.s17),char,a17) * store(&(a.s18),char,a18) * store(&(a.s19),char,a19) * store(&(a.s20),char,a20) * store(&(a.s21),char,a21) * store(&(a.s22),char,a22) * store(&(a.s23),char,a23) * store(&(a.s24),char,a24) * store(&(a.s25),char,a25) * store(&(a.s26),char,a26) * store(&(a.s27),char,a27) * store(&(a.s28),char,a28) * store(&(a.s29),char,a29) * store(&(a.s30),char,a30) * store(&(a.s31),char,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,A(0)) && qm_lane_match(1,vl,r1,A(1)) && qm_lane_match(2,vl,r2,A(2)) && qm_lane_match(3,vl,r3,A(3)) && qm_lane_match(4,vl,r4,A(4)) && qm_lane_match(5,vl,r5,A(5)) && qm_lane_match(6,vl,r6,A(6)) && qm_lane_match(7,vl,r7,A(7)) && qm_lane_match(8,vl,r8,A(8)) && qm_lane_match(9,vl,r9,A(9)) && qm_lane_match(10,vl,r10,A(10)) && qm_lane_match(11,vl,r11,A(11)) && qm_lane_match(12,vl,r12,A(12)) && qm_lane_match(13,vl,r13,A(13)) && qm_lane_match(14,vl,r14,A(14)) && qm_lane_match(15,vl,r15,A(15)) && qm_lane_match(16,vl,r16,A(16)) && qm_lane_match(17,vl,r17,A(17)) && qm_lane_match(18,vl,r18,A(18)) && qm_lane_match(19,vl,r19,A(19)) && qm_lane_match(20,vl,r20,A(20)) && qm_lane_match(21,vl,r21,A(21)) && qm_lane_match(22,vl,r22,A(22)) && qm_lane_match(23,vl,r23,A(23)) && qm_lane_match(24,vl,r24,A(24)) && qm_lane_match(25,vl,r25,A(25)) && qm_lane_match(26,vl,r26,A(26)) && qm_lane_match(27,vl,r27,A(27)) && qm_lane_match(28,vl,r28,A(28)) && qm_lane_match(29,vl,r29,A(29)) && qm_lane_match(30,vl,r30,A(30)) && qm_lane_match(31,vl,r31,A(31)) && store(&(__return.s0),short,r0) * store(&(__return.s1),short,r1) * store(&(__return.s2),short,r2) * store(&(__return.s3),short,r3) * store(&(__return.s4),short,r4) * store(&(__return.s5),short,r5) * store(&(__return.s6),short,r6) * store(&(__return.s7),short,r7) * store(&(__return.s8),short,r8) * store(&(__return.s9),short,r9) * store(&(__return.s10),short,r10) * store(&(__return.s11),short,r11) * store(&(__return.s12),short,r12) * store(&(__return.s13),short,r13) * store(&(__return.s14),short,r14) * store(&(__return.s15),short,r15) * store(&(__return.s16),short,r16) * store(&(__return.s17),short,r17) * store(&(__return.s18),short,r18) * store(&(__return.s19),short,r19) * store(&(__return.s20),short,r20) * store(&(__return.s21),short,r21) * store(&(__return.s22),short,r22) * store(&(__return.s23),short,r23) * store(&(__return.s24),short,r24) * store(&(__return.s25),short,r25) * store(&(__return.s26),short,r26) * store(&(__return.s27),short,r27) * store(&(__return.s28),short,r28) * store(&(__return.s29),short,r29) * store(&(__return.s30),short,r30) * store(&(__return.s31),short,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vsub_vx_i16m4",
+      "side": "RVV",
+      "return_type": "vint16m4_t",
+      "arguments": [
+        [
+          "vint16m4_t",
+          "a"
+        ],
+        [
+          "int16_t",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint16m4_t __riscv_vsub_vx_i16m4(vint16m4_t a,int16_t x,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7) * store(&(a.s8),short,a8) * store(&(a.s9),short,a9) * store(&(a.s10),short,a10) * store(&(a.s11),short,a11) * store(&(a.s12),short,a12) * store(&(a.s13),short,a13) * store(&(a.s14),short,a14) * store(&(a.s15),short,a15) * store(&(a.s16),short,a16) * store(&(a.s17),short,a17) * store(&(a.s18),short,a18) * store(&(a.s19),short,a19) * store(&(a.s20),short,a20) * store(&(a.s21),short,a21) * store(&(a.s22),short,a22) * store(&(a.s23),short,a23) * store(&(a.s24),short,a24) * store(&(a.s25),short,a25) * store(&(a.s26),short,a26) * store(&(a.s27),short,a27) * store(&(a.s28),short,a28) * store(&(a.s29),short,a29) * store(&(a.s30),short,a30) * store(&(a.s31),short,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_sub16(A(0),x)) && qm_lane_match(1,vl,r1,qm_sub16(A(1),x)) && qm_lane_match(2,vl,r2,qm_sub16(A(2),x)) && qm_lane_match(3,vl,r3,qm_sub16(A(3),x)) && qm_lane_match(4,vl,r4,qm_sub16(A(4),x)) && qm_lane_match(5,vl,r5,qm_sub16(A(5),x)) && qm_lane_match(6,vl,r6,qm_sub16(A(6),x)) && qm_lane_match(7,vl,r7,qm_sub16(A(7),x)) && qm_lane_match(8,vl,r8,qm_sub16(A(8),x)) && qm_lane_match(9,vl,r9,qm_sub16(A(9),x)) && qm_lane_match(10,vl,r10,qm_sub16(A(10),x)) && qm_lane_match(11,vl,r11,qm_sub16(A(11),x)) && qm_lane_match(12,vl,r12,qm_sub16(A(12),x)) && qm_lane_match(13,vl,r13,qm_sub16(A(13),x)) && qm_lane_match(14,vl,r14,qm_sub16(A(14),x)) && qm_lane_match(15,vl,r15,qm_sub16(A(15),x)) && qm_lane_match(16,vl,r16,qm_sub16(A(16),x)) && qm_lane_match(17,vl,r17,qm_sub16(A(17),x)) && qm_lane_match(18,vl,r18,qm_sub16(A(18),x)) && qm_lane_match(19,vl,r19,qm_sub16(A(19),x)) && qm_lane_match(20,vl,r20,qm_sub16(A(20),x)) && qm_lane_match(21,vl,r21,qm_sub16(A(21),x)) && qm_lane_match(22,vl,r22,qm_sub16(A(22),x)) && qm_lane_match(23,vl,r23,qm_sub16(A(23),x)) && qm_lane_match(24,vl,r24,qm_sub16(A(24),x)) && qm_lane_match(25,vl,r25,qm_sub16(A(25),x)) && qm_lane_match(26,vl,r26,qm_sub16(A(26),x)) && qm_lane_match(27,vl,r27,qm_sub16(A(27),x)) && qm_lane_match(28,vl,r28,qm_sub16(A(28),x)) && qm_lane_match(29,vl,r29,qm_sub16(A(29),x)) && qm_lane_match(30,vl,r30,qm_sub16(A(30),x)) && qm_lane_match(31,vl,r31,qm_sub16(A(31),x)) && store(&(__return.s0),short,r0) * store(&(__return.s1),short,r1) * store(&(__return.s2),short,r2) * store(&(__return.s3),short,r3) * store(&(__return.s4),short,r4) * store(&(__return.s5),short,r5) * store(&(__return.s6),short,r6) * store(&(__return.s7),short,r7) * store(&(__return.s8),short,r8) * store(&(__return.s9),short,r9) * store(&(__return.s10),short,r10) * store(&(__return.s11),short,r11) * store(&(__return.s12),short,r12) * store(&(__return.s13),short,r13) * store(&(__return.s14),short,r14) * store(&(__return.s15),short,r15) * store(&(__return.s16),short,r16) * store(&(__return.s17),short,r17) * store(&(__return.s18),short,r18) * store(&(__return.s19),short,r19) * store(&(__return.s20),short,r20) * store(&(__return.s21),short,r21) * store(&(__return.s22),short,r22) * store(&(__return.s23),short,r23) * store(&(__return.s24),short,r24) * store(&(__return.s25),short,r25) * store(&(__return.s26),short,r26) * store(&(__return.s27),short,r27) * store(&(__return.s28),short,r28) * store(&(__return.s29),short,r29) * store(&(__return.s30),short,r30) * store(&(__return.s31),short,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vwmul_vv_i32m8",
+      "side": "RVV",
+      "return_type": "vint32m8_t",
+      "arguments": [
+        [
+          "vint16m4_t",
+          "a"
+        ],
+        [
+          "vint16m4_t",
+          "b"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint32m8_t __riscv_vwmul_vv_i32m8(vint16m4_t a,vint16m4_t b,size_t vl)\n/*@ With (A:Z -> Z) (B:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7) * store(&(a.s8),short,a8) * store(&(a.s9),short,a9) * store(&(a.s10),short,a10) * store(&(a.s11),short,a11) * store(&(a.s12),short,a12) * store(&(a.s13),short,a13) * store(&(a.s14),short,a14) * store(&(a.s15),short,a15) * store(&(a.s16),short,a16) * store(&(a.s17),short,a17) * store(&(a.s18),short,a18) * store(&(a.s19),short,a19) * store(&(a.s20),short,a20) * store(&(a.s21),short,a21) * store(&(a.s22),short,a22) * store(&(a.s23),short,a23) * store(&(a.s24),short,a24) * store(&(a.s25),short,a25) * store(&(a.s26),short,a26) * store(&(a.s27),short,a27) * store(&(a.s28),short,a28) * store(&(a.s29),short,a29) * store(&(a.s30),short,a30) * store(&(a.s31),short,a31)) * (exists (b0:Z) (b1:Z) (b2:Z) (b3:Z) (b4:Z) (b5:Z) (b6:Z) (b7:Z) (b8:Z) (b9:Z) (b10:Z) (b11:Z) (b12:Z) (b13:Z) (b14:Z) (b15:Z) (b16:Z) (b17:Z) (b18:Z) (b19:Z) (b20:Z) (b21:Z) (b22:Z) (b23:Z) (b24:Z) (b25:Z) (b26:Z) (b27:Z) (b28:Z) (b29:Z) (b30:Z) (b31:Z), qm_lane_match(0,vl,b0,B(0)) && qm_lane_match(1,vl,b1,B(1)) && qm_lane_match(2,vl,b2,B(2)) && qm_lane_match(3,vl,b3,B(3)) && qm_lane_match(4,vl,b4,B(4)) && qm_lane_match(5,vl,b5,B(5)) && qm_lane_match(6,vl,b6,B(6)) && qm_lane_match(7,vl,b7,B(7)) && qm_lane_match(8,vl,b8,B(8)) && qm_lane_match(9,vl,b9,B(9)) && qm_lane_match(10,vl,b10,B(10)) && qm_lane_match(11,vl,b11,B(11)) && qm_lane_match(12,vl,b12,B(12)) && qm_lane_match(13,vl,b13,B(13)) && qm_lane_match(14,vl,b14,B(14)) && qm_lane_match(15,vl,b15,B(15)) && qm_lane_match(16,vl,b16,B(16)) && qm_lane_match(17,vl,b17,B(17)) && qm_lane_match(18,vl,b18,B(18)) && qm_lane_match(19,vl,b19,B(19)) && qm_lane_match(20,vl,b20,B(20)) && qm_lane_match(21,vl,b21,B(21)) && qm_lane_match(22,vl,b22,B(22)) && qm_lane_match(23,vl,b23,B(23)) && qm_lane_match(24,vl,b24,B(24)) && qm_lane_match(25,vl,b25,B(25)) && qm_lane_match(26,vl,b26,B(26)) && qm_lane_match(27,vl,b27,B(27)) && qm_lane_match(28,vl,b28,B(28)) && qm_lane_match(29,vl,b29,B(29)) && qm_lane_match(30,vl,b30,B(30)) && qm_lane_match(31,vl,b31,B(31)) && store(&(b.s0),short,b0) * store(&(b.s1),short,b1) * store(&(b.s2),short,b2) * store(&(b.s3),short,b3) * store(&(b.s4),short,b4) * store(&(b.s5),short,b5) * store(&(b.s6),short,b6) * store(&(b.s7),short,b7) * store(&(b.s8),short,b8) * store(&(b.s9),short,b9) * store(&(b.s10),short,b10) * store(&(b.s11),short,b11) * store(&(b.s12),short,b12) * store(&(b.s13),short,b13) * store(&(b.s14),short,b14) * store(&(b.s15),short,b15) * store(&(b.s16),short,b16) * store(&(b.s17),short,b17) * store(&(b.s18),short,b18) * store(&(b.s19),short,b19) * store(&(b.s20),short,b20) * store(&(b.s21),short,b21) * store(&(b.s22),short,b22) * store(&(b.s23),short,b23) * store(&(b.s24),short,b24) * store(&(b.s25),short,b25) * store(&(b.s26),short,b26) * store(&(b.s27),short,b27) * store(&(b.s28),short,b28) * store(&(b.s29),short,b29) * store(&(b.s30),short,b30) * store(&(b.s31),short,b31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,A(0)*B(0)) && qm_lane_match(1,vl,r1,A(1)*B(1)) && qm_lane_match(2,vl,r2,A(2)*B(2)) && qm_lane_match(3,vl,r3,A(3)*B(3)) && qm_lane_match(4,vl,r4,A(4)*B(4)) && qm_lane_match(5,vl,r5,A(5)*B(5)) && qm_lane_match(6,vl,r6,A(6)*B(6)) && qm_lane_match(7,vl,r7,A(7)*B(7)) && qm_lane_match(8,vl,r8,A(8)*B(8)) && qm_lane_match(9,vl,r9,A(9)*B(9)) && qm_lane_match(10,vl,r10,A(10)*B(10)) && qm_lane_match(11,vl,r11,A(11)*B(11)) && qm_lane_match(12,vl,r12,A(12)*B(12)) && qm_lane_match(13,vl,r13,A(13)*B(13)) && qm_lane_match(14,vl,r14,A(14)*B(14)) && qm_lane_match(15,vl,r15,A(15)*B(15)) && qm_lane_match(16,vl,r16,A(16)*B(16)) && qm_lane_match(17,vl,r17,A(17)*B(17)) && qm_lane_match(18,vl,r18,A(18)*B(18)) && qm_lane_match(19,vl,r19,A(19)*B(19)) && qm_lane_match(20,vl,r20,A(20)*B(20)) && qm_lane_match(21,vl,r21,A(21)*B(21)) && qm_lane_match(22,vl,r22,A(22)*B(22)) && qm_lane_match(23,vl,r23,A(23)*B(23)) && qm_lane_match(24,vl,r24,A(24)*B(24)) && qm_lane_match(25,vl,r25,A(25)*B(25)) && qm_lane_match(26,vl,r26,A(26)*B(26)) && qm_lane_match(27,vl,r27,A(27)*B(27)) && qm_lane_match(28,vl,r28,A(28)*B(28)) && qm_lane_match(29,vl,r29,A(29)*B(29)) && qm_lane_match(30,vl,r30,A(30)*B(30)) && qm_lane_match(31,vl,r31,A(31)*B(31)) && store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) * store(&(__return.s16),int,r16) * store(&(__return.s17),int,r17) * store(&(__return.s18),int,r18) * store(&(__return.s19),int,r19) * store(&(__return.s20),int,r20) * store(&(__return.s21),int,r21) * store(&(__return.s22),int,r22) * store(&(__return.s23),int,r23) * store(&(__return.s24),int,r24) * store(&(__return.s25),int,r25) * store(&(__return.s26),int,r26) * store(&(__return.s27),int,r27) * store(&(__return.s28),int,r28) * store(&(__return.s29),int,r29) * store(&(__return.s30),int,r30) * store(&(__return.s31),int,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vfcvt_f_x_v_f32m8",
+      "side": "RVV",
+      "return_type": "vfloat32m8_t",
+      "arguments": [
+        [
+          "vint32m8_t",
+          "a"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vfloat32m8_t __riscv_vfcvt_f_x_v_f32m8(vint32m8_t a,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),int,a0) * store(&(a.s1),int,a1) * store(&(a.s2),int,a2) * store(&(a.s3),int,a3) * store(&(a.s4),int,a4) * store(&(a.s5),int,a5) * store(&(a.s6),int,a6) * store(&(a.s7),int,a7) * store(&(a.s8),int,a8) * store(&(a.s9),int,a9) * store(&(a.s10),int,a10) * store(&(a.s11),int,a11) * store(&(a.s12),int,a12) * store(&(a.s13),int,a13) * store(&(a.s14),int,a14) * store(&(a.s15),int,a15) * store(&(a.s16),int,a16) * store(&(a.s17),int,a17) * store(&(a.s18),int,a18) * store(&(a.s19),int,a19) * store(&(a.s20),int,a20) * store(&(a.s21),int,a21) * store(&(a.s22),int,a22) * store(&(a.s23),int,a23) * store(&(a.s24),int,a24) * store(&(a.s25),int,a25) * store(&(a.s26),int,a26) * store(&(a.s27),int,a27) * store(&(a.s28),int,a28) * store(&(a.s29),int,a29) * store(&(a.s30),int,a30) * store(&(a.s31),int,a31))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), qm_fp_lane_match(0,vl,r0,qm_of_int(A(0))) && qm_fp_lane_match(1,vl,r1,qm_of_int(A(1))) && qm_fp_lane_match(2,vl,r2,qm_of_int(A(2))) && qm_fp_lane_match(3,vl,r3,qm_of_int(A(3))) && qm_fp_lane_match(4,vl,r4,qm_of_int(A(4))) && qm_fp_lane_match(5,vl,r5,qm_of_int(A(5))) && qm_fp_lane_match(6,vl,r6,qm_of_int(A(6))) && qm_fp_lane_match(7,vl,r7,qm_of_int(A(7))) && qm_fp_lane_match(8,vl,r8,qm_of_int(A(8))) && qm_fp_lane_match(9,vl,r9,qm_of_int(A(9))) && qm_fp_lane_match(10,vl,r10,qm_of_int(A(10))) && qm_fp_lane_match(11,vl,r11,qm_of_int(A(11))) && qm_fp_lane_match(12,vl,r12,qm_of_int(A(12))) && qm_fp_lane_match(13,vl,r13,qm_of_int(A(13))) && qm_fp_lane_match(14,vl,r14,qm_of_int(A(14))) && qm_fp_lane_match(15,vl,r15,qm_of_int(A(15))) && qm_fp_lane_match(16,vl,r16,qm_of_int(A(16))) && qm_fp_lane_match(17,vl,r17,qm_of_int(A(17))) && qm_fp_lane_match(18,vl,r18,qm_of_int(A(18))) && qm_fp_lane_match(19,vl,r19,qm_of_int(A(19))) && qm_fp_lane_match(20,vl,r20,qm_of_int(A(20))) && qm_fp_lane_match(21,vl,r21,qm_of_int(A(21))) && qm_fp_lane_match(22,vl,r22,qm_of_int(A(22))) && qm_fp_lane_match(23,vl,r23,qm_of_int(A(23))) && qm_fp_lane_match(24,vl,r24,qm_of_int(A(24))) && qm_fp_lane_match(25,vl,r25,qm_of_int(A(25))) && qm_fp_lane_match(26,vl,r26,qm_of_int(A(26))) && qm_fp_lane_match(27,vl,r27,qm_of_int(A(27))) && qm_fp_lane_match(28,vl,r28,qm_of_int(A(28))) && qm_fp_lane_match(29,vl,r29,qm_of_int(A(29))) && qm_fp_lane_match(30,vl,r30,qm_of_int(A(30))) && qm_fp_lane_match(31,vl,r31,qm_of_int(A(31))) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vfmul_vf_f32m8",
+      "side": "RVV",
+      "return_type": "vfloat32m8_t",
+      "arguments": [
+        [
+          "vfloat32m8_t",
+          "a"
+        ],
+        [
+          "float",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vfloat32m8_t __riscv_vfmul_vf_f32m8(vfloat32m8_t a,float x,size_t vl)\n/*@ With (A:Z -> fp32)\n Require 0<=vl && vl<=32 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32), qm_fp_lane_match(0,vl,a0,A(0)) && qm_fp_lane_match(1,vl,a1,A(1)) && qm_fp_lane_match(2,vl,a2,A(2)) && qm_fp_lane_match(3,vl,a3,A(3)) && qm_fp_lane_match(4,vl,a4,A(4)) && qm_fp_lane_match(5,vl,a5,A(5)) && qm_fp_lane_match(6,vl,a6,A(6)) && qm_fp_lane_match(7,vl,a7,A(7)) && qm_fp_lane_match(8,vl,a8,A(8)) && qm_fp_lane_match(9,vl,a9,A(9)) && qm_fp_lane_match(10,vl,a10,A(10)) && qm_fp_lane_match(11,vl,a11,A(11)) && qm_fp_lane_match(12,vl,a12,A(12)) && qm_fp_lane_match(13,vl,a13,A(13)) && qm_fp_lane_match(14,vl,a14,A(14)) && qm_fp_lane_match(15,vl,a15,A(15)) && qm_fp_lane_match(16,vl,a16,A(16)) && qm_fp_lane_match(17,vl,a17,A(17)) && qm_fp_lane_match(18,vl,a18,A(18)) && qm_fp_lane_match(19,vl,a19,A(19)) && qm_fp_lane_match(20,vl,a20,A(20)) && qm_fp_lane_match(21,vl,a21,A(21)) && qm_fp_lane_match(22,vl,a22,A(22)) && qm_fp_lane_match(23,vl,a23,A(23)) && qm_fp_lane_match(24,vl,a24,A(24)) && qm_fp_lane_match(25,vl,a25,A(25)) && qm_fp_lane_match(26,vl,a26,A(26)) && qm_fp_lane_match(27,vl,a27,A(27)) && qm_fp_lane_match(28,vl,a28,A(28)) && qm_fp_lane_match(29,vl,a29,A(29)) && qm_fp_lane_match(30,vl,a30,A(30)) && qm_fp_lane_match(31,vl,a31,A(31)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(a.s8),float,a8) * store(&(a.s9),float,a9) * store(&(a.s10),float,a10) * store(&(a.s11),float,a11) * store(&(a.s12),float,a12) * store(&(a.s13),float,a13) * store(&(a.s14),float,a14) * store(&(a.s15),float,a15) * store(&(a.s16),float,a16) * store(&(a.s17),float,a17) * store(&(a.s18),float,a18) * store(&(a.s19),float,a19) * store(&(a.s20),float,a20) * store(&(a.s21),float,a21) * store(&(a.s22),float,a22) * store(&(a.s23),float,a23) * store(&(a.s24),float,a24) * store(&(a.s25),float,a25) * store(&(a.s26),float,a26) * store(&(a.s27),float,a27) * store(&(a.s28),float,a28) * store(&(a.s29),float,a29) * store(&(a.s30),float,a30) * store(&(a.s31),float,a31))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), qm_fp_lane_match(0,vl,r0,qm_rvv_mul(A(0),x)) && qm_fp_lane_match(1,vl,r1,qm_rvv_mul(A(1),x)) && qm_fp_lane_match(2,vl,r2,qm_rvv_mul(A(2),x)) && qm_fp_lane_match(3,vl,r3,qm_rvv_mul(A(3),x)) && qm_fp_lane_match(4,vl,r4,qm_rvv_mul(A(4),x)) && qm_fp_lane_match(5,vl,r5,qm_rvv_mul(A(5),x)) && qm_fp_lane_match(6,vl,r6,qm_rvv_mul(A(6),x)) && qm_fp_lane_match(7,vl,r7,qm_rvv_mul(A(7),x)) && qm_fp_lane_match(8,vl,r8,qm_rvv_mul(A(8),x)) && qm_fp_lane_match(9,vl,r9,qm_rvv_mul(A(9),x)) && qm_fp_lane_match(10,vl,r10,qm_rvv_mul(A(10),x)) && qm_fp_lane_match(11,vl,r11,qm_rvv_mul(A(11),x)) && qm_fp_lane_match(12,vl,r12,qm_rvv_mul(A(12),x)) && qm_fp_lane_match(13,vl,r13,qm_rvv_mul(A(13),x)) && qm_fp_lane_match(14,vl,r14,qm_rvv_mul(A(14),x)) && qm_fp_lane_match(15,vl,r15,qm_rvv_mul(A(15),x)) && qm_fp_lane_match(16,vl,r16,qm_rvv_mul(A(16),x)) && qm_fp_lane_match(17,vl,r17,qm_rvv_mul(A(17),x)) && qm_fp_lane_match(18,vl,r18,qm_rvv_mul(A(18),x)) && qm_fp_lane_match(19,vl,r19,qm_rvv_mul(A(19),x)) && qm_fp_lane_match(20,vl,r20,qm_rvv_mul(A(20),x)) && qm_fp_lane_match(21,vl,r21,qm_rvv_mul(A(21),x)) && qm_fp_lane_match(22,vl,r22,qm_rvv_mul(A(22),x)) && qm_fp_lane_match(23,vl,r23,qm_rvv_mul(A(23),x)) && qm_fp_lane_match(24,vl,r24,qm_rvv_mul(A(24),x)) && qm_fp_lane_match(25,vl,r25,qm_rvv_mul(A(25),x)) && qm_fp_lane_match(26,vl,r26,qm_rvv_mul(A(26),x)) && qm_fp_lane_match(27,vl,r27,qm_rvv_mul(A(27),x)) && qm_fp_lane_match(28,vl,r28,qm_rvv_mul(A(28),x)) && qm_fp_lane_match(29,vl,r29,qm_rvv_mul(A(29),x)) && qm_fp_lane_match(30,vl,r30,qm_rvv_mul(A(30),x)) && qm_fp_lane_match(31,vl,r31,qm_rvv_mul(A(31),x)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vfadd_vf_f32m8",
+      "side": "RVV",
+      "return_type": "vfloat32m8_t",
+      "arguments": [
+        [
+          "vfloat32m8_t",
+          "a"
+        ],
+        [
+          "float",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vfloat32m8_t __riscv_vfadd_vf_f32m8(vfloat32m8_t a,float x,size_t vl)\n/*@ With (A:Z -> fp32)\n Require 0<=vl && vl<=32 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32), qm_fp_lane_match(0,vl,a0,A(0)) && qm_fp_lane_match(1,vl,a1,A(1)) && qm_fp_lane_match(2,vl,a2,A(2)) && qm_fp_lane_match(3,vl,a3,A(3)) && qm_fp_lane_match(4,vl,a4,A(4)) && qm_fp_lane_match(5,vl,a5,A(5)) && qm_fp_lane_match(6,vl,a6,A(6)) && qm_fp_lane_match(7,vl,a7,A(7)) && qm_fp_lane_match(8,vl,a8,A(8)) && qm_fp_lane_match(9,vl,a9,A(9)) && qm_fp_lane_match(10,vl,a10,A(10)) && qm_fp_lane_match(11,vl,a11,A(11)) && qm_fp_lane_match(12,vl,a12,A(12)) && qm_fp_lane_match(13,vl,a13,A(13)) && qm_fp_lane_match(14,vl,a14,A(14)) && qm_fp_lane_match(15,vl,a15,A(15)) && qm_fp_lane_match(16,vl,a16,A(16)) && qm_fp_lane_match(17,vl,a17,A(17)) && qm_fp_lane_match(18,vl,a18,A(18)) && qm_fp_lane_match(19,vl,a19,A(19)) && qm_fp_lane_match(20,vl,a20,A(20)) && qm_fp_lane_match(21,vl,a21,A(21)) && qm_fp_lane_match(22,vl,a22,A(22)) && qm_fp_lane_match(23,vl,a23,A(23)) && qm_fp_lane_match(24,vl,a24,A(24)) && qm_fp_lane_match(25,vl,a25,A(25)) && qm_fp_lane_match(26,vl,a26,A(26)) && qm_fp_lane_match(27,vl,a27,A(27)) && qm_fp_lane_match(28,vl,a28,A(28)) && qm_fp_lane_match(29,vl,a29,A(29)) && qm_fp_lane_match(30,vl,a30,A(30)) && qm_fp_lane_match(31,vl,a31,A(31)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(a.s8),float,a8) * store(&(a.s9),float,a9) * store(&(a.s10),float,a10) * store(&(a.s11),float,a11) * store(&(a.s12),float,a12) * store(&(a.s13),float,a13) * store(&(a.s14),float,a14) * store(&(a.s15),float,a15) * store(&(a.s16),float,a16) * store(&(a.s17),float,a17) * store(&(a.s18),float,a18) * store(&(a.s19),float,a19) * store(&(a.s20),float,a20) * store(&(a.s21),float,a21) * store(&(a.s22),float,a22) * store(&(a.s23),float,a23) * store(&(a.s24),float,a24) * store(&(a.s25),float,a25) * store(&(a.s26),float,a26) * store(&(a.s27),float,a27) * store(&(a.s28),float,a28) * store(&(a.s29),float,a29) * store(&(a.s30),float,a30) * store(&(a.s31),float,a31))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), qm_fp_lane_match(0,vl,r0,qm_rvv_add(A(0),x)) && qm_fp_lane_match(1,vl,r1,qm_rvv_add(A(1),x)) && qm_fp_lane_match(2,vl,r2,qm_rvv_add(A(2),x)) && qm_fp_lane_match(3,vl,r3,qm_rvv_add(A(3),x)) && qm_fp_lane_match(4,vl,r4,qm_rvv_add(A(4),x)) && qm_fp_lane_match(5,vl,r5,qm_rvv_add(A(5),x)) && qm_fp_lane_match(6,vl,r6,qm_rvv_add(A(6),x)) && qm_fp_lane_match(7,vl,r7,qm_rvv_add(A(7),x)) && qm_fp_lane_match(8,vl,r8,qm_rvv_add(A(8),x)) && qm_fp_lane_match(9,vl,r9,qm_rvv_add(A(9),x)) && qm_fp_lane_match(10,vl,r10,qm_rvv_add(A(10),x)) && qm_fp_lane_match(11,vl,r11,qm_rvv_add(A(11),x)) && qm_fp_lane_match(12,vl,r12,qm_rvv_add(A(12),x)) && qm_fp_lane_match(13,vl,r13,qm_rvv_add(A(13),x)) && qm_fp_lane_match(14,vl,r14,qm_rvv_add(A(14),x)) && qm_fp_lane_match(15,vl,r15,qm_rvv_add(A(15),x)) && qm_fp_lane_match(16,vl,r16,qm_rvv_add(A(16),x)) && qm_fp_lane_match(17,vl,r17,qm_rvv_add(A(17),x)) && qm_fp_lane_match(18,vl,r18,qm_rvv_add(A(18),x)) && qm_fp_lane_match(19,vl,r19,qm_rvv_add(A(19),x)) && qm_fp_lane_match(20,vl,r20,qm_rvv_add(A(20),x)) && qm_fp_lane_match(21,vl,r21,qm_rvv_add(A(21),x)) && qm_fp_lane_match(22,vl,r22,qm_rvv_add(A(22),x)) && qm_fp_lane_match(23,vl,r23,qm_rvv_add(A(23),x)) && qm_fp_lane_match(24,vl,r24,qm_rvv_add(A(24),x)) && qm_fp_lane_match(25,vl,r25,qm_rvv_add(A(25),x)) && qm_fp_lane_match(26,vl,r26,qm_rvv_add(A(26),x)) && qm_fp_lane_match(27,vl,r27,qm_rvv_add(A(27),x)) && qm_fp_lane_match(28,vl,r28,qm_rvv_add(A(28),x)) && qm_fp_lane_match(29,vl,r29,qm_rvv_add(A(29),x)) && qm_fp_lane_match(30,vl,r30,qm_rvv_add(A(30),x)) && qm_fp_lane_match(31,vl,r31,qm_rvv_add(A(31),x)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vfsgnj_vf_f32m8",
+      "side": "RVV",
+      "return_type": "vfloat32m8_t",
+      "arguments": [
+        [
+          "vfloat32m8_t",
+          "a"
+        ],
+        [
+          "float",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vfloat32m8_t __riscv_vfsgnj_vf_f32m8(vfloat32m8_t a,float x,size_t vl)\n/*@ With (A:Z -> fp32)\n Require 0<=vl && vl<=32 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32), qm_fp_lane_match(0,vl,a0,A(0)) && qm_fp_lane_match(1,vl,a1,A(1)) && qm_fp_lane_match(2,vl,a2,A(2)) && qm_fp_lane_match(3,vl,a3,A(3)) && qm_fp_lane_match(4,vl,a4,A(4)) && qm_fp_lane_match(5,vl,a5,A(5)) && qm_fp_lane_match(6,vl,a6,A(6)) && qm_fp_lane_match(7,vl,a7,A(7)) && qm_fp_lane_match(8,vl,a8,A(8)) && qm_fp_lane_match(9,vl,a9,A(9)) && qm_fp_lane_match(10,vl,a10,A(10)) && qm_fp_lane_match(11,vl,a11,A(11)) && qm_fp_lane_match(12,vl,a12,A(12)) && qm_fp_lane_match(13,vl,a13,A(13)) && qm_fp_lane_match(14,vl,a14,A(14)) && qm_fp_lane_match(15,vl,a15,A(15)) && qm_fp_lane_match(16,vl,a16,A(16)) && qm_fp_lane_match(17,vl,a17,A(17)) && qm_fp_lane_match(18,vl,a18,A(18)) && qm_fp_lane_match(19,vl,a19,A(19)) && qm_fp_lane_match(20,vl,a20,A(20)) && qm_fp_lane_match(21,vl,a21,A(21)) && qm_fp_lane_match(22,vl,a22,A(22)) && qm_fp_lane_match(23,vl,a23,A(23)) && qm_fp_lane_match(24,vl,a24,A(24)) && qm_fp_lane_match(25,vl,a25,A(25)) && qm_fp_lane_match(26,vl,a26,A(26)) && qm_fp_lane_match(27,vl,a27,A(27)) && qm_fp_lane_match(28,vl,a28,A(28)) && qm_fp_lane_match(29,vl,a29,A(29)) && qm_fp_lane_match(30,vl,a30,A(30)) && qm_fp_lane_match(31,vl,a31,A(31)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(a.s8),float,a8) * store(&(a.s9),float,a9) * store(&(a.s10),float,a10) * store(&(a.s11),float,a11) * store(&(a.s12),float,a12) * store(&(a.s13),float,a13) * store(&(a.s14),float,a14) * store(&(a.s15),float,a15) * store(&(a.s16),float,a16) * store(&(a.s17),float,a17) * store(&(a.s18),float,a18) * store(&(a.s19),float,a19) * store(&(a.s20),float,a20) * store(&(a.s21),float,a21) * store(&(a.s22),float,a22) * store(&(a.s23),float,a23) * store(&(a.s24),float,a24) * store(&(a.s25),float,a25) * store(&(a.s26),float,a26) * store(&(a.s27),float,a27) * store(&(a.s28),float,a28) * store(&(a.s29),float,a29) * store(&(a.s30),float,a30) * store(&(a.s31),float,a31))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), qm_fp_lane_match(0,vl,r0,qm_sign(A(0),x)) && qm_fp_lane_match(1,vl,r1,qm_sign(A(1),x)) && qm_fp_lane_match(2,vl,r2,qm_sign(A(2),x)) && qm_fp_lane_match(3,vl,r3,qm_sign(A(3),x)) && qm_fp_lane_match(4,vl,r4,qm_sign(A(4),x)) && qm_fp_lane_match(5,vl,r5,qm_sign(A(5),x)) && qm_fp_lane_match(6,vl,r6,qm_sign(A(6),x)) && qm_fp_lane_match(7,vl,r7,qm_sign(A(7),x)) && qm_fp_lane_match(8,vl,r8,qm_sign(A(8),x)) && qm_fp_lane_match(9,vl,r9,qm_sign(A(9),x)) && qm_fp_lane_match(10,vl,r10,qm_sign(A(10),x)) && qm_fp_lane_match(11,vl,r11,qm_sign(A(11),x)) && qm_fp_lane_match(12,vl,r12,qm_sign(A(12),x)) && qm_fp_lane_match(13,vl,r13,qm_sign(A(13),x)) && qm_fp_lane_match(14,vl,r14,qm_sign(A(14),x)) && qm_fp_lane_match(15,vl,r15,qm_sign(A(15),x)) && qm_fp_lane_match(16,vl,r16,qm_sign(A(16),x)) && qm_fp_lane_match(17,vl,r17,qm_sign(A(17),x)) && qm_fp_lane_match(18,vl,r18,qm_sign(A(18),x)) && qm_fp_lane_match(19,vl,r19,qm_sign(A(19),x)) && qm_fp_lane_match(20,vl,r20,qm_sign(A(20),x)) && qm_fp_lane_match(21,vl,r21,qm_sign(A(21),x)) && qm_fp_lane_match(22,vl,r22,qm_sign(A(22),x)) && qm_fp_lane_match(23,vl,r23,qm_sign(A(23),x)) && qm_fp_lane_match(24,vl,r24,qm_sign(A(24),x)) && qm_fp_lane_match(25,vl,r25,qm_sign(A(25),x)) && qm_fp_lane_match(26,vl,r26,qm_sign(A(26),x)) && qm_fp_lane_match(27,vl,r27,qm_sign(A(27),x)) && qm_fp_lane_match(28,vl,r28,qm_sign(A(28),x)) && qm_fp_lane_match(29,vl,r29,qm_sign(A(29),x)) && qm_fp_lane_match(30,vl,r30,qm_sign(A(30),x)) && qm_fp_lane_match(31,vl,r31,qm_sign(A(31),x)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vreinterpret_v_f32m8_i32m8",
+      "side": "RVV",
+      "return_type": "vint32m8_t",
+      "arguments": [
+        [
+          "vfloat32m8_t",
+          "a"
+        ]
+      ],
+      "contract": "vint32m8_t __riscv_vreinterpret_v_f32m8_i32m8(vfloat32m8_t a)\n/*@ With (vl:Z) (A:Z -> fp32)\n Require 0<=vl && vl<=32 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32), qm_fp_lane_match(0,vl,a0,A(0)) && qm_fp_lane_match(1,vl,a1,A(1)) && qm_fp_lane_match(2,vl,a2,A(2)) && qm_fp_lane_match(3,vl,a3,A(3)) && qm_fp_lane_match(4,vl,a4,A(4)) && qm_fp_lane_match(5,vl,a5,A(5)) && qm_fp_lane_match(6,vl,a6,A(6)) && qm_fp_lane_match(7,vl,a7,A(7)) && qm_fp_lane_match(8,vl,a8,A(8)) && qm_fp_lane_match(9,vl,a9,A(9)) && qm_fp_lane_match(10,vl,a10,A(10)) && qm_fp_lane_match(11,vl,a11,A(11)) && qm_fp_lane_match(12,vl,a12,A(12)) && qm_fp_lane_match(13,vl,a13,A(13)) && qm_fp_lane_match(14,vl,a14,A(14)) && qm_fp_lane_match(15,vl,a15,A(15)) && qm_fp_lane_match(16,vl,a16,A(16)) && qm_fp_lane_match(17,vl,a17,A(17)) && qm_fp_lane_match(18,vl,a18,A(18)) && qm_fp_lane_match(19,vl,a19,A(19)) && qm_fp_lane_match(20,vl,a20,A(20)) && qm_fp_lane_match(21,vl,a21,A(21)) && qm_fp_lane_match(22,vl,a22,A(22)) && qm_fp_lane_match(23,vl,a23,A(23)) && qm_fp_lane_match(24,vl,a24,A(24)) && qm_fp_lane_match(25,vl,a25,A(25)) && qm_fp_lane_match(26,vl,a26,A(26)) && qm_fp_lane_match(27,vl,a27,A(27)) && qm_fp_lane_match(28,vl,a28,A(28)) && qm_fp_lane_match(29,vl,a29,A(29)) && qm_fp_lane_match(30,vl,a30,A(30)) && qm_fp_lane_match(31,vl,a31,A(31)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(a.s8),float,a8) * store(&(a.s9),float,a9) * store(&(a.s10),float,a10) * store(&(a.s11),float,a11) * store(&(a.s12),float,a12) * store(&(a.s13),float,a13) * store(&(a.s14),float,a14) * store(&(a.s15),float,a15) * store(&(a.s16),float,a16) * store(&(a.s17),float,a17) * store(&(a.s18),float,a18) * store(&(a.s19),float,a19) * store(&(a.s20),float,a20) * store(&(a.s21),float,a21) * store(&(a.s22),float,a22) * store(&(a.s23),float,a23) * store(&(a.s24),float,a24) * store(&(a.s25),float,a25) * store(&(a.s26),float,a26) * store(&(a.s27),float,a27) * store(&(a.s28),float,a28) * store(&(a.s29),float,a29) * store(&(a.s30),float,a30) * store(&(a.s31),float,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_signed_bits(bits_of_fp32(A(0)))) && qm_lane_match(1,vl,r1,qm_signed_bits(bits_of_fp32(A(1)))) && qm_lane_match(2,vl,r2,qm_signed_bits(bits_of_fp32(A(2)))) && qm_lane_match(3,vl,r3,qm_signed_bits(bits_of_fp32(A(3)))) && qm_lane_match(4,vl,r4,qm_signed_bits(bits_of_fp32(A(4)))) && qm_lane_match(5,vl,r5,qm_signed_bits(bits_of_fp32(A(5)))) && qm_lane_match(6,vl,r6,qm_signed_bits(bits_of_fp32(A(6)))) && qm_lane_match(7,vl,r7,qm_signed_bits(bits_of_fp32(A(7)))) && qm_lane_match(8,vl,r8,qm_signed_bits(bits_of_fp32(A(8)))) && qm_lane_match(9,vl,r9,qm_signed_bits(bits_of_fp32(A(9)))) && qm_lane_match(10,vl,r10,qm_signed_bits(bits_of_fp32(A(10)))) && qm_lane_match(11,vl,r11,qm_signed_bits(bits_of_fp32(A(11)))) && qm_lane_match(12,vl,r12,qm_signed_bits(bits_of_fp32(A(12)))) && qm_lane_match(13,vl,r13,qm_signed_bits(bits_of_fp32(A(13)))) && qm_lane_match(14,vl,r14,qm_signed_bits(bits_of_fp32(A(14)))) && qm_lane_match(15,vl,r15,qm_signed_bits(bits_of_fp32(A(15)))) && qm_lane_match(16,vl,r16,qm_signed_bits(bits_of_fp32(A(16)))) && qm_lane_match(17,vl,r17,qm_signed_bits(bits_of_fp32(A(17)))) && qm_lane_match(18,vl,r18,qm_signed_bits(bits_of_fp32(A(18)))) && qm_lane_match(19,vl,r19,qm_signed_bits(bits_of_fp32(A(19)))) && qm_lane_match(20,vl,r20,qm_signed_bits(bits_of_fp32(A(20)))) && qm_lane_match(21,vl,r21,qm_signed_bits(bits_of_fp32(A(21)))) && qm_lane_match(22,vl,r22,qm_signed_bits(bits_of_fp32(A(22)))) && qm_lane_match(23,vl,r23,qm_signed_bits(bits_of_fp32(A(23)))) && qm_lane_match(24,vl,r24,qm_signed_bits(bits_of_fp32(A(24)))) && qm_lane_match(25,vl,r25,qm_signed_bits(bits_of_fp32(A(25)))) && qm_lane_match(26,vl,r26,qm_signed_bits(bits_of_fp32(A(26)))) && qm_lane_match(27,vl,r27,qm_signed_bits(bits_of_fp32(A(27)))) && qm_lane_match(28,vl,r28,qm_signed_bits(bits_of_fp32(A(28)))) && qm_lane_match(29,vl,r29,qm_signed_bits(bits_of_fp32(A(29)))) && qm_lane_match(30,vl,r30,qm_signed_bits(bits_of_fp32(A(30)))) && qm_lane_match(31,vl,r31,qm_signed_bits(bits_of_fp32(A(31)))) && store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) * store(&(__return.s16),int,r16) * store(&(__return.s17),int,r17) * store(&(__return.s18),int,r18) * store(&(__return.s19),int,r19) * store(&(__return.s20),int,r20) * store(&(__return.s21),int,r21) * store(&(__return.s22),int,r22) * store(&(__return.s23),int,r23) * store(&(__return.s24),int,r24) * store(&(__return.s25),int,r25) * store(&(__return.s26),int,r26) * store(&(__return.s27),int,r27) * store(&(__return.s28),int,r28) * store(&(__return.s29),int,r29) * store(&(__return.s30),int,r30) * store(&(__return.s31),int,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vssub_vx_i32m8",
+      "side": "RVV",
+      "return_type": "vint32m8_t",
+      "arguments": [
+        [
+          "vint32m8_t",
+          "a"
+        ],
+        [
+          "int32_t",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint32m8_t __riscv_vssub_vx_i32m8(vint32m8_t a,int32_t x,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),int,a0) * store(&(a.s1),int,a1) * store(&(a.s2),int,a2) * store(&(a.s3),int,a3) * store(&(a.s4),int,a4) * store(&(a.s5),int,a5) * store(&(a.s6),int,a6) * store(&(a.s7),int,a7) * store(&(a.s8),int,a8) * store(&(a.s9),int,a9) * store(&(a.s10),int,a10) * store(&(a.s11),int,a11) * store(&(a.s12),int,a12) * store(&(a.s13),int,a13) * store(&(a.s14),int,a14) * store(&(a.s15),int,a15) * store(&(a.s16),int,a16) * store(&(a.s17),int,a17) * store(&(a.s18),int,a18) * store(&(a.s19),int,a19) * store(&(a.s20),int,a20) * store(&(a.s21),int,a21) * store(&(a.s22),int,a22) * store(&(a.s23),int,a23) * store(&(a.s24),int,a24) * store(&(a.s25),int,a25) * store(&(a.s26),int,a26) * store(&(a.s27),int,a27) * store(&(a.s28),int,a28) * store(&(a.s29),int,a29) * store(&(a.s30),int,a30) * store(&(a.s31),int,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_sat32(A(0)-x)) && qm_lane_match(1,vl,r1,qm_sat32(A(1)-x)) && qm_lane_match(2,vl,r2,qm_sat32(A(2)-x)) && qm_lane_match(3,vl,r3,qm_sat32(A(3)-x)) && qm_lane_match(4,vl,r4,qm_sat32(A(4)-x)) && qm_lane_match(5,vl,r5,qm_sat32(A(5)-x)) && qm_lane_match(6,vl,r6,qm_sat32(A(6)-x)) && qm_lane_match(7,vl,r7,qm_sat32(A(7)-x)) && qm_lane_match(8,vl,r8,qm_sat32(A(8)-x)) && qm_lane_match(9,vl,r9,qm_sat32(A(9)-x)) && qm_lane_match(10,vl,r10,qm_sat32(A(10)-x)) && qm_lane_match(11,vl,r11,qm_sat32(A(11)-x)) && qm_lane_match(12,vl,r12,qm_sat32(A(12)-x)) && qm_lane_match(13,vl,r13,qm_sat32(A(13)-x)) && qm_lane_match(14,vl,r14,qm_sat32(A(14)-x)) && qm_lane_match(15,vl,r15,qm_sat32(A(15)-x)) && qm_lane_match(16,vl,r16,qm_sat32(A(16)-x)) && qm_lane_match(17,vl,r17,qm_sat32(A(17)-x)) && qm_lane_match(18,vl,r18,qm_sat32(A(18)-x)) && qm_lane_match(19,vl,r19,qm_sat32(A(19)-x)) && qm_lane_match(20,vl,r20,qm_sat32(A(20)-x)) && qm_lane_match(21,vl,r21,qm_sat32(A(21)-x)) && qm_lane_match(22,vl,r22,qm_sat32(A(22)-x)) && qm_lane_match(23,vl,r23,qm_sat32(A(23)-x)) && qm_lane_match(24,vl,r24,qm_sat32(A(24)-x)) && qm_lane_match(25,vl,r25,qm_sat32(A(25)-x)) && qm_lane_match(26,vl,r26,qm_sat32(A(26)-x)) && qm_lane_match(27,vl,r27,qm_sat32(A(27)-x)) && qm_lane_match(28,vl,r28,qm_sat32(A(28)-x)) && qm_lane_match(29,vl,r29,qm_sat32(A(29)-x)) && qm_lane_match(30,vl,r30,qm_sat32(A(30)-x)) && qm_lane_match(31,vl,r31,qm_sat32(A(31)-x)) && store(&(__return.s0),int,r0) * store(&(__return.s1),int,r1) * store(&(__return.s2),int,r2) * store(&(__return.s3),int,r3) * store(&(__return.s4),int,r4) * store(&(__return.s5),int,r5) * store(&(__return.s6),int,r6) * store(&(__return.s7),int,r7) * store(&(__return.s8),int,r8) * store(&(__return.s9),int,r9) * store(&(__return.s10),int,r10) * store(&(__return.s11),int,r11) * store(&(__return.s12),int,r12) * store(&(__return.s13),int,r13) * store(&(__return.s14),int,r14) * store(&(__return.s15),int,r15) * store(&(__return.s16),int,r16) * store(&(__return.s17),int,r17) * store(&(__return.s18),int,r18) * store(&(__return.s19),int,r19) * store(&(__return.s20),int,r20) * store(&(__return.s21),int,r21) * store(&(__return.s22),int,r22) * store(&(__return.s23),int,r23) * store(&(__return.s24),int,r24) * store(&(__return.s25),int,r25) * store(&(__return.s26),int,r26) * store(&(__return.s27),int,r27) * store(&(__return.s28),int,r28) * store(&(__return.s29),int,r29) * store(&(__return.s30),int,r30) * store(&(__return.s31),int,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vnclip_wx_i16m4",
+      "side": "RVV",
+      "return_type": "vint16m4_t",
+      "arguments": [
+        [
+          "vint32m8_t",
+          "a"
+        ],
+        [
+          "size_t",
+          "shift"
+        ],
+        [
+          "unsigned int",
+          "vxrm"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint16m4_t __riscv_vnclip_wx_i16m4(vint32m8_t a,size_t shift,unsigned int vxrm,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && shift==0 && vxrm==2 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),int,a0) * store(&(a.s1),int,a1) * store(&(a.s2),int,a2) * store(&(a.s3),int,a3) * store(&(a.s4),int,a4) * store(&(a.s5),int,a5) * store(&(a.s6),int,a6) * store(&(a.s7),int,a7) * store(&(a.s8),int,a8) * store(&(a.s9),int,a9) * store(&(a.s10),int,a10) * store(&(a.s11),int,a11) * store(&(a.s12),int,a12) * store(&(a.s13),int,a13) * store(&(a.s14),int,a14) * store(&(a.s15),int,a15) * store(&(a.s16),int,a16) * store(&(a.s17),int,a17) * store(&(a.s18),int,a18) * store(&(a.s19),int,a19) * store(&(a.s20),int,a20) * store(&(a.s21),int,a21) * store(&(a.s22),int,a22) * store(&(a.s23),int,a23) * store(&(a.s24),int,a24) * store(&(a.s25),int,a25) * store(&(a.s26),int,a26) * store(&(a.s27),int,a27) * store(&(a.s28),int,a28) * store(&(a.s29),int,a29) * store(&(a.s30),int,a30) * store(&(a.s31),int,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_sat16(A(0))) && qm_lane_match(1,vl,r1,qm_sat16(A(1))) && qm_lane_match(2,vl,r2,qm_sat16(A(2))) && qm_lane_match(3,vl,r3,qm_sat16(A(3))) && qm_lane_match(4,vl,r4,qm_sat16(A(4))) && qm_lane_match(5,vl,r5,qm_sat16(A(5))) && qm_lane_match(6,vl,r6,qm_sat16(A(6))) && qm_lane_match(7,vl,r7,qm_sat16(A(7))) && qm_lane_match(8,vl,r8,qm_sat16(A(8))) && qm_lane_match(9,vl,r9,qm_sat16(A(9))) && qm_lane_match(10,vl,r10,qm_sat16(A(10))) && qm_lane_match(11,vl,r11,qm_sat16(A(11))) && qm_lane_match(12,vl,r12,qm_sat16(A(12))) && qm_lane_match(13,vl,r13,qm_sat16(A(13))) && qm_lane_match(14,vl,r14,qm_sat16(A(14))) && qm_lane_match(15,vl,r15,qm_sat16(A(15))) && qm_lane_match(16,vl,r16,qm_sat16(A(16))) && qm_lane_match(17,vl,r17,qm_sat16(A(17))) && qm_lane_match(18,vl,r18,qm_sat16(A(18))) && qm_lane_match(19,vl,r19,qm_sat16(A(19))) && qm_lane_match(20,vl,r20,qm_sat16(A(20))) && qm_lane_match(21,vl,r21,qm_sat16(A(21))) && qm_lane_match(22,vl,r22,qm_sat16(A(22))) && qm_lane_match(23,vl,r23,qm_sat16(A(23))) && qm_lane_match(24,vl,r24,qm_sat16(A(24))) && qm_lane_match(25,vl,r25,qm_sat16(A(25))) && qm_lane_match(26,vl,r26,qm_sat16(A(26))) && qm_lane_match(27,vl,r27,qm_sat16(A(27))) && qm_lane_match(28,vl,r28,qm_sat16(A(28))) && qm_lane_match(29,vl,r29,qm_sat16(A(29))) && qm_lane_match(30,vl,r30,qm_sat16(A(30))) && qm_lane_match(31,vl,r31,qm_sat16(A(31))) && store(&(__return.s0),short,r0) * store(&(__return.s1),short,r1) * store(&(__return.s2),short,r2) * store(&(__return.s3),short,r3) * store(&(__return.s4),short,r4) * store(&(__return.s5),short,r5) * store(&(__return.s6),short,r6) * store(&(__return.s7),short,r7) * store(&(__return.s8),short,r8) * store(&(__return.s9),short,r9) * store(&(__return.s10),short,r10) * store(&(__return.s11),short,r11) * store(&(__return.s12),short,r12) * store(&(__return.s13),short,r13) * store(&(__return.s14),short,r14) * store(&(__return.s15),short,r15) * store(&(__return.s16),short,r16) * store(&(__return.s17),short,r17) * store(&(__return.s18),short,r18) * store(&(__return.s19),short,r19) * store(&(__return.s20),short,r20) * store(&(__return.s21),short,r21) * store(&(__return.s22),short,r22) * store(&(__return.s23),short,r23) * store(&(__return.s24),short,r24) * store(&(__return.s25),short,r25) * store(&(__return.s26),short,r26) * store(&(__return.s27),short,r27) * store(&(__return.s28),short,r28) * store(&(__return.s29),short,r29) * store(&(__return.s30),short,r30) * store(&(__return.s31),short,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vnclip_wx_i8m2",
+      "side": "RVV",
+      "return_type": "vint8m2_t",
+      "arguments": [
+        [
+          "vint16m4_t",
+          "a"
+        ],
+        [
+          "size_t",
+          "shift"
+        ],
+        [
+          "unsigned int",
+          "vxrm"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint8m2_t __riscv_vnclip_wx_i8m2(vint16m4_t a,size_t shift,unsigned int vxrm,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && shift==0 && vxrm==2 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),short,a0) * store(&(a.s1),short,a1) * store(&(a.s2),short,a2) * store(&(a.s3),short,a3) * store(&(a.s4),short,a4) * store(&(a.s5),short,a5) * store(&(a.s6),short,a6) * store(&(a.s7),short,a7) * store(&(a.s8),short,a8) * store(&(a.s9),short,a9) * store(&(a.s10),short,a10) * store(&(a.s11),short,a11) * store(&(a.s12),short,a12) * store(&(a.s13),short,a13) * store(&(a.s14),short,a14) * store(&(a.s15),short,a15) * store(&(a.s16),short,a16) * store(&(a.s17),short,a17) * store(&(a.s18),short,a18) * store(&(a.s19),short,a19) * store(&(a.s20),short,a20) * store(&(a.s21),short,a21) * store(&(a.s22),short,a22) * store(&(a.s23),short,a23) * store(&(a.s24),short,a24) * store(&(a.s25),short,a25) * store(&(a.s26),short,a26) * store(&(a.s27),short,a27) * store(&(a.s28),short,a28) * store(&(a.s29),short,a29) * store(&(a.s30),short,a30) * store(&(a.s31),short,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_sat8(A(0))) && qm_lane_match(1,vl,r1,qm_sat8(A(1))) && qm_lane_match(2,vl,r2,qm_sat8(A(2))) && qm_lane_match(3,vl,r3,qm_sat8(A(3))) && qm_lane_match(4,vl,r4,qm_sat8(A(4))) && qm_lane_match(5,vl,r5,qm_sat8(A(5))) && qm_lane_match(6,vl,r6,qm_sat8(A(6))) && qm_lane_match(7,vl,r7,qm_sat8(A(7))) && qm_lane_match(8,vl,r8,qm_sat8(A(8))) && qm_lane_match(9,vl,r9,qm_sat8(A(9))) && qm_lane_match(10,vl,r10,qm_sat8(A(10))) && qm_lane_match(11,vl,r11,qm_sat8(A(11))) && qm_lane_match(12,vl,r12,qm_sat8(A(12))) && qm_lane_match(13,vl,r13,qm_sat8(A(13))) && qm_lane_match(14,vl,r14,qm_sat8(A(14))) && qm_lane_match(15,vl,r15,qm_sat8(A(15))) && qm_lane_match(16,vl,r16,qm_sat8(A(16))) && qm_lane_match(17,vl,r17,qm_sat8(A(17))) && qm_lane_match(18,vl,r18,qm_sat8(A(18))) && qm_lane_match(19,vl,r19,qm_sat8(A(19))) && qm_lane_match(20,vl,r20,qm_sat8(A(20))) && qm_lane_match(21,vl,r21,qm_sat8(A(21))) && qm_lane_match(22,vl,r22,qm_sat8(A(22))) && qm_lane_match(23,vl,r23,qm_sat8(A(23))) && qm_lane_match(24,vl,r24,qm_sat8(A(24))) && qm_lane_match(25,vl,r25,qm_sat8(A(25))) && qm_lane_match(26,vl,r26,qm_sat8(A(26))) && qm_lane_match(27,vl,r27,qm_sat8(A(27))) && qm_lane_match(28,vl,r28,qm_sat8(A(28))) && qm_lane_match(29,vl,r29,qm_sat8(A(29))) && qm_lane_match(30,vl,r30,qm_sat8(A(30))) && qm_lane_match(31,vl,r31,qm_sat8(A(31))) && store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) * store(&(__return.s16),char,r16) * store(&(__return.s17),char,r17) * store(&(__return.s18),char,r18) * store(&(__return.s19),char,r19) * store(&(__return.s20),char,r20) * store(&(__return.s21),char,r21) * store(&(__return.s22),char,r22) * store(&(__return.s23),char,r23) * store(&(__return.s24),char,r24) * store(&(__return.s25),char,r25) * store(&(__return.s26),char,r26) * store(&(__return.s27),char,r27) * store(&(__return.s28),char,r28) * store(&(__return.s29),char,r29) * store(&(__return.s30),char,r30) * store(&(__return.s31),char,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vmin_vx_i8m2",
+      "side": "RVV",
+      "return_type": "vint8m2_t",
+      "arguments": [
+        [
+          "vint8m2_t",
+          "a"
+        ],
+        [
+          "int8_t",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint8m2_t __riscv_vmin_vx_i8m2(vint8m2_t a,int8_t x,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(a.s8),char,a8) * store(&(a.s9),char,a9) * store(&(a.s10),char,a10) * store(&(a.s11),char,a11) * store(&(a.s12),char,a12) * store(&(a.s13),char,a13) * store(&(a.s14),char,a14) * store(&(a.s15),char,a15) * store(&(a.s16),char,a16) * store(&(a.s17),char,a17) * store(&(a.s18),char,a18) * store(&(a.s19),char,a19) * store(&(a.s20),char,a20) * store(&(a.s21),char,a21) * store(&(a.s22),char,a22) * store(&(a.s23),char,a23) * store(&(a.s24),char,a24) * store(&(a.s25),char,a25) * store(&(a.s26),char,a26) * store(&(a.s27),char,a27) * store(&(a.s28),char,a28) * store(&(a.s29),char,a29) * store(&(a.s30),char,a30) * store(&(a.s31),char,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_min(A(0),x)) && qm_lane_match(1,vl,r1,qm_min(A(1),x)) && qm_lane_match(2,vl,r2,qm_min(A(2),x)) && qm_lane_match(3,vl,r3,qm_min(A(3),x)) && qm_lane_match(4,vl,r4,qm_min(A(4),x)) && qm_lane_match(5,vl,r5,qm_min(A(5),x)) && qm_lane_match(6,vl,r6,qm_min(A(6),x)) && qm_lane_match(7,vl,r7,qm_min(A(7),x)) && qm_lane_match(8,vl,r8,qm_min(A(8),x)) && qm_lane_match(9,vl,r9,qm_min(A(9),x)) && qm_lane_match(10,vl,r10,qm_min(A(10),x)) && qm_lane_match(11,vl,r11,qm_min(A(11),x)) && qm_lane_match(12,vl,r12,qm_min(A(12),x)) && qm_lane_match(13,vl,r13,qm_min(A(13),x)) && qm_lane_match(14,vl,r14,qm_min(A(14),x)) && qm_lane_match(15,vl,r15,qm_min(A(15),x)) && qm_lane_match(16,vl,r16,qm_min(A(16),x)) && qm_lane_match(17,vl,r17,qm_min(A(17),x)) && qm_lane_match(18,vl,r18,qm_min(A(18),x)) && qm_lane_match(19,vl,r19,qm_min(A(19),x)) && qm_lane_match(20,vl,r20,qm_min(A(20),x)) && qm_lane_match(21,vl,r21,qm_min(A(21),x)) && qm_lane_match(22,vl,r22,qm_min(A(22),x)) && qm_lane_match(23,vl,r23,qm_min(A(23),x)) && qm_lane_match(24,vl,r24,qm_min(A(24),x)) && qm_lane_match(25,vl,r25,qm_min(A(25),x)) && qm_lane_match(26,vl,r26,qm_min(A(26),x)) && qm_lane_match(27,vl,r27,qm_min(A(27),x)) && qm_lane_match(28,vl,r28,qm_min(A(28),x)) && qm_lane_match(29,vl,r29,qm_min(A(29),x)) && qm_lane_match(30,vl,r30,qm_min(A(30),x)) && qm_lane_match(31,vl,r31,qm_min(A(31),x)) && store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) * store(&(__return.s16),char,r16) * store(&(__return.s17),char,r17) * store(&(__return.s18),char,r18) * store(&(__return.s19),char,r19) * store(&(__return.s20),char,r20) * store(&(__return.s21),char,r21) * store(&(__return.s22),char,r22) * store(&(__return.s23),char,r23) * store(&(__return.s24),char,r24) * store(&(__return.s25),char,r25) * store(&(__return.s26),char,r26) * store(&(__return.s27),char,r27) * store(&(__return.s28),char,r28) * store(&(__return.s29),char,r29) * store(&(__return.s30),char,r30) * store(&(__return.s31),char,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vmax_vx_i8m2",
+      "side": "RVV",
+      "return_type": "vint8m2_t",
+      "arguments": [
+        [
+          "vint8m2_t",
+          "a"
+        ],
+        [
+          "int8_t",
+          "x"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint8m2_t __riscv_vmax_vx_i8m2(vint8m2_t a,int8_t x,size_t vl)\n/*@ With (A:Z -> Z)\n Require 0<=vl && vl<=32 && (exists (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z), qm_lane_match(0,vl,a0,A(0)) && qm_lane_match(1,vl,a1,A(1)) && qm_lane_match(2,vl,a2,A(2)) && qm_lane_match(3,vl,a3,A(3)) && qm_lane_match(4,vl,a4,A(4)) && qm_lane_match(5,vl,a5,A(5)) && qm_lane_match(6,vl,a6,A(6)) && qm_lane_match(7,vl,a7,A(7)) && qm_lane_match(8,vl,a8,A(8)) && qm_lane_match(9,vl,a9,A(9)) && qm_lane_match(10,vl,a10,A(10)) && qm_lane_match(11,vl,a11,A(11)) && qm_lane_match(12,vl,a12,A(12)) && qm_lane_match(13,vl,a13,A(13)) && qm_lane_match(14,vl,a14,A(14)) && qm_lane_match(15,vl,a15,A(15)) && qm_lane_match(16,vl,a16,A(16)) && qm_lane_match(17,vl,a17,A(17)) && qm_lane_match(18,vl,a18,A(18)) && qm_lane_match(19,vl,a19,A(19)) && qm_lane_match(20,vl,a20,A(20)) && qm_lane_match(21,vl,a21,A(21)) && qm_lane_match(22,vl,a22,A(22)) && qm_lane_match(23,vl,a23,A(23)) && qm_lane_match(24,vl,a24,A(24)) && qm_lane_match(25,vl,a25,A(25)) && qm_lane_match(26,vl,a26,A(26)) && qm_lane_match(27,vl,a27,A(27)) && qm_lane_match(28,vl,a28,A(28)) && qm_lane_match(29,vl,a29,A(29)) && qm_lane_match(30,vl,a30,A(30)) && qm_lane_match(31,vl,a31,A(31)) && store(&(a.s0),char,a0) * store(&(a.s1),char,a1) * store(&(a.s2),char,a2) * store(&(a.s3),char,a3) * store(&(a.s4),char,a4) * store(&(a.s5),char,a5) * store(&(a.s6),char,a6) * store(&(a.s7),char,a7) * store(&(a.s8),char,a8) * store(&(a.s9),char,a9) * store(&(a.s10),char,a10) * store(&(a.s11),char,a11) * store(&(a.s12),char,a12) * store(&(a.s13),char,a13) * store(&(a.s14),char,a14) * store(&(a.s15),char,a15) * store(&(a.s16),char,a16) * store(&(a.s17),char,a17) * store(&(a.s18),char,a18) * store(&(a.s19),char,a19) * store(&(a.s20),char,a20) * store(&(a.s21),char,a21) * store(&(a.s22),char,a22) * store(&(a.s23),char,a23) * store(&(a.s24),char,a24) * store(&(a.s25),char,a25) * store(&(a.s26),char,a26) * store(&(a.s27),char,a27) * store(&(a.s28),char,a28) * store(&(a.s29),char,a29) * store(&(a.s30),char,a30) * store(&(a.s31),char,a31))\n Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,qm_max(A(0),x)) && qm_lane_match(1,vl,r1,qm_max(A(1),x)) && qm_lane_match(2,vl,r2,qm_max(A(2),x)) && qm_lane_match(3,vl,r3,qm_max(A(3),x)) && qm_lane_match(4,vl,r4,qm_max(A(4),x)) && qm_lane_match(5,vl,r5,qm_max(A(5),x)) && qm_lane_match(6,vl,r6,qm_max(A(6),x)) && qm_lane_match(7,vl,r7,qm_max(A(7),x)) && qm_lane_match(8,vl,r8,qm_max(A(8),x)) && qm_lane_match(9,vl,r9,qm_max(A(9),x)) && qm_lane_match(10,vl,r10,qm_max(A(10),x)) && qm_lane_match(11,vl,r11,qm_max(A(11),x)) && qm_lane_match(12,vl,r12,qm_max(A(12),x)) && qm_lane_match(13,vl,r13,qm_max(A(13),x)) && qm_lane_match(14,vl,r14,qm_max(A(14),x)) && qm_lane_match(15,vl,r15,qm_max(A(15),x)) && qm_lane_match(16,vl,r16,qm_max(A(16),x)) && qm_lane_match(17,vl,r17,qm_max(A(17),x)) && qm_lane_match(18,vl,r18,qm_max(A(18),x)) && qm_lane_match(19,vl,r19,qm_max(A(19),x)) && qm_lane_match(20,vl,r20,qm_max(A(20),x)) && qm_lane_match(21,vl,r21,qm_max(A(21),x)) && qm_lane_match(22,vl,r22,qm_max(A(22),x)) && qm_lane_match(23,vl,r23,qm_max(A(23),x)) && qm_lane_match(24,vl,r24,qm_max(A(24),x)) && qm_lane_match(25,vl,r25,qm_max(A(25),x)) && qm_lane_match(26,vl,r26,qm_max(A(26),x)) && qm_lane_match(27,vl,r27,qm_max(A(27),x)) && qm_lane_match(28,vl,r28,qm_max(A(28),x)) && qm_lane_match(29,vl,r29,qm_max(A(29),x)) && qm_lane_match(30,vl,r30,qm_max(A(30),x)) && qm_lane_match(31,vl,r31,qm_max(A(31),x)) && store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) * store(&(__return.s16),char,r16) * store(&(__return.s17),char,r17) * store(&(__return.s18),char,r18) * store(&(__return.s19),char,r19) * store(&(__return.s20),char,r20) * store(&(__return.s21),char,r21) * store(&(__return.s22),char,r22) * store(&(__return.s23),char,r23) * store(&(__return.s24),char,r24) * store(&(__return.s25),char,r25) * store(&(__return.s26),char,r26) * store(&(__return.s27),char,r27) * store(&(__return.s28),char,r28) * store(&(__return.s29),char,r29) * store(&(__return.s30),char,r30) * store(&(__return.s31),char,r31) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32
+    },
+    {
+      "name": "__riscv_vle8_v_i8m2",
+      "side": "RVV",
+      "return_type": "vint8m2_t",
+      "arguments": [
+        [
+          "const int8_t*",
+          "p"
+        ],
+        [
+          "size_t",
+          "vl"
+        ]
+      ],
+      "contract": "vint8m2_t __riscv_vle8_v_i8m2(const int8_t* p,size_t vl)\n/*@ With (M:RDMap)\n Require 0<=vl && vl<=32 && rd_window(M,p,vl) && rd_mem(M)\n Ensure rd_mem(M) * ( exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), qm_lane_match(0,vl,r0,rd_get(M,p+0)) && qm_lane_match(1,vl,r1,rd_get(M,p+1)) && qm_lane_match(2,vl,r2,rd_get(M,p+2)) && qm_lane_match(3,vl,r3,rd_get(M,p+3)) && qm_lane_match(4,vl,r4,rd_get(M,p+4)) && qm_lane_match(5,vl,r5,rd_get(M,p+5)) && qm_lane_match(6,vl,r6,rd_get(M,p+6)) && qm_lane_match(7,vl,r7,rd_get(M,p+7)) && qm_lane_match(8,vl,r8,rd_get(M,p+8)) && qm_lane_match(9,vl,r9,rd_get(M,p+9)) && qm_lane_match(10,vl,r10,rd_get(M,p+10)) && qm_lane_match(11,vl,r11,rd_get(M,p+11)) && qm_lane_match(12,vl,r12,rd_get(M,p+12)) && qm_lane_match(13,vl,r13,rd_get(M,p+13)) && qm_lane_match(14,vl,r14,rd_get(M,p+14)) && qm_lane_match(15,vl,r15,rd_get(M,p+15)) && qm_lane_match(16,vl,r16,rd_get(M,p+16)) && qm_lane_match(17,vl,r17,rd_get(M,p+17)) && qm_lane_match(18,vl,r18,rd_get(M,p+18)) && qm_lane_match(19,vl,r19,rd_get(M,p+19)) && qm_lane_match(20,vl,r20,rd_get(M,p+20)) && qm_lane_match(21,vl,r21,rd_get(M,p+21)) && qm_lane_match(22,vl,r22,rd_get(M,p+22)) && qm_lane_match(23,vl,r23,rd_get(M,p+23)) && qm_lane_match(24,vl,r24,rd_get(M,p+24)) && qm_lane_match(25,vl,r25,rd_get(M,p+25)) && qm_lane_match(26,vl,r26,rd_get(M,p+26)) && qm_lane_match(27,vl,r27,rd_get(M,p+27)) && qm_lane_match(28,vl,r28,rd_get(M,p+28)) && qm_lane_match(29,vl,r29,rd_get(M,p+29)) && qm_lane_match(30,vl,r30,rd_get(M,p+30)) && qm_lane_match(31,vl,r31,rd_get(M,p+31)) && store(&(__return.s0),char,r0) * store(&(__return.s1),char,r1) * store(&(__return.s2),char,r2) * store(&(__return.s3),char,r3) * store(&(__return.s4),char,r4) * store(&(__return.s5),char,r5) * store(&(__return.s6),char,r6) * store(&(__return.s7),char,r7) * store(&(__return.s8),char,r8) * store(&(__return.s9),char,r9) * store(&(__return.s10),char,r10) * store(&(__return.s11),char,r11) * store(&(__return.s12),char,r12) * store(&(__return.s13),char,r13) * store(&(__return.s14),char,r14) * store(&(__return.s15),char,r15) * store(&(__return.s16),char,r16) * store(&(__return.s17),char,r17) * store(&(__return.s18),char,r18) * store(&(__return.s19),char,r19) * store(&(__return.s20),char,r20) * store(&(__return.s21),char,r21) * store(&(__return.s22),char,r22) * store(&(__return.s23),char,r23) * store(&(__return.s24),char,r24) * store(&(__return.s25),char,r25) * store(&(__return.s26),char,r26) * store(&(__return.s27),char,r27) * store(&(__return.s28),char,r28) * store(&(__return.s29),char,r29) * store(&(__return.s30),char,r30) * store(&(__return.s31),char,r31)) */;\n",
+      "evidence": "draft-review-pending",
+      "inactive": "Arbitrary typed C representation values, only active prefix constrained. Abstraction of unobserved tail, not tail=zero claim.",
+      "VLEN": 128,
+      "VLMAX": 32,
+      "memory": "Exactly VL active byte reads, shared map preserved"
+    }
+  ]
+}

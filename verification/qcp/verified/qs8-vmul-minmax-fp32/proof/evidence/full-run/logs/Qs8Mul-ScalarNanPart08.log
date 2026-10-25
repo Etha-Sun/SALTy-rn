@@ -1,0 +1,32 @@
+Chars 0 - 65 [From~Qs8Mul~Require~Import~Sca...] 3.827 secs (3.205u,0.57s)
+Chars 66 - 90 [Import~Snaive_C_Rules64.] 0.041 secs (0.041u,0.s)
+Chars 91 - 116 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 117 - 138 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 139 - 266 [Lemma~proof_of_qm_scale_is_nan...] 0. secs (0.u,0.s)
+Chars 267 - 273 [Proof.] 0. secs (0.u,0.s)
+Chars 274 - 388 [(unfold~Qs8Mul.qm_scale_is_nan...] 12.95 secs (12.746u,0.168s)
+Chars 389 - 393 [Qed.] 0.987 secs (0.979u,0.008s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 394 - 462 [Print~Assumptions~proof_of_qm_...] 0.834 secs (0.805u,0.028s)

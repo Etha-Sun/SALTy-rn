@@ -1,0 +1,20 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -34,8 +34,15 @@
+     vfloat32m8_t vfpacc = __riscv_vfcvt_f_x_v_f32m8(vacc, vl);
+     vfpacc = __riscv_vfmul_vf_f32m8(vfpacc, scale, vl);
+ 
+-    vacc = __riscv_vfcvt_x_f_v_i32m8(vfpacc, vl);
+-    vacc = __riscv_vadd_vx_i32m8(vacc, (int32_t)output_zero_point, vl);
++    vfpacc = __riscv_vfadd_vf_f32m8(vfpacc, 12582912.0f, vl);
++    // ARM arithmetic preserves a NaN scale's sign; RVV arithmetic canonicalizes it.
++    // Restore that sign after the final arithmetic operation, before bit reinterpretation.
++    if (scale != scale) {
++      vfpacc = __riscv_vfsgnj_vf_f32m8(vfpacc, scale, vl);
++    }
++    vacc = __riscv_vreinterpret_v_f32m8_i32m8(vfpacc);
++    vacc = __riscv_vssub_vx_i32m8(
++        vacc, INT32_C(0x4B400000) - (int32_t)output_zero_point, vl);
+ 
+     vint16m4_t vout16 = __riscv_vnclip_wx_i16m4(
+         vacc, 0, __RISCV_VXRM_RDN, vl);

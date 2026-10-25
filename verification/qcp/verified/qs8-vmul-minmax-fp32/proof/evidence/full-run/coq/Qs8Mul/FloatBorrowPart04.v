@@ -1,0 +1,6 @@
+From Qs8Mul Require Import AdapterTactics float_borrow_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Local Opaque qm_lane_match qm_fp_lane_match qm_rvv_mul qm_rvv_add qm_sign bits_of_fp32 qm_signed_bits.
+Lemma proof_of_qm_borrow_vfmul_vf_f32m8_partial_solve_wit_3 : Qs8Mul.float_borrow_unit_goal.qm_borrow_vfmul_vf_f32m8_partial_solve_wit_3.
+Proof. unfold Qs8Mul.float_borrow_unit_goal.qm_borrow_vfmul_vf_f32m8_partial_solve_wit_3;try left;qm_adapter_start;qm_adapter_finish. Qed.
+Print Assumptions proof_of_qm_borrow_vfmul_vf_f32m8_partial_solve_wit_3.

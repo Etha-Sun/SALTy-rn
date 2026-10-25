@@ -1,0 +1,15 @@
+--- before/testRVV.c
++++ after/testRVV.c
+@@ -21,8 +21,10 @@
+   while (batch > 0) {
+     size_t vl = __riscv_vsetvl_e8m2(batch);
+ 
+-    vint8m2_t va = __riscv_vle8_v_i8m2(input_a, vl);
+-    vint8m2_t vb = __riscv_vle8_v_i8m2(input_b, vl);
++    vint8m2_t va;
++    qm_load_into32(&va, input_a, vl);
++    vint8m2_t vb;
++    qm_load_into32(&vb, input_b, vl);
+ 
+     vint16m4_t vxa = __riscv_vsub_vx_i16m4(
+         __riscv_vsext_vf2_i16m4(va, vl), (int16_t)a_zero_point, vl);

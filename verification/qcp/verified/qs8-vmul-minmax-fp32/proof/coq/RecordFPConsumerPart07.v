@@ -1,0 +1,6 @@
+From Coq Require Import ZArith Lia.
+From Qs8Mul Require Import RecordFPConsumerFacts record_fp_consumers_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Lemma proof_of_qm_record_borrow_fadd_partial_solve_wit_2_pure:Qs8Mul.record_fp_consumers_goal.qm_record_borrow_fadd_partial_solve_wit_2_pure.
+Proof. unfold Qs8Mul.record_fp_consumers_goal.qm_record_borrow_fadd_partial_solve_wit_2_pure;qm_record_fp_consumer_solve. Qed.
+Print Assumptions proof_of_qm_record_borrow_fadd_partial_solve_wit_2_pure.

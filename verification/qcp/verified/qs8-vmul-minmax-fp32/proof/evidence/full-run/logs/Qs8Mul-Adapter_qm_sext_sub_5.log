@@ -1,0 +1,26 @@
+Chars 0 - 59 [From~Qs8Mul~Require~Import~Ada...] 3.617 secs (2.878u,0.699s)
+Chars 60 - 84 [Import~Snaive_C_Rules64.] 0.034 secs (0.034u,0.s)
+Chars 85 - 110 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 111 - 132 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 133 - 238 [Lemma~proof_of_qm_sext_sub_par...] 0. secs (0.u,0.s)
+Chars 239 - 245 [Proof.] 0. secs (0.u,0.s)
+Chars 246 - 414 [(unfold~Qs8Mul.qm_sext_sub_goa...] 25.943 secs (25.608u,0.284s)
+Chars 415 - 419 [Qed.] 4.491 secs (4.444u,0.04s)
+Axioms:
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 420 - 479 [Print~Assumptions~proof_of_qm_...] 0.269 secs (0.268u,0.s)
