@@ -1,3 +1,5 @@
+当前完整33/40，目标40；新增Maxpool857 actual C/310 fresh Coq/1020最终Print已完整闭合。外部矩阵worker QS8-QC8W GEMM@37685e527另计其贡献；不得覆盖或重复计数。半小时额度检查/严格>95%收尾继续。以下保留历史记录。
+
 2026-10-25 matrix worker：完整清单 **32/40**，新增[QS8-QC8W GEMM FP32](verified/qs8-qc8w-gemm-minmax-fp32/README.zh-CN.md)。QS8-QC8W GEMM FP32完整修复版：4实际C/1531义务/16策略/3051同环境fresh模块（续跑谱系明确）/1874假设报告，递归coqchk及32并发准入通过。原NEON保持，RVV恢复ARM NaN优先级；公开容量内正N/K，全binary32参数，固定VLEN128，精确int8输出。intrinsic语义人工复核pending，无形式ISA/ABI或完整终止性定理。 下文旧快照保留原时间含义。
 
 2026-10-25（洛杉矶）：**x32-transposec 修复/兼容版完整通过并收录，正式31/40，目标40/40。** 8实际C单元/381字段/13普通body、116源码fresh普通Coq、489最终假设报告；11既有框架假设、9项公开intrinsic spec视图，人工规格审核pending。干净发布目录核对全部591清单文件、8 CPP/全部源日志及依赖闭包，双san各8808矩阵/1006296word/side、127014公开caller与独立oracle/共错负控复查通过；发布复核不计第二次形式化重放。原件、原反例及精确修复补丁保留。

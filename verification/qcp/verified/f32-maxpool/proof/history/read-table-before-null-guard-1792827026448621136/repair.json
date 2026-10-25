@@ -1,0 +1,41 @@
+{
+  "variant": "repaired-count64-nan-priority-tree-and-alias-safe-table-adapter",
+  "whole_kernel_verified": false,
+  "semantic_repair_not_original_proof": true,
+  "user_authorization": "Direct impl repairs authorized; preserve originals, exact patch and counterexamples; no newK>0 premise",
+  "original_sha256": {
+    "NEON": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+    "RVV": "0194ef9ea40d42ba0496069edf1afa54073893df273b58d00c91ad95faadc894"
+  },
+  "repaired_sha256": {
+    "NEON": "3c563f5d804841233581ca90c37a7620d397931c537a336c0e08bf20f2ff37b2",
+    "RVV": "6449a5d10a17e1f9d4e41832306ca3d3f015101232b1d983a1598074e8fa50ec"
+  },
+  "added_helpers": {
+    "shim/propagate.c": "4443bf4ac9e33b96c10129b8cf508b6c0e5a2391ca2840523be9e94b95c8cae9",
+    "shim/propagate.h": "6ac81ad4156b03587035c8a631efb297fafd66220bdb2cf07e0b75ff0c78f3cd",
+    "shim/read_table.c": "e9da43019c75b75433f30eb96cffface03278abcae3c6b22f63b7e4b0a6d113c",
+    "shim/read_table.h": "dd67dcf72455c1a7424b16c652faf862cc22191c6527d8bf94bc4acd160a22e6"
+  },
+  "patch": "proof/repair.patch",
+  "patch_sha256": "695a67486c4a7e6da6dec79e826ee8f8e7baab4c12eb267a2eb3439944d2dc70",
+  "patch_exact_application_checked": true,
+  "patch_replay_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/exact-patch-table-z_nv_i8j",
+  "observations": "Bit-exact binary32 output, including NaN payload/sign/quieting and signed zeros. FP exception flags/traps/physicalISA refinement outside observation.",
+  "repairs": [
+    "Both int(K)-9 counters changed to unsigned64 guarded remaining count; finalshort pass cannot underflow; K0 still executes initial9-input pass withi0 fallback.",
+    "RVV matches exact NEON nine-input max tree and prev/group operand order.",
+    "Real RVV numeric max/min retained; ordinaryC helper uses actualinteger bitcast/masks/merge to restore Arm DN0 signaling and quiet NaN priority, preserving payload/sign.",
+    "Readonly table dereferences use the body-checked one-read mp_read_table adapter. Preserve exactly18 postincrements per implementation, K0 firstread and every fallback condition; no fixed or empty table model."
+  ],
+  "source_review": "draft proof/intrinsic-ledger.json; ordinary NaN adapter proof pending",
+  "counterexamples": "proof/original-counterexamples.json",
+  "history_before_table_refactor": "proof/history/before-table-adapter-1792825988722699100",
+  "table_adapter": {
+    "source": "shim/read_table.c",
+    "actual_body_checked_vcs": 2,
+    "receipt": "proof/read-table-status.json",
+    "transformation": "exact18 *i++ per implementation -> mp_read_table(i++); one evaluation of old pointer, one increment, one read; readonly table memory preserved",
+    "purpose": "alias-safe whole-map contract for actual ordinary C read; no original-C refinement theorem claimed"
+  }
+}

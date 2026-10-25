@@ -1,6 +1,8 @@
 # Kernel 验证进度
 
-完整验证通过：**32/40**。当前目标：**40/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**33/40**。当前目标：**40/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+
+2026-10-25（洛杉矶）：**f32-maxpool 修复版完整通过并收录，正式33/40，目标40/40。** 11实际C单元/857字段/26普通body、310源码fresh普通Coq、1020最终假设报告；13继承框架/经典数学假设、无新项目公理。31个intrinsic-spec视图明确待人工审查，覆盖全部written binary32位与各自未写frame。另一位matrix worker的 qs8-qc8w-gemm-minmax-fp32 已先发布37685e527，使清单先达32；保留外部作者归属。
 
 2026-10-25（洛杉矶）：**x32-transposec 修复/兼容版完整通过并收录，正式31/40，目标40/40。** 8实际C单元/381字段/13普通body、116源码fresh普通Coq、489最终假设报告；11既有框架假设、9项公开intrinsic spec视图，人工规格审核pending。干净发布目录核对全部591清单文件、8 CPP/全部源日志及依赖闭包，双san各8808矩阵/1006296word/side、127014公开caller与独立oracle/共错负控复查通过；发布复核不计第二次形式化重放。原件、原反例及精确修复补丁保留。
 

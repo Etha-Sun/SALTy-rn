@@ -1,0 +1,30 @@
+{
+  "variant": "repaired-count64-and-bit-exact-nan-priority-tree",
+  "whole_kernel_verified": false,
+  "semantic_repair_not_original_proof": true,
+  "user_authorization": "Direct impl repairs authorized; preserve originals, exact patch and counterexamples; no newK>0 premise",
+  "original_sha256": {
+    "NEON": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+    "RVV": "0194ef9ea40d42ba0496069edf1afa54073893df273b58d00c91ad95faadc894"
+  },
+  "repaired_sha256": {
+    "NEON": "639a191df5135552187f121d90c50daaf9005e137722ddf840cfbf85f386af35",
+    "RVV": "e6e1c544bf81baeba118d7406adb109830125e21ac925088e8b58150cf7825c9"
+  },
+  "added_helpers": {
+    "shim/propagate.h": "6ac81ad4156b03587035c8a631efb297fafd66220bdb2cf07e0b75ff0c78f3cd",
+    "shim/propagate.c": "4443bf4ac9e33b96c10129b8cf508b6c0e5a2391ca2840523be9e94b95c8cae9"
+  },
+  "patch": "proof/repair.patch",
+  "patch_sha256": "4900cc444ca2645d70e8d530bd8daa9f683e765c9cd2083eb280fb1dc13e0334",
+  "patch_exact_application_checked": true,
+  "patch_replay_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/exact-patch-gp3_ko37",
+  "observations": "Bit-exact binary32 output, including NaN payload/sign/quieting and signed zeros. FP exception flags/traps/physicalISA refinement outside observation.",
+  "repairs": [
+    "Both int(K)-9 counters changed to unsigned64 guarded remaining count; finalshort pass cannot underflow; K0 still executes initial9-input pass withi0 fallback.",
+    "RVV matches exact NEON nine-input max tree and prev/group operand order.",
+    "Real RVV numeric max/min retained; ordinaryC helper uses actualinteger bitcast/masks/merge to restore Arm DN0 signaling and quiet NaN priority, preserving payload/sign."
+  ],
+  "source_review": "pending concrete ledger/ordinaryC helper proof",
+  "counterexamples": "proof/original-counterexamples.json"
+}

@@ -1,0 +1,49 @@
+{
+  "schema": 1,
+  "observation": "bitexactFP32 at every actualwritten address, ownunwrittenframes; fullmap if initialunwrittenframesagree",
+  "public_domain": "allFP32, unordered min/max bounds, fullunsigned64counts, K0 firstread preserved; memory/liveness contracts explicit",
+  "hardware": {
+    "RVV": "VLEN128/e32m8/VLMAX32/vstart0",
+    "Arm": "DN0/FZ0/AH0, nontrapping"
+  },
+  "intrinsic_boundary": "source-reviewed originalISA specifications, no proved ISA/compiler/ABI refinement",
+  "scratch_arrays": {
+    "elements": 32,
+    "element_type": "UInt32",
+    "ordinary_c_initialization": "three32wordarrays explicitly zero-initialized by C",
+    "active_prefix_only": true,
+    "inactive_register_lanes": "arbitrary, no ISA tailzero claim",
+    "case_local_functions": [
+      "mp_array_read",
+      "mp_array_write"
+    ],
+    "all_actual_pointer_arguments": [
+      "&a_bits",
+      "&b_bits",
+      "&r_bits"
+    ],
+    "source_to_model_live_object_assumption": "fresh live C stack objects have valid nonnull addresses; QCP integer-address model and UIntArray resources are not an arbitrary ISO C pointer API theorem",
+    "nonnull_not_inferred_from_heap_zero": true
+  },
+  "program_theorems": [
+    "MaxPool.StateObservation.mp_kernel_posts_written_and_frames",
+    "MaxPool.TraceLookup.mp_kernel_posts_full_state"
+  ],
+  "not_observed": [
+    "FPexceptionflags",
+    "FPenvironmenttraps",
+    "physicalABI/compilerrefinement",
+    "independent totaltermination"
+  ],
+  "inherited_assumptions": "complete finalPrint reports retain known QCP/classical dependencies; no newprojectaxiom",
+  "library_memory_basis": {
+    "source": "/tmp/qcp214-src/Rocq/SeparationLogic/ArrayLib.v",
+    "sha256": "895f719273a28b5a8ab2834c0a31aaa8c58ccc16b8905727a080edd369ee87f0",
+    "definitions": [
+      "StoreUIntAsElement.storeA",
+      "UIntArray.full"
+    ],
+    "inspection": "storeA is (base+index*sizeofUINT)#UInt|->value; no derivation of C-nonnull from this logical address representation claimed"
+  },
+  "document_is_verification_certificate": false
+}

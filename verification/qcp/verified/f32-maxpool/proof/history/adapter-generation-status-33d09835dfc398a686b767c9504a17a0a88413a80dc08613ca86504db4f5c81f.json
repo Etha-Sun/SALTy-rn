@@ -1,0 +1,67 @@
+{
+  "passed": false,
+  "qcp_generation_passed": false,
+  "whole_kernel_verified": false,
+  "actual_body_checked_c_vcs": 0,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf",
+  "input_sha256": {
+    "proof/generate_adapters.py": "be79d3331b6154617ef87ae7713b9a06cde9c8b05b07f52643843319fe1b0801",
+    "shim/formal_model.h": "3133f850ba32cb42e5824a9ee3171cadbbd368d7ba53818e9e7f7c7b50a1fa5b",
+    "shim/formal_types.h": "72d83f9855117d495c418c38dbe5efb39914548e9da1f63881be752b92b3b1e9",
+    "shim/rvv_arithmetic_specs.h": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+    "shim/propagate_specs.h": "cf4e9cb84d584cafe133f3b921210318a10a423dfb2ddc71c91c697c12ecd85e",
+    "shim/propagate.h": "6ac81ad4156b03587035c8a631efb297fafd66220bdb2cf07e0b75ff0c78f3cd",
+    "shim/propagate.c": "4443bf4ac9e33b96c10129b8cf508b6c0e5a2391ca2840523be9e94b95c8cae9",
+    "proof/coq/Bits.v": "85ce1d846de3ac4f17654169543b784f8c4c95bf6fa46acead94fa6636005c39",
+    "proof/coq/Model.v": "62cf3b70a6c86ea53caa5f4a1819dc803702645fb7caa5415a2cab6f3e13cb08",
+    "proof/coq/Types.v": "54925adef6933a91c20a6c4bf631acf95f27ca96e9939dbee692dcf20c84cd4a",
+    "proof/coq/VectorModel.v": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf/input.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf/propagate.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01887080492451787,
+      "memory_limit_GiB": 16,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=34359738368:34359738368",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf/propagate.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf/generated",
+        "--coq-logic-path=MaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/shim",
+        "MaxPool"
+      ],
+      "exit_code": 1,
+      "seconds": 0.11573799815960228,
+      "memory_limit_GiB": 32,
+      "log_sha256": "05e9fd37bc04f02e8f93e09687f0bf559d357aba7b984d04b1afaeeaf968de88"
+    }
+  ],
+  "error": "\u001b[1;31mfatal error: \u001b[0mrecord initializer: local address not found in /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf/propagate.c:86:14\nProgram: `/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/propagate-generation-aex_w3yf/propagate.c`\nStart to parse strategies file common\nFile Path: builtin/common.strategies\nFinish parsing strategies file common\nStart to parse strategies file string_literal\nFile Path: builtin/string_literal.strategies\nFinish parsing strategies file string_literal\nStart to parse function declaration of function __riscv_vreinterpret_v_f32m8_u32m8\nStart to parse function declaration of function __riscv_vreinterpret_v_u32m8_f32m8\nStart to parse function declaration of function __riscv_vand_vx_u32m8\nStart to parse function declaration of function __riscv_vor_vx_u32m8\nStart to parse function declaration of function __riscv_vmsgtu_vx_u32m8_b4\nStart to parse function declaration of function __riscv_vmseq_vx_u32m8_b4\nStart to parse function declaration of function __riscv_vmand_mm_b4\nStart to parse function declaration of function __riscv_vmerge_vvm_f32m8\nStart to parse function declaration of function __riscv_vfmax_vv_f32m8\nStart to parse function declaration of function __riscv_vfmin_vv_f32m8\nStart to parse function declaration of function __riscv_vfmv_v_f_f32m8\nStart to parse function declaration of function mp_propagate_nan\nStart to parse function declaration of function mp_max_vv\nStart to parse function declaration of function mp_min_vv\nStart to parse function declaration of function mp_max_vf\nStart to parse function declaration of function mp_min_vf\nFunction `mp_propagate_nan`\n"
+}

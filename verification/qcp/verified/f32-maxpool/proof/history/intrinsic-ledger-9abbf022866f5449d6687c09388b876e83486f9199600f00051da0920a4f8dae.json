@@ -1,0 +1,580 @@
+{
+  "status": "draft, not whole-case certificate",
+  "whole_kernel_verified": false,
+  "policy": "source-reviewed original intrinsic specification exception; ordinary helpers are not exempt",
+  "primary_sources": {
+    "ACLE": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+    "Arm_shared_pseudocode_pdf": {
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "physical_pages": {
+        "FPMax": 5880,
+        "FPMin": 5882,
+        "FPProcessNaN": 5893,
+        "FPProcessNaNs": 5894
+      },
+      "review": "AH=0 branch, DN=0,FZ=0; traps disabled; output bits only"
+    },
+    "RVV": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html"
+  },
+  "entries": [
+    {
+      "intrinsic": "vdupq_n_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vld1q_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vmaxq_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "FMAX/FMIN signaling operand1, signaling2, quiet1, quiet2 priority; retain sign/payload and set quiet bit",
+      "coq_definitions": [
+        "MaxPool.Model.mp_arm",
+        "MaxPool.Model.mp_arm_bits"
+      ],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vminq_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "FMAX/FMIN signaling operand1, signaling2, quiet1, quiet2 priority; retain sign/payload and set quiet bit",
+      "coq_definitions": [
+        "MaxPool.Model.mp_arm",
+        "MaxPool.Model.mp_arm_bits"
+      ],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vst1q_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vget_low_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vst1_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vget_high_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "vst1_lane_f32",
+      "isa": "NEON",
+      "appears_in": [
+        "impl/testNEON.c"
+      ],
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm 2025-03 shared pseudocode",
+      "lane_configuration": "binary32 x4/x2; constant store lane0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "NEON fixed lanes; final output store only1/2 active lanes",
+      "rounding": "min/max/bitcopy do not round finite results; FP control DN0/FZ0/AH0; exceptions not observed",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vsetvl_e32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "impl/testRVV.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.Model.mp_vl_allowed"
+      ],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "impl/testRVV.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vse32_v_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "impl/testRVV.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": null,
+      "contract_source_sha256": null,
+      "intrinsic_body_checked": false,
+      "specification_status": "pending complete memory/vector contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vreinterpret_v_f32m8_u32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "SimpleC.SL.FloatLib.bits_of_fp32"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vand_vx_u32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_land"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vmsgtu_vx_u32m8_b4",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_bit_gt"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vmseq_vx_u32m8_b4",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_bit_eq"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vmand_mm_b4",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_mask_and"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vor_vx_u32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_lor"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vreinterpret_v_u32m8_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "SimpleC.SL.FloatLib.fp32_of_bits"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vmerge_vvm_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_float_merge"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vfmax_vv_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "RISC-V numeric min/max: one NaN selects number; two select canonical qNaN; raw moves preserve bits",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_rvv_max",
+        "MaxPool.Model.mp_rvv_bits"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vfmin_vv_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "RISC-V numeric min/max: one NaN selects number; two select canonical qNaN; raw moves preserve bits",
+      "coq_definitions": [
+        "MaxPool.VectorModel.mp_rvv_min",
+        "MaxPool.Model.mp_rvv_bits"
+      ],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    },
+    {
+      "intrinsic": "__riscv_vfmv_v_f_f32m8",
+      "isa": "RVV",
+      "appears_in": [
+        "shim/propagate.c"
+      ],
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "version": "RISC-V ISA library v20260120 V1.0/F2.2; RVV API v1.0-ratified b611045daf6c1f2449a5dad6f1a1a6b244b52798",
+      "lane_configuration": "VLEN128/SEW32/LMUL8/VLMAX32; boolean ratio4; vstart0",
+      "mask": "unmasked active body; vmerge selects mask bits, never suppresses memory access",
+      "tail": "all legal VL schedules; inactive abstract values unconstrained; no C inactive0 representative claim",
+      "rounding": "bitcopy/integer ops exact; min/max minimumNumber/maximumNumber F2.2, flags outside observation",
+      "NaN": "raw values/bits preserved or integer-mask operation; no FP compare used for classification",
+      "coq_definitions": [],
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "intrinsic_body_checked": false,
+      "specification_status": "draft matching available contract",
+      "formal_ISA_refinement_proved": false,
+      "human_review_status": "pending final human review"
+    }
+  ],
+  "ordinary_helpers": [
+    {
+      "name": "mp_propagate_nan",
+      "source": "shim/propagate.c",
+      "actual_c_body_required": true,
+      "body_proof": "pending"
+    },
+    {
+      "name": "mp_max_vv",
+      "source": "shim/propagate.c",
+      "actual_c_body_required": true,
+      "body_proof": "pending"
+    },
+    {
+      "name": "mp_min_vv",
+      "source": "shim/propagate.c",
+      "actual_c_body_required": true,
+      "body_proof": "pending"
+    },
+    {
+      "name": "mp_max_vf",
+      "source": "shim/propagate.c",
+      "actual_c_body_required": true,
+      "body_proof": "pending"
+    },
+    {
+      "name": "mp_min_vf",
+      "source": "shim/propagate.c",
+      "actual_c_body_required": true,
+      "body_proof": "pending"
+    }
+  ],
+  "representation_boundary": "Formal field structs are value/memory projections of intrinsic abstract vectors; no claim about physical ABI/layout of native ISA vector registers. Inactive lanes are constrained only by physical value type; proof must establish they are not observed.",
+  "source_hashes": {
+    "impl/testNEON.c": "639a191df5135552187f121d90c50daaf9005e137722ddf840cfbf85f386af35",
+    "impl/testRVV.c": "e6e1c544bf81baeba118d7406adb109830125e21ac925088e8b58150cf7825c9",
+    "shim/propagate.c": "4443bf4ac9e33b96c10129b8cf508b6c0e5a2391ca2840523be9e94b95c8cae9",
+    "shim/propagate.h": "6ac81ad4156b03587035c8a631efb297fafd66220bdb2cf07e0b75ff0c78f3cd",
+    "shim/formal_model.h": "3133f850ba32cb42e5824a9ee3171cadbbd368d7ba53818e9e7f7c7b50a1fa5b",
+    "shim/formal_types.h": "72d83f9855117d495c418c38dbe5efb39914548e9da1f63881be752b92b3b1e9",
+    "shim/rvv_arithmetic_specs.h": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+    "shim/propagate_specs.h": "cf4e9cb84d584cafe133f3b921210318a10a423dfb2ddc71c91c697c12ecd85e",
+    "proof/coq/Model.v": "62cf3b70a6c86ea53caa5f4a1819dc803702645fb7caa5415a2cab6f3e13cb08",
+    "proof/coq/VectorModel.v": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+  }
+}

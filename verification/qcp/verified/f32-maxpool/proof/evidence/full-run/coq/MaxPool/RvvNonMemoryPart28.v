@@ -1,0 +1,22 @@
+From MaxPool Require Import RvvAutomation.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedPart.
+Lemma proof_of_test_rvv_safety_wit_29:MaxPool.rvv_unit_goal.test_rvv_safety_wit_29.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_safety_wit_29;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_6_pure:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_6_pure.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_6_pure;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_25_pure:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_25_pure.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_25_pure;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_46:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_46.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_46;try left;mp_intro;mp_rvv_call_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_64:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_64.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_64;try left;mp_intro;mp_rvv_call_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_85:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_85.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_85;unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_85_aux;try left;mp_intro;mp_rvv_call_frame. Qed.
+End CheckedPart.
+Print Assumptions CheckedPart.proof_of_test_rvv_safety_wit_29.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_6_pure.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_25_pure.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_46.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_64.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_85.

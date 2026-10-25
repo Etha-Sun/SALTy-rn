@@ -1,0 +1,30 @@
+From SimpleC.SL Require Import Mem SeparationLogic.
+From MaxPool Require Import Types MemoryModel MemoryViews load_views_goal.
+Import Snaive_C_Rules64.
+Local Open Scope sac.
+Module CheckedLoadViews : MaxPool.load_views_goal.VC_Correct.
+Lemma proof_of_mp_probe_readonly_return_wit_1 : MaxPool.load_views_goal.mp_probe_readonly_return_wit_1.
+Proof. unfold MaxPool.load_views_goal.mp_probe_readonly_return_wit_1;intros;entailer!. Qed.
+Lemma proof_of_mp_probe_readonly_partial_solve_wit_1_pure : MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_1_pure.
+Proof. unfold MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_1_pure;intros;entailer!. Qed.
+Lemma proof_of_mp_probe_readonly_partial_solve_wit_1 : MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_1.
+Proof. unfold MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_1;intro Hpure;unfold MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_1_aux;intros;entailer!. Qed.
+Lemma proof_of_mp_probe_readonly_partial_solve_wit_2 : MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_2.
+Proof. unfold MaxPool.load_views_goal.mp_probe_readonly_partial_solve_wit_2;intros;unfold UndefStructPredfloat32x4_t;entailer!. Qed.
+Lemma proof_of_mp_probe_output_return_wit_1 : MaxPool.load_views_goal.mp_probe_output_return_wit_1.
+Proof. unfold MaxPool.load_views_goal.mp_probe_output_return_wit_1;intros p O W record r3 r2 r1 r0 H0 H1 H2 H3 Hwin;Exists r3 r2 r1 r0;entailer!. Qed.
+Lemma proof_of_mp_probe_output_partial_solve_wit_1_pure : MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_1_pure.
+Proof. unfold MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_1_pure;intros;entailer!. Qed.
+Lemma proof_of_mp_probe_output_partial_solve_wit_1 : MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_1.
+Proof. unfold MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_1;intro Hpure;unfold MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_1_aux;intros;entailer!. Qed.
+Lemma proof_of_mp_probe_output_partial_solve_wit_2 : MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_2.
+Proof. unfold MaxPool.load_views_goal.mp_probe_output_partial_solve_wit_2;intros;unfold UndefStructPredfloat32x4_t;entailer!. Qed.
+End CheckedLoadViews.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_readonly_return_wit_1.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_readonly_partial_solve_wit_1_pure.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_readonly_partial_solve_wit_1.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_readonly_partial_solve_wit_2.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_output_return_wit_1.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_output_partial_solve_wit_1_pure.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_output_partial_solve_wit_1.
+Print Assumptions CheckedLoadViews.proof_of_mp_probe_output_partial_solve_wit_2.

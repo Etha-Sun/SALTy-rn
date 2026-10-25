@@ -1,0 +1,164 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -109,7 +109,8 @@
+     }
+ 
+     // Passes 1 - n: Max more inputs to the output.
+-    for (int k = (int) kernel_elements - 9; k > 0; k -= 9) {
++    for (size_t k = kernel_elements > 9 ? kernel_elements - 9 : 0;
++         k != 0; k = k > 9 ? k - 9 : 0) {
+       const float* i0 = *i++;
+       const float* i1 = 1 < k ? *i++ : i0;
+       const float* i2 = 2 < k ? *i++ : i0;
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -1,3 +1,4 @@
++#include "../shim/propagate.h"
+ void test_rvv(
+     size_t output_pixels,
+     size_t kernel_elements,
+@@ -44,25 +45,35 @@
+     while (c > 0) {
+       size_t vl = __riscv_vsetvl_e32m8(c);
+ 
+-      vfloat32m8_t vacc = __riscv_vle32_v_f32m8(i0, vl); i0 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i1, vl), vl); i1 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i2, vl), vl); i2 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i3, vl), vl); i3 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i4, vl), vl); i4 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i5, vl), vl); i5 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i6, vl), vl); i6 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i7, vl), vl); i7 += vl;
+-      vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i8, vl), vl); i8 += vl;
++      vfloat32m8_t vi0=__riscv_vle32_v_f32m8(i0,vl); i0+=vl;
++      vfloat32m8_t vi1=__riscv_vle32_v_f32m8(i1,vl); i1+=vl;
++      vfloat32m8_t vi2=__riscv_vle32_v_f32m8(i2,vl); i2+=vl;
++      vfloat32m8_t vi3=__riscv_vle32_v_f32m8(i3,vl); i3+=vl;
++      vfloat32m8_t vi4=__riscv_vle32_v_f32m8(i4,vl); i4+=vl;
++      vfloat32m8_t vi5=__riscv_vle32_v_f32m8(i5,vl); i5+=vl;
++      vfloat32m8_t vi6=__riscv_vle32_v_f32m8(i6,vl); i6+=vl;
++      vfloat32m8_t vi7=__riscv_vle32_v_f32m8(i7,vl); i7+=vl;
++      vfloat32m8_t vi8=__riscv_vle32_v_f32m8(i8,vl); i8+=vl;
++      vfloat32m8_t vmax01=mp_max_vv(vi0,vi1,vl);
++      vfloat32m8_t vmax018=mp_max_vv(vmax01,vi8,vl);
++      vfloat32m8_t vmax23=mp_max_vv(vi2,vi3,vl);
++      vfloat32m8_t vmax45=mp_max_vv(vi4,vi5,vl);
++      vfloat32m8_t vmax67=mp_max_vv(vi6,vi7,vl);
++      vfloat32m8_t vmax2345=mp_max_vv(vmax23,vmax45,vl);
++      vfloat32m8_t vmax01678=mp_max_vv(vmax018,vmax67,vl);
++      vfloat32m8_t vgroup=mp_max_vv(vmax2345,vmax01678,vl);
++      vfloat32m8_t vacc=vgroup;
+ 
+-      vacc = __riscv_vfmax_vf_f32m8(vacc, vmin, vl);
+-      vacc = __riscv_vfmin_vf_f32m8(vacc, vmax, vl);
++      vacc = mp_max_vf(vacc, vmin, vl);
++      vacc = mp_min_vf(vacc, vmax, vl);
+ 
+       __riscv_vse32_v_f32m8(o, vacc, vl); o += vl;
+       c -= vl;
+     }
+ 
+     // Passes 1 - n: Max more inputs to the output.
+-    for (int k = (int) kernel_elements - 9; k > 0; k -= 9) {
++    for (size_t k = kernel_elements > 9 ? kernel_elements - 9 : 0;
++         k != 0; k = k > 9 ? k - 9 : 0) {
+       const float* i0 = *i++;
+       const float* i1 = 1 < k ? *i++ : i0;
+       const float* i2 = 2 < k ? *i++ : i0;
+@@ -87,18 +98,27 @@
+       while (c > 0) {
+         size_t vl = __riscv_vsetvl_e32m8(c);
+ 
+-        vfloat32m8_t vacc = __riscv_vle32_v_f32m8(o, vl);
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i0, vl), vl); i0 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i1, vl), vl); i1 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i2, vl), vl); i2 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i3, vl), vl); i3 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i4, vl), vl); i4 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i5, vl), vl); i5 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i6, vl), vl); i6 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i7, vl), vl); i7 += vl;
+-        vacc = __riscv_vfmax_vv_f32m8(vacc, __riscv_vle32_v_f32m8(i8, vl), vl); i8 += vl;
++        vfloat32m8_t vi0=__riscv_vle32_v_f32m8(i0,vl); i0+=vl;
++        vfloat32m8_t vi1=__riscv_vle32_v_f32m8(i1,vl); i1+=vl;
++        vfloat32m8_t vi2=__riscv_vle32_v_f32m8(i2,vl); i2+=vl;
++        vfloat32m8_t vi3=__riscv_vle32_v_f32m8(i3,vl); i3+=vl;
++        vfloat32m8_t vi4=__riscv_vle32_v_f32m8(i4,vl); i4+=vl;
++        vfloat32m8_t vi5=__riscv_vle32_v_f32m8(i5,vl); i5+=vl;
++        vfloat32m8_t vi6=__riscv_vle32_v_f32m8(i6,vl); i6+=vl;
++        vfloat32m8_t vi7=__riscv_vle32_v_f32m8(i7,vl); i7+=vl;
++        vfloat32m8_t vi8=__riscv_vle32_v_f32m8(i8,vl); i8+=vl;
++        vfloat32m8_t vprev=__riscv_vle32_v_f32m8(o,vl);
++        vfloat32m8_t vmax01=mp_max_vv(vi0,vi1,vl);
++        vfloat32m8_t vmax018=mp_max_vv(vmax01,vi8,vl);
++        vfloat32m8_t vmax23=mp_max_vv(vi2,vi3,vl);
++        vfloat32m8_t vmax45=mp_max_vv(vi4,vi5,vl);
++        vfloat32m8_t vmax67=mp_max_vv(vi6,vi7,vl);
++        vfloat32m8_t vmax2345=mp_max_vv(vmax23,vmax45,vl);
++        vfloat32m8_t vmax01678=mp_max_vv(vmax018,vmax67,vl);
++        vfloat32m8_t vgroup=mp_max_vv(vmax2345,vmax01678,vl);
++        vfloat32m8_t vacc=mp_max_vv(vprev,vgroup,vl);
+ 
+-        vacc = __riscv_vfmin_vf_f32m8(vacc, vmax, vl);
++        vacc = mp_min_vf(vacc, vmax, vl);
+ 
+         __riscv_vse32_v_f32m8(o, vacc, vl); o += vl;
+         c -= vl;
+--- /dev/null
++++ b/shim/propagate.h
+@@ -0,0 +1,8 @@
++#ifndef MP_PROPAGATE_H
++#define MP_PROPAGATE_H
++vfloat32m8_t mp_propagate_nan(vfloat32m8_t a,vfloat32m8_t b,vfloat32m8_t numeric,size_t vl);
++vfloat32m8_t mp_max_vv(vfloat32m8_t a,vfloat32m8_t b,size_t vl);
++vfloat32m8_t mp_min_vv(vfloat32m8_t a,vfloat32m8_t b,size_t vl);
++vfloat32m8_t mp_max_vf(vfloat32m8_t a,float b,size_t vl);
++vfloat32m8_t mp_min_vf(vfloat32m8_t a,float b,size_t vl);
++#endif
+--- /dev/null
++++ b/shim/propagate.c
+@@ -0,0 +1,44 @@
++#include "propagate.h"
++
++/* Data observation matches Arm FPCR.DN=0,FZ=0,AH=0. Numeric min/max
++   retain their RISC-V minimumNumber/maximumNumber definitions. Integer
++   masks restore signaling-NaN priority, operand priority and quiet payload.
++   These are ordinary C adapters and require their own actual-body proofs. */
++vfloat32m8_t mp_propagate_nan(vfloat32m8_t a,vfloat32m8_t b,vfloat32m8_t numeric,size_t vl) {
++  vuint32m8_t ua=__riscv_vreinterpret_v_f32m8_u32m8(a);
++  vuint32m8_t ub=__riscv_vreinterpret_v_f32m8_u32m8(b);
++  vuint32m8_t aa=__riscv_vand_vx_u32m8(ua,UINT32_C(0x7FFFFFFF),vl);
++  vuint32m8_t ab=__riscv_vand_vx_u32m8(ub,UINT32_C(0x7FFFFFFF),vl);
++  vbool4_t na=__riscv_vmsgtu_vx_u32m8_b4(aa,UINT32_C(0x7F800000),vl);
++  vbool4_t nb=__riscv_vmsgtu_vx_u32m8_b4(ab,UINT32_C(0x7F800000),vl);
++  vuint32m8_t ba=__riscv_vand_vx_u32m8(ua,UINT32_C(0x00400000),vl);
++  vuint32m8_t bb=__riscv_vand_vx_u32m8(ub,UINT32_C(0x00400000),vl);
++  vbool4_t za=__riscv_vmseq_vx_u32m8_b4(ba,0,vl);
++  vbool4_t zb=__riscv_vmseq_vx_u32m8_b4(bb,0,vl);
++  vbool4_t sa=__riscv_vmand_mm_b4(na,za,vl);
++  vbool4_t sb=__riscv_vmand_mm_b4(nb,zb,vl);
++  vuint32m8_t qa=__riscv_vor_vx_u32m8(ua,UINT32_C(0x00400000),vl);
++  vuint32m8_t qb=__riscv_vor_vx_u32m8(ub,UINT32_C(0x00400000),vl);
++  vfloat32m8_t fa=__riscv_vreinterpret_v_u32m8_f32m8(qa);
++  vfloat32m8_t fb=__riscv_vreinterpret_v_u32m8_f32m8(qb);
++  vfloat32m8_t r=__riscv_vmerge_vvm_f32m8(numeric,fb,nb,vl);
++  r=__riscv_vmerge_vvm_f32m8(r,fa,na,vl);
++  r=__riscv_vmerge_vvm_f32m8(r,fb,sb,vl);
++  return __riscv_vmerge_vvm_f32m8(r,fa,sa,vl);
++}
++vfloat32m8_t mp_max_vv(vfloat32m8_t a,vfloat32m8_t b,size_t vl) {
++  vfloat32m8_t numeric=__riscv_vfmax_vv_f32m8(a,b,vl);
++  return mp_propagate_nan(a,b,numeric,vl);
++}
++vfloat32m8_t mp_min_vv(vfloat32m8_t a,vfloat32m8_t b,size_t vl) {
++  vfloat32m8_t numeric=__riscv_vfmin_vv_f32m8(a,b,vl);
++  return mp_propagate_nan(a,b,numeric,vl);
++}
++vfloat32m8_t mp_max_vf(vfloat32m8_t a,float b,size_t vl) {
++  vfloat32m8_t vb=__riscv_vfmv_v_f_f32m8(b,vl);
++  return mp_max_vv(a,vb,vl);
++}
++vfloat32m8_t mp_min_vf(vfloat32m8_t a,float b,size_t vl) {
++  vfloat32m8_t vb=__riscv_vfmv_v_f_f32m8(b,vl);
++  return mp_min_vv(a,vb,vl);
++}

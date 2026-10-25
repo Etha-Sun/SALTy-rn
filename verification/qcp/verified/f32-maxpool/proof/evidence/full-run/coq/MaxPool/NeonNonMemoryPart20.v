@@ -1,0 +1,40 @@
+From MaxPool Require Import NeonAutomation.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedPart20.
+Lemma proof_of_test_neon_safety_wit_21 : MaxPool.neon_unit_goal.test_neon_safety_wit_21.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_safety_wit_21;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_safety_wit_53 : MaxPool.neon_unit_goal.test_neon_safety_wit_53.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_safety_wit_53;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_safety_wit_85 : MaxPool.neon_unit_goal.test_neon_safety_wit_85.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_safety_wit_85;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_2_pure : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_2_pure.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_2_pure;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_21 : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_21.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_21;try left;mp_intro;mp_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_47 : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_47.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_47;try left;mp_intro;mp_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_70 : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_70.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_70;try left;mp_intro;mp_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_99_pure : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_99_pure.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_99_pure;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_117_pure : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_117_pure.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_117_pure;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_143 : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_143.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_143;try left;mp_intro;mp_call_frame. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_166_pure : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_166_pure.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_166_pure;try left;mp_intro;mp_pure. Qed.
+Lemma proof_of_test_neon_partial_solve_wit_195_pure : MaxPool.neon_unit_goal.test_neon_partial_solve_wit_195_pure.
+Proof. unfold MaxPool.neon_unit_goal.test_neon_partial_solve_wit_195_pure;try left;mp_intro;mp_pure. Qed.
+End CheckedPart20.
+Print Assumptions CheckedPart20.proof_of_test_neon_safety_wit_21.
+Print Assumptions CheckedPart20.proof_of_test_neon_safety_wit_53.
+Print Assumptions CheckedPart20.proof_of_test_neon_safety_wit_85.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_2_pure.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_21.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_47.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_70.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_99_pure.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_117_pure.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_143.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_166_pure.
+Print Assumptions CheckedPart20.proof_of_test_neon_partial_solve_wit_195_pure.

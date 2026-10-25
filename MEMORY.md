@@ -1,3 +1,5 @@
+当前完整33/40，目标40；新增Maxpool857 actual C/310 fresh Coq/1020最终Print已完整闭合。外部矩阵worker QS8-QC8W GEMM@37685e527另计其贡献；不得覆盖或重复计数。半小时额度检查/严格>95%收尾继续。以下保留历史记录。
+
 # QCP 工作记忆入口
 
 2026-10-25 matrix worker：QS8-QC8W GEMM FP32完整修复版：4实际C/1531义务/16策略/3051同环境fresh模块（续跑谱系明确）/1874假设报告，递归coqchk及32并发准入通过。原NEON保持，RVV恢复ARM NaN优先级；公开容量内正N/K，全binary32参数，固定VLEN128，精确int8输出。intrinsic语义人工复核pending，无形式ISA/ABI或完整终止性定理。 当前32/40，完整包 verification/qcp/verified/qs8-qc8w-gemm-minmax-fp32。用户恢复额度后继续矩阵核，下一SpMM，勿沿用旧“全部当前核完成即停止”的阶段指令。

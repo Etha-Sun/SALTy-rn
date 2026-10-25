@@ -1,0 +1,84 @@
+{
+  "variant": "repaired-count64-nan-priority-tree-and-alias-safe-table-adapter",
+  "whole_kernel_verified": false,
+  "semantic_repair_not_original_proof": true,
+  "user_authorization": "Direct impl repairs authorized; preserve originals, exact patch and counterexamples; no newK>0 premise",
+  "original_sha256": {
+    "NEON": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+    "RVV": "0194ef9ea40d42ba0496069edf1afa54073893df273b58d00c91ad95faadc894"
+  },
+  "repaired_sha256": {
+    "NEON": "d58e8e5172f5e192cda8ee0167741690055ad8d6e218d4ef092766a7dc274311",
+    "RVV": "b6002fbde433ac47c2edd2d1dcccfbd278b5c95419f4bcc91f53281ccd0c87d0"
+  },
+  "added_helpers": {
+    "shim/propagate.c": "6866385bf0cd56d4fc10c90c1751d6acf34022a107911dd5356cc12711e1d48b",
+    "shim/propagate.h": "6ac81ad4156b03587035c8a631efb297fafd66220bdb2cf07e0b75ff0c78f3cd",
+    "shim/read_table.c": "24773d62d3ede7e80afe68a6c58efe1ab62d5e9612138011795e4a6f59c7f2cb",
+    "shim/read_table.h": "e8e81be4d736368e9bd43cb425d41832be49774550bc25a953c3d562b9590c6e"
+  },
+  "patch": "proof/repair.patch",
+  "patch_sha256": "df3a53c8add3a0340e11c230f9c52fc43830d33143b1e0f36cc82d0de95c7f2d",
+  "patch_exact_application_checked": true,
+  "patch_replay_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/exact-patch-7erx3tzl",
+  "observations": "Bit-exact binary32 output, including NaN payload/sign/quieting and signed zeros. FP exception flags/traps/physicalISA refinement outside observation.",
+  "repairs": [
+    "Both int(K)-9 counters changed to unsigned64 guarded remaining count; finalshort pass cannot underflow; K0 still executes initial9-input pass withi0 fallback.",
+    "RVV matches exact NEON nine-input max tree and prev/group operand order.",
+    "Real RVV numeric max/min retained; ordinaryC helper uses actualinteger bitcast/masks/merge to restore Arm DN0 signaling and quiet NaN priority, preserving payload/sign.",
+    "Readonly table dereferences use body-checked one-read adapter with explicit subsequent increment, preserving18 read sites/18 conditional-or-unconditional increments, K0 first read and all fallback conditions.",
+    "Frontend control compatibility only: move original --output_pixels from do-while condition to final body statement output_pixels-=1; condition tests output_pixels!=0; preserve original P>0 domain and update/evaluation order. Argument i++ expansion is syntax compatibility, distinct from numerical count/NaN fixes.",
+    "Four nested NEON max expressions are spelled as a named vmax01 temporary then the identical outer max. Preserve the same inner/outer operations and operand order with no duplicated input evaluation; each actual value-object address is available to frontend contracts. No ISA arithmetic semantics or NaN tree change.",
+    "Put first-pass-only local variables in an explicit C block ending before later-pass loop. The table cursor i stays in the outer pixel scope; all first-pass row pointers/o/c were otherwise shadowed and never read again. This preserves operations and side effects while avoiding lost dead-local permissions across frontend loop invariants.",
+    "Replace ordinary propagation bitmask vector implementation by bit-exact scalar UInt32 array loop; preserve original inputs/NaN priority/numeric selection. Actual C initializes three32-word scratch arrays; original RVV loads/stores only active prefix. Four existing FP wrappers are byte-exact unchanged."
+  ],
+  "source_review": "proof/intrinsic-ledger.json;70 ordinary NaN body fields sourcefresh checked, final whole fresh closure pending",
+  "counterexamples": "proof/original-counterexamples.json",
+  "history_before_table_refactor": "proof/history/before-table-adapter-1792825988722699100",
+  "table_adapter": {
+    "source": "shim/read_table.c",
+    "actual_body_checked_vcs": 2,
+    "receipt": "proof/read-table-status.json",
+    "transformation": "For each of18 original *i++ per implementation: value=mp_read_table(i); i+=1; conditional reads/increments execute only in original true branch; one read of old pointer before one increment.",
+    "purpose": "alias-safe whole-map contract for actual ordinary C read; no original-C refinement theorem claimed",
+    "memory_precondition": "explicit p!=0 and existing pointer-map cell; no abstract heap0 permission accepted as C-null dereference"
+  },
+  "history_before_control_layout": "proof/history/before-control-layout-1792830252751761835",
+  "control_layout": {
+    "actual_rejected_syntax_runs": [
+      ".build/loop-control-generation-mui_ymfv",
+      ".build/loop-control-generation-_39wcl_1"
+    ],
+    "accepted_generation": ".build/loop-control-fresh-d2mxbk1x",
+    "ordinary_probe_proof_pending": false,
+    "receipt": "proof/loop-control-status.json",
+    "actual_probe_c_vcs": 23
+  },
+  "history_before_named_max_temporary": "proof/history/before-named-max-temporary-1792830447514513008",
+  "history_before_first_pass_block": "proof/history/before-first-pass-block-1792832374014756515",
+  "history_before_nan_array_refactor": "proof/history/before-nan-array-1792910026380797399",
+  "nan_array_refactor": {
+    "purpose": "ordinary C verification compatibility: same four original NaN priority stages using initialized scalar UInt32 scratch arrays; no source domain/ISA arithmetic/NaN order change",
+    "original_helper_sha256": "4443bf4ac9e33b96c10129b8cf508b6c0e5a2391ca2840523be9e94b95c8cae9",
+    "repaired_helper_sha256": "6866385bf0cd56d4fc10c90c1751d6acf34022a107911dd5356cc12711e1d48b",
+    "exact_helper_patch": "proof/history/before-nan-array-1792910026380797399/propagate-only.patch",
+    "exact_helper_patch_sha256": "c71880365ea95765c06195d71be0b435952f0c008f8740f46ebe2e762787a4f1",
+    "ordinary_c_bodies": [
+      "mp_restore_lane",
+      "mp_array_read",
+      "mp_array_write",
+      "mp_propagate_nan"
+    ],
+    "actual_c_vcs": 70,
+    "production_stem_migration_receipt": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/nan-production-migration-1qqa3m35/status.json",
+    "production_stem_migration_sha256": "7b98e3c82b24744fa081196f448a24698428b5007725de415d82b0d8b9a1a8b9",
+    "native_regression_pending": false,
+    "annotation_history": "Two rejected invariants: missing vl preservation, then missing existing byvalue pointer-cell frame; these are annotation/state-model gaps, not C counterexamples.",
+    "active_tail_scope": "C explicitly initializes local arrays. RVV load/store specs constrain only active prefix; inactive vector lanes remain arbitrary and are not observed.",
+    "native_current_receipts": [
+      "proof/native-status.json",
+      "proof/native-address-status.json",
+      "proof/cross-build-status.json"
+    ]
+  }
+}

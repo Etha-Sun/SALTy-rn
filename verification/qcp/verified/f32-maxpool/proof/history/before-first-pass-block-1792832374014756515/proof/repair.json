@@ -1,0 +1,56 @@
+{
+  "variant": "repaired-count64-nan-priority-tree-and-alias-safe-table-adapter",
+  "whole_kernel_verified": false,
+  "semantic_repair_not_original_proof": true,
+  "user_authorization": "Direct impl repairs authorized; preserve originals, exact patch and counterexamples; no newK>0 premise",
+  "original_sha256": {
+    "NEON": "c90b55eac3dd217b87d0a05a10b1335852a6922e41d8b622fb0eb06c13ad42f5",
+    "RVV": "0194ef9ea40d42ba0496069edf1afa54073893df273b58d00c91ad95faadc894"
+  },
+  "repaired_sha256": {
+    "NEON": "3d1a7ac91fc413b1c75271729aa48fa375f6100d40ddb170c63d3f5ef54a4edd",
+    "RVV": "b16c80a47321ba032968152f05ac1371aa7a0b1b5f544c216e587acabe0fa178"
+  },
+  "added_helpers": {
+    "shim/propagate.c": "4443bf4ac9e33b96c10129b8cf508b6c0e5a2391ca2840523be9e94b95c8cae9",
+    "shim/propagate.h": "6ac81ad4156b03587035c8a631efb297fafd66220bdb2cf07e0b75ff0c78f3cd",
+    "shim/read_table.c": "24773d62d3ede7e80afe68a6c58efe1ab62d5e9612138011795e4a6f59c7f2cb",
+    "shim/read_table.h": "e8e81be4d736368e9bd43cb425d41832be49774550bc25a953c3d562b9590c6e"
+  },
+  "patch": "proof/repair.patch",
+  "patch_sha256": "519249f7687ed5f04a703761275edc4dd19086c587d3bdad6bd47961b89e5f1b",
+  "patch_exact_application_checked": true,
+  "patch_replay_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-maxpool/.build/exact-patch-k38x93qu",
+  "observations": "Bit-exact binary32 output, including NaN payload/sign/quieting and signed zeros. FP exception flags/traps/physicalISA refinement outside observation.",
+  "repairs": [
+    "Both int(K)-9 counters changed to unsigned64 guarded remaining count; finalshort pass cannot underflow; K0 still executes initial9-input pass withi0 fallback.",
+    "RVV matches exact NEON nine-input max tree and prev/group operand order.",
+    "Real RVV numeric max/min retained; ordinaryC helper uses actualinteger bitcast/masks/merge to restore Arm DN0 signaling and quiet NaN priority, preserving payload/sign.",
+    "Readonly table dereferences use body-checked one-read adapter with explicit subsequent increment, preserving18 read sites/18 conditional-or-unconditional increments, K0 first read and all fallback conditions.",
+    "Frontend control compatibility only: move original --output_pixels from do-while condition to final body statement output_pixels-=1; condition tests output_pixels!=0; preserve original P>0 domain and update/evaluation order. Argument i++ expansion is syntax compatibility, distinct from numerical count/NaN fixes.",
+    "Four nested NEON max expressions are spelled as a named vmax01 temporary then the identical outer max. Preserve the same inner/outer operations and operand order with no duplicated input evaluation; each actual value-object address is available to frontend contracts. No ISA arithmetic semantics or NaN tree change."
+  ],
+  "source_review": "draft proof/intrinsic-ledger.json; ordinary NaN adapter proof pending",
+  "counterexamples": "proof/original-counterexamples.json",
+  "history_before_table_refactor": "proof/history/before-table-adapter-1792825988722699100",
+  "table_adapter": {
+    "source": "shim/read_table.c",
+    "actual_body_checked_vcs": 2,
+    "receipt": "proof/read-table-status.json",
+    "transformation": "For each of18 original *i++ per implementation: value=mp_read_table(i); i+=1; conditional reads/increments execute only in original true branch; one read of old pointer before one increment.",
+    "purpose": "alias-safe whole-map contract for actual ordinary C read; no original-C refinement theorem claimed",
+    "memory_precondition": "explicit p!=0 and existing pointer-map cell; no abstract heap0 permission accepted as C-null dereference"
+  },
+  "history_before_control_layout": "proof/history/before-control-layout-1792830252751761835",
+  "control_layout": {
+    "actual_rejected_syntax_runs": [
+      ".build/loop-control-generation-mui_ymfv",
+      ".build/loop-control-generation-_39wcl_1"
+    ],
+    "accepted_generation": ".build/loop-control-fresh-d2mxbk1x",
+    "ordinary_probe_proof_pending": false,
+    "receipt": "proof/loop-control-status.json",
+    "actual_probe_c_vcs": 23
+  },
+  "history_before_named_max_temporary": "proof/history/before-named-max-temporary-1792830447514513008"
+}

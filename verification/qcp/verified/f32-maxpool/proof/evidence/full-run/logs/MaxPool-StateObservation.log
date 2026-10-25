@@ -1,0 +1,215 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.308 secs (0.16u,0.139s)
+Chars 41 - 92 [From~MaxPool~Require~Import~Ke...] 3.699 secs (3.2u,0.499s)
+Chars 93 - 114 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 115 - 140 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 376 - 497 [Definition~mp_run_writes~(O~:~...] 0.001 secs (0.001u,0.s)
+Chars 498 - 590 [Definition~mp_slot_equal~(x~y~...] 0. secs (0.u,0.s)
+Chars 591 - 698 [Definition~mp_states_equal_on~...] 0. secs (0.u,0.s)
+Chars 699 - 839 [Lemma~mp_put_equal_on~:~~~fora...] 0. secs (0.u,0.s)
+Chars 840 - 846 [Proof.] 0. secs (0.u,0.s)
+Chars 848 - 912 [(intros~D~O1~O2~p~value~H~q~Hq...] 0.001 secs (0.001u,0.s)
+Chars 914 - 915 [-] 0. secs (0.u,0.s)
+Chars 916 - 955 [(rewrite~!mp_put_same;~exists~...] 0.001 secs (0.001u,0.s)
+Chars 957 - 958 [-] 0. secs (0.u,0.s)
+Chars 959 - 1039 [(rewrite~!mp_put_other~by~cong...] 0.001 secs (0.001u,0.s)
+Chars 1040 - 1044 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1045 - 1193 [Lemma~mp_run_equal_on~:~~~fora...] 0. secs (0.u,0.s)
+Chars 1194 - 1200 [Proof.] 0. secs (0.u,0.s)
+Chars 1202 - 1263 [(induction~xs~as~[|~[p~value]~...] 0. secs (0.u,0.s)
+Chars 1265 - 1318 [(pose~proof~(mp_put_equal_on~D...] 0. secs (0.u,0.s)
+Chars 1320 - 1383 [specialize~(IH~(p~::~D)~(mp_pu...] 0. secs (0.u,0.s)
+Chars 1385 - 1450 [(intros~q~Hq;~apply~IH;~cbn~in...] 0.013 secs (0.013u,0.s)
+Chars 1451 - 1455 [Qed.] 0.002 secs (0.002u,0.s)
+Chars 1456 - 1630 [Theorem~mp_trace_written_bits~...] 0.001 secs (0.001u,0.s)
+Chars 1631 - 1637 [Proof.] 0. secs (0.u,0.s)
+Chars 1639 - 1660 [(intros~xs~O1~O2~p~Hp).] 0. secs (0.u,0.s)
+Chars 1662 - 1730 [(assert~(HE~:~mp_states_equal_...] 0. secs (0.u,0.s)
+Chars 1732 - 1781 [(pose~proof~(mp_run_equal_on~x...] 0. secs (0.u,0.s)
+Chars 1783 - 1847 [(rewrite~app_nil_r~in~H;~speci...] 0. secs (0.u,0.s)
+Chars 1849 - 1865 [(exists~v,v;~auto).] 0. secs (0.u,0.s)
+Chars 1866 - 1870 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1871 - 1964 [Theorem~mp_trace_unwritten_fra...] 0. secs (0.u,0.s)
+Chars 1965 - 1971 [Proof.] 0. secs (0.u,0.s)
+Chars 1973 - 2034 [(induction~xs~as~[|~[q~value]~...] 0.001 secs (0.u,0.s)
+Chars 2036 - 2093 [(cbn~in~H;~change~(mp_run_writ...] 0. secs (0.u,0.s)
+Chars 2095 - 2140 [(rewrite~IH~by~tauto;~apply~mp...] 0.003 secs (0.003u,0.s)
+Chars 2141 - 2145 [Qed.] 0.002 secs (0.002u,0.s)
+Chars 2146 - 2243 [Lemma~mp_run_append~:~~~forall...] 0. secs (0.u,0.s)
+Chars 2244 - 2250 [Proof.] 0. secs (0.u,0.s)
+Chars 2251 - 2299 [(intros;~unfold~mp_run_writes;...] 0. secs (0.u,0.s)
+Chars 2300 - 2304 [Qed.] 0. secs (0.u,0.s)
+Chars 2306 - 2473 [Fixpoint~mp_lane_writes~(count...] 0.001 secs (0.001u,0.s)
+Chars 2474 - 2597 [Lemma~mp_run_lane_writes~:~~~f...] 0. secs (0.u,0.s)
+Chars 2598 - 2604 [Proof.] 0. secs (0.u,0.s)
+Chars 2606 - 2654 [(induction~count;~intros~O~p~v...] 0. secs (0.u,0.s)
+Chars 2656 - 2709 [(cbn[mp_lane_writes~mp_write_n...] 0. secs (0.u,0.s)
+Chars 2711 - 2898 [(change~~~~(mp_put~(mp_run_wri...] 0. secs (0.u,0.s)
+Chars 2900 - 2928 [(rewrite~IHcount;~reflexivity).] 0. secs (0.u,0.s)
+Chars 2929 - 2933 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 2934 - 3078 [Lemma~mp_lane_writes_addresses...] 0.001 secs (0.001u,0.s)
+Chars 3079 - 3085 [Proof.] 0. secs (0.u,0.s)
+Chars 3087 - 3120 [(induction~count;~intros~p~val...] 0. secs (0.u,0.s)
+Chars 3122 - 3123 [-] 0. secs (0.u,0.s)
+Chars 3124 - 3170 [(cbn;~split;~[~contradiction~|...] 0.003 secs (0.003u,0.s)
+Chars 3172 - 3173 [-] 0. secs (0.u,0.s)
+Chars 3174 - 3197 [(rewrite~Nat2Z.inj_succ).] 0. secs (0.u,0.s)
+Chars 3201 - 3260 [(cbn[mp_lane_writes];~rewrite~...] 0.006 secs (0.006u,0.s)
+Chars 3264 - 3270 [split.] 0. secs (0.u,0.s)
+Chars 3274 - 3275 [+] 0. secs (0.u,0.s)
+Chars 3276 - 3373 [(intros~[[i~[Hi~Heq]]|~[Heq|~H...] 0.029 secs (0.029u,0.s)
+Chars 3377 - 3378 [+] 0. secs (0.u,0.s)
+Chars 3379 - 3445 [(intros~[i~[Hi~Heq]];~destruct...] 0.001 secs (0.001u,0.s)
+Chars 3451 - 3452 [*] 0. secs (0.u,0.s)
+Chars 3453 - 3468 [(right;~left;~lia).] 0.001 secs (0.001u,0.s)
+Chars 3474 - 3475 [*] 0. secs (0.u,0.s)
+Chars 3476 - 3500 [(left;~exists~i;~split;~lia).] 0.002 secs (0.002u,0.s)
+Chars 3501 - 3505 [Qed.] 0.011 secs (0.011u,0.s)
+Chars 3506 - 3957 [Fixpoint~mp_pixel_writes~(F~:~...] 0.002 secs (0.002u,0.s)
+Chars 3958 - 4262 [Lemma~mp_finish_pixels_as_trac...] 0.001 secs (0.001u,0.s)
+Chars 4263 - 4269 [Proof.] 0. secs (0.u,0.s)
+Chars 4271 - 4310 [(induction~pixels;~intros;~[~r...] 0. secs (0.u,0.s)
+Chars 4312 - 4391 [(cbn[mp_finish_pixels~mp_pixel...] 0.001 secs (0.001u,0.s)
+Chars 4393 - 4423 [(rewrite~<-~IHpixels;~reflexiv...] 0.001 secs (0.001u,0.s)
+Chars 4424 - 4428 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 4429 - 4668 [Definition~mp_complete_writes~...] 0. secs (0.u,0.s)
+Chars 4669 - 4843 [Definition~mp_written~(pixels~...] 0. secs (0.u,0.s)
+Chars 4844 - 5141 [Lemma~mp_complete_as_trace~:~~...] 0. secs (0.u,0.s)
+Chars 5142 - 5148 [Proof.] 0. secs (0.u,0.s)
+Chars 5149 - 5188 [(intros;~apply~mp_finish_pixel...] 0. secs (0.u,0.s)
+Chars 5189 - 5193 [Qed.] 0. secs (0.u,0.s)
+Chars 5194 - 5475 [Lemma~mp_pixel_writes_addresse...] 0.001 secs (0.001u,0.s)
+Chars 5476 - 5482 [Proof.] 0. secs (0.u,0.s)
+Chars 5484 - 5573 [(induction~pixels;~~~intros~F~...] 0. secs (0.u,0.s)
+Chars 5575 - 5576 [-] 0. secs (0.u,0.s)
+Chars 5577 - 5644 [(cbn;~unfold~mp_written;~split...] 0.001 secs (0.001u,0.s)
+Chars 5646 - 5647 [-] 0. secs (0.u,0.s)
+Chars 5648 - 5696 [(cbn[mp_pixel_writes];~rewrite...] 0.002 secs (0.002u,0.s)
+Chars 5700 - 5787 [(rewrite~IHpixels~by~assumptio...] 0.005 secs (0.005u,0.s)
+Chars 5791 - 5838 [(unfold~mp_written;~rewrite~Na...] 0.001 secs (0.001u,0.s)
+Chars 5842 - 5843 [+] 0. secs (0.u,0.s)
+Chars 5844 - 5883 [(intros~[[i~[j~[Hi~[Hj~Heq]]]]...] 0.001 secs (0.001u,0.s)
+Chars 5889 - 5890 [*] 0. secs (0.u,0.s)
+Chars 5891 - 5919 [(exists~i,j;~repeat~split;~lia).] 0.004 secs (0.004u,0.s)
+Chars 5925 - 5926 [*] 0. secs (0.u,0.s)
+Chars 5927 - 5985 [(exists~(Z.of_nat~pixels),j;~r...] 0.002 secs (0.002u,0.s)
+Chars 5989 - 5990 [+] 0. secs (0.u,0.s)
+Chars 5991 - 6065 [(intros~[i~[j~[Hi~[Hj~Heq]]]];...] 0.001 secs (0.001u,0.s)
+Chars 6071 - 6072 [*] 0. secs (0.u,0.s)
+Chars 6073 - 6093 [(right;~exists~j;~auto).] 0. secs (0.u,0.s)
+Chars 6099 - 6100 [*] 0. secs (0.u,0.s)
+Chars 6101 - 6149 [(left;~exists~i,j;~repeat~spli...] 0.003 secs (0.003u,0.s)
+Chars 6150 - 6154 [Qed.] 0.017 secs (0.017u,0.s)
+Chars 6155 - 6447 [Theorem~mp_complete_written_ad...] 0.001 secs (0.001u,0.s)
+Chars 6448 - 6454 [Proof.] 0. secs (0.u,0.s)
+Chars 6456 - 6537 [(intros;~unfold~mp_complete_wr...] 0.001 secs (0.001u,0.s)
+Chars 6539 - 6582 [(rewrite~Z2Nat.id~by~assumptio...] 0. secs (0.u,0.s)
+Chars 6583 - 6587 [Qed.] 0. secs (0.u,0.s)
+Chars 6588 - 7016 [Theorem~mp_complete_written_bi...] 0.001 secs (0.001u,0.s)
+Chars 7017 - 7023 [Proof.] 0. secs (0.u,0.s)
+Chars 7025 - 7090 [(intros;~rewrite~!mp_complete_...] 0.02 secs (0.016u,0.003s)
+Chars 7092 - 7221 [(apply~~~(proj2~~~~~~(mp_compl...] 0. secs (0.u,0.s)
+Chars 7222 - 7226 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 7227 - 7507 [Theorem~mp_complete_unwritten_...] 0.001 secs (0.001u,0.s)
+Chars 7508 - 7514 [Proof.] 0. secs (0.u,0.s)
+Chars 7516 - 7583 [(intros;~rewrite~mp_complete_a...] 0. secs (0.u,0.s)
+Chars 7585 - 7648 [(rewrite~mp_complete_written_a...] 0.002 secs (0.002u,0.s)
+Chars 7649 - 7653 [Qed.] 0. secs (0.u,0.s)
+Chars 8023 - 8612 [Theorem~mp_kernel_posts_writte...] 0.002 secs (0.002u,0.s)
+Chars 8613 - 8619 [Proof.] 0. secs (0.u,0.s)
+Chars 8621 - 8654 [(intros;~subst~finalN~finalR;~...] 0.001 secs (0.001u,0.s)
+Chars 8656 - 8657 [-] 0. secs (0.u,0.s)
+Chars 8658 - 8709 [(intros;~eapply~mp_complete_wr...] 0. secs (0.u,0.s)
+Chars 8711 - 8712 [-] 0. secs (0.u,0.s)
+Chars 8713 - 8771 [(intros;~split;~apply~mp_compl...] 0. secs (0.u,0.s)
+Chars 8772 - 8776 [Qed.] 0.001 secs (0.001u,0.s)
+Closed under the global context
+Chars 8778 - 8812 [Print~Assumptions~mp_put_equal...] 0.003 secs (0.u,0.003s)
+Closed under the global context
+Chars 8813 - 8847 [Print~Assumptions~mp_run_equal...] 0.004 secs (0.u,0.004s)
+Closed under the global context
+Chars 8848 - 8888 [Print~Assumptions~mp_trace_wri...] 0.001 secs (0.001u,0.s)
+Closed under the global context
+Chars 8889 - 8932 [Print~Assumptions~mp_trace_unw...] 0. secs (0.u,0.s)
+Closed under the global context
+Chars 8933 - 8965 [Print~Assumptions~mp_run_append.] 0. secs (0.u,0.s)
+Closed under the global context
+Chars 8966 - 9003 [Print~Assumptions~mp_run_lane_...] 0. secs (0.u,0.s)
+Closed under the global context
+Chars 9004 - 9047 [Print~Assumptions~mp_lane_writ...] 0.321 secs (0.297u,0.023s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9048 - 9092 [Print~Assumptions~mp_finish_pi...] 1.307 secs (1.297u,0.009s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9093 - 9132 [Print~Assumptions~mp_complete_...] 0.995 secs (0.872u,0.027s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9133 - 9177 [Print~Assumptions~mp_pixel_wri...] 1.178 secs (1.171u,0.006s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9178 - 9226 [Print~Assumptions~mp_complete_...] 0.724 secs (0.675u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9227 - 9270 [Print~Assumptions~mp_complete_...] 0.817 secs (0.772u,0.011s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9271 - 9317 [Print~Assumptions~mp_complete_...] 0.748 secs (0.748u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 9318 - 9371 [Print~Assumptions~mp_kernel_po...] 0.734 secs (0.668u,0.011s)

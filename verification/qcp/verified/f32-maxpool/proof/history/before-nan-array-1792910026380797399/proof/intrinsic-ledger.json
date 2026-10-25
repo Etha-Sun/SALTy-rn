@@ -1,0 +1,998 @@
+{
+  "whole_kernel_verified": false,
+  "status": "source-bound ledger; independent final manual source review and unified fresh closure pending",
+  "primary_sources": {
+    "ACLE": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+    "Arm_shared_pseudocode_pdf": {
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "physical_pages": {
+        "FPMax": 5880,
+        "FPMin": 5882,
+        "FPProcessNaN": 5893,
+        "FPProcessNaNs": 5894
+      },
+      "review": "AH=0 branch, DN=0,FZ=0; traps disabled; output bits only"
+    },
+    "RVV": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html"
+  },
+  "entries": [
+    {
+      "intrinsic": "vld1q_f32",
+      "formal_symbol": "vld1q_f32",
+      "view": "readonly_map",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "cf5f087bf53379178b7405d4a17ac64e89f3293782abea91e339857da5317d75",
+      "signature": "float32x4_t vld1q_f32(const float*p)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryModel.mp_data",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryViews.mp_load_lane",
+          "source": "proof/coq/MemoryViews.v",
+          "source_sha256": "78aeecb21fdd4ab54a3c0b72d62e27c9402dd2c1c0070ea2558c01955d07dd6b"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "memory_view": "readonly initializedmap exactbits; output Some exactbits/None arbitrary loadedvalue preserving thevalid undefcell; active result only observed"
+    },
+    {
+      "intrinsic": "vld1q_f32",
+      "formal_symbol": "vld1q_f32",
+      "view": "output_map",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "dc7f92f2e2bda605a8ac8b44a1c0bde2d41fb40aafcd1a2f9c6ea677c02f50fc",
+      "signature": "float32x4_t vld1q_f32(const float*p)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryViews.mp_loaded_lane",
+          "source": "proof/coq/MemoryViews.v",
+          "source_sha256": "78aeecb21fdd4ab54a3c0b72d62e27c9402dd2c1c0070ea2558c01955d07dd6b"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_out",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "memory_view": "readonly initializedmap exactbits; output Some exactbits/None arbitrary loadedvalue preserving thevalid undefcell; active result only observed"
+    },
+    {
+      "intrinsic": "vdupq_n_f32",
+      "formal_symbol": "vdupq_n_f32",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "98de407823d1dda4d2ab43a12f5a02fe94bf7e73423dfa056f108301a74df9d7",
+      "signature": "float32x4_t vdupq_n_f32(float x)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "vmaxq_f32",
+      "formal_symbol": "vmaxq_f32",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "f22fce5fceb5e37d69b3230ff695f5e64737567802b527a42fca79c5f477ae0c",
+      "signature": "float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.Model.mp_max",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "62cf3b70a6c86ea53caa5f4a1819dc803702645fb7caa5415a2cab6f3e13cb08"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Arm AH0: signaling first, signaling second, quiet first, quiet second; quiet selectedsign/payload bybit22; DN0; signedzero select usesmax/min"
+    },
+    {
+      "intrinsic": "vminq_f32",
+      "formal_symbol": "vminq_f32",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "bea43274e7d989e5f49d18ed5899d9316740f5ba22ec621441f120be673ca86d",
+      "signature": "float32x4_t vminq_f32(float32x4_t a,float32x4_t b)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.Model.mp_min",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "62cf3b70a6c86ea53caa5f4a1819dc803702645fb7caa5415a2cab6f3e13cb08"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Arm AH0: signaling first, signaling second, quiet first, quiet second; quiet selectedsign/payload bybit22; DN0; signedzero select usesmax/min"
+    },
+    {
+      "intrinsic": "vget_low_f32",
+      "formal_symbol": "vget_low_f32",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "76a8127215641a2ed9f1770f187d66a171af8105ef7bffe5926391e2329b8e33",
+      "signature": "float32x2_t vget_low_f32(float32x4_t a)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "vget_high_f32",
+      "formal_symbol": "vget_high_f32",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "e2cbe4165bcd00309e6ff5f223cf8c8e635731d3e4c353deb967d35e9b3a4fc3",
+      "signature": "float32x2_t vget_high_f32(float32x4_t a)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "vst1q_f32",
+      "formal_symbol": "mp_neon_store4_view",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "f61f09a9e089a4a9bfb79f1bf0c25118b0d440e43dfa7d108540e63edd635c28",
+      "signature": "void mp_neon_store4_view(float*p,const float32x4_t*a)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryModel.mp_out",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.PackModel.mp_pack4",
+          "source": "proof/coq/PackModel.v",
+          "source_sha256": "d2ad4d9bce261178f77739f3222ad4e88b3dd11a0ee9019ea5e17f270a2fc19e"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "borrowed input-object logical view of original ISA store, exact-once named-lvalue capture; not a new ordinary helper",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "adapter": {
+        "kind": "borrowed namedlvalue logicalinput view oforiginalISAstore",
+        "macro_exact_once": true,
+        "ordinary_C_body_implementation": false,
+        "ISA_ABI_representation_refinement_proved": false,
+        "source_guard": "formalstore macro capture &(namedinput) once; actual SDK calls andoperandorder retained inimpl/native, unknown value expressions rejected byannotationbuilder"
+      }
+    },
+    {
+      "intrinsic": "vst1_f32",
+      "formal_symbol": "mp_neon_store2_view",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "0d89632c06a696bcc120eba913abe984f7dd5335fbab0df875295fa32f6a1da2",
+      "signature": "void mp_neon_store2_view(float*p,const float32x2_t*a)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryModel.mp_out",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.PackModel.mp_pack2",
+          "source": "proof/coq/PackModel.v",
+          "source_sha256": "d2ad4d9bce261178f77739f3222ad4e88b3dd11a0ee9019ea5e17f270a2fc19e"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "borrowed input-object logical view of original ISA store, exact-once named-lvalue capture; not a new ordinary helper",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "adapter": {
+        "kind": "borrowed namedlvalue logicalinput view oforiginalISAstore",
+        "macro_exact_once": true,
+        "ordinary_C_body_implementation": false,
+        "ISA_ABI_representation_refinement_proved": false,
+        "source_guard": "formalstore macro capture &(namedinput) once; actual SDK calls andoperandorder retained inimpl/native, unknown value expressions rejected byannotationbuilder"
+      }
+    },
+    {
+      "intrinsic": "vst1_lane_f32",
+      "formal_symbol": "mp_neon_store1_view",
+      "view": "default",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "09fb366e3756b481276a11775bd794109faa5b1a078f1866a7ffa5a9a3858075",
+      "contract_sha256": "2ae835c3b4d1fdc3fd80b06d84973b9b3c6c547548a5cfaf3a14873cfc3997a5",
+      "signature": "void mp_neon_store1_view(float*p,const float32x2_t*a,int lane)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryModel.mp_out",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.PackModel.mp_pack2",
+          "source": "proof/coq/PackModel.v",
+          "source_sha256": "d2ad4d9bce261178f77739f3222ad4e88b3dd11a0ee9019ea5e17f270a2fc19e"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "borrowed input-object logical view of original ISA store, exact-once named-lvalue capture; not a new ordinary helper",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "adapter": {
+        "kind": "borrowed namedlvalue logicalinput view oforiginalISAstore",
+        "macro_exact_once": true,
+        "ordinary_C_body_implementation": false,
+        "ISA_ABI_representation_refinement_proved": false,
+        "source_guard": "formalstore macro capture &(namedinput) once; actual SDK calls andoperandorder retained inimpl/native, unknown value expressions rejected byannotationbuilder"
+      }
+    },
+    {
+      "intrinsic": "__riscv_vreinterpret_v_f32m8_u32m8",
+      "formal_symbol": "__riscv_vreinterpret_v_f32m8_u32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "3d0b9e73abf39992279c13afdb77a20480194590f21c379230fcddaba1c74ba0",
+      "signature": "vuint32m8_t __riscv_vreinterpret_v_f32m8_u32m8(vfloat32m8_t a)",
+      "direct_coq_definitions": [
+        {
+          "constant": "SimpleC.SL.FloatLib.bits_of_fp32",
+          "external_source": "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+          "source_sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5",
+          "basis": "QCP exact bit conversion via Flocq Bits; three own Bits.v range/roundtrip lemmas checked independently"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vreinterpret_v_u32m8_f32m8",
+      "formal_symbol": "__riscv_vreinterpret_v_u32m8_f32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "07422d0f9196985a2ffd720c5fcd08bb892dbd481e83c46fc91f4f6f2f3791a1",
+      "signature": "vfloat32m8_t __riscv_vreinterpret_v_u32m8_f32m8(vuint32m8_t a)",
+      "direct_coq_definitions": [
+        {
+          "constant": "SimpleC.SL.FloatLib.fp32_of_bits",
+          "external_source": "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+          "source_sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5",
+          "basis": "QCP exact bit conversion via Flocq Bits; three own Bits.v range/roundtrip lemmas checked independently"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vand_vx_u32m8",
+      "formal_symbol": "__riscv_vand_vx_u32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "eee873730088322028ca736310a0fea88593bd9508f2d0638a43902b0ab289c8",
+      "signature": "vuint32m8_t __riscv_vand_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_land",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_zmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vor_vx_u32m8",
+      "formal_symbol": "__riscv_vor_vx_u32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "48d0b5f1804a72d8f15ba8931b5f82b6a1fa40d24345860dbc5c70003cbdccf3",
+      "signature": "vuint32m8_t __riscv_vor_vx_u32m8(vuint32m8_t a,uint32_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_lor",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_zmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vmsgtu_vx_u32m8_b4",
+      "formal_symbol": "__riscv_vmsgtu_vx_u32m8_b4",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "1e380d8142f76ee45d453edabc4fa4769385e7dfd62591da756c998525049b46",
+      "signature": "vbool4_t __riscv_vmsgtu_vx_u32m8_b4(vuint32m8_t a,uint32_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_bit_gt",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_zmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vmseq_vx_u32m8_b4",
+      "formal_symbol": "__riscv_vmseq_vx_u32m8_b4",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "2d107ff544a588ec717d3b668dee18c7299f67a73892e8c7fc2dd393c6adc006",
+      "signature": "vbool4_t __riscv_vmseq_vx_u32m8_b4(vuint32m8_t a,uint32_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_bit_eq",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_zmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vmand_mm_b4",
+      "formal_symbol": "__riscv_vmand_mm_b4",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "edfa7ca39a969d4993ad45355947520a132a92289b85d6e715339878c1381b4d",
+      "signature": "vbool4_t __riscv_vmand_mm_b4(vbool4_t a,vbool4_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_mask_and",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_zmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vmerge_vvm_f32m8",
+      "formal_symbol": "__riscv_vmerge_vvm_f32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "442655c2a94540787e466b092c5ff3d054a100e084590f2d1b27664566bee654",
+      "signature": "vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t m,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_float_merge",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_fmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vfmax_vv_f32m8",
+      "formal_symbol": "__riscv_vfmax_vv_f32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "9b64040b3c029a3a7162c60a2167d635f01e09be09d8e21ada3fec3402850237",
+      "signature": "vfloat32m8_t __riscv_vfmax_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_fmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_rvv_max",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "OriginalnumericRVV: exactlyoneNaN returnsnumericoperand, bothNaN canonicalqNaN; no substitution byArm semantics. Ordinarypropagationhelpers repair theprogram."
+    },
+    {
+      "intrinsic": "__riscv_vfmin_vv_f32m8",
+      "formal_symbol": "__riscv_vfmin_vv_f32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "75e49be4cf739d802bbcee4cae2c9d17ec6d1602282ae1db4fb6d24af059b2ba",
+      "signature": "vfloat32m8_t __riscv_vfmin_vv_f32m8(vfloat32m8_t a,vfloat32m8_t b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_fmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_rvv_min",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "OriginalnumericRVV: exactlyoneNaN returnsnumericoperand, bothNaN canonicalqNaN; no substitution byArm semantics. Ordinarypropagationhelpers repair theprogram."
+    },
+    {
+      "intrinsic": "__riscv_vfmv_v_f_f32m8",
+      "formal_symbol": "__riscv_vfmv_v_f_f32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_arithmetic_specs.h",
+      "contract_source_sha256": "f6e93ff3e9101cd40019a731ff56bcfca9d6fff32c97614bca7b1f8d043ce5f2",
+      "contract_sha256": "3bd9b2a9d75078e5ade6a2214375b892321036efd17e0a57a64d07f0167296e2",
+      "signature": "vfloat32m8_t __riscv_vfmv_v_f_f32m8(float b,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.VectorModel.mp_fmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vsetvl_e32m8",
+      "formal_symbol": "__riscv_vsetvl_e32m8",
+      "view": "default",
+      "contract_source": "shim/rvv_memory_specs.h",
+      "contract_source_sha256": "19b0176aa1641ac509dc667d69bd662ee906bf1e35a2dd4b530d91fb1bb3942d",
+      "contract_sha256": "0e16f4504463be7ef6ea3360100828d25e6e10c748a0fd30666ce9af2a4e1795",
+      "signature": "size_t __riscv_vsetvl_e32m8(size_t avl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.Model.mp_vl_allowed",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "62cf3b70a6c86ea53caa5f4a1819dc803702645fb7caa5415a2cab6f3e13cb08"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_f32m8",
+      "formal_symbol": "__riscv_vle32_v_f32m8",
+      "view": "readonly_map",
+      "contract_source": "shim/rvv_memory_specs.h",
+      "contract_source_sha256": "19b0176aa1641ac509dc667d69bd662ee906bf1e35a2dd4b530d91fb1bb3942d",
+      "contract_sha256": "065edbce9433132a5d1f1e276d7e0edb161842e171921b22128974f46bffe8b8",
+      "signature": "vfloat32m8_t __riscv_vle32_v_f32m8(const float*p,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryModel.mp_data",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.VectorModel.mp_fmatch",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "067bccb3140c11bd505a278727b2bd7edd39ca09eea1a56a01c27d49c7eafcd7"
+        },
+        {
+          "constant": "MaxPool.MemoryViews.mp_load_lane",
+          "source": "proof/coq/MemoryViews.v",
+          "source_sha256": "78aeecb21fdd4ab54a3c0b72d62e27c9402dd2c1c0070ea2558c01955d07dd6b"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "memory_view": "readonly initializedmap exactbits; output Some exactbits/None arbitrary loadedvalue preserving thevalid undefcell; active result only observed"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_f32m8",
+      "formal_symbol": "__riscv_vle32_v_f32m8",
+      "view": "output_map",
+      "contract_source": "shim/rvv_memory_specs.h",
+      "contract_source_sha256": "19b0176aa1641ac509dc667d69bd662ee906bf1e35a2dd4b530d91fb1bb3942d",
+      "contract_sha256": "55066d4f2b609e33d0b46fae1d648b45ad0ea23307678d652b8196a0afd349ed",
+      "signature": "vfloat32m8_t __riscv_vle32_v_f32m8(const float*p,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.RvvMemoryModel.mp_active_loaded",
+          "source": "proof/coq/RvvMemoryModel.v",
+          "source_sha256": "47e7009fda32da645307c69f36769eaa1a4c8021b8271ebc4764cdf155e389eb"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_out",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "memory_view": "readonly initializedmap exactbits; output Some exactbits/None arbitrary loadedvalue preserving thevalid undefcell; active result only observed"
+    },
+    {
+      "intrinsic": "__riscv_vse32_v_f32m8",
+      "formal_symbol": "mp_rvv_store32_view",
+      "view": "default",
+      "contract_source": "shim/rvv_memory_specs.h",
+      "contract_source_sha256": "19b0176aa1641ac509dc667d69bd662ee906bf1e35a2dd4b530d91fb1bb3942d",
+      "contract_sha256": "2b119d4478aed3557d4165a91697be37c48a02ae2baf947fa9f7ddb4a4650c3e",
+      "signature": "void mp_rvv_store32_view(float*p,const vfloat32m8_t*a,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "MaxPool.MemoryModel.mp_out",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.PackModel.mp_pack32",
+          "source": "proof/coq/PackModel.v",
+          "source_sha256": "d2ad4d9bce261178f77739f3222ad4e88b3dd11a0ee9019ea5e17f270a2fc19e"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        },
+        {
+          "constant": "MaxPool.MemoryModel.mp_write_window",
+          "source": "proof/coq/MemoryModel.v",
+          "source_sha256": "f2755eea0c82def2163a62b1352b4b4d9294acd61ade475751ee845eda565636"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "borrowed input-object logical view of original ISA store, exact-once named-lvalue capture; not a new ordinary helper",
+      "review_status": "pending final source review",
+      "inactive_lanes": "unconstrained outside active prefix; no literalISA tailzero",
+      "isa": "RVV",
+      "official_primary": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "official_version": "RISC-V unprivileged v20260120; Vector1.0 andF2.2",
+      "lane_configuration": "VLEN128/e32m8/VLMAX32; UInt32m8 forinteger bitops, vbool4 mask forcomparison/merge",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions",
+      "adapter": {
+        "kind": "borrowed namedlvalue logicalinput view oforiginalISAstore",
+        "macro_exact_once": true,
+        "ordinary_C_body_implementation": false,
+        "ISA_ABI_representation_refinement_proved": false,
+        "source_guard": "formalstore macro capture &(namedinput) once; actual SDK calls andoperandorder retained inimpl/native, unknown value expressions rejected byannotationbuilder"
+      }
+    },
+    {
+      "intrinsic": "vreinterpretq_u32_f32",
+      "formal_symbol": "vreinterpretq_u32_f32",
+      "view": "default",
+      "contract_source": "shim/compare_intrinsic_specs.h",
+      "contract_source_sha256": "8448e3a882b5119af6c0faac475bff053ccf4a1d9c5781ef49c368407b4b5dfc",
+      "contract_sha256": "68b9cc27da8aa3260d9fb30ac6a8752c259689ea0755dd2ef2d6b429df396bb5",
+      "signature": "uint32x4_t vreinterpretq_u32_f32(float32x4_t a)",
+      "direct_coq_definitions": [
+        {
+          "constant": "SimpleC.SL.FloatLib.bits_of_fp32",
+          "external_source": "/tmp/qcp214-src/Rocq/SeparationLogic/FloatLib.v",
+          "source_sha256": "9b3a33c3d74f5b761add1b02c79440eb368e6bf822aca12e9a589665afc0e9a5",
+          "basis": "QCP exact bit conversion via Flocq Bits; three own Bits.v range/roundtrip lemmas checked independently"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    },
+    {
+      "intrinsic": "vgetq_lane_u32",
+      "formal_symbol": "vgetq_lane_u32",
+      "view": "default",
+      "contract_source": "shim/compare_intrinsic_specs.h",
+      "contract_source_sha256": "8448e3a882b5119af6c0faac475bff053ccf4a1d9c5781ef49c368407b4b5dfc",
+      "contract_sha256": "d9bb74f7314f74c49f7fbb4c474d4fb947c6768a888817a612c3b46b65d49f86",
+      "signature": "uint32_t vgetq_lane_u32(uint32x4_t a,int lane)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary",
+      "review_status": "pending final source review",
+      "inactive_lanes": "fixed NEON lanes; only written active output is observed",
+      "isa": "NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0; Arm2025-03 sharedpseudocode",
+      "lane_configuration": "fixed binary32x4/x2; uint32x4 forbitobserver; lane0 only forlane operations",
+      "rounding": "No finite arithmetic rounding in min/max selection, rawbitcopy, integer bitwise, loads/stores",
+      "mask": "allactive elements unmasked; merge usesbooleanmask; none of these masksprevents load/store memory access",
+      "NaN": "Raw bits retained bybitcopy/load/store; masks classify exponent/fraction integers, no floating selfcomparison; arithmetic outcomes given byexactbound Coqdefinitions"
+    }
+  ],
+  "ordinary_helpers_not_exempt": [
+    "mp_propagate_nan",
+    "mp_max_vv",
+    "mp_min_vv",
+    "mp_max_vf",
+    "mp_min_vf",
+    "mp_read_table",
+    "mp_assert",
+    "mp_output_bits_at",
+    "mp_same_output_at"
+  ],
+  "observation": "allFP32 exactbits at allwritten addresses; own unwritten frame retained; no orderedbounds premise",
+  "configurations": {
+    "Arm": {
+      "FPCR_DN": 0,
+      "FPCR_FZ": 0,
+      "FPCR_AH": 0,
+      "FP_traps": "disabled",
+      "observed": "binary32 valuebits only, no FPstatus flags"
+    },
+    "RVV": {
+      "VLEN_bits": 128,
+      "SEW_bits": 32,
+      "LMUL": 8,
+      "VLMAX": 32,
+      "vstart": 0,
+      "VL": "every legal stripmine choice permitted, not only maximal",
+      "inactive": "not constrained where ISA allows arbitrary tail bits; active initialized prefix only is observed",
+      "observed": "binary32 valuebits only, no FPstatus flags"
+    }
+  },
+  "source_review": {
+    "final_independent_review": "pending",
+    "ordinary_helpers_exempt": false,
+    "intrinsic_C_implementations_proved": false,
+    "ISA_ABI_compiler_refinement_proved": false,
+    "conditional_semantics": "fixed configurations and explicit valid-memory contracts as listed; mathematical proofs do not independently establish ISA specification fidelity"
+  }
+}

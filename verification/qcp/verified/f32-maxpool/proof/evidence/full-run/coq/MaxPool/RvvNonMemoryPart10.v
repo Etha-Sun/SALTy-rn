@@ -1,0 +1,25 @@
+From MaxPool Require Import RvvAutomation.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedPart.
+Lemma proof_of_test_rvv_safety_wit_11:MaxPool.rvv_unit_goal.test_rvv_safety_wit_11.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_safety_wit_11;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_safety_wit_43:MaxPool.rvv_unit_goal.test_rvv_safety_wit_43.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_safety_wit_43;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_13_pure:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_13_pure.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_13_pure;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_34:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_34.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_34;try left;mp_intro;mp_rvv_call_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_55_pure:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_55_pure.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_55_pure;try left;mp_intro;mp_rvv_pure. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_73:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_73.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_73;unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_73_aux;try left;mp_intro;mp_rvv_call_frame. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_95_pure:MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_95_pure.
+Proof. unfold MaxPool.rvv_unit_goal.test_rvv_partial_solve_wit_95_pure;try left;mp_intro;mp_rvv_pure. Qed.
+End CheckedPart.
+Print Assumptions CheckedPart.proof_of_test_rvv_safety_wit_11.
+Print Assumptions CheckedPart.proof_of_test_rvv_safety_wit_43.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_13_pure.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_34.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_55_pure.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_73.
+Print Assumptions CheckedPart.proof_of_test_rvv_partial_solve_wit_95_pure.
