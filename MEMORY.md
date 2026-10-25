@@ -1,5 +1,9 @@
 # QCP 工作记忆入口
 
+2026-10-24（洛杉矶，UTC 2026-10-25 06:27）：用户明确要求继续，当前账户实际额度 **0%**，已归档并解除旧97%收尾锁，恢复推进至少 **36/40**；半小时检查、严格超过95%收尾的规则保留。当前正式 **30/40**，新组件不增加计数。
+
+继续路线：Maxpool全案fresh门禁 → Argmax/QS8Mul/DWCHW实际主核；root新隔离候选x32-transposec参考Arcadia修复，并评估x32-packw旧布局证明的迁移。先证明普通适配器，再绑定主核；旧投影及已生成目标不算整核。详见根PROGRESS。
+
 2026-10-24 matrix worker交付：正式清单 **30/40**，新增[QD8-F32-QC4W GEMM](verification/qcp/verified/qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)，5实际C/1531字段、12策略、1610fresh模块及1567假设报告完整通过，32并发；仅14继承假设，无新公理。NEON原C、RVV NaN修复，45intrinsic spec人工语义审核pending。该worker按其用户最新要求完成已开工矩阵核后停止，不扩展新kernel；这不宣称其他owner的36目标完成。详细续接见包内CONTINUE_PROMPT.zh-CN.md；下文带日期的记录保留历史来源。
 
 2026-10-24 UTC16:38:51 实际额度97%，wind_down_requested=true。按用户条件收尾：停止新增kernel/验证/集成批次，保留现有效有限任务自然完成；仅归档终态，不自动续开下一步。当前正式29/40，目标36未达。恢复需先读 `.build/memory/STATE.json`、quota/state及各owner当前handoff；组件、私有目标和预检不能算整核。
