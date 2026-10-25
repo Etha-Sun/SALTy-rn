@@ -1,0 +1,34 @@
+{
+  "reviewed_utc": "2026-10-25T11:42:07.591161+00:00",
+  "status": "source review notes; complete per-call/hash ledger still pending",
+  "sources": [
+    {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "revision": "aef52c2",
+      "checks": [
+        "vld2q_dup_f32 maps to LD2R with result.val[0]/[1] and two four-lane S vectors",
+        "vfma_f32 and vfmaq_f32 map to FMLA with acc as destination/addend"
+      ]
+    },
+    {
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "revision": "20260120, V1.0",
+      "checks": [
+        "30.1.6.3 all allowed VL values, including balanced 32<n<64 case",
+        "30.1.13.6 scalar/vector fused multiply-accumulate operand order",
+        "30.1.3.4.3 tail-agnostic values may be old values or all ones; active-prefix abstraction deliberately leaves inactive fields unrestricted"
+      ]
+    }
+  ],
+  "configuration": {
+    "NEON": "AArch64/RNE/no flush; FP exceptions, NaN payload/sign and signaling identity unobserved",
+    "RVV": "VLEN128 SEW32 LMUL8 VLMAX32, vstart0/RNE/no flush, all legal VL choices; modeled inactive values unconstrained"
+  },
+  "trust_boundary": "Public intrinsic-spec model with source review. No formal ISA/ABI correspondence; canonical NaN models support declared numeric-or-both-NaN observation only. New vector methods do not claim C-body credit.",
+  "parameter_tuple_memory_view": {
+    "contract": "shim/neon-intrinsics.h:vld2q_dup_f32",
+    "field_view": "typed min/max cells of scalar_bounds, owner binding to the actual params pointer; no new kernel input premise",
+    "evidence": "proof/evidence/params-layout/result.json",
+    "scope": "source-reviewed memory interpretation for the only actual call; formal ABI correspondence remains unproved"
+  }
+}

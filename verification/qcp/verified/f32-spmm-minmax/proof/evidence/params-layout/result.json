@@ -1,0 +1,59 @@
+{
+  "configured_jobs": 32,
+  "checks": [
+    {
+      "name": "gcc-native",
+      "exit": 0,
+      "command": [
+        "gcc",
+        "-std=c11",
+        "-ffreestanding",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax",
+        "-fsyntax-only",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/proof/evidence/params-layout/layout.c"
+      ],
+      "launcher": "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/params-layout01/gcc-native exit=0\n"
+    },
+    {
+      "name": "clang-aarch64",
+      "exit": 0,
+      "command": [
+        "clang",
+        "-D__builtin_prefetch=qcp_layout_only_prefetch",
+        "--target=aarch64-none-elf",
+        "-std=c11",
+        "-ffreestanding",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax",
+        "-fsyntax-only",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/proof/evidence/params-layout/layout.c"
+      ],
+      "launcher": "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/params-layout02/clang-aarch64 exit=0\n",
+      "adaptation": "Only unrelated builtin prefetch declaration renamed for this compiler layout diagnostic; all struct declarations unchanged. Initial incompatible builtin declaration recorded, not a layout failure."
+    }
+  ],
+  "source_sha256": "631fbf6e7763c2b3f9a45381b470a0430b64e002c4eaaa52213546549d56b5e1",
+  "types_sha256": "260201ef5f7667c1a19e8205289bb547e42e3d44f6a0bacf4adaad9a7360d20e",
+  "scope": "compiler layout checks and official-source review, not a formal ABI theorem",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/ARM-software/abi-aa/2025Q1/aapcs64/aapcs64.rst",
+      "sections": [
+        "5.1 Fundamental data types",
+        "5.10.1 Aggregates",
+        "5.10.5 Homogeneous aggregates"
+      ],
+      "deduction": "float min,max have offsets0,4 and params.size8 under this declared C type"
+    },
+    {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "revision": "aef52c2",
+      "intrinsic": "vld2q_dup_f32",
+      "operation": "LD2R {Vt.4S-Vt2.4S}"
+    }
+  ],
+  "passed": true
+}

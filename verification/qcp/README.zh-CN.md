@@ -1,11 +1,11 @@
-当前完整通过 **33/40**，目标 **40/40**。最新Maxpool实际857C字段及统一fresh门禁通过；外部QS8-QC8W GEMM归属单列。完整清单见 [verified/manifest.json](verified/manifest.json)。
+当前完整通过 **34/40**，目标 **40/40**。最新 [F32 SpMM](verified/f32-spmm-minmax/README.zh-CN.md) 完整准入通过；Maxpool 与 QS8-QC8W GEMM 的既有成果及作者归属保留。完整清单见 [verified/manifest.json](verified/manifest.json)。
 
 2026-10-23 用户更新：intrinsic 不再强制提供 C implementation/body 证明，可直接采用与原始规范对应、公开定义并逐项登记的 spec；完整 kernel 证明和最终人工 spec 审核保留。详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。下文早期 body 必选要求仅保留历史含义，已发布证据不改写。
 
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
-当前 **32/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
-最新收录 [QD8-F32-QC4W GEMM](verified/qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)；此前收录 [QU8 加法修复版](verified/qu8-vadd-minmax/README.md) 与 [QD8 QC8W IGEMM](verified/qd8-f32-qc8w-igemm-minmax/README.md)。完整 C-shim 门禁及发布证据已核对；具体输入域、repair 和 intrinsic spec 信任边界见各案说明。
+当前 **34/40**（清单见下方 manifest；公开契约下的 C-shim 模块化部分正确性）。
+最新收录 [F32 SpMM](verified/f32-spmm-minmax/README.zh-CN.md)；此前收录 [QD8-F32-QC4W GEMM](verified/qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)；此前收录 [QU8 加法修复版](verified/qu8-vadd-minmax/README.md) 与 [QD8 QC8W IGEMM](verified/qd8-f32-qc8w-igemm-minmax/README.md)。完整 C-shim 门禁及发布证据已核对；具体输入域、repair 和 intrinsic spec 信任边界见各案说明。
 已通过的 case 统一放在 [verified/](verified/README.zh-CN.md)，机器清单见 [verified/manifest.json](verified/manifest.json)。其余候选位于 `candidates/`。
 原始 [VCMUL](verified/f32-vcmul/README.md) 、[VMIN修复版](verified/f32-vmin/README.zh-CN.md) 和 [VMAX修复版](verified/f32-vmax/README.zh-CN.md) 的完整 C/helper/caller 门禁、归档和发布身份检查均已通过。
 
@@ -172,3 +172,5 @@ python3 verification/qcp/tools/generate_review.py
 QD8-F32-QC4W GEMM完整准入并收录，见[证明与重放入口](verified/qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)。本matrix worker已完成用户指定的已开工矩阵核，停止扩展；其他owner的历史目标和任务状态分别保留。
 
 2026-10-25 QS8-QC8W GEMM FP32完整修复版：4实际C/1531义务/16策略/3051同环境fresh模块（续跑谱系明确）/1874假设报告，递归coqchk及32并发准入通过。原NEON保持，RVV恢复ARM NaN优先级；公开容量内正N/K，全binary32参数，固定VLEN128，精确int8输出。intrinsic语义人工复核pending，无形式ISA/ABI或完整终止性定理。 [审核入口](verified/qs8-qc8w-gemm-minmax-fp32/README.zh-CN.md)。
+
+2026-10-25 F32 SpMM完整修复/兼容版：4实际C/788义务/19策略/835同环境fresh模块/956假设报告，递归coqchk及32并发准入通过。完整M/N/稀疏循环、NEON4/2/1与全部合法RVV VL；全binary32，循环打包与显式容量，固定VLEN128/e32m8，数值相等或同为NaN。原件保留，两侧表达式兼容改写，RVV另修复FMA/NaN。intrinsic人工语义审阅pending，无形式ISA/ABI或完整终止性定理。 [审核入口](verified/f32-spmm-minmax/README.zh-CN.md)。

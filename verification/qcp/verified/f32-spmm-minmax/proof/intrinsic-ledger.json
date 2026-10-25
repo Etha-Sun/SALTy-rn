@@ -1,0 +1,1356 @@
+{
+  "schema": 1,
+  "kernel": "f32-spmm-minmax",
+  "basis": "source-reviewed intrinsic specs; full actual C kernel/ordinary-helper/caller proof remains required",
+  "reviewer": "assistant source review; final human semantic review pending",
+  "reviewed_utc": "2026-10-25T13:11:02.114524+00:00",
+  "configuration": {
+    "pointer_bits": 64,
+    "endian": "little",
+    "NEON": "AArch64 RNE FZ0 AH0; NaN policy abstracted under documented output observation",
+    "RVV": {
+      "VLEN_bits": 128,
+      "ELEN_minimum": 32,
+      "SEW": 32,
+      "LMUL": 8,
+      "VLMAX": 32,
+      "modeled_slots": 32,
+      "VL": "all legal choices,1..32, including balanced case",
+      "vstart": 0,
+      "rounding": "RNE/no FTZ",
+      "tail": "unconstrained inactive values; never required to be zero",
+      "VXRM": "unused"
+    },
+    "domain": "all binary32, including NaNs/infinities/zeros/subnormals and unordered clamp bounds; positiveM/N and public cyclic packing/capacity contract",
+    "observation": "numeric equality or both NaN; payload,sign,quieting,flags unobserved; original sparse accumulation order retained"
+  },
+  "memory_backend": {
+    "qualified_name": "SimpleC.SL.ArrayLib.FloatArray",
+    "toolchain_path": "Rocq/SeparationLogic/ArrayLib.v",
+    "sha256": "895f719273a28b5a8ab2834c0a31aaa8c58ccc16b8905727a080edd369ee87f0",
+    "definition_core": "Rocq/SeparationLogic/ArrayLibCore.v",
+    "core_sha256": "1b0ce087d5d788c370e54a000e9761831ec8120f84de6432a482fd6edd294cd0",
+    "interpretation": "typed binary32 cells; exact active read/write ranges; input/output separation and external frame explicit"
+  },
+  "abstraction_proofs": [
+    {
+      "path": "proof/coq/SpmmSpec/Observation.v",
+      "sha256": "1f9104499ca2c9a2a0a53f6cd632926ce1732f8cb853f69af25533b3b4f1abba"
+    },
+    {
+      "path": "proof/coq/SpmmSpec/VectorFacts.v",
+      "sha256": "75e74b0fa00c34696540329f848b2a74523ace1f7ad632ef18f5e41344ae22d0"
+    },
+    {
+      "path": "proof/coq/F32Admission/Boundary.v",
+      "sha256": "a4700856f455b5c611110d7064a8939bfb2e5afed6e139c251788415b29615d7"
+    }
+  ],
+  "parameter_layout_evidence": "proof/evidence/params-layout/result.json",
+  "entries": [
+    {
+      "intrinsic": "vld2q_dup_f32",
+      "ISA": "NEON",
+      "call_symbol": "vld2q_dup_f32",
+      "C_signature": "float32x4x2_t vld2q_dup_f32(const float*p)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 8,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "4a5f0e482abf7a89c0a24f8870560e0f149ede70849bdf6332c03d2a71c89233",
+        "text": "/*@ With (owner:Z) (lo:fp32) (hi:fp32)\n Require p==field_addr(field_addr(owner,xnn_f32_minmax_params,scalar),scalar_bounds,min) && store(field_addr(field_addr(owner,xnn_f32_minmax_params,scalar),scalar_bounds,min),float,lo) * store(field_addr(field_addr(owner,xnn_f32_minmax_params,scalar),scalar_bounds,max),float,hi)\n Ensure store(field_addr(field_addr(owner,xnn_f32_minmax_params,scalar),scalar_bounds,min),float,lo) * store(field_addr(field_addr(owner,xnn_f32_minmax_params,scalar),scalar_bounds,max),float,hi) * StructPredfloat32x4x2_t(&(__return),tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.TupleMemory.StructPredfloat32x4x2_t",
+          "path": "proof/coq/SpmmSpec/TupleMemory.v",
+          "line": 42,
+          "sha256": "dd1dee7b5240bb3c49d7e6b06451b54277d915d987d5657c2a55cfbccfdb76fb"
+        },
+        {
+          "qualified_name": "SpmmSpec.TupleMemory.Recordfloat32x4x2_t",
+          "path": "proof/coq/SpmmSpec/TupleMemory.v",
+          "line": 12,
+          "sha256": "dd1dee7b5240bb3c49d7e6b06451b54277d915d987d5657c2a55cfbccfdb76fb"
+        },
+        {
+          "qualified_name": "SpmmSpec.TupleMemory.Recordfloat32x4_t",
+          "path": "proof/coq/SpmmSpec/TupleMemory.v",
+          "line": 11,
+          "sha256": "dd1dee7b5240bb3c49d7e6b06451b54277d915d987d5657c2a55cfbccfdb76fb"
+        }
+      ],
+      "reviewed_value_semantics": "read two adjacent min/max parameter fields; broadcast each into its four-lane tuple component",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        },
+        {
+          "url": "https://raw.githubusercontent.com/ARM-software/abi-aa/2025Q1/aapcs64/aapcs64.rst",
+          "version": "2025Q1",
+          "section": "fundamental float size/alignment and aggregate layout"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 26,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vld1q_f32",
+      "ISA": "NEON",
+      "call_symbol": "vld1q_f32",
+      "C_signature": "float32x4_t vld1q_f32(const float*p)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 12,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "255ef8902bd280477d5c7c993f98ea9ab78d04dda0a006e40457a08642ceaf8d",
+        "text": "/*@ With (base:Z) (len:Z) (j:Z) (L:list fp32)\n Require p==pointer_offset(base,j,float) && 0<=j && j+4<=len && FloatArray::full(base,len,L)\n Ensure FloatArray::full(base,len,L) * store(&(__return.s0),float,spmm_get(j+0,L)) * store(&(__return.s1),float,spmm_get(j+1,L)) * store(&(__return.s2),float,spmm_get(j+2,L)) * store(&(__return.s3),float,spmm_get(j+3,L)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_get",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 7,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "read four binary32 cells; preserve source array and frame",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 47,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vld1q_dup_f32",
+      "ISA": "NEON",
+      "call_symbol": "vld1q_dup_f32",
+      "C_signature": "float32x4_t vld1q_dup_f32(const float*p)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 16,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "93ceb80a540b4f9cdecd8c092b637339e5284c23bb7071a98889e8ec1af62931",
+        "text": "/*@ With (base:Z) (len:Z) (j:Z) (L:list fp32)\n Require p==pointer_offset(base,j,float) && 0<=j && j+1<=len && FloatArray::full(base,len,L)\n Ensure FloatArray::full(base,len,L) * store(&(__return.s0),float,spmm_get(j+0,L)) * store(&(__return.s1),float,spmm_get(j+0,L)) * store(&(__return.s2),float,spmm_get(j+0,L)) * store(&(__return.s3),float,spmm_get(j+0,L)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_get",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 7,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "read one binary32 cell and broadcast to four lanes",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 43,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 50,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vfmaq_f32",
+      "ISA": "NEON",
+      "call_symbol": "vfmaq_f32",
+      "C_signature": "float32x4_t vfmaq_f32(float32x4_t acc,float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 20,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "de96feaa895752595a22ea09753febc4202b0fbcd54432e0dd7a281ca8ca9e65",
+        "text": "/*@ With (z0:fp32) (z1:fp32) (z2:fp32) (z3:fp32) (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(acc.s0),float,z0) * store(&(acc.s1),float,z1) * store(&(acc.s2),float,z2) * store(&(acc.s3),float,z3) * store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fma_rne(x0,y0,z0)) * store(&(__return.s1),float,fma_rne(x1,y1,z1)) * store(&(__return.s2),float,fma_rne(x2,y2,z2)) * store(&(__return.s3),float,fma_rne(x3,y3,z3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        }
+      ],
+      "reviewed_value_semantics": "four independent single-rounding fma(a,b,acc), no reassociation",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 52,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vminq_f32",
+      "ISA": "NEON",
+      "call_symbol": "vminq_f32",
+      "C_signature": "float32x4_t vminq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 24,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "20de05f25e68f5d82dbf314c64eece1cd6795bfca2e9f144b70c66da199c4d1e",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_neon_min(x0,y0)) * store(&(__return.s1),float,fp32_neon_min(x1,y1)) * store(&(__return.s2),float,fp32_neon_min(x2,y2)) * store(&(__return.s3),float,fp32_neon_min(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_min",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 28,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "NaN-propagating minimum, negative-zero minimum",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 56,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vmaxq_f32",
+      "ISA": "NEON",
+      "call_symbol": "vmaxq_f32",
+      "C_signature": "float32x4_t vmaxq_f32(float32x4_t a,float32x4_t b)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 28,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "da653fe4bc3051065bba5a4cef0ee13b6206b63866745e466c3b376190837aa5",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3)\n Ensure store(&(__return.s0),float,fp32_neon_max(x0,y0)) * store(&(__return.s1),float,fp32_neon_max(x1,y1)) * store(&(__return.s2),float,fp32_neon_max(x2,y2)) * store(&(__return.s3),float,fp32_neon_max(x3,y3)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_max",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 31,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "NaN-propagating maximum, positive-zero maximum",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 57,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vst1q_f32",
+      "ISA": "NEON",
+      "call_symbol": "qcp_vst1q_f32",
+      "C_signature": "void qcp_vst1q_f32(float*p,const float32x4_t*a)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 32,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "2b3a1cb46304e166a17a06eca72d09ed6c77851c7e1f92c65d81962fd5283616",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32)\n Require store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * FloatArray::undef_full(p,4)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * FloatArray::full(p,4,cons(x0,cons(x1,cons(x2,cons(x3,nil))))) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "write four lanes to four owned consecutive output cells",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "Macro borrows local vector lvalues; each source argument evaluated once. Only these actual side-effect-free lvalues supported; self-compare requires equal pointers and one owner.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 58,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vld1_f32",
+      "ISA": "NEON",
+      "call_symbol": "vld1_f32",
+      "C_signature": "float32x2_t vld1_f32(const float*p)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 37,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "ec43ff2e89d51dd4d67448b565b9bbf2690720840a051d90004218e65feab2f4",
+        "text": "/*@ With (base:Z) (len:Z) (j:Z) (L:list fp32)\n Require p==pointer_offset(base,j,float) && 0<=j && j+2<=len && FloatArray::full(base,len,L)\n Ensure FloatArray::full(base,len,L) * store(&(__return.s0),float,spmm_get(j+0,L)) * store(&(__return.s1),float,spmm_get(j+1,L)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_get",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 7,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "read two binary32 cells; preserve source array and frame",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 79,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vld1_dup_f32",
+      "ISA": "NEON",
+      "call_symbol": "vld1_dup_f32",
+      "C_signature": "float32x2_t vld1_dup_f32(const float*p)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 41,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "cff5ed8473034c62f788a071563a26fe6a1bf9f6412d824a671a8eb2cd496ff5",
+        "text": "/*@ With (base:Z) (len:Z) (j:Z) (L:list fp32)\n Require p==pointer_offset(base,j,float) && 0<=j && j+1<=len && FloatArray::full(base,len,L)\n Ensure FloatArray::full(base,len,L) * store(&(__return.s0),float,spmm_get(j+0,L)) * store(&(__return.s1),float,spmm_get(j+0,L)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_get",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 7,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "read one binary32 cell and broadcast to two lanes",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 75,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 81,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 103,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 107,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 109,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vfma_f32",
+      "ISA": "NEON",
+      "call_symbol": "vfma_f32",
+      "C_signature": "float32x2_t vfma_f32(float32x2_t acc,float32x2_t a,float32x2_t b)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 45,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "4e45ad3aa1d9ffcd2ea95d22eda4ee9d5743892125fb2c413f9beafc557102c4",
+        "text": "/*@ With (z0:fp32) (z1:fp32) (x0:fp32) (x1:fp32) (y0:fp32) (y1:fp32)\n Require store(&(acc.s0),float,z0) * store(&(acc.s1),float,z1) * store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1)\n Ensure store(&(__return.s0),float,fma_rne(x0,y0,z0)) * store(&(__return.s1),float,fma_rne(x1,y1,z1)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        }
+      ],
+      "reviewed_value_semantics": "two independent single-rounding fma(a,b,acc), no reassociation",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 82,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 110,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vmin_f32",
+      "ISA": "NEON",
+      "call_symbol": "vmin_f32",
+      "C_signature": "float32x2_t vmin_f32(float32x2_t a,float32x2_t b)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 49,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "35f61573d19743263ce9d81b9df2a1dc03791909a510842d25aa769e82bcd99d",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (y0:fp32) (y1:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1)\n Ensure store(&(__return.s0),float,fp32_neon_min(x0,y0)) * store(&(__return.s1),float,fp32_neon_min(x1,y1)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_min",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 28,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "NaN-propagating minimum, negative-zero minimum",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 86,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 114,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vmax_f32",
+      "ISA": "NEON",
+      "call_symbol": "vmax_f32",
+      "C_signature": "float32x2_t vmax_f32(float32x2_t a,float32x2_t b)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 53,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "3d8cecea2bbb9a20bdb391a9f65545f4e1400136831939fa1d14af6203b82be0",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (y0:fp32) (y1:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1)\n Ensure store(&(__return.s0),float,fp32_neon_max(x0,y0)) * store(&(__return.s1),float,fp32_neon_max(x1,y1)) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_neon_max",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 31,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        }
+      ],
+      "reviewed_value_semantics": "NaN-propagating maximum, positive-zero maximum",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 87,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 115,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vst1_f32",
+      "ISA": "NEON",
+      "call_symbol": "qcp_vst1_f32",
+      "C_signature": "void qcp_vst1_f32(float*p,const float32x2_t*a)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 57,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "9e1f0ae6186d13eb61e2f80554dfd2c95632b8fc7cf62a5cb630d263b36c50ae",
+        "text": "/*@ With (x0:fp32) (x1:fp32)\n Require store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * FloatArray::undef_full(p,2)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * FloatArray::full(p,2,cons(x0,cons(x1,nil))) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "write two lanes to two owned consecutive output cells",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "Macro borrows local vector lvalues; each source argument evaluated once. Only these actual side-effect-free lvalues supported; self-compare requires equal pointers and one owner.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 88,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vget_low_f32",
+      "ISA": "NEON",
+      "call_symbol": "vget_low_f32",
+      "C_signature": "float32x2_t vget_low_f32(float32x4_t a)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 62,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "d4989b3e59320b90381c2ebd9ed21544121a11baac793e86766bd1d558152d03",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32)\n Require store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3)\n Ensure store(&(__return.s0),float,x0) * store(&(__return.s1),float,x1) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "copy lanes0/1 of four-lane input into two-lane result",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 86,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 87,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 114,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        },
+        {
+          "path": "impl/testNEON.c",
+          "line": 115,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "vst1_lane_f32",
+      "ISA": "NEON",
+      "call_symbol": "qcp_vst1_lane_f32",
+      "C_signature": "void qcp_vst1_lane_f32(float*p,const float32x2_t*a,int lane)",
+      "contract": {
+        "path": "shim/neon-intrinsics.h",
+        "line": 66,
+        "file_sha256": "8717d42565640100b161e7ad43035b1e70e464972d73420d7d29dab4a4e0e8c0",
+        "signature_and_contract_sha256": "5352a272223db577c660c5574c9012fd66c457182479a1402ab8bf9f604c8ffc",
+        "text": "/*@ With (x0:fp32) (x1:fp32)\n Require lane==0 && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * FloatArray::undef_full(p,1)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * FloatArray::full(p,1,cons(x0,nil)) */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "only lane0 is used and permitted; write one owned output cell",
+      "official_sources": [
+        {
+          "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+          "version": "aef52c2",
+          "section": "exact intrinsic spelling and AArch64 instruction/lane mapping"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "Macro borrows local vector lvalues; each source argument evaluated once. Only these actual side-effect-free lvalues supported; self-compare requires equal pointers and one owner.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testNEON.c",
+          "line": 116,
+          "sha256": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vsetvl_e32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vsetvl_e32m8",
+      "C_signature": "size_t __riscv_vsetvl_e32m8(size_t n)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 4,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "96f4b19a05eaf8c983317e745aa2094e90aee714749daab2b2813316a20022a2",
+        "text": "/*@ Require 1<=n && emp\n Ensure spmm_vl_allowed(n,__return) && emp */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_vl_allowed",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 12,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "all legal positive VL choices for VLMAX32, including balanced choices",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 22,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__builtin_nanf",
+      "ISA": "compiler builtin",
+      "call_symbol": "qcp_nanf",
+      "C_signature": "float qcp_nanf(void)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 7,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "701fe9341d238fb7ea5055cf2cc5e954e3ff2c08e2c35c80e0b812a783f2e1a3",
+        "text": "/*@ Require emp\n Ensure bit_same(__return,canonical_qnan) && emp */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.canonical_qnan",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 9,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "GemmSpec.FmaModel.bit_same",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 11,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        }
+      ],
+      "reviewed_value_semantics": "quiet-NaN representative for empty literal payload; output ignores payload/sign/quieting/flags",
+      "official_sources": [
+        {
+          "url": "https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Other-Builtins.html",
+          "version": "12.1.0",
+          "section": "__builtin_nanf and __builtin_prefetch"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "Only __builtin_nanf(\"\") occurs; constant literal has no side effects. Macro selects canonical quiet-NaN representative.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 48,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 52,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 55,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 59,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vle32_v_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vle32_v_f32m8(const float*p,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 11,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "185c2db9fd18aedb10d67d3d32dbeab138fe7302c62985713e0c2b0c73359693",
+        "text": "/*@ With (base:Z) (len:Z) (j:Z) (L:list fp32)\n Require 1<=vl && vl<=32 && p==pointer_offset(base,j,float) && 0<=j && j+vl<=len && FloatArray::full(base,len,L)\n Ensure exists z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31, spmm_active32(vl,z0,z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16,z17,z18,z19,z20,z21,z22,z23,z24,z25,z26,z27,z28,z29,z30,z31,spmm_get(j+0,L),spmm_get(j+1,L),spmm_get(j+2,L),spmm_get(j+3,L),spmm_get(j+4,L),spmm_get(j+5,L),spmm_get(j+6,L),spmm_get(j+7,L),spmm_get(j+8,L),spmm_get(j+9,L),spmm_get(j+10,L),spmm_get(j+11,L),spmm_get(j+12,L),spmm_get(j+13,L),spmm_get(j+14,L),spmm_get(j+15,L),spmm_get(j+16,L),spmm_get(j+17,L),spmm_get(j+18,L),spmm_get(j+19,L),spmm_get(j+20,L),spmm_get(j+21,L),spmm_get(j+22,L),spmm_get(j+23,L),spmm_get(j+24,L),spmm_get(j+25,L),spmm_get(j+26,L),spmm_get(j+27,L),spmm_get(j+28,L),spmm_get(j+29,L),spmm_get(j+30,L),spmm_get(j+31,L)) && store(&(__return.s0),float,z0) * store(&(__return.s1),float,z1) * store(&(__return.s2),float,z2) * store(&(__return.s3),float,z3) * store(&(__return.s4),float,z4) * store(&(__return.s5),float,z5) * store(&(__return.s6),float,z6) * store(&(__return.s7),float,z7) * store(&(__return.s8),float,z8) * store(&(__return.s9),float,z9) * store(&(__return.s10),float,z10) * store(&(__return.s11),float,z11) * store(&(__return.s12),float,z12) * store(&(__return.s13),float,z13) * store(&(__return.s14),float,z14) * store(&(__return.s15),float,z15) * store(&(__return.s16),float,z16) * store(&(__return.s17),float,z17) * store(&(__return.s18),float,z18) * store(&(__return.s19),float,z19) * store(&(__return.s20),float,z20) * store(&(__return.s21),float,z21) * store(&(__return.s22),float,z22) * store(&(__return.s23),float,z23) * store(&(__return.s24),float,z24) * store(&(__return.s25),float,z25) * store(&(__return.s26),float,z26) * store(&(__return.s27),float,z27) * store(&(__return.s28),float,z28) * store(&(__return.s29),float,z29) * store(&(__return.s30),float,z30) * store(&(__return.s31),float,z31) * FloatArray::full(base,len,L) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_get",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 7,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "read exactly VL contiguous cells; active values preserved; inactive fields unconstrained",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 37,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vfmv_v_f_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vfmv_v_f_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmv_v_f_f32m8(float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 15,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "9961ac627a7f54e35524a05e8093c7d6f74f3ec37685d52b3badfc15d85f2fe2",
+        "text": "/*@ Require 1<=vl && vl<=32 && emp\n Ensure exists z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31, spmm_active32(vl,z0,z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16,z17,z18,z19,z20,z21,z22,z23,z24,z25,z26,z27,z28,z29,z30,z31,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar,scalar) && store(&(__return.s0),float,z0) * store(&(__return.s1),float,z1) * store(&(__return.s2),float,z2) * store(&(__return.s3),float,z3) * store(&(__return.s4),float,z4) * store(&(__return.s5),float,z5) * store(&(__return.s6),float,z6) * store(&(__return.s7),float,z7) * store(&(__return.s8),float,z8) * store(&(__return.s9),float,z9) * store(&(__return.s10),float,z10) * store(&(__return.s11),float,z11) * store(&(__return.s12),float,z12) * store(&(__return.s13),float,z13) * store(&(__return.s14),float,z14) * store(&(__return.s15),float,z15) * store(&(__return.s16),float,z16) * store(&(__return.s17),float,z17) * store(&(__return.s18),float,z18) * store(&(__return.s19),float,z19) * store(&(__return.s20),float,z20) * store(&(__return.s21),float,z21) * store(&(__return.s22),float,z22) * store(&(__return.s23),float,z23) * store(&(__return.s24),float,z24) * store(&(__return.s25),float,z25) * store(&(__return.s26),float,z26) * store(&(__return.s27),float,z27) * store(&(__return.s28),float,z28) * store(&(__return.s29),float,z29) * store(&(__return.s30),float,z30) * store(&(__return.s31),float,z31) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "broadcast scalar to active lanes",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 33,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 48,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 55,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vfmacc_vf_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vfmacc_vf_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmacc_vf_f32m8(vfloat32m8_t a,float scalar,vfloat32m8_t b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 18,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "cb0db206918067a7988fae8eb7ec17b20fc81fa8fdd7c97e6cf876584c7a0bb9",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32) (y0:fp32) (y1:fp32) (y2:fp32) (y3:fp32) (y4:fp32) (y5:fp32) (y6:fp32) (y7:fp32) (y8:fp32) (y9:fp32) (y10:fp32) (y11:fp32) (y12:fp32) (y13:fp32) (y14:fp32) (y15:fp32) (y16:fp32) (y17:fp32) (y18:fp32) (y19:fp32) (y20:fp32) (y21:fp32) (y22:fp32) (y23:fp32) (y24:fp32) (y25:fp32) (y26:fp32) (y27:fp32) (y28:fp32) (y29:fp32) (y30:fp32) (y31:fp32)\n Require 1<=vl && vl<=32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31) * store(&(b.s0),float,y0) * store(&(b.s1),float,y1) * store(&(b.s2),float,y2) * store(&(b.s3),float,y3) * store(&(b.s4),float,y4) * store(&(b.s5),float,y5) * store(&(b.s6),float,y6) * store(&(b.s7),float,y7) * store(&(b.s8),float,y8) * store(&(b.s9),float,y9) * store(&(b.s10),float,y10) * store(&(b.s11),float,y11) * store(&(b.s12),float,y12) * store(&(b.s13),float,y13) * store(&(b.s14),float,y14) * store(&(b.s15),float,y15) * store(&(b.s16),float,y16) * store(&(b.s17),float,y17) * store(&(b.s18),float,y18) * store(&(b.s19),float,y19) * store(&(b.s20),float,y20) * store(&(b.s21),float,y21) * store(&(b.s22),float,y22) * store(&(b.s23),float,y23) * store(&(b.s24),float,y24) * store(&(b.s25),float,y25) * store(&(b.s26),float,y26) * store(&(b.s27),float,y27) * store(&(b.s28),float,y28) * store(&(b.s29),float,y29) * store(&(b.s30),float,y30) * store(&(b.s31),float,y31)\n Ensure exists z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31, spmm_active32(vl,z0,z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16,z17,z18,z19,z20,z21,z22,z23,z24,z25,z26,z27,z28,z29,z30,z31,fma_rne(scalar,y0,x0),fma_rne(scalar,y1,x1),fma_rne(scalar,y2,x2),fma_rne(scalar,y3,x3),fma_rne(scalar,y4,x4),fma_rne(scalar,y5,x5),fma_rne(scalar,y6,x6),fma_rne(scalar,y7,x7),fma_rne(scalar,y8,x8),fma_rne(scalar,y9,x9),fma_rne(scalar,y10,x10),fma_rne(scalar,y11,x11),fma_rne(scalar,y12,x12),fma_rne(scalar,y13,x13),fma_rne(scalar,y14,x14),fma_rne(scalar,y15,x15),fma_rne(scalar,y16,x16),fma_rne(scalar,y17,x17),fma_rne(scalar,y18,x18),fma_rne(scalar,y19,x19),fma_rne(scalar,y20,x20),fma_rne(scalar,y21,x21),fma_rne(scalar,y22,x22),fma_rne(scalar,y23,x23),fma_rne(scalar,y24,x24),fma_rne(scalar,y25,x25),fma_rne(scalar,y26,x26),fma_rne(scalar,y27,x27),fma_rne(scalar,y28,x28),fma_rne(scalar,y29,x29),fma_rne(scalar,y30,x30),fma_rne(scalar,y31,x31)) && store(&(__return.s0),float,z0) * store(&(__return.s1),float,z1) * store(&(__return.s2),float,z2) * store(&(__return.s3),float,z3) * store(&(__return.s4),float,z4) * store(&(__return.s5),float,z5) * store(&(__return.s6),float,z6) * store(&(__return.s7),float,z7) * store(&(__return.s8),float,z8) * store(&(__return.s9),float,z9) * store(&(__return.s10),float,z10) * store(&(__return.s11),float,z11) * store(&(__return.s12),float,z12) * store(&(__return.s13),float,z13) * store(&(__return.s14),float,z14) * store(&(__return.s15),float,z15) * store(&(__return.s16),float,z16) * store(&(__return.s17),float,z17) * store(&(__return.s18),float,z18) * store(&(__return.s19),float,z19) * store(&(__return.s20),float,z20) * store(&(__return.s21),float,z21) * store(&(__return.s22),float,z22) * store(&(__return.s23),float,z23) * store(&(__return.s24),float,z24) * store(&(__return.s25),float,z25) * store(&(__return.s26),float,z26) * store(&(__return.s27),float,z27) * store(&(__return.s28),float,z28) * store(&(__return.s29),float,z29) * store(&(__return.s30),float,z30) * store(&(__return.s31),float,z31) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.FmaModel.fma_rne",
+          "path": "proof/coq/GemmSpec/FmaModel.v",
+          "line": 8,
+          "sha256": "0ea0d05ea83bc1425551fc967f15f73cb2c5520df1a3abe63e6f2f6a78fc1153"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "active fma(scalar,source,accumulator), single rounding",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 41,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vfmin_vf_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vfmin_vf_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmin_vf_f32m8(vfloat32m8_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 22,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "2f739ebc5cf96d83cf4f6ebfe9363f6a6c92d92e016f9d75db09de645327f8a2",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32)\n Require 1<=vl && vl<=32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31)\n Ensure exists z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31, spmm_active32(vl,z0,z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16,z17,z18,z19,z20,z21,z22,z23,z24,z25,z26,z27,z28,z29,z30,z31,fp32_min_number(x0,scalar),fp32_min_number(x1,scalar),fp32_min_number(x2,scalar),fp32_min_number(x3,scalar),fp32_min_number(x4,scalar),fp32_min_number(x5,scalar),fp32_min_number(x6,scalar),fp32_min_number(x7,scalar),fp32_min_number(x8,scalar),fp32_min_number(x9,scalar),fp32_min_number(x10,scalar),fp32_min_number(x11,scalar),fp32_min_number(x12,scalar),fp32_min_number(x13,scalar),fp32_min_number(x14,scalar),fp32_min_number(x15,scalar),fp32_min_number(x16,scalar),fp32_min_number(x17,scalar),fp32_min_number(x18,scalar),fp32_min_number(x19,scalar),fp32_min_number(x20,scalar),fp32_min_number(x21,scalar),fp32_min_number(x22,scalar),fp32_min_number(x23,scalar),fp32_min_number(x24,scalar),fp32_min_number(x25,scalar),fp32_min_number(x26,scalar),fp32_min_number(x27,scalar),fp32_min_number(x28,scalar),fp32_min_number(x29,scalar),fp32_min_number(x30,scalar),fp32_min_number(x31,scalar)) && store(&(__return.s0),float,z0) * store(&(__return.s1),float,z1) * store(&(__return.s2),float,z2) * store(&(__return.s3),float,z3) * store(&(__return.s4),float,z4) * store(&(__return.s5),float,z5) * store(&(__return.s6),float,z6) * store(&(__return.s7),float,z7) * store(&(__return.s8),float,z8) * store(&(__return.s9),float,z9) * store(&(__return.s10),float,z10) * store(&(__return.s11),float,z11) * store(&(__return.s12),float,z12) * store(&(__return.s13),float,z13) * store(&(__return.s14),float,z14) * store(&(__return.s15),float,z15) * store(&(__return.s16),float,z16) * store(&(__return.s17),float,z17) * store(&(__return.s18),float,z18) * store(&(__return.s19),float,z19) * store(&(__return.s20),float,z20) * store(&(__return.s21),float,z21) * store(&(__return.s22),float,z22) * store(&(__return.s23),float,z23) * store(&(__return.s24),float,z24) * store(&(__return.s25),float,z25) * store(&(__return.s26),float,z26) * store(&(__return.s27),float,z27) * store(&(__return.s28),float,z28) * store(&(__return.s29),float,z29) * store(&(__return.s30),float,z30) * store(&(__return.s31),float,z31) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_min_number",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 12,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "minimumNumber; one NaN selects numeric operand; negative-zero minimum",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 51,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vfmax_vf_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vfmax_vf_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmax_vf_f32m8(vfloat32m8_t a,float scalar,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 26,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "4863ccce1dc43ccea824c592f44ff66d3920f5bb121b9266ab21771a42f5dabf",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32)\n Require 1<=vl && vl<=32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31)\n Ensure exists z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31, spmm_active32(vl,z0,z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16,z17,z18,z19,z20,z21,z22,z23,z24,z25,z26,z27,z28,z29,z30,z31,fp32_max_number(x0,scalar),fp32_max_number(x1,scalar),fp32_max_number(x2,scalar),fp32_max_number(x3,scalar),fp32_max_number(x4,scalar),fp32_max_number(x5,scalar),fp32_max_number(x6,scalar),fp32_max_number(x7,scalar),fp32_max_number(x8,scalar),fp32_max_number(x9,scalar),fp32_max_number(x10,scalar),fp32_max_number(x11,scalar),fp32_max_number(x12,scalar),fp32_max_number(x13,scalar),fp32_max_number(x14,scalar),fp32_max_number(x15,scalar),fp32_max_number(x16,scalar),fp32_max_number(x17,scalar),fp32_max_number(x18,scalar),fp32_max_number(x19,scalar),fp32_max_number(x20,scalar),fp32_max_number(x21,scalar),fp32_max_number(x22,scalar),fp32_max_number(x23,scalar),fp32_max_number(x24,scalar),fp32_max_number(x25,scalar),fp32_max_number(x26,scalar),fp32_max_number(x27,scalar),fp32_max_number(x28,scalar),fp32_max_number(x29,scalar),fp32_max_number(x30,scalar),fp32_max_number(x31,scalar)) && store(&(__return.s0),float,z0) * store(&(__return.s1),float,z1) * store(&(__return.s2),float,z2) * store(&(__return.s3),float,z3) * store(&(__return.s4),float,z4) * store(&(__return.s5),float,z5) * store(&(__return.s6),float,z6) * store(&(__return.s7),float,z7) * store(&(__return.s8),float,z8) * store(&(__return.s9),float,z9) * store(&(__return.s10),float,z10) * store(&(__return.s11),float,z11) * store(&(__return.s12),float,z12) * store(&(__return.s13),float,z13) * store(&(__return.s14),float,z14) * store(&(__return.s15),float,z15) * store(&(__return.s16),float,z16) * store(&(__return.s17),float,z17) * store(&(__return.s18),float,z18) * store(&(__return.s19),float,z19) * store(&(__return.s20),float,z20) * store(&(__return.s21),float,z21) * store(&(__return.s22),float,z22) * store(&(__return.s23),float,z23) * store(&(__return.s24),float,z24) * store(&(__return.s25),float,z25) * store(&(__return.s26),float,z26) * store(&(__return.s27),float,z27) * store(&(__return.s28),float,z28) * store(&(__return.s29),float,z29) * store(&(__return.s30),float,z30) * store(&(__return.s31),float,z31) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "GemmSpec.IntrinsicModel.fp32_max_number",
+          "path": "proof/coq/GemmSpec/IntrinsicModel.v",
+          "line": 20,
+          "sha256": "e5b2f63d72bff59dbba9c2049da42a3d659d1c0cb8e95c8031337bac5c93ea4a"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "maximumNumber; one NaN selects numeric operand; positive-zero maximum",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 58,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vmfne_vv_f32m8_b4",
+      "ISA": "RVV",
+      "call_symbol": "qcp_nanmask",
+      "C_signature": "vbool4_t qcp_nanmask(const vfloat32m8_t*a,const vfloat32m8_t*b,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 30,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "322857190f691a5113fa8cbf493816947af5051619f124e4dfb5ae00e2dfb236",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32)\n Require 1<=vl && vl<=32 && a==b && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * store(&(a->s16),float,x16) * store(&(a->s17),float,x17) * store(&(a->s18),float,x18) * store(&(a->s19),float,x19) * store(&(a->s20),float,x20) * store(&(a->s21),float,x21) * store(&(a->s22),float,x22) * store(&(a->s23),float,x23) * store(&(a->s24),float,x24) * store(&(a->s25),float,x25) * store(&(a->s26),float,x26) * store(&(a->s27),float,x27) * store(&(a->s28),float,x28) * store(&(a->s29),float,x29) * store(&(a->s30),float,x30) * store(&(a->s31),float,x31)\n Ensure exists m0 m1 m2 m3 m4 m5 m6 m7 m8 m9 m10 m11 m12 m13 m14 m15 m16 m17 m18 m19 m20 m21 m22 m23 m24 m25 m26 m27 m28 m29 m30 m31, spmm_mask32(vl,m0,m1,m2,m3,m4,m5,m6,m7,m8,m9,m10,m11,m12,m13,m14,m15,m16,m17,m18,m19,m20,m21,m22,m23,m24,m25,m26,m27,m28,m29,m30,m31,spmm_nanth(x0),spmm_nanth(x1),spmm_nanth(x2),spmm_nanth(x3),spmm_nanth(x4),spmm_nanth(x5),spmm_nanth(x6),spmm_nanth(x7),spmm_nanth(x8),spmm_nanth(x9),spmm_nanth(x10),spmm_nanth(x11),spmm_nanth(x12),spmm_nanth(x13),spmm_nanth(x14),spmm_nanth(x15),spmm_nanth(x16),spmm_nanth(x17),spmm_nanth(x18),spmm_nanth(x19),spmm_nanth(x20),spmm_nanth(x21),spmm_nanth(x22),spmm_nanth(x23),spmm_nanth(x24),spmm_nanth(x25),spmm_nanth(x26),spmm_nanth(x27),spmm_nanth(x28),spmm_nanth(x29),spmm_nanth(x30),spmm_nanth(x31)) && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * store(&(a->s16),float,x16) * store(&(a->s17),float,x17) * store(&(a->s18),float,x18) * store(&(a->s19),float,x19) * store(&(a->s20),float,x20) * store(&(a->s21),float,x21) * store(&(a->s22),float,x22) * store(&(a->s23),float,x23) * store(&(a->s24),float,x24) * store(&(a->s25),float,x25) * store(&(a->s26),float,x26) * store(&(a->s27),float,x27) * store(&(a->s28),float,x28) * store(&(a->s29),float,x29) * store(&(a->s30),float,x30) * store(&(a->s31),float,x31) * store(&(__return.s0),int,m0) * store(&(__return.s1),int,m1) * store(&(__return.s2),int,m2) * store(&(__return.s3),int,m3) * store(&(__return.s4),int,m4) * store(&(__return.s5),int,m5) * store(&(__return.s6),int,m6) * store(&(__return.s7),int,m7) * store(&(__return.s8),int,m8) * store(&(__return.s9),int,m9) * store(&(__return.s10),int,m10) * store(&(__return.s11),int,m11) * store(&(__return.s12),int,m12) * store(&(__return.s13),int,m13) * store(&(__return.s14),int,m14) * store(&(__return.s15),int,m15) * store(&(__return.s16),int,m16) * store(&(__return.s17),int,m17) * store(&(__return.s18),int,m18) * store(&(__return.s19),int,m19) * store(&(__return.s20),int,m20) * store(&(__return.s21),int,m21) * store(&(__return.s22),int,m22) * store(&(__return.s23),int,m23) * store(&(__return.s24),int,m24) * store(&(__return.s25),int,m25) * store(&(__return.s26),int,m26) * store(&(__return.s27),int,m27) * store(&(__return.s28),int,m28) * store(&(__return.s29),int,m29) * store(&(__return.s30),int,m30) * store(&(__return.s31),int,m31) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_nanth",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 8,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_mask32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 59,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_mask",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 11,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "self-comparison only: active mask is1 iff source is NaN; shared source owned once",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "Macro borrows local vector lvalues; each source argument evaluated once. Only these actual side-effect-free lvalues supported; self-compare requires equal pointers and one owner.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 50,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 57,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vfmerge_vfm_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "__riscv_vfmerge_vfm_f32m8",
+      "C_signature": "vfloat32m8_t __riscv_vfmerge_vfm_f32m8(vfloat32m8_t a,float scalar,vbool4_t mask,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 35,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "b7f6c7859f895680d9225cdd19844b2ac702836b5b91c96e644270bb0deb770a",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z) (m16:Z) (m17:Z) (m18:Z) (m19:Z) (m20:Z) (m21:Z) (m22:Z) (m23:Z) (m24:Z) (m25:Z) (m26:Z) (m27:Z) (m28:Z) (m29:Z) (m30:Z) (m31:Z)\n Require 1<=vl && vl<=32 && store(&(a.s0),float,x0) * store(&(a.s1),float,x1) * store(&(a.s2),float,x2) * store(&(a.s3),float,x3) * store(&(a.s4),float,x4) * store(&(a.s5),float,x5) * store(&(a.s6),float,x6) * store(&(a.s7),float,x7) * store(&(a.s8),float,x8) * store(&(a.s9),float,x9) * store(&(a.s10),float,x10) * store(&(a.s11),float,x11) * store(&(a.s12),float,x12) * store(&(a.s13),float,x13) * store(&(a.s14),float,x14) * store(&(a.s15),float,x15) * store(&(a.s16),float,x16) * store(&(a.s17),float,x17) * store(&(a.s18),float,x18) * store(&(a.s19),float,x19) * store(&(a.s20),float,x20) * store(&(a.s21),float,x21) * store(&(a.s22),float,x22) * store(&(a.s23),float,x23) * store(&(a.s24),float,x24) * store(&(a.s25),float,x25) * store(&(a.s26),float,x26) * store(&(a.s27),float,x27) * store(&(a.s28),float,x28) * store(&(a.s29),float,x29) * store(&(a.s30),float,x30) * store(&(a.s31),float,x31) * store(&(mask.s0),int,m0) * store(&(mask.s1),int,m1) * store(&(mask.s2),int,m2) * store(&(mask.s3),int,m3) * store(&(mask.s4),int,m4) * store(&(mask.s5),int,m5) * store(&(mask.s6),int,m6) * store(&(mask.s7),int,m7) * store(&(mask.s8),int,m8) * store(&(mask.s9),int,m9) * store(&(mask.s10),int,m10) * store(&(mask.s11),int,m11) * store(&(mask.s12),int,m12) * store(&(mask.s13),int,m13) * store(&(mask.s14),int,m14) * store(&(mask.s15),int,m15) * store(&(mask.s16),int,m16) * store(&(mask.s17),int,m17) * store(&(mask.s18),int,m18) * store(&(mask.s19),int,m19) * store(&(mask.s20),int,m20) * store(&(mask.s21),int,m21) * store(&(mask.s22),int,m22) * store(&(mask.s23),int,m23) * store(&(mask.s24),int,m24) * store(&(mask.s25),int,m25) * store(&(mask.s26),int,m26) * store(&(mask.s27),int,m27) * store(&(mask.s28),int,m28) * store(&(mask.s29),int,m29) * store(&(mask.s30),int,m30) * store(&(mask.s31),int,m31)\n Ensure exists z0 z1 z2 z3 z4 z5 z6 z7 z8 z9 z10 z11 z12 z13 z14 z15 z16 z17 z18 z19 z20 z21 z22 z23 z24 z25 z26 z27 z28 z29 z30 z31, spmm_active32(vl,z0,z1,z2,z3,z4,z5,z6,z7,z8,z9,z10,z11,z12,z13,z14,z15,z16,z17,z18,z19,z20,z21,z22,z23,z24,z25,z26,z27,z28,z29,z30,z31,spmm_merge(x0,scalar,m0),spmm_merge(x1,scalar,m1),spmm_merge(x2,scalar,m2),spmm_merge(x3,scalar,m3),spmm_merge(x4,scalar,m4),spmm_merge(x5,scalar,m5),spmm_merge(x6,scalar,m6),spmm_merge(x7,scalar,m7),spmm_merge(x8,scalar,m8),spmm_merge(x9,scalar,m9),spmm_merge(x10,scalar,m10),spmm_merge(x11,scalar,m11),spmm_merge(x12,scalar,m12),spmm_merge(x13,scalar,m13),spmm_merge(x14,scalar,m14),spmm_merge(x15,scalar,m15),spmm_merge(x16,scalar,m16),spmm_merge(x17,scalar,m17),spmm_merge(x18,scalar,m18),spmm_merge(x19,scalar,m19),spmm_merge(x20,scalar,m20),spmm_merge(x21,scalar,m21),spmm_merge(x22,scalar,m22),spmm_merge(x23,scalar,m23),spmm_merge(x24,scalar,m24),spmm_merge(x25,scalar,m25),spmm_merge(x26,scalar,m26),spmm_merge(x27,scalar,m27),spmm_merge(x28,scalar,m28),spmm_merge(x29,scalar,m29),spmm_merge(x30,scalar,m30),spmm_merge(x31,scalar,m31)) && store(&(__return.s0),float,z0) * store(&(__return.s1),float,z1) * store(&(__return.s2),float,z2) * store(&(__return.s3),float,z3) * store(&(__return.s4),float,z4) * store(&(__return.s5),float,z5) * store(&(__return.s6),float,z6) * store(&(__return.s7),float,z7) * store(&(__return.s8),float,z8) * store(&(__return.s9),float,z9) * store(&(__return.s10),float,z10) * store(&(__return.s11),float,z11) * store(&(__return.s12),float,z12) * store(&(__return.s13),float,z13) * store(&(__return.s14),float,z14) * store(&(__return.s15),float,z15) * store(&(__return.s16),float,z16) * store(&(__return.s17),float,z17) * store(&(__return.s18),float,z18) * store(&(__return.s19),float,z19) * store(&(__return.s20),float,z20) * store(&(__return.s21),float,z21) * store(&(__return.s22),float,z22) * store(&(__return.s23),float,z23) * store(&(__return.s24),float,z24) * store(&(__return.s25),float,z25) * store(&(__return.s26),float,z26) * store(&(__return.s27),float,z27) * store(&(__return.s28),float,z28) * store(&(__return.s29),float,z29) * store(&(__return.s30),float,z30) * store(&(__return.s31),float,z31) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_merge",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 9,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "active mask0 selects vector, mask1 scalar; only binary active masks supplied",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 52,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        },
+        {
+          "path": "impl/testRVV.c",
+          "line": 59,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__riscv_vse32_v_f32m8",
+      "ISA": "RVV",
+      "call_symbol": "qcp_store",
+      "C_signature": "void qcp_store(float*p,const vfloat32m8_t*a,size_t vl)",
+      "contract": {
+        "path": "shim/rvv-intrinsics.h",
+        "line": 39,
+        "file_sha256": "5a7e50315e08b7d3a51570949faf49da6befddb0457fc5030db219c24919a4aa",
+        "signature_and_contract_sha256": "6c5bee61a22189de9b44df8e5a1a2e800b106d838f0c7f7bd47a6d25ac384b67",
+        "text": "/*@ With (x0:fp32) (x1:fp32) (x2:fp32) (x3:fp32) (x4:fp32) (x5:fp32) (x6:fp32) (x7:fp32) (x8:fp32) (x9:fp32) (x10:fp32) (x11:fp32) (x12:fp32) (x13:fp32) (x14:fp32) (x15:fp32) (x16:fp32) (x17:fp32) (x18:fp32) (x19:fp32) (x20:fp32) (x21:fp32) (x22:fp32) (x23:fp32) (x24:fp32) (x25:fp32) (x26:fp32) (x27:fp32) (x28:fp32) (x29:fp32) (x30:fp32) (x31:fp32)\n Require 1<=vl && vl<=32 && store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * store(&(a->s16),float,x16) * store(&(a->s17),float,x17) * store(&(a->s18),float,x18) * store(&(a->s19),float,x19) * store(&(a->s20),float,x20) * store(&(a->s21),float,x21) * store(&(a->s22),float,x22) * store(&(a->s23),float,x23) * store(&(a->s24),float,x24) * store(&(a->s25),float,x25) * store(&(a->s26),float,x26) * store(&(a->s27),float,x27) * store(&(a->s28),float,x28) * store(&(a->s29),float,x29) * store(&(a->s30),float,x30) * store(&(a->s31),float,x31) * FloatArray::undef_full(p,vl)\n Ensure store(&(a->s0),float,x0) * store(&(a->s1),float,x1) * store(&(a->s2),float,x2) * store(&(a->s3),float,x3) * store(&(a->s4),float,x4) * store(&(a->s5),float,x5) * store(&(a->s6),float,x6) * store(&(a->s7),float,x7) * store(&(a->s8),float,x8) * store(&(a->s9),float,x9) * store(&(a->s10),float,x10) * store(&(a->s11),float,x11) * store(&(a->s12),float,x12) * store(&(a->s13),float,x13) * store(&(a->s14),float,x14) * store(&(a->s15),float,x15) * store(&(a->s16),float,x16) * store(&(a->s17),float,x17) * store(&(a->s18),float,x18) * store(&(a->s19),float,x19) * store(&(a->s20),float,x20) * store(&(a->s21),float,x21) * store(&(a->s22),float,x22) * store(&(a->s23),float,x23) * store(&(a->s24),float,x24) * store(&(a->s25),float,x25) * store(&(a->s26),float,x26) * store(&(a->s27),float,x27) * store(&(a->s28),float,x28) * store(&(a->s29),float,x29) * store(&(a->s30),float,x30) * store(&(a->s31),float,x31) * FloatArray::full(p,vl,sublist(0,vl,cons(x0,cons(x1,cons(x2,cons(x3,cons(x4,cons(x5,cons(x6,cons(x7,cons(x8,cons(x9,cons(x10,cons(x11,cons(x12,cons(x13,cons(x14,cons(x15,cons(x16,cons(x17,cons(x18,cons(x19,cons(x20,cons(x21,cons(x22,cons(x23,cons(x24,cons(x25,cons(x26,cons(x27,cons(x28,cons(x29,cons(x30,cons(x31,nil)))))))))))))))))))))))))))))))))) */"
+      },
+      "definition_bindings": [
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active32",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 26,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        },
+        {
+          "qualified_name": "SpmmSpec.Vectors.spmm_active_value",
+          "path": "proof/coq/SpmmSpec/Vectors.v",
+          "line": 10,
+          "sha256": "83fd05915cc9b152638e421a3a14457df8cfcddf2b6cd770e8d0d2248be3b16e"
+        }
+      ],
+      "reviewed_value_semantics": "write exactly VL active values; preserve vector and separate frame",
+      "official_sources": [
+        {
+          "url": "https://raw.githubusercontent.com/riscv/riscv-isa-manual/20260120/src/v-st-ext.adoc",
+          "version": "20260120, Vector1.0",
+          "section": "unit-stride load/store; VL constraints; FP FMA/min-max/compare/merge/move; tail policy"
+        },
+        {
+          "url": "https://docs.riscv.org/reference/vector-c-intrinsics/v1.0/rvv-intrinsic-spec.html",
+          "version": "1.0",
+          "section": "default unmasked ta forms and argument order"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "Macro borrows local vector lvalues; each source argument evaluated once. Only these actual side-effect-free lvalues supported; self-compare requires equal pointers and one owner.",
+      "tail_semantics": "arbitrary inactive fields; only0<=lane<VL observed",
+      "source_call_sites": [
+        {
+          "path": "impl/testRVV.c",
+          "line": 61,
+          "sha256": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    },
+    {
+      "intrinsic": "__builtin_prefetch",
+      "ISA": "compiler builtin",
+      "call_symbol": "__builtin_prefetch",
+      "C_signature": "void __builtin_prefetch(const void *address)",
+      "contract": {
+        "path": "shim/helpers.h",
+        "line": 11,
+        "file_sha256": "e47519c1e6b723e64217eee0f75389a05ac6adfc6fbaf5654c0f901290a74152",
+        "signature_and_contract_sha256": "342fb7f6e09b1b9eb1248da1f12caecaa6495bfd21d7a9220a25e9bb2c990d3b",
+        "text": "/*@ Require emp Ensure emp */"
+      },
+      "definition_bindings": [],
+      "reviewed_value_semantics": "data-memory frame preserved; caller still proves address-expression evaluation; cache/timing effects unobserved",
+      "official_sources": [
+        {
+          "url": "https://gcc.gnu.org/onlinedocs/gcc-12.1.0/gcc/Other-Builtins.html",
+          "version": "12.1.0",
+          "section": "__builtin_nanf and __builtin_prefetch"
+        }
+      ],
+      "evidence_status": "source-reviewed-spec",
+      "formal_C_body_required": false,
+      "ISA_correspondence_checked": false,
+      "adaptation": "By-value argument/return representation; actual copy/free obligations are kernel obligations.",
+      "tail_semantics": "fixed NEON lanes or scalar builtin",
+      "source_call_sites": [
+        {
+          "path": "shim/ordinary.c",
+          "line": 11,
+          "sha256": "cb07f233bf816e7189b5b8bb685ddb46a949c38de8c1515f131bfe628058337e"
+        }
+      ],
+      "call_closure_status": "Exact current C/CPP provider and compiled direct/transitive Coq-definition binding checked in preliminary-binding01; final complete-case audit independently repeats it"
+    }
+  ],
+  "unproved_boundaries": [
+    "final human semantic review pending",
+    "formal ISA/compiler/physical ABI correspondence not established",
+    "complete termination and arbitrary hardware VLEN not established"
+  ]
+}

@@ -1,3 +1,5 @@
+2026-10-25 matrix worker：F32 SpMM完整修复/兼容版：4实际C/788义务/19策略/835同环境fresh模块/956假设报告，递归coqchk及32并发准入通过。完整M/N/稀疏循环、NEON4/2/1与全部合法RVV VL；全binary32，循环打包与显式容量，固定VLEN128/e32m8，数值相等或同为NaN。原件保留，两侧表达式兼容改写，RVV另修复FMA/NaN。intrinsic人工语义审阅pending，无形式ISA/ABI或完整终止性定理。 当前34/40，完整包 verification/qcp/verified/f32-spmm-minmax。用户恢复额度后继续矩阵相关核；QS8与SpMM已完成。HWC→CHW仍为候选，已有原生回归与共享组件，尚未完成整核证明；勿沿用旧阶段停止指令，勿重复其他owner工作。下文保留原日期与作者归属。
+
 当前完整33/40，目标40；新增Maxpool857 actual C/310 fresh Coq/1020最终Print已完整闭合。外部矩阵worker QS8-QC8W GEMM@37685e527另计其贡献；不得覆盖或重复计数。半小时额度检查/严格>95%收尾继续。以下保留历史记录。
 
 # QCP 工作记忆入口

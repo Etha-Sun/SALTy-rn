@@ -1,0 +1,269 @@
+{
+  "source_token_sha256": "2dad9643e1ca6f409e32be51f8905151468d7a9a5cb45a9fb8c23c1fc8d4f9f3",
+  "annotations": [
+    {
+      "before_token": 43,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 44,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert mc==mc@pre && nc==nc@pre && input==input@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output==output@pre && output_stride==output_stride@pre && params==params@pre && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && 0<rows && 0<mc && mc%4==0 && 0<nc && mc==4*rows && input==pointer_offset(a,start,float) && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output,NN,D,A,W) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * spmm_output(output,rows,nc,output_stride,0,0,0,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 90,
+      "kind": "proof_annotation",
+      "text": "/*@ where owner=params */"
+    },
+    {
+      "before_token": 188,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && output_decrement==word64(word64(output_stride*nc)-16) && input==pointer_offset(a,start+(rows-mc/4),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,0) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),0,0,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 228,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && output_decrement==word64(word64(output_stride*nc)-16) && 16<=mc && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && dmap==pointer_offset(widx_dmap,nnz_before(NN,(nc-n)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-mc/4),nnz_before(NN,(nc-n))),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),4,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 230,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && UIntArray::full(nidx_nnzmap,nc,NN) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && 0<=(nc-n) && (nc-n)<nc && UIntArray::missing_i(nidx_nnzmap,(nc-n),0,nc,NN) * store(nnzmap,unsigned int,NN[(nc-n)]) */"
+    },
+    {
+      "before_token": 241,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && FloatArray::full(weights,Zlength(W),W) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && 0<=bias_index(NN,(nc-n)) && bias_index(NN,(nc-n))+1<=Zlength(W) && FloatArray::full(weights,Zlength(W),W) */"
+    },
+    {
+      "before_token": 248,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=weights,len=Zlength(W),j=bias_index(NN,(nc-n)),L=W */"
+    },
+    {
+      "before_token": 265,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=NN[(nc-n)] && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),int) && IntArray::full(widx_dmap,Zlength(D),D) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=NN[(nc-n)] && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),int) && 0<=(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)) && (nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz))<Zlength(D) && IntArray::missing_i(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),0,Zlength(D),D) * store(dmap,int,D[(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz))]) */"
+    },
+    {
+      "before_token": 277,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && input==pointer_offset(a,input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && FloatArray::full(a,Zlength(A),A) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && input==pointer_offset(a,input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && 0<=input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))) && input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz)))+4<=Zlength(A) && FloatArray::full(a,Zlength(A),A) */"
+    },
+    {
+      "before_token": 285,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a,len=Zlength(A),j=input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),L=A */"
+    },
+    {
+      "before_token": 312,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),float) && 0<nnz && nnz<=z_at(NN,(nc-n)) && FloatArray::full(weights,Zlength(W),W) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),float) && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)) && (bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz))+1<=Zlength(W) && FloatArray::full(weights,Zlength(W),W) */"
+    },
+    {
+      "before_token": 320,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=weights,len=Zlength(W),j=(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),L=W */"
+    },
+    {
+      "before_token": 343,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0123,a=&vi0123,b=&vw */"
+    },
+    {
+      "before_token": 350,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && output_decrement==word64(word64(output_stride*nc)-16) && 16<=mc && 0<n && n<=nc && 0<=nnz && nnz<=z_at(NN,(nc-n)) && w==pointer_offset(weights,bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz),float) && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n)+1,unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),4,start,NN,D,A,W,lo,hi) * store(&(vacc0123.s0),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-mc/4)+0,start,NN,D,A,W)) * store(&(vacc0123.s1),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-mc/4)+1,start,NN,D,A,W)) * store(&(vacc0123.s2),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-mc/4)+2,start,NN,D,A,W)) * store(&(vacc0123.s3),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-mc/4)+3,start,NN,D,A,W)) */"
+    },
+    {
+      "before_token": 368,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0123,b=&vmax */"
+    },
+    {
+      "before_token": 377,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0123,b=&vmin */"
+    },
+    {
+      "before_token": 378,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && output_decrement==word64(word64(output_stride*nc)-16) && 16<=mc && 0<n && n<=nc && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),4,start,NN,D,A,W,lo,hi) which implies 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && output_decrement==word64(word64(output_stride*nc)-16) && 16<=mc && 0<n && n<=nc && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && spmm_output_hole(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),4,start,NN,D,A,W,lo,hi) * FloatArray::undef_full(output,4) */"
+    },
+    {
+      "before_token": 406,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+4<=rows && output_decrement==word64(word64(output_stride*nc)-16) && 16<=mc && 0<=n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && dmap==pointer_offset(widx_dmap,nnz_before(NN,(nc-n)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-mc/4),nnz_before(NN,(nc-n))),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),4,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 504,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && output_decrement==word64(word64(output_stride*nc)-8) && mc<16 && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && dmap==pointer_offset(widx_dmap,nnz_before(NN,(nc-n)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-mc/4),nnz_before(NN,(nc-n))),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),2,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 506,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && UIntArray::full(nidx_nnzmap,nc,NN) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && 0<=(nc-n) && (nc-n)<nc && UIntArray::missing_i(nidx_nnzmap,(nc-n),0,nc,NN) * store(nnzmap,unsigned int,NN[(nc-n)]) */"
+    },
+    {
+      "before_token": 517,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && FloatArray::full(weights,Zlength(W),W) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && 0<=bias_index(NN,(nc-n)) && bias_index(NN,(nc-n))+1<=Zlength(W) && FloatArray::full(weights,Zlength(W),W) */"
+    },
+    {
+      "before_token": 524,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=weights,len=Zlength(W),j=bias_index(NN,(nc-n)),L=W */"
+    },
+    {
+      "before_token": 541,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=NN[(nc-n)] && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),int) && IntArray::full(widx_dmap,Zlength(D),D) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=NN[(nc-n)] && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),int) && 0<=(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)) && (nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz))<Zlength(D) && IntArray::missing_i(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),0,Zlength(D),D) * store(dmap,int,D[(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz))]) */"
+    },
+    {
+      "before_token": 553,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && input==pointer_offset(a,input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && FloatArray::full(a,Zlength(A),A) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && input==pointer_offset(a,input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && 0<=input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))) && input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz)))+2<=Zlength(A) && FloatArray::full(a,Zlength(A),A) */"
+    },
+    {
+      "before_token": 561,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a,len=Zlength(A),j=input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),L=A */"
+    },
+    {
+      "before_token": 581,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),float) && 0<nnz && nnz<=z_at(NN,(nc-n)) && FloatArray::full(weights,Zlength(W),W) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),float) && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)) && (bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz))+1<=Zlength(W) && FloatArray::full(weights,Zlength(W),W) */"
+    },
+    {
+      "before_token": 589,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=weights,len=Zlength(W),j=(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),L=W */"
+    },
+    {
+      "before_token": 605,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc01,a=&vi01,b=&vw */"
+    },
+    {
+      "before_token": 612,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && output_decrement==word64(word64(output_stride*nc)-8) && mc<16 && 0<n && n<=nc && 0<=nnz && nnz<=z_at(NN,(nc-n)) && w==pointer_offset(weights,bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz),float) && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n)+1,unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-mc/4),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),2,start,NN,D,A,W,lo,hi) * store(&(vacc01.s0),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-mc/4)+0,start,NN,D,A,W)) * store(&(vacc01.s1),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-mc/4)+1,start,NN,D,A,W)) */"
+    },
+    {
+      "before_token": 632,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vmax */"
+    },
+    {
+      "before_token": 633,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc01,b=0 */"
+    },
+    {
+      "before_token": 644,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vmin */"
+    },
+    {
+      "before_token": 645,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout01,b=0 */"
+    },
+    {
+      "before_token": 646,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && output_decrement==word64(word64(output_stride*nc)-8) && mc<16 && 0<n && n<=nc && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),2,start,NN,D,A,W,lo,hi) which implies 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && output_decrement==word64(word64(output_stride*nc)-8) && mc<16 && 0<n && n<=nc && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && spmm_output_hole(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),2,start,NN,D,A,W,lo,hi) * FloatArray::undef_full(output,2) */"
+    },
+    {
+      "before_token": 674,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-mc/4) && (rows-mc/4)+2<=rows && output_decrement==word64(word64(output_stride*nc)-8) && mc<16 && 0<=n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && dmap==pointer_offset(widx_dmap,nnz_before(NN,(nc-n)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-mc/4),nnz_before(NN,(nc-n))),float) && output==spmm_output_cursor(output@pre,(rows-mc/4),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-mc/4),(nc-n),2,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 753,
+      "kind": "proof_annotation",
+      "text": "/*@ Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-1) && (rows-1)+1<=rows && output_decrement==word64(word64(output_stride*nc)-4) && mc<16 && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && dmap==pointer_offset(widx_dmap,nnz_before(NN,(nc-n)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-1),nnz_before(NN,(nc-n))),float) && output==spmm_output_cursor(output@pre,(rows-1),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-1),(nc-n),1,start,NN,D,A,W,lo,hi) */"
+    },
+    {
+      "before_token": 755,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && UIntArray::full(nidx_nnzmap,nc,NN) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && 0<=(nc-n) && (nc-n)<nc && UIntArray::missing_i(nidx_nnzmap,(nc-n),0,nc,NN) * store(nnzmap,unsigned int,NN[(nc-n)]) */"
+    },
+    {
+      "before_token": 766,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && FloatArray::full(weights,Zlength(W),W) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && 0<=bias_index(NN,(nc-n)) && bias_index(NN,(nc-n))+1<=Zlength(W) && FloatArray::full(weights,Zlength(W),W) */"
+    },
+    {
+      "before_token": 773,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=weights,len=Zlength(W),j=bias_index(NN,(nc-n)),L=W */"
+    },
+    {
+      "before_token": 790,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=NN[(nc-n)] && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),int) && IntArray::full(widx_dmap,Zlength(D),D) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=NN[(nc-n)] && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),int) && 0<=(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)) && (nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz))<Zlength(D) && IntArray::missing_i(widx_dmap,(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz)),0,Zlength(D),D) * store(dmap,int,D[(nnz_before(NN,(nc-n))+(NN[(nc-n)]-nnz))]) */"
+    },
+    {
+      "before_token": 802,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(rows-1) && (rows-1)+1<=rows && input==pointer_offset(a,input_index(D,start,(rows-1),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && FloatArray::full(a,Zlength(A),A) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(rows-1) && (rows-1)+1<=rows && input==pointer_offset(a,input_index(D,start,(rows-1),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && 0<=input_index(D,start,(rows-1),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))) && input_index(D,start,(rows-1),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz)))+1<=Zlength(A) && FloatArray::full(a,Zlength(A),A) */"
+    },
+    {
+      "before_token": 810,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=a,len=Zlength(A),j=input_index(D,start,(rows-1),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),L=A */"
+    },
+    {
+      "before_token": 830,
+      "kind": "proof_annotation",
+      "text": "/*@ spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),float) && 0<nnz && nnz<=z_at(NN,(nc-n)) && FloatArray::full(weights,Zlength(W),W) which implies spmm_shape(rows,nc,start,NN,D,A,W) && 0<n && n<=nc && w==pointer_offset(weights,(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),float) && 0<nnz && nnz<=z_at(NN,(nc-n)) && 0<=(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)) && (bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz))+1<=Zlength(W) && FloatArray::full(weights,Zlength(W),W) */"
+    },
+    {
+      "before_token": 838,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=weights,len=Zlength(W),j=(bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz)),L=W */"
+    },
+    {
+      "before_token": 854,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0,a=&vi0,b=&vw */"
+    },
+    {
+      "before_token": 861,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-1) && (rows-1)+1<=rows && output_decrement==word64(word64(output_stride*nc)-4) && mc<16 && 0<n && n<=nc && 0<=nnz && nnz<=z_at(NN,(nc-n)) && w==pointer_offset(weights,bias_index(NN,(nc-n))+1+(z_at(NN,(nc-n))-nnz),float) && dmap==pointer_offset(widx_dmap,(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n)+1,unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-1),(nnz_before(NN,(nc-n))+(z_at(NN,(nc-n))-nnz))),float) && output==spmm_output_cursor(output@pre,(rows-1),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-1),(nc-n),1,start,NN,D,A,W,lo,hi) * store(&(vacc0.s0),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-1)+0,start,NN,D,A,W)) * store(&(vacc0.s1),float,spmm_acc((z_at(NN,(nc-n))-nnz),(nc-n),(rows-1)+0,start,NN,D,A,W)) */"
+    },
+    {
+      "before_token": 881,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vmax */"
+    },
+    {
+      "before_token": 882,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0,b=0 */"
+    },
+    {
+      "before_token": 893,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vmin */"
+    },
+    {
+      "before_token": 894,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0,b=0 */"
+    },
+    {
+      "before_token": 895,
+      "kind": "proof_annotation",
+      "text": "/*@ 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-1) && (rows-1)+1<=rows && output_decrement==word64(word64(output_stride*nc)-4) && mc<16 && 0<n && n<=nc && output==spmm_output_cursor(output@pre,(rows-1),output_stride,(nc-n)) && spmm_output(output@pre,rows,nc,output_stride,(rows-1),(nc-n),1,start,NN,D,A,W,lo,hi) which implies 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-1) && (rows-1)+1<=rows && output_decrement==word64(word64(output_stride*nc)-4) && mc<16 && 0<n && n<=nc && output==spmm_output_cursor(output@pre,(rows-1),output_stride,(nc-n)) && spmm_output_hole(output@pre,rows,nc,output_stride,(rows-1),(nc-n),1,start,NN,D,A,W,lo,hi) * FloatArray::undef_full(output,1) */"
+    },
+    {
+      "before_token": 925,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert 0<nc && 0<rows && sizeof(float)==4 && sizeof(int)==4 && sizeof(unsigned int)==4 && mc@pre==4*rows && nc==nc@pre && weights==weights@pre && widx_dmap==widx_dmap@pre && nidx_nnzmap==nidx_nnzmap@pre && output_stride==output_stride@pre && params==params@pre && spmm_shape(rows,nc,start,NN,D,A,W) && spmm_capacity(rows,nc,output_stride,a,weights,widx_dmap,nidx_nnzmap,output@pre,NN,D,A,W) && 0<=mc && mc<=mc@pre && mc%4==0 && 0<mc && 0<=(rows-1) && (rows-1)+1<=rows && output_decrement==word64(word64(output_stride*nc)-4) && mc<16 && 0<=n && n<=nc && w==pointer_offset(weights,bias_index(NN,(nc-n)),float) && dmap==pointer_offset(widx_dmap,nnz_before(NN,(nc-n)),int) && nnzmap==pointer_offset(nidx_nnzmap,(nc-n),unsigned int) && input==pointer_offset(a,input_index(D,start,(rows-1),nnz_before(NN,(nc-n))),float) && output==spmm_output_cursor(output@pre,(rows-1),output_stride,(nc-n)) && FloatArray::full(a,Zlength(A),A) * FloatArray::full(weights,Zlength(W),W) * IntArray::full(widx_dmap,Zlength(D),D) * UIntArray::full(nidx_nnzmap,nc,NN) * store(&(params->scalar.min),float,lo) * store(&(params->scalar.max),float,hi) * store(&(vmin.s0),float,lo) * store(&(vmin.s1),float,lo) * store(&(vmin.s2),float,lo) * store(&(vmin.s3),float,lo) * store(&(vmax.s0),float,hi) * store(&(vmax.s1),float,hi) * store(&(vmax.s2),float,hi) * store(&(vmax.s3),float,hi) * StructPredfloat32x4x2_t(&vminmax,tuple_record(cons(vec4(lo,lo,lo,lo),cons(vec4(hi,hi,hi,hi),nil)))) * spmm_output(output@pre,rows,nc,output_stride,(rows-1),(nc-n),1,start,NN,D,A,W,lo,hi) */"
+    }
+  ]
+}

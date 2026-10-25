@@ -1,0 +1,5 @@
+# Prefetch范围
+
+固定上游800ffc179的src/xnnpack/prefetch.h在GNU分支调用__builtin_prefetch(address)，地址仅求值一次。GCC文档说明预取不因无效目标地址本身触发访问故障，但地址表达式的求值必须有效。来源快照及SHA同目录保存。
+
+后续按原GNU分支证明普通xnn_prefetch_to_l1包装函数，只有builtin采用来源对照的intrinsic合同；不把整个普通wrapper免证。数据内存观察不包含缓存/性能，地址加法的64位边界仍由实际C义务检查。QCP整数地址模型不另外提供ISO C对象provenance或真实ABI定理。

@@ -1,0 +1,247 @@
+{
+  "passed": true,
+  "configured_jobs": 32,
+  "scope": "native actual C under host models, two legal VL selections, independent indexed oracle; no whole-kernel or hardware proof",
+  "source_hashes": {
+    "proof/native/extra.c": "bbeb6adb4c431bd22dead5f9f21c38035ae8150278733b240bb0ce4deafa313f",
+    "proof/native/fp_arithmetic.c": "25f2245089bfed3eccbeb5d466d9b587e7322ca21e37b154373bbd348e702366",
+    "proof/native/fp_arithmetic_m8.c": "9b8312a15aec517b3f23ced822cfda7ba49ad5ddf12ada2dafecf7fb942ab5f4",
+    "proof/native/fp_masks_m8.c": "688d00e503a988adddeee7ea5301e9dee7bcc36cfaf8fc26fda05c15c0163e0c",
+    "proof/native/fp_memory.c": "5fa7a42e9620b1d8085ef8401c3de061e5bb2c779d362e6e5ed1efc63eee8436",
+    "proof/native/fp_memory_m8.c": "a070e055479c72b3e238a708dffe49f72a29028e7f2232b55d37d59c71ef4c97",
+    "proof/native/fp_minmax.c": "92ea301e85f8ce7cf917bf21104087d7619cb8c5c674f4e7c32b879565a05381",
+    "proof/native/fp_minmax_m8.c": "f4424d8ca04a3d7ad8196c8041f0e5610eec3eb9833a1825bb9d7827d898952a",
+    "proof/native/regression.c": "bb3b452f6a493eef03b47fe649bcdc01e4d3f1bd23b5d757a59270c1e18da838",
+    "proof/native/fp_primitives.h": "38c790868ca457127fda99bf162e93c808a2384032b0ff21547fe883cc240268",
+    "proof/native/native_types.h": "7634880c0918c3607aa82aff0d7c740e5cb1d13c61b24b04bd64ad75369068c1",
+    "impl/testNEON.c": "4b79b07ea7e52739457bc458f912225c9ccb441ad30ebbc10c50cf02390c41b1",
+    "impl/testRVV.c": "087545e6993f1be16e91047f0d6618f8a007008ab8e4fc821e44e02e9184d887"
+  },
+  "inputs_unchanged": true,
+  "results": [
+    {
+      "variant": "max",
+      "passed": true,
+      "records": [
+        {
+          "phase": "build",
+          "exit": 0,
+          "seconds": 2.662307989085093,
+          "budget_result": {
+            "command": [
+              "gcc",
+              "-std=c11",
+              "-O1",
+              "-g",
+              "-ffp-contract=off",
+              "-frounding-math",
+              "-fno-builtin-fmaf",
+              "-fsanitize=address,undefined",
+              "-fno-omit-frame-pointer",
+              "-I",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/extra.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_arithmetic.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_arithmetic_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_masks_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_memory.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_memory_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_minmax.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_minmax_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/regression.c",
+              "-lm",
+              "-o",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/max/regression"
+            ],
+            "exit_code": 0,
+            "seconds": 2.38,
+            "cgroup": "/sys/fs/cgroup/user.slice/user-2069.slice/user@2069.service/qcp.slice/qcp-worker.slice/qcp-worker-proof.slice/qcp-worker-proof-1e1ee3fd4174.service",
+            "metrics": {
+              "memory.max": "4294967296",
+              "cpu.stat": "usage_usec 2679133\nuser_usec 987546\nsystem_usec 1691587",
+              "shared_slice_limits": {
+                "memory.max": "549755813888",
+                "cpu.max": "3200000 100000"
+              }
+            },
+            "proof_checking": "ordinary command; no proof skipping enabled"
+          }
+        },
+        {
+          "phase": "run",
+          "exit": 0,
+          "seconds": 0.8671798629220575,
+          "budget_result": {
+            "command": [
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/max/regression"
+            ],
+            "exit_code": 0,
+            "seconds": 0.463,
+            "cgroup": "/sys/fs/cgroup/user.slice/user-2069.slice/user@2069.service/qcp.slice/qcp-worker.slice/qcp-worker-proof.slice/qcp-worker-proof-d7a5729fd5d8.service",
+            "metrics": {
+              "memory.max": "4294967296",
+              "cpu.stat": "usage_usec 500344\nuser_usec 288241\nsystem_usec 212102",
+              "shared_slice_limits": {
+                "memory.max": "549755813888",
+                "cpu.max": "3200000 100000"
+              }
+            },
+            "proof_checking": "ordinary command; no proof skipping enabled"
+          }
+        }
+      ],
+      "cases": 8160,
+      "output_cells": 594720
+    },
+    {
+      "variant": "balanced",
+      "passed": true,
+      "records": [
+        {
+          "phase": "build",
+          "exit": 0,
+          "seconds": 2.6479341539088637,
+          "budget_result": {
+            "command": [
+              "gcc",
+              "-std=c11",
+              "-O1",
+              "-g",
+              "-ffp-contract=off",
+              "-frounding-math",
+              "-fno-builtin-fmaf",
+              "-fsanitize=address,undefined",
+              "-fno-omit-frame-pointer",
+              "-DBALANCED_VL",
+              "-I",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/extra.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_arithmetic.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_arithmetic_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_masks_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_memory.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_memory_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_minmax.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_minmax_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/regression.c",
+              "-lm",
+              "-o",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/balanced/regression"
+            ],
+            "exit_code": 0,
+            "seconds": 2.073,
+            "cgroup": "/sys/fs/cgroup/user.slice/user-2069.slice/user@2069.service/qcp.slice/qcp-worker.slice/qcp-worker-proof.slice/qcp-worker-proof-4b8a2c6a9695.service",
+            "metrics": {
+              "memory.max": "4294967296",
+              "cpu.stat": "usage_usec 2221359\nuser_usec 1043656\nsystem_usec 1177703",
+              "shared_slice_limits": {
+                "memory.max": "549755813888",
+                "cpu.max": "3200000 100000"
+              }
+            },
+            "proof_checking": "ordinary command; no proof skipping enabled"
+          }
+        },
+        {
+          "phase": "run",
+          "exit": 0,
+          "seconds": 0.8813447740394622,
+          "budget_result": {
+            "command": [
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/balanced/regression"
+            ],
+            "exit_code": 0,
+            "seconds": 0.471,
+            "cgroup": "/sys/fs/cgroup/user.slice/user-2069.slice/user@2069.service/qcp.slice/qcp-worker.slice/qcp-worker-proof.slice/qcp-worker-proof-783329492f4f.service",
+            "metrics": {
+              "memory.max": "4294967296",
+              "cpu.stat": "usage_usec 698166\nuser_usec 239371\nsystem_usec 458795",
+              "shared_slice_limits": {
+                "memory.max": "549755813888",
+                "cpu.max": "3200000 100000"
+              }
+            },
+            "proof_checking": "ordinary command; no proof skipping enabled"
+          }
+        }
+      ],
+      "cases": 8160,
+      "output_cells": 594720
+    },
+    {
+      "variant": "both_wrong",
+      "passed": true,
+      "records": [
+        {
+          "phase": "build",
+          "exit": 0,
+          "seconds": 2.941971192834899,
+          "budget_result": {
+            "command": [
+              "gcc",
+              "-std=c11",
+              "-O1",
+              "-g",
+              "-ffp-contract=off",
+              "-frounding-math",
+              "-fno-builtin-fmaf",
+              "-fsanitize=address,undefined",
+              "-fno-omit-frame-pointer",
+              "-DBOTH_WRONG",
+              "-I",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/extra.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_arithmetic.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_arithmetic_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_masks_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_memory.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_memory_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_minmax.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/fp_minmax_m8.c",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/snapshot/regression.c",
+              "-lm",
+              "-o",
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/both_wrong/regression"
+            ],
+            "exit_code": 0,
+            "seconds": 2.312,
+            "cgroup": "/sys/fs/cgroup/user.slice/user-2069.slice/user@2069.service/qcp.slice/qcp-worker.slice/qcp-worker-proof.slice/qcp-worker-proof-c186f16e6fb2.service",
+            "metrics": {
+              "memory.max": "4294967296",
+              "cpu.stat": "usage_usec 2507087\nuser_usec 1093273\nsystem_usec 1413814",
+              "shared_slice_limits": {
+                "memory.max": "549755813888",
+                "cpu.max": "3200000 100000"
+              }
+            },
+            "proof_checking": "ordinary command; no proof skipping enabled"
+          }
+        },
+        {
+          "phase": "run",
+          "exit": 21,
+          "seconds": 0.5287143019959331,
+          "budget_result": {
+            "command": [
+              "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/repaired03/native/both_wrong/regression"
+            ],
+            "exit_code": 21,
+            "seconds": 0.124,
+            "cgroup": "/sys/fs/cgroup/user.slice/user-2069.slice/user@2069.service/qcp.slice/qcp-worker.slice/qcp-worker-proof.slice/qcp-worker-proof-60a61e1d65fc.service",
+            "metrics": {
+              "memory.max": "4294967296",
+              "cpu.stat": "usage_usec 119928\nuser_usec 42831\nsystem_usec 77097",
+              "shared_slice_limits": {
+                "memory.max": "549755813888",
+                "cpu.max": "3200000 100000"
+              }
+            },
+            "proof_checking": "ordinary command; no proof skipping enabled"
+          }
+        }
+      ],
+      "negative_rejected": true,
+      "expected_exit": 21
+    }
+  ]
+}

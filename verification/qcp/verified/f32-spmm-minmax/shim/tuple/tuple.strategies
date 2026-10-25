@@ -1,0 +1,94 @@
+#include "tuple.h"
+id : 1
+priority : core(0)
+left : UndefStructPredfloat32x4x2_t(?p) at 0
+right : Structfloat32x4_tArray::undef_full(?q,2) at 1
+check : infer(q==field_addr(p,float32x4x2_t,val));
+action : left_erase(0);left_add(Structfloat32x4_tArray::undef_full(field_addr(p,float32x4x2_t,val),2));
+
+id : 2
+priority : core(0)
+left : Structfloat32x4_tArray::full(?p,2,?L) at 0
+right : Structfloat32x4_tArray::full(p,2,?K) at 1
+action : left_erase(0);right_erase(1);right_add(L==K);
+
+id : 3
+priority : core(0)
+left : UndefStructPredfloat32x4_t(?p) at 0
+right : undef_data_at(field_addr(?q,float32x4_t,s0),float) at 1
+check : infer(q==p);
+action : left_erase(0);
+ left_add(undef_data_at(field_addr(p,float32x4_t,s0),float));
+ left_add(undef_data_at(field_addr(p,float32x4_t,s1),float));
+ left_add(undef_data_at(field_addr(p,float32x4_t,s2),float));
+ left_add(undef_data_at(field_addr(p,float32x4_t,s3),float));
+
+id : 4
+priority : core(0)
+left : Structfloat32x4_tArray::full(?p,2,?L) at 0
+right : store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s0),float,?v) at 1
+action : left_erase(0);
+ left_add(store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s0),float,f0(tuple_at(0,L))));
+ left_add(store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s1),float,f1(tuple_at(0,L))));
+ left_add(store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s2),float,f2(tuple_at(0,L))));
+ left_add(store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s3),float,f3(tuple_at(0,L))));
+ left_add(store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s0),float,f0(tuple_at(1,L))));
+ left_add(store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s1),float,f1(tuple_at(1,L))));
+ left_add(store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s2),float,f2(tuple_at(1,L))));
+ left_add(store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s3),float,f3(tuple_at(1,L))));
+
+id : 5
+priority : core(0)
+right : UndefStructPredfloat32x4x2_t(?p) at 0
+action : right_erase(0);right_add(Structfloat32x4_tArray::undef_full(field_addr(p,float32x4x2_t,val),2));
+
+id : 6
+priority : core(0)
+left : Structfloat32x4_tArray::full(?p,2,?L) at 0
+right : Structfloat32x4_tArray::undef_full(p,2) at 1
+action : left_erase(0);right_erase(1);
+
+id : 7
+priority : core(0)
+left : store(field_addr(?p,float32x4_t,s0),float,?x0) at 0
+       store(field_addr(p,float32x4_t,s1),float,?x1) at 1
+       store(field_addr(p,float32x4_t,s2),float,?x2) at 2
+       store(field_addr(p,float32x4_t,s3),float,?x3) at 3
+right : UndefStructPredfloat32x4_t(p) at 4
+action : left_erase(0);left_erase(1);left_erase(2);left_erase(3);right_erase(4);
+
+id : 8
+priority : core(0)
+left : store(field_addr(pointer_offset(?p,0,struct float32x4_t),float32x4_t,s0),float,?x00) at 0
+       store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s1),float,?x01) at 1
+       store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s2),float,?x02) at 2
+       store(field_addr(pointer_offset(p,0,struct float32x4_t),float32x4_t,s3),float,?x03) at 3
+       store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s0),float,?x10) at 4
+       store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s1),float,?x11) at 5
+       store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s2),float,?x12) at 6
+       store(field_addr(pointer_offset(p,1,struct float32x4_t),float32x4_t,s3),float,?x13) at 7
+right : Structfloat32x4_tArray::undef_full(p,2) at 8
+action : left_erase(0);left_erase(1);left_erase(2);left_erase(3);left_erase(4);left_erase(5);left_erase(6);left_erase(7);right_erase(8);
+
+id : 11
+priority : core(0)
+left : StructPredfloat32x4x2_t(?p,?V) at 0
+right : Structfloat32x4_tArray::full(field_addr(p,float32x4x2_t,val),2,?K) at 1
+action : left_erase(0);left_add(Structfloat32x4_tArray::full(field_addr(p,float32x4x2_t,val),2,tuple_values(V)));
+
+id : 12
+priority : post(1)
+left : Structfloat32x4_tArray::full(field_addr(?p,float32x4x2_t,val),2,?L) at 0
+action : left_erase(0);left_add(StructPredfloat32x4x2_t(p,tuple_record(L)));
+
+id : 13
+priority : core(0)
+left : StructPredfloat32x4x2_t(?p,?V) at 0
+right : Structfloat32x4_tArray::undef_full(field_addr(p,float32x4x2_t,val),2) at 1
+action : left_erase(0);left_add(Structfloat32x4_tArray::full(field_addr(p,float32x4x2_t,val),2,tuple_values(V)));
+
+id : 14
+priority : core(0)
+left : StructPredfloat32x4x2_t(?p,?V) at 0
+right : store(field_addr(pointer_offset(field_addr(p,float32x4x2_t,val),0,struct float32x4_t),float32x4_t,s0),float,?v) at 1
+action : left_erase(0);left_add(Structfloat32x4_tArray::full(field_addr(p,float32x4x2_t,val),2,tuple_values(V)));

@@ -1,0 +1,108 @@
+{
+  "passed": true,
+  "utc": "2026-10-25T15:15:02.814735+00:00",
+  "configured_jobs": 32,
+  "seconds": 1537.9519792429637,
+  "compile_run": "wholecompile01",
+  "generation_run": "admission01-generation",
+  "recursive_run": "wholecase01-recursive",
+  "auxiliary_run": "admission01-auxiliary",
+  "native_run": "repaired03",
+  "adopted_compile": true,
+  "adopted_generation": true,
+  "adopted_auxiliary": true,
+  "adopted_native": true,
+  "records": [
+    {
+      "stage": "generation-adopted",
+      "exit": 0
+    },
+    {
+      "stage": "compile-adopted",
+      "exit": 0,
+      "seconds": 1.2240606490522623,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py",
+        "--out",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/wholecase01/compile-adopted-budget",
+        "--timeout",
+        "1800",
+        "--reserve-gib",
+        "16",
+        "--memory-gib",
+        "16",
+        "--",
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/proof/adopt_compile.py",
+        "--compile-run",
+        "wholecompile01",
+        "--run",
+        "wholecase01"
+      ],
+      "budget_normal": true
+    },
+    {
+      "stage": "auxiliary-adopted",
+      "exit": 0,
+      "source_run": "admission01-auxiliary",
+      "scope": "Unchanged installed environment and existing negative/dependency checks; final audit rechecks identities"
+    },
+    {
+      "stage": "recursive",
+      "exit": 0,
+      "seconds": 1530.58811303298,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/proof/recursive_check.py",
+        "--compile-run",
+        "wholecompile01",
+        "--run",
+        "wholecase01-recursive",
+        "--jobs",
+        "32",
+        "--memory-gib",
+        "32",
+        "--seconds",
+        "14400",
+        "--budget-runner",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py",
+        "--module",
+        "SpmmAdmission.FinalCheck"
+      ]
+    },
+    {
+      "stage": "binding-audit",
+      "exit": 0,
+      "seconds": 5.706969707040116,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py",
+        "--out",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/.build/wholecase01/binding-audit-budget",
+        "--timeout",
+        "1800",
+        "--reserve-gib",
+        "16",
+        "--memory-gib",
+        "16",
+        "--",
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/f32-spmm-minmax/proof/audit.py",
+        "--run",
+        "wholecase01",
+        "--compile-run",
+        "wholecompile01",
+        "--generation-run",
+        "admission01-generation",
+        "--recursive-run",
+        "wholecase01-recursive",
+        "--auxiliary-run",
+        "admission01-auxiliary"
+      ],
+      "budget_normal": true
+    }
+  ],
+  "sealed_evidence_overwritten": false,
+  "boundary": "Full C-shim modular partial correctness under source-reviewed intrinsic specs; no formal ISA/ABI/termination/arbitrary-VLEN theorem."
+}
