@@ -1,0 +1,6 @@
+From DwChw Require Import PropagatingTactics.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Lemma proof_of_dw_chw_propagating_max_partial_solve_wit_9 : DwChw.propagating_unit_goal.dw_chw_propagating_max_partial_solve_wit_9.
+Proof. unfold DwChw.propagating_unit_goal.dw_chw_propagating_max_partial_solve_wit_9, DwChw.propagating_unit_goal.dw_chw_propagating_max_partial_solve_wit_9_aux;dw_prop_solve.
+Qed.
+Print Assumptions proof_of_dw_chw_propagating_max_partial_solve_wit_9.

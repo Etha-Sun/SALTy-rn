@@ -1,0 +1,12 @@
+From DwChw Require Import RvvChecked.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_safety_wit_7.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_safety_wit_23.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_safety_wit_39.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_safety_wit_55.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_return_wit_1.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_9.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_19_pure.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_27.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_37_pure.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_46_pure.
+Print Assumptions DwChw.RvvChecked.CheckedRvv.proof_of_test_rvv_partial_solve_wit_54_pure.

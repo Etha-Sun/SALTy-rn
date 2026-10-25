@@ -1,0 +1,179 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite original NEON/repaired RVV C through independently distinct vector emulation and scalar fused oracle; no hardware/ISA/formal credit",
+  "sanitizer": "undefined",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7",
+  "input_sha256": {
+    "impl/testNEON.c": "2122aa0bdb50430ceb264be68ceb1df7664771730b9952c5c6853e0af5b33a69",
+    "impl/testRVV.c": "daf51c9c11e4d3cc18b44c91d1f92b0f07e248c275ff1ce97e9e3d54c2d1509f",
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "shim/read_scalar.c": "ac3f4f0c7c4cd98e557670d2cc0c2535922670c72331e4bb79e09fb978724d20",
+    "shim/read_api.h": "abb4eb4b67bf321dda6eb997721860e4e28f17beedc9d4b6bbc85126dd5d0d71",
+    "shim/rvv_extended_borrow.c": "2d7f4fbe3448eb0211d48a3c752429eac8e35ae0db88a602baf5f00ae5ece2ef",
+    "shim/rvv_extended_borrow.h": "a7a99c9af64eaa6aeefd20342b5f76bfd63eed979d42ee73fc5c4a200a4bb6a9",
+    "shim/vector_pixel.c": "3cd2dbae225aa311cbe4a7e491ad7346780a30c941e7a3e0843ff3f39c80f7fb",
+    "shim/vector_pixel.h": "a6af5be6a07f4e323015bf66abe109ac421197f0578e3f259140fc2a9ae7aa70",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "proof/native/regression.c": "47724cb0344146838031dcbe3b27be1237294ff9d5ad61c20c7277d8b87128d2",
+    "proof/check_native.py": "bac1f1735c672eb96566456839af974982a4a8d63b7f0709be76849fd73761dc"
+  },
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/input/proof/native/regression.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.016304827062413096,
+      "log_sha256": "e61160a649069da1428858b0b8a0e5eef9e4f7a998da0c338e013d274d10af77"
+    },
+    {
+      "label": "compile-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.1703536538407207,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.7708010149654,
+      "log_sha256": "74e25b1e4ac1b4eb4d798e5ccf3fd8b32f5be4e4bd2481ac81a49e22de6cd6a6"
+    },
+    {
+      "label": "compile-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_ONE",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/wrong-one"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.3335820261854678,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/wrong-one"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.004589340183883905,
+      "log_sha256": "2308171507aa61a5af179f8b8de91c7410e82e76445d2056f372d96d427c8a5a"
+    },
+    {
+      "label": "compile-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_BOTH",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/wrong-both"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.6597209570463747,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-946z5mu7/wrong-both"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.006718180142343044,
+      "log_sha256": "cf49f62c50a859f8e11e8fc53234cb2eb72b37dadba3bca5df03937983c241b1"
+    }
+  ],
+  "configured_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "actual_recursive_local_input_sha256": {
+    "proof/native/regression.c": "47724cb0344146838031dcbe3b27be1237294ff9d5ad61c20c7277d8b87128d2",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "shim/read_scalar.c": "ac3f4f0c7c4cd98e557670d2cc0c2535922670c72331e4bb79e09fb978724d20",
+    "shim/read_api.h": "abb4eb4b67bf321dda6eb997721860e4e28f17beedc9d4b6bbc85126dd5d0d71",
+    "shim/rvv_extended_borrow.c": "2d7f4fbe3448eb0211d48a3c752429eac8e35ae0db88a602baf5f00ae5ece2ef",
+    "shim/rvv_extended_borrow.h": "a7a99c9af64eaa6aeefd20342b5f76bfd63eed979d42ee73fc5c4a200a4bb6a9",
+    "shim/vector_pixel.c": "3cd2dbae225aa311cbe4a7e491ad7346780a30c941e7a3e0843ff3f39c80f7fb",
+    "shim/vector_pixel.h": "a6af5be6a07f4e323015bf66abe109ac421197f0578e3f259140fc2a9ae7aa70",
+    "impl/testNEON.c": "2122aa0bdb50430ceb264be68ceb1df7664771730b9952c5c6853e0af5b33a69",
+    "impl/testRVV.c": "daf51c9c11e4d3cc18b44c91d1f92b0f07e248c275ff1ce97e9e3d54c2d1509f"
+  },
+  "actual_recursive_local_input_count": 12,
+  "cases": 128520,
+  "lanes_per_side": 12247200,
+  "aliased_cases": 102816,
+  "vl_modes": 3,
+  "inactive_modes": 2,
+  "both_wrong_still_equal_oracle_rejected": true
+}

@@ -1,0 +1,32 @@
+{
+  "kernel": "f32-dwconv2d-chw",
+  "variant": "repaired",
+  "neon_changed": false,
+  "original_neon_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+  "repaired_neon_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+  "original_rvv_sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+  "repaired_rvv_sha256": "8b1aa8d8822c09694d966c824a2a8144372b475427ae90b33a265f7d7b409818",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "1743581d26a7cb9d91acd7a94525ec87d805cc45cd1dbbe576cf9694f5fc7673",
+  "causes": [
+    "ARM FMAX/FMIN propagate NaNs; RVV maxNumber/minNumber retain the numeric operand when only one operand is NaN."
+  ],
+  "changes": [
+    "Use real RVV self-NaN masks and vector merges for propagating min/max.",
+    "Create separate bit-preserving value copies for each repeated comparison operand. No scalar b!=b or NaN literal helper.",
+    "Preserve original nine-FMA order, row/column/VL loops, reverse o2/o1/o0 store order and all alias/tail paths."
+  ],
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "fb75e69e110be736d103dd0267828191e6e6ed2f1ffdc3a700818a39a8c4e720",
+  "scope": "Full FP32 values/bounds and unordered bounds; numeric equality or bothNaN. FP flags unobserved/traps disabled; no physical ISA/ABI refinement claim.",
+  "reference_only": "Frama candidate preserved separately, not copied with its dimension/separation cuts or scalar selfcompare. Arcadia target equals original.",
+  "exact_patch_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/repair-exact-_dvi39fq",
+  "whole_kernel_verified": false,
+  "actual_C_fields_checked": 0,
+  "native_repaired_validation_pending": false,
+  "native_evidence": {
+    "proof/native-undefined-status.json": "c7c10a0459da23f26f8a9aecec7218d7949c70e218831e5f4a9a34bfe90967d3",
+    "proof/native-address-status.json": "b0b9e901944260747065cd1eea40cd949a3572644cb48f3965f3f5061947ef68"
+  },
+  "native_scope": "Finite actual C through three legalVL modes/two inactive choices with independent scalar exact-fused oracle, read aliases/frame, wrongone/both controls. Not formal proof or hardware execution."
+}

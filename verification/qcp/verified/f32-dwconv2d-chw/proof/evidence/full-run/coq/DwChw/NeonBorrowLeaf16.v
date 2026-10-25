@@ -1,0 +1,6 @@
+From DwChw Require Import NeonBorrowTactics.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Lemma proof_of_dw_n_vextq_f32_partial_solve_wit_3_pure : DwChw.neon_borrow_unit_goal.dw_n_vextq_f32_partial_solve_wit_3_pure.
+Proof. unfold DwChw.neon_borrow_unit_goal.dw_n_vextq_f32_partial_solve_wit_3_pure;dw_neon_borrow_solve.
+Qed.
+Print Assumptions proof_of_dw_n_vextq_f32_partial_solve_wit_3_pure.

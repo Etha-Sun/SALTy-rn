@@ -1,0 +1,8 @@
+From DwChw Require Import neon_unit_goal dw_maps_strategy_proof dw_output_strategy_proof NeonKernelCallersChecked NeonKernelMemoryRootChecked.
+Module CheckedNeon:DwChw.neon_unit_goal.VC_Correct.
+Include DwChw.dw_maps_strategy_proof.CheckedMaps.
+Include DwChw.dw_output_strategy_proof.CheckedOutput.
+Include DwChw.NeonKernelCallersChecked.CheckedNeonCallers.
+Include DwChw.NeonKernelMemoryRootChecked.CheckedRootMemory.
+End CheckedNeon.
+Module ExactCheckedNeon:DwChw.neon_unit_goal.VC_Correct:=CheckedNeon.

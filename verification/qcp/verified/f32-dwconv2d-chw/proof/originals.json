@@ -1,0 +1,37 @@
+{
+  "kernel": "f32-dwconv2d-chw",
+  "namespace": "DwChw",
+  "claim": "https://github.com/Etha-Sun/SALTy-rn/pull/1#issuecomment-6383593670",
+  "source_base": "336add5e9428bc458dd3ced1259e3be66e689303",
+  "originals": {
+    "neon": {
+      "path": "kernels/source/f32-dwconv2d-chw.c",
+      "sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+      "source_commit": "336add5e9428bc458dd3ced1259e3be66e689303",
+      "original_copy": "proof/original/testNEON.c",
+      "current_copy": "impl/testNEON.c"
+    },
+    "rvv": {
+      "path": "kernels/target/f32-dwconv2d-chw.c",
+      "sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+      "source_commit": "336add5e9428bc458dd3ced1259e3be66e689303",
+      "original_copy": "proof/original/testRVV.c",
+      "current_copy": "impl/testRVV.c"
+    }
+  },
+  "reference_only": {
+    "frama_ref": "1b5c46253105caee4f22dd003f1b6e49bd955978",
+    "frama_rvv_sha256": "b7655578e41d4a8c28c07668bc0989c139de3e76497e3af87fab2b9d1f7a470c",
+    "arcadia_ref": "4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca",
+    "arcadia_equals_original": true,
+    "proof_credit_transferred": false,
+    "do_not_copy_constraints": [
+      "h,w<=SIZE_MAX/32",
+      "read-read separated input/zero/weights"
+    ]
+  },
+  "whole_kernel_verified": false,
+  "actual_C_fields_checked": 0,
+  "sources_unmodified": true,
+  "created_utc": "2026-10-24T11:22:09.954035+00:00"
+}

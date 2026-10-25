@@ -1,0 +1,27 @@
+Chars 0 - 35 [From~Coq~Require~Import~ZArith...] 0.278 secs (0.2u,0.077s)
+Chars 36 - 100 [From~DwChw~Require~Import~Neon...] 3.248 secs (2.723u,0.506s)
+Chars 101 - 125 [Import~Snaive_C_Rules64.] 0.031 secs (0.031u,0.s)
+Chars 126 - 151 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 152 - 173 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 174 - 300 [Lemma~proof_of_dw_neon_pixel_c...] 0. secs (0.u,0.s)
+Chars 301 - 307 [Proof.] 0. secs (0.u,0.s)
+Chars 308 - 404 [(unfold~DwChw.neon_pixel_unit_...] 2.392 secs (2.318u,0.011s)
+Chars 405 - 409 [Qed.] 0.196 secs (0.194u,0.s)
+Axioms:
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 410 - 479 [Print~Assumptions~proof_of_dw_...] 0.087 secs (0.086u,0.s)

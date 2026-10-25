@@ -1,0 +1,193 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite original NEON/repaired RVV C through independently distinct vector emulation and scalar fused oracle; no hardware/ISA/formal credit",
+  "sanitizer": "address",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky",
+  "input_sha256": {
+    "impl/testNEON.c": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+    "impl/testRVV.c": "8b1aa8d8822c09694d966c824a2a8144372b475427ae90b33a265f7d7b409818",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "proof/native/regression.c": "60f034e7999882d26e6188b0566eb607871a266ffab6553923b297c7e3c45cc8",
+    "proof/check_native.py": "98518f50c26e333ebc91bf77bf7285f871d7c2b7082da7f3eeb0cd86b9275176"
+  },
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/input/proof/native/regression.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.020748707000166178,
+      "log_sha256": "789efac564aa7425cc6865ae10ac0d6a25e2fe1f7d0f71566906f58ab74460f5"
+    },
+    {
+      "label": "compile-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.589337387122214,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-correct",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 4.057092190952972,
+      "log_sha256": "24651fcfe6155bec2d75766568b7a42c46be15cb3ef552127dcd87e9a75f478a"
+    },
+    {
+      "label": "compile-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_ONE",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/wrong-one"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.6075327480211854,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-one",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/wrong-one"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.11608791095204651,
+      "log_sha256": "74550aa836db931c24ac489787d7d33a2bd59fca94e2e6f36a6cc0213e77243b"
+    },
+    {
+      "label": "compile-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=address",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_BOTH",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/wrong-both"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.340748919872567,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-both",
+      "command": [
+        "systemd-run",
+        "--user",
+        "--wait",
+        "--pipe",
+        "--quiet",
+        "-p",
+        "MemoryMax=17179869184",
+        "-p",
+        "MemorySwapMax=0",
+        "python3",
+        "-c",
+        "import pathlib,subprocess,sys,json;p=pathlib.Path('/proc/self/cgroup').read_text().strip().split('::',1)[1];d=pathlib.Path('/sys/fs/cgroup')/p.lstrip('/');m=(d/'memory.max').read_text().strip();s=(d/'memory.swap.max').read_text().strip();assert m=='17179869184'and s=='0';print(json.dumps({'actual_memory_max':m,'actual_memory_swap_max':s}),flush=True);sys.exit(subprocess.run(sys.argv[1:]).returncode)",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-address-jjrqd5ky/wrong-both"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.11088374210521579,
+      "log_sha256": "278b02616e20500d90b0e8fcf6e88764fc7d11fa2d28eecd9762aa77e93391f2"
+    }
+  ],
+  "configured_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "actual_recursive_local_input_sha256": {
+    "proof/native/regression.c": "60f034e7999882d26e6188b0566eb607871a266ffab6553923b297c7e3c45cc8",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "impl/testNEON.c": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+    "impl/testRVV.c": "8b1aa8d8822c09694d966c824a2a8144372b475427ae90b33a265f7d7b409818"
+  },
+  "actual_recursive_local_input_count": 4,
+  "cases": 128520,
+  "lanes_per_side": 12247200,
+  "aliased_cases": 102816,
+  "vl_modes": 3,
+  "inactive_modes": 2,
+  "both_wrong_still_equal_oracle_rejected": true,
+  "actual_memory_max": 17179869184,
+  "actual_memory_swap_max": 0,
+  "LSan_enabled": true
+}

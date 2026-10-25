@@ -1,0 +1,441 @@
+{
+  "scope": "Compatibility change: 52 private one-use hoisted vector temporaries end at their original consuming statement. Six original output-initializer declaration groups and mask_table stay in original scopes. No arithmetic/reordering/address/loop/model change; not an original-C whole proof or a proven explanation of the old tool crash.",
+  "before_sha256": "7d30da93f304cb4452d239d98341777fb40a3c277569d33ccbde3fd52d10338d",
+  "after_sha256": "2122aa0bdb50430ceb264be68ceb1df7664771730b9952c5c6853e0af5b33a69",
+  "source_patch": "proof/history/neon-short-temporary-scopes/scope.patch",
+  "groups": [
+    {
+      "temporary_names": [
+        "dw_nested_0"
+      ],
+      "original_statement": "float32x4_t vo0p0 = vdupq_lane_f32(dw_nested_0, 0);",
+      "scoped": false,
+      "source_line": 76
+    },
+    {
+      "temporary_names": [
+        "dw_nested_1"
+      ],
+      "original_statement": "float32x4_t vo1p0 = vdupq_lane_f32(dw_nested_1, 0);",
+      "scoped": false,
+      "source_line": 78
+    },
+    {
+      "temporary_names": [
+        "dw_nested_2"
+      ],
+      "original_statement": "float32x4_t vo2p0 = vdupq_lane_f32(dw_nested_2, 0);",
+      "scoped": false,
+      "source_line": 80
+    },
+    {
+      "temporary_names": [
+        "dw_nested_3"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi0x4567, dw_nested_3, 0);",
+      "scoped": true,
+      "source_line": 89
+    },
+    {
+      "temporary_names": [
+        "dw_nested_4"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi1x4567, dw_nested_4, 0);",
+      "scoped": true,
+      "source_line": 91
+    },
+    {
+      "temporary_names": [
+        "dw_nested_5"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi2x4567, dw_nested_5, 0);",
+      "scoped": true,
+      "source_line": 93
+    },
+    {
+      "temporary_names": [
+        "dw_nested_6"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi1x4567, dw_nested_6, 1);",
+      "scoped": true,
+      "source_line": 96
+    },
+    {
+      "temporary_names": [
+        "dw_nested_7"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi2x4567, dw_nested_7, 1);",
+      "scoped": true,
+      "source_line": 98
+    },
+    {
+      "temporary_names": [
+        "dw_nested_8"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi3x4567, dw_nested_8, 1);",
+      "scoped": true,
+      "source_line": 100
+    },
+    {
+      "temporary_names": [
+        "dw_nested_9"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi0x3456, dw_nested_9, 1);",
+      "scoped": true,
+      "source_line": 113
+    },
+    {
+      "temporary_names": [
+        "dw_nested_10"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi1x3456, dw_nested_10, 1);",
+      "scoped": true,
+      "source_line": 115
+    },
+    {
+      "temporary_names": [
+        "dw_nested_11"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi2x3456, dw_nested_11, 1);",
+      "scoped": true,
+      "source_line": 117
+    },
+    {
+      "temporary_names": [
+        "dw_nested_12"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi1x3456, dw_nested_12, 0);",
+      "scoped": true,
+      "source_line": 120
+    },
+    {
+      "temporary_names": [
+        "dw_nested_13"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi2x3456, dw_nested_13, 0);",
+      "scoped": true,
+      "source_line": 122
+    },
+    {
+      "temporary_names": [
+        "dw_nested_14"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi3x3456, dw_nested_14, 0);",
+      "scoped": true,
+      "source_line": 124
+    },
+    {
+      "temporary_names": [
+        "dw_nested_15"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi2x3456, dw_nested_15, 1);",
+      "scoped": true,
+      "source_line": 127
+    },
+    {
+      "temporary_names": [
+        "dw_nested_16"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi3x3456, dw_nested_16, 1);",
+      "scoped": true,
+      "source_line": 129
+    },
+    {
+      "temporary_names": [
+        "dw_nested_17"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi4x3456, dw_nested_17, 1);",
+      "scoped": true,
+      "source_line": 131
+    },
+    {
+      "temporary_names": [
+        "dw_nested_18"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi0x5678, dw_nested_18, 1);",
+      "scoped": true,
+      "source_line": 146
+    },
+    {
+      "temporary_names": [
+        "dw_nested_19"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi1x5678, dw_nested_19, 1);",
+      "scoped": true,
+      "source_line": 148
+    },
+    {
+      "temporary_names": [
+        "dw_nested_20"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi2x5678, dw_nested_20, 1);",
+      "scoped": true,
+      "source_line": 150
+    },
+    {
+      "temporary_names": [
+        "dw_nested_21"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi1x5678, dw_nested_21, 0);",
+      "scoped": true,
+      "source_line": 153
+    },
+    {
+      "temporary_names": [
+        "dw_nested_22"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi2x5678, dw_nested_22, 0);",
+      "scoped": true,
+      "source_line": 155
+    },
+    {
+      "temporary_names": [
+        "dw_nested_23"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi3x5678, dw_nested_23, 0);",
+      "scoped": true,
+      "source_line": 157
+    },
+    {
+      "temporary_names": [
+        "dw_nested_24"
+      ],
+      "original_statement": "float32x4_t vo0p0 = vdupq_lane_f32(dw_nested_24, 0);",
+      "scoped": false,
+      "source_line": 187
+    },
+    {
+      "temporary_names": [
+        "dw_nested_25"
+      ],
+      "original_statement": "float32x4_t vo1p0 = vdupq_lane_f32(dw_nested_25, 0);",
+      "scoped": false,
+      "source_line": 189
+    },
+    {
+      "temporary_names": [
+        "dw_nested_26"
+      ],
+      "original_statement": "float32x4_t vo2p0 = vdupq_lane_f32(dw_nested_26, 0);",
+      "scoped": false,
+      "source_line": 191
+    },
+    {
+      "temporary_names": [
+        "dw_nested_27",
+        "dw_nested_28"
+      ],
+      "original_statement": "vi0x4567 = vreinterpretq_f32_u32(dw_nested_28);",
+      "scoped": true,
+      "source_line": 194
+    },
+    {
+      "temporary_names": [
+        "dw_nested_29",
+        "dw_nested_30"
+      ],
+      "original_statement": "vi1x4567 = vreinterpretq_f32_u32(dw_nested_30);",
+      "scoped": true,
+      "source_line": 197
+    },
+    {
+      "temporary_names": [
+        "dw_nested_31",
+        "dw_nested_32"
+      ],
+      "original_statement": "vi2x4567 = vreinterpretq_f32_u32(dw_nested_32);",
+      "scoped": true,
+      "source_line": 200
+    },
+    {
+      "temporary_names": [
+        "dw_nested_33",
+        "dw_nested_34"
+      ],
+      "original_statement": "vi3x4567 = vreinterpretq_f32_u32(dw_nested_34);",
+      "scoped": true,
+      "source_line": 203
+    },
+    {
+      "temporary_names": [
+        "dw_nested_35",
+        "dw_nested_36"
+      ],
+      "original_statement": "vi4x4567 = vreinterpretq_f32_u32(dw_nested_36);",
+      "scoped": true,
+      "source_line": 206
+    },
+    {
+      "temporary_names": [
+        "dw_nested_37"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi0x4567, dw_nested_37, 0);",
+      "scoped": true,
+      "source_line": 210
+    },
+    {
+      "temporary_names": [
+        "dw_nested_38"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi1x4567, dw_nested_38, 0);",
+      "scoped": true,
+      "source_line": 212
+    },
+    {
+      "temporary_names": [
+        "dw_nested_39"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi2x4567, dw_nested_39, 0);",
+      "scoped": true,
+      "source_line": 214
+    },
+    {
+      "temporary_names": [
+        "dw_nested_40"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi1x4567, dw_nested_40, 1);",
+      "scoped": true,
+      "source_line": 217
+    },
+    {
+      "temporary_names": [
+        "dw_nested_41"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi2x4567, dw_nested_41, 1);",
+      "scoped": true,
+      "source_line": 219
+    },
+    {
+      "temporary_names": [
+        "dw_nested_42"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi3x4567, dw_nested_42, 1);",
+      "scoped": true,
+      "source_line": 221
+    },
+    {
+      "temporary_names": [
+        "dw_nested_43"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi0x3456, dw_nested_43, 1);",
+      "scoped": true,
+      "source_line": 234
+    },
+    {
+      "temporary_names": [
+        "dw_nested_44"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi1x3456, dw_nested_44, 1);",
+      "scoped": true,
+      "source_line": 236
+    },
+    {
+      "temporary_names": [
+        "dw_nested_45"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi2x3456, dw_nested_45, 1);",
+      "scoped": true,
+      "source_line": 238
+    },
+    {
+      "temporary_names": [
+        "dw_nested_46"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi1x3456, dw_nested_46, 0);",
+      "scoped": true,
+      "source_line": 241
+    },
+    {
+      "temporary_names": [
+        "dw_nested_47"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi2x3456, dw_nested_47, 0);",
+      "scoped": true,
+      "source_line": 243
+    },
+    {
+      "temporary_names": [
+        "dw_nested_48"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi3x3456, dw_nested_48, 0);",
+      "scoped": true,
+      "source_line": 245
+    },
+    {
+      "temporary_names": [
+        "dw_nested_49"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi2x3456, dw_nested_49, 1);",
+      "scoped": true,
+      "source_line": 248
+    },
+    {
+      "temporary_names": [
+        "dw_nested_50"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi3x3456, dw_nested_50, 1);",
+      "scoped": true,
+      "source_line": 250
+    },
+    {
+      "temporary_names": [
+        "dw_nested_51"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi4x3456, dw_nested_51, 1);",
+      "scoped": true,
+      "source_line": 252
+    },
+    {
+      "temporary_names": [
+        "dw_nested_52"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi0x5678, dw_nested_52, 1);",
+      "scoped": true,
+      "source_line": 262
+    },
+    {
+      "temporary_names": [
+        "dw_nested_53"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi1x5678, dw_nested_53, 1);",
+      "scoped": true,
+      "source_line": 264
+    },
+    {
+      "temporary_names": [
+        "dw_nested_54"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi2x5678, dw_nested_54, 1);",
+      "scoped": true,
+      "source_line": 266
+    },
+    {
+      "temporary_names": [
+        "dw_nested_55"
+      ],
+      "original_statement": "vo0p0 = vfmaq_lane_f32(vo0p0, vi1x5678, dw_nested_55, 0);",
+      "scoped": true,
+      "source_line": 269
+    },
+    {
+      "temporary_names": [
+        "dw_nested_56"
+      ],
+      "original_statement": "vo1p0 = vfmaq_lane_f32(vo1p0, vi2x5678, dw_nested_56, 0);",
+      "scoped": true,
+      "source_line": 271
+    },
+    {
+      "temporary_names": [
+        "dw_nested_57"
+      ],
+      "original_statement": "vo2p0 = vfmaq_lane_f32(vo2p0, vi3x5678, dw_nested_57, 0);",
+      "scoped": true,
+      "source_line": 273
+    }
+  ],
+  "actual_scope_probe_status": ".build/scoped-temp-proof-uuj1sp5s/status-final.json",
+  "actual_scope_probe_fields": 10,
+  "whole_kernel_verified": false,
+  "native_replay_pending": true
+}

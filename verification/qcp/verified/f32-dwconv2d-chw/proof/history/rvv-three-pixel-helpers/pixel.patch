@@ -1,0 +1,95 @@
+--- before/impl/testRVV.c
++++ after/impl/testRVV.c
+@@ -1,3 +1,4 @@
++#include "../shim/vector_pixel.h"
+ #include "../shim/read_api.h"
+ #include "../shim/propagating_api.h"
+ void test_rvv(
+@@ -58,79 +59,14 @@
+       vfloat32m2_t vi3 = __riscv_vle32_v_f32m2(i3, vl);
+       vfloat32m2_t vi4 = __riscv_vle32_v_f32m2(i4, vl);
+ 
+-      vfloat32m2_t vo0 = __riscv_vfmv_v_f_f32m2(dw_read_scalar(&(weights[0])), vl);
+-      vfloat32m2_t vo1 = vo0;
+-      vfloat32m2_t vo2 = vo0;
+-
+-      // Center column
+-      vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[2])), vi0, vl);
+-      vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[2])), vi1, vl);
+-      vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[2])), vi2, vl);
+-
+-      vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[5])), vi1, vl);
+-      vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[5])), vi2, vl);
+-      vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[5])), vi3, vl);
+-
+-      vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[8])), vi2, vl);
+-      vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[8])), vi3, vl);
+-      vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[8])), vi4, vl);
+-
+-      // Left column
+-      {
+-        vfloat32m2_t v_left = __riscv_vfslide1up_vf_f32m2(vi0, prev_i0, vl);
+-        vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[1])), v_left, vl);
+-        
+-        v_left = __riscv_vfslide1up_vf_f32m2(vi1, prev_i1, vl);
+-        vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[4])), v_left, vl);
+-        vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[1])), v_left, vl);
+-        
+-        v_left = __riscv_vfslide1up_vf_f32m2(vi2, prev_i2, vl);
+-        vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[7])), v_left, vl);
+-        vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[4])), v_left, vl);
+-        vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[1])), v_left, vl);
+-        
+-        v_left = __riscv_vfslide1up_vf_f32m2(vi3, prev_i3, vl);
+-        vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[7])), v_left, vl);
+-        vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[4])), v_left, vl);
+-        
+-        v_left = __riscv_vfslide1up_vf_f32m2(vi4, prev_i4, vl);
+-        vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[7])), v_left, vl);
+-      }
+-
+-      // Right column
+-      {
+-        float next_i0 = (w > vl) ? dw_read_scalar(&(i0[vl])) : 0.0f;
+-        vfloat32m2_t v_right = __riscv_vfslide1down_vf_f32m2(vi0, next_i0, vl);
+-        vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[3])), v_right, vl);
+-        
+-        float next_i1 = (w > vl) ? dw_read_scalar(&(i1[vl])) : 0.0f;
+-        v_right = __riscv_vfslide1down_vf_f32m2(vi1, next_i1, vl);
+-        vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[6])), v_right, vl);
+-        vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[3])), v_right, vl);
+-        
+-        float next_i2 = (w > vl) ? dw_read_scalar(&(i2[vl])) : 0.0f;
+-        v_right = __riscv_vfslide1down_vf_f32m2(vi2, next_i2, vl);
+-        vo0 = __riscv_vfmacc_vf_f32m2(vo0, dw_read_scalar(&(weights[9])), v_right, vl);
+-        vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[6])), v_right, vl);
+-        vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[3])), v_right, vl);
+-        
+-        float next_i3 = (w > vl) ? dw_read_scalar(&(i3[vl])) : 0.0f;
+-        v_right = __riscv_vfslide1down_vf_f32m2(vi3, next_i3, vl);
+-        vo1 = __riscv_vfmacc_vf_f32m2(vo1, dw_read_scalar(&(weights[9])), v_right, vl);
+-        vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[6])), v_right, vl);
+-        
+-        float next_i4 = (w > vl) ? dw_read_scalar(&(i4[vl])) : 0.0f;
+-        v_right = __riscv_vfslide1down_vf_f32m2(vi4, next_i4, vl);
+-        vo2 = __riscv_vfmacc_vf_f32m2(vo2, dw_read_scalar(&(weights[9])), v_right, vl);
+-      }
+-
+-      vo0 = dw_chw_propagating_max(vo0, dw_read_scalar(&(params->scalar.min)), vl);
+-      vo1 = dw_chw_propagating_max(vo1, dw_read_scalar(&(params->scalar.min)), vl);
+-      vo2 = dw_chw_propagating_max(vo2, dw_read_scalar(&(params->scalar.min)), vl);
+-
+-      vo0 = dw_chw_propagating_min(vo0, dw_read_scalar(&(params->scalar.max)), vl);
+-      vo1 = dw_chw_propagating_min(vo1, dw_read_scalar(&(params->scalar.max)), vl);
+-      vo2 = dw_chw_propagating_min(vo2, dw_read_scalar(&(params->scalar.max)), vl);
++      const float next_i0 = (w > vl) ? dw_read_scalar(&(i0[vl])) : 0.0f;
++      const float next_i1 = (w > vl) ? dw_read_scalar(&(i1[vl])) : 0.0f;
++      const float next_i2 = (w > vl) ? dw_read_scalar(&(i2[vl])) : 0.0f;
++      const float next_i3 = (w > vl) ? dw_read_scalar(&(i3[vl])) : 0.0f;
++      const float next_i4 = (w > vl) ? dw_read_scalar(&(i4[vl])) : 0.0f;
++      vfloat32m2_t vo0 = dw_vector_pixel_compute(&vi0,&vi1,&vi2,weights,prev_i0,prev_i1,prev_i2,next_i0,next_i1,next_i2,dw_read_scalar(&(params->scalar.min)),dw_read_scalar(&(params->scalar.max)),vl);
++      vfloat32m2_t vo1 = dw_vector_pixel_compute(&vi1,&vi2,&vi3,weights,prev_i1,prev_i2,prev_i3,next_i1,next_i2,next_i3,dw_read_scalar(&(params->scalar.min)),dw_read_scalar(&(params->scalar.max)),vl);
++      vfloat32m2_t vo2 = dw_vector_pixel_compute(&vi2,&vi3,&vi4,weights,prev_i2,prev_i3,prev_i4,next_i2,next_i3,next_i4,dw_read_scalar(&(params->scalar.min)),dw_read_scalar(&(params->scalar.max)),vl);
+ 
+       __riscv_vse32_v_f32m2(o2, vo2, vl);
+       __riscv_vse32_v_f32m2(o1, vo1, vl);

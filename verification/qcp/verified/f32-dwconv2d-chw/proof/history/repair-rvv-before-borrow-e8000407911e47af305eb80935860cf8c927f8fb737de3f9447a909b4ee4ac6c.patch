@@ -1,0 +1,83 @@
+--- impl/testRVV.c
++++ impl/testRVV.c
+@@ -1,3 +1,4 @@
++#include "../shim/propagating_api.h"
+ void test_rvv(
+     size_t input_height,
+     size_t input_width,
+@@ -122,13 +123,13 @@
+         vo2 = __riscv_vfmacc_vf_f32m2(vo2, weights[9], v_right, vl);
+       }
+ 
+-      vo0 = __riscv_vfmax_vf_f32m2(vo0, params->scalar.min, vl);
+-      vo1 = __riscv_vfmax_vf_f32m2(vo1, params->scalar.min, vl);
+-      vo2 = __riscv_vfmax_vf_f32m2(vo2, params->scalar.min, vl);
+-
+-      vo0 = __riscv_vfmin_vf_f32m2(vo0, params->scalar.max, vl);
+-      vo1 = __riscv_vfmin_vf_f32m2(vo1, params->scalar.max, vl);
+-      vo2 = __riscv_vfmin_vf_f32m2(vo2, params->scalar.max, vl);
++      vo0 = dw_chw_propagating_max(vo0, params->scalar.min, vl);
++      vo1 = dw_chw_propagating_max(vo1, params->scalar.min, vl);
++      vo2 = dw_chw_propagating_max(vo2, params->scalar.min, vl);
++
++      vo0 = dw_chw_propagating_min(vo0, params->scalar.max, vl);
++      vo1 = dw_chw_propagating_min(vo1, params->scalar.max, vl);
++      vo2 = dw_chw_propagating_min(vo2, params->scalar.max, vl);
+ 
+       __riscv_vse32_v_f32m2(o2, vo2, vl);
+       __riscv_vse32_v_f32m2(o1, vo1, vl);
+--- shim/propagating.c
++++ shim/propagating.c
+@@ -0,0 +1,32 @@
++#include "propagating_api.h"
++/* Preserve ARM NaN propagation under the public numeric-or-bothNaN observer.
++ * Distinct by-value copies retain both original operands without requiring
++ * two ownerships of one local vector. No scalar floating self-comparison. */
++vfloat32m2_t dw_chw_propagating_max(vfloat32m2_t a,float b,size_t vl) 
++/*@ With (A:Z -> fp32)
++ Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7))
++ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_repaired_max(A(0),b)) && dw_fp_match(1,vl,r1,dw_repaired_max(A(1),b)) && dw_fp_match(2,vl,r2,dw_repaired_max(A(2),b)) && dw_fp_match(3,vl,r3,dw_repaired_max(A(3),b)) && dw_fp_match(4,vl,r4,dw_repaired_max(A(4),b)) && dw_fp_match(5,vl,r5,dw_repaired_max(A(5),b)) && dw_fp_match(6,vl,r6,dw_repaired_max(A(6),b)) && dw_fp_match(7,vl,r7,dw_repaired_max(A(7),b)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */
++{
++  vfloat32m2_t acopy=a;
++  vfloat32m2_t vb=__riscv_vfmv_v_f_f32m2(b,vl);
++  vfloat32m2_t bcopy=vb;
++  vbool16_t na=__riscv_vmfne_vv_f32m2_b16(a,acopy,vl);
++  vbool16_t nb=__riscv_vmfne_vv_f32m2_b16(vb,bcopy,vl);
++  vfloat32m2_t r=__riscv_vfmax_vf_f32m2(a,b,vl);
++  r=__riscv_vmerge_vvm_f32m2(r,a,na,vl);
++  return __riscv_vmerge_vvm_f32m2(r,vb,nb,vl);
++}
++vfloat32m2_t dw_chw_propagating_min(vfloat32m2_t a,float b,size_t vl) 
++/*@ With (A:Z -> fp32)
++ Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7))
++ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_repaired_min(A(0),b)) && dw_fp_match(1,vl,r1,dw_repaired_min(A(1),b)) && dw_fp_match(2,vl,r2,dw_repaired_min(A(2),b)) && dw_fp_match(3,vl,r3,dw_repaired_min(A(3),b)) && dw_fp_match(4,vl,r4,dw_repaired_min(A(4),b)) && dw_fp_match(5,vl,r5,dw_repaired_min(A(5),b)) && dw_fp_match(6,vl,r6,dw_repaired_min(A(6),b)) && dw_fp_match(7,vl,r7,dw_repaired_min(A(7),b)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */
++{
++  vfloat32m2_t acopy=a;
++  vfloat32m2_t vb=__riscv_vfmv_v_f_f32m2(b,vl);
++  vfloat32m2_t bcopy=vb;
++  vbool16_t na=__riscv_vmfne_vv_f32m2_b16(a,acopy,vl);
++  vbool16_t nb=__riscv_vmfne_vv_f32m2_b16(vb,bcopy,vl);
++  vfloat32m2_t r=__riscv_vfmin_vf_f32m2(a,b,vl);
++  r=__riscv_vmerge_vvm_f32m2(r,a,na,vl);
++  return __riscv_vmerge_vvm_f32m2(r,vb,nb,vl);
++}
+--- shim/propagating_api.h
++++ shim/propagating_api.h
+@@ -0,0 +1,17 @@
++#ifndef DWCHW_PROPAGATING_API_H
++#define DWCHW_PROPAGATING_API_H
++#if defined(DWCHW_FORMAL)
++#include "propagating_frontend.h"
++#elif !defined(DWCHW_NATIVE_ISA_ARRAYS_H)
++#include <stddef.h>
++#include <riscv_vector.h>
++#endif
++vfloat32m2_t dw_chw_propagating_max(vfloat32m2_t a,float b,size_t vl)
++/*@ With (A:Z -> fp32)
++ Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7))
++ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_repaired_max(A(0),b)) && dw_fp_match(1,vl,r1,dw_repaired_max(A(1),b)) && dw_fp_match(2,vl,r2,dw_repaired_max(A(2),b)) && dw_fp_match(3,vl,r3,dw_repaired_max(A(3),b)) && dw_fp_match(4,vl,r4,dw_repaired_max(A(4),b)) && dw_fp_match(5,vl,r5,dw_repaired_max(A(5),b)) && dw_fp_match(6,vl,r6,dw_repaired_max(A(6),b)) && dw_fp_match(7,vl,r7,dw_repaired_max(A(7),b)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;
++vfloat32m2_t dw_chw_propagating_min(vfloat32m2_t a,float b,size_t vl)
++/*@ With (A:Z -> fp32)
++ Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7))
++ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_repaired_min(A(0),b)) && dw_fp_match(1,vl,r1,dw_repaired_min(A(1),b)) && dw_fp_match(2,vl,r2,dw_repaired_min(A(2),b)) && dw_fp_match(3,vl,r3,dw_repaired_min(A(3),b)) && dw_fp_match(4,vl,r4,dw_repaired_min(A(4),b)) && dw_fp_match(5,vl,r5,dw_repaired_min(A(5),b)) && dw_fp_match(6,vl,r6,dw_repaired_min(A(6),b)) && dw_fp_match(7,vl,r7,dw_repaired_min(A(7),b)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;
++#endif

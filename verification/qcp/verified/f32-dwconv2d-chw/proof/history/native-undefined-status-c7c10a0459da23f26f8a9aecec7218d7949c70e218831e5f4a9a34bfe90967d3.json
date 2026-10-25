@@ -1,0 +1,163 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite original NEON/repaired RVV C through independently distinct vector emulation and scalar fused oracle; no hardware/ISA/formal credit",
+  "sanitizer": "undefined",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql",
+  "input_sha256": {
+    "impl/testNEON.c": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+    "impl/testRVV.c": "8b1aa8d8822c09694d966c824a2a8144372b475427ae90b33a265f7d7b409818",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "proof/native/regression.c": "60f034e7999882d26e6188b0566eb607871a266ffab6553923b297c7e3c45cc8",
+    "proof/check_native.py": "98518f50c26e333ebc91bf77bf7285f871d7c2b7082da7f3eeb0cd86b9275176"
+  },
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/input/proof/native/regression.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.03583233617246151,
+      "log_sha256": "4f2784d6491a1ed3031d1e4b7fd762c2ec7d85ac1edb617e18ab4310bbb98bb6"
+    },
+    {
+      "label": "compile-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 2.1578669149894267,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.0254307829309255,
+      "log_sha256": "74e25b1e4ac1b4eb4d798e5ccf3fd8b32f5be4e4bd2481ac81a49e22de6cd6a6"
+    },
+    {
+      "label": "compile-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_ONE",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/wrong-one"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.567756291013211,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/wrong-one"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.00427988194860518,
+      "log_sha256": "2308171507aa61a5af179f8b8de91c7410e82e76445d2056f372d96d427c8a5a"
+    },
+    {
+      "label": "compile-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_BOTH",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/wrong-both"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.6246026700828224,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-_wjp3qql/wrong-both"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.004358513979241252,
+      "log_sha256": "cf49f62c50a859f8e11e8fc53234cb2eb72b37dadba3bca5df03937983c241b1"
+    }
+  ],
+  "configured_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "actual_recursive_local_input_sha256": {
+    "proof/native/regression.c": "60f034e7999882d26e6188b0566eb607871a266ffab6553923b297c7e3c45cc8",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "impl/testNEON.c": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+    "impl/testRVV.c": "8b1aa8d8822c09694d966c824a2a8144372b475427ae90b33a265f7d7b409818"
+  },
+  "actual_recursive_local_input_count": 4,
+  "cases": 128520,
+  "lanes_per_side": 12247200,
+  "aliased_cases": 102816,
+  "vl_modes": 3,
+  "inactive_modes": 2,
+  "both_wrong_still_equal_oracle_rejected": true
+}

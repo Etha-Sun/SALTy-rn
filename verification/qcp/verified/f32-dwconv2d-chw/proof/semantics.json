@@ -1,0 +1,37 @@
+{
+  "kernel": "f32-dwconv2d-chw",
+  "namespace": "DwChw",
+  "whole_kernel_verified": false,
+  "status": "candidate; complete main/helper/caller/strategy fresh gate still mandatory",
+  "verification_scope": "Repaired and disclosed compatible C-shim modular partial correctness under explicit reviewed intrinsic specifications",
+  "original_C_refinement_established": false,
+  "physical_ISA_ABI_compiler_refinement_established": false,
+  "termination_proved": false,
+  "hardware": {
+    "NEON": "AArch64 binary32x4/x2 vector representation",
+    "RVV": "RVV1.0 fixed VLEN128, SEW32, LMUL2, VLMAX8, XLEN64; all architecturally legal VL; inactive lanes unconstrained"
+  },
+  "floating_point": {
+    "domain": "Every binary32 value including quiet/signaling NaN payloads, infinities and signed zero",
+    "configuration": "RNE; DN/FZ/FIZ/AH/traps disabled; FP exception flags not observed",
+    "observation": "IEEE numeric equality or both NaN; signed zeros may compare equal; no all-output bit equality claim",
+    "computation": "Original ordered nine-FMA stencil followed by propagating min/max; no associativity assumption"
+  },
+  "public_domain": {
+    "dimensions": "H>0, N>0; input_width=4*N; padding_top=1; exact unsigned64 address geometry from ProgramModel.dw_inputs and public caller contracts",
+    "read_windows": "Input H*N+3 float cells, supplied zero row N+3, ten weights, two clamp parameters; each actual read must be initialized",
+    "read_aliasing": "One shared readonly map; input, zero, weights and parameters may overlap",
+    "write_aliasing": "One owned output map covers H*N cells; clipped last rows may alias, stores execute o2 then o1 then o0",
+    "output_read_overlap": "The actual public separation contract dw_data(F) * dw_output(W,O) applies; arbitrary output/readonly overlap is not asserted",
+    "unwritten_frame": "Own prior option values preserved at every unwritten address, including None"
+  },
+  "counts": {
+    "actual_C_units": 13,
+    "actual_C_fields": 1167,
+    "ordinary_C_bodies": 37,
+    "actual_strategies": 3,
+    "strategy_fields": 11,
+    "original_or_repair_intrinsics": 30
+  },
+  "evidence_boundary": "Component/native/SDK/source-audit successes do not constitute whole-kernel admission; exact final sources, fresh QCP, ordinary Coq, interfaces and assumptions must all pass"
+}

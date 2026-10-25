@@ -1,0 +1,947 @@
+{
+  "scope": "All29 original/repair ISA terminals have explicit value models and source-reviewed C contract declarations; actual whole-kernel caller bindings remain pending. Contracts themselves are not a formal ISA refinement theorem.",
+  "whole_kernel_verified": false,
+  "official_sources": {
+    "ARM_ACLE": {
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "version": "aef52c2",
+      "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+      "bytes": 3587774
+    },
+    "RVV_V1.0": {
+      "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "version": "1.0",
+      "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+      "bytes": 207611
+    }
+  },
+  "original_intrinsics": {
+    "NEON": [
+      "vandq_u32",
+      "vdupq_lane_f32",
+      "vdupq_n_f32",
+      "vextq_f32",
+      "vfmaq_lane_f32",
+      "vget_high_f32",
+      "vget_low_f32",
+      "vld1_f32",
+      "vld1q_f32",
+      "vld1q_u32",
+      "vmaxq_f32",
+      "vminq_f32",
+      "vmovq_n_f32",
+      "vreinterpretq_f32_u32",
+      "vreinterpretq_u32_f32",
+      "vst1_f32",
+      "vst1_lane_f32",
+      "vst1q_f32"
+    ],
+    "RVV": [
+      "__riscv_vfmacc_vf_f32m2",
+      "__riscv_vfmax_vf_f32m2",
+      "__riscv_vfmin_vf_f32m2",
+      "__riscv_vfmv_v_f_f32m2",
+      "__riscv_vfslide1down_vf_f32m2",
+      "__riscv_vfslide1up_vf_f32m2",
+      "__riscv_vle32_v_f32m2",
+      "__riscv_vse32_v_f32m2",
+      "__riscv_vsetvl_e32m2"
+    ]
+  },
+  "entry_count": 29,
+  "entries": [
+    {
+      "name": "vandq_u32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_and",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vandq_u32(uint32x4_t a,uint32x4_t b)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z)\n Require store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3) * store(&(b.s0),unsigned int,b0) * store(&(b.s1),unsigned int,b1) * store(&(b.s2),unsigned int,b2) * store(&(b.s3),unsigned int,b3)\n Ensure store(&(__return.s0),unsigned int,dw_arm_and(dw_u4(a0,a1,a2,a3),dw_u4(b0,b1,b2,b3),0)) * store(&(__return.s1),unsigned int,dw_arm_and(dw_u4(a0,a1,a2,a3),dw_u4(b0,b1,b2,b3),1)) * store(&(__return.s2),unsigned int,dw_arm_and(dw_u4(a0,a1,a2,a3),dw_u4(b0,b1,b2,b3),2)) * store(&(__return.s3),unsigned int,dw_arm_and(dw_u4(a0,a1,a2,a3),dw_u4(b0,b1,b2,b3),3)) */;",
+      "contract_sha256": "5f53716a5d9d8f12c7186825b8c79fa7dfc3298adf3155593e072c0f25507ee4",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vdupq_lane_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_dup_lane",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vdupq_lane_f32(float32x2_t a,int lane)\n/*@ With (a0:fp32) (a1:fp32)\n Require 0<=lane && lane<2 && store(&(a.s0),float,a0) * store(&(a.s1),float,a1)\n Ensure store(&(__return.s0),float,dw_fp2(a0,a1,lane)) * store(&(__return.s1),float,dw_fp2(a0,a1,lane)) * store(&(__return.s2),float,dw_fp2(a0,a1,lane)) * store(&(__return.s3),float,dw_fp2(a0,a1,lane)) */;",
+      "contract_sha256": "481bf804f51e0c1bd506512aa25c80387fdfa97382d3e56a5214b828141907b8",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4",
+      "immediate_domain": "0<=lane<2"
+    },
+    {
+      "name": "vdupq_n_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_dup",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vdupq_n_f32(float x)\n/*@ Require emp Ensure store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */;",
+      "contract_sha256": "43ae2c13ffa40075846f7ab3891f68de369133d95c2016b6628db7f04e9dc538",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vextq_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_ext",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vextq_f32(float32x4_t a,float32x4_t b,int k)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32)\n Require 0<=k && k<4 && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)\n Ensure store(&(__return.s0),float,dw_arm_ext(dw_fp4(a0,a1,a2,a3),dw_fp4(b0,b1,b2,b3),k,0)) * store(&(__return.s1),float,dw_arm_ext(dw_fp4(a0,a1,a2,a3),dw_fp4(b0,b1,b2,b3),k,1)) * store(&(__return.s2),float,dw_arm_ext(dw_fp4(a0,a1,a2,a3),dw_fp4(b0,b1,b2,b3),k,2)) * store(&(__return.s3),float,dw_arm_ext(dw_fp4(a0,a1,a2,a3),dw_fp4(b0,b1,b2,b3),k,3)) */;",
+      "contract_sha256": "07089e052403f4e1d980a10515a8a4f2e4ccb66755cd7e9187f30bf8cecc3c9b",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4",
+      "immediate_domain": "0<=k<4; actual kernel uses k=1 or3"
+    },
+    {
+      "name": "vfmaq_lane_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_fma_lane",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        },
+        {
+          "FQ": "DwChw.Model.dw_arm_fma",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "b8ee9082cea107693e1e96b58a7361ec83e6c2fb8cdccf54151d603e4be7f696"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vfmaq_lane_f32(float32x4_t c,float32x4_t a,float32x2_t b,int lane)\n/*@ With (c0:fp32) (c1:fp32) (c2:fp32) (c3:fp32) (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32)\n Require 0<=lane && lane<2 && store(&(c.s0),float,c0) * store(&(c.s1),float,c1) * store(&(c.s2),float,c2) * store(&(c.s3),float,c3) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1)\n Ensure store(&(__return.s0),float,dw_arm_fma(c0,a0,dw_fp2(b0,b1,lane))) * store(&(__return.s1),float,dw_arm_fma(c1,a1,dw_fp2(b0,b1,lane))) * store(&(__return.s2),float,dw_arm_fma(c2,a2,dw_fp2(b0,b1,lane))) * store(&(__return.s3),float,dw_arm_fma(c3,a3,dw_fp2(b0,b1,lane))) */;",
+      "contract_sha256": "c0eb9a7efbb0e73d1d737d8d2518d154c04555f2355d16f69af49213038d9236",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4",
+      "immediate_domain": "0<=lane<2"
+    },
+    {
+      "name": "vget_high_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_high",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vget_high_f32(float32x4_t a)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)\n Ensure store(&(__return.s0),float,a2) * store(&(__return.s1),float,a3) */;",
+      "contract_sha256": "d9ec9e9ad8ac5ce605589ab8a37b9b5736872c49c913ffa8582d14c13d38c001",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<2"
+    },
+    {
+      "name": "vget_low_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_low",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vget_low_f32(float32x4_t a)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)\n Ensure store(&(__return.s0),float,a0) * store(&(__return.s1),float,a1) */;",
+      "contract_sha256": "216206f2a081ece793643bbf772fb0ae5de167a087cf99040ed860165db85a49",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<2"
+    },
+    {
+      "name": "vld1_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_load",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vld1_f32(const float *p)\n/*@ With (F:DwROMap) Require dw_window(F,p,2) && dw_data(F) Ensure dw_data(F) * store(&(__return.s0),float,dw_get(F,p+4*0)) * store(&(__return.s1),float,dw_get(F,p+4*1)) */;",
+      "contract_sha256": "fd4505eacea5b0d376dfa9cfba428d8bfcb1cc461fd0abda14db9d3aec6005bd",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<2"
+    },
+    {
+      "name": "vld1q_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_load",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vld1q_f32(const float *p)\n/*@ With (F:DwROMap) Require dw_window(F,p,4) && dw_data(F) Ensure dw_data(F) * store(&(__return.s0),float,dw_get(F,p+4*0)) * store(&(__return.s1),float,dw_get(F,p+4*1)) * store(&(__return.s2),float,dw_get(F,p+4*2)) * store(&(__return.s3),float,dw_get(F,p+4*3)) */;",
+      "contract_sha256": "93315d0d8ab27f0d90157b856f095f84c048ac6e088357028beaf68a83e113ca",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vld1q_u32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_load_u32",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vld1q_u32(const uint32_t *p)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) Require store(p+0,unsigned int,a0) * store(p+1,unsigned int,a1) * store(p+2,unsigned int,a2) * store(p+3,unsigned int,a3) Ensure store(p+0,unsigned int,a0) * store(p+1,unsigned int,a1) * store(p+2,unsigned int,a2) * store(p+3,unsigned int,a3) * store(&(__return.s0),unsigned int,a0) * store(&(__return.s1),unsigned int,a1) * store(&(__return.s2),unsigned int,a2) * store(&(__return.s3),unsigned int,a3) */;",
+      "contract_sha256": "8e9965646c4c17b4320358e3fa078449e3d0638d8b97247f9dba443ab9c7be40",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4",
+      "memory_note": "Unsigned32 word reads of the private signed-int32 constant mask table; integer bit representation bridge is pending, never treated as Float cells."
+    },
+    {
+      "name": "vmaxq_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_max_lane",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vmaxq_f32(float32x4_t a,float32x4_t b)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)\n Ensure store(&(__return.s0),float,dw_arm_max(a0,b0)) * store(&(__return.s1),float,dw_arm_max(a1,b1)) * store(&(__return.s2),float,dw_arm_max(a2,b2)) * store(&(__return.s3),float,dw_arm_max(a3,b3)) */;",
+      "contract_sha256": "2ee4780554dcc6ce24782efd46d0a6b7fdbf88e96d640276c21cd81d87193fad",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vminq_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_min_lane",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vminq_f32(float32x4_t a,float32x4_t b)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)\n Ensure store(&(__return.s0),float,dw_arm_min(a0,b0)) * store(&(__return.s1),float,dw_arm_min(a1,b1)) * store(&(__return.s2),float,dw_arm_min(a2,b2)) * store(&(__return.s3),float,dw_arm_min(a3,b3)) */;",
+      "contract_sha256": "81e08e38bc8a1d1d69f2ab674dd8bd4a1f665c4af83b59820213026a785650bd",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vmovq_n_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_dup",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vmovq_n_f32(float x)\n/*@ Require emp Ensure store(&(__return.s0),float,x) * store(&(__return.s1),float,x) * store(&(__return.s2),float,x) * store(&(__return.s3),float,x) */;",
+      "contract_sha256": "55dee8a999e265bde22197760ce727da2413d5749df1de5f17f16c69c1357bba",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vreinterpretq_f32_u32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_from_bits",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vreinterpretq_f32_u32(uint32x4_t a)\n/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z)\n Require store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3)\n Ensure store(&(__return.s0),float,fp32_of_bits(a0)) * store(&(__return.s1),float,fp32_of_bits(a1)) * store(&(__return.s2),float,fp32_of_bits(a2)) * store(&(__return.s3),float,fp32_of_bits(a3)) */;",
+      "contract_sha256": "e89d8000175ec6bee4c46ffbbd860b91390eef16c9879c68211ec7f3e816b7bc",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vreinterpretq_u32_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_to_bits",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vreinterpretq_u32_f32(float32x4_t a)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32)\n Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)\n Ensure store(&(__return.s0),unsigned int,bits_of_fp32(a0)) * store(&(__return.s1),unsigned int,bits_of_fp32(a1)) * store(&(__return.s2),unsigned int,bits_of_fp32(a2)) * store(&(__return.s3),unsigned int,bits_of_fp32(a3)) */;",
+      "contract_sha256": "6bc1d13439e5c10403c6c7bb038bc8605a9917e1a83bcecca85f051e9500fcae",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "vst1_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_store",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vst1_f32(float *p,float32x2_t a)\n/*@ With (a0:fp32) (a1:fp32) Require undef_data_at(p+0,float) * undef_data_at(p+1,float) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) Ensure store(p+0,float,a0) * store(p+1,float,a1) */;",
+      "contract_sha256": "379a1c0591dca1e095eba68253cdedc55c84c91a0d68d92838152c49d254cb26",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<2"
+    },
+    {
+      "name": "vst1_lane_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_store",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vst1_lane_f32(float *p,float32x2_t a,int lane)\n/*@ With (a0:fp32) (a1:fp32) Require lane==0 && undef_data_at(p+0,float) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) Ensure store(p+0,float,a0) */;",
+      "contract_sha256": "f507b0e3cf31d8c347f8f7cdf0a90a027416f510a8a061a960f701af333513fd",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<2"
+    },
+    {
+      "name": "vst1q_f32",
+      "side": "NEON",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "binary32 NEON4/2 lanes",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_store",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+        "version": "aef52c2",
+        "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+        "bytes": 3587774
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "vst1q_f32(float *p,float32x4_t a)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) Require undef_data_at(p+0,float) * undef_data_at(p+1,float) * undef_data_at(p+2,float) * undef_data_at(p+3,float) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) Ensure store(p+0,float,a0) * store(p+1,float,a1) * store(p+2,float,a2) * store(p+3,float,a3) */;",
+      "contract_sha256": "be4db8117ce34e9c8891c9ed0e1292cd0fb69f48aa382ed77ae5a0035fef908d",
+      "header": "shim/neon_intrinsics.h",
+      "header_sha256": "1e5cb16fc75609139119e12f2535ba9b35cc0563b3879cdde3183bf61d72ad30",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<4"
+    },
+    {
+      "name": "__riscv_vfmacc_vf_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_rvv_fma_lane",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vfmacc_vf_f32m2(vfloat32m2_t c,float x,vfloat32m2_t a,size_t vl)\n/*@ With (c0:fp32) (c1:fp32) (c2:fp32) (c3:fp32) (c4:fp32) (c5:fp32) (c6:fp32) (c7:fp32) (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32)\n Require 0<=vl && vl<=8 && store(&(c.s0),float,c0) * store(&(c.s1),float,c1) * store(&(c.s2),float,c2) * store(&(c.s3),float,c3) * store(&(c.s4),float,c4) * store(&(c.s5),float,c5) * store(&(c.s6),float,c6) * store(&(c.s7),float,c7) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7)\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_rvv_fma(c0,x,a0)) && dw_fp_match(1,vl,r1,dw_rvv_fma(c1,x,a1)) && dw_fp_match(2,vl,r2,dw_rvv_fma(c2,x,a2)) && dw_fp_match(3,vl,r3,dw_rvv_fma(c3,x,a3)) && dw_fp_match(4,vl,r4,dw_rvv_fma(c4,x,a4)) && dw_fp_match(5,vl,r5,dw_rvv_fma(c5,x,a5)) && dw_fp_match(6,vl,r6,dw_rvv_fma(c6,x,a6)) && dw_fp_match(7,vl,r7,dw_rvv_fma(c7,x,a7)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "38562d97280d1b994fcdbd479e8838e0bbe42a5033c863f4b097d29b1e9edc3b",
+      "header": "shim/rvv_extended_intrinsics.h",
+      "header_sha256": "efc800eee342a86e525dab694bcb4286649fcd87b010b4ad89eec3cd9369b8f9",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vfmax_vf_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.Model.fp32_max_number",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "b8ee9082cea107693e1e96b58a7361ec83e6c2fb8cdccf54151d603e4be7f696"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vfmax_vf_f32m2(vfloat32m2_t a,float x,size_t vl)\n/*@ With (A:Z -> fp32)\n Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,fp32_max_number(A(0),x)) && dw_fp_match(1,vl,r1,fp32_max_number(A(1),x)) && dw_fp_match(2,vl,r2,fp32_max_number(A(2),x)) && dw_fp_match(3,vl,r3,fp32_max_number(A(3),x)) && dw_fp_match(4,vl,r4,fp32_max_number(A(4),x)) && dw_fp_match(5,vl,r5,fp32_max_number(A(5),x)) && dw_fp_match(6,vl,r6,fp32_max_number(A(6),x)) && dw_fp_match(7,vl,r7,fp32_max_number(A(7),x)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "23646110451fd048454b49a01aa641449ba4409900eef2363f368fe5539c35e4",
+      "header": "shim/intrinsics_rvv.h",
+      "header_sha256": "bf804730eb5caba0cd5a18b2873890d70747877214c4bfb54acd839aae3f8d84",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vfmin_vf_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.Model.fp32_min_number",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "b8ee9082cea107693e1e96b58a7361ec83e6c2fb8cdccf54151d603e4be7f696"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vfmin_vf_f32m2(vfloat32m2_t a,float x,size_t vl)\n/*@ With (A:Z -> fp32)\n Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,fp32_min_number(A(0),x)) && dw_fp_match(1,vl,r1,fp32_min_number(A(1),x)) && dw_fp_match(2,vl,r2,fp32_min_number(A(2),x)) && dw_fp_match(3,vl,r3,fp32_min_number(A(3),x)) && dw_fp_match(4,vl,r4,fp32_min_number(A(4),x)) && dw_fp_match(5,vl,r5,fp32_min_number(A(5),x)) && dw_fp_match(6,vl,r6,fp32_min_number(A(6),x)) && dw_fp_match(7,vl,r7,fp32_min_number(A(7),x)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "52e4c8f4c1089af09f0f08dbc24bfe8fc5616b8169bf0cd60396df6469f26516",
+      "header": "shim/intrinsics_rvv.h",
+      "header_sha256": "bf804730eb5caba0cd5a18b2873890d70747877214c4bfb54acd839aae3f8d84",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vfmv_v_f_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_arm_dup",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vfmv_v_f_f32m2(float x,size_t vl)\n/*@ Require 0<=vl && vl<=8 && emp\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,x) && dw_fp_match(1,vl,r1,x) && dw_fp_match(2,vl,r2,x) && dw_fp_match(3,vl,r3,x) && dw_fp_match(4,vl,r4,x) && dw_fp_match(5,vl,r5,x) && dw_fp_match(6,vl,r6,x) && dw_fp_match(7,vl,r7,x) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "9c301a80cca380d44902e201ed572ac0a056626d0aedb80178a18b6b19212b2a",
+      "header": "shim/intrinsics_rvv.h",
+      "header_sha256": "bf804730eb5caba0cd5a18b2873890d70747877214c4bfb54acd839aae3f8d84",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vfslide1down_vf_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_rvv_slide_down",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vfslide1down_vf_f32m2(vfloat32m2_t a,float x,size_t vl)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32)\n Require 0<=vl && vl<=8 && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7)\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,0)) && dw_fp_match(1,vl,r1,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,1)) && dw_fp_match(2,vl,r2,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,2)) && dw_fp_match(3,vl,r3,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,3)) && dw_fp_match(4,vl,r4,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,4)) && dw_fp_match(5,vl,r5,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,5)) && dw_fp_match(6,vl,r6,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,6)) && dw_fp_match(7,vl,r7,dw_rvv_slide_down(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,vl,7)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "d87d6b4969e21479effe21d8e2f6cda2b03328f029baa0a7bb14f14bc6a3292e",
+      "header": "shim/rvv_extended_intrinsics.h",
+      "header_sha256": "efc800eee342a86e525dab694bcb4286649fcd87b010b4ad89eec3cd9369b8f9",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vfslide1up_vf_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_rvv_slide_up",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vfslide1up_vf_f32m2(vfloat32m2_t a,float x,size_t vl)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32)\n Require 0<=vl && vl<=8 && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7)\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,0)) && dw_fp_match(1,vl,r1,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,1)) && dw_fp_match(2,vl,r2,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,2)) && dw_fp_match(3,vl,r3,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,3)) && dw_fp_match(4,vl,r4,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,4)) && dw_fp_match(5,vl,r5,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,5)) && dw_fp_match(6,vl,r6,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,6)) && dw_fp_match(7,vl,r7,dw_rvv_slide_up(dw_fp8(a0,a1,a2,a3,a4,a5,a6,a7),x,7)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "65f03b6a37479b0a387189b99bf619f4f81088bb4ac26b8169f4114f4df669a0",
+      "header": "shim/rvv_extended_intrinsics.h",
+      "header_sha256": "efc800eee342a86e525dab694bcb4286649fcd87b010b4ad89eec3cd9369b8f9",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vle32_v_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_load",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vle32_v_f32m2(const float *p,size_t vl)\n/*@ With (F:DwROMap) Require 0<=vl && vl<=8 && (vl==0 || dw_window(F,p,vl)) && dw_data(F) Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_get(F,p+4*0)) && dw_fp_match(1,vl,r1,dw_get(F,p+4*1)) && dw_fp_match(2,vl,r2,dw_get(F,p+4*2)) && dw_fp_match(3,vl,r3,dw_get(F,p+4*3)) && dw_fp_match(4,vl,r4,dw_get(F,p+4*4)) && dw_fp_match(5,vl,r5,dw_get(F,p+4*5)) && dw_fp_match(6,vl,r6,dw_get(F,p+4*6)) && dw_fp_match(7,vl,r7,dw_get(F,p+4*7)) && dw_data(F) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "32511534544cfec45891965701efa9ca6a2f30b279bbaa0634a1110bae90e9ed",
+      "header": "shim/rvv_extended_intrinsics.h",
+      "header_sha256": "efc800eee342a86e525dab694bcb4286649fcd87b010b4ad89eec3cd9369b8f9",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vse32_v_f32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.TerminalModel.dw_store",
+          "source": "proof/coq/TerminalModel.v",
+          "source_sha256": "c846d2bb1d3e2d8825e63bf86e7de69e2aa376687643b8ba1d7ab51c028325ec"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vse32_v_f32m2(float *p,vfloat32m2_t a,size_t vl)\n/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) Require 0<=vl && vl<=8 && FloatArray::undef_full(p,vl) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) Ensure FloatArray::full(p,vl,dw_values8(a0,a1,a2,a3,a4,a5,a6,a7,vl)) */;",
+      "contract_sha256": "f28badc45ad27958efecf01f5a671c5c840469fd2a32e92a82e41a939e43a9d2",
+      "header": "shim/rvv_store_spec.h",
+      "header_sha256": "6917a4e5d5a402dc4bd4fa667812add3f9af783982fb7ceb1853674f654b6d21",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vsetvl_e32m2",
+      "side": "RVV",
+      "origin": "original",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.VectorModel.dw_vl_allowed",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "882138bfac8e33c8fc3550c446c49bacd04d449a6fcf1a046cd50cbd6ee5c3f6"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vsetvl_e32m2(size_t avl)\n/*@ Require 0<=avl && avl<=18446744073709551615 && emp Ensure 0<=__return && __return<=8 && dw_vl_allowed(avl,__return) && emp */;",
+      "contract_sha256": "5e1a889c86ee4c7b55d9212e21dae763e6a482fdce507a2214165c253ec498dd",
+      "header": "shim/rvv_extended_intrinsics.h",
+      "header_sha256": "efc800eee342a86e525dab694bcb4286649fcd87b010b4ad89eec3cd9369b8f9",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vmfne_vv_f32m2_b16",
+      "side": "RVV",
+      "origin": "NaN repair addition",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.VectorModel.dw_mask_matches",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "882138bfac8e33c8fc3550c446c49bacd04d449a6fcf1a046cd50cbd6ee5c3f6"
+        },
+        {
+          "FQ": "DwChw.VectorModel.dw_ne_value",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "882138bfac8e33c8fc3550c446c49bacd04d449a6fcf1a046cd50cbd6ee5c3f6"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vmfne_vv_f32m2_b16(vfloat32m2_t a,vfloat32m2_t b,size_t vl)\n/*@ With (A:Z -> fp32) (B:Z -> fp32)\n Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (b4:fp32) (b5:fp32) (b6:fp32) (b7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && dw_fp_match(0,vl,b0,B(0)) && dw_fp_match(1,vl,b1,B(1)) && dw_fp_match(2,vl,b2,B(2)) && dw_fp_match(3,vl,b3,B(3)) && dw_fp_match(4,vl,b4,B(4)) && dw_fp_match(5,vl,b5,B(5)) && dw_fp_match(6,vl,b6,B(6)) && dw_fp_match(7,vl,b7,B(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3) * store(&(b.s4),float,b4) * store(&(b.s5),float,b5) * store(&(b.s6),float,b6) * store(&(b.s7),float,b7))\n Ensure 0<=__return && __return<=255 && dw_mask_matches(vl,__return,A,B) && emp */;",
+      "contract_sha256": "cf976e0af2f86135c908f975c6733b0196ed8e81cf15958cede7ed0f18b0818c",
+      "header": "shim/intrinsics_rvv.h",
+      "header_sha256": "bf804730eb5caba0cd5a18b2873890d70747877214c4bfb54acd839aae3f8d84",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    },
+    {
+      "name": "__riscv_vmerge_vvm_f32m2",
+      "side": "RVV",
+      "origin": "NaN repair addition",
+      "boundary": "source-reviewed-spec",
+      "formal_ISA_correspondence_proved": false,
+      "human_review": "pending final manual review",
+      "configuration": "RVV1.0 fixedVLEN128,SEW32,LMUL2,VLMAX8,XLEN64; all legal VL retained",
+      "Coq_definitions": [
+        {
+          "FQ": "DwChw.Model.dw_rvv_merge",
+          "source": "proof/coq/Model.v",
+          "source_sha256": "b8ee9082cea107693e1e96b58a7361ec83e6c2fb8cdccf54151d603e4be7f696"
+        },
+        {
+          "FQ": "DwChw.VectorModel.dw_mask_bit",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "882138bfac8e33c8fc3550c446c49bacd04d449a6fcf1a046cd50cbd6ee5c3f6"
+        }
+      ],
+      "official_source": {
+        "url": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+        "version": "1.0",
+        "sha256": "bfe42bd33dc6abeef5362f475605dda3d229e722257a613b0691cee760f04a19",
+        "bytes": 207611
+      },
+      "rounding_nan": "RNE, DN/FZ/FIZ/AH disabled, traps disabled, flags not observed; ARM payload selection/quieting vs RVV canonical FMA NaN and minNumber. Public observer numeric equality or bothNaN.",
+      "inactive": "NEON all result lanes specified by instruction; RVV inactive fields arbitrary typed values, no zero/tail-undisturbed guarantee.",
+      "contract": "__riscv_vmerge_vvm_f32m2(vfloat32m2_t a,vfloat32m2_t b,vbool16_t m,size_t vl)\n/*@ With (A:Z -> fp32) (B:Z -> fp32)\n Require 0<=vl && vl<=8 && (exists (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (b4:fp32) (b5:fp32) (b6:fp32) (b7:fp32), dw_fp_match(0,vl,a0,A(0)) && dw_fp_match(1,vl,a1,A(1)) && dw_fp_match(2,vl,a2,A(2)) && dw_fp_match(3,vl,a3,A(3)) && dw_fp_match(4,vl,a4,A(4)) && dw_fp_match(5,vl,a5,A(5)) && dw_fp_match(6,vl,a6,A(6)) && dw_fp_match(7,vl,a7,A(7)) && dw_fp_match(0,vl,b0,B(0)) && dw_fp_match(1,vl,b1,B(1)) && dw_fp_match(2,vl,b2,B(2)) && dw_fp_match(3,vl,b3,B(3)) && dw_fp_match(4,vl,b4,B(4)) && dw_fp_match(5,vl,b5,B(5)) && dw_fp_match(6,vl,b6,B(6)) && dw_fp_match(7,vl,b7,B(7)) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3) * store(&(b.s4),float,b4) * store(&(b.s5),float,b5) * store(&(b.s6),float,b6) * store(&(b.s7),float,b7))\n Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32), dw_fp_match(0,vl,r0,dw_rvv_merge(A(0),B(0),dw_mask_bit(m,0))) && dw_fp_match(1,vl,r1,dw_rvv_merge(A(1),B(1),dw_mask_bit(m,1))) && dw_fp_match(2,vl,r2,dw_rvv_merge(A(2),B(2),dw_mask_bit(m,2))) && dw_fp_match(3,vl,r3,dw_rvv_merge(A(3),B(3),dw_mask_bit(m,3))) && dw_fp_match(4,vl,r4,dw_rvv_merge(A(4),B(4),dw_mask_bit(m,4))) && dw_fp_match(5,vl,r5,dw_rvv_merge(A(5),B(5),dw_mask_bit(m,5))) && dw_fp_match(6,vl,r6,dw_rvv_merge(A(6),B(6),dw_mask_bit(m,6))) && dw_fp_match(7,vl,r7,dw_rvv_merge(A(7),B(7),dw_mask_bit(m,7))) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) */;",
+      "contract_sha256": "4f8e741484a8017680a234948dcc28fae19604c4cbfa18badd9f59dd96c96e35",
+      "header": "shim/intrinsics_rvv.h",
+      "header_sha256": "bf804730eb5caba0cd5a18b2873890d70747877214c4bfb54acd839aae3f8d84",
+      "contract_status": "source-reviewed declaration; complete kernel call-site binding pending",
+      "active_lane_domain": "0<=i<vl<=8"
+    }
+  ],
+  "ordinary_adapter_proof": "proof/propagating-proof-status.json",
+  "ordinary_adapter_proof_sha256": "16595cf86fe3c8cacf5129006f418f253faadcb63f75edd54fe9e961f7a7c40d",
+  "representation": "Float2/4 and RVV8 scalar fields plus logical8mask bits; not physical ABI. Only active lanes are constrained at RVV boundary.",
+  "alias_scope": "One shared read map for input/zero/weights/params; one mutable output map preserves intentional bottom-row output aliases and reverse o2/o1/o0 stores."
+}

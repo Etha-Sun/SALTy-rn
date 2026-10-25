@@ -1,0 +1,45 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.375 secs (0.162u,0.117s)
+Chars 41 - 83 [From~DwChw~Require~Import~Outp...] 3.876 secs (3.365u,0.463s)
+Chars 84 - 105 [Import~ListNotations.] 0. secs (0.u,0.s)
+Chars 106 - 131 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 133 - 259 [Lemma~dw_write_values_frame~:~...] 0.001 secs (0.u,0.001s)
+Chars 260 - 266 [Proof.] 0. secs (0.u,0.s)
+Chars 268 - 349 [(induction~xs~as~[|~v~xs~IH];~...] 0.001 secs (0.u,0.001s)
+Chars 351 - 362 [(rewrite~IH).] 0. secs (0.u,0.s)
+Chars 364 - 365 [-] 0. secs (0.u,0.s)
+Chars 366 - 394 [(unfold~dw_output_put,~dw_put).] 0. secs (0.u,0.s)
+Chars 398 - 493 [(destruct~(Z.eqb_spec~q~p);~~~...] 0.005 secs (0.005u,0.s)
+Chars 495 - 496 [-] 0. secs (0.u,0.s)
+Chars 497 - 544 [(intros~n~Hn~Eq;~apply~(Haway~...] 0.001 secs (0.001u,0.s)
+Chars 548 - 575 [(rewrite~Nat2Z.inj_succ;~lia).] 0.001 secs (0.001u,0.s)
+Chars 576 - 580 [Qed.] 0.004 secs (0.004u,0.s)
+Chars 582 - 711 [Lemma~dw_write_values_nth~:~~~...] 0. secs (0.u,0.s)
+Chars 712 - 718 [Proof.] 0. secs (0.u,0.s)
+Chars 720 - 779 [(induction~xs~as~[|~v~xs~IH];~...] 0.001 secs (0.001u,0.s)
+Chars 781 - 799 [(destruct~n~as~[|~n]).] 0. secs (0.u,0.s)
+Chars 801 - 802 [-] 0. secs (0.u,0.s)
+Chars 803 - 828 [(cbn[dw_write_values~nth]).] 0. secs (0.u,0.s)
+Chars 832 - 862 [(rewrite~dw_write_values_frame).] 0. secs (0.u,0.s)
+Chars 866 - 867 [+] 0. secs (0.u,0.s)
+Chars 868 - 905 [replace~(p~+~4~*~Z.of_nat~0)~w...] 0.001 secs (0.001u,0.s)
+Chars 911 - 970 [(unfold~dw_output_put,~dw_put;...] 0. secs (0.u,0.s)
+Chars 974 - 975 [+] 0. secs (0.u,0.s)
+Chars 976 - 995 [(intros~k~Hk~Eq;~lia).] 0.001 secs (0.001u,0.s)
+Chars 997 - 998 [-] 0. secs (0.u,0.s)
+Chars 999 - 1024 [(cbn[dw_write_values~nth]).] 0. secs (0.u,0.s)
+Chars 1028 - 1109 [replace~(p~+~4~*~Z.of_nat~(S~n...] 0.003 secs (0.003u,0.s)
+Chars 1113 - 1136 [(apply~IH;~cbn~in~Hn;~lia).] 0.001 secs (0.001u,0.s)
+Chars 1137 - 1141 [Qed.] 0.006 secs (0.006u,0.s)
+Closed under the global context
+Chars 1143 - 1183 [Print~Assumptions~dw_write_val...] 0.501 secs (0.248u,0.095s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 1184 - 1222 [Print~Assumptions~dw_write_val...] 1.308 secs (0.926u,0.38s)

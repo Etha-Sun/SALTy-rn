@@ -1,0 +1,82 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.246 secs (0.115u,0.13s)
+Chars 41 - 87 [From~DwChw~Require~Export~Neon...] 3.19 secs (2.608u,0.487s)
+Chars 88 - 113 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 114 - 180 [#[local]~Opaque~dw_get~dw_imag...] 0. secs (0.u,0.s)
+Chars 182 - 326 [Definition~dw_neon_read4~(F~:~...] 0.001 secs (0.001u,0.s)
+Chars 327 - 419 [Lemma~dw_neon_read4_lane~:~~~f...] 0. secs (0.u,0.s)
+Chars 420 - 426 [Proof.] 0. secs (0.u,0.s)
+Chars 428 - 479 [(intros~F~p~x~i~Hi;~assert~(i~...] 0.002 secs (0.002u,0.s)
+Chars 481 - 567 [(destruct~H~as~[->|~[->|~[->|~...] 0.014 secs (0.014u,0.s)
+Chars 568 - 572 [Qed.] 0.004 secs (0.004u,0.s)
+Chars 574 - 810 [Lemma~dw_neon_tail_mask_image~...] 0.001 secs (0.001u,0.s)
+Chars 811 - 817 [Proof.] 0. secs (0.u,0.s)
+Chars 819 - 868 [(intros~F~input~zero~H~N~y~x~n...] 0. secs (0.u,0.s)
+Chars 870 - 928 [(rewrite~(dw_neon_tail_mask_in...] 0.002 secs (0.002u,0.s)
+Chars 930 - 973 [(rewrite~dw_neon_masked4_lane~...] 0. secs (0.u,0.s)
+Chars 975 - 1000 [(destruct~(Z.ltb_spec~k~n)).] 0. secs (0.u,0.s)
+Chars 1002 - 1003 [-] 0. secs (0.u,0.s)
+Chars 1004 - 1066 [(rewrite~dw_neon_read4_lane~by...] 0.001 secs (0.001u,0.s)
+Chars 1068 - 1069 [-] 0. secs (0.u,0.s)
+Chars 1070 - 1109 [(symmetry;~apply~dw_image_righ...] 0.001 secs (0.001u,0.s)
+Chars 1110 - 1114 [Qed.] 0.002 secs (0.002u,0.s)
+Chars 1116 - 1878 [Lemma~dw_neon_tail_pixel_row~:...] 0.002 secs (0.002u,0.s)
+Chars 1879 - 1885 [Proof.] 0. secs (0.u,0.s)
+Chars 1887 - 1995 [(intros~F~input~zero~weights~H...] 0. secs (0.u,0.s)
+Chars 1997 - 2050 [(unfold~dw_neon_vector_match4~...] 0.001 secs (0.001u,0.s)
+Chars 2052 - 2091 [replace~(y~*~N~+~x~+~i)~with~(...] 0.025 secs (0.025u,0.s)
+Chars 2093 - 2133 [(rewrite~dw_neon_result_row_in...] 0.003 secs (0.003u,0.s)
+Chars 2135 - 2177 [(eapply~dw_neon_vector_pixel_p...] 0. secs (0.u,0.s)
+Chars 2179 - 2180 [-] 0. secs (0.u,0.s)
+Chars 2181 - 2185 [lia.] 0. secs (0.u,0.s)
+Chars 2187 - 2188 [-] 0. secs (0.u,0.s)
+Chars 2189 - 2256 [(apply~(dw_neon_tail_mask_imag...] 0. secs (0.u,0.s)
+Chars 2258 - 2259 [-] 0. secs (0.u,0.s)
+Chars 2260 - 2325 [(apply~(dw_neon_tail_mask_imag...] 0. secs (0.u,0.s)
+Chars 2327 - 2328 [-] 0. secs (0.u,0.s)
+Chars 2329 - 2396 [(apply~(dw_neon_tail_mask_imag...] 0. secs (0.u,0.s)
+Chars 2398 - 2399 [-] 0. secs (0.u,0.s)
+Chars 2400 - 2410 [exact~Hp0.] 0. secs (0.u,0.s)
+Chars 2412 - 2413 [-] 0. secs (0.u,0.s)
+Chars 2414 - 2424 [exact~Hp1.] 0. secs (0.u,0.s)
+Chars 2426 - 2427 [-] 0. secs (0.u,0.s)
+Chars 2428 - 2438 [exact~Hp2.] 0. secs (0.u,0.s)
+Chars 2440 - 2441 [-] 0. secs (0.u,0.s)
+Chars 2442 - 2481 [(symmetry;~apply~dw_image_righ...] 0.001 secs (0.001u,0.s)
+Chars 2483 - 2484 [-] 0. secs (0.u,0.s)
+Chars 2485 - 2524 [(symmetry;~apply~dw_image_righ...] 0. secs (0.u,0.s)
+Chars 2526 - 2527 [-] 0. secs (0.u,0.s)
+Chars 2528 - 2567 [(symmetry;~apply~dw_image_righ...] 0. secs (0.u,0.s)
+Chars 2568 - 2572 [Qed.] 0.005 secs (0.005u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2573 - 2610 [Print~Assumptions~dw_neon_read...] 0.998 secs (0.903u,0.031s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2611 - 2653 [Print~Assumptions~dw_neon_tail...] 0.844 secs (0.781u,0.s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2654 - 2695 [Print~Assumptions~dw_neon_tail...] 1.016 secs (1.002u,0.011s)

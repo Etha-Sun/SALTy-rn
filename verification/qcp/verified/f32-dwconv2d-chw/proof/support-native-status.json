@@ -1,0 +1,47 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite native UBSan of every actual ordinary support C body with independently defined uint32 conversion, uint64 round-up/doz oracles; not ISA/formal whole proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/support-native-uyczcgdl",
+  "input_sha256": {
+    "shim/support.c": "f5a130269cf3c1029e724f49ee7d49551ac8f70e0a4e8d4f20a831fc6ff073f8",
+    "shim/support.h": "4704924fec17abaa9238fb9b0f4b65ff517a0a67dd070398ff3fef2237b3a70a",
+    "shim/types.h": "cb04c6a97548969884f375deaa926b971946a3a5f2695426e95a655c2712ec7d",
+    "shim/types_def.h": "f686a4b4f8804665e18dc457b9bf41671664dcad4b11b2179b2adf2e75a23349"
+  },
+  "native_types_projection_sha256": "e3829b4b28d316bb9251aff25dc778913d2db6cf6c17704bdbe9af17d22c1fda",
+  "native_type_projection": "Fixed scalar typedef spellings replaced by corresponding host stdint/stddef types; vector field declarations copied exactly, widths actual static-asserted.",
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/support-native-uyczcgdl/harness.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/support-native-uyczcgdl/harness"
+      ],
+      "exit_code": 0,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/support-native-uyczcgdl/harness"
+      ],
+      "exit_code": 0,
+      "log_sha256": "26e056a5ecd3142208df79d0f3a6307111faecd7d29ed9a42a9cc7031c1ad5f2"
+    }
+  ],
+  "result": "passed cases=131089 mask_windows=4\n"
+}

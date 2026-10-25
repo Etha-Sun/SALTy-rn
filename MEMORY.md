@@ -1,3 +1,12 @@
+<!-- CURRENT_VERIFIED37_DWCHW_20261025 -->
+当前完整已验证 **37/40**，目标 **40/40**。新增 f32-dwconv2d-chw：13实际C单元/1167C义务/11策略字段/37普通函数体/1232own+18final=1250源码fresh Coq/1381最终Print；14既有假设、0新增项目公理，36原生intrinsic spec视图人工审核pending。正H/N、padding_top1、全binary32与无序clamp、共享RO/末行写入别名、固定RVV128/e32m2/VLMAX8及全部合法VL边界详见公开spec。written值数值相等或同为NaN，各自未写option frame保持原值。本聊天24+外部8+基线5。
+
+H1所有本案模块通过但最终报告11个嵌套路径错误，失败完整保留；仅修报告工具后H2重新全部源码fresh通过，不借组件VO。发布副本13CPP/37body、全部档案/目标/日志/来源与四组native各128520例/12247200lane通过。冻结旧审查器的绝对策略来源路径比较由独立迁移入口修正，证明与冻结输入不动；详见全局DWCHW-PUBLICATION-AUDIT说明及审核索引。剩Argmax/Exp/HWC继续，组件不计核。
+
+DW H2 5ca6cc57/fullf5d20414/statusaa6b4f72/manifest428f0bd5；全fresh full-ecjzolw2自然全真。portable审查只把历史strategy源命令期望根从当前case改为原记录full-run父case，原源码SHA/goal/command/CPP/完整报告/对象来源检查全保留，派生工具内容与单处替换明示，不重签/改H2。旧原始工具失败收据保留，发布复核不是第二次证明。18:00真实quota39%，半小时检查/strict>95继续；goal40 active。
+
+以下保留先前阶段记录。
+
 <!-- CURRENT_VERIFIED36_QS8_MUL_20261025 -->
 当前完整已验证 **36/40**，目标 **40/40**。新增 qs8-vmul-minmax-fp32：24个实际C单元、871条C义务、7策略字段、40个普通函数体、984个源码fresh Coq模块、1042命令全0、878最终Print；14项继承假设、0新增项目公理。57个原生intrinsic spec视图人工审核仍pending。本聊天23+外部8+基线5；外部SPMM及矩阵成果保留作者归属。剩余DWCHW、Argmax、Exp、HWC2CHW继续；组件不计新增核。
 

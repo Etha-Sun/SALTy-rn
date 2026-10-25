@@ -1,0 +1,3 @@
+From DwChw Require Import UnitInterfaces PublicObservation AssumptionsPart00 AssumptionsPart01 AssumptionsPart02 AssumptionsPart03 AssumptionsPart04 AssumptionsPart05 AssumptionsPart06 AssumptionsPart07 AssumptionsPart08 AssumptionsPart09 AssumptionsPart10 AssumptionsPart11 AssumptionsPart12 AssumptionsPart13 AssumptionsPart14 AssumptionsPart15.
+Definition written_observation := DwChw.PublicObservation.dw_complete_program_observation.
+Definition separate_own_frames := DwChw.PublicObservation.dw_complete_program_own_frames.

@@ -1,0 +1,167 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite original NEON/repaired RVV C through independently distinct vector emulation and scalar fused oracle; no hardware/ISA/formal credit",
+  "sanitizer": "undefined",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq",
+  "input_sha256": {
+    "impl/testNEON.c": "81376bf957670df27e7ab6f0f6b658e4d0c82d6f621741c6e3ee7563c7593425",
+    "impl/testRVV.c": "b5851c523c124de0a5f3cb63cc73f6965b4ee5a3325cec889b4ca0a6165250a0",
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "proof/native/regression.c": "f0cb39adbe3dacb0d2973d1871cabb04e6e8598312b61042231a20aadb0afd9f",
+    "proof/check_native.py": "a77981b056dd6cca73cf54fc685429dfbab1821e195a72de46903ea8086c69fa"
+  },
+  "records": [
+    {
+      "label": "dependencies",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/input/proof/native/regression.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.016406143084168434,
+      "log_sha256": "4b62ac2bd174135ca22ce2d9231f3d5c460eb7041b45f49fc3ddee1f186dbe95"
+    },
+    {
+      "label": "compile-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.8650646859314293,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-correct",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/correct"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 3.7674353159964085,
+      "log_sha256": "74e25b1e4ac1b4eb4d798e5ccf3fd8b32f5be4e4bd2481ac81a49e22de6cd6a6"
+    },
+    {
+      "label": "compile-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_ONE",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/wrong-one"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.8469560369849205,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/wrong-one"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.004461670992895961,
+      "log_sha256": "2308171507aa61a5af179f8b8de91c7410e82e76445d2056f372d96d427c8a5a"
+    },
+    {
+      "label": "compile-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-DWRONG_BOTH",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/wrong-both"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 1.689173110993579,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run-wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/native-undefined-l726n1iq/wrong-both"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.017988515086472034,
+      "log_sha256": "cf49f62c50a859f8e11e8fc53234cb2eb72b37dadba3bca5df03937983c241b1"
+    }
+  ],
+  "configured_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "actual_recursive_local_input_sha256": {
+    "proof/native/regression.c": "f0cb39adbe3dacb0d2973d1871cabb04e6e8598312b61042231a20aadb0afd9f",
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "impl/testNEON.c": "81376bf957670df27e7ab6f0f6b658e4d0c82d6f621741c6e3ee7563c7593425",
+    "impl/testRVV.c": "b5851c523c124de0a5f3cb63cc73f6965b4ee5a3325cec889b4ca0a6165250a0"
+  },
+  "actual_recursive_local_input_count": 6,
+  "cases": 128520,
+  "lanes_per_side": 12247200,
+  "aliased_cases": 102816,
+  "vl_modes": 3,
+  "inactive_modes": 2,
+  "both_wrong_still_equal_oracle_rejected": true
+}

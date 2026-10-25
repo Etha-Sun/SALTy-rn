@@ -1,0 +1,105 @@
+{
+  "kernel": "f32-dwconv2d-chw",
+  "variant": "repaired",
+  "neon_changed": true,
+  "original_neon_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+  "repaired_neon_sha256": "99430f981d73973a4c64dddfde50e5ee1dcebaf9211d7bba5cd7868e417a9a09",
+  "original_rvv_sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+  "repaired_rvv_sha256": "daf51c9c11e4d3cc18b44c91d1f92b0f07e248c275ff1ce97e9e3d54c2d1509f",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "d7bcf21af3a29e7c5486bd154c4ed916dac2b9dcde836bd9a8ef0b6f8cf17f6b",
+  "causes": [
+    "ARM FMAX/FMIN propagate NaNs; RVV maxNumber/minNumber retain the numeric operand when only one operand is NaN."
+  ],
+  "changes": [
+    "Use real RVV self-NaN masks and vector merges for propagating min/max.",
+    "Create separate bit-preserving value copies for each repeated comparison operand. No scalar b!=b or NaN literal helper.",
+    "Preserve original nine-FMA order, row/column/VL loops, reverse o2/o1/o0 store order and all alias/tail paths.",
+    "Move the two actual ordinary C helpers into shim/propagating.c behind a public typed API; formal-only pointer borrow adapters preserve all input cells. Main C arithmetic/loop/store tokens retained after the NaN repair.",
+    "Hoist exactly58 nested pure local-vector calls to named const temporaries at the original statement. Intrinsic call counts and all FMA/store/control order retained; lvalue-only borrow frontend is buildable. This is an explicit compatibility implementation variant, with original-C equivalence not asserted as a whole theorem.",
+    "Wrap46 scalar loads at their original evaluation sites in ordinary dw_read_scalar(&lvalue), whose actual C body returns *p and preserves the shared read map. This case-local compatible variant retains conditional evaluation and each FMA/store/control order; it does not exempt an adapter as an intrinsic.",
+    "Scope52 nonescaping NEON vector temporaries around consuming statements, preserving original operation order (history retained).",
+    "Extract each RVV/NEON output row9FMA computation into actual C ordinary helpers with full89/153 typed VC gates, preserving centre2/5/8-left1/4/7-right3/6/9 order, clamp and reverse stores. Additional readonly weight reads, unobserved FPflags and trapsdisabled compatibility boundary are explicit; no original-C whole refinement theorem claimed.",
+    "Copy NEON neighbour lanes with the original vgetq_lane_f32 specification (all4binary32 inputs, exact bits,0..3 lane); pointer view/physical ABI mapping remains source-reviewed for final human audit."
+  ],
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "fb75e69e110be736d103dd0267828191e6e6ed2f1ffdc3a700818a39a8c4e720",
+  "scope": "Full FP32 values/bounds and unordered bounds; numeric equality or bothNaN. FP flags unobserved/traps disabled; no physical ISA/ABI refinement claim.",
+  "reference_only": "Frama candidate preserved separately, not copied with its dimension/separation cuts or scalar selfcompare. Arcadia target equals original.",
+  "exact_patch_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/repair-pixel-current-exact-ittb2efi",
+  "whole_kernel_verified": false,
+  "actual_C_fields_checked": 413,
+  "native_repaired_validation_pending": false,
+  "native_scope": "Finite actual C through three legalVL modes/two inactive choices with independent scalar exact-fused oracle, read aliases/frame, wrongone/both controls. Not formal proof or hardware execution.",
+  "patch_file_count": 5,
+  "main_patch": "proof/repair-rvv-main.patch",
+  "main_patch_sha256": "434af599b6ce12e585fc2d387b9e96ceb8da4549d9897991f7486f49445289ed",
+  "ordinary_helper_source_sha256": {
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "shim/read_scalar.c": "ac3f4f0c7c4cd98e557670d2cc0c2535922670c72331e4bb79e09fb978724d20",
+    "shim/read_api.h": "abb4eb4b67bf321dda6eb997721860e4e28f17beedc9d4b6bbc85126dd5d0d71",
+    "shim/rvv_extended_borrow.c": "2d7f4fbe3448eb0211d48a3c752429eac8e35ae0db88a602baf5f00ae5ece2ef",
+    "shim/rvv_extended_borrow.h": "a7a99c9af64eaa6aeefd20342b5f76bfd63eed979d42ee73fc5c4a200a4bb6a9",
+    "shim/vector_pixel.c": "3cd2dbae225aa311cbe4a7e491ad7346780a30c941e7a3e0843ff3f39c80f7fb",
+    "shim/vector_pixel.h": "a6af5be6a07f4e323015bf66abe109ac421197f0578e3f259140fc2a9ae7aa70",
+    "shim/neon_vector_pixel.c": "74e052d6da126b8cc96f1bf096d41c4d4d31682dfb3d3a36d5c3d5afc568de0c",
+    "shim/neon_vector_pixel.h": "81efad0b8560152393a9c0132e7362c890e2733b764fedfe88920e2e0edd53b6"
+  },
+  "component_proof": "proof/propagating-proof-status.json",
+  "component_proof_sha256": "16595cf86fe3c8cacf5129006f418f253faadcb63f75edd54fe9e961f7a7c40d",
+  "neon_variant": "compatibility-repaired",
+  "neon_patch": "proof/repair-neon.patch",
+  "neon_patch_sha256": "090851a0b22604ce293141e1289b5b937e203e3ab5ff584d7b6e6f00036b1bfb",
+  "combined_patch": "proof/repair.patch",
+  "combined_patch_sha256": "938a66d886e4dfb6fb19f9dee9a3ec8dcd05bbba69dd17e7b66f8b26fdad48d5",
+  "neon_compatibility": {
+    "reason": "QCP rejects local static storage (actual fatal/zero VC preserved). Only static removed from never-escaping read-only 7-int constant table; identical initializer/use sites, no new branch/domain restriction.",
+    "diagnostic": "proof/static-local-tool-gap.json",
+    "semantic_counterexample": false,
+    "nested_vector_refactor": "proof/neon-nested-normalization.json",
+    "nested_vector_refactor_sha256": "d52dc3a1b63030109f2d339eb30b91934904aa68983443886f5c2f1e560b250e"
+  },
+  "scalar_read_compatibility": {
+    "evidence": "proof/scalar-read-refactor.json",
+    "semantic_counterexample": false,
+    "ordinary_actual_body": "shim/read_scalar.c",
+    "helper_status": "proof/ReadChecked-ReadCallProbeChecked-status.json"
+  },
+  "ordinary_helper_components_only": true,
+  "native_evidence": {
+    "native-undefined-status.json": {
+      "path": "proof/native-undefined-status.json",
+      "sha256": "1fab46b41ab499dbdfab3d5824bba9d3daf55148ad03e488d19886f083c5aed1",
+      "passed": true,
+      "scope": "Finite current native evidence only"
+    },
+    "native-address-status.json": {
+      "path": "proof/native-address-status.json",
+      "sha256": "b162a86430f155b5d8af2a148e415a1a7ac9930ac07ab65850eaa5e1c969825f",
+      "passed": true,
+      "scope": "Finite current native evidence only"
+    },
+    "public-native-undefined-status.json": {
+      "path": "proof/public-native-undefined-status.json",
+      "sha256": "42b875ca9ade42135b1a3b654fe2ad29f3075394debee1e01619698ba3a7bdd0",
+      "passed": true,
+      "scope": "Finite current native evidence only"
+    },
+    "public-native-address-status.json": {
+      "path": "proof/public-native-address-status.json",
+      "sha256": "b08026fed2a1413cb9c6bfeb664449ee57c9655199c1d2782f1d57f0bf087beb",
+      "passed": true,
+      "scope": "Finite current native evidence only"
+    }
+  },
+  "patch_scope": "Main C deltas plus historical NaN/read extraction sources; remaining ordinary helper sources are independently source-bound by this map and component inventory, not created by the repair patch.",
+  "pixel_compatibility_evidence": {
+    "rvv-three-pixel-helpers.json": "7295b5e8c0b53f1364070749b902f85483d3542a5b97f6750df78b9d7195fe2f",
+    "neon-three-pixel-helpers.json": "ec9275af36dbf8a71dfa3a73554fc45feaf1f235fca898470e41dd5d9014737a",
+    "vector-pixel-status.json": "de901b934b399194e3a9048998e5262b91923e327b18154a7bd04f1641421087",
+    "neon-vector-pixel-status.json": "1647124b93a79c676c0ef59b853254bca29765713e476d9cc5060432fceeda4f"
+  },
+  "native_current_public_validation_pending": false,
+  "current_raw_source_scope": "Fullbinary32/unorderedbounds; nonwrapping valid row/input/zero/weights/output footprints, shared readonly aliases and bottom-row output aliases retained; fixedVLEN128 max8 RVV, NEON4 lanes."
+}

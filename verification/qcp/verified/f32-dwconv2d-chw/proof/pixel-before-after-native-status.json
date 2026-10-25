@@ -1,0 +1,74 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite direct bit-exact entire output/canary comparisons before/after each actual ordinary9FMA helper extraction; both current paths also independent scalar oracle. No original-raw formal refinement theorem.",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/pixel-before-after-d6kppk5l",
+  "before_sha256": {
+    "NEON": "2122aa0bdb50430ceb264be68ceb1df7664771730b9952c5c6853e0af5b33a69",
+    "RVV": "3525666e7e1fbf60782cdb9daedc03f6f702850addaf32b1be0a9bc8eac1abcc"
+  },
+  "after_sha256": {
+    "NEON": "99430f981d73973a4c64dddfde50e5ee1dcebaf9211d7bba5cd7868e417a9a09",
+    "RVV": "daf51c9c11e4d3cc18b44c91d1f92b0f07e248c275ff1ce97e9e3d54c2d1509f"
+  },
+  "actual_current_snapshot_pins": {
+    "impl/testNEON.c": "99430f981d73973a4c64dddfde50e5ee1dcebaf9211d7bba5cd7868e417a9a09",
+    "impl/testRVV.c": "daf51c9c11e4d3cc18b44c91d1f92b0f07e248c275ff1ce97e9e3d54c2d1509f",
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "shim/read_scalar.c": "ac3f4f0c7c4cd98e557670d2cc0c2535922670c72331e4bb79e09fb978724d20",
+    "shim/read_api.h": "abb4eb4b67bf321dda6eb997721860e4e28f17beedc9d4b6bbc85126dd5d0d71",
+    "shim/rvv_extended_borrow.c": "2d7f4fbe3448eb0211d48a3c752429eac8e35ae0db88a602baf5f00ae5ece2ef",
+    "shim/rvv_extended_borrow.h": "a7a99c9af64eaa6aeefd20342b5f76bfd63eed979d42ee73fc5c4a200a4bb6a9",
+    "shim/vector_pixel.c": "3cd2dbae225aa311cbe4a7e491ad7346780a30c941e7a3e0843ff3f39c80f7fb",
+    "shim/vector_pixel.h": "a6af5be6a07f4e323015bf66abe109ac421197f0578e3f259140fc2a9ae7aa70",
+    "shim/neon_vector_pixel.c": "74e052d6da126b8cc96f1bf096d41c4d4d31682dfb3d3a36d5c3d5afc568de0c",
+    "shim/neon_vector_pixel.h": "81efad0b8560152393a9c0132e7362c890e2733b764fedfe88920e2e0edd53b6",
+    "proof/native/isa_arrays.h": "7ff8dc3a4dd0cf9355ec83612686bac278e03260ab12231423d7b21f4aa99f65",
+    "proof/native/regression.c": "63fc7ee78be7c57ca6145e9cffaf59f72ace13bf87ff7b50caaf4d5767d165fb",
+    "proof/check_native.py": "5b266a922eb184606dcc735020329718e2152bfd3cdfba8a583a18dd6013b85d"
+  },
+  "source_snapshot_status_sha256": "1fab46b41ab499dbdfab3d5824bba9d3daf55148ad03e488d19886f083c5aed1",
+  "harness_sha256": "9a2720207f4726a89ecf796dafe7d13445c7b10df59fd12306292656d4e87cce",
+  "cases": 128520,
+  "lanes_per_side": 12247200,
+  "aliased_cases": 102816,
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/pixel-before-after-d6kppk5l/input/proof/native/regression.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/pixel-before-after-d6kppk5l/test"
+      ],
+      "exit_code": 0,
+      "seconds": 3.386005770182237,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/pixel-before-after-d6kppk5l/test"
+      ],
+      "exit_code": 0,
+      "seconds": 8.066423191921785,
+      "log_sha256": "74e25b1e4ac1b4eb4d798e5ccf3fd8b32f5be4e4bd2481ac81a49e22de6cd6a6"
+    }
+  ]
+}

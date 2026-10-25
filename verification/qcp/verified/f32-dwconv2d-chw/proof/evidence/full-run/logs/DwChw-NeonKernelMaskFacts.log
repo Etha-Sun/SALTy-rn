@@ -1,0 +1,53 @@
+Chars 0 - 35 [From~Coq~Require~Import~ZArith...] 0.298 secs (0.168u,0.109s)
+Chars 36 - 89 [From~DwChw~Require~Export~Neon...] 3.909 secs (3.307u,0.58s)
+Chars 90 - 115 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 117 - 209 [Lemma~dw_neon_tail_mask_index~...] 0.001 secs (0.u,0.001s)
+Chars 210 - 216 [Proof.] 0. secs (0.u,0.s)
+Chars 218 - 261 [(intros~N~x~n~Hx~Hn~HN;~unfold...] 0. secs (0.u,0.s)
+Chars 263 - 322 [(pose~proof~(Z.div_mod~x~4~lta...] 0.002 secs (0.u,0.002s)
+Chars 324 - 360 [replace~(N~-~1)~with~(n~-~1~+~...] 0.002 secs (0.001u,0.s)
+Chars 362 - 404 [(rewrite~Z.mod_add,~Z.mod_smal...] 0.004 secs (0.004u,0.s)
+Chars 405 - 409 [Qed.] 0.003 secs (0.003u,0.s)
+Chars 411 - 490 [Lemma~dw_u4_from_four~:~~~fora...] 0. secs (0.u,0.s)
+Chars 491 - 497 [Proof.] 0. secs (0.u,0.s)
+Chars 499 - 546 [(intros~A~i~Hi;~assert~(i~=~0~...] 0.001 secs (0.001u,0.s)
+Chars 548 - 593 [(destruct~H~as~[->|~[->|~[->|~...] 0.001 secs (0.001u,0.s)
+Chars 594 - 598 [Qed.] 0.003 secs (0.u,0.003s)
+Chars 600 - 690 [Lemma~dw_float_bits_full_mask~...] 0. secs (0.u,0.s)
+Chars 691 - 697 [Proof.] 0. secs (0.u,0.s)
+Chars 699 - 727 [(intro~v;~rewrite~Z.land_comm).] 0. secs (0.u,0.s)
+Chars 729 - 786 [(change~(Z.land~(bits_of_fp32~...] 0. secs (0.u,0.s)
+Chars 788 - 850 [(rewrite~Z.land_ones~by~lia;~r...] 0.001 secs (0.001u,0.s)
+Chars 852 - 923 [(pose~proof~(fp32_bits_range~v...] 0.001 secs (0.001u,0.s)
+Chars 924 - 928 [Qed.] 0.001 secs (0.001u,0.s)
+Chars 1080 - 1482 [Definition~dw_neon_masked4~(in...] 0.001 secs (0.001u,0.s)
+Chars 1484 - 1601 [Lemma~dw_neon_masked4_lane~:~~...] 0. secs (0.u,0.s)
+Chars 1602 - 1608 [Proof.] 0. secs (0.u,0.s)
+Chars 1610 - 1661 [(intros~n~A~i~Hn~Hi;~unfold~dw...] 0. secs (0.u,0.s)
+Chars 1663 - 1912 [(rewrite~~~(dw_fp4_from_four~~...] 0.002 secs (0.002u,0.s)
+Chars 1914 - 1932 [(unfold~dw_arm_and).] 0. secs (0.u,0.s)
+Chars 1934 - 1991 [(rewrite~(dw_u4_from_four~(fun...] 0. secs (0.u,0.s)
+Chars 1993 - 2048 [(rewrite~(dw_u4_from_four~(fun...] 0. secs (0.u,0.s)
+Chars 2050 - 2133 [(unfold~dw_mask7_word;~destruc...] 0.003 secs (0.003u,0.s)
+Chars 2135 - 2136 [-] 0. secs (0.u,0.s)
+Chars 2137 - 2196 [(rewrite~dw_float_bits_full_ma...] 0. secs (0.u,0.s)
+Chars 2198 - 2199 [-] 0. secs (0.u,0.s)
+Chars 2200 - 2231 [(rewrite~Z.land_0_l;~reflexivi...] 0. secs (0.u,0.s)
+Chars 2232 - 2236 [Qed.] 0.004 secs (0.004u,0.s)
+Closed under the global context
+Chars 2237 - 2279 [Print~Assumptions~dw_neon_tail...] 0.395 secs (0.315u,0.003s)
+Closed under the global context
+Chars 2280 - 2314 [Print~Assumptions~dw_u4_from_f...] 0.445 secs (0.444u,0.s)
+Closed under the global context
+Chars 2315 - 2357 [Print~Assumptions~dw_float_bit...] 0.421 secs (0.413u,0.007s)
+Axioms:
+ClassicalDedekindReals.sig_not_dec : forall P : Prop, {~ ~ P} + {~ P}
+ClassicalDedekindReals.sig_forall_dec :
+  forall P : nat -> Prop,
+  (forall n : nat, {P n} + {~ P n}) ->
+  {n : nat | ~ P n} + {forall n : nat, P n}
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+Classical_Prop.classic : forall P : Prop, P \/ ~ P
+Chars 2358 - 2397 [Print~Assumptions~dw_neon_mask...] 0.743 secs (0.721u,0.02s)

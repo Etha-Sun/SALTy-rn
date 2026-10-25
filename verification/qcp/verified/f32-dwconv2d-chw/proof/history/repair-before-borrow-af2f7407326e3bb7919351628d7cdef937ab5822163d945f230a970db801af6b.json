@@ -1,0 +1,51 @@
+{
+  "kernel": "f32-dwconv2d-chw",
+  "variant": "repaired",
+  "neon_changed": true,
+  "original_neon_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+  "repaired_neon_sha256": "81376bf957670df27e7ab6f0f6b658e4d0c82d6f621741c6e3ee7563c7593425",
+  "original_rvv_sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+  "repaired_rvv_sha256": "b5851c523c124de0a5f3cb63cc73f6965b4ee5a3325cec889b4ca0a6165250a0",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "e8000407911e47af305eb80935860cf8c927f8fb737de3f9447a909b4ee4ac6c",
+  "causes": [
+    "ARM FMAX/FMIN propagate NaNs; RVV maxNumber/minNumber retain the numeric operand when only one operand is NaN."
+  ],
+  "changes": [
+    "Use real RVV self-NaN masks and vector merges for propagating min/max.",
+    "Create separate bit-preserving value copies for each repeated comparison operand. No scalar b!=b or NaN literal helper.",
+    "Preserve original nine-FMA order, row/column/VL loops, reverse o2/o1/o0 store order and all alias/tail paths.",
+    "Move the two actual ordinary C helpers into shim/propagating.c behind a public typed API; formal-only pointer borrow adapters preserve all input cells. Main C arithmetic/loop/store tokens retained after the NaN repair.",
+    "Hoist exactly58 nested pure local-vector calls to named const temporaries at the original statement. Intrinsic call counts and all FMA/store/control order retained; lvalue-only borrow frontend is buildable. This is an explicit compatibility implementation variant, with original-C equivalence not asserted as a whole theorem."
+  ],
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "fb75e69e110be736d103dd0267828191e6e6ed2f1ffdc3a700818a39a8c4e720",
+  "scope": "Full FP32 values/bounds and unordered bounds; numeric equality or bothNaN. FP flags unobserved/traps disabled; no physical ISA/ABI refinement claim.",
+  "reference_only": "Frama candidate preserved separately, not copied with its dimension/separation cuts or scalar selfcompare. Arcadia target equals original.",
+  "exact_patch_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/repair-current-exact-sty8ciid",
+  "whole_kernel_verified": false,
+  "actual_C_fields_checked": 0,
+  "native_repaired_validation_pending": true,
+  "native_scope": "Finite actual C through three legalVL modes/two inactive choices with independent scalar exact-fused oracle, read aliases/frame, wrongone/both controls. Not formal proof or hardware execution.",
+  "patch_file_count": 3,
+  "main_patch": "proof/repair-rvv-main.patch",
+  "main_patch_sha256": "97f1be866bcebbc3e5e9e226902818175af146386967b078e6a2d32df1b8aa4a",
+  "ordinary_helper_source_sha256": {
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42"
+  },
+  "component_proof": "proof/propagating-proof-status.json",
+  "component_proof_sha256": "16595cf86fe3c8cacf5129006f418f253faadcb63f75edd54fe9e961f7a7c40d",
+  "neon_variant": "compatibility-repaired",
+  "neon_patch": "proof/repair-neon.patch",
+  "neon_patch_sha256": "f5856b32baede52335c687b113e71f0284094d05016df718c0613623c21f1bc1",
+  "combined_patch": "proof/repair.patch",
+  "combined_patch_sha256": "604d6cd9571ee24b0111d0861abe6eff6247f856c89019f594f1bccd1e8ff76d",
+  "neon_compatibility": {
+    "reason": "QCP rejects local static storage (actual fatal/zero VC preserved). Only static removed from never-escaping read-only 7-int constant table; identical initializer/use sites, no new branch/domain restriction.",
+    "diagnostic": "proof/static-local-tool-gap.json",
+    "semantic_counterexample": false,
+    "nested_vector_refactor": "proof/neon-nested-normalization.json",
+    "nested_vector_refactor_sha256": "d52dc3a1b63030109f2d339eb30b91934904aa68983443886f5c2f1e560b250e"
+  }
+}

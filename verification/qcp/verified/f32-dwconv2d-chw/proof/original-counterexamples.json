@@ -1,0 +1,51 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite actual original C in independent Arm/RVV scalar emulator, not hardware execution or formal proof",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/original-nan-witness-jy39kt_i",
+  "records": [
+    {
+      "label": "compile",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-frounding-math",
+        "-fno-fast-math",
+        "-ffp-contract=off",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/proof/native/original_nan_witness.c",
+        "-lm",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/original-nan-witness-jy39kt_i/witness"
+      ],
+      "exit_code": 0,
+      "seconds": 1.6693496138323098,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "run",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/original-nan-witness-jy39kt_i/witness"
+      ],
+      "exit_code": 0,
+      "seconds": 0.004218958085402846,
+      "log_sha256": "94c403938dd18d9478af1087924a3db068d49d19f533105581dfa20acb8ccd96"
+    }
+  ],
+  "witnesses": 3,
+  "input_sha256": {
+    "proof/native/isa_arrays.h": "1f9ca794922c130efa2f624a570ea450e93d3c97e12fe76276d9d350d77c8242",
+    "proof/native/original_nan_witness.c": "f69e5d02ab2710cf9eb25d4713734f8c5e7c4f4f51520e55ab0dfe63242b9bf4",
+    "proof/original/testNEON.c": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+    "proof/original/testRVV.c": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112"
+  }
+}

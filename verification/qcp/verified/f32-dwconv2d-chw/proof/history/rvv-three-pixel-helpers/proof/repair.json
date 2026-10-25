@@ -1,0 +1,78 @@
+{
+  "kernel": "f32-dwconv2d-chw",
+  "variant": "repaired",
+  "neon_changed": true,
+  "original_neon_sha256": "92203697f6f349fe1519cb50907639a2977d73caa56672f68bd2696e3d7d363d",
+  "repaired_neon_sha256": "7d30da93f304cb4452d239d98341777fb40a3c277569d33ccbde3fd52d10338d",
+  "original_rvv_sha256": "42355c58d8cdc399e4e3cf9fd9d597b016b06543c509bf6bfcd29a4617500112",
+  "repaired_rvv_sha256": "3525666e7e1fbf60782cdb9daedc03f6f702850addaf32b1be0a9bc8eac1abcc",
+  "patch": "proof/repair-rvv.patch",
+  "patch_sha256": "d50bc2ab8cbab02124245e059f7913fbcf9c8a30592db9045c68b9ae20484fa1",
+  "causes": [
+    "ARM FMAX/FMIN propagate NaNs; RVV maxNumber/minNumber retain the numeric operand when only one operand is NaN."
+  ],
+  "changes": [
+    "Use real RVV self-NaN masks and vector merges for propagating min/max.",
+    "Create separate bit-preserving value copies for each repeated comparison operand. No scalar b!=b or NaN literal helper.",
+    "Preserve original nine-FMA order, row/column/VL loops, reverse o2/o1/o0 store order and all alias/tail paths.",
+    "Move the two actual ordinary C helpers into shim/propagating.c behind a public typed API; formal-only pointer borrow adapters preserve all input cells. Main C arithmetic/loop/store tokens retained after the NaN repair.",
+    "Hoist exactly58 nested pure local-vector calls to named const temporaries at the original statement. Intrinsic call counts and all FMA/store/control order retained; lvalue-only borrow frontend is buildable. This is an explicit compatibility implementation variant, with original-C equivalence not asserted as a whole theorem.",
+    "Wrap46 scalar loads at their original evaluation sites in ordinary dw_read_scalar(&lvalue), whose actual C body returns *p and preserves the shared read map. This case-local compatible variant retains conditional evaluation and each FMA/store/control order; it does not exempt an adapter as an intrinsic."
+  ],
+  "counterexamples": "proof/original-counterexamples.json",
+  "counterexamples_sha256": "fb75e69e110be736d103dd0267828191e6e6ed2f1ffdc3a700818a39a8c4e720",
+  "scope": "Full FP32 values/bounds and unordered bounds; numeric equality or bothNaN. FP flags unobserved/traps disabled; no physical ISA/ABI refinement claim.",
+  "reference_only": "Frama candidate preserved separately, not copied with its dimension/separation cuts or scalar selfcompare. Arcadia target equals original.",
+  "exact_patch_run": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-dwconv2d-chw/.build/repair-current-exact-wsz7jy6h",
+  "whole_kernel_verified": false,
+  "actual_C_fields_checked": 171,
+  "native_repaired_validation_pending": false,
+  "native_scope": "Finite actual C through three legalVL modes/two inactive choices with independent scalar exact-fused oracle, read aliases/frame, wrongone/both controls. Not formal proof or hardware execution.",
+  "patch_file_count": 5,
+  "main_patch": "proof/repair-rvv-main.patch",
+  "main_patch_sha256": "a55f30cc65c9658987705cf2977d02480d54dcb121c0e9c2baae288cc0d0b2d0",
+  "ordinary_helper_source_sha256": {
+    "shim/propagating.c": "5ba3ef84b40630bdf13ad719bc7bf27a61de583f4df962f58f86a69ca197231a",
+    "shim/propagating_api.h": "559a301daa999953895d496d97e12723fa4d081befbae2e8a16c908d4b9bbf42",
+    "shim/read_scalar.c": "ac3f4f0c7c4cd98e557670d2cc0c2535922670c72331e4bb79e09fb978724d20",
+    "shim/read_api.h": "abb4eb4b67bf321dda6eb997721860e4e28f17beedc9d4b6bbc85126dd5d0d71"
+  },
+  "component_proof": "proof/propagating-proof-status.json",
+  "component_proof_sha256": "16595cf86fe3c8cacf5129006f418f253faadcb63f75edd54fe9e961f7a7c40d",
+  "neon_variant": "compatibility-repaired",
+  "neon_patch": "proof/repair-neon.patch",
+  "neon_patch_sha256": "d0c9bd4f17789984cb7b8340ca615f9c7ee1fb914c67713ee2d2544b89d936e1",
+  "combined_patch": "proof/repair.patch",
+  "combined_patch_sha256": "d976c03be4b0507b25289281a4694159b22ef02f2ada9ca435e54b4731341174",
+  "neon_compatibility": {
+    "reason": "QCP rejects local static storage (actual fatal/zero VC preserved). Only static removed from never-escaping read-only 7-int constant table; identical initializer/use sites, no new branch/domain restriction.",
+    "diagnostic": "proof/static-local-tool-gap.json",
+    "semantic_counterexample": false,
+    "nested_vector_refactor": "proof/neon-nested-normalization.json",
+    "nested_vector_refactor_sha256": "d52dc3a1b63030109f2d339eb30b91934904aa68983443886f5c2f1e560b250e"
+  },
+  "scalar_read_compatibility": {
+    "evidence": "proof/scalar-read-refactor.json",
+    "semantic_counterexample": false,
+    "ordinary_actual_body": "shim/read_scalar.c",
+    "helper_status": "proof/ReadChecked-ReadCallProbeChecked-status.json"
+  },
+  "ordinary_helper_components_only": true,
+  "native_evidence": {
+    "native-undefined-status.json": {
+      "path": "proof/native-undefined-status.json",
+      "sha256": "b755d832957e88f34108747a41cec621c995975d5429700d97c453f237b798c4",
+      "passed": true
+    },
+    "native-address-status.json": {
+      "path": "proof/native-address-status.json",
+      "sha256": "0bd6d82429c49eaffa7090a1d6f3eadb80f5dda33c4c280c3772e66d9914f417",
+      "passed": true
+    },
+    "rv64-buildability-status.json": {
+      "path": "proof/rv64-buildability-status.json",
+      "sha256": "678271ccca388dc4978589036ceb42c2d906b8ff36d55dd8a2dead9a39da41da",
+      "passed": true
+    }
+  }
+}

@@ -1,0 +1,6 @@
+From Coq Require Import ZArith Lia.
+From DwChw Require Import NeonPixelTactics neon_pixel_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Lemma proof_of_dw_neon_pixel_compute_partial_solve_wit_102:DwChw.neon_pixel_unit_goal.dw_neon_pixel_compute_partial_solve_wit_102.
+Proof. unfold DwChw.neon_pixel_unit_goal.dw_neon_pixel_compute_partial_solve_wit_102;dw_neon_pixel_solve. Qed.
+Print Assumptions proof_of_dw_neon_pixel_compute_partial_solve_wit_102.

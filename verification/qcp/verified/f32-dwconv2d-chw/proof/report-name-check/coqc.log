@@ -1,0 +1,2764 @@
+qm_local_field_address
+     : forall v t f : String.string, &( &( v) # t ->ₛ f) = &( &( v) ->ₛ f)
+fp32_bits_range
+     : forall v : fp32,
+       BinInt.Z.le BinNums.Z0 (bits_of_fp32 v) /\
+       BinInt.Z.le (bits_of_fp32 v) UINT_MAX
+fp32_of_bits_of_fp32
+     : forall v : fp32, fp32_of_bits (bits_of_fp32 v) = v
+bits_of_fp32_of_bits
+     : forall u : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 u /\ BinInt.Z.le u UINT_MAX ->
+       bits_of_fp32 (fp32_of_bits u) = u
+rvv_pull_through
+     : forall A P q R : Snaive_C_Rules64.expr,
+       Snaive_C_Rules64.derivable1 P (Snaive_C_Rules64.sepcon q R) ->
+       Snaive_C_Rules64.derivable1 (Snaive_C_Rules64.sepcon A P)
+         (Snaive_C_Rules64.sepcon q (Snaive_C_Rules64.sepcon A R))
+nan_left
+     : forall a b c : fp32, fp32_isNaN a -> fp32_isNaN (fma_rne a b c)
+nan_right
+     : forall a b c : fp32, fp32_isNaN b -> fp32_isNaN (fma_rne a b c)
+nan_accumulator
+     : forall a b c : fp32, fp32_isNaN c -> fp32_isNaN (fma_rne a b c)
+infinity_times_zero
+     : forall c : fp32,
+       fp32_isNaN
+         (fma_rne
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits BinNums.Z0) c)
+opposite_infinities
+     : fp32_isNaN
+         (fma_rne
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...)))))))))))))))))))))))
+negative_zero_preserved
+     : bits_of_fp32
+         (fma_rne
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))) =
+       BinNums.Zpos
+         (BinNums.xO
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))))
+overflow_to_positive_infinity
+     : bits_of_fp32
+         (fma_rne
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xI
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xI
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...))))))))))))))))))))))
+            (fp32_of_bits BinNums.Z0)) =
+       BinNums.Zpos
+         (BinNums.xO
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))))
+underflow_tie_to_even_zero
+     : bits_of_fp32
+         (fma_rne (fp32_of_bits (BinNums.Zpos BinNums.xH))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits BinNums.Z0)) = BinNums.Z0
+fused_rounding_witness
+     : bits_of_fp32
+         (fma_rne
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xI
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))) =
+       BinNums.Zpos
+         (BinNums.xO
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))))
+split_rounding_witness
+     : bits_of_fp32
+         (fp32_add
+            (fp32_mul
+               (fp32_of_bits
+                  (BinNums.Zpos
+                     (BinNums.xI
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))
+               (fp32_of_bits
+                  (BinNums.Zpos
+                     (BinNums.xO
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))) =
+       BinNums.Z0
+pair_schedule_matches_scalar
+     : forall (xs : list (fp32 * fp32)) (acc : fp32),
+       pair_schedule acc xs = scalar_schedule acc xs
+double_rounding_fused_witness
+     : bits_of_fp32
+         (fma_rne
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xI
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))) =
+       BinNums.Zpos
+         (BinNums.xI
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))))
+double_rounding_intermediate_witness
+     : bits_of_fp32
+         (via_double
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xI
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...))))))))))))))))))))))
+            (fp32_of_bits
+               (BinNums.Zpos
+                  (BinNums.xI
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))) =
+       BinNums.Zpos
+         (BinNums.xO
+            (BinNums.xI
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))))
+single_nan_fma_swap
+     : forall
+         a b
+          c : BinarySingleNaN.binary_float
+                (BinNums.Zpos
+                   (BinNums.xO
+                      (BinNums.xO (BinNums.xO (BinNums.xI BinNums.xH)))))
+                (BinNums.Zpos
+                   (BinNums.xO
+                      (BinNums.xO
+                         (BinNums.xO
+                            (BinNums.xO
+                               (BinNums.xO
+                                  (BinNums.xO (BinNums.xO BinNums.xH)))))))),
+       BinarySingleNaN.Bfma BinarySingleNaN.mode_NE a b c =
+       BinarySingleNaN.Bfma BinarySingleNaN.mode_NE b a c
+dw_rvv_fma_swap
+     : forall c a b : fp32, dw_rvv_fma c a b = dw_rvv_fma c b a
+dw_width_shift_two
+     : forall N : BinNums.Z,
+       BinInt.Z.shiftr
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+         (BinNums.Zpos (BinNums.xO BinNums.xH)) = N
+dw_land_three_mod_four
+     : forall x : BinNums.Z,
+       BinInt.Z.land x (BinNums.Zpos (BinNums.xI BinNums.xH)) =
+       BinInt.Z.modulo x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+dw_mask_index_range
+     : forall N : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 (dw_mask_index N) /\
+       BinInt.Z.le (dw_mask_index N) (BinNums.Zpos (BinNums.xI BinNums.xH))
+dw_mask_index_source_exact
+     : forall N : BinNums.Z, dw_mask_index_source N = dw_mask_index N
+dw_mask_index_source_range
+     : forall N : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 (dw_mask_index_source N) /\
+       BinInt.Z.le (dw_mask_index_source N)
+         (BinNums.Zpos (BinNums.xI BinNums.xH))
+dw_mask7_word_from_signed
+     : forall k i : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 k /\
+       BinInt.Z.le k (BinNums.Zpos (BinNums.xI BinNums.xH)) ->
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       unsigned_last_nbits
+         (Znth (BinInt.Z.add k i) dw_mask7_values BinNums.Z0)
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))) =
+       dw_mask7_word k i
+dw_fp_match_active
+     : forall (i vl : BinNums.Z) (x y : fp32),
+       BinInt.Z.lt i vl -> dw_fp_match i vl x y -> x = y
+dw_ne_self_nan
+     : forall x : fp32, dw_ne_value x x = dw_rvv_nanmask x
+dw_mask_self_active
+     : forall (vl m : BinNums.Z) (A : BinNums.Z -> fp32) (i : BinNums.Z),
+       dw_mask_matches vl m A A ->
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl ->
+       dw_mask_bit m i = dw_rvv_nanmask (A i)
+dw_fp8_at_0
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7 BinNums.Z0 = x0
+dw_fp8_at_1
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7 (BinNums.Zpos BinNums.xH) = x1
+dw_fp8_at_2
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7 (BinNums.Zpos (BinNums.xO BinNums.xH)) =
+       x2
+dw_fp8_at_3
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7 (BinNums.Zpos (BinNums.xI BinNums.xH)) =
+       x3
+dw_fp8_at_4
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = x4
+dw_fp8_at_5
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7
+         (BinNums.Zpos (BinNums.xI (BinNums.xO BinNums.xH))) = x5
+dw_fp8_at_6
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7
+         (BinNums.Zpos (BinNums.xO (BinNums.xI BinNums.xH))) = x6
+dw_fp8_at_7
+     : forall x0 x1 x2 x3 x4 x5 x6 x7 : fp32,
+       dw_fp8 x0 x1 x2 x3 x4 x5 x6 x7
+         (BinNums.Zpos (BinNums.xI (BinNums.xI BinNums.xH))) = x7
+dw_ptr_data_pop
+     : forall (P : DwPtrMap) (p : BinNums.Z),
+       dw_ptr_present P p ->
+       Snaive_C_Rules64.logic_equiv (dw_ptr_data P)
+         (Snaive_C_Rules64.sepcon
+            (Snaive_C_Rules64.store_ptr p (dw_ptr_get P p))
+            (dw_ptr_data (dw_ptr_pop P p)))
+dw_data_pop
+     : forall (P : DwROMap) (p : BinNums.Z),
+       dw_present P p ->
+       Snaive_C_Rules64.logic_equiv (dw_data P)
+         (Snaive_C_Rules64.sepcon
+            (Snaive_C_Rules64.store_float p (dw_get P p))
+            (dw_data (dw_pop P p)))
+dw_get_cons_same
+     : forall (F : list (BinNums.Z * fp32)) (p : BinNums.Z) (v : fp32),
+       dw_get ((p, v) :: F)%list p = v
+dw_present_cons_same
+     : forall (F : list (BinNums.Z * fp32)) (p : BinNums.Z) (v : fp32),
+       dw_present ((p, v) :: F)%list p
+dw_window_lane
+     : forall (F : DwROMap) (p count lane : BinNums.Z),
+       dw_window F p count ->
+       BinInt.Z.le BinNums.Z0 lane /\ BinInt.Z.lt lane count ->
+       dw_present F
+         (BinInt.Z.add p
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               lane))
+dw_load_allowed_exact
+     : forall (F : DwROMap) (p vl : BinNums.Z),
+       dw_load_allowed F p vl <-> vl = BinNums.Z0 \/ dw_window F p vl
+dw_store_allowed_exact
+     : forall (W : list BinNums.Z) (p vl : BinNums.Z),
+       dw_store_allowed W p vl <-> vl = BinNums.Z0 \/ dw_write_window W p vl
+dw_load_allowed_zero
+     : forall (F : DwROMap) (p : BinNums.Z), dw_load_allowed F p BinNums.Z0
+dw_store_allowed_zero
+     : forall (W : list BinNums.Z) (p : BinNums.Z),
+       dw_store_allowed W p BinNums.Z0
+dw_load_byte_address
+     : forall (F : DwROMap) (base j : BinNums.Z),
+       dw_load F base j =
+       dw_get F
+         (BinInt.Z.add base
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               j))
+dw_split_magnitude
+     : forall u : BinNums.Z,
+       BinInt.Z.modulo u
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...)))))))))))))))))))))) =
+       BinInt.Z.add
+         (BinInt.Z.mul
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...)))))))))))))))))))))
+            (BinInt.Z.modulo
+               (BinInt.Z.div u
+                  (BinNums.Zpos
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...))))))))))))))))))))
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO (BinNums.xO BinNums.xH)))))))))))
+         (BinInt.Z.modulo u
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...))))))))))))))))))))))
+dw_nan_decode
+     : forall u : BinNums.Z,
+       dw_nan_bits u = BinNums.Zpos BinNums.xH <->
+       fp32_isNaN (fp32_of_bits u)
+dw_nan_fp32
+     : forall x : fp32,
+       dw_nan_bits (bits_of_fp32 x) = BinNums.Zpos BinNums.xH <->
+       fp32_isNaN x
+dw_nan_cases
+     : forall u : BinNums.Z,
+       dw_nan_bits u = BinNums.Z0 \/ dw_nan_bits u = BinNums.Zpos BinNums.xH
+dw_snan_implies_nan
+     : forall u : BinNums.Z,
+       dw_snan_bits u = BinNums.Zpos BinNums.xH ->
+       dw_nan_bits u = BinNums.Zpos BinNums.xH
+dw_quiet_preserves_nan
+     : forall u : BinNums.Z,
+       dw_nan_bits u = BinNums.Zpos BinNums.xH ->
+       dw_nan_bits
+         (BinInt.Z.lor u
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))) =
+       BinNums.Zpos BinNums.xH
+dw_canonical_is_nan
+     : fp32_isNaN dw_canonical_nan
+dw_neon_quot_position_exact
+     : forall N w : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 w /\
+       BinInt.Z.le w
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) ->
+       BinInt.Z.modulo w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+         (BinInt.Z.quot
+            (BinInt.Z.sub
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) w)
+            (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) =
+       BinInt.Z.sub
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+         w
+dw_neon_next_column
+     : forall N w : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 w /\
+       BinInt.Z.le w
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) ->
+       BinInt.Z.modulo w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       BinInt.Z.quot
+         (BinInt.Z.sub
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               N)
+            (BinInt.Z.sub w
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinInt.Z.add
+         (BinInt.Z.quot
+            (BinInt.Z.sub
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) w)
+            (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+dw_neon_previous_advance
+     : forall (F : DwROMap) (p x i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_get F
+         (BinInt.Z.add p
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add x i))) =
+       dw_previous4 F p
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))
+         i
+dw_neon_position_exact
+     : forall N w : BinNums.Z,
+       BinInt.Z.modulo w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+         (BinInt.Z.div
+            (BinInt.Z.sub
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) w)
+            (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) =
+       BinInt.Z.sub
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+         w
+dw_neon_position_bounds
+     : forall N w : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 w /\
+       BinInt.Z.le w
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) ->
+       BinInt.Z.modulo w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       BinInt.Z.le BinNums.Z0
+         (BinInt.Z.div
+            (BinInt.Z.sub
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) w)
+            (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) /\
+       BinInt.Z.le
+         (BinInt.Z.div
+            (BinInt.Z.sub
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N) w)
+            (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) N
+dw_neon_width_padding
+     : forall (F : DwROMap) (input zero weights params H N : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le
+         (BinInt.Z.add
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               N)
+            (BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+         UINT64_MAX
+dw_neon_round16_bounds
+     : forall N : BinNums.Z,
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le
+         (BinInt.Z.add
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               N)
+            (BinNums.Zpos (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+         UINT64_MAX ->
+       BinInt.Z.le
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+         (BinInt.Z.mul
+            (BinInt.Z.div
+               (BinInt.Z.add
+                  (BinInt.Z.mul
+                     (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+                  (BinNums.Zpos
+                     (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+            (BinNums.Zpos
+               (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))) /\
+       BinInt.Z.le
+         (BinInt.Z.mul
+            (BinInt.Z.div
+               (BinInt.Z.add
+                  (BinInt.Z.mul
+                     (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+                  (BinNums.Zpos
+                     (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+            (BinNums.Zpos
+               (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+         UINT64_MAX
+dw_neon_fp4_0
+     : forall a b c d : fp32, dw_fp4 a b c d BinNums.Z0 = a
+dw_neon_fp4_3
+     : forall a b c d : fp32,
+       dw_fp4 a b c d (BinNums.Zpos (BinNums.xI BinNums.xH)) = d
+dw_initial_input_row3_window
+     : forall (F : DwROMap) (input zero weights params H N : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) H ->
+       dw_window F
+         (unsigned_last_nbits
+            (BinInt.Z.add
+               (unsigned_last_nbits
+                  (BinInt.Z.add
+                     (unsigned_last_nbits
+                        (BinInt.Z.add
+                           (unsigned_last_nbits input
+                              (BinNums.Zpos
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO BinNums.xH))))))))
+                           (BinInt.Z.mul
+                              (BinNums.Zpos
+                                 (BinNums.xO (BinNums.xO BinNums.xH))) N))
+                        (BinNums.Zpos
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO (BinNums.xO BinNums.xH))))))))
+                     (BinInt.Z.mul
+                        (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+                  (BinNums.Zpos
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO (BinNums.xO BinNums.xH))))))))
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+dw_initial_input_row1_window
+     : forall (F : DwROMap) (input zero weights params H N : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le (BinNums.Zpos (BinNums.xO BinNums.xH)) H ->
+       dw_window F
+         (unsigned_last_nbits
+            (BinInt.Z.add
+               (unsigned_last_nbits input
+                  (BinNums.Zpos
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO (BinNums.xO BinNums.xH))))))))
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+dw_initial_input_row2_window
+     : forall (F : DwROMap) (input zero weights params H N : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le (BinNums.Zpos (BinNums.xI BinNums.xH)) H ->
+       dw_window F
+         (unsigned_last_nbits
+            (BinInt.Z.add
+               (unsigned_last_nbits
+                  (BinInt.Z.add
+                     (unsigned_last_nbits input
+                        (BinNums.Zpos
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO (BinNums.xO BinNums.xH))))))))
+                     (BinInt.Z.mul
+                        (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+                  (BinNums.Zpos
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO (BinNums.xO BinNums.xH))))))))
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+dw_neon_tail_mask_index
+     : forall N x n : BinNums.Z,
+       BinInt.Z.modulo x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       BinInt.Z.le (BinNums.Zpos BinNums.xH) n /\
+       BinInt.Z.le n (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       N = BinInt.Z.add x n ->
+       dw_mask_index N =
+       BinInt.Z.sub (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) n
+dw_u4_from_four
+     : forall (A : BinNums.Z -> BinNums.Z) (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_u4 (A BinNums.Z0) (A (BinNums.Zpos BinNums.xH))
+         (A (BinNums.Zpos (BinNums.xO BinNums.xH)))
+         (A (BinNums.Zpos (BinNums.xI BinNums.xH))) i = 
+       A i
+dw_float_bits_full_mask
+     : forall v : fp32,
+       BinInt.Z.land UINT_MAX (bits_of_fp32 v) = bits_of_fp32 v
+dw_neon_masked4_lane
+     : forall (n : BinNums.Z) (A : BinNums.Z -> fp32) (i : BinNums.Z),
+       BinInt.Z.le (BinNums.Zpos BinNums.xH) n /\
+       BinInt.Z.le n (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_neon_masked4
+         (BinInt.Z.sub (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) n)
+         A i = (if BinInt.Z.ltb i n then A i else fp32_zero)
+dw_neon_decrement_at_tail
+     : forall N x n : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le (BinNums.Zpos BinNums.xH) n /\
+       BinInt.Z.le n (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       N = BinInt.Z.add x n ->
+       BinInt.Z.modulo x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       BinInt.Z.mul
+         (BinInt.Z.quot
+            (BinInt.Z.add
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+               (BinNums.Zpos
+                  (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+            (BinNums.Zpos
+               (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+         (BinNums.Zpos
+            (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))) =
+       BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))
+dw_progress_doz_end
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput)
+         (output H N rem : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 rem /\ BinInt.Z.le rem H ->
+       dw_progress R O output H N (BinInt.Z.sub H rem) N =
+       dw_progress R O output H N
+         (BinInt.Z.sub H
+            (dw_doz_model rem (BinNums.Zpos (BinNums.xI BinNums.xH))))
+         BinNums.Z0
+dw_u64_idempotent
+     : forall p : BinNums.Z,
+       unsigned_last_nbits
+         (unsigned_last_nbits p
+            (BinNums.Zpos
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))) =
+       unsigned_last_nbits p
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+dw_output_row_base_bounds
+     : forall output H N y : BinNums.Z,
+       dw_footprint output (BinInt.Z.mul H N) ->
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       BinInt.Z.le BinNums.Z0
+         (BinInt.Z.add output
+            (BinInt.Z.mul
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) y) N)) /\
+       BinInt.Z.lt
+         (BinInt.Z.add output
+            (BinInt.Z.mul
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) y) N))
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...)))))))))))))))))))))
+dw_mod_sub_add_flat
+     : forall a b c m : BinNums.Z,
+       BinInt.Z.modulo
+         (BinInt.Z.add (BinInt.Z.sub (BinInt.Z.modulo a m) b) c) m =
+       BinInt.Z.modulo (BinInt.Z.add (BinInt.Z.sub a b) c) m
+dw_mod_add_pair_flat
+     : forall a b c m : BinNums.Z,
+       BinInt.Z.modulo
+         (BinInt.Z.add (BinInt.Z.add (BinInt.Z.modulo a m) b) c) m =
+       BinInt.Z.modulo (BinInt.Z.add (BinInt.Z.add a b) c) m
+dw_neon_outer_pointers_after_tail_final
+     : forall (F : DwROMap)
+         (input zero weights params output H N rem x n : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       dw_footprint output (BinInt.Z.mul H N) ->
+       BinInt.Z.lt BinNums.Z0 rem /\ BinInt.Z.le rem H ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le (BinNums.Zpos BinNums.xH) n /\
+       BinInt.Z.le n (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       N = BinInt.Z.add x n ->
+       let y := BinInt.Z.sub H rem in
+       let i3 :=
+         BinInt.Z.add
+           (dw_row_base input zero H N
+              (BinInt.Z.add y (BinNums.Zpos (BinNums.xO BinNums.xH))))
+           (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+              (BinInt.Z.add x
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))) in
+       let i4 :=
+         BinInt.Z.add
+           (dw_row_base input zero H N
+              (BinInt.Z.add y (BinNums.Zpos (BinNums.xI BinNums.xH))))
+           (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+              (BinInt.Z.add x
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))) in
+       let dec :=
+         BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+           (BinInt.Z.add x
+              (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) in
+       let p0 :=
+         unsigned_last_nbits
+           (BinInt.Z.sub
+              (unsigned_last_nbits i3
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              dec)
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       let p1 :=
+         unsigned_last_nbits
+           (BinInt.Z.sub
+              (unsigned_last_nbits i4
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              dec)
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       let p2 :=
+         unsigned_last_nbits
+           (BinInt.Z.add
+              (unsigned_last_nbits p1
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       let p3 :=
+         unsigned_last_nbits
+           (BinInt.Z.add
+              (unsigned_last_nbits p2
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       let p4 :=
+         unsigned_last_nbits
+           (BinInt.Z.add
+              (unsigned_last_nbits p3
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       let q0 :=
+         BinInt.Z.add
+           (BinInt.Z.add output
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                 (BinInt.Z.add
+                    (BinInt.Z.mul
+                       (dw_store_row H y
+                          (BinNums.Zpos (BinNums.xO BinNums.xH))) N) x)))
+           (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+              n) in
+       let q1 :=
+         unsigned_last_nbits
+           (BinInt.Z.add
+              (unsigned_last_nbits q0
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       let q2 :=
+         unsigned_last_nbits
+           (BinInt.Z.add
+              (unsigned_last_nbits q1
+                 (BinNums.Zpos
+                    (BinNums.xO
+                       (BinNums.xO
+                          (BinNums.xO
+                             (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N))
+           (BinNums.Zpos
+              (BinNums.xO
+                 (BinNums.xO
+                    (BinNums.xO
+                       (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))))
+         in
+       dw_outer_pointers input zero output H N
+         (dw_doz_model rem (BinNums.Zpos (BinNums.xI BinNums.xH))) p0 p1 p2
+         p3 p4 q0 q1 q2
+dw_fp4_from_four
+     : forall (A : BinNums.Z -> fp32) (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_fp4 (A BinNums.Z0) (A (BinNums.Zpos BinNums.xH))
+         (A (BinNums.Zpos (BinNums.xO BinNums.xH)))
+         (A (BinNums.Zpos (BinNums.xI BinNums.xH))) i = 
+       A i
+dw_neon_row_four
+     : forall (F : DwROMap) (input zero H N y x k : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))
+         N ->
+       BinInt.Z.le BinNums.Z0 k /\
+       BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_fp4
+         (dw_get F
+            (BinInt.Z.add (dw_row_base input zero H N y)
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add x BinNums.Z0))))
+         (dw_get F
+            (BinInt.Z.add (dw_row_base input zero H N y)
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add x (BinNums.Zpos BinNums.xH)))))
+         (dw_get F
+            (BinInt.Z.add (dw_row_base input zero H N y)
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add x (BinNums.Zpos (BinNums.xO BinNums.xH))))))
+         (dw_get F
+            (BinInt.Z.add (dw_row_base input zero H N y)
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add x (BinNums.Zpos (BinNums.xI BinNums.xH))))))
+         k = dw_image F input zero H N y (BinInt.Z.add x k)
+dw_neon_previous_last
+     : forall (F : DwROMap) (p x : BinNums.Z),
+       dw_previous4 F p x (BinNums.Zpos (BinNums.xI BinNums.xH)) =
+       dw_prev F p x
+dw_pack4_nth_active
+     : forall (a b c d : fp32) (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       List.nth (BinInt.Z.to_nat i) (dw_pack4 a b c d) fp32_zero =
+       dw_fp4 a b c d i
+dw_pack4_pixel_row
+     : forall (F : DwROMap) (input zero weights H N y x : BinNums.Z)
+         (A0 A1 A2 : BinNums.Z -> fp32)
+         (prev0 prev1 prev2 next0 next1 next2 lo hi r0 r1 r2 r3 : fp32),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))
+         N ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A0 k =
+        dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A1 k = dw_image F input zero H N y (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A2 k =
+        dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       prev0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev1 =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       next0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       next1 =
+       dw_image F input zero H N y
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       next2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       dw_neon_vector_match4 r0 r1 r2 r3
+         (dw_neon_vector_pixel F weights A0 A1 A2 prev0 prev1 prev2 next0
+            next1 next2 lo hi) ->
+       forall i : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       List.nth (BinInt.Z.to_nat i) (dw_pack4 r0 r1 r2 r3) fp32_zero =
+       dw_neon_results F input zero weights H N lo hi
+         (BinInt.Z.add (BinInt.Z.add (BinInt.Z.mul y N) x) i)
+dw_tail_store_two_bound
+     : forall w : BinNums.Z,
+       BinInt.Z.le (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) w /\
+       BinInt.Z.le w
+         (BinNums.Zpos
+            (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))) ->
+       w % BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)) = BinNums.Z0 ->
+       BinInt.Z.land w
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) <>
+       BinNums.Z0 ->
+       BinInt.Z.le
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) w
+dw_tail_store_last_bound
+     : forall w : BinNums.Z,
+       BinInt.Z.le (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) w /\
+       BinInt.Z.le w
+         (BinNums.Zpos
+            (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))) ->
+       w % BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)) = BinNums.Z0 ->
+       BinInt.Z.land w
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) <>
+       BinNums.Z0 ->
+       BinInt.Z.land w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) <>
+       BinNums.Z0 ->
+       BinInt.Z.le
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xI BinNums.xH)))) w
+dw_output_row_window_offset
+     : forall output H N y j x off n : BinNums.Z,
+       dw_footprint output (BinInt.Z.mul H N) ->
+       BinInt.Z.lt BinNums.Z0 H ->
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       BinInt.Z.le BinNums.Z0 j ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 off ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add (BinInt.Z.add x off) n) N ->
+       dw_write_window (dw_addresses output H N)
+         (BinInt.Z.add
+            (BinInt.Z.add output
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add (BinInt.Z.mul (dw_store_row H y j) N) x)))
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               off)) n
+dw_neon_singleton_fp4
+     : forall (a b c d : fp32) (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i (BinNums.Zpos BinNums.xH) ->
+       List.nth (BinInt.Z.to_nat i) (a :: nil) fp32_zero = dw_fp4 a b c d i
+dw_neon_pack2_fp4
+     : forall (a b c d : fp32) (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO BinNums.xH)) ->
+       List.nth (BinInt.Z.to_nat i) (dw_pack2 a b) fp32_zero =
+       dw_fp4 a b c d i
+dw_neon_tail_fp2_zero
+     : forall a b : fp32, dw_fp2 a b BinNums.Z0 = a
+dw_neon_read4_lane
+     : forall (F : DwROMap) (p x i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_neon_read4 F p x i =
+       dw_get F
+         (BinInt.Z.add p
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add x i)))
+dw_neon_tail_mask_image
+     : forall (F : DwROMap) (input zero H N y x n : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le (BinNums.Zpos BinNums.xH) n /\
+       BinInt.Z.le n (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       BinInt.Z.add x n = N ->
+       BinInt.Z.modulo x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       forall k : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 k /\
+       BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       dw_neon_masked4 (dw_mask_index N)
+         (dw_neon_read4 F (dw_row_base input zero H N y) x) k =
+       dw_image F input zero H N y (BinInt.Z.add x k)
+dw_neon_tail_pixel_row
+     : forall (F : DwROMap) (input zero weights H N y x n : BinNums.Z)
+         (prev0 prev1 prev2 lo hi r0 r1 r2 r3 : fp32),
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le (BinNums.Zpos BinNums.xH) n /\
+       BinInt.Z.le n (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       BinInt.Z.add x n = N ->
+       BinInt.Z.modulo x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) =
+       BinNums.Z0 ->
+       prev0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev1 =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       dw_neon_vector_match4 r0 r1 r2 r3
+         (dw_neon_vector_pixel F weights
+            (dw_neon_masked4 (dw_mask_index N)
+               (dw_neon_read4 F
+                  (dw_row_base input zero H N
+                     (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))) x))
+            (dw_neon_masked4 (dw_mask_index N)
+               (dw_neon_read4 F (dw_row_base input zero H N y) x))
+            (dw_neon_masked4 (dw_mask_index N)
+               (dw_neon_read4 F
+                  (dw_row_base input zero H N
+                     (BinInt.Z.add y (BinNums.Zpos BinNums.xH))) x)) prev0
+            prev1 prev2 fp32_zero fp32_zero fp32_zero lo hi) ->
+       forall i : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i n ->
+       dw_fp4 r0 r1 r2 r3 i =
+       dw_neon_results F input zero weights H N lo hi
+         (BinInt.Z.add (BinInt.Z.add (BinInt.Z.mul y N) x) i)
+dw_neon_vector_pixel_padded_window
+     : forall (F : DwROMap) (input zero weights H N y x : BinNums.Z)
+         (A0 A1 A2 : BinNums.Z -> fp32)
+         (prev0 prev1 prev2 next0 next1 next2 lo hi : fp32) 
+         (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\
+       BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A0 k =
+        dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A1 k = dw_image F input zero H N y (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A2 k =
+        dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       prev0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev1 =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       next0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       next1 =
+       dw_image F input zero H N y
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       next2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       dw_neon_vector_pixel F weights A0 A1 A2 prev0 prev1 prev2 next0 next1
+         next2 lo hi i =
+       dw_pixel F input zero weights H N y (BinInt.Z.add x i) lo hi
+dw_image_right_zero
+     : forall (F : DwROMap) (input zero H N y x : BinNums.Z),
+       BinInt.Z.le N x -> dw_image F input zero H N y x = fp32_zero
+dw_neon_tail_window
+     : forall (F : DwROMap) (input zero H N y x w : BinNums.Z)
+         (A : BinNums.Z -> fp32),
+       BinInt.Z.le BinNums.Z0 w /\
+       BinInt.Z.le w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       BinInt.Z.add x w = N ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k w ->
+        A k = dw_image F input zero H N y (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le w k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A k = fp32_zero) ->
+       forall k : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 k /\
+       BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       A k = dw_image F input zero H N y (BinInt.Z.add x k)
+dw_neon_vector_pixel_tail_window
+     : forall (F : DwROMap) (input zero weights H N y x w : BinNums.Z)
+         (A0 A1 A2 : BinNums.Z -> fp32) (prev0 prev1 prev2 lo hi : fp32)
+         (i : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 w /\
+       BinInt.Z.le w (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+       BinInt.Z.add x w = N ->
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i w ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k w ->
+        A0 k =
+        dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k w ->
+        A1 k = dw_image F input zero H N y (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k w ->
+        A2 k =
+        dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le w k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A0 k = fp32_zero) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le w k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A1 k = fp32_zero) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le w k /\
+        BinInt.Z.lt k (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        A2 k = fp32_zero) ->
+       prev0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev1 =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       dw_neon_vector_pixel F weights A0 A1 A2 prev0 prev1 prev2 fp32_zero
+         fp32_zero fp32_zero lo hi i =
+       dw_pixel F input zero weights H N y (BinInt.Z.add x i) lo hi
+dw_neon_vector_match4_ext
+     : forall (r0 r1 r2 r3 : fp32) (G K : BinNums.Z -> fp32),
+       dw_neon_vector_match4 r0 r1 r2 r3 G ->
+       (forall i : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 i /\
+        BinInt.Z.lt i (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) ->
+        G i = K i) -> dw_neon_vector_match4 r0 r1 r2 r3 K
+dw_neon_result_row_index
+     : forall (F : DwROMap) (input zero weights H N : BinNums.Z)
+         (lo hi : fp32) (y x : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 x /\ BinInt.Z.lt x N ->
+       dw_neon_results F input zero weights H N lo hi
+         (BinInt.Z.add (BinInt.Z.mul y N) x) =
+       dw_pixel F input zero weights H N y x lo hi
+dw_rel_refl
+     : forall x : fp32, dw_rel x x
+dw_nan_or2
+     : forall a b : fp32,
+       (dw_nan a || dw_nan b)%bool = true <-> fp32_isNaN a \/ fp32_isNaN b
+dw_nan_or3
+     : forall c a b : fp32,
+       (dw_nan c || (dw_nan a || dw_nan b))%bool = true <->
+       fp32_isNaN c \/ fp32_isNaN a \/ fp32_isNaN b
+dw_snan_nan
+     : forall x : fp32, dw_snan x = true -> fp32_isNaN x
+dw_quiet_nan
+     : forall x : fp32, fp32_isNaN x -> fp32_isNaN (dw_quiet x)
+dw_qnan_nan
+     : fp32_isNaN canonical_qnan
+dw_canonicalize_nan
+     : forall x : fp32, fp32_isNaN x -> fp32_isNaN (dw_canonicalize x)
+dw_arm_nan2_nan
+     : forall a b : fp32,
+       fp32_isNaN a \/ fp32_isNaN b -> fp32_isNaN (dw_arm_nan2 a b)
+dw_arm_nan3_nan
+     : forall c a b : fp32,
+       fp32_isNaN c \/ fp32_isNaN a \/ fp32_isNaN b ->
+       fp32_isNaN (dw_arm_nan3 c a b)
+dw_add_nan
+     : forall a b : fp32,
+       fp32_isNaN a \/ fp32_isNaN b -> fp32_isNaN (fp32_add a b)
+dw_mul_nan
+     : forall a b : fp32,
+       fp32_isNaN a \/ fp32_isNaN b -> fp32_isNaN (fp32_mul a b)
+dw_fma_nan
+     : forall c a b : fp32,
+       fp32_isNaN c \/ fp32_isNaN a \/ fp32_isNaN b ->
+       fp32_isNaN (fma_rne a b c)
+dw_arm_binary_nan
+     : forall a b r : fp32,
+       fp32_isNaN a \/ fp32_isNaN b -> fp32_isNaN (dw_arm_binary a b r)
+dw_binary_same
+     : forall (op : fp32 -> fp32 -> fp32) (a b : fp32),
+       (forall a0 b0 : fp32,
+        fp32_isNaN a0 \/ fp32_isNaN b0 -> fp32_isNaN (op a0 b0)) ->
+       dw_rel (dw_arm_binary a b (op a b)) (dw_canonicalize (op a b))
+dw_arm_fma_nan
+     : forall c a b : fp32,
+       fp32_isNaN c \/ fp32_isNaN a \/ fp32_isNaN b ->
+       fp32_isNaN (dw_arm_fma c a b)
+dw_fma_same
+     : forall c a b : fp32, dw_rel (dw_arm_fma c a b) (dw_rvv_fma c a b)
+dw_arm_clamp_nan
+     : forall (op : fp32 -> fp32 -> fp32) (a b : fp32),
+       fp32_isNaN a \/ fp32_isNaN b ->
+       fp32_isNaN
+         (if (dw_nan a || dw_nan b)%bool then dw_arm_nan2 a b else op a b)
+dw_rvv_clamp_nan
+     : forall (op : fp32 -> fp32 -> fp32) (a b : fp32),
+       fp32_isNaN a \/ fp32_isNaN b ->
+       fp32_isNaN
+         (dw_rvv_merge (dw_rvv_merge (op a b) a (dw_rvv_nanmask a)) b
+            (dw_rvv_nanmask b))
+dw_clamp_same
+     : forall (op : fp32 -> fp32 -> fp32) (a b : fp32),
+       dw_rel
+         (if (dw_nan a || dw_nan b)%bool then dw_arm_nan2 a b else op a b)
+         (dw_rvv_merge (dw_rvv_merge (op a b) a (dw_rvv_nanmask a)) b
+            (dw_rvv_nanmask b))
+dw_binary_related
+     : forall arm rvv : fp32 -> fp32 -> fp32,
+       (forall a b : fp32, dw_rel (arm a b) (rvv a b)) ->
+       (forall a b : fp32,
+        fp32_isNaN a \/ fp32_isNaN b -> fp32_isNaN (arm a b)) ->
+       (forall a b : fp32,
+        fp32_isNaN a \/ fp32_isNaN b -> fp32_isNaN (rvv a b)) ->
+       forall a a' b b' : fp32,
+       dw_rel a a' -> dw_rel b b' -> dw_rel (arm a b) (rvv a' b')
+dw_fma_related
+     : forall c c' a a' b b' : fp32,
+       dw_rel c c' ->
+       dw_rel a a' ->
+       dw_rel b b' -> dw_rel (dw_arm_fma c a b) (dw_rvv_fma c' a' b')
+dw_add_related
+     : forall a a' b b' : fp32,
+       dw_rel a a' ->
+       dw_rel b b' -> dw_rel (dw_arm_add a b) (dw_rvv_add a' b')
+dw_mul_related
+     : forall a a' b b' : fp32,
+       dw_rel a a' ->
+       dw_rel b b' -> dw_rel (dw_arm_mul a b) (dw_rvv_mul a' b')
+dw_max_related
+     : forall a a' b b' : fp32,
+       dw_rel a a' ->
+       dw_rel b b' -> dw_rel (dw_arm_max a b) (dw_repaired_max a' b')
+dw_min_related
+     : forall a a' b b' : fp32,
+       dw_rel a a' ->
+       dw_rel b b' -> dw_rel (dw_arm_min a b) (dw_repaired_min a' b')
+dw_lane_related
+     : forall bias i0 k0 i1 k1 i2 k2 lo hi : fp32,
+       dw_rel (dw_neon_lane bias i0 k0 i1 k1 i2 k2 lo hi)
+         (dw_rvv_lane bias i0 k0 i1 k1 i2 k2 lo hi)
+dw_observe_refl
+     : forall x : fp32, dw_observe x x
+dw_related_observe
+     : forall a b : fp32, dw_rel a b -> dw_observe a b
+dw_lane_observation
+     : forall bias i0 k0 i1 k1 i2 k2 lo hi : fp32,
+       dw_observe (dw_neon_lane bias i0 k0 i1 k1 i2 k2 lo hi)
+         (dw_rvv_lane bias i0 k0 i1 k1 i2 k2 lo hi)
+dw_put_same
+     : forall (A : Type) (O : DwState A) (p : BinNums.Z) (v : A),
+       dw_put O p v p = Some v
+dw_put_other
+     : forall (A : Type) (O : DwState A) (p q : BinNums.Z) (v : A),
+       p <> q -> dw_put O p v q = O q
+dw_cells_put_away
+     : forall (A : Type)
+         (cell : BinNums.Z -> option A -> Snaive_C_Rules64.expr)
+         (W : list BinNums.Z) (O : DwState A) (p : BinNums.Z) 
+         (v : A),
+       ~ List.In p W -> dw_cells cell W (dw_put O p v) = dw_cells cell W O
+dw_cells_pop
+     : forall (A : Type)
+         (cell : BinNums.Z -> option A -> Snaive_C_Rules64.expr)
+         (W : list BinNums.Z) (O : DwState A) (p : BinNums.Z),
+       List.NoDup W ->
+       List.In p W ->
+       Snaive_C_Rules64.logic_equiv (dw_cells cell W O)
+         (Snaive_C_Rules64.sepcon (cell p (O p))
+            (dw_cells cell (List.remove BinInt.Z.eq_dec p W) O))
+dw_cells_writeback
+     : forall (A : Type)
+         (cell : BinNums.Z -> option A -> Snaive_C_Rules64.expr)
+         (W : list BinNums.Z) (O : DwState A) (p : BinNums.Z) 
+         (v : A),
+       List.NoDup W ->
+       List.In p W ->
+       Snaive_C_Rules64.derivable1
+         (Snaive_C_Rules64.sepcon (cell p (Some v))
+            (dw_cells cell (List.remove BinInt.Z.eq_dec p W) O))
+         (dw_cells cell W (dw_put O p v))
+dw_output_writeback
+     : forall (W : list addr) (O : DwOutput) (p : addr) (v : fp32),
+       List.NoDup W ->
+       List.In p W ->
+       Snaive_C_Rules64.derivable1
+         (Snaive_C_Rules64.sepcon (Snaive_C_Rules64.store_float p v)
+            (dw_output (List.remove BinInt.Z.eq_dec p W) O))
+         (dw_output W (dw_output_put O p v))
+dw_output_forget_cell
+     : forall (p : BinNums.Z) (v : option fp32),
+       Snaive_C_Rules64.derivable1 (dw_output_cell p v)
+         (Snaive_C_Rules64.undef_store_float p)
+dw_loaded_initialized
+     : forall (O : BinNums.Z -> option fp32) (p : BinNums.Z) (x v : fp32),
+       O p = Some x -> dw_output_loaded O p v -> v = x
+dw_chw_fold_related
+     : forall (terms : list (fp32 * fp32)) (arm rvv : fp32),
+       dw_rel arm rvv ->
+       dw_rel (dw_chw_arm_fold terms arm) (dw_chw_rvv_fold terms rvv)
+dw_chw_pixel_related
+     : forall
+         bias c0 c1 c2 l0 l1 l2 r0 r1 r2 w1 w2 w3 w4 w5 w6 w7 w8 w9 lo
+          hi : fp32,
+       dw_rel
+         (dw_chw_neon_pixel bias c0 c1 c2 l0 l1 l2 r0 r1 r2 w1 w2 w3 w4 w5 w6
+            w7 w8 w9 lo hi)
+         (dw_chw_rvv_pixel bias c0 c1 c2 l0 l1 l2 r0 r1 r2 w1 w2 w3 w4 w5 w6
+            w7 w8 w9 lo hi)
+dw_chw_pixel_observation
+     : forall
+         bias c0 c1 c2 l0 l1 l2 r0 r1 r2 w1 w2 w3 w4 w5 w6 w7 w8 w9 lo
+          hi : fp32,
+       dw_observe
+         (dw_chw_neon_pixel bias c0 c1 c2 l0 l1 l2 r0 r1 r2 w1 w2 w3 w4 w5 w6
+            w7 w8 w9 lo hi)
+         (dw_chw_rvv_pixel bias c0 c1 c2 l0 l1 l2 r0 r1 r2 w1 w2 w3 w4 w5 w6
+            w7 w8 w9 lo hi)
+dw_pixel_related
+     : forall (F : DwROMap) (input zero weights H N y x : BinNums.Z)
+         (lo hi : fp32),
+       dw_rel (dw_pixel F input zero weights H N y x lo hi)
+         (dw_pixel_rvv F input zero weights H N y x lo hi)
+dw_pixel_observation
+     : forall (F : DwROMap) (input zero weights H N y x : BinNums.Z)
+         (lo hi : fp32),
+       dw_observe (dw_pixel F input zero weights H N y x lo hi)
+         (dw_pixel_rvv F input zero weights H N y x lo hi)
+dw_output_observation
+     : forall (F : DwROMap) (input zero weights H N : BinNums.Z)
+         (lo hi : fp32),
+       List.Forall2 dw_observe
+         (dw_output_values F input zero weights H N lo hi)
+         (dw_output_rvv_values F input zero weights H N lo hi)
+dw_progress_complete_at
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput)
+         (output H N k : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 H ->
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k (BinInt.Z.mul H N) ->
+       dw_progress R O output H N H BinNums.Z0
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               k)) = Some (R k)
+dw_progress_unwritten_frame
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput)
+         (output H N y x p : BinNums.Z),
+       ~
+       ((BinInt.Z.le output p /\
+         BinInt.Z.lt p
+           (BinInt.Z.add output
+              (BinInt.Z.mul
+                 (BinInt.Z.mul
+                    (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) H) N))) /\
+        BinInt.Z.modulo (BinInt.Z.sub p output)
+          (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = BinNums.Z0) ->
+       dw_progress R O output H N y x p = O p
+dw_complete_program_observation
+     : forall (F : DwROMap) (input zero weights H N : BinNums.Z)
+         (lo hi : fp32) (outN outR : BinNums.Z) (ON OR : DwOutput),
+       BinInt.Z.lt BinNums.Z0 H ->
+       BinInt.Z.lt BinNums.Z0 N ->
+       dw_public_observed
+         (dw_progress (dw_neon_results F input zero weights H N lo hi) ON
+            outN H N H BinNums.Z0)
+         (dw_progress (dw_rvv_results F input zero weights H N lo hi) OR outR
+            H N H BinNums.Z0) outN outR H N
+dw_complete_program_own_frames
+     : forall (RN RR : BinNums.Z -> fp32) (ON OR : DwOutput)
+         (outN outR H N p q : BinNums.Z),
+       ~
+       ((BinInt.Z.le outN p /\
+         BinInt.Z.lt p
+           (BinInt.Z.add outN
+              (BinInt.Z.mul
+                 (BinInt.Z.mul
+                    (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) H) N))) /\
+        BinInt.Z.modulo (BinInt.Z.sub p outN)
+          (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = BinNums.Z0) ->
+       ~
+       ((BinInt.Z.le outR q /\
+         BinInt.Z.lt q
+           (BinInt.Z.add outR
+              (BinInt.Z.mul
+                 (BinInt.Z.mul
+                    (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) H) N))) /\
+        BinInt.Z.modulo (BinInt.Z.sub q outR)
+          (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = BinNums.Z0) ->
+       dw_progress RN ON outN H N H BinNums.Z0 p = ON p /\
+       dw_progress RR OR outR H N H BinNums.Z0 q = OR q
+dw_input_windows
+     : forall (F : DwROMap) (input zero weights params H N : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       dw_window F input
+         (BinInt.Z.add (BinInt.Z.mul H N)
+            (BinNums.Zpos (BinNums.xI BinNums.xH))) /\
+       dw_window F zero
+         (BinInt.Z.add N (BinNums.Zpos (BinNums.xI BinNums.xH))) /\
+       dw_window F weights
+         (BinNums.Zpos (BinNums.xO (BinNums.xI (BinNums.xO BinNums.xH)))) /\
+       dw_window F params (BinNums.Zpos (BinNums.xO BinNums.xH))
+dw_input_geometry
+     : forall (F : DwROMap) (input zero weights params H N : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.lt BinNums.Z0 H /\
+       BinInt.Z.lt BinNums.Z0 N /\
+       dw_footprint input
+         (BinInt.Z.add (BinInt.Z.mul H N)
+            (BinNums.Zpos (BinNums.xI BinNums.xH))) /\
+       dw_footprint zero
+         (BinInt.Z.add N (BinNums.Zpos (BinNums.xI BinNums.xH)))
+dw_read_window_shift
+     : forall (F : DwROMap) (p count k n : BinNums.Z),
+       dw_window F p count ->
+       BinInt.Z.le BinNums.Z0 k ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add k n) count ->
+       dw_window F
+         (BinInt.Z.add p
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               k)) n
+dw_row_read_window
+     : forall (F : DwROMap) (input zero weights params H N y x n : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n)
+         (BinInt.Z.add N (BinNums.Zpos (BinNums.xI BinNums.xH))) ->
+       dw_window F
+         (BinInt.Z.add (dw_row_base input zero H N y)
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               x)) n
+dw_row_read_present
+     : forall (F : DwROMap) (input zero weights params H N y x : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le BinNums.Z0 x /\
+       BinInt.Z.lt x (BinInt.Z.add N (BinNums.Zpos (BinNums.xI BinNums.xH))) ->
+       dw_present F
+         (BinInt.Z.add (dw_row_base input zero H N y)
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               x))
+dw_row_footprint
+     : forall (F : DwROMap) (input zero weights params H N y : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       dw_footprint (dw_row_base input zero H N y)
+         (BinInt.Z.add N (BinNums.Zpos (BinNums.xI BinNums.xH)))
+dw_row_address_bounds
+     : forall (F : DwROMap) (input zero weights params H N y x : BinNums.Z),
+       dw_inputs F input zero weights params H N ->
+       BinInt.Z.le BinNums.Z0 x /\ BinInt.Z.le x N ->
+       BinInt.Z.lt BinNums.Z0
+         (BinInt.Z.add (dw_row_base input zero H N y)
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               x)) /\
+       BinInt.Z.lt
+         (BinInt.Z.add (dw_row_base input zero H N y)
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               x)) dw_u64_limit
+dw_legal_vl_positive
+     : forall n vl : BinNums.Z,
+       BinInt.Z.lt BinNums.Z0 n ->
+       dw_vl_allowed n vl ->
+       (BinInt.Z.lt BinNums.Z0 vl /\ BinInt.Z.le vl n) /\
+       BinInt.Z.le vl
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))
+dw_addresses_contains
+     : forall output H N k : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k (BinInt.Z.mul H N) ->
+       List.In
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               k)) (dw_addresses output H N)
+dw_store_row_bounds
+     : forall H y j : BinNums.Z,
+       BinInt.Z.lt BinNums.Z0 H ->
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       BinInt.Z.le BinNums.Z0 j ->
+       BinInt.Z.le BinNums.Z0 (dw_store_row H y j) /\
+       BinInt.Z.lt (dw_store_row H y j) H
+dw_output_row_window
+     : forall output H N y j x n : BinNums.Z,
+       dw_footprint output (BinInt.Z.mul H N) ->
+       BinInt.Z.lt BinNums.Z0 H ->
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       BinInt.Z.le BinNums.Z0 j ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       dw_write_window (dw_addresses output H N)
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul (dw_store_row H y j) N) x))) n
+dw_c_literal_zero
+     : fp32_of_real
+         (Rdefinitions.Q2R
+            {|
+              QArith_base.Qnum := BinNums.Z0;
+              QArith_base.Qden :=
+                BinNums.xO (BinNums.xI (BinNums.xO BinNums.xH))
+            |}) = fp32_zero
+dw_row_base_before
+     : forall input zero H N y : BinNums.Z,
+       BinInt.Z.lt y BinNums.Z0 -> dw_row_base input zero H N y = zero
+dw_row_base_after
+     : forall input zero H N y : BinNums.Z,
+       BinInt.Z.le H y -> dw_row_base input zero H N y = zero
+dw_row_base_inside
+     : forall input zero H N y : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       dw_row_base input zero H N y =
+       BinInt.Z.add input
+         (BinInt.Z.mul
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               y) N)
+dw_prev_at_zero
+     : forall (F : DwROMap) (p : BinNums.Z),
+       dw_prev F p BinNums.Z0 = fp32_zero
+dw_progress_start
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput) (output H N : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       dw_progress R O output H N BinNums.Z0 BinNums.Z0 = O
+dw_progress_tile_end
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput)
+         (output H N y : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le y H ->
+       dw_progress R O output H N y N =
+       dw_progress R O output H N
+         (BinInt.Z.min H
+            (BinInt.Z.add y (BinNums.Zpos (BinNums.xI BinNums.xH))))
+         BinNums.Z0
+dw_width_quot
+     : forall N : BinNums.Z,
+       BinInt.Z.quot
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) N)
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = N
+dw_u64_add_no_wrap
+     : forall p off : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 p ->
+       BinInt.Z.le BinNums.Z0 off ->
+       BinInt.Z.lt (BinInt.Z.add p off)
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (BinNums.xO ...))))))))))))))))))))) ->
+       unsigned_last_nbits
+         (BinInt.Z.add
+            (unsigned_last_nbits p
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))))
+            off)
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))) =
+       BinInt.Z.add p off
+dw_rvv_result_row_index
+     : forall (F : DwROMap) (input zero weights H N : BinNums.Z)
+         (lo hi : fp32) (y c : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N ->
+       dw_rvv_results F input zero weights H N lo hi
+         (BinInt.Z.add (BinInt.Z.mul y N) c) =
+       dw_pixel_rvv F input zero weights H N y c lo hi
+dw_values8_pixel_row
+     : forall (F : DwROMap) (input zero weights H N y x vl : BinNums.Z)
+         (A0 A1 A2 : BinNums.Z -> fp32)
+         (prev0 prev1 prev2 next0 next1 next2 lo hi r0 r1 r2 r3 r4 r5 r6
+          r7 : fp32),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 vl /\
+       BinInt.Z.le vl
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       BinInt.Z.le (BinInt.Z.add x vl) N ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A0 k =
+        dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A1 k = dw_image F input zero H N y (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A2 k =
+        dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       prev0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev1 =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       next0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x vl) ->
+       next1 = dw_image F input zero H N y (BinInt.Z.add x vl) ->
+       next2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x vl) ->
+       dw_vector_match8 vl r0 r1 r2 r3 r4 r5 r6 r7
+         (dw_vector_pixel F weights A0 A1 A2 prev0 prev1 prev2 next0 next1
+            next2 lo hi vl) ->
+       forall i : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl ->
+       List.nth (BinInt.Z.to_nat i) (dw_values8 r0 r1 r2 r3 r4 r5 r6 r7 vl)
+         fp32_zero =
+       dw_rvv_results F input zero weights H N lo hi
+         (BinInt.Z.add (BinInt.Z.add (BinInt.Z.mul y N) x) i)
+dw_prev_after_chunk
+     : forall (F : DwROMap) (p x vl : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.lt BinNums.Z0 vl ->
+       dw_get F
+         (BinInt.Z.add
+            (BinInt.Z.add p
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) x))
+            (BinInt.Z.mul (BinInt.Z.sub vl (BinNums.Zpos BinNums.xH))
+               (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))) =
+       dw_prev F p (BinInt.Z.add x vl)
+dw_output_index_split
+     : forall output H N q : BinNums.Z,
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le output q /\
+       BinInt.Z.lt q
+         (BinInt.Z.add output
+            (BinInt.Z.mul
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) H) N)) ->
+       BinInt.Z.modulo (BinInt.Z.sub q output)
+         (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = BinNums.Z0 ->
+       let k :=
+         BinInt.Z.div (BinInt.Z.sub q output)
+           (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) in
+       let r := BinInt.Z.div k N in
+       let c := BinInt.Z.modulo k N in
+       (BinInt.Z.le BinNums.Z0 r /\ BinInt.Z.lt r H) /\
+       (BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N) /\
+       q =
+       BinInt.Z.add output
+         (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+            (BinInt.Z.add (BinInt.Z.mul r N) c))
+dw_progress_cell
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput)
+         (output H N y x r c : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 r /\ BinInt.Z.lt r H ->
+       BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N ->
+       dw_progress R O output H N y x
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul r N) c))) =
+       (if
+         (BinInt.Z.ltb r y
+          || BinInt.Z.ltb r
+               (BinInt.Z.min H
+                  (BinInt.Z.add y (BinNums.Zpos (BinNums.xI BinNums.xH)))) &&
+             BinInt.Z.ltb c x)%bool
+        then Some (R (BinInt.Z.add (BinInt.Z.mul r N) c))
+        else
+         O
+           (BinInt.Z.add output
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                 (BinInt.Z.add (BinInt.Z.mul r N) c))))
+dw_write_values_row_cell
+     : forall (xs : list fp32) (O : DwOutput)
+         (output N row x n r c : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       BinInt.Z.of_nat (length xs) = n ->
+       dw_write_values O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul row N) x))) xs
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul r N) c))) =
+       (if BinInt.Z.eq_dec r row
+        then
+         if ZArith_dec.Z_le_dec x c
+         then
+          if ZArith_dec.Z_lt_dec c (BinInt.Z.add x n)
+          then
+           Some (List.nth (BinInt.Z.to_nat (BinInt.Z.sub c x)) xs fp32_zero)
+          else
+           O
+             (BinInt.Z.add output
+                (BinInt.Z.mul
+                   (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                   (BinInt.Z.add (BinInt.Z.mul r N) c)))
+         else
+          O
+            (BinInt.Z.add output
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add (BinInt.Z.mul r N) c)))
+        else
+         O
+           (BinInt.Z.add output
+              (BinInt.Z.mul
+                 (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                 (BinInt.Z.add (BinInt.Z.mul r N) c))))
+dw_progress_write_tile
+     : forall (R : BinNums.Z -> fp32) (O : DwOutput)
+         (output H N y x n : BinNums.Z) (V0 V1 V2 : list fp32),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       BinInt.Z.of_nat (length V0) = n ->
+       BinInt.Z.of_nat (length V1) = n ->
+       BinInt.Z.of_nat (length V2) = n ->
+       (forall i : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i n ->
+        List.nth (BinInt.Z.to_nat i) V0 fp32_zero =
+        R (BinInt.Z.add (BinInt.Z.add (BinInt.Z.mul y N) x) i)) ->
+       (forall i : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i n ->
+        List.nth (BinInt.Z.to_nat i) V1 fp32_zero =
+        R
+          (BinInt.Z.add
+             (BinInt.Z.add
+                (BinInt.Z.mul (BinInt.Z.add y (BinNums.Zpos BinNums.xH)) N) x)
+             i)) ->
+       (forall i : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i n ->
+        List.nth (BinInt.Z.to_nat i) V2 fp32_zero =
+        R
+          (BinInt.Z.add
+             (BinInt.Z.add
+                (BinInt.Z.mul
+                   (BinInt.Z.add y (BinNums.Zpos (BinNums.xO BinNums.xH))) N)
+                x) i)) ->
+       dw_write_values
+         (dw_write_values
+            (dw_write_values (dw_progress R O output H N y x)
+               (BinInt.Z.add output
+                  (BinInt.Z.mul
+                     (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                     (BinInt.Z.add
+                        (BinInt.Z.mul
+                           (dw_store_row H y
+                              (BinNums.Zpos (BinNums.xO BinNums.xH))) N) x)))
+               V2)
+            (BinInt.Z.add output
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.add
+                     (BinInt.Z.mul
+                        (dw_store_row H y (BinNums.Zpos BinNums.xH)) N) x)))
+            V1)
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul (dw_store_row H y BinNums.Z0) N) x)))
+         V0 = dw_progress R O output H N y (BinInt.Z.add x n)
+dw_values8_length
+     : forall (a0 a1 a2 a3 a4 a5 a6 a7 : fp32) (n : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.of_nat (length (dw_values8 a0 a1 a2 a3 a4 a5 a6 a7 n)) = n
+dw_values8_nth_active
+     : forall (a0 a1 a2 a3 a4 a5 a6 a7 : fp32) (n i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i n ->
+       List.nth (BinInt.Z.to_nat i) (dw_values8 a0 a1 a2 a3 a4 a5 a6 a7 n)
+         fp32_zero = dw_fp8 a0 a1 a2 a3 a4 a5 a6 a7 i
+dw_row_image
+     : forall (F : DwROMap) (input zero H N y x : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x /\ BinInt.Z.lt x N ->
+       dw_get F
+         (BinInt.Z.add (dw_row_base input zero H N y)
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               x)) = dw_image F input zero H N y x
+dw_prev_image
+     : forall (F : DwROMap) (input zero H N y x : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x /\ BinInt.Z.le x N ->
+       dw_prev F (dw_row_base input zero H N y) x =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH))
+dw_fp8_active_all
+     : forall (vl : BinNums.Z) (a0 a1 a2 a3 a4 a5 a6 a7 : fp32)
+         (B : BinNums.Z -> fp32),
+       BinInt.Z.le BinNums.Z0 vl /\
+       BinInt.Z.le vl
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       dw_fp_match BinNums.Z0 vl a0 (B BinNums.Z0) ->
+       dw_fp_match (BinNums.Zpos BinNums.xH) vl a1
+         (B (BinNums.Zpos BinNums.xH)) ->
+       dw_fp_match (BinNums.Zpos (BinNums.xO BinNums.xH)) vl a2
+         (B (BinNums.Zpos (BinNums.xO BinNums.xH))) ->
+       dw_fp_match (BinNums.Zpos (BinNums.xI BinNums.xH)) vl a3
+         (B (BinNums.Zpos (BinNums.xI BinNums.xH))) ->
+       dw_fp_match (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) vl a4
+         (B (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       dw_fp_match (BinNums.Zpos (BinNums.xI (BinNums.xO BinNums.xH))) vl a5
+         (B (BinNums.Zpos (BinNums.xI (BinNums.xO BinNums.xH)))) ->
+       dw_fp_match (BinNums.Zpos (BinNums.xO (BinNums.xI BinNums.xH))) vl a6
+         (B (BinNums.Zpos (BinNums.xO (BinNums.xI BinNums.xH)))) ->
+       dw_fp_match (BinNums.Zpos (BinNums.xI (BinNums.xI BinNums.xH))) vl a7
+         (B (BinNums.Zpos (BinNums.xI (BinNums.xI BinNums.xH)))) ->
+       forall i : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl ->
+       dw_fp8 a0 a1 a2 a3 a4 a5 a6 a7 i = B i
+dw_write_row_different
+     : forall (xs : list fp32) (O : DwOutput)
+         (output N row x n r c : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       BinInt.Z.of_nat (length xs) = n ->
+       r <> row ->
+       dw_write_values O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul row N) x))) xs
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul r N) c))) =
+       O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul r N) c)))
+dw_write_row_hit
+     : forall (xs : list fp32) (O : DwOutput)
+         (output N row x n c : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       BinInt.Z.of_nat (length xs) = n ->
+       BinInt.Z.le x c /\ BinInt.Z.lt c (BinInt.Z.add x n) ->
+       dw_write_values O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul row N) x))) xs
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul row N) c))) =
+       Some (List.nth (BinInt.Z.to_nat (BinInt.Z.sub c x)) xs fp32_zero)
+dw_write_row_outside_columns
+     : forall (xs : list fp32) (O : DwOutput)
+         (output N row x n r c : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 c /\ BinInt.Z.lt c N ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       BinInt.Z.of_nat (length xs) = n ->
+       BinInt.Z.lt c x \/ BinInt.Z.le (BinInt.Z.add x n) c ->
+       dw_write_values O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul row N) x))) xs
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul r N) c))) =
+       O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul r N) c)))
+dw_write_row_outside_matrix
+     : forall (xs : list fp32) (O : DwOutput)
+         (output H N row x n q : BinNums.Z),
+       BinInt.Z.lt BinNums.Z0 N ->
+       BinInt.Z.le BinNums.Z0 row /\ BinInt.Z.lt row H ->
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 n ->
+       BinInt.Z.le (BinInt.Z.add x n) N ->
+       BinInt.Z.of_nat (length xs) = n ->
+       ~
+       ((BinInt.Z.le output q /\
+         BinInt.Z.lt q
+           (BinInt.Z.add output
+              (BinInt.Z.mul
+                 (BinInt.Z.mul
+                    (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) H) N))) /\
+        BinInt.Z.modulo (BinInt.Z.sub q output)
+          (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))) = BinNums.Z0) ->
+       dw_write_values O
+         (BinInt.Z.add output
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.add (BinInt.Z.mul row N) x))) xs q = 
+       O q
+dw_store_row_in_tile
+     : forall H y j : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 y /\ BinInt.Z.lt y H ->
+       BinInt.Z.le BinNums.Z0 j /\
+       BinInt.Z.le j (BinNums.Zpos (BinNums.xO BinNums.xH)) ->
+       BinInt.Z.le BinNums.Z0 (dw_store_row H y j) /\
+       BinInt.Z.lt (dw_store_row H y j)
+         (BinInt.Z.min H
+            (BinInt.Z.add y (BinNums.Zpos (BinNums.xI BinNums.xH))))
+dw_write_values_frame
+     : forall (xs : list fp32) (O : DwOutput) (p q : BinNums.Z),
+       (forall n : nat,
+        n < length xs ->
+        q <>
+        BinInt.Z.add p
+          (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+             (BinInt.Z.of_nat n))) -> dw_write_values O p xs q = O q
+dw_write_values_nth
+     : forall (xs : list fp32) (O : DwOutput) (p : BinNums.Z) (n : nat),
+       n < length xs ->
+       dw_write_values O p xs
+         (BinInt.Z.add p
+            (BinInt.Z.mul (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+               (BinInt.Z.of_nat n))) = Some (List.nth n xs fp32_zero)
+dw_write_values_cell
+     : forall (xs : list fp32) (O : DwOutput) (p q : BinNums.Z),
+       dw_write_values O p xs q =
+       (if ZArith_dec.Z_le_dec p q
+        then
+         if
+          ZArith_dec.Z_lt_dec q
+            (BinInt.Z.add p
+               (BinInt.Z.mul
+                  (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))
+                  (BinInt.Z.of_nat (length xs))))
+         then
+          if
+           BinInt.Z.eq_dec
+             (BinInt.Z.modulo (BinInt.Z.sub q p)
+                (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH))))
+             BinNums.Z0
+          then
+           Some
+             (List.nth
+                (BinInt.Z.to_nat
+                   (BinInt.Z.div (BinInt.Z.sub q p)
+                      (BinNums.Zpos (BinNums.xO (BinNums.xO BinNums.xH)))))
+                xs fp32_zero)
+          else O q
+         else O q
+        else O q)
+dw_values8_succ
+     : forall (a0 a1 a2 a3 a4 a5 a6 a7 : fp32) (i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 i ->
+       dw_values8 a0 a1 a2 a3 a4 a5 a6 a7
+         (BinInt.Z.add i (BinNums.Zpos BinNums.xH)) =
+       (dw_values8 a0 a1 a2 a3 a4 a5 a6 a7 i ++
+        dw_fp8 a0 a1 a2 a3 a4 a5 a6 a7 i :: nil)%list
+dw_float_undef_head
+     : forall (p : addr) (lo hi : BinNums.Z),
+       BinInt.Z.lt lo hi ->
+       Snaive_C_Rules64.derivable1
+         (Snaive_C_Rules64.FloatArray.undef_seg p lo hi)
+         (Snaive_C_Rules64.sepcon
+            (Snaive_C_Rules64.undef_store_float
+               (BinInt.Z.add p
+                  (BinInt.Z.mul lo
+                     (Snaive_C_Rules64.sizeof_front_end_type FET_float))))
+            (Snaive_C_Rules64.FloatArray.undef_seg p
+               (BinInt.Z.add lo (BinNums.Zpos BinNums.xH)) hi))
+dw_float_single
+     : forall (p : addr) (value : fp32),
+       Snaive_C_Rules64.derivable1 (Snaive_C_Rules64.store_float p value)
+         (Snaive_C_Rules64.FloatArray.full p (BinNums.Zpos BinNums.xH)
+            (value :: nil))
+dw_round_result_range
+     : forall n : BinNums.Z,
+       BinInt.Z.le BinNums.Z0 n /\
+       BinInt.Z.le n
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xI
+                           (BinNums.xI
+                              (BinNums.xI
+                                 (BinNums.xI
+                                    (BinNums.xI
+                                       (BinNums.xI
+                                          (BinNums.xI
+                                             (BinNums.xI
+                                                (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI
+                                                 (BinNums.xI (...)))))))))))))))))))))) ->
+       BinInt.Z.le BinNums.Z0
+         (BinInt.Z.mul
+            (BinInt.Z.quot
+               (BinInt.Z.add n
+                  (BinNums.Zpos
+                     (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+            (BinNums.Zpos
+               (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))))) /\
+       BinInt.Z.lt
+         (BinInt.Z.mul
+            (BinInt.Z.quot
+               (BinInt.Z.add n
+                  (BinNums.Zpos
+                     (BinNums.xI (BinNums.xI (BinNums.xI BinNums.xH)))))
+               (BinNums.Zpos
+                  (BinNums.xO
+                     (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+            (BinNums.Zpos
+               (BinNums.xO (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH))))))
+         (BinNums.Zpos
+            (BinNums.xO
+               (BinNums.xO
+                  (BinNums.xO
+                     (BinNums.xO
+                        (BinNums.xO
+                           (BinNums.xO
+                              (BinNums.xO
+                                 (BinNums.xO
+                                    (BinNums.xO
+                                       (BinNums.xO
+                                          (BinNums.xO
+                                             (BinNums.xO
+                                                (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO
+                                                 (BinNums.xO (...))))))))))))))))))))))
+dw_slide_up_active_window
+     : forall (A B : BinNums.Z -> fp32) (prev : fp32) (x vl i : BinNums.Z),
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A k = B (BinInt.Z.add x k)) ->
+       prev = B (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl ->
+       dw_rvv_slide_up A prev i =
+       B (BinInt.Z.sub (BinInt.Z.add x i) (BinNums.Zpos BinNums.xH))
+dw_slide_down_active_window
+     : forall (A B : BinNums.Z -> fp32) (next : fp32) (x vl i : BinNums.Z),
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A k = B (BinInt.Z.add x k)) ->
+       next = B (BinInt.Z.add x vl) ->
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl ->
+       dw_rvv_slide_down A next vl i =
+       B (BinInt.Z.add (BinInt.Z.add x i) (BinNums.Zpos BinNums.xH))
+dw_vector_pixel_active_window
+     : forall (F : DwROMap) (input zero weights H N y x : BinNums.Z)
+         (A0 A1 A2 : BinNums.Z -> fp32)
+         (prev0 prev1 prev2 next0 next1 next2 lo hi : fp32)
+         (vl i : BinNums.Z),
+       BinInt.Z.le BinNums.Z0 x ->
+       BinInt.Z.le BinNums.Z0 vl /\
+       BinInt.Z.le vl
+         (BinNums.Zpos (BinNums.xO (BinNums.xO (BinNums.xO BinNums.xH)))) ->
+       BinInt.Z.le (BinInt.Z.add x vl) N ->
+       BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A0 k =
+        dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A1 k = dw_image F input zero H N y (BinInt.Z.add x k)) ->
+       (forall k : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 k /\ BinInt.Z.lt k vl ->
+        A2 k =
+        dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+          (BinInt.Z.add x k)) ->
+       prev0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev1 =
+       dw_image F input zero H N y (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       prev2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.sub x (BinNums.Zpos BinNums.xH)) ->
+       next0 =
+       dw_image F input zero H N (BinInt.Z.sub y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x vl) ->
+       next1 = dw_image F input zero H N y (BinInt.Z.add x vl) ->
+       next2 =
+       dw_image F input zero H N (BinInt.Z.add y (BinNums.Zpos BinNums.xH))
+         (BinInt.Z.add x vl) ->
+       dw_vector_pixel F weights A0 A1 A2 prev0 prev1 prev2 next0 next1 next2
+         lo hi vl i =
+       dw_pixel_rvv F input zero weights H N y (BinInt.Z.add x i) lo hi
+dw_vector_match8_active_ext
+     : forall (vl : BinNums.Z) (r0 r1 r2 r3 r4 r5 r6 r7 : fp32)
+         (G K : BinNums.Z -> fp32),
+       dw_vector_match8 vl r0 r1 r2 r3 r4 r5 r6 r7 G ->
+       (forall i : BinNums.Z,
+        BinInt.Z.le BinNums.Z0 i /\ BinInt.Z.lt i vl -> G i = K i) ->
+       dw_vector_match8 vl r0 r1 r2 r3 r4 r5 r6 r7 K
+CheckedMaps.dw_maps_strategy1_correctness
+     : dw_maps_strategy_goal.dw_maps_strategy1
+CheckedMaps.dw_maps_strategy2_correctness
+     : dw_maps_strategy_goal.dw_maps_strategy2
+CheckedMaps.dw_maps_strategy5_correctness
+     : dw_maps_strategy_goal.dw_maps_strategy5
+CheckedMaps.dw_maps_strategy7_correctness
+     : dw_maps_strategy_goal.dw_maps_strategy7
+CheckedOutput.dw_output_strategy1_correctness
+     : dw_output_strategy_goal.dw_output_strategy1
+CheckedFloatStoreStrategy.float_store_strategy4_correctness
+     : float_store_strategy_goal.float_store_strategy4
+CheckedFloatStoreStrategy.float_store_strategy5_correctness
+     : float_store_strategy_goal.float_store_strategy5
+CheckedFloatStoreStrategy.float_store_strategy1_correctness
+     : float_store_strategy_goal.float_store_strategy1
+CheckedFloatStoreStrategy.float_store_strategy2_correctness
+     : float_store_strategy_goal.float_store_strategy2
+CheckedFloatStoreStrategy.float_store_strategy3_correctness
+     : float_store_strategy_goal.float_store_strategy3
+CheckedFloatStoreStrategy.float_store_strategy6_correctness
+     : float_store_strategy_goal.float_store_strategy6

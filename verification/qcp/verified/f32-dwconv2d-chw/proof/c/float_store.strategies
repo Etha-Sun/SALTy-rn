@@ -1,0 +1,50 @@
+#include "../../shim/store8_model.h"
+id : 1
+priority : core(1)
+left : FloatArray::undef_seg(?p,?lo,?hi) at 0
+right : undef_data_at(?q,float) at 1
+check : infer(q == pointer_offset(p,lo,float));
+        infer(lo < hi);
+action : left_erase(0);
+         right_erase(1);
+         left_add(FloatArray::undef_seg(p,lo+1,hi));
+id : 2
+priority : core(1)
+left : FloatArray::full(?p,?n,?l) at 0
+right : FloatArray::full(?q,?m,?r) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+         right_add(l == r);
+id : 3
+priority : core(1)
+left : FloatArray::undef_seg(?p,?lo,?hi) at 0
+right : FloatArray::undef_seg(?q,?lo2,?hi2) at 1
+check : infer(p == q);
+        infer(lo == lo2);
+        infer(hi == hi2);
+action : left_erase(0);
+         right_erase(1);
+id : 4
+priority : core(0)
+left : FloatArray::undef_full(?p,?n) at 0
+right : FloatArray::undef_seg(?q,0,?m) at 1
+check : infer(p == q);
+        infer(n == m);
+action : left_erase(0);
+         right_erase(1);
+id : 5
+priority : core(0)
+right : FloatArray::full(?p,?n,dw_values8(?a0,?a1,?a2,?a3,?a4,?a5,?a6,?a7,n)) at 0
+check : infer(n == 0);
+action : right_erase(0);
+id : 6
+priority : core(1)
+left : FloatArray::undef_full(?p,?n) at 0
+right : undef_data_at(?q,float) at 1
+check : infer(p == q);
+        infer(0 < n);
+action : left_erase(0);
+         right_erase(1);
+         left_add(FloatArray::undef_full(pointer_offset(p,1,float),n-1));
