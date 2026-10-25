@@ -1,0 +1,44 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96/scalar_memory.in.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96/scalar_memory.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.34682608395814896,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96/scalar_memory.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96/generated",
+        "--coq-logic-path=X32Packw",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim",
+        "X32Packw"
+      ],
+      "exit_code": 1,
+      "seconds": 0.02357441815547645,
+      "log_sha256": "39b7901bf701578d705ec3167e1de48eec379f3ae26c9ac2be9d77a1b5dfdba1"
+    }
+  ],
+  "error": "Program: `/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96/scalar_memory.c`\nStart to parse strategies file common\nFile Path: builtin/common.strategies\nFinish parsing strategies file common\nStart to parse strategies file string_literal\nFile Path: builtin/string_literal.strategies\nFinish parsing strategies file string_literal\nStart to parse function declaration of function pw_read_word\nStart to parse function declaration of function pw_write_word\nFunction `pw_read_word`\nEnd of function `pw_read_word`\nFunction `pw_write_word`\n\u001b[1;31mfatal error: \u001b[0mcannot find the program variable x(393) in assertion, please check the @pre or related which implies in /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-lsrvdr96/scalar_memory.c:32:4\n"
+}

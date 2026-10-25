@@ -1,0 +1,44 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq/scalar_memory.in.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq/scalar_memory.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.009431426180526614,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq/scalar_memory.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq/generated",
+        "--coq-logic-path=X32Packw",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim",
+        "X32Packw"
+      ],
+      "exit_code": 1,
+      "seconds": 0.011956776026636362,
+      "log_sha256": "fb2ccf02f16c9766962dc8ae1a05d691724b9ea22180d1d55427e01bcfce8c2b"
+    }
+  ],
+  "error": "Program: `/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq/scalar_memory.c`\nStart to parse strategies file common\nFile Path: builtin/common.strategies\nFinish parsing strategies file common\nStart to parse strategies file string_literal\nFile Path: builtin/string_literal.strategies\nFinish parsing strategies file string_literal\nStart to parse function declaration of function pw_read_word\nStart to parse function declaration of function pw_write_word\nFunction `pw_read_word`\nEnd of function `pw_read_word`\nFunction `pw_write_word`\n\u001b[1;31mfatal error: \u001b[0mSyntax error: unexpected token 'unsigned' in /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/scalar_memory-generation-g12m1zsq/scalar_memory.c:31:51\n"
+}

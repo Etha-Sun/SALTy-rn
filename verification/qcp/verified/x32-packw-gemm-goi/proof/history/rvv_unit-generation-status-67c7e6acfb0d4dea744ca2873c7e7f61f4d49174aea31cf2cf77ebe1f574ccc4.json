@@ -1,0 +1,44 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/rvv_unit-generation-pnpqcwyz",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/rvv_unit-generation-pnpqcwyz/rvv_unit.in.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/rvv_unit-generation-pnpqcwyz/rvv_unit.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.02235481608659029,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=4096",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/rvv_unit-generation-pnpqcwyz/rvv_unit.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/rvv_unit-generation-pnpqcwyz/generated",
+        "--coq-logic-path=X32Packw",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim",
+        "X32Packw"
+      ],
+      "exit_code": 1,
+      "seconds": 0.025961459847167134,
+      "log_sha256": "89bbb4dd951204e48d06346c5c19d25cbfa09241ba08560138a6087c0cb3a75f"
+    }
+  ],
+  "error": "al.strategies\nFinish parsing strategies file string_literal\nStart to parse function declaration of function pw_read_word\nStart to parse function declaration of function pw_write_word\nStart to parse function declaration of function pw_assert\nStart to parse function declaration of function __riscv_vsetvl_e32m4\nStart to parse function declaration of function __riscv_vle32_v_u32m4\nStart to parse function declaration of function pw_intrinsic_vsse32\nStart to parse function declaration of function __riscv_vle32_v_u32m1\nStart to parse function declaration of function __riscv_vmv_v_x_u32m1\nStart to parse function declaration of function pw_intrinsic_store_m1_2\nStart to parse function declaration of function pw_rvv_header\nStart to parse function declaration of function pw_store_pair_vectors\nStart to parse function declaration of function pw_rvv_pair\nStart to parse function declaration of function pw_rvv_odd\nFunction `test_rvv`\n\u001b[1;31mfatal error: \u001b[0mCannot derive the precondition of function pw_assert for spec (default) in /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/rvv_unit-generation-pnpqcwyz/rvv_unit.c:63:14\nFunction call failed because the caller assertion does not entail the callee Require assertion after substituting actual arguments.\nFunction call argument bindings:\n  argument 1: ok <- 0\nCallee precondition after substituting actual arguments:\nPROP[\n  0 != 0 ]\nLOCAL[]\nSEP[]\n\nCaller current assertion:\nPROP[\n  g_858_pre == 0;\n  g_858_pre == pw_groups(G_861_free);\n  nc_855_pre == pw_channels(G_861_free);\n  kc_852_pre == pw_depth(G_861_free);\n  extra_bytes_828_pre == pw_extra_bytes(G_861_free);\n  nr_849_pre == 2;\n  kr_846_pre == 1;\n  sr_843_pre == 1;\n  pw_program_storage_406(F_863_free, W_862_free, G_861_free);\n  weights_840_pre == pw_weights(G_861_free);\n  bias_837_pre == pw_bias(G_861_free);\n  packed_weights_831_pre == pw_output_base(G_861_free) ]\nLOCAL[\n  Temp g g_859_addr;\n  Temp nc nc_856_addr;\n  Temp kc kc_853_addr;\n  Temp nr nr_850_addr;\n  Temp kr kr_847_addr;\n  Temp sr sr_844_addr;\n  Temp weights weights_841_addr;\n  Temp bias bias_838_addr;\n  Temp scale scale_835_addr;\n  Temp packed_weights packed_weights_832_addr;\n  Temp extra_bytes extra_bytes_829_addr;\n  Temp params params_826_addr ]\nSEP[\n  store(g_859_addr, g_858_pre, unsigned int64);\n  store(nc_856_addr, nc_855_pre, unsigned int64);\n  store(kc_853_addr, kc_852_pre, unsigned int64);\n  store(nr_850_addr, nr_849_pre, unsigned int64);\n  store(kr_847_addr, kr_846_pre, unsigned int64);\n  store(sr_844_addr, sr_843_pre, unsigned int64);\n  store(weights_841_addr, weights_840_pre, unsigned int*);\n  store(bias_838_addr, bias_837_pre, unsigned int*);\n  store(scale_835_addr, scale_834_pre, void*);\n  store(packed_weights_832_addr, packed_weights_831_pre, unsigned int*);\n  store(extra_bytes_829_addr, extra_bytes_828_pre, unsigned int64);\n  store(params_826_addr, params_825_pre, void*);\n  pw_data (F_863_free);\n  pw_output (W_862_free, O_860_free) ]\n\n"
+}

@@ -1,3 +1,10 @@
+<!-- CURRENT_VERIFIED35_PACKW_20261025 -->
+当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
+
+2026-10-25（洛杉矶）：Packw模块化SIMD版完整通过，原件/23文件精确patch、完整UInt32状态/未写None frame与全部合法RVV VL边界保留。完整验收后直接commit/push到c-shim-v2，不开PR。
+
+以下保留历史记录。
+
 # Kernel 验证进度
 
 完整验证通过：**34/40**。当前目标：**40/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。

@@ -1,0 +1,14 @@
+{
+  "created_utc": "2026-10-25T14:01:20.801176+00:00",
+  "whole_kernel_verified": false,
+  "previous_variant": "proof/history/before-modular-simd",
+  "reason": [
+    "Factor original SIMD KC loops and header into actual ordinary C helpers, each retaining SIMD body proof obligations; explicit group/tile counters make bounded loop progress visible",
+    "RVV m4 two-strided-store decomposition removes aggregate vcreate+vsseg2 frontend constructor; 2*VL memory writes and bit layout preserved by checked StridedPairFacts",
+    "NEON local vector registers reset at pair helper entry; both lanes are overwritten before every observed store; no source-to-original compiler/ISA refinement claimed",
+    "Positive-entry do loops normalized to while; scalar odd/header accesses use actual ordinary pw_read_word/pw_write_word adapters with checked bodies"
+  ],
+  "source_refinement_proved": false,
+  "domain_narrowed": false,
+  "new_project_axioms": false
+}

@@ -1,0 +1,1 @@
+Historical field-owner ordinary tuple-copy probe: first reader canonical pointer_offset worked; whole-copy needs StructArray owner. Actual original kernel never changed. Current ordinary sources are shim/tuple_first.c and shim/tuple_record.c. No proof credit for the old scalar-field-copy contract.

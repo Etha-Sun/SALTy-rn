@@ -1,0 +1,58 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "scope": "ordinary_C_borrowed_consumer_body_goal_generation_only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-bh3nxgsl",
+  "input_sha256": {
+    "proof/check_tuple_generation.py": "cdb9362ed3fa9486a5ca5a13ed0018263cc813693866bbe470ecb6ff0c62962e",
+    "shim/tuple_copy.c": "52ed1e9e3f44fe04f53907016c1149872068a4c05cb7046d9dcbaf43f5ea5a39",
+    "shim/tuple_types.h": "27daf0f92de9b7bac085432bb78742abd93325a1994d2162ae69a7691392b236"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim/tuple_copy.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-bh3nxgsl/tuple_copy.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01658696704544127,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-bh3nxgsl/tuple_copy.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-bh3nxgsl/generated",
+        "--coq-logic-path=X32Packw",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim",
+        "X32Packw"
+      ],
+      "exit_code": 1,
+      "seconds": 0.016482393955811858,
+      "log_sha256": "81faa8671a8b640dbc52e0d96843a10d2d84d006f8d8a9721d6ed2f69cd9cf8a"
+    }
+  ],
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "error": "Program: `/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-bh3nxgsl/tuple_copy.c`\nStart to parse strategies file common\nFile Path: builtin/common.strategies\nFinish parsing strategies file common\nStart to parse strategies file string_literal\nFile Path: builtin/string_literal.strategies\nFinish parsing strategies file string_literal\nFunction `pw_tuple_first`\n\u001b[1;31mfatal error: \u001b[0mSymbolic execution failed: cannot establish the memory requirements for record copy initialization in /srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-bh3nxgsl/tuple_copy.c:15:17\nrecord copy initialization failed because the current assertion does not entail the required memory assertion.\nRequired memory assertion:\nEX record_val_470_free \nPROP[]\nLOCAL[]\nSEP[\n  Structuint32x2_tArray.full (&(p_455_pre->val), 2, record_val_470_free) ]\n\nCurrent assertion:\nEX v_468_addr \nPROP[]\nLOCAL[\n  Temp v v_468_addr;\n  Temp p p_456_addr ]\nSEP[\n  UndefStructPreduint32x2x2_t (v_468_addr);\n  store(p_456_addr, p_455_pre, struct uint32x2x2_t*);\n  store(&(pointer_offset(&(p_455_pre->val), 0, (Size_of struct uint32x2_t), struct uint32x2_t)->s0), a0_460_free, unsigned int);\n  store(&(pointer_offset(&(p_455_pre->val), 0, (Size_of struct uint32x2_t), struct uint32x2_t)->s1), a1_459_free, unsigned int);\n  store(&(pointer_offset(&(p_455_pre->val), 1, (Size_of struct uint32x2_t), struct uint32x2_t)->s0), b0_458_free, unsigned int);\n  store(&(pointer_offset(&(p_455_pre->val), 1, (Size_of struct uint32x2_t), struct uint32x2_t)->s1), b1_457_free, unsigned int) ]\n\nEnd of function `pw_tuple_first`\nFunction `pw_tuple_copy`\n"
+}

@@ -1,0 +1,32 @@
+Chars 0 - 45 [From~Coq~Require~Import~ZArith...] 0.328 secs (0.204u,0.105s)
+Chars 46 - 94 [From~X32Packw~Require~Import~N...] 3.811 secs (3.086u,0.562s)
+Chars 95 - 133 [Import~ListNotations~Snaive_C_...] 0.037 secs (0.037u,0.s)
+Chars 134 - 159 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 160 - 181 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 182 - 262 [Lemma~checked_pw_neon_pair_par...] 0. secs (0.u,0.s)
+Chars 263 - 269 [Proof.] 0. secs (0.u,0.s)
+Chars 270 - 310 [(unfold~pw_neon_pair_partial_s...] 0. secs (0.u,0.s)
+Chars 312 - 408 [(first~~[~right;~intros;~pw_ne...] 1.243 secs (1.23u,0.012s)
+Chars 409 - 413 [Qed.] 0.062 secs (0.062u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 414 - 473 [Print~Assumptions~checked_pw_n...] 0.044 secs (0.04u,0.003s)

@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "ordinary_C_borrowed_consumer_body_goal_generation_only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-t4ah3h_k",
+  "input_sha256": {
+    "proof/check_tuple_generation.py": "6446cda186224e6abfb74f006c2fd9f0d816a7d9a699144591f4d2e380aded80",
+    "shim/tuple_copy.c": "52ed1e9e3f44fe04f53907016c1149872068a4c05cb7046d9dcbaf43f5ea5a39",
+    "shim/tuple_types.h": "27daf0f92de9b7bac085432bb78742abd93325a1994d2162ae69a7691392b236"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim/tuple_copy.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-t4ah3h_k/tuple_first.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.019605790032073855,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-t4ah3h_k/tuple_first.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/tuple-copy-generation-t4ah3h_k/generated",
+        "--coq-logic-path=X32Packw",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/shim",
+        "X32Packw"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01643935195170343,
+      "log_sha256": "9e75ed83e1d8cc9977da00508a9da64691605fdf31156d70a2726466ee2b459a"
+    }
+  ],
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "fields": [
+    "pw_tuple_first_safety_wit_1",
+    "pw_tuple_first_return_wit_1"
+  ],
+  "actual_C_fields": 2,
+  "goal_sha256": "82beb4432782f488eb08f65feda4bf6b9601c08adc532baa0b9343ee26e6c7e3"
+}

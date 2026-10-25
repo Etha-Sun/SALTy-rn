@@ -1,3 +1,10 @@
+<!-- CURRENT_VERIFIED35_PACKW_20261025 -->
+当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
+
+Packw status288301a24.../manifestae58.../H91fc21.../full9f243...；root独立writer dry-run、integration13CPP/14body relocation和私有副本UBSan/实16GiBASan各41184次公有caller/case/83232864bytes都通过，签发原件未修改。Q full-t6pyqowb6slots+D full-ex7thbdj6slots、Neon6/112G、HWC6/96G、Argmax新bulk6/96G+Pack发布native2/32G，总32/528G。真实额度半小时检查，严格>95%收尾；当前约31%，以live状态为准。所有证明边界详见各案spec/VERIFIED，无ISA/ABI/compiler或termination结论。
+
+以下保留历史记录。
+
 2026-10-25 matrix worker：F32 SpMM完整修复/兼容版：4实际C/788义务/19策略/835同环境fresh模块/956假设报告，递归coqchk及32并发准入通过。完整M/N/稀疏循环、NEON4/2/1与全部合法RVV VL；全binary32，循环打包与显式容量，固定VLEN128/e32m8，数值相等或同为NaN。原件保留，两侧表达式兼容改写，RVV另修复FMA/NaN。intrinsic人工语义审阅pending，无形式ISA/ABI或完整终止性定理。 当前34/40，完整包 verification/qcp/verified/f32-spmm-minmax。用户恢复额度后继续矩阵相关核；QS8与SpMM已完成。HWC→CHW仍为候选，已有原生回归与共享组件，尚未完成整核证明；勿沿用旧阶段停止指令，勿重复其他owner工作。下文保留原日期与作者归属。
 
 当前完整33/40，目标40；新增Maxpool857 actual C/310 fresh Coq/1020最终Print已完整闭合。外部矩阵worker QS8-QC8W GEMM@37685e527另计其贡献；不得覆盖或重复计数。半小时额度检查/严格>95%收尾继续。以下保留历史记录。

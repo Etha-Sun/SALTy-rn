@@ -1,3 +1,8 @@
+<!-- CURRENT_VERIFIED35_PACKW_20261025 -->
+当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
+
+以下保留历史记录。
+
 # 双服务器协作约定
 
 2026-10-23 最新收录：QS8 RDSUM 两侧修复版，35实际C单元/1590 C字段/703普通Coq/1771假设报告及发布身份与双sanitizer独立oracle复核通过，当前19/40，目标至少31。新intrinsic规则不改写本案已经冻结的更强C-body证据。

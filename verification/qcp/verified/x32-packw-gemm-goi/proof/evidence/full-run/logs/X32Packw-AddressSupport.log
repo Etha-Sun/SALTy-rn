@@ -1,0 +1,22 @@
+Chars 0 - 46 [From~Coq~Require~Import~ZArith...] 0.272 secs (0.182u,0.09s)
+Chars 47 - 98 [From~SimpleC.SL~Require~Import...] 3.41 secs (2.779u,0.629s)
+Chars 99 - 123 [Import~Snaive_C_Rules64.] 0.031 secs (0.031u,0.s)
+Chars 124 - 349 [Lemma~pw_local_field_address~:...] 0.001 secs (0.u,0.s)
+Chars 350 - 356 [Proof.] 0. secs (0.u,0.s)
+Chars 358 - 474 [(intros;~apply~eval_addr_expr_...] 0. secs (0.u,0.s)
+Chars 475 - 479 [Qed.] 0. secs (0.u,0.s)
+Axioms:
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 480 - 521 [Print~Assumptions~pw_local_fie...] 0.018 secs (0.018u,0.s)

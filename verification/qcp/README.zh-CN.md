@@ -1,3 +1,8 @@
+<!-- CURRENT_VERIFIED35_PACKW_20261025 -->
+当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
+
+以下保留历史记录。
+
 当前完整通过 **34/40**，目标 **40/40**。最新 [F32 SpMM](verified/f32-spmm-minmax/README.zh-CN.md) 完整准入通过；Maxpool 与 QS8-QC8W GEMM 的既有成果及作者归属保留。完整清单见 [verified/manifest.json](verified/manifest.json)。
 
 2026-10-23 用户更新：intrinsic 不再强制提供 C implementation/body 证明，可直接采用与原始规范对应、公开定义并逐项登记的 spec；完整 kernel 证明和最终人工 spec 审核保留。详见 [Intrinsic 规范边界](docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。下文早期 body 必选要求仅保留历史含义，已发布证据不改写。

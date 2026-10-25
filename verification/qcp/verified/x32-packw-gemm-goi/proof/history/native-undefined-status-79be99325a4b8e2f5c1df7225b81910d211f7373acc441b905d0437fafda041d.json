@@ -1,0 +1,244 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite unchanged SIMD C; independent packed-layout byte oracle preserves OLD holes/gaps; native emulator, no ISA proof",
+  "sanitizer": "undefined",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_",
+  "input_sha256": {
+    "impl/testNEON.c": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+    "impl/testRVV.c": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+    "proof/original/testNEON.c": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+    "proof/original/testRVV.c": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+    "proof/originals.json": "09697ed3d382ab75ee4f66a0f87eab4c4dc27ec0c4d631c097dbf96f9f58e736",
+    "proof/native/isa_arrays.h": "65acbb89c7839d960b7c9fc7c749a069cf5453f028f076408b50c676c448c193",
+    "proof/native/regression.c": "1a9f30aaa1b0bf42dce1773ca6912228109a36235b0b66eca6c96b7697dd771e",
+    "proof/check_native.py": "07cae684359655a390234722c71ef52e2852e5f07e0205a4d2b0b418cb8d2ea7"
+  },
+  "records": [
+    {
+      "label": "dependencies-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/impl/testNEON.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.04148610890842974,
+      "log_sha256": "9a579c7401bd9b0e8cb62494911906deebf7f635ee1236a77092e6d4f5c3b2ab"
+    },
+    {
+      "label": "compile-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/impl/testNEON.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/neon.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.3623835970647633,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "dependencies-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/impl/testRVV.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.028368418104946613,
+      "log_sha256": "fb0ccfec7cd7d03c69bda129fca6f94ba1970fb0bfd4e063db4ac748a06c7c63"
+    },
+    {
+      "label": "compile-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/impl/testRVV.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/rvv.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.31230112980119884,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "dependencies-driver",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/regression.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.03327097604051232,
+      "log_sha256": "9b1841a52ebec7ef6b7fe80f01245f7ab9ccb09dbdb151029d178d65efd8229c"
+    },
+    {
+      "label": "compile-driver",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/regression.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/driver.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.16524437605403364,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "link",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/input/proof/native/isa_arrays.h",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/rvv.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/driver.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/regression"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.06904442701488733,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-regression",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/regression"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.33146316395141184,
+      "log_sha256": "6e966fd2df9d1205239587be0b4b3f5d842f49292b740fec936e5ce66cdba676"
+    },
+    {
+      "label": "wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/regression",
+        "--wrong-one"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.008770084008574486,
+      "log_sha256": "9b3a904528f4ad358b42cf5e738d0339bdf9616329d13cc283b7e8c6b57062ab"
+    },
+    {
+      "label": "wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-packw-gemm-goi/.build/native-undefined-zyohr7v_/regression",
+        "--wrong-both"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.0093670969363302,
+      "log_sha256": "1819b76428a280097483b2ee2dec7d8769ca458210e213dd15d74367ab647263"
+    }
+  ],
+  "configured_jobs": 32,
+  "actual_max_parallel_processes": 1,
+  "per_process_memory_GiB": 16,
+  "per_command_timeout_seconds": 1800,
+  "actual_recursive_local_input_sha256": {
+    "impl/testNEON.c": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+    "proof/native/isa_arrays.h": "65acbb89c7839d960b7c9fc7c749a069cf5453f028f076408b50c676c448c193",
+    "impl/testRVV.c": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+    "proof/native/regression.c": "1a9f30aaa1b0bf42dce1773ca6912228109a36235b0b66eca6c96b7697dd771e"
+  },
+  "original_regression": {
+    "passed": true,
+    "cases": 27456,
+    "observed_output_bytes_per_side": 55488576,
+    "VL_modes": 3,
+    "tail_modes": 2,
+    "all_old_holes_gaps_and_guards": true,
+    "inputs_preserved": true
+  },
+  "implementations_byte_identical_to_originals": true,
+  "both_wrong_still_equal_oracle_rejected": true
+}

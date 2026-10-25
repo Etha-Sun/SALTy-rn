@@ -1,0 +1,511 @@
+{
+  "whole_kernel_verified": false,
+  "scope": "source-reviewed intrinsic specs only, separate from actual ordinary C body proofs and formal ISA/ABI correspondence",
+  "architecture": {
+    "arch64": true,
+    "endian": "little",
+    "RVV_VLEN": 128,
+    "SEW": 32,
+    "main_LMUL": 4,
+    "main_VLMAX": 16,
+    "header_LMUL": 1,
+    "header_VLMAX": 4
+  },
+  "source_audit_completed": true,
+  "human_semantic_review_completed": false,
+  "new_project_axioms": false,
+  "rows": [
+    {
+      "native_intrinsic": "vdup_n_u32",
+      "formal_symbol": "vdup_n_u32",
+      "Coq_semantics": "two initialized result words both equal raw uint32 x",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3274",
+      "semantic_review": "DUP Vd.2S,rn; two32-bit copies",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "vmov_n_u32",
+      "formal_symbol": "vmov_n_u32",
+      "Coq_semantics": "two initialized result words both equal raw uint32 x",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3302",
+      "semantic_review": "same DUP source mapping, no floating operations",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "vld1_u32",
+      "formal_symbol": "vld1_u32",
+      "Coq_semantics": "pw_window F p2; pw_load_lane F p0/1 and readonly map retained",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md",
+      "semantic_review": "LD1 of two32-bit words; no missing-read default accepted",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "vld1_lane_u32(lane=0)",
+      "formal_symbol": "pw_intrinsic_ld1_lane_0",
+      "Coq_semantics": "load one initialized word, replace selected lane, retain other lane and borrowed input vector",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3878",
+      "semantic_review": "LD1 lane immediate0/1; pointer signature is formal byvalue input view; source intrinsic itself remains native",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "vld1_lane_u32(lane=1)",
+      "formal_symbol": "pw_intrinsic_ld1_lane_1",
+      "Coq_semantics": "load one initialized word, replace selected lane, retain other lane and borrowed input vector",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3878",
+      "semantic_review": "LD1 lane immediate0/1; pointer signature is formal byvalue input view; source intrinsic itself remains native",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "vst1_u32",
+      "formal_symbol": "pw_intrinsic_store2",
+      "Coq_semantics": "pw_write_pair O p x0 x1; vector unchanged; all other option words retained",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:4327",
+      "semantic_review": "ST1 two32-bit words; formal pointer argument borrows actual input value",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "__riscv_vsetvl_e32m4",
+      "formal_symbol": "__riscv_vsetvl_e32m4",
+      "Coq_semantics": "pw_legal_vl avl vl; all v1.0 legal choices at VLMAX16",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "VLEN128/SEW32/LMUL4; no fixed minimum schedule in AVL17..31 range",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "__riscv_vle32_v_u32m4",
+      "formal_symbol": "__riscv_vle32_v_u32m4",
+      "Coq_semantics": "pw_rvv_lanes F p vl(pw_vec16...); inactive lanes unconstrained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "unmasked unit-stride loads active0..vl-1 exactly; pre requires initialized pw_window",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "__riscv_vsse32_v_u32m4",
+      "formal_symbol": "pw_intrinsic_vsse32",
+      "Coq_semantics": "stride==8; pw_strided vl values p O; inactive cells untouched",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "one unmasked strided32-bit store; output addresses distinct since stride8; no per-element ordering observation",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "__riscv_vle32_v_u32m1",
+      "formal_symbol": "__riscv_vle32_v_u32m1",
+      "Coq_semantics": "explicit AVL/VL2 within VLMAX4; first2 read words exact, high2 unconstrained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "VLEN128/SEW32/LMUL1; original header calls only2",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "__riscv_vmv_v_x_u32m1",
+      "formal_symbol": "__riscv_vmv_v_x_u32m1",
+      "Coq_semantics": "VL2; first2 words x, inactive high2 unconstrained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "VMV.V.X active scalar broadcast; no constraint invented for tail words",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    },
+    {
+      "native_intrinsic": "__riscv_vse32_v_u32m1",
+      "formal_symbol": "pw_intrinsic_store_m1_2",
+      "Coq_semantics": "VL2; pw_write_pair O p x0 x1; all4 vector input fields retained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "unit-stride active2 store; tail vector fields unobserved",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false
+    }
+  ],
+  "definitions_sha256": {
+    "shim/neon_specs.h": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+    "shim/rvv_specs.h": "4d57e4fbfbf4b7143caff213f3c6d529904fdb1b15b2291e08afc3ccc4cfcd8a",
+    "shim/rvv_m1_specs.h": "18132b5a0764ca0fadc1e6f4b6c094667d618e3c76f5036591cc3c8b16af6fbc",
+    "proof/coq/ProgramModel.v": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36",
+    "proof/coq/VectorModel.v": "75c961bb8ed05227be33f11715eecb298b5072e577a45b47a6a5a479ac67a429",
+    "shim/formal_types.h": "3d4831198d569be73c091ad55f2654003e68eb3bc8d1d1ab97802b3e67ca3f7b",
+    "proof/coq/Types.v": "b8fcc808623b09859fea2133dc05a566236dbe1245ff445757e5cd96c1552a9e"
+  },
+  "removed_original_tuple_construction": "Original vcreate+vsseg2 are absent from current executable variant. Two actual native vsse calls live in ordinary helper pw_store_pair_vectors; complete actual C8-field proof plus StridedPairFacts bridge required separately.",
+  "entries": [
+    {
+      "native_intrinsic": "vdup_n_u32",
+      "formal_symbol": "vdup_n_u32",
+      "Coq_semantics": "two initialized result words both equal raw uint32 x",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3274",
+      "semantic_review": "DUP Vd.2S,rn; two32-bit copies",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "vdup_n_u32",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+      "contract_sha256": "0e70f3a1b64a3417624f251cb43fc8ddc9b8ec1c6aa88486cf7e4958b74618a9",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "direct_coq_definitions": []
+    },
+    {
+      "native_intrinsic": "vmov_n_u32",
+      "formal_symbol": "vmov_n_u32",
+      "Coq_semantics": "two initialized result words both equal raw uint32 x",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3302",
+      "semantic_review": "same DUP source mapping, no floating operations",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "vmov_n_u32",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+      "contract_sha256": "0e70f3a1b64a3417624f251cb43fc8ddc9b8ec1c6aa88486cf7e4958b74618a9",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "direct_coq_definitions": []
+    },
+    {
+      "native_intrinsic": "vld1_u32",
+      "formal_symbol": "vld1_u32",
+      "Coq_semantics": "pw_window F p2; pw_load_lane F p0/1 and readonly map retained",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md",
+      "semantic_review": "LD1 of two32-bit words; no missing-read default accepted",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "vld1_u32",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+      "contract_sha256": "81f2b03399cef54bdd48154a110440fc9b660237454b90a4f67bda3e4a46d046",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.InputMemory.pw_load_lane",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "vld1_lane_u32(lane=0)",
+      "formal_symbol": "pw_intrinsic_ld1_lane_0",
+      "Coq_semantics": "load one initialized word, replace selected lane, retain other lane and borrowed input vector",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3878",
+      "semantic_review": "LD1 lane immediate0/1; pointer signature is formal byvalue input view; source intrinsic itself remains native",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "pw_intrinsic_ld1_lane_0",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+      "contract_sha256": "8ffcac71af1741a8a12ea92558deacc8a906754d1224bd0f9e46ab01a87ec1e0",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.InputMemory.pw_load_lane",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "vld1_lane_u32(lane=1)",
+      "formal_symbol": "pw_intrinsic_ld1_lane_1",
+      "Coq_semantics": "load one initialized word, replace selected lane, retain other lane and borrowed input vector",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:3878",
+      "semantic_review": "LD1 lane immediate0/1; pointer signature is formal byvalue input view; source intrinsic itself remains native",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "pw_intrinsic_ld1_lane_1",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+      "contract_sha256": "177ad5348674e2ff8d26c99d68710040a435b9ff335dad6fa80ef15846aa6352",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.InputMemory.pw_load_lane",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "vst1_u32",
+      "formal_symbol": "pw_intrinsic_store2",
+      "Coq_semantics": "pw_write_pair O p x0 x1; vector unchanged; all other option words retained",
+      "primary_source": "proof/evidence/intrinsic-sources/acle-advsimd.md:4327",
+      "semantic_review": "ST1 two32-bit words; formal pointer argument borrows actual input value",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "pw_intrinsic_store2",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "f98f467026623ebdca6054daa01452d963b422ca70fbc84bae8bdd1a107bb662",
+      "contract_sha256": "8abfe6fd3cdee46c0a1ce750a503ebe4462766d28beb5cf5d7ff1cbb3e2869d2",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.ProgramModel.pw_write_pair",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36"
+        },
+        {
+          "constant": "X32Packw.OutputMemory.pw_write_window",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "a452db38beec8f453d0c0e4fe3e66d487ffd8876ee775115bb9090b31a0306a9"
+        },
+        {
+          "constant": "X32Packw.OutputMemory.pw_output",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "a452db38beec8f453d0c0e4fe3e66d487ffd8876ee775115bb9090b31a0306a9"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "__riscv_vsetvl_e32m4",
+      "formal_symbol": "__riscv_vsetvl_e32m4",
+      "Coq_semantics": "pw_legal_vl avl vl; all v1.0 legal choices at VLMAX16",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "VLEN128/SEW32/LMUL4; no fixed minimum schedule in AVL17..31 range",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "__riscv_vsetvl_e32m4",
+      "contract_source": "shim/rvv_specs.h",
+      "contract_source_sha256": "4d57e4fbfbf4b7143caff213f3c6d529904fdb1b15b2291e08afc3ccc4cfcd8a",
+      "contract_sha256": "c25401a2756fb9e3f75daf513567d2c82c43e1101f86f297debaf38f4965c8b4",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "official_version": "RVV v1.0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.ProgramModel.pw_legal_vl",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "__riscv_vle32_v_u32m4",
+      "formal_symbol": "__riscv_vle32_v_u32m4",
+      "Coq_semantics": "pw_rvv_lanes F p vl(pw_vec16...); inactive lanes unconstrained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "unmasked unit-stride loads active0..vl-1 exactly; pre requires initialized pw_window",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "__riscv_vle32_v_u32m4",
+      "contract_source": "shim/rvv_specs.h",
+      "contract_source_sha256": "4d57e4fbfbf4b7143caff213f3c6d529904fdb1b15b2291e08afc3ccc4cfcd8a",
+      "contract_sha256": "45f72e3475520dde12a67d0e5a8ca9b22334a92a016ccf38ae9d1df57a13d6ad",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "official_version": "RVV v1.0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.VectorModel.pw_rvv_lanes",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "75c961bb8ed05227be33f11715eecb298b5072e577a45b47a6a5a479ac67a429"
+        },
+        {
+          "constant": "X32Packw.ProgramModel.pw_vec16",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "__riscv_vsse32_v_u32m4",
+      "formal_symbol": "pw_intrinsic_vsse32",
+      "Coq_semantics": "stride==8; pw_strided vl values p O; inactive cells untouched",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "one unmasked strided32-bit store; output addresses distinct since stride8; no per-element ordering observation",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "pw_intrinsic_vsse32",
+      "contract_source": "shim/rvv_specs.h",
+      "contract_source_sha256": "4d57e4fbfbf4b7143caff213f3c6d529904fdb1b15b2291e08afc3ccc4cfcd8a",
+      "contract_sha256": "dcc9d11c2d7026fcd6ef55264eb4a5be2cf45d3e39bca0235825b802837512b3",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "official_version": "RVV v1.0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.StrideAccessModel.pw_stride_window",
+          "source": "proof/coq/StrideAccessModel.v",
+          "source_sha256": "7cb61d8d4698093f7954e834f67a1b405c0415a58de1042ad93525de0d955c54"
+        },
+        {
+          "constant": "X32Packw.ProgramModel.pw_strided",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36"
+        },
+        {
+          "constant": "X32Packw.ProgramModel.pw_vec16",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36"
+        },
+        {
+          "constant": "X32Packw.OutputMemory.pw_output",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "a452db38beec8f453d0c0e4fe3e66d487ffd8876ee775115bb9090b31a0306a9"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "__riscv_vle32_v_u32m1",
+      "formal_symbol": "__riscv_vle32_v_u32m1",
+      "Coq_semantics": "explicit AVL/VL2 within VLMAX4; first2 read words exact, high2 unconstrained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "VLEN128/SEW32/LMUL1; original header calls only2",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "__riscv_vle32_v_u32m1",
+      "contract_source": "shim/rvv_m1_specs.h",
+      "contract_source_sha256": "18132b5a0764ca0fadc1e6f4b6c094667d618e3c76f5036591cc3c8b16af6fbc",
+      "contract_sha256": "1b923dcdf579c8f8ea1c55130fa7c85fb7cd513c39243a9543dc88ed7b3f0e55",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "official_version": "RVV v1.0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.InputMemory.pw_load_lane",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        },
+        {
+          "constant": "X32Packw.InputMemory.pw_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "652993aa7c9ca178546bfb0301d8ad58792256b367afd1f955980edb355ef258"
+        }
+      ]
+    },
+    {
+      "native_intrinsic": "__riscv_vmv_v_x_u32m1",
+      "formal_symbol": "__riscv_vmv_v_x_u32m1",
+      "Coq_semantics": "VL2; first2 words x, inactive high2 unconstrained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "VMV.V.X active scalar broadcast; no constraint invented for tail words",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "__riscv_vmv_v_x_u32m1",
+      "contract_source": "shim/rvv_m1_specs.h",
+      "contract_source_sha256": "18132b5a0764ca0fadc1e6f4b6c094667d618e3c76f5036591cc3c8b16af6fbc",
+      "contract_sha256": "66d79409a0db4404c506b294d012088be3e10b916b59809dd2d6928df45f38ed",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "official_version": "RVV v1.0",
+      "direct_coq_definitions": []
+    },
+    {
+      "native_intrinsic": "__riscv_vse32_v_u32m1",
+      "formal_symbol": "pw_intrinsic_store_m1_2",
+      "Coq_semantics": "VL2; pw_write_pair O p x0 x1; all4 vector input fields retained",
+      "primary_source": "proof/evidence/intrinsic-sources/rvv-v1.0.adoc",
+      "semantic_review": "unit-stride active2 store; tail vector fields unobserved",
+      "native_body_proof_required": false,
+      "formal_ISA_refinement_proved": false,
+      "view": "pw_intrinsic_store_m1_2",
+      "contract_source": "shim/rvv_m1_specs.h",
+      "contract_source_sha256": "18132b5a0764ca0fadc1e6f4b6c094667d618e3c76f5036591cc3c8b16af6fbc",
+      "contract_sha256": "fb92a8a36369b5381261c8ea2da4439726769f1608cc507bfa4b3feae396bd22",
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "official_primary": "https://raw.githubusercontent.com/riscvarchive/riscv-v-spec/v1.0/v-spec.adoc",
+      "official_version": "RVV v1.0",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Packw.ProgramModel.pw_write_pair",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "43dbe103342fb223ea9a5f64d2737b312698ea366ebda229b0488af654d40f36"
+        },
+        {
+          "constant": "X32Packw.OutputMemory.pw_write_window",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "a452db38beec8f453d0c0e4fe3e66d487ffd8876ee775115bb9090b31a0306a9"
+        },
+        {
+          "constant": "X32Packw.OutputMemory.pw_output",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "a452db38beec8f453d0c0e4fe3e66d487ffd8876ee775115bb9090b31a0306a9"
+        }
+      ]
+    }
+  ]
+}

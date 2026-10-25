@@ -1,0 +1,3 @@
+From X32Packw Require Import UnitInterfaces StateObservation AssumptionsPart00 AssumptionsPart01 AssumptionsPart02 AssumptionsPart03 AssumptionsPart04 AssumptionsPart05 AssumptionsPart06 AssumptionsPart07 AssumptionsPart08 AssumptionsPart09 AssumptionsPart10 AssumptionsPart11 AssumptionsPart12 AssumptionsPart13 AssumptionsPart14 AssumptionsPart15.
+Definition complete_bitwise_state := X32Packw.StateObservation.pw_kernel_posts_full_map.
+Definition own_optional_frame_cases := X32Packw.StateObservation.pw_static_memory_frames.

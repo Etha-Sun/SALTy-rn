@@ -1,0 +1,20 @@
+{
+  "whole_kernel_verified": false,
+  "variant": "NEON single-lane-load compatibility; RVV original",
+  "reason": "Original two-vector lane load decomposed into corresponding native one-vector lane loads to avoid an unresolved tuple temporary ownership frontend path. Exact raw uint32 results and access/store sequence retained. This is disclosed compatibility, not a newly found C numerical bug.",
+  "original_NEON_sha256": "3804caddb205c82d2b27a8f882a1774380c55802e974c43f7bf845870d6db143",
+  "actual_NEON_sha256": "9d216811e76dde6469e2bd7713d3f797c2bc447639c01296e8b3142f6a30dd27",
+  "original_RVV_sha256": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+  "actual_RVV_sha256": "855035f4e579a7a69317ea26ae3a59102b34e9deff4b2539c3e95b2b2be55ab3",
+  "patch_sha256": "8a97270dbbc4e1e21e9ca0b91a79f5deb63813f206ab9f761f178735e9859418",
+  "zero_fuzz_patch_replay": true,
+  "mathematical_projection_bridge_pending": false,
+  "whole_original_C_refinement_proved": false,
+  "ACLE_reference": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+  "domain": "g/nc/k positive64 conditional live bounded storage; all raw uint32; NR2/KR1/SR1; gap multiple4; optional bias including RO weights aliases; all OLD holes/gaps observed",
+  "mathematical_projection_bridge": "proof/coq/LaneLoadBridge.v",
+  "mathematical_projection_bridge_sha256": "be04871006a362404ebdd856280e5609e3620d52b88bd351e7b4591bceb0221f",
+  "bridge_fresh_status": ".build/coq-closure-ini037af/status.json",
+  "bridge_fresh_status_sha256": "4e3e8f4b1c7db0596d178612c47f2ee95f682aac5532d83d13d1d2f2f0409483",
+  "bridge_scope": "Two original lane-load intrinsic specifications have exact pointwise identical values on both vectors and both lanes; no complete original-C program refinement or ISA theorem"
+}
