@@ -1,6 +1,8 @@
 <!-- CURRENT_VERIFIED35_PACKW_20261025 -->
 当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
 
+完整证据及 intrinsic 人工审核入口见[逐核审核索引](../docs/VERIFIED-REVIEW-INDEX.zh-CN.md)。
+
 以下保留历史记录。
 
 # 已验证的 kernel

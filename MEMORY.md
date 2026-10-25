@@ -1,7 +1,7 @@
 <!-- CURRENT_VERIFIED35_PACKW_20261025 -->
 当前完整已验证 **35/40**，目标 **40/40**。新增 x32-packw-gemm-goi：13个实际C单元、312条C义务、14个普通函数体、295次源码fresh Coq编译、325命令全0、444最终假设报告；12个原生intrinsic视图人工审核仍pending。SPMM@2239bcf90属于外部贡献。本聊天22+外部8+原有5。QS8/DW全门禁继续，Argmax/Exp/HWC仍为candidate。
 
-Packw status288301a24.../manifestae58.../H91fc21.../full9f243...；root独立writer dry-run、integration13CPP/14body relocation和私有副本UBSan/实16GiBASan各41184次公有caller/case/83232864bytes都通过，签发原件未修改。Q full-t6pyqowb6slots+D full-ex7thbdj6slots、Neon6/112G、HWC6/96G、Argmax新bulk6/96G+Pack发布native2/32G，总32/528G。真实额度半小时检查，严格>95%收尾；当前约31%，以live状态为准。所有证明边界详见各案spec/VERIFIED，无ISA/ABI/compiler或termination结论。
+Packw status288301a24.../manifestae58.../H91fc21.../full9f243...；root独立writer dry-run、integration13CPP/14body relocation和私有副本UBSan/实16GiBASan各41184次公有caller/case/83232864bytes都通过，签发原件未修改。Packw已发布cd2f274e4，原qs8-rdsum漏跟踪780日志依原清单SHA恢复89df8ddaf；35包45036清单项均跟踪。当前Q full-t6pyqowb8slots+D full-ex7thbdj6slots、Neon6/112GiB、HWC6/96GiB、Argmax新尾组件6/96GiB，共32actual。Q/D重型可升32GiB，root按最坏448GiB、全队752GiB地址空间cap保留；外部矩阵pool512GiB，host1505GiB，保守余量241GiB。真实额度半小时检查，严格>95%收尾；16:00:04Z读数33%，以live状态为准。所有证明边界详见各案spec/VERIFIED，无ISA/ABI/compiler或termination结论。
 
 以下保留历史记录。
 
