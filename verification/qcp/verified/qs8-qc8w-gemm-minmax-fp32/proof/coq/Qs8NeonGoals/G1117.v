@@ -1,0 +1,124 @@
+Require Import Coq.ZArith.ZArith.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Strings.String.
+Require Import Coq.Strings.Ascii.
+Require Import Coq.Lists.List.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Classes.Morphisms.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Sorting.Permutation.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
+Require Import SetsClass.SetsClass. Import SetsNotation.
+From SimpleC.SL Require Import Mem SeparationLogic.
+Require Import Logic.LogicGenerator.demo932.Interface.
+Local Open Scope Z_scope.
+Local Open Scope sets.
+Local Open Scope string_scope.
+Local Open Scope list.
+Import Snaive_C_Rules64.
+Require Import Qs8Gemm.Model Qs8Gemm.Layouts.
+Require Import Qs8Gemm.Model Qs8Gemm.Layouts.
+Local Open Scope sac.
+From Qs8Gemm Require Import copy_strategy_goal.
+From Qs8Gemm Require Import copy_strategy_proof.
+
+(*----- Function test_neon -----*)
+
+Definition test_neon_partial_solve_wit_538_pure_split_goal_1 := 
+forall (params_pre: Z) (cm_stride_pre: Z) (c_pre: Z) (w_pre: Z) (a_stride_pre: Z) (a_pre: Z) (kc_pre: Z) (nc_pre: Z) (mr_pre: Z) (hi: Z) (lo: Z) (offset: Z) (magic: fp32) (Ps: (@list panel_data)) (A: (@list Z)) (w: Z) (a0: Z) (k: Z) (c0: Z) (nc: Z) (cn_stride: Z) (PreH1 : (k <= UINT64_MAX)) (PreH2 : (nc <= UINT64_MAX)) (PreH3 : (cn_stride <= UINT64_MAX)) (PreH4 : (cm_stride_pre <= UINT64_MAX)) (PreH5 : (a_stride_pre <= UINT64_MAX)) (PreH6 : (kc_pre <= UINT64_MAX)) (PreH7 : (mr_pre <= UINT64_MAX)) (PreH8 : (k >= 0)) (PreH9 : (nc >= 0)) (PreH10 : (cn_stride >= 0)) (PreH11 : (cm_stride_pre >= 0)) (PreH12 : (a_stride_pre >= 0)) (PreH13 : (kc_pre >= 0)) (PreH14 : (mr_pre >= 0)) (PreH15 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH16 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH17 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH18 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH19 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH20 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH21 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH22 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps))))) (magic))))) (offset)) <= INT_MAX)) (PreH23 : (offset <= INT_MAX)) (PreH24 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH25 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH26 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH27 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH28 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH29 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH30 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH31 : ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps))))) (magic))))) (offset)) >= INT_MIN)) (PreH32 : (offset >= INT_MIN)) (PreH33 : (nc < 8)) (PreH34 : (k = 0)) (PreH35 : (k < (8 * sizeof(CHAR) ))) (PreH36 : (cn_stride = 8)) (PreH37 : (mr_pre = 1)) (PreH38 : (0 < kc_pre)) (PreH39 : (0 < nc_pre)) (PreH40 : (domain_shape 1 nc_pre kc_pre Ps )) (PreH41 : (data_capacity nc_pre kc_pre a_pre w_pre c_pre )) (PreH42 : (qs8_matrix_wf kc_pre Ps )) (PreH43 : (sizeof(CHAR) = 1)) (PreH44 : (sizeof(FLOAT) = 4)) (PreH45 : (0 <= nc)) (PreH46 : (nc <= nc_pre)) (PreH47 : (0 < nc)) (PreH48 : (((nc_pre - nc ) % ( 8 ) ) = 0)) (PreH49 : (0 <= ((nc_pre - nc ) ÷ 8 ))) (PreH50 : (((nc_pre - nc ) ÷ 8 ) < (Zlength (Ps)))) (PreH51 : (c0 = (c_pre + ((nc_pre - nc ) * sizeof(CHAR))))) (PreH52 : (0 <= k)) (PreH53 : (k <= kc_pre)) (PreH54 : (((kc_pre - k ) % ( 8 ) ) = 0)) (PreH55 : (a0 = (a_pre + ((kc_pre - k ) * sizeof(CHAR))))) (PreH56 : (w = (w_pre + ((((((nc_pre - nc ) ÷ 8 ) * (64 + (8 * kc_pre ) ) ) + 32 ) + (8 * (kc_pre - k ) ) ) * sizeof(CHAR))))) (PreH57 : ((Z.land nc 4) <> 0)) ,
+  ((&(( &( "qcp_store_tmp" ) )->ₛ "s7")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s6")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s5")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s4")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s3")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s2")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s1")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "qcp_store_tmp" ) )->ₛ "s0")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  (packed_matrix kc_pre w_pre Ps )
+  **  ((( &( "mr" ) )) # UInt64  |-> mr_pre)
+  **  ((( &( "kc" ) )) # UInt64  |-> kc_pre)
+  **  ((( &( "a" ) )) # Ptr  |-> a_pre)
+  **  ((( &( "c" ) )) # Ptr  |-> c_pre)
+  **  ((( &( "params" ) )) # Ptr  |-> params_pre)
+  **  ((( &( "a_stride" ) )) # UInt64  |-> a_stride_pre)
+  **  ((( &( "cm_stride" ) )) # UInt64  |-> cm_stride_pre)
+  **  ((( &( "cn_stride" ) )) # UInt64  |-> cn_stride)
+  **  ((( &( "nc" ) )) # UInt64  |-> nc)
+  **  ((( &( "c0" ) )) # Ptr  |-> c0)
+  **  ((( &( "k" ) )) # UInt64  |-> k)
+  **  ((( &( "a0" ) )) # Ptr  |-> a0)
+  **  ((( &( "w" ) )) # Ptr  |-> (w + ((4 + 4 ) * sizeof(FLOAT))))
+  **  (CharArray.full a_pre (a_read_extent (kc_pre)) A )
+  **  (qs8_output_prefix c_pre nc_pre (nc_pre - nc ) kc_pre A Ps magic offset lo hi )
+  **  ((&((params_pre)  # "xnn_qs8_qc8w_conv_minmax_params" ->ₛ "fp32_neon" .ₛ "magic_bias")) # Float  |-> magic)
+  **  ((&((params_pre)  # "xnn_qs8_qc8w_conv_minmax_params" ->ₛ "fp32_neon" .ₛ "magic_bias_less_output_zero_point")) # Int  |-> offset)
+  **  ((&((params_pre)  # "xnn_qs8_qc8w_conv_minmax_params" ->ₛ "fp32_neon" .ₛ "output_min")) # Char  |-> lo)
+  **  ((&((params_pre)  # "xnn_qs8_qc8w_conv_minmax_params" ->ₛ "fp32_neon" .ₛ "output_max")) # Char  |-> hi)
+  **  ((&(( &( "vscale0123" ) )->ₛ "s0")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps)))
+  **  ((&(( &( "vscale0123" ) )->ₛ "s1")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps)))
+  **  ((&(( &( "vscale0123" ) )->ₛ "s2")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps)))
+  **  ((&(( &( "vscale0123" ) )->ₛ "s3")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps)))
+  **  ((&(( &( "vscale4567" ) )->ₛ "s0")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps)))
+  **  ((&(( &( "vscale4567" ) )->ₛ "s1")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps)))
+  **  ((&(( &( "vscale4567" ) )->ₛ "s2")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps)))
+  **  ((&(( &( "vscale4567" ) )->ₛ "s3")) # Float  |-> (qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps)))
+  **  ((&(( &( "vfpacc0x0123" ) )->ₛ "s0")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x0123" ) )->ₛ "s1")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x0123" ) )->ₛ "s2")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x0123" ) )->ₛ "s3")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x4567" ) )->ₛ "s0")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x4567" ) )->ₛ "s1")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x4567" ) )->ₛ "s2")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps)))))
+  **  ((&(( &( "vfpacc0x4567" ) )->ₛ "s3")) # Float  |-> (f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps)))))
+  **  ((&(( &( "vmagic_bias" ) )->ₛ "s0")) # Float  |-> magic)
+  **  ((&(( &( "vmagic_bias" ) )->ₛ "s1")) # Float  |-> magic)
+  **  ((&(( &( "vmagic_bias" ) )->ₛ "s2")) # Float  |-> magic)
+  **  ((&(( &( "vmagic_bias" ) )->ₛ "s3")) # Float  |-> magic)
+  **  ((&(( &( "vmagic_bias_less_output_zero_point" ) )->ₛ "s0")) # Int  |-> offset)
+  **  ((&(( &( "vmagic_bias_less_output_zero_point" ) )->ₛ "s1")) # Int  |-> offset)
+  **  ((&(( &( "vmagic_bias_less_output_zero_point" ) )->ₛ "s2")) # Int  |-> offset)
+  **  ((&(( &( "vmagic_bias_less_output_zero_point" ) )->ₛ "s3")) # Int  |-> offset)
+  **  ((&(( &( "vacc0x0123" ) )->ₛ "s0")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x0123" ) )->ₛ "s1")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x0123" ) )->ₛ "s2")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x0123" ) )->ₛ "s3")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x4567" ) )->ₛ "s0")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x4567" ) )->ₛ "s1")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x4567" ) )->ₛ "s2")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x4567" ) )->ₛ "s3")) # Int  |-> (qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps))))) (magic))))) (offset)))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s0")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s1")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s2")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s3")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s4")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s5")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s6")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "vacc0x01234567" ) )->ₛ "s7")) # Short  |-> (qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps))))) (magic))))) (offset)))))
+  **  ((&(( &( "voutput_min" ) )->ₛ "s0")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s1")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s2")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s3")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s4")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s5")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s6")) # Char  |-> lo)
+  **  ((&(( &( "voutput_min" ) )->ₛ "s7")) # Char  |-> lo)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s0")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s1")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s2")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s3")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s4")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s5")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s6")) # Char  |-> hi)
+  **  ((&(( &( "voutput_max" ) )->ₛ "s7")) # Char  |-> hi)
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s0")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (0) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 0 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s1")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (1) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 1 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s2")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (2) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 2 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s3")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (3) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((0 + 3 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s4")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (4) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 0 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s5")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (5) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 1 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s6")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (6) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 2 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+  **  ((&(( &( "vout0x01234567" ) )->ₛ "s7")) # Char  |-> (qs8_min ((qs8_max ((qs8_narrow8 ((qs8_narrow16 ((qs8_ssub32 ((qs8_reinterpret ((f16_arm_add ((f16_arm_mul ((fp32_of_Z ((qs8_acc ((kc_pre - k )) (((nc_pre - nc ) ÷ 8 )) (7) (A) (Ps))))) ((qs8_scale (((nc_pre - nc ) ÷ 8 )) ((4 + 3 )) (Ps))))) (magic))))) (offset))))))) (lo))) (hi)))
+|--
+  “ (((nc_pre - nc ) + 4 ) <= nc_pre) ”
+.
+

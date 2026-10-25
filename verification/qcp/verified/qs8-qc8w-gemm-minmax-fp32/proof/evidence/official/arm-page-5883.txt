@@ -1,0 +1,51 @@
+Library pseudocode for shared/functions/float/fpminnum/FPMinNum
+// FPMinNum()
+// ==========
+bits(N) FPMinNum(bits(N) op1, bits(N) op2, FPCR_Type fpcr)
+constant boolean fpexc = TRUE;
+return FPMinNum(op1, op2, fpcr, fpexc);
+// FPMinNum()
+// ==========
+bits(N) FPMinNum(bits(N) op1_in, bits(N) op2_in, FPCR_Type fpcr, boolean fpexc)
+assert N IN {16,32,64};
+bits(N) op1 = op1_in;
+bits(N) op2 = op2_in;
+(type1,-,-) = FPUnpack(op1, fpcr, fpexc);
+(type2,-,-) = FPUnpack(op2, fpcr, fpexc);
+constant boolean type1_nan = type1 IN {FPType_QNaN, FPType_SNaN};
+constant boolean type2_nan = type2 IN {FPType_QNaN, FPType_SNaN};
+constant boolean altfp = IsFeatureImplemented(FEAT_AFP) && !UsingAArch32() && fpcr.AH == '1';
+if !(altfp && type1_nan && type2_nan) then
+// Treat a single quiet-NaN as +Infinity.
+if type1 == FPType_QNaN && type2 != FPType_QNaN then
+op1 = FPInfinity('0', N);
+elsif type1 != FPType_QNaN && type2 == FPType_QNaN then
+op2 = FPInfinity('0', N);
+altfmaxfmin = FALSE;    // Restrict use of FMAX/FMIN NaN propagation rules
+result = FPMin(op1, op2, fpcr, altfmaxfmin, fpexc);
+return result;
+Library pseudocode for shared/functions/float/fpmul/FPMul
+// FPMul()
+// =======
+bits(N) FPMul(bits(N) op1, bits(N) op2, FPCR_Type fpcr)
+assert N IN {16,32,64};
+(type1,sign1,value1) = FPUnpack(op1, fpcr);
+(type2,sign2,value2) = FPUnpack(op2, fpcr);
+(done,result) = FPProcessNaNs(type1, type2, op1, op2, fpcr);
+if !done then
+inf1 = (type1 == FPType_Infinity);
+inf2 = (type2 == FPType_Infinity);
+zero1 = (type1 == FPType_Zero);
+zero2 = (type2 == FPType_Zero);
+if (inf1 && zero2) || (zero1 && inf2) then
+result = FPDefaultNaN(fpcr, N);
+FPProcessException(FPExc_InvalidOp, fpcr);
+elsif inf1 || inf2 then
+result = FPInfinity(sign1 EOR sign2, N);
+elsif zero1 || zero2 then
+result = FPZero(sign1 EOR sign2, N);
+else
+result = FPRound(value1*value2, fpcr, N);
+FPProcessDenorms(type1, type2, N, fpcr);
+return result;
+Shared Pseudocode Functions Page 5881

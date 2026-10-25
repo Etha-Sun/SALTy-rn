@@ -1,0 +1,774 @@
+{
+  "source_token_sha256": "f933afde88cc88bd0a7b5353be6ae84e9822fb5853abf27c077b72e28470f27a",
+  "annotations": [
+    {
+      "before_token": 46,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 79,
+      "kind": "proof_annotation",
+      "text": "/*@ emp which implies sizeof(int8_t)==1 && kc@pre%sizeof(int8_t)==0 && emp */"
+    },
+    {
+      "before_token": 138,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), j=0 */"
+    },
+    {
+      "before_token": 157,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), j=4 */"
+    },
+    {
+      "before_token": 174,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==8 && mr==1 && 0<kc@pre && 0<nc@pre && domain_shape(1,nc@pre,kc@pre,Ps) && data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && qs8_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && c0==pointer_offset(c@pre,(nc@pre-nc),char) && 0<=k && k<=kc@pre && (kc@pre-k)%8==0 && a0==pointer_offset(a@pre,(kc@pre-k),char) && w==pointer_offset(w@pre,((nc@pre-nc)/8)*(64+8*kc@pre)+32+8*(kc@pre-k),char) && CharArray::full(a@pre,a_read_extent(kc@pre),A) * packed_matrix(kc@pre,w@pre,Ps) * qs8_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,A,Ps,magic,offset,lo,hi) * store(&(params->fp32_neon.magic_bias),float,magic) * store(&(params->fp32_neon.magic_bias_less_output_zero_point),int,offset) * store(&(params->fp32_neon.output_min),char,lo) * store(&(params->fp32_neon.output_max),char,hi) * store(&(vacc0x0123.s0),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),0,A,Ps)) * store(&(vacc0x0123.s1),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),1,A,Ps)) * store(&(vacc0x0123.s2),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),2,A,Ps)) * store(&(vacc0x0123.s3),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),3,A,Ps)) * store(&(vacc0x4567.s0),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),4,A,Ps)) * store(&(vacc0x4567.s1),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),5,A,Ps)) * store(&(vacc0x4567.s2),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),6,A,Ps)) * store(&(vacc0x4567.s3),int,qs8_acc((kc@pre-k),((nc@pre-nc)/8),7,A,Ps)) */"
+    },
+    {
+      "before_token": 195,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=0, j=(kc@pre-k), A=A */"
+    },
+    {
+      "before_token": 209,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 218,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+0, A=A */"
+    },
+    {
+      "before_token": 238,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+8, A=A */"
+    },
+    {
+      "before_token": 258,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+16, A=A */"
+    },
+    {
+      "before_token": 278,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+24, A=A */"
+    },
+    {
+      "before_token": 298,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+32, A=A */"
+    },
+    {
+      "before_token": 318,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+40, A=A */"
+    },
+    {
+      "before_token": 338,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+48, A=A */"
+    },
+    {
+      "before_token": 358,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+56, A=A */"
+    },
+    {
+      "before_token": 378,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c0 */"
+    },
+    {
+      "before_token": 387,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c1 */"
+    },
+    {
+      "before_token": 396,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c2 */"
+    },
+    {
+      "before_token": 405,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c3 */"
+    },
+    {
+      "before_token": 414,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c4 */"
+    },
+    {
+      "before_token": 423,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c5 */"
+    },
+    {
+      "before_token": 432,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c6 */"
+    },
+    {
+      "before_token": 441,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c7 */"
+    },
+    {
+      "before_token": 452,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 457,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 460,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 471,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 476,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 479,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 490,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 495,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 498,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 509,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 514,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 517,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 528,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 533,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 536,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 547,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 552,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 555,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 566,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 571,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 574,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 585,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 590,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 593,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 604,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 609,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 612,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 623,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 628,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 631,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 642,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 647,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 650,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 661,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 666,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 669,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 680,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 685,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 688,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 699,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 704,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 707,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 718,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c7 */"
+    },
+    {
+      "before_token": 723,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 726,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 737,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c7 */"
+    },
+    {
+      "before_token": 742,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 745,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 774,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=0, j=(kc@pre-k), A=A */"
+    },
+    {
+      "before_token": 799,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&va0 */"
+    },
+    {
+      "before_token": 808,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+0, A=A */"
+    },
+    {
+      "before_token": 828,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c0 */"
+    },
+    {
+      "before_token": 839,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 844,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 847,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 858,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c0 */"
+    },
+    {
+      "before_token": 863,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 866,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 888,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+8, A=A */"
+    },
+    {
+      "before_token": 908,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c1 */"
+    },
+    {
+      "before_token": 919,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 924,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 927,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 938,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c1 */"
+    },
+    {
+      "before_token": 943,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 946,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 967,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+16, A=A */"
+    },
+    {
+      "before_token": 987,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c2 */"
+    },
+    {
+      "before_token": 998,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 1003,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1006,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1017,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c2 */"
+    },
+    {
+      "before_token": 1022,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1025,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1047,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+24, A=A */"
+    },
+    {
+      "before_token": 1067,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c3 */"
+    },
+    {
+      "before_token": 1078,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1083,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1086,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1097,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c3 */"
+    },
+    {
+      "before_token": 1102,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1105,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1126,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+32, A=A */"
+    },
+    {
+      "before_token": 1146,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c4 */"
+    },
+    {
+      "before_token": 1157,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 1162,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1165,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1176,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c4 */"
+    },
+    {
+      "before_token": 1181,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1184,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1206,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+40, A=A */"
+    },
+    {
+      "before_token": 1226,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c5 */"
+    },
+    {
+      "before_token": 1237,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 1242,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1245,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1256,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c5 */"
+    },
+    {
+      "before_token": 1261,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1264,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1285,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, ab=a@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), mode=1, j=8*(kc@pre-k)+48, A=A */"
+    },
+    {
+      "before_token": 1305,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb01234567c6 */"
+    },
+    {
+      "before_token": 1316,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 1321,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1324,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x0123, a=0, b=0 */"
+    },
+    {
+      "before_token": 1335,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxb01234567c6 */"
+    },
+    {
+      "before_token": 1340,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vxa0 */"
+    },
+    {
+      "before_token": 1343,
+      "kind": "proof_annotation",
+      "text": "/*@ where acc=&vacc0x4567, a=0, b=0 */"
+    },
+    {
+      "before_token": 1358,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0123 */"
+    },
+    {
+      "before_token": 1366,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x4567 */"
+    },
+    {
+      "before_token": 1380,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), j=0 */"
+    },
+    {
+      "before_token": 1400,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc0x0123, b=&vscale0123 */"
+    },
+    {
+      "before_token": 1414,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, Ps=Ps, tile=((nc@pre-nc)/8), j=4 */"
+    },
+    {
+      "before_token": 1434,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc0x4567, b=&vscale4567 */"
+    },
+    {
+      "before_token": 1459,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc0x0123, b=&vmagic_bias */"
+    },
+    {
+      "before_token": 1460,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=0 */"
+    },
+    {
+      "before_token": 1471,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc0x4567, b=&vmagic_bias */"
+    },
+    {
+      "before_token": 1472,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=0 */"
+    },
+    {
+      "before_token": 1495,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0123, b=&vmagic_bias_less_output_zero_point */"
+    },
+    {
+      "before_token": 1504,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x4567, b=&vmagic_bias_less_output_zero_point */"
+    },
+    {
+      "before_token": 1517,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0123 */"
+    },
+    {
+      "before_token": 1520,
+      "kind": "proof_annotation",
+      "text": "/*@ where b=&vacc0x4567, a=0 */"
+    },
+    {
+      "before_token": 1528,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x01234567 */"
+    },
+    {
+      "before_token": 1540,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x0123 */"
+    },
+    {
+      "before_token": 1545,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x4567 */"
+    },
+    {
+      "before_token": 1554,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc0x01234567 */"
+    },
+    {
+      "before_token": 1579,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x01234567, b=&voutput_min */"
+    },
+    {
+      "before_token": 1602,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x01234567, b=&voutput_max */"
+    },
+    {
+      "before_token": 1619,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=(nc@pre-nc) */"
+    },
+    {
+      "before_token": 1678,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x01234567 */"
+    },
+    {
+      "before_token": 1718,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout0x01234567 */"
+    },
+    {
+      "before_token": 1754,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=(nc@pre-nc)+(nc&4)+(nc&2) */"
+    },
+    {
+      "before_token": 1762,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert exists (ap:Z) (wp:Z) (cp:Z), mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==8 && mr==1 && 0<kc@pre && 0<nc@pre && domain_shape(1,nc@pre,kc@pre,Ps) && data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && qs8_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && a0==ap && w==wp && c0==cp && (nc==0 || (0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && cp==pointer_offset(c@pre,(nc@pre-nc),char) && ap==a@pre && wp==pointer_offset(w@pre,((nc@pre-nc)/8)*(64+8*kc@pre),char))) && CharArray::full(a@pre,a_read_extent(kc@pre),A) * packed_matrix(kc@pre,w@pre,Ps) * qs8_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,A,Ps,magic,offset,lo,hi) * store(&(params->fp32_neon.magic_bias),float,magic) * store(&(params->fp32_neon.magic_bias_less_output_zero_point),int,offset) * store(&(params->fp32_neon.output_min),char,lo) * store(&(params->fp32_neon.output_max),char,hi) */"
+    }
+  ]
+}

@@ -1,0 +1,179 @@
+{
+  "source_token_sha256": "8e965aa6a4dd9e35a637917c1b176e35af152d375aa4b89157a934cc31b04af9",
+  "annotations": [
+    {
+      "before_token": 46,
+      "kind": "public_kernel_contract"
+    },
+    {
+      "before_token": 79,
+      "kind": "proof_annotation",
+      "text": "/*@ emp which implies sizeof(int8_t)==1 && kc@pre%sizeof(int8_t)==0 && emp */"
+    },
+    {
+      "before_token": 159,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=((nc@pre-nc)/8), Ps=Ps, j=0 */"
+    },
+    {
+      "before_token": 178,
+      "kind": "proof_annotation",
+      "text": "/*@ a0==pointer_offset(a@pre,(kc@pre-k),char) && 0<=(kc@pre-k) && (kc@pre-k)<a_read_extent(kc@pre) && CharArray::full(a@pre,a_read_extent(kc@pre),A) which implies a0==pointer_offset(a@pre,(kc@pre-k),char) && 0<=(kc@pre-k) && (kc@pre-k)<a_read_extent(kc@pre) && CharArray::missing_i(a@pre,(kc@pre-k),0,a_read_extent(kc@pre),A) * store(a0,char,A[(kc@pre-k)]) */"
+    },
+    {
+      "before_token": 207,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=((nc@pre-nc)/8), Ps=Ps, j=8*(kc@pre-k) */"
+    },
+    {
+      "before_token": 228,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vb */"
+    },
+    {
+      "before_token": 241,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc, b=&vxb */"
+    },
+    {
+      "before_token": 251,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z), mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==8 && mr==1 && 0<kc@pre && 0<nc@pre && domain_shape(1,nc@pre,kc@pre,Ps) && data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && qs8_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && 0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && c0==pointer_offset(c@pre,(nc@pre-nc),char) && 1<=vl && vl<=8 && vl==qs8_min(nc,8) && 0<=k && k<=kc@pre && a0==pointer_offset(a@pre,(kc@pre-k),char) && w==pointer_offset(w@pre,((nc@pre-nc)/8)*(64+8*kc@pre)+32+8*(kc@pre-k),char) && qs8_active_z(vl,0,r0,qs8_acc((kc@pre-k),((nc@pre-nc)/8),0,A,Ps)) && qs8_active_z(vl,1,r1,qs8_acc((kc@pre-k),((nc@pre-nc)/8),1,A,Ps)) && qs8_active_z(vl,2,r2,qs8_acc((kc@pre-k),((nc@pre-nc)/8),2,A,Ps)) && qs8_active_z(vl,3,r3,qs8_acc((kc@pre-k),((nc@pre-nc)/8),3,A,Ps)) && qs8_active_z(vl,4,r4,qs8_acc((kc@pre-k),((nc@pre-nc)/8),4,A,Ps)) && qs8_active_z(vl,5,r5,qs8_acc((kc@pre-k),((nc@pre-nc)/8),5,A,Ps)) && qs8_active_z(vl,6,r6,qs8_acc((kc@pre-k),((nc@pre-nc)/8),6,A,Ps)) && qs8_active_z(vl,7,r7,qs8_acc((kc@pre-k),((nc@pre-nc)/8),7,A,Ps)) && CharArray::full(a@pre,a_read_extent(kc@pre),A) * packed_matrix(kc@pre,w@pre,Ps) * qs8_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,A,Ps,magic,offset,lo,hi) * store(&(params->fp32_neon.magic_bias),float,magic) * store(&(params->fp32_neon.magic_bias_less_output_zero_point),int,offset) * store(&(params->fp32_neon.output_min),char,lo) * store(&(params->fp32_neon.output_max),char,hi) * store(&(vacc.s0),int,r0) * store(&(vacc.s1),int,r1) * store(&(vacc.s2),int,r2) * store(&(vacc.s3),int,r3) * store(&(vacc.s4),int,r4) * store(&(vacc.s5),int,r5) * store(&(vacc.s6),int,r6) * store(&(vacc.s7),int,r7) */"
+    },
+    {
+      "before_token": 268,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 283,
+      "kind": "proof_annotation",
+      "text": "/*@ where K=kc@pre, wb=w@pre, tile=((nc@pre-nc)/8), Ps=Ps, j=0 */"
+    },
+    {
+      "before_token": 305,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc, b=&vscale */"
+    },
+    {
+      "before_token": 327,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vscale */"
+    },
+    {
+      "before_token": 340,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&scale_bits */"
+    },
+    {
+      "before_token": 348,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc */"
+    },
+    {
+      "before_token": 361,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&product_bits, b=&scale_quiet, m=&scale_nan */"
+    },
+    {
+      "before_token": 368,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&product_bits */"
+    },
+    {
+      "before_token": 406,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic */"
+    },
+    {
+      "before_token": 419,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic_bits */"
+    },
+    {
+      "before_token": 432,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic_abs */"
+    },
+    {
+      "before_token": 445,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic_bits */"
+    },
+    {
+      "before_token": 458,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic_qbit */"
+    },
+    {
+      "before_token": 471,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic_nan, b=&magic_qzero */"
+    },
+    {
+      "before_token": 484,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&magic_bits */"
+    },
+    {
+      "before_token": 500,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc */"
+    },
+    {
+      "before_token": 507,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vfpacc */"
+    },
+    {
+      "before_token": 520,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc, b=&magic_quiet, m=&magic_nan */"
+    },
+    {
+      "before_token": 533,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc, b=&product_bits, m=&product_nan */"
+    },
+    {
+      "before_token": 546,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc, b=&magic_quiet, m=&magic_snan */"
+    },
+    {
+      "before_token": 562,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 576,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vacc */"
+    },
+    {
+      "before_token": 590,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout16 */"
+    },
+    {
+      "before_token": 606,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 622,
+      "kind": "proof_annotation",
+      "text": "/*@ where a=&vout */"
+    },
+    {
+      "before_token": 631,
+      "kind": "proof_annotation",
+      "text": "/*@ where base=c@pre, N=nc@pre, done=(nc@pre-nc) */"
+    },
+    {
+      "before_token": 669,
+      "kind": "proof_annotation",
+      "text": "/*@ Inv Assert exists (ap:Z) (wp:Z) (cp:Z), mr==mr@pre && kc==kc@pre && a==a@pre && c==c@pre && params==params@pre && a_stride==a_stride@pre && cm_stride==cm_stride@pre && cn_stride==8 && mr==1 && 0<kc@pre && 0<nc@pre && domain_shape(1,nc@pre,kc@pre,Ps) && data_capacity(nc@pre,kc@pre,a@pre,w@pre,c@pre) && qs8_matrix_wf(kc@pre,Ps) && sizeof(int8_t)==1 && sizeof(float)==4 && 0<=nc && nc<=nc@pre && a0==ap && w==wp && c0==cp && (nc==0 || (0<nc && (nc@pre-nc)%8==0 && 0<=((nc@pre-nc)/8) && ((nc@pre-nc)/8)<Zlength(Ps) && cp==pointer_offset(c@pre,(nc@pre-nc),char) && ap==a@pre && wp==pointer_offset(w@pre,((nc@pre-nc)/8)*(64+8*kc@pre),char))) && CharArray::full(a@pre,a_read_extent(kc@pre),A) * packed_matrix(kc@pre,w@pre,Ps) * qs8_output_prefix(c@pre,nc@pre,(nc@pre-nc),kc@pre,A,Ps,magic,offset,lo,hi) * store(&(params->fp32_neon.magic_bias),float,magic) * store(&(params->fp32_neon.magic_bias_less_output_zero_point),int,offset) * store(&(params->fp32_neon.output_min),char,lo) * store(&(params->fp32_neon.output_max),char,hi) */"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Kernel 验证进度
 
-完整验证通过：**31/40**。当前目标：**40/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
+完整验证通过：**32/40**。当前目标：**40/40**。依据：[verified 清单](verification/qcp/verified/manifest.json)。
 
 2026-10-25（洛杉矶）：**x32-transposec 修复/兼容版完整通过并收录，正式31/40，目标40/40。** 8实际C单元/381字段/13普通body、116源码fresh普通Coq、489最终假设报告；11既有框架假设、9项公开intrinsic spec视图，人工规格审核pending。干净发布目录核对全部591清单文件、8 CPP/全部源日志及依赖闭包，双san各8808矩阵/1006296word/side、127014公开caller与独立oracle/共错负控复查通过；发布复核不计第二次形式化重放。原件、原反例及精确修复补丁保留。
 
@@ -158,3 +158,5 @@ u8-clamp、GEMM、ENV及旧layout历史目录保持其他worker现有成果；ro
 - 2026-10-24（洛杉矶）：DWCHW 公开入口6项C/4项程序数学及双sanitizer各128520case通过；Maxpool 两核组件442/268及新版NaN helper70完整接口通过，尚未整核重放。额度97%，按要求收尾，正式仍 **29/40**。
 
 2026-10-24 matrix worker：QD8-F32-QC4W GEMM完整修复版入verified，5C/1531VC/12策略/1610fresh模块/1567假设报告；native1881cases/31977outputs，3项负控制，45项intrinsic-spec。清单30/40。本worker已完成本轮全部已开工矩阵核，按用户要求停止扩展。
+
+2026-10-25 matrix worker：QS8-QC8W GEMM FP32完整修复版：4实际C/1531义务/16策略/3051同环境fresh模块（续跑谱系明确）/1874假设报告，递归coqchk及32并发准入通过。原NEON保持，RVV恢复ARM NaN优先级；公开容量内正N/K，全binary32参数，固定VLEN128，精确int8输出。intrinsic语义人工复核pending，无形式ISA/ABI或完整终止性定理。 完整清单32/40。下一优先SpMM；循环打包约定及FMA差异已预审，尚未计入verified。

@@ -1,0 +1,1274 @@
+{
+  "kind": "source_reviewed_intrinsic_spec_mapping",
+  "utc": "2026-10-25T08:00:10.919554+00:00",
+  "kernel": "qs8-qc8w-gemm-minmax-fp32",
+  "status": "Source-reviewed semantic mapping. Mechanical call/contract/definition bindings are checked by the complete admission audit; human semantic review remains pending.",
+  "configuration": {
+    "NEON": "AArch64 little-endian DN0 FZ0 AH0 RNE",
+    "RVV": "VLEN128 SEW32 LMUL2, matching16m1/8mf2, RNE, active1..8",
+    "observations": "exact int8 output; flags/traps/physical ABI/termination excluded"
+  },
+  "official_sources": [
+    {
+      "name": "acle",
+      "url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "final_url": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "sha256": "2b59abf1bac44b609b4b003d36c70b380959b3fa8af1cf39b7c0dc140733cf62",
+      "bytes": 3587774,
+      "utc": "2026-10-25T07:56:55.827242+00:00",
+      "ok": true
+    },
+    {
+      "name": "rvv",
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "final_url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/v-st-ext.html",
+      "sha256": "0ba80713c568dd16ded70c9725e47076bbdfd163080949a41476870deb3ab9f0",
+      "bytes": 570257,
+      "utc": "2026-10-25T07:56:56.303994+00:00",
+      "ok": true
+    },
+    {
+      "name": "rvf",
+      "url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/f-st-ext.html",
+      "final_url": "https://docs.riscv.org/reference/isa/v20260120/unpriv/f-st-ext.html",
+      "sha256": "32fab89e5095b41a276fe55ac0a5ba938afd301661037f2c45353ca9a0c0de68",
+      "bytes": 70860,
+      "utc": "2026-10-25T07:56:57.142530+00:00",
+      "ok": true
+    },
+    {
+      "name": "arm_pdf",
+      "url": "https://documentation-service.arm.com/static/67e40f3398aa3c3b6eea6a85",
+      "utc": "2026-10-25T07:50:09.727421+00:00",
+      "sha256": "b7baa6869789722df70da60170d999a62810409aaabbb6db1ef729ed68686bdf",
+      "pages": 6079,
+      "selected_pdf_page_indexes": {
+        "5870": {
+          "sha256": "8d07e42069e50ddc60775d2177e5bff2402e3477e1b92169116c8fb773b8cad2",
+          "heading": "Library pseudocode for shared/functions/float/fpadd/FPAdd\n// FPAdd()\n// =======\nbits(N) FPAdd(bits(N"
+        },
+        "5882": {
+          "sha256": "21daaee0afcbd19e56fa4f0d036b7fd6b8f3f85ce5ebec56f6b514dc650903d0",
+          "heading": "Library pseudocode for shared/functions/float/fpmin/FPMin\n// FPMin()\n// =======\nbits(N) FPMin(bits(N"
+        },
+        "5883": {
+          "sha256": "e4dae73b94904bec4cd92e8940868bb9784c50441ab280443287b76f1c1745eb",
+          "heading": "Library pseudocode for shared/functions/float/fpminnum/FPMinNum\n// FPMinNum()\n// ==========\nbits(N) "
+        },
+        "5884": {
+          "sha256": "cd6684517db58bd905739e51250f30b0df4faa14de9c58fde655ef1b243fc7e9",
+          "heading": "Library pseudocode for shared/functions/float/fpmuladd/FPMulAdd\nShared Pseudocode Functions Page 588"
+        },
+        "5885": {
+          "sha256": "081c85bdcea20f95fda0b04c826ed44e99615a00c601ffbe77929b06f49e30d6",
+          "heading": "// FPMulAdd()\n// ==========\nbits(N) FPMulAdd(bits(N) addend, bits(N) op1, bits(N) op2, FPCR_Type fpc"
+        },
+        "5893": {
+          "sha256": "ceb0e5f0a2a24d6cbb8e41cad0fe1f36524668c08a438f7693138515383aeb9e",
+          "heading": "Library pseudocode for shared/functions/float/fpprocessnan/FPProcessNaN\n// FPProcessNaN()\n// ======="
+        },
+        "5894": {
+          "sha256": "f0614065f494ed17b76d845b477a7172b4facb461df9ac4b5ea7f53d6e468da7",
+          "heading": "Library pseudocode for shared/functions/float/fpprocessnans/FPProcessNaNs\n// FPProcessNaNs()\n// ===="
+        },
+        "5886": {
+          "sha256": "467103123284e42cc1c18a3093cf71e2eaa3089b1ac72d3997b21a2624476454",
+          "heading": "FPProcessDenorms3(typeA, type1, type2, N, fpcr);\nreturn result;\nLibrary pseudocode for shared/functi"
+        },
+        "5887": {
+          "sha256": "c76536c03db4652580d86056045fcd284ca9c5f397e5fcf9007d40daf93b868a",
+          "heading": "Library pseudocode for shared/functions/float/fpmuladdh/FPMulAddH\nShared Pseudocode Functions Page 5"
+        },
+        "5888": {
+          "sha256": "da7c5ca695e2072774860e788641b972fe87c088d9f2ea25512faf0483f232d8",
+          "heading": "// FPMulAddH()\n// ===========\n// Calculates addend + op1*op2.\nbits(32) FPMulAddH(bits(32) addend, bi"
+        },
+        "5889": {
+          "sha256": "9c7d6432c5c2f57e4ec61eaf38d731f42b435ff2bf657fb4106685ee7a2630c2",
+          "heading": "Library pseudocode for shared/functions/float/fpmuladdh/FPMulAddH_ZA\n// FPMulAddH_ZA()\n// =========="
+        },
+        "5890": {
+          "sha256": "efe5df763ece616d20894c6e8c126fba37d2046877f8f62eb214294675b6ff91",
+          "heading": "Library pseudocode for shared/functions/float/fpmulx/FPMulX\n// FPMulX()\n// ========\nbits(N) FPMulX(b"
+        }
+      },
+      "fresh_download": true
+    }
+  ],
+  "contracts": {
+    "shim/neon-api.h": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+    "shim/rvv-api.h": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+    "contracts/model.h": "0e607baad5e3705c355271cf8170f840d0ce64838d2c33d5c7dc4cb563e95454",
+    "proof/coq/Qs8Gemm/Model.v": "e71eb1e45ff8cb27e78d8597204505f445ce066fbb8ff913af0f0e11aefdcaf9",
+    "proof/coq/Qs8Gemm/Quantization.v": "c9cda4c8ffebc0868109e74c9b0ba8bbf6f77ec6a3e2d0028e5c5334f47ca6b0",
+    "proof/coq/Qs8Gemm/FloatBits.v": "91781cce605c240f38bdfcac8a2d0d5fb55d9ce22d7230820107546e70ba42b4"
+  },
+  "entries": [
+    {
+      "original_intrinsic": "vaddq_f32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vaddq_f32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "a9ee543e8b1fccfba1ccb6b99512aeb270769f6134003cc544476221248a6b43",
+      "value_definitions": [
+        "f16_arm_add"
+      ],
+      "instruction": "FADD",
+      "interpretation": "Binary32 addition RNE, ARM operand NaN priority/quieting; DN0 FZ0 AH0",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vcombine_s16",
+      "isa": "NEON",
+      "active": false,
+      "reason": "Only in the excluded !XNN_ARCH_ARM64 branch; candidate declares AArch64"
+    },
+    {
+      "original_intrinsic": "vcvtq_f32_s32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vcvtq_f32_s32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "c6a58d7e215b822179322500712bbb7e2fe06538bf1f52e8e7b1b3887a9e414f",
+      "value_definitions": [
+        "fp32_of_Z"
+      ],
+      "instruction": "SCVTF",
+      "interpretation": "Signed32 to binary32, RNE",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vdup_n_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vdup_n_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "06021a3254886929115c0703cf24b61f170524a3c51e822d192dbfc45903fb49",
+      "value_definitions": [],
+      "instruction": "DUP",
+      "interpretation": "Broadcast signed8 scalar to8 lanes",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vdupq_n_f32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vdupq_n_f32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "b8f0415d4606f3e345d7e1a9ea3fb39362468425f4d2642b268a7e73b088e2fb",
+      "value_definitions": [],
+      "instruction": "DUP",
+      "interpretation": "Broadcast exact binary32 scalar bits to4 lanes",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vdupq_n_s32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vdupq_n_s32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "453e1ca5ab1ef078742bfdc0b367c1e8c97bc33438f640831bd32f486e3c06bf",
+      "value_definitions": [],
+      "instruction": "DUP",
+      "interpretation": "Broadcast signed32 scalar to4 lanes",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vext_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "qcp_qs8_ext",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "5af9b6a5f7dc98fa618b979a5cccd3ef78b1c5269987a976b9c9f616317308dc",
+      "value_definitions": [
+        "qs8_ext"
+      ],
+      "instruction": "EXT",
+      "interpretation": "All callsites use identical source vector; concatenate self and select8 bytes at immediate0..7",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vget_high_s16",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vget_high_s16",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "589bb0fff011682ae372c92a33af7d330f2903620bf9be185c675962b4d347a5",
+      "value_definitions": [],
+      "instruction": "extract upper64 bits",
+      "interpretation": "Select lanes4..7 without arithmetic",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vget_low_s16",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vget_low_s16",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "fca12498feb5cad04cbb0565f14fe1129b6c5a9557f38607f8cde731e116368f",
+      "value_definitions": [],
+      "instruction": "extract lower64 bits",
+      "interpretation": "Select lanes0..3 without arithmetic",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vld1_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vld1_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "eb35c3605384bfce117d174ecbf8a73ffd0bc3c2221145bf62018280a31a1c17",
+      "value_definitions": [
+        "qs8_char",
+        "qs8_i8_address_ok",
+        "qs8_matrix_wf"
+      ],
+      "instruction": "LD1",
+      "interpretation": "Load8 signed bytes from the specified A or W block, retain read permission",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vld1q_f32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vld1q_f32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "770b6e3816d4d93b5e779a58650db39b5af24e90600ef5717ec49d62e6b78ef1",
+      "value_definitions": [
+        "qs8_matrix_wf",
+        "qs8_scale"
+      ],
+      "instruction": "LD1",
+      "interpretation": "Load4 binary32 bitpatterns at fixed panel scale offset",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vld1q_s32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vld1q_s32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "11a74cd0135995a6a2485b8c73a87377a792067d67755adfebdccac6b86ea5a6",
+      "value_definitions": [
+        "qs8_bias",
+        "qs8_matrix_wf"
+      ],
+      "instruction": "LD1",
+      "interpretation": "Load4 signed32 biases at fixed panel offset",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vmax_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vmax_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "ec794cdf82719d50a9234d7225708946b3bbdd652394cd230768fa4df27a37ac",
+      "value_definitions": [
+        "qs8_max"
+      ],
+      "instruction": "SMAX",
+      "interpretation": "Per-lane signed8 maximum",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vmin_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vmin_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "b72bcd445083aa7308cd3a3345965b388fe3f59516e68a5bfe0037f2959cb496",
+      "value_definitions": [
+        "qs8_min"
+      ],
+      "instruction": "SMIN",
+      "interpretation": "Per-lane signed8 minimum; no ordered-bound assumption",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vmlal_lane_s16",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vmlal_lane_s16",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "83c60a630cdc079122e461fe8d967184a20c93a3b7071ddcebddb5dee8d7c677",
+      "value_definitions": [
+        "qs8_lane4",
+        "qs8_mac"
+      ],
+      "instruction": "SMLAL by element",
+      "interpretation": "Signed16 product accumulated modulo32, scalar lane immediate0..3",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vmovl_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vmovl_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "b65b714f7c8169cb537d65c0e7c60b7df88df1f931da951f3ca8e9c2b9f01804",
+      "value_definitions": [],
+      "instruction": "SSHLL #0",
+      "interpretation": "Sign-extend signed8 to signed16",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vmulq_f32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vmulq_f32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "4dd97f76f26f1a8099bddbe7275da481d7b594bcda42d315e4ad2335b5473130",
+      "value_definitions": [
+        "f16_arm_mul"
+      ],
+      "instruction": "FMUL",
+      "interpretation": "Binary32 multiplication RNE, ARM operand NaN priority/quieting; DN0 FZ0 AH0",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vqmovn_high_s32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vqmovn_high_s32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "9b86b93152401a6aa5045fd5270f9c251adbcf5ff3ced96816f3c90bc658d0f7",
+      "value_definitions": [
+        "qs8_narrow16"
+      ],
+      "instruction": "SQXTN2",
+      "interpretation": "Keep lower4 signed16 values and append4 signed32 saturated to signed16",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vqmovn_s16",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vqmovn_s16",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "f1c48221582780b6d87da0d38412d46645da0e3b2bc23f1b9ac73f2b0c5f4422",
+      "value_definitions": [
+        "qs8_narrow8"
+      ],
+      "instruction": "SQXTN",
+      "interpretation": "Saturate signed16 to signed8",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vqmovn_s32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vqmovn_s32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "20cc76daa48662baf80c13f25ae25a167966bcc593240b0d48c410e1268ad6c7",
+      "value_definitions": [
+        "qs8_narrow16"
+      ],
+      "instruction": "SQXTN",
+      "interpretation": "Saturate signed32 to signed16",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vqsubq_s32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vqsubq_s32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "7ec31b0f3e4a8296885eb3fcd1482b12c0119cd59ee49ffc1e6a41c4167aef29",
+      "value_definitions": [
+        "qs8_ssub32"
+      ],
+      "instruction": "SQSUB",
+      "interpretation": "Signed32 saturating subtraction",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vreinterpret_u16_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vreinterpret_u16_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "aeb62dba49213a11e7e3a864e573d3581a19f056926941352c0c5b67f2f16721",
+      "value_definitions": [],
+      "instruction": "no value conversion",
+      "interpretation": "Preserve8 bytes; abstract byte view used by lane0 store, little-endian",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vreinterpret_u32_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vreinterpret_u32_s8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "d440142b0977eabbb9b75ab1f20ca2d2c7bd2bbb4274558c993edee2d0d7e622",
+      "value_definitions": [],
+      "instruction": "no value conversion",
+      "interpretation": "Preserve8 bytes; abstract byte view used by lane0 store, little-endian",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vreinterpretq_s32_f32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "vreinterpretq_s32_f32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "4d426b02a18244d97ee2c10388615004856f72428ad676eec95bcb77c630efda",
+      "value_definitions": [
+        "qs8_reinterpret"
+      ],
+      "instruction": "no value conversion",
+      "interpretation": "Interpret exact binary32 bits as two-complement signed32",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vst1_lane_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "qcp_qs8_store_lane",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "aeca1c07e62f5c9a684300deaf2b1844a740198454164a2aeee96040b3b42623",
+      "value_definitions": [
+        "qs8_append",
+        "qs8_write_state"
+      ],
+      "instruction": "ST1 byte lane",
+      "interpretation": "Write selected single byte, preserve surrounding output and borrowed vector",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vst1_lane_u16",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "qcp_qs8_store_u16",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "a0bd7f117f1fda316c95bfdbba624421a923f809f89b54b37914e618361c2087",
+      "value_definitions": [
+        "qs8_append",
+        "qs8_write_state"
+      ],
+      "instruction": "ST1 halfword lane0",
+      "interpretation": "Write the first2 representation bytes; byte-view spec and ordinary temporary assignment",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vst1_lane_u32",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "qcp_qs8_store_u32",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "f6231443b659d4bab1556eeb153ea0cd70039e28001b90cdca89836a05e8fe34",
+      "value_definitions": [
+        "qs8_append",
+        "qs8_write_state"
+      ],
+      "instruction": "ST1 word lane0",
+      "interpretation": "Write the first4 representation bytes; byte-view spec and ordinary temporary assignment",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "vst1_s8",
+      "isa": "NEON",
+      "active": true,
+      "source_file": "impl/testNEON.c",
+      "source_sha256": "b7b38e737e2cd3f9372b692deb4f2f88681f799b92f005ad9492da1581b18119",
+      "actual_provider": "qcp_qs8_store8",
+      "contract_file": "shim/neon-api.h",
+      "contract_file_sha256": "e52c94d914b1ee8569dd998f709e59e8814c006be86cb4079270a2d98ea02820",
+      "contract_sha256": "4e6ab338d0f4896a2c8a3028b8201ac0fa84742fbe4bfd4f9cbd802ff4f9fd26",
+      "value_definitions": [
+        "qs8_append",
+        "qs8_write_state"
+      ],
+      "instruction": "ST1",
+      "interpretation": "Write8 signed bytes and extend output prefix",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "acle",
+        "arm_pdf"
+      ],
+      "inactive_lanes": "all declared NEON lanes"
+    },
+    {
+      "original_intrinsic": "__riscv_vand_vx_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vand_vx_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "6c4e3d6c2b561ef55012dbfff4dac457c667967a759f914c1597bde1ace2774b",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_and32"
+      ],
+      "instruction": "vand.vx",
+      "interpretation": "Bitwise AND modulo32 with signed32 view",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vfadd_vf_f32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vfadd_vf_f32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "8a9b4b5e6d7ae170ef723d2bc7688bc260a98fc96784414f748d52b50fee088e",
+      "value_definitions": [
+        "f16_rvv_add",
+        "qs8_active_f"
+      ],
+      "instruction": "vfadd.vf",
+      "interpretation": "Binary32 RNE add, canonical NaN",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vfcvt_f_x_v_f32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vfcvt_f_x_v_f32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "1697d54877734a6c6baa431f653080c383fe94ad0dbc5f1e12c298bd8ee1d238",
+      "value_definitions": [
+        "fp32_of_Z",
+        "qs8_active_f"
+      ],
+      "instruction": "vfcvt.f.x.v",
+      "interpretation": "Signed32 to binary32 RNE; all int32 conversions finite",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmul_vv_f32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vfmul_vv_f32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "25a29e016e94aef8bf6879166fd044229ef1729bb603066ff1fa121afe4dd89a",
+      "value_definitions": [
+        "f16_rvv_mul",
+        "qs8_active_f"
+      ],
+      "instruction": "vfmul.vv",
+      "interpretation": "Binary32 RNE multiply, canonical NaN",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vfmv_v_f_f32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vfmv_v_f_f32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "1244a991045fcaea8cb7f65c4576026688cfc458ed2c8cb459b4433fde515b1c",
+      "value_definitions": [
+        "qs8_active_f"
+      ],
+      "instruction": "vfmv.v.f",
+      "interpretation": "Broadcast exact scalar binary32 bits to active lanes",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vle32_v_f32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vle32_v_f32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "59e535bd0fba2ab193c6b932b0fa95d820b34c02765c7608c4aca4c32da8b858",
+      "value_definitions": [
+        "qs8_active_f",
+        "qs8_matrix_wf",
+        "qs8_scale"
+      ],
+      "instruction": "vle32.v",
+      "interpretation": "Load active32-bit bias or scale elements; retain full packed matrix permissions",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vle32_v_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vle32_v_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "7759e4d1ebd761d7c685f3ad690a0f1a2aabafbc72b0908afa0d95a9cdfc2758",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_bias",
+        "qs8_matrix_wf"
+      ],
+      "instruction": "vle32.v",
+      "interpretation": "Load active32-bit bias or scale elements; retain full packed matrix permissions",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vle8_v_i8mf2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vle8_v_i8mf2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "24b2d6d74b81f6498218fe1d22cd169c054cc0d456d550603ba563dd56a5336d",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_matrix_wf",
+        "qs8_zget"
+      ],
+      "instruction": "vle8.v",
+      "interpretation": "Load active signed8 elements from8-wide packed K row",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmand_mm_b16",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vmand_mm_b16",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "a81a192cde9dd48c07f702c8b15a0c0e2b52d3109819af9f729d980aaa1a5085",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_mask_and"
+      ],
+      "instruction": "vmand.mm",
+      "interpretation": "Boolean mask conjunction",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmax_vx_i8mf2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vmax_vx_i8mf2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "a32e1e48c6b093ddace29380770cb556ac42cd29b47923ab5817a0aaf3c65299",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_max"
+      ],
+      "instruction": "vmax.vx",
+      "interpretation": "Signed8 maximum",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmerge_vvm_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vmerge_vvm_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "e40cdc5fdb963fe8962b0144ac3307b5a1fb01bf7f6926daf054765a1319e94e",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_merge"
+      ],
+      "instruction": "vmerge.vvm",
+      "interpretation": "Select vector second operand for nonzero mask, otherwise first",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmfne_vv_f32m2_b16",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "qcp_qs8_self_nan",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "51e2a9e274e57a32b29fdd581cf37b2a01ddbe11ae19c9dc6c4874b9d68e5fe5",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_nan"
+      ],
+      "instruction": "vmfne.vv",
+      "interpretation": "Only self-comparison used: true exactly for NaN; flags not observed",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmin_vx_i8mf2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vmin_vx_i8mf2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "8d99a3757fc1fba572a5ab7ad22f6e691c9c7bf1537296b852de0fb9f52961a6",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_min"
+      ],
+      "instruction": "vmin.vx",
+      "interpretation": "Signed8 minimum; bounds can be unordered",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmseq_vx_i32m2_b16",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vmseq_vx_i32m2_b16",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "8e7df84bcfb51454c045cb4787827f60336140429d6d45090358488c0056f6eb",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_eq"
+      ],
+      "instruction": "vmseq.vx",
+      "interpretation": "Integer equality mask",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vmsgt_vx_i32m2_b16",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vmsgt_vx_i32m2_b16",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "20fe556980b4213198ee51597e4f3b2f2534851ec61017f3538563eaddcde788",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_gt"
+      ],
+      "instruction": "vmsgt.vx",
+      "interpretation": "Signed integer greater-than mask; absolute NaN bits are nonnegative",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vnclip_wx_i16m1",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vnclip_wx_i16m1",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "ceee361c4bd213ac648c76b3387c7139bcd6061ef2871c0eb472d1964662e0a0",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_narrow16"
+      ],
+      "instruction": "vnclip.wx",
+      "interpretation": "Shift0, VXRM RDN; exact saturation32to16 or16to8",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vnclip_wx_i8mf2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vnclip_wx_i8mf2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "12076cc824b117d0365005b928c628b6396c84d424ab7373c6cd60f40067f101",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_narrow8"
+      ],
+      "instruction": "vnclip.wx",
+      "interpretation": "Shift0, VXRM RDN; exact saturation32to16 or16to8",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vor_vx_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vor_vx_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "5b50c455d5bd8871af7babd054df2bee27899f7d009410925357cb685a301b67",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_or32"
+      ],
+      "instruction": "vor.vx",
+      "interpretation": "Bitwise OR modulo32 with signed32 view, including NaN quiet-bit mask",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vreinterpret_v_f32m2_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vreinterpret_v_f32m2_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "2d1776ca3961d689630fa6741b7745d988c01d30ca967ffb93da0ba5a78e2900",
+      "value_definitions": [
+        "qs8_reinterpret"
+      ],
+      "instruction": "representation identity",
+      "interpretation": "Preserve exact32-bit vector elements; signed32/binary32 views inverse",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vreinterpret_v_i32m2_f32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vreinterpret_v_i32m2_f32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "ef5a9bc2f324ce0275c78262bad127b6256f0d25714fbb475f88dafb233bb026",
+      "value_definitions": [
+        "qs8_uninterpret"
+      ],
+      "instruction": "representation identity",
+      "interpretation": "Preserve exact32-bit vector elements; signed32/binary32 views inverse",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vse8_v_i8mf2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "qcp_qs8_rvv_store",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "85bc50ba2cf7a81811c5553fa17e4221ec2b89feb6ac52426968d27f98c34903",
+      "value_definitions": [
+        "qs8_append",
+        "qs8_take",
+        "qs8_write_state"
+      ],
+      "instruction": "vse8.v",
+      "interpretation": "Write active signed8 elements only; retained prefix and suffix ownership",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vsetvl_e32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vsetvl_e32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "cb95e5a06054d7e8a32350ed0e3ce248931c6b4c892bb47dd7d2b02245b068c6",
+      "value_definitions": [],
+      "instruction": "vsetvli e32,m2",
+      "interpretation": "Caller first caps AVL to1..8; VLEN128 gives VLMAX8, so vl=AVL is mandatory",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vsext_vf2_i16m1",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vsext_vf2_i16m1",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "4a8b3dd0722e14949b3666f19e28be839e5c6c64373982211d03b5c19d705a1c",
+      "value_definitions": [
+        "qs8_active_z"
+      ],
+      "instruction": "vsext.vf2",
+      "interpretation": "Sign extend8to16 in active lanes",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vssub_vx_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vssub_vx_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "39a893fdf22ac371ae61cdc59f075eb8613c6d66897a0a0a237d1b1cbf6e10fd",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_ssub32"
+      ],
+      "instruction": "vssub.vx",
+      "interpretation": "Signed32 saturating subtraction",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    },
+    {
+      "original_intrinsic": "__riscv_vwmacc_vx_i32m2",
+      "isa": "RVV",
+      "active": true,
+      "source_file": "impl/testRVV.c",
+      "source_sha256": "3b3fd4c794cd3c1611aa2ec9dd8c2665450b0549aad62e6685099608790137f0",
+      "actual_provider": "__riscv_vwmacc_vx_i32m2",
+      "contract_file": "shim/rvv-api.h",
+      "contract_file_sha256": "e835653f2560f270a9d2e2d30e888538f2c813e47b8c17a3c7b27a6138bfde8a",
+      "contract_sha256": "5cf122a678029dff6363dbd3f9412797f82de1066a19d2d340ee6650886f1cf9",
+      "value_definitions": [
+        "qs8_active_z",
+        "qs8_mac"
+      ],
+      "instruction": "vwmacc.vx",
+      "interpretation": "Signed16 scalar and vector multiplication accumulated modulo32",
+      "body_proof": "intrinsic source-reviewed spec; no C-body or ISA-refinement theorem asserted",
+      "review_sources": [
+        "rvv",
+        "rvf"
+      ],
+      "inactive_lanes": "unconstrained, never consumed as active"
+    }
+  ],
+  "trust_boundary": "QCP parser/VC generator, intrinsic-to-contract and abstract field/byte-view source correspondence are trusted source-reviewed boundaries. Coq checks actual whole-C obligations, strategies and caller; no physical ISA/ABI or termination theorem."
+}

@@ -1,0 +1,96 @@
+{
+  "passed": false,
+  "utc": "2026-10-25T09:44:26.528701+00:00",
+  "configured_jobs": 32,
+  "seconds": 435.45204746490344,
+  "compile_run": "wholecase01-compile",
+  "generation_run": "wholecase01-generation",
+  "recursive_run": "wholecase01-recursive",
+  "auxiliary_run": "wholecase01-auxiliary",
+  "native_run": "native04",
+  "adopted_native": true,
+  "records": [
+    {
+      "stage": "environment",
+      "exit": 0,
+      "seconds": 2.3635346011724323,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py",
+        "--out",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qs8-qc8w-gemm-minmax-fp32/.build/wholecase01/environment-budget",
+        "--timeout",
+        "1800",
+        "--reserve-gib",
+        "16",
+        "--memory-gib",
+        "16",
+        "--",
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qs8-qc8w-gemm-minmax-fp32/proof/environment.py",
+        "--run",
+        "wholecase01-auxiliary"
+      ],
+      "budget_normal": true
+    },
+    {
+      "stage": "generation",
+      "exit": 0,
+      "seconds": 3.092942827846855,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qs8-qc8w-gemm-minmax-fp32/proof/admission_generate.py",
+        "--run",
+        "wholecase01-generation",
+        "--jobs",
+        "32",
+        "--budget-runner",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py",
+        "--reuse-neon-run",
+        "actual08",
+        "--reuse-rvv-run",
+        "actual09"
+      ]
+    },
+    {
+      "stage": "dependency-audit",
+      "exit": 0,
+      "seconds": 15.01017669099383,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py",
+        "--out",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qs8-qc8w-gemm-minmax-fp32/.build/wholecase01/dependency-audit-budget",
+        "--timeout",
+        "1800",
+        "--reserve-gib",
+        "16",
+        "--memory-gib",
+        "16",
+        "--",
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qs8-qc8w-gemm-minmax-fp32/proof/dependency_audit.py",
+        "--run",
+        "wholecase01-auxiliary"
+      ],
+      "budget_normal": true
+    },
+    {
+      "stage": "compile",
+      "exit": 1,
+      "seconds": 435.4340762270149,
+      "command": [
+        "/usr/bin/python3",
+        "/srv/home/yuechunsun/tools/qcp-worker-qd8-verified/verification/qcp/candidates/qs8-qc8w-gemm-minmax-fp32/proof/compile.py",
+        "--run",
+        "wholecase01-compile",
+        "--jobs",
+        "32",
+        "--budget-runner",
+        "/srv/home/yuechunsun/tools/lean/build/qcp-worker-local/budget_run.py"
+      ]
+    }
+  ],
+  "sealed_evidence_overwritten": false,
+  "boundary": "Source-reviewed intrinsic-spec modular partial correctness; explicit capacity/configuration contracts; no formal ISA/ABI or termination theorem."
+}

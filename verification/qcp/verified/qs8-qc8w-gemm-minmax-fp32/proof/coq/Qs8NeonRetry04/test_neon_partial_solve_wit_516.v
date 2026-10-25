@@ -1,0 +1,13 @@
+From Coq Require Import ZArith List Lia Strings.String.
+From Qs8NeonGoals Require Import G1094.
+From Qs8Gemm Require Import NeonMemory.
+Import ListNotations Snaive_C_Rules64.
+Local Open Scope Z_scope.
+Local Open Scope sac.
+Lemma checked:test_neon_partial_solve_wit_516.
+Proof.
+ unfold test_neon_partial_solve_wit_516,test_neon_partial_solve_wit_516_aux;try right;intros;qs8_normalize2;qs8_domain_facts.
+ try(qs8_neon_tail_facts nc).
+ unfold qs8_output_prefix;qs8_neon_frame.
+Qed.
+Print Assumptions checked.
