@@ -1,0 +1,159 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -8,6 +8,9 @@
+ {
+   assert(block_width == 1 || output_stride >= block_height * sizeof(uint32_t));
+   assert(block_height == 1 || input_stride >= block_width * sizeof(uint32_t));
++
++  /* Empty height touches no memory; retain both original entry assertions. */
++  if (block_height == 0) return;
+ 
+   const size_t tile_height = 2;
+   const size_t tile_width = 2;
+@@ -31,22 +34,22 @@
+       const uint32x2_t v1_0 = vld1_u32(i0); i0 = (uint32_t*) ((uintptr_t) i0 + input_offset);
+       const uint32x2_t v1_1 = vld1_u32(i1); i1 = (uint32_t*) ((uintptr_t) i1 + input_offset);
+ 
+-      const uint32x2x2_t v0_0 = vzip_u32(v1_0, v1_1);
++      const uint32x2_t v0_0_low = vzip1_u32(v1_0, v1_1);
++      const uint32x2_t v0_0_high = vzip2_u32(v1_0, v1_1);
+ 
+ 
+-      vst1_u32(o1, v0_0.val[1]); o1 = (uint32_t*) ((uintptr_t) o1 + tile_hbytes);
+-      vst1_u32(o0, v0_0.val[0]); o0 = (uint32_t*) ((uintptr_t) o0 + tile_hbytes);
++      vst1_u32(o1, v0_0_high); o1 = (uint32_t*) ((uintptr_t) o1 + tile_hbytes);
++      vst1_u32(o0, v0_0_low); o0 = (uint32_t*) ((uintptr_t) o0 + tile_hbytes);
+     }
+ 
+     if (bh != 0) {
+       const uint32x2_t v1_0 = vld1_u32(i0);
+       const uint32x2_t v1_1 = vmov_n_u32(0);
+ 
+-      const uint32x2x2_t v0_0 = vzip_u32(v1_0, v1_1);
++      const uint32x2_t v0_low = vzip1_u32(v1_0, v1_1);
++      const uint32x2_t v1_low = vzip2_u32(v1_0, v1_1);
+ 
+ 
+-      uint32x2_t v0_low = v0_0.val[0];
+-      uint32x2_t v1_low = v0_0.val[1];
+ 
+       if (bh & 1) {
+         vst1_lane_u32(o1, v1_low, 0);
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -1,3 +1,4 @@
++#include "../shim/strided_store.h"
+ void test_rvv(
+     const uint32_t* input,
+     uint32_t* output,
+@@ -10,6 +11,15 @@
+   assert(block_height == 1 || input_stride >= block_width * sizeof(uint32_t));
+ 
+   size_t bw = block_width;
++  /* The NEON do-loop executes one tile even when block_width is zero.
++   * Its o1=o0 alias leaves column zero as the final output. */
++  if (bw == 0) {
++    bw = 1;
++  }
++  /* Empty-height source calls touch no memory and may use null pointers. */
++  if (block_height == 0) {
++    bw = 0;
++  }
+   while (bw > 0) {
+     size_t vl = __riscv_vsetvl_e32m8(bw);
+     const uint32_t* i = input;
+@@ -18,7 +28,7 @@
+     
+     while (bh > 0) {
+       vuint32m8_t v = __riscv_vle32_v_u32m8(i, vl);
+-      __riscv_vsse32_v_u32m8(o, output_stride, v, vl);
++      xt_store_strided(o, output_stride, &v, vl);
+       
+       i = (const uint32_t*) ((uintptr_t) i + input_stride);
+       o += 1;
+--- /dev/null
++++ b/shim/scalar.c
+@@ -0,0 +1,15 @@
++#include "formal_types.h"
++/*@ Import Coq Require Import X32Transpose.ArithmeticModel */
++/*@ Extern Coq (xt_doz:Z->Z->Z) (xt_round_down:Z->Z->Z) */
++size_t doz(size_t a,size_t b)
++/*@ Require emp Ensure __return==xt_doz(a,b) && emp */
++{
++ if(a>b) return a-b;
++ return 0;
++}
++/* All original kernel calls useq=2. The body is ordinary unsignedC. */
++size_t round_down_po2(size_t n,size_t q)
++/*@ Require q>0 && emp Ensure __return==xt_round_down(n,q) && emp */
++{
++ return n-(n%q);
++}
+--- /dev/null
++++ b/shim/formal_types.h
+@@ -0,0 +1,16 @@
++#ifndef X32_TRANSPOSE_FORMAL_TYPES_H
++#define X32_TRANSPOSE_FORMAL_TYPES_H
++#ifdef QCP_NATIVE
++#include <stddef.h>
++#include <stdint.h>
++#else
++typedef unsigned long long size_t;
++typedef unsigned long long uintptr_t;
++typedef unsigned int uint32_t;
++typedef long long int64_t;
++/*@ Import Coq Require Import X32Transpose.VectorModel */
++typedef struct uint32x2_t { uint32_t s0; uint32_t s1; } uint32x2_t;
++typedef struct uint32x2x2_t { uint32x2_t val[2]; } uint32x2x2_t;
++typedef struct vuint32m8_t {uint32_t s0; uint32_t s1; uint32_t s2; uint32_t s3; uint32_t s4; uint32_t s5; uint32_t s6; uint32_t s7; uint32_t s8; uint32_t s9; uint32_t s10; uint32_t s11; uint32_t s12; uint32_t s13; uint32_t s14; uint32_t s15; uint32_t s16; uint32_t s17; uint32_t s18; uint32_t s19; uint32_t s20; uint32_t s21; uint32_t s22; uint32_t s23; uint32_t s24; uint32_t s25; uint32_t s26; uint32_t s27; uint32_t s28; uint32_t s29; uint32_t s30; uint32_t s31; } vuint32m8_t;
++#endif /* QCP_NATIVE */
++#endif
+--- /dev/null
++++ b/shim/strided_store.c
+@@ -0,0 +1,11 @@
++#define X32_BODY_STRIDED_STORE
++/* Ordinary native C adapter: dereference one live vector object once and call
++   the genuine ISA intrinsic. Formal view borrows that same object. */
++#include "strided_store.h"
++void xt_store_strided(uint32_t*p,size_t stride,const vuint32m8_t*v,size_t vl)
++/*@ With (W:list Z) (O:XTOutput) (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z)
++ Require xt_stride_valid(W,p,stride,vl) && xt_stride_distinct(p,stride,vl) && xt_output(W,O) * store(&(v->s0),unsigned int,a0) * store(&(v->s1),unsigned int,a1) * store(&(v->s2),unsigned int,a2) * store(&(v->s3),unsigned int,a3) * store(&(v->s4),unsigned int,a4) * store(&(v->s5),unsigned int,a5) * store(&(v->s6),unsigned int,a6) * store(&(v->s7),unsigned int,a7) * store(&(v->s8),unsigned int,a8) * store(&(v->s9),unsigned int,a9) * store(&(v->s10),unsigned int,a10) * store(&(v->s11),unsigned int,a11) * store(&(v->s12),unsigned int,a12) * store(&(v->s13),unsigned int,a13) * store(&(v->s14),unsigned int,a14) * store(&(v->s15),unsigned int,a15) * store(&(v->s16),unsigned int,a16) * store(&(v->s17),unsigned int,a17) * store(&(v->s18),unsigned int,a18) * store(&(v->s19),unsigned int,a19) * store(&(v->s20),unsigned int,a20) * store(&(v->s21),unsigned int,a21) * store(&(v->s22),unsigned int,a22) * store(&(v->s23),unsigned int,a23) * store(&(v->s24),unsigned int,a24) * store(&(v->s25),unsigned int,a25) * store(&(v->s26),unsigned int,a26) * store(&(v->s27),unsigned int,a27) * store(&(v->s28),unsigned int,a28) * store(&(v->s29),unsigned int,a29) * store(&(v->s30),unsigned int,a30) * store(&(v->s31),unsigned int,a31)
++ Ensure xt_output(W,xt_strided_write(O,p,stride,vl,xt_vec32(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,a25,a26,a27,a28,a29,a30,a31))) * store(&(v->s0),unsigned int,a0) * store(&(v->s1),unsigned int,a1) * store(&(v->s2),unsigned int,a2) * store(&(v->s3),unsigned int,a3) * store(&(v->s4),unsigned int,a4) * store(&(v->s5),unsigned int,a5) * store(&(v->s6),unsigned int,a6) * store(&(v->s7),unsigned int,a7) * store(&(v->s8),unsigned int,a8) * store(&(v->s9),unsigned int,a9) * store(&(v->s10),unsigned int,a10) * store(&(v->s11),unsigned int,a11) * store(&(v->s12),unsigned int,a12) * store(&(v->s13),unsigned int,a13) * store(&(v->s14),unsigned int,a14) * store(&(v->s15),unsigned int,a15) * store(&(v->s16),unsigned int,a16) * store(&(v->s17),unsigned int,a17) * store(&(v->s18),unsigned int,a18) * store(&(v->s19),unsigned int,a19) * store(&(v->s20),unsigned int,a20) * store(&(v->s21),unsigned int,a21) * store(&(v->s22),unsigned int,a22) * store(&(v->s23),unsigned int,a23) * store(&(v->s24),unsigned int,a24) * store(&(v->s25),unsigned int,a25) * store(&(v->s26),unsigned int,a26) * store(&(v->s27),unsigned int,a27) * store(&(v->s28),unsigned int,a28) * store(&(v->s29),unsigned int,a29) * store(&(v->s30),unsigned int,a30) * store(&(v->s31),unsigned int,a31) */
++{
++ __riscv_vsse32_v_u32m8(p,stride,*v,vl);
++}
+--- /dev/null
++++ b/shim/strided_store.h
+@@ -0,0 +1,17 @@
++#ifndef X32_TRANSPOSE_STRIDED_STORE_H
++#define X32_TRANSPOSE_STRIDED_STORE_H
++#ifndef QCP_NATIVE
++#include "rvv_specs.h"
++#ifndef X32_BODY_STRIDED_STORE
++void xt_store_strided(uint32_t*p,size_t stride,const vuint32m8_t*v,size_t vl)
++/*@ With (W:list Z) (O:XTOutput) (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z)
++ Require xt_stride_valid(W,p,stride,vl) && xt_stride_distinct(p,stride,vl) && xt_output(W,O) * store(&(v->s0),unsigned int,a0) * store(&(v->s1),unsigned int,a1) * store(&(v->s2),unsigned int,a2) * store(&(v->s3),unsigned int,a3) * store(&(v->s4),unsigned int,a4) * store(&(v->s5),unsigned int,a5) * store(&(v->s6),unsigned int,a6) * store(&(v->s7),unsigned int,a7) * store(&(v->s8),unsigned int,a8) * store(&(v->s9),unsigned int,a9) * store(&(v->s10),unsigned int,a10) * store(&(v->s11),unsigned int,a11) * store(&(v->s12),unsigned int,a12) * store(&(v->s13),unsigned int,a13) * store(&(v->s14),unsigned int,a14) * store(&(v->s15),unsigned int,a15) * store(&(v->s16),unsigned int,a16) * store(&(v->s17),unsigned int,a17) * store(&(v->s18),unsigned int,a18) * store(&(v->s19),unsigned int,a19) * store(&(v->s20),unsigned int,a20) * store(&(v->s21),unsigned int,a21) * store(&(v->s22),unsigned int,a22) * store(&(v->s23),unsigned int,a23) * store(&(v->s24),unsigned int,a24) * store(&(v->s25),unsigned int,a25) * store(&(v->s26),unsigned int,a26) * store(&(v->s27),unsigned int,a27) * store(&(v->s28),unsigned int,a28) * store(&(v->s29),unsigned int,a29) * store(&(v->s30),unsigned int,a30) * store(&(v->s31),unsigned int,a31)
++ Ensure xt_output(W,xt_strided_write(O,p,stride,vl,xt_vec32(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,a25,a26,a27,a28,a29,a30,a31))) * store(&(v->s0),unsigned int,a0) * store(&(v->s1),unsigned int,a1) * store(&(v->s2),unsigned int,a2) * store(&(v->s3),unsigned int,a3) * store(&(v->s4),unsigned int,a4) * store(&(v->s5),unsigned int,a5) * store(&(v->s6),unsigned int,a6) * store(&(v->s7),unsigned int,a7) * store(&(v->s8),unsigned int,a8) * store(&(v->s9),unsigned int,a9) * store(&(v->s10),unsigned int,a10) * store(&(v->s11),unsigned int,a11) * store(&(v->s12),unsigned int,a12) * store(&(v->s13),unsigned int,a13) * store(&(v->s14),unsigned int,a14) * store(&(v->s15),unsigned int,a15) * store(&(v->s16),unsigned int,a16) * store(&(v->s17),unsigned int,a17) * store(&(v->s18),unsigned int,a18) * store(&(v->s19),unsigned int,a19) * store(&(v->s20),unsigned int,a20) * store(&(v->s21),unsigned int,a21) * store(&(v->s22),unsigned int,a22) * store(&(v->s23),unsigned int,a23) * store(&(v->s24),unsigned int,a24) * store(&(v->s25),unsigned int,a25) * store(&(v->s26),unsigned int,a26) * store(&(v->s27),unsigned int,a27) * store(&(v->s28),unsigned int,a28) * store(&(v->s29),unsigned int,a29) * store(&(v->s30),unsigned int,a30) * store(&(v->s31),unsigned int,a31) */;
++#endif
++
++#else
++#include <stddef.h>
++#include <stdint.h>
++void xt_store_strided(uint32_t*p,size_t stride,const vuint32m8_t*v,size_t vl);
++#endif
++#endif
+--- /dev/null
++++ b/shim/rvv_specs.h
+@@ -0,0 +1,12 @@
++#ifndef X32_TRANSPOSE_RVV_SPECS_H
++#define X32_TRANSPOSE_RVV_SPECS_H
++#include "formal_types.h"
++/*@ Import Coq Require Import X32Transpose.StrideModel */
++/*@ Extern Coq (XTOutput :: *) */
++/*@ Extern Coq (xt_output:list Z->XTOutput->Assertion) (xt_stride_valid:list Z->Z->Z->Z->Prop) (xt_stride_distinct:Z->Z->Z->Prop) (xt_strided_write:XTOutput->Z->Z->Z->list Z->XTOutput) (xt_vec32:Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->list Z) */
++void xt_intrinsic_vsse32(uint32_t*p,size_t stride,const vuint32m8_t*v,size_t vl)
++/*@ With (W:list Z) (O:XTOutput) (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z)
++ Require xt_stride_valid(W,p,stride,vl) && xt_stride_distinct(p,stride,vl) && xt_output(W,O) * store(&(v->s0),unsigned int,a0) * store(&(v->s1),unsigned int,a1) * store(&(v->s2),unsigned int,a2) * store(&(v->s3),unsigned int,a3) * store(&(v->s4),unsigned int,a4) * store(&(v->s5),unsigned int,a5) * store(&(v->s6),unsigned int,a6) * store(&(v->s7),unsigned int,a7) * store(&(v->s8),unsigned int,a8) * store(&(v->s9),unsigned int,a9) * store(&(v->s10),unsigned int,a10) * store(&(v->s11),unsigned int,a11) * store(&(v->s12),unsigned int,a12) * store(&(v->s13),unsigned int,a13) * store(&(v->s14),unsigned int,a14) * store(&(v->s15),unsigned int,a15) * store(&(v->s16),unsigned int,a16) * store(&(v->s17),unsigned int,a17) * store(&(v->s18),unsigned int,a18) * store(&(v->s19),unsigned int,a19) * store(&(v->s20),unsigned int,a20) * store(&(v->s21),unsigned int,a21) * store(&(v->s22),unsigned int,a22) * store(&(v->s23),unsigned int,a23) * store(&(v->s24),unsigned int,a24) * store(&(v->s25),unsigned int,a25) * store(&(v->s26),unsigned int,a26) * store(&(v->s27),unsigned int,a27) * store(&(v->s28),unsigned int,a28) * store(&(v->s29),unsigned int,a29) * store(&(v->s30),unsigned int,a30) * store(&(v->s31),unsigned int,a31)
++ Ensure xt_output(W,xt_strided_write(O,p,stride,vl,xt_vec32(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,a25,a26,a27,a28,a29,a30,a31))) * store(&(v->s0),unsigned int,a0) * store(&(v->s1),unsigned int,a1) * store(&(v->s2),unsigned int,a2) * store(&(v->s3),unsigned int,a3) * store(&(v->s4),unsigned int,a4) * store(&(v->s5),unsigned int,a5) * store(&(v->s6),unsigned int,a6) * store(&(v->s7),unsigned int,a7) * store(&(v->s8),unsigned int,a8) * store(&(v->s9),unsigned int,a9) * store(&(v->s10),unsigned int,a10) * store(&(v->s11),unsigned int,a11) * store(&(v->s12),unsigned int,a12) * store(&(v->s13),unsigned int,a13) * store(&(v->s14),unsigned int,a14) * store(&(v->s15),unsigned int,a15) * store(&(v->s16),unsigned int,a16) * store(&(v->s17),unsigned int,a17) * store(&(v->s18),unsigned int,a18) * store(&(v->s19),unsigned int,a19) * store(&(v->s20),unsigned int,a20) * store(&(v->s21),unsigned int,a21) * store(&(v->s22),unsigned int,a22) * store(&(v->s23),unsigned int,a23) * store(&(v->s24),unsigned int,a24) * store(&(v->s25),unsigned int,a25) * store(&(v->s26),unsigned int,a26) * store(&(v->s27),unsigned int,a27) * store(&(v->s28),unsigned int,a28) * store(&(v->s29),unsigned int,a29) * store(&(v->s30),unsigned int,a30) * store(&(v->s31),unsigned int,a31) */;
++#define __riscv_vsse32_v_u32m8(p,stride,a,vl) xt_intrinsic_vsse32(p,stride,&(a),vl)
++#endif

@@ -1,0 +1,15 @@
+From Coq Require Import ZArith.
+From X32Transpose Require Import StrideModel strided_store_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedStridedStore : X32Transpose.strided_store_goal.VC_Correct.
+Lemma proof_of_xt_store_strided_return_wit_1:X32Transpose.strided_store_goal.xt_store_strided_return_wit_1.
+Proof. unfold X32Transpose.strided_store_goal.xt_store_strided_return_wit_1;intros;apply derivable1_refl. Qed.
+Lemma proof_of_xt_store_strided_partial_solve_wit_1_pure:X32Transpose.strided_store_goal.xt_store_strided_partial_solve_wit_1_pure.
+Proof. unfold X32Transpose.strided_store_goal.xt_store_strided_partial_solve_wit_1_pure;intros;unfold derivable1,andp,coq_prop;intros;tauto. Qed.
+Lemma proof_of_xt_store_strided_partial_solve_wit_1:X32Transpose.strided_store_goal.xt_store_strided_partial_solve_wit_1.
+Proof. unfold X32Transpose.strided_store_goal.xt_store_strided_partial_solve_wit_1,X32Transpose.strided_store_goal.xt_store_strided_partial_solve_wit_1_aux;intros;entailer!. Qed.
+End CheckedStridedStore.
+Module StridedStoreExact : X32Transpose.strided_store_goal.VC_Correct := CheckedStridedStore.
+Print Assumptions CheckedStridedStore.proof_of_xt_store_strided_return_wit_1.
+Print Assumptions CheckedStridedStore.proof_of_xt_store_strided_partial_solve_wit_1_pure.
+Print Assumptions CheckedStridedStore.proof_of_xt_store_strided_partial_solve_wit_1.

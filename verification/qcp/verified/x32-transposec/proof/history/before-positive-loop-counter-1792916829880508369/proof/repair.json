@@ -1,0 +1,50 @@
+{
+  "variant": "rvv-zero-width-one-column-and-empty-height-preserving-assertions-native-zip1-zip2-compatibility-body-checked-scalar-and-strided-borrow-adapters",
+  "repair_reason": "Original NEON do-loop copies column0 at width0,height>0; original RVV skips it. Adopt pinned Arcadia effective-width repair. NEON empty-height early exit preserves both entry assertions and empty footprint.",
+  "arcadia_reference_commit": "4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca",
+  "originals": {
+    "NEON": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a",
+    "RVV": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f"
+  },
+  "actual": {
+    "NEON": "0e275f874476948543c61e1ddb45e79973c8169a396ed46fe4f44e0bdf04109c",
+    "RVV": "fb53d81b52af9954bf0039a555fec1e76411545ede01c46e060c4d6979801372"
+  },
+  "exact_patch_sha256": "d98cc328c32b055c9193773ad49b0e98b9aae7eacc732c87db4de4390df494cd",
+  "zero_fuzz_replay": true,
+  "whole_kernel_verified": false,
+  "original_source_refinement_proved": false,
+  "zip_split": {
+    "reason": "Native A64 ZIP1/ZIP2 retain both fullUInt32 vectors and original high-first/low-second store order, avoiding unresolvedtuple temporaryscope/array-model frontend gaps",
+    "original_helper_version_sha256": "22abfbb1330ac5b5209af488e24351a849d4712ca477fc19a00fa29519012986",
+    "current_neon_sha256": "0e275f874476948543c61e1ddb45e79973c8169a396ed46fe4f44e0bdf04109c",
+    "exact_local_patch": "proof/history/before-native-zip-split-1792915706764535086/zip-split-only.patch",
+    "exact_local_patch_sha256": "0314b9d5cf5cb5f4f3c2b31b881c12ca245cdd43aef4813a6aac0dab4d1de6db",
+    "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+    "official_version": "aef52c2b0944bf652443c1acd867dbb893af8dd0",
+    "native_api": [
+      "vzip1_u32",
+      "vzip2_u32"
+    ],
+    "isa": "AArch64 ZIP1/ZIP2 .2S",
+    "store_order_preserved": true,
+    "old_tuple_probe_status": "private generation/5partial passedcorrect64LE, returnextraanonymousowner unresolved; no wholecredit",
+    "whole_original_c_refinement_proved": false,
+    "exact_patch_replay_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/zip-patch-replay-e04o149k"
+  },
+  "ordinary_adapters": {
+    "scalar_body": "shim/scalar.c",
+    "scalar_scope": "doz exactunsignedsaturatingdifference;rounddown divisionbody onlyoriginalkernelq2 calls, provenmod64/floorbridge",
+    "strided_body": "shim/strided_store.c",
+    "strided_scope": "one actualoriginalVSSE invocation on*livev once; p/stride/vl unchanged; genuineISAprimitive logicalborrowview consumesoneglobaloutputowner",
+    "source_to_model": "formal64 aliases/nativeLP64 typedef bridge; fixedVLEN128; no physicalcompiler/ABIrefinement",
+    "intrinsic_spec_not_ordinary_body_credit": true
+  },
+  "added_helpers": {
+    "shim/scalar.c": "2e17dfa84a479c797717e9136616cf77445863abd61762cb23cd1e8531de5936",
+    "shim/formal_types.h": "855aca540db402074a011bc662c96de47147f51fbe30c54f60dc3948c5755a5d",
+    "shim/strided_store.c": "30811e879679a510b99f253990ca1958abc361c2d90244ab4eda48ef737fa66a",
+    "shim/strided_store.h": "9094e8803887d166e978d7daa339b42f2863349e662ec5ee075dd6a365e5cac1",
+    "shim/rvv_specs.h": "fdafe7598237786d9e513a6c7ca6bbdb6cf2a25b78da994965c0631c3e9d92b5"
+  }
+}

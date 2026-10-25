@@ -1,0 +1,30 @@
+from pathlib import Path
+import re,json,hashlib
+C=Path(__file__).resolve().parents[1];sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest();NS='X32Transpose'
+def defs(rows):
+ return [dict(constant=NS+'.'+m+'.'+n,source='proof/coq/'+m+'.v',source_sha256=sha(C/'proof/coq'/(m+'.v')))for m,n in rows]
+config={
+'vld1_u32':('vld1_u32',[('InputMemory','xt_load_lane'),('InputMemory','xt_window'),('InputMemory','xt_data')]),
+'vmov_n_u32':('vmov_n_u32',[]),
+'xt_intrinsic_zip1':('vzip1_u32',[]),
+'xt_intrinsic_zip2':('vzip2_u32',[]),
+'xt_intrinsic_store2':('vst1_u32',[('VectorModel','xt_write_pair'),('OutputMemory','xt_write_window'),('OutputMemory','xt_output')]),
+'xt_intrinsic_store_lane_0':('vst1_lane_u32',[('OutputMemory','xt_output_put'),('OutputMemory','xt_write_window'),('OutputMemory','xt_output')]),
+'__riscv_vsetvl_e32m8':('__riscv_vsetvl_e32m8',[('WordModel','xt_legal_vl')]),
+'__riscv_vle32_v_u32m8':('__riscv_vle32_v_u32m8',[('ProgramModel','xt_rvv_lane'),('InputMemory','xt_window'),('InputMemory','xt_data'),('InputMemory','xt_load_lane')]),
+'xt_intrinsic_vsse32':('__riscv_vsse32_v_u32m8',[('StrideModel','xt_stride_valid'),('StrideModel','xt_stride_distinct'),('StrideModel','xt_strided_write'),('WordModel','xt_addr')])}
+entries=[]
+for file in ['shim/neon_specs.h','shim/rvv_specs.h','shim/rvv_load_specs.h']:
+ p=C/file
+ for m in re.finditer(r'(?m)^([A-Za-z_][\w ]*?)\s+([A-Za-z_]\w*)\(([^;{}]*?)\)\s*/\*@(.+?)\*/;',p.read_text(),re.S):
+  ret,sym,args,contract=m.groups();assert sym in config,sym;api,rows=config[sym];neon=file.endswith('neon_specs.h');rvv=not neon
+  e=dict(intrinsic=api,formal_symbol=sym,view='readonly_map'if sym in ['vld1_u32','__riscv_vle32_v_u32m8']else'lane0_borrowed_output_map'if sym=='xt_intrinsic_store_lane_0'else'borrowed_original_ISA'if sym.startswith('xt_intrinsic_')else'original_ISA',contract_source=file,contract_source_sha256=sha(p),contract_sha256=hashlib.sha256(contract.encode()).hexdigest(),signature=ret+' '+sym+'('+args+')',direct_coq_definitions=defs(rows),unresolved_logical_symbols=[],intrinsic_body_checked=False,formal_ISA_or_compiler_refinement_proved=False,scope='original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately',review_status='source inspected against pinned official operation/API references; final independent human review pending',isa='AArch64 NEON'if neon else'RVV1.0',official_primary='https://arm-software.github.io/acle/neon_intrinsics/advsimd.html'if neon else'https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc',official_version='ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0'if neon else'RISC-V V frozen v1.0; GCC15.2 RVV C intrinsics header pinned in cross-build-status.json',lane_configuration='two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64'if neon else'XLEN64, VLEN128, SEW32, LMUL8, VLMAX32, vstart0',mask='unmasked',rounding='none; exact uint32 raw word operations',NaN='all2^32 word patterns allowed; no floating interpretation or NaN exclusion',inactive_lanes='NEON fixed2 lanes; scalar lane stores use constant0 only'if neon else'all inactive load result lanes unconstrained UInt32; no tail0 ISA requirement; only j<vl gets loaded or stored',memory_view='one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition',observables='all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation')
+  if sym in ['xt_intrinsic_zip1','xt_intrinsic_zip2']:
+   e.update(adapter='macro takes the actual addresses of the two distinct live vector local objects once; preserves both vectors and returns full2 lanes',permutation='ZIP1 gives a0,b0; ZIP2 gives a1,b1',bridge_source='proof/coq/ZipBridge.v',bridge_source_sha256=sha(C/'proof/coq/ZipBridge.v'))
+  if sym=='xt_intrinsic_vsse32':
+   e.update(order='ISA element accesses are unordered. Contract requires active address injectivity (automatic forVL<=1); its fold denotes the order-independent final map under that premise, not a hardware lane order.',stride_units='bytes; entire unsigned64 source argument domain retained',signed_stride_mapping='GCC15.2 documented conversion to signed64 preserves the lower64 bits. xt_signed_stride64_range/bits/address prove the mathematical decode and modulo64 address equivalence for every lane index. This is a reviewed source/ABI mapping, not a compiler refinement theorem.',signed_stride_primary='https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/Integers-implementation.html',signed_stride_bridge='proof/coq/SignedStrideFacts.v',signed_stride_bridge_sha256=sha(C/'proof/coq/SignedStrideFacts.v'),ordinary_adapter=dict(symbol='xt_store_strided',source='shim/strided_store.c',source_sha256=sha(C/'shim/strided_store.c'),body_checked_module='X32Transpose.StridedStoreChecked.CheckedStridedStore',actual_c_vcs=3,intrinsic_body_exemption=False))
+  if sym=='__riscv_vsetvl_e32m8':e.update(VL_selection='all three legal AVL intervals; nondeterministic overapproximation of implementation choices, including ceil(AVL/2)..VLMAX forVLMAX<AVL<2VLMAX; all resulting choices proved',inactive_lanes='not applicable; CSR values themselves are not observed')
+  entries.append(e)
+assert len(entries)==9 and{e['formal_symbol']for e in entries}==set(config)
+j=dict(schema=1,whole_kernel_verified=False,status='source-bound specification ledger; whole fresh gate and independent final human review pending',intrinsic_spec_body_credit=False,formal_isa_refinement_established=False,primary_sources={'ACLE':'https://arm-software.github.io/acle/neon_intrinsics/advsimd.html','RVV1.0':'https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc','GCC15.2_signed_integer_conversion':'https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/Integers-implementation.html'},entries=entries)
+(C/'proof/intrinsic-ledger.json').write_text(json.dumps(j,indent=2)+'\n');print(len(entries))

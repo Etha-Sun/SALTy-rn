@@ -1,0 +1,387 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Finite actual original/repaired C; independent raw uint32 transpose oracle and frame checks; source-reviewed native emulator only",
+  "sanitizer": "undefined",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70",
+  "input_sha256": {
+    "impl/testNEON.c": "22abfbb1330ac5b5209af488e24351a849d4712ca477fc19a00fa29519012986",
+    "impl/testRVV.c": "c5d70b72e1aad6b1a747926134b8bf4f43ffd84d0b7ad8b00bb9d636043340ba",
+    "proof/original/testNEON.c": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a",
+    "proof/original/testRVV.c": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f",
+    "proof/originals.json": "42aa84adea6132259695124f000748e5ada85cb6de5d11762bea41448664e280",
+    "proof/repair.json": "4a5a62d981a138f9717e99a319e6f2637bdb5e527aa207d5e6b8cb3a11d53b01",
+    "proof/repair.patch": "54075addd6858c222a3ef42a65030d1f5b95eb6542c521541e7690114c4a94bc",
+    "proof/native/isa_arrays.h": "393b3eb1f2c7061fd6afa9118620a40cbdf4b02a05910953c63e4fb5c9aeeef1",
+    "proof/native/regression.c": "01151d1fe8db9b82381a847d66caa8169acf45dcaa5bf292f51ccb11b604abcd",
+    "proof/check_native.py": "3d1487d3463f0683e1b9ad17bbaf1c5197436fc98f1466d843c7155f8c2c6d71"
+  },
+  "records": [
+    {
+      "label": "zero-fuzz-patch",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "patch",
+        "--batch",
+        "--fuzz=0",
+        "-d",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/patch-replay",
+        "-p1",
+        "-i",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/repair.patch"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.004473031964153051,
+      "log_sha256": "9eb6cba3532f72dfca3735ef465e2bd2035abe9ab2228823109f277b4a479fde"
+    },
+    {
+      "label": "dependencies-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/impl/testNEON.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.016487644985318184,
+      "log_sha256": "598aa23f4b06ce3db4bfe14b65e547a75af92edde6010a0de74c5b232e2baff2"
+    },
+    {
+      "label": "compile-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/impl/testNEON.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/neon.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.06483487109653652,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "dependencies-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/impl/testRVV.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.01663138810545206,
+      "log_sha256": "68b3d1ea281de12c49ab3ea28f79218536fc93201b7472ba10d16aa4869c52b7"
+    },
+    {
+      "label": "compile-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/impl/testRVV.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/rvv.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.06481363996863365,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "dependencies-original-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-Dtest_neon=original_neon",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/original/testNEON.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.016878545051440597,
+      "log_sha256": "86c4baba4337cb98d7d975a6c6dbb82fc68104e4a0270d3284e971bc67e4636f"
+    },
+    {
+      "label": "compile-original-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-Dtest_neon=original_neon",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/original/testNEON.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/original-neon.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.06513919797725976,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "dependencies-original-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-Dtest_rvv=original_rvv",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/original/testRVV.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.017175401793792844,
+      "log_sha256": "7a31fed22b30ee4101770d3a947a44a4ad79cc7e7ee31af5d8647281a82f1e65"
+    },
+    {
+      "label": "compile-original-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-Dtest_rvv=original_rvv",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/original/testRVV.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/original-rvv.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.08863698900677264,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "dependencies-driver",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-MM",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/regression.c"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.03282598499208689,
+      "log_sha256": "6b0a05be844d1d8c6d535324207ad3b2445ca077881d8011abd408ef4e172841"
+    },
+    {
+      "label": "compile-driver",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/regression.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/driver.o"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.11489630001597106,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "link",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc-12",
+        "-std=c11",
+        "-O1",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/input/proof/native/isa_arrays.h",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/rvv.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/original-neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/original-rvv.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/driver.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/regression"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.11505359318107367,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "original-zero-width",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/regression",
+        "--original-zero-width"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.004613066092133522,
+      "log_sha256": "a416825f903c62be7fdc3bd80a9e37095c99efe9a42b9bc84454d12e6d5559b7"
+    },
+    {
+      "label": "repaired-regression",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/regression"
+      ],
+      "exit_code": 0,
+      "expected_exit_code": 0,
+      "seconds": 0.018499454949051142,
+      "log_sha256": "25a171e84446ca9fbac79ab3661ea6c4e89fb5f48f9bdbc764af9d4daceeb177"
+    },
+    {
+      "label": "wrong-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/regression",
+        "--wrong-one"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.004475452937185764,
+      "log_sha256": "9b3a904528f4ad358b42cf5e738d0339bdf9616329d13cc283b7e8c6b57062ab"
+    },
+    {
+      "label": "wrong-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/x32-transposec/.build/native-undefined-1nehfz70/regression",
+        "--wrong-both"
+      ],
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "seconds": 0.004446712089702487,
+      "log_sha256": "1819b76428a280097483b2ee2dec7d8769ca458210e213dd15d74367ab647263"
+    }
+  ],
+  "configured_jobs": 32,
+  "actual_max_parallel_processes": 1,
+  "per_process_memory_GiB": 16,
+  "per_command_timeout_seconds": 1800,
+  "actual_recursive_local_input_sha256": {
+    "impl/testNEON.c": "22abfbb1330ac5b5209af488e24351a849d4712ca477fc19a00fa29519012986",
+    "proof/native/isa_arrays.h": "393b3eb1f2c7061fd6afa9118620a40cbdf4b02a05910953c63e4fb5c9aeeef1",
+    "impl/testRVV.c": "c5d70b72e1aad6b1a747926134b8bf4f43ffd84d0b7ad8b00bb9d636043340ba",
+    "proof/original/testNEON.c": "8493c77a023aa7d43fdbf559c7316a242cb5ed529b56b63c66bc2a7693b2fd3a",
+    "proof/original/testRVV.c": "313e539b9f40d83c41794dd0c7a5b9f10e386f4799e82e6c6bd0a3fa427abe1f",
+    "proof/native/regression.c": "01151d1fe8db9b82381a847d66caa8169acf45dcaa5bf292f51ccb11b604abcd"
+  },
+  "original_counterexample": {
+    "width": 0,
+    "height": 1,
+    "input0": 2703443303,
+    "neon": 2703443303,
+    "rvv": 1437278686,
+    "counterexample": true
+  },
+  "repaired_regression": {
+    "passed": true,
+    "cases": 8808,
+    "written_words_per_side": 1006296,
+    "empty_height_calls_per_side": 67,
+    "VL_modes": 3,
+    "tail_modes": 2
+  },
+  "zero_fuzz_patch_replay": true,
+  "both_wrong_still_equal_oracle_rejected": true
+}

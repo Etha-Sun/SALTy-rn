@@ -1,0 +1,358 @@
+{
+  "schema": 1,
+  "whole_kernel_verified": false,
+  "status": "source-bound specification ledger; whole fresh gate and independent final human review pending",
+  "intrinsic_spec_body_credit": false,
+  "formal_isa_refinement_established": false,
+  "primary_sources": {
+    "ACLE": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+    "RVV1.0": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc",
+    "GCC15.2_signed_integer_conversion": "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/Integers-implementation.html"
+  },
+  "entries": [
+    {
+      "intrinsic": "vld1_u32",
+      "formal_symbol": "vld1_u32",
+      "view": "readonly_map",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "a3b184c89d948d8d0cccfdcb808a96ccfbab042d76f2416377e381b35e4ddb0f",
+      "contract_sha256": "0efabcafc0b9b1ace2ab8d9556c46252572cfe083aa165b67fc5edcddc994c36",
+      "signature": "uint32x2_t vld1_u32(const uint32_t*p)",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Transpose.InputMemory.xt_load_lane",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+        },
+        {
+          "constant": "X32Transpose.InputMemory.xt_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+        },
+        {
+          "constant": "X32Transpose.InputMemory.xt_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "AArch64 NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "lane_configuration": "two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "NEON fixed2 lanes; scalar lane stores use constant0 only",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation"
+    },
+    {
+      "intrinsic": "vmov_n_u32",
+      "formal_symbol": "vmov_n_u32",
+      "view": "original_ISA",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "a3b184c89d948d8d0cccfdcb808a96ccfbab042d76f2416377e381b35e4ddb0f",
+      "contract_sha256": "0e70f3a1b64a3417624f251cb43fc8ddc9b8ec1c6aa88486cf7e4958b74618a9",
+      "signature": "uint32x2_t vmov_n_u32(uint32_t x)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "AArch64 NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "lane_configuration": "two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "NEON fixed2 lanes; scalar lane stores use constant0 only",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation"
+    },
+    {
+      "intrinsic": "vzip1_u32",
+      "formal_symbol": "xt_intrinsic_zip1",
+      "view": "borrowed_original_ISA",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "a3b184c89d948d8d0cccfdcb808a96ccfbab042d76f2416377e381b35e4ddb0f",
+      "contract_sha256": "d1d90294fcea98bb51371ddc0cb2d1f363043ae0b939a16e27a3b61808d9110f",
+      "signature": "uint32x2_t xt_intrinsic_zip1(const uint32x2_t*a,const uint32x2_t*b)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "AArch64 NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "lane_configuration": "two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "NEON fixed2 lanes; scalar lane stores use constant0 only",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation",
+      "adapter": "macro takes the actual addresses of the two distinct live vector local objects once; preserves both vectors and returns full2 lanes",
+      "permutation": "ZIP1 gives a0,b0; ZIP2 gives a1,b1",
+      "bridge_source": "proof/coq/ZipBridge.v",
+      "bridge_source_sha256": "f03a8787447eedc9f059040723880b9d9196bedbbb329b09576d84a989d3d285"
+    },
+    {
+      "intrinsic": "vzip2_u32",
+      "formal_symbol": "xt_intrinsic_zip2",
+      "view": "borrowed_original_ISA",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "a3b184c89d948d8d0cccfdcb808a96ccfbab042d76f2416377e381b35e4ddb0f",
+      "contract_sha256": "aa3534da19088d8fa364ce1dcb7ef8f85479cac9684c5b2c79f0fb419c26c13d",
+      "signature": "uint32x2_t xt_intrinsic_zip2(const uint32x2_t*a,const uint32x2_t*b)",
+      "direct_coq_definitions": [],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "AArch64 NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "lane_configuration": "two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "NEON fixed2 lanes; scalar lane stores use constant0 only",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation",
+      "adapter": "macro takes the actual addresses of the two distinct live vector local objects once; preserves both vectors and returns full2 lanes",
+      "permutation": "ZIP1 gives a0,b0; ZIP2 gives a1,b1",
+      "bridge_source": "proof/coq/ZipBridge.v",
+      "bridge_source_sha256": "f03a8787447eedc9f059040723880b9d9196bedbbb329b09576d84a989d3d285"
+    },
+    {
+      "intrinsic": "vst1_lane_u32",
+      "formal_symbol": "xt_intrinsic_store_lane_0",
+      "view": "lane0_borrowed_output_map",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "a3b184c89d948d8d0cccfdcb808a96ccfbab042d76f2416377e381b35e4ddb0f",
+      "contract_sha256": "6614e70c8daae5e4a8c38f126a527d082ed07d659ecc02d60480a1ef4c99a999",
+      "signature": "void xt_intrinsic_store_lane_0(uint32_t*p,const uint32x2_t*v)",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Transpose.OutputMemory.xt_output_put",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "869ca39d585b98b9333f2c8ae3e0c616927cc576d0b74152a29e27cc7aaebace"
+        },
+        {
+          "constant": "X32Transpose.OutputMemory.xt_write_window",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "869ca39d585b98b9333f2c8ae3e0c616927cc576d0b74152a29e27cc7aaebace"
+        },
+        {
+          "constant": "X32Transpose.OutputMemory.xt_output",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "869ca39d585b98b9333f2c8ae3e0c616927cc576d0b74152a29e27cc7aaebace"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "AArch64 NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "lane_configuration": "two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "NEON fixed2 lanes; scalar lane stores use constant0 only",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation"
+    },
+    {
+      "intrinsic": "vst1_u32",
+      "formal_symbol": "xt_intrinsic_store2",
+      "view": "borrowed_original_ISA",
+      "contract_source": "shim/neon_specs.h",
+      "contract_source_sha256": "a3b184c89d948d8d0cccfdcb808a96ccfbab042d76f2416377e381b35e4ddb0f",
+      "contract_sha256": "9aa13aaad959fd05ac15ba4b0fd64c177552ba4e313a738c0ab897021560e5c1",
+      "signature": "void xt_intrinsic_store2(uint32_t*p,const uint32x2_t*v)",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Transpose.VectorModel.xt_write_pair",
+          "source": "proof/coq/VectorModel.v",
+          "source_sha256": "a553608cf43c496d6d4a97701f5c02a117682bda7d81a94f2f57ced63e492f91"
+        },
+        {
+          "constant": "X32Transpose.OutputMemory.xt_write_window",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "869ca39d585b98b9333f2c8ae3e0c616927cc576d0b74152a29e27cc7aaebace"
+        },
+        {
+          "constant": "X32Transpose.OutputMemory.xt_output",
+          "source": "proof/coq/OutputMemory.v",
+          "source_sha256": "869ca39d585b98b9333f2c8ae3e0c616927cc576d0b74152a29e27cc7aaebace"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "AArch64 NEON",
+      "official_primary": "https://arm-software.github.io/acle/neon_intrinsics/advsimd.html",
+      "official_version": "ACLE aef52c2b0944bf652443c1acd867dbb893af8dd0",
+      "lane_configuration": "two uint32 lanes, AArch64 64-bit SIMD view; original scalar params remain unsigned64",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "NEON fixed2 lanes; scalar lane stores use constant0 only",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation"
+    },
+    {
+      "intrinsic": "__riscv_vsse32_v_u32m8",
+      "formal_symbol": "xt_intrinsic_vsse32",
+      "view": "borrowed_original_ISA",
+      "contract_source": "shim/rvv_specs.h",
+      "contract_source_sha256": "fdafe7598237786d9e513a6c7ca6bbdb6cf2a25b78da994965c0631c3e9d92b5",
+      "contract_sha256": "5db6ef6bc510ffe11978c4a2266b77ae9cee2f4ffb793e2d701cfdd692ea2293",
+      "signature": "void xt_intrinsic_vsse32(uint32_t*p,size_t stride,const vuint32m8_t*v,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Transpose.StrideModel.xt_stride_valid",
+          "source": "proof/coq/StrideModel.v",
+          "source_sha256": "2b2800ec530cc041dd30b5378140811c60a7b7ff81defd4887f7e3287fb6edcd"
+        },
+        {
+          "constant": "X32Transpose.StrideModel.xt_stride_distinct",
+          "source": "proof/coq/StrideModel.v",
+          "source_sha256": "2b2800ec530cc041dd30b5378140811c60a7b7ff81defd4887f7e3287fb6edcd"
+        },
+        {
+          "constant": "X32Transpose.StrideModel.xt_strided_write",
+          "source": "proof/coq/StrideModel.v",
+          "source_sha256": "2b2800ec530cc041dd30b5378140811c60a7b7ff81defd4887f7e3287fb6edcd"
+        },
+        {
+          "constant": "X32Transpose.WordModel.xt_addr",
+          "source": "proof/coq/WordModel.v",
+          "source_sha256": "f44c58b137e86c6af2d462d3f3cc85d90fe9fa2e38875923810d8681e0e95a30"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "RVV1.0",
+      "official_primary": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc",
+      "official_version": "RISC-V V frozen v1.0; GCC15.2 RVV C intrinsics header pinned in cross-build-status.json",
+      "lane_configuration": "XLEN64, VLEN128, SEW32, LMUL8, VLMAX32, vstart0",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "all inactive load result lanes unconstrained UInt32; no tail0 ISA requirement; only j<vl gets loaded or stored",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation",
+      "order": "ISA element accesses are unordered. Contract requires active address injectivity (automatic forVL<=1); its fold denotes the order-independent final map under that premise, not a hardware lane order.",
+      "stride_units": "bytes; entire unsigned64 source argument domain retained",
+      "signed_stride_mapping": "GCC15.2 documented conversion to signed64 preserves the lower64 bits. xt_signed_stride64_range/bits/address prove the mathematical decode and modulo64 address equivalence for every lane index. This is a reviewed source/ABI mapping, not a compiler refinement theorem.",
+      "signed_stride_primary": "https://gcc.gnu.org/onlinedocs/gcc-15.2.0/gcc/Integers-implementation.html",
+      "signed_stride_bridge": "proof/coq/SignedStrideFacts.v",
+      "signed_stride_bridge_sha256": "b0cd5b56c9fa9809444264346c0e48e716ea3d77a023a0909c315ce6e1d5df2c",
+      "ordinary_adapter": {
+        "symbol": "xt_store_strided",
+        "source": "shim/strided_store.c",
+        "source_sha256": "30811e879679a510b99f253990ca1958abc361c2d90244ab4eda48ef737fa66a",
+        "body_checked_module": "X32Transpose.StridedStoreChecked.CheckedStridedStore",
+        "actual_c_vcs": 3,
+        "intrinsic_body_exemption": false
+      }
+    },
+    {
+      "intrinsic": "__riscv_vsetvl_e32m8",
+      "formal_symbol": "__riscv_vsetvl_e32m8",
+      "view": "original_ISA",
+      "contract_source": "shim/rvv_load_specs.h",
+      "contract_source_sha256": "e7e98d1890b5e228254b0098d0b9d6c7f20a2712d9cd5743751d86270cf3c0d5",
+      "contract_sha256": "d6a4592a4444e2ff3b880a7eb88863cf0ecbf0c25074869283a1c4786dbb33de",
+      "signature": "size_t __riscv_vsetvl_e32m8(size_t avl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Transpose.WordModel.xt_legal_vl",
+          "source": "proof/coq/WordModel.v",
+          "source_sha256": "f44c58b137e86c6af2d462d3f3cc85d90fe9fa2e38875923810d8681e0e95a30"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "RVV1.0",
+      "official_primary": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc",
+      "official_version": "RISC-V V frozen v1.0; GCC15.2 RVV C intrinsics header pinned in cross-build-status.json",
+      "lane_configuration": "XLEN64, VLEN128, SEW32, LMUL8, VLMAX32, vstart0",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "not applicable; CSR values themselves are not observed",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation",
+      "VL_selection": "all three legal AVL intervals; nondeterministic overapproximation of implementation choices, including ceil(AVL/2)..VLMAX forVLMAX<AVL<2VLMAX; all resulting choices proved"
+    },
+    {
+      "intrinsic": "__riscv_vle32_v_u32m8",
+      "formal_symbol": "__riscv_vle32_v_u32m8",
+      "view": "readonly_map",
+      "contract_source": "shim/rvv_load_specs.h",
+      "contract_source_sha256": "e7e98d1890b5e228254b0098d0b9d6c7f20a2712d9cd5743751d86270cf3c0d5",
+      "contract_sha256": "c1f33225b7e46982614c11ffe458d1653682a8893bff7ca73f471dca0ad031f8",
+      "signature": "vuint32m8_t __riscv_vle32_v_u32m8(const uint32_t*p,size_t vl)",
+      "direct_coq_definitions": [
+        {
+          "constant": "X32Transpose.ProgramModel.xt_rvv_lane",
+          "source": "proof/coq/ProgramModel.v",
+          "source_sha256": "d059395585529ce5180db75ac8c3f2e1cbbf686ea72d12cd07308a019d2b49c5"
+        },
+        {
+          "constant": "X32Transpose.InputMemory.xt_window",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+        },
+        {
+          "constant": "X32Transpose.InputMemory.xt_data",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+        },
+        {
+          "constant": "X32Transpose.InputMemory.xt_load_lane",
+          "source": "proof/coq/InputMemory.v",
+          "source_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+        }
+      ],
+      "unresolved_logical_symbols": [],
+      "intrinsic_body_checked": false,
+      "formal_ISA_or_compiler_refinement_proved": false,
+      "scope": "original intrinsic source-reviewed specification boundary; ordinary adapters are checked separately",
+      "review_status": "source inspected against pinned official operation/API references; final independent human review pending",
+      "isa": "RVV1.0",
+      "official_primary": "https://github.com/riscvarchive/riscv-v-spec/blob/v1.0/v-spec.adoc",
+      "official_version": "RISC-V V frozen v1.0; GCC15.2 RVV C intrinsics header pinned in cross-build-status.json",
+      "lane_configuration": "XLEN64, VLEN128, SEW32, LMUL8, VLMAX32, vstart0",
+      "mask": "unmasked",
+      "rounding": "none; exact uint32 raw word operations",
+      "NaN": "all2^32 word patterns allowed; no floating interpretation or NaN exclusion",
+      "inactive_lanes": "all inactive load result lanes unconstrained UInt32; no tail0 ISA requirement; only j<vl gets loaded or stored",
+      "memory_view": "one readonly initialized address map and one optional-value output map; no duplicating row/padding owners; input/output separation supplied by spatial precondition",
+      "observables": "all matrix-written UInt32 words and each execution own unwritten frame; architectural registers/CSRs/traps are outside this C-shim partial-correctness observation"
+    }
+  ]
+}

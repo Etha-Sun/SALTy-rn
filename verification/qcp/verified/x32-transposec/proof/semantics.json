@@ -1,0 +1,53 @@
+{
+  "namespace": "X32Transpose",
+  "current_variant": "repaired",
+  "original_source_refinement_proved": false,
+  "whole_kernel_verified": false,
+  "scope": "C-shim modular partial correctness under reviewed original-intrinsic functional specs",
+  "machine_model": {
+    "arch_bits": 64,
+    "endian": "little",
+    "size_t_formal": "unsigned long long, actual sizeof8 typed probe",
+    "size_t_native": "standard LP64 size_t, unsigned64 SDK static assertions",
+    "word": "all2^32 uint32 bit patterns",
+    "RVV": {
+      "XLEN": 64,
+      "VLEN": 128,
+      "SEW": 32,
+      "LMUL": 8,
+      "VLMAX": 32,
+      "mask": "unmasked",
+      "vstart": 0,
+      "VL": "all legal three-interval choices; overapproximation of deterministic implementation choices",
+      "tail": "arbitrary inactive UInt32 values, never asserted ISA0",
+      "strided_store": "byte stride; active word addresses distinct under actual Geometry and disjoint owned cell footprints"
+    }
+  },
+  "domain": {
+    "parameters": "full native unsigned64 parameter domain conditional on actual C assertions and valid finite memory storage; no width>0/height>0/stride signed-range premise added",
+    "width0": "height>0 copies column0, consistent with original NEON observable low-store-last behavior",
+    "height0": "both original asserts retained; no memory access; NULL and empty footprint allowed",
+    "storage": "readonly unique address map may share/overlap input rows; each row includes one readable uint32 padding word; output owned words NoDup and optional initial values; nonwrap spans/alignment only where accessed",
+    "separation": "spatial input and output resources disjoint; output unwritten frame retained"
+  },
+  "source_to_model_boundaries": [
+    "logical64LE live-object/cell model and fixed-lane vector value views; not a global ISO C pointer/object provenance proof",
+    "native unsigned64 stride to RVV ptrdiff_t mapping reviewed using GCC15.2 documentation; mathematical signed64 bit/address bridges checked, compiler ABI refinement not proved",
+    "SDK buildability and native C-emulator tests are separate finite evidence and do not establish machineISA correctness"
+  ],
+  "observables": "all matrix-written UInt32 words and own unwritten output/frame; arbitrary independent initial maps covered by StateObservation",
+  "excluded_claims": [
+    "originalC complete refinement",
+    "formal ISA/compiler refinement",
+    "independent full termination theorem",
+    "architectural register/CSR/trap equivalence"
+  ],
+  "intrinsic_spec_human_review": "pending independent final review; exact9view ledger available",
+  "actual_current_inventory": {
+    "C_units": 8,
+    "C_fields": 381,
+    "ordinary_bodies": 13,
+    "intrinsic_views": 9,
+    "custom_strategy_fields": 0
+  }
+}

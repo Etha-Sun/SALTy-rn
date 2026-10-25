@@ -1,0 +1,22 @@
+From X32Transpose Require Import RvvAutomation.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedRvvNonmemoryPart03.
+Lemma proof_of_test_rvv_safety_wit_4:X32Transpose.rvv_unit_goal.test_rvv_safety_wit_4.
+Proof. unfold X32Transpose.rvv_unit_goal.test_rvv_safety_wit_4;try left;xt_rvv_basic. Qed.
+Lemma proof_of_test_rvv_safety_wit_23:X32Transpose.rvv_unit_goal.test_rvv_safety_wit_23.
+Proof. unfold X32Transpose.rvv_unit_goal.test_rvv_safety_wit_23;try left;xt_rvv_basic. Qed.
+Lemma proof_of_test_rvv_safety_wit_39:X32Transpose.rvv_unit_goal.test_rvv_safety_wit_39.
+Proof. unfold X32Transpose.rvv_unit_goal.test_rvv_safety_wit_39;try left;xt_rvv_basic. Qed.
+Lemma proof_of_test_rvv_safety_wit_55:X32Transpose.rvv_unit_goal.test_rvv_safety_wit_55.
+Proof. unfold X32Transpose.rvv_unit_goal.test_rvv_safety_wit_55;try left;xt_rvv_basic. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_3_pure:X32Transpose.rvv_unit_goal.test_rvv_partial_solve_wit_3_pure.
+Proof. unfold X32Transpose.rvv_unit_goal.test_rvv_partial_solve_wit_3_pure;try left;xt_rvv_basic. Qed.
+Lemma proof_of_test_rvv_partial_solve_wit_11_pure:X32Transpose.rvv_unit_goal.test_rvv_partial_solve_wit_11_pure.
+Proof. unfold X32Transpose.rvv_unit_goal.test_rvv_partial_solve_wit_11_pure;try left;xt_rvv_basic. Qed.
+End CheckedRvvNonmemoryPart03.
+Print Assumptions CheckedRvvNonmemoryPart03.proof_of_test_rvv_safety_wit_4.
+Print Assumptions CheckedRvvNonmemoryPart03.proof_of_test_rvv_safety_wit_23.
+Print Assumptions CheckedRvvNonmemoryPart03.proof_of_test_rvv_safety_wit_39.
+Print Assumptions CheckedRvvNonmemoryPart03.proof_of_test_rvv_safety_wit_55.
+Print Assumptions CheckedRvvNonmemoryPart03.proof_of_test_rvv_partial_solve_wit_3_pure.
+Print Assumptions CheckedRvvNonmemoryPart03.proof_of_test_rvv_partial_solve_wit_11_pure.

@@ -1,0 +1,29 @@
+From X32Transpose Require Import Types width_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedWidth:X32Transpose.width_goal.VC_Correct.
+Lemma proof_of_xt_sizeof_size_t_return_wit_1:X32Transpose.width_goal.xt_sizeof_size_t_return_wit_1.
+Proof. unfold X32Transpose.width_goal.xt_sizeof_size_t_return_wit_1;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_sizeof_uintptr_t_return_wit_1:X32Transpose.width_goal.xt_sizeof_uintptr_t_return_wit_1.
+Proof. unfold X32Transpose.width_goal.xt_sizeof_uintptr_t_return_wit_1;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_sizeof_uint32_t_return_wit_1:X32Transpose.width_goal.xt_sizeof_uint32_t_return_wit_1.
+Proof. unfold X32Transpose.width_goal.xt_sizeof_uint32_t_return_wit_1;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_size_t_is_unsigned_safety_wit_1:X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_1.
+Proof. unfold X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_1;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_size_t_is_unsigned_safety_wit_2:X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_2.
+Proof. unfold X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_2;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_size_t_is_unsigned_safety_wit_3:X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_3.
+Proof. unfold X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_3;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_size_t_is_unsigned_safety_wit_4:X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_4.
+Proof. unfold X32Transpose.width_goal.xt_size_t_is_unsigned_safety_wit_4;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+Lemma proof_of_xt_size_t_is_unsigned_return_wit_1:X32Transpose.width_goal.xt_size_t_is_unsigned_return_wit_1.
+Proof. unfold X32Transpose.width_goal.xt_size_t_is_unsigned_return_wit_1;intros;cbn [sizeof_front_end_type sizeof_front_end_type_of_ptr_size unsigned_last_nbits] in *;entailer!. Qed.
+End CheckedWidth.
+Module WidthExact:X32Transpose.width_goal.VC_Correct:=CheckedWidth.
+Print Assumptions CheckedWidth.proof_of_xt_sizeof_size_t_return_wit_1.
+Print Assumptions CheckedWidth.proof_of_xt_sizeof_uintptr_t_return_wit_1.
+Print Assumptions CheckedWidth.proof_of_xt_sizeof_uint32_t_return_wit_1.
+Print Assumptions CheckedWidth.proof_of_xt_size_t_is_unsigned_safety_wit_1.
+Print Assumptions CheckedWidth.proof_of_xt_size_t_is_unsigned_safety_wit_2.
+Print Assumptions CheckedWidth.proof_of_xt_size_t_is_unsigned_safety_wit_3.
+Print Assumptions CheckedWidth.proof_of_xt_size_t_is_unsigned_safety_wit_4.
+Print Assumptions CheckedWidth.proof_of_xt_size_t_is_unsigned_return_wit_1.

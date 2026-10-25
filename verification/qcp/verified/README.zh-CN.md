@@ -1,8 +1,10 @@
 # 已验证的 kernel
 
+2026-10-25 最新目标 **40/40**；保留半小时检查真实额度、严格超过95%收尾的规则。下文36目标为历史。
+
 2026-10-24 用户最新规则：目标至少 **36/40**；每 **30 分钟**读取一次当前账户实际额度，任一有效窗口的已使用比例 **严格超过 95%** 时开始收尾：停止新增 kernel/验证批次，保存证明、日志、已验证清单和恢复记录，汇总可交付结果；已启动的有效有限任务优先自然完成。读数不可用时明确记录未知，不编造百分比。此规则覆盖旧的31目标及“取消额度阈值”约定，不能将收尾视为36目标已完成。
 
-当前 **30/40**，目标至少 **36/40**。最新新增 [QD8-F32-QC4W GEMM](qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)；此前包括 [qu8-vadd-minmax](qu8-vadd-minmax/README.md) 两侧修复版及 [QD8 QC8W IGEMM](qd8-f32-qc8w-igemm-minmax/README.md)；包含 [u8-vclamp](u8-vclamp/README.md)。
+当前 **31/40**，目标 **40/40**。最新新增 [x32-transposec](x32-transposec/README.md)；此前新增 [QD8-F32-QC4W GEMM](qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)；此前包括 [qu8-vadd-minmax](qu8-vadd-minmax/README.md) 两侧修复版及 [QD8 QC8W IGEMM](qd8-f32-qc8w-igemm-minmax/README.md)；包含 [u8-vclamp](u8-vclamp/README.md)。
 
 本目录收录完整模块化等价性检查通过的 kernel；清单见 manifest.json。后续 intrinsic 可以采用与原始规范对应的公开 spec，C 实现证明可选；实际 kernel、内存、普通 helper/caller 与 spec 绑定仍须完整检查。详见 [规范边界](../docs/INTRINSIC-SPEC-POLICY.zh-CN.md)。
 原始 impl、公开 spec/contracts 和操作 shim 是审核入口；proof/c 只保存证明注释和策略。
@@ -42,3 +44,5 @@ F32 IGEMM 完整修复版已收录：[审核入口](f32-igemm-minmax/README.md)�
 DWConv 修复版完整收录：[证明与实现](f32-dwconv-minmax/README.zh-CN.md)，[V2发行工具路径修复](f32-dwconv-minmax/ADMISSION_REPAIR.zh-CN.md)。487项实际C字段+9策略、179次源码fresh普通Coq、501假设报告；发布身份审计与双sanitizer有限回归通过。
 
 QD8-F32-QC4W GEMM 完整修复版已收录：[审核入口](qd8-f32-qc4w-gemm-minmax/README.zh-CN.md)。5实际C单元/1531字段、12策略字段、1610fresh Coq模块和1567假设报告全部通过；32路。MR1/NR16/cn_stride64，任意公开容量内正N/K，全binary32；NEON源码保持，RVV NaN恢复修复。固定VLEN128；intrinsic语义人工审核pending，无ISA/物理ABI或独立终止性结论。
+
+x32-transposec 修复/兼容版完整收录：[审核入口](x32-transposec/README.md)。8实际C/381字段/13普通body、116fresh Coq、489最终Print；11既有假设、9项原intrinsic规格视图、全UInt32 written与ownframe关系。原始零宽不等价反例及精确补丁保留，修复版完整证明；不宣称原始C refinement、任意VLEN、ISA/ABI对应或独立终止性。

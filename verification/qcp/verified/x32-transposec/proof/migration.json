@@ -1,0 +1,40 @@
+{
+  "whole_kernel_verified": false,
+  "files": [
+    {
+      "source": "verification/qcp/candidates/f32-argmaxpool/proof/coq/MemoryModel.v",
+      "source_sha256": "a84149bed089fd77f1665591f328ff1f1134bf9a188fc71c9cb51523dccfbfb0",
+      "target": "proof/coq/InputMemory.v",
+      "transformation": "Rename namespace; raw uint32 Z cells; default0; no floating arithmetic or float ownership",
+      "fresh_compile_required": true,
+      "migrated_sha256": "ad37b2bafb2b735728124f1d443461e01c6e03249a35b30d4d3cd83cfe48470a"
+    },
+    {
+      "source": "verification/qcp/candidates/f32-argmaxpool/proof/coq/OutputMemory.v",
+      "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76",
+      "target": "proof/coq/OutputMemory.v",
+      "transformation": "Rename namespace; both output/index cells UInt; retain optional initialization and generic frame/pop/writeback proofs",
+      "fresh_compile_required": true,
+      "migrated_sha256": "869ca39d585b98b9333f2c8ae3e0c616927cc576d0b74152a29e27cc7aaebace"
+    },
+    {
+      "source": "verification/qcp/candidates/f32-argmaxpool/proof/check_math.py",
+      "source_sha256": "d140815b25381c829c78493d68f1bf7692380b1771ed921ef98c14fedde32cf4",
+      "target": "proof/check_math.py",
+      "transformation": "Rename local namespace only; fresh local source closure, configured32 but root actual4",
+      "fresh_compile_required": true,
+      "migrated_sha256": "73d6ce277126a8e7bddcd3987f0fb02360ca2fd90fce67d6fae79de60de845ec"
+    }
+  ],
+  "arcadia_reference": "4a0627dc72d39de8b8e5c1971bcc23b267e2d4ca",
+  "packw_old_projection_credit_transferred": false,
+  "imports_argmax_candidate_proof_vo": false,
+  "shared_prebuilt_QCP_dependencies": "verified/f32-vadd/.build/full-1f5wequq/coq (baseline environment, not fresh current kernel credit)",
+  "fresh_math_closure": {
+    "status": ".build/coq-closure-08gbcgc9/status.json",
+    "status_sha256": "cadd70b28316d5c2fb0fa8e81982944ec15b243c117325f801b68a6a222631ad",
+    "local_modules": 5,
+    "actual_C_fields_proved": 0,
+    "scope": "raw uint32 ownership/frame/geometry/observation lemmas, not actual kernel"
+  }
+}
