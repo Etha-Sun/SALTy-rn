@@ -1,0 +1,94 @@
+{
+  "scope": "derived_record_representation_and_checked_ordinary_helper_inventory_no_complete_kernel_credit",
+  "canonical_configuration": {
+    "QCP_arch": 64,
+    "QCP_endian": "little",
+    "Coq_import": "Snaive_C_Rules64",
+    "VLEN": 128,
+    "SEW": 32,
+    "LMUL": 8,
+    "VLMAX": 32
+  },
+  "record_sources": {
+    "proof/coq/VectorRecords.v": "cb27ce7e47a630a1e8bed71e9f60329c82e708bb6f8b76bef542cb0762c9e3f6",
+    "proof/coq/RvvVectorRecords.v": "df1521273a499492fe8a771fcdaf6e6b609f0ec99679520cfaf5fc7d0fdb16b5",
+    "proof/coq/NeonRecordCompareModel.v": "a5f44b117dea544b8e1b36c6201f72627c341a26dba8876df4d0afcb1befdfa6"
+  },
+  "definition_mapping": "TU-specific *_def.v exports the canonical record model, with no independent Record declarations; generated actual goal is byte-preserved",
+  "rejected_automatic_definitions": {
+    "preserved": true,
+    "compiled": false,
+    "errors": [
+      "fp32 C fields incorrectly emitted as R values with Int cells",
+      "Import naive_C_Rules selects default Arch32/BigEndian instead of the actual arch64/little"
+    ],
+    "example": ".build/record-float4-probe-u1fkd5pr/generated/record_copy_def.v"
+  },
+  "helpers": [
+    {
+      "ordinary_C_helper": "ap_record_neon_gt4",
+      "ISA": "ARM",
+      "original_intrinsic": "vcgtq_f32",
+      "body_checked": true,
+      "intrinsic_exemption": false,
+      "status": "proof/neon-record-compare-status.json",
+      "status_sha256": "1b139cc1b443c6c5a88a2cc6d959813e6622b37cc17ed32abc90aca9e282e0b2",
+      "typed_provider": "ArgmaxPool.NeonRecordCompareChecked.Exact",
+      "canonical_model": "ArgmaxPool.NeonRecordCompareModel",
+      "canonical_source": "proof/coq/NeonRecordCompareModel.v",
+      "canonical_source_sha256": "a5f44b117dea544b8e1b36c6201f72627c341a26dba8876df4d0afcb1befdfa6",
+      "semantics": "ap_record_gt4; ordered compare gives exact zero/all-one mask",
+      "original_ISA_refinement_formally_proved": false,
+      "source_review": "existing intrinsic ledger; final human review pending"
+    },
+    {
+      "ordinary_C_helper": "ap_record_select4_borrow",
+      "ISA": "ARM",
+      "original_intrinsic": "vbslq_f32",
+      "body_checked": true,
+      "intrinsic_exemption": false,
+      "status": "proof/record-consumers-status.json",
+      "status_sha256": "b8da6b6e46535c92026f4d096031f947712630efe3f2403bdf24c4b0a6cb6beb",
+      "typed_provider": "ArgmaxPool.RecordConsumersChecked.Exact",
+      "canonical_model": "ArgmaxPool.VectorRecords",
+      "canonical_source": "proof/coq/VectorRecords.v",
+      "canonical_source_sha256": "cb27ce7e47a630a1e8bed71e9f60329c82e708bb6f8b76bef542cb0762c9e3f6",
+      "semantics": "ap_record_select4; full structural binary32 record equality",
+      "original_ISA_refinement_formally_proved": false,
+      "source_review": "existing intrinsic ledger; final human review pending"
+    },
+    {
+      "ordinary_C_helper": "ap_record_rvv_gt32",
+      "ISA": "RVV",
+      "original_intrinsic": "__riscv_vmfgt_vv_f32m8_b4",
+      "body_checked": true,
+      "intrinsic_exemption": false,
+      "status": "proof/rvv-record-consumers-status.json",
+      "status_sha256": "44b5cc41d5c62cdce115959007ad7114cc72a8d92588e1afc1e995398fa4d409",
+      "typed_provider": "ArgmaxPool.RvvRecordConsumersChecked.Exact",
+      "canonical_model": "ArgmaxPool.RvvVectorRecords",
+      "canonical_source": "proof/coq/RvvVectorRecords.v",
+      "canonical_source_sha256": "df1521273a499492fe8a771fcdaf6e6b609f0ec99679520cfaf5fc7d0fdb16b5",
+      "semantics": "ap_record_gt32 and ap_record_mask32; active-prefix exact, arbitrary inactive",
+      "original_ISA_refinement_formally_proved": false,
+      "source_review": "existing intrinsic ledger; final human review pending"
+    },
+    {
+      "ordinary_C_helper": "ap_record_rvv_merge32",
+      "ISA": "RVV",
+      "original_intrinsic": "__riscv_vmerge_vvm_f32m8",
+      "body_checked": true,
+      "intrinsic_exemption": false,
+      "status": "proof/rvv-record-consumers-status.json",
+      "status_sha256": "44b5cc41d5c62cdce115959007ad7114cc72a8d92588e1afc1e995398fa4d409",
+      "typed_provider": "ArgmaxPool.RvvRecordConsumersChecked.Exact",
+      "canonical_model": "ArgmaxPool.RvvVectorRecords",
+      "canonical_source": "proof/coq/RvvVectorRecords.v",
+      "canonical_source_sha256": "df1521273a499492fe8a771fcdaf6e6b609f0ec99679520cfaf5fc7d0fdb16b5",
+      "semantics": "ap_record_merge32; active binary32 equality, arbitrary inactive",
+      "original_ISA_refinement_formally_proved": false,
+      "source_review": "existing intrinsic ledger; final human review pending"
+    }
+  ],
+  "main_kernel_proof": false
+}

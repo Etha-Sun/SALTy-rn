@@ -1,0 +1,46 @@
+Chars 0 - 40 [From~Coq~Require~Import~ZArith...] 0.301 secs (0.175u,0.123s)
+Chars 41 - 113 [From~ArgmaxPool~Require~Import...] 5.099 secs (4.087u,1.005s)
+Chars 114 - 138 [Import~Snaive_C_Rules64.] 0.051 secs (0.047u,0.003s)
+Chars 139 - 164 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 165 - 186 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 187 - 202 [Module~Checked.] 0. secs (0.u,0.s)
+Chars 203 - 292 [Lemma~proof_of_test_neon_entai...] 0. secs (0.u,0.s)
+Chars 293 - 299 [Proof.] 0. secs (0.u,0.s)
+Chars 301 - 373 [(unfold~ArgmaxPool.neon_unit_g...] 0.009 secs (0.009u,0.s)
+Chars 375 - 408 [(assert~(Hk~:~0~<~k~<=~app_row...] 0.065 secs (0.061u,0.003s)
+Chars 410 - 473 [(assert~(Hrem~:~k~=~app_remain...] 0. secs (0.u,0.s)
+Chars 475 - 476 [{] 0. secs (0.u,0.s)
+Chars 477 - 506 [(rewrite~<-~PreH4;~exact~PreH26).] 0. secs (0.u,0.s)
+Chars 507 - 508 [}] 0. secs (0.u,0.s)
+Chars 510 - 583 [(assert~~~(Hcur~:~id~=~app_rea...] 0. secs (0.u,0.s)
+Chars 585 - 586 [{] 0. secs (0.u,0.s)
+Chars 587 - 616 [(rewrite~<-~PreH4;~exact~PreH30).] 0. secs (0.u,0.s)
+Chars 617 - 618 [}] 0. secs (0.u,0.s)
+Chars 620 - 794 [(pose~proof~~~(apmk_row_reads_...] 0.013 secs (0.013u,0.s)
+Chars 796 - 828 [(rewrite~<-~PreH4~in~Hvalue,~H...] 0.001 secs (0.001u,0.s)
+Chars 830 - 846 [(rewrite~?PreH15).] 0.01 secs (0.01u,0.s)
+Chars 848 - 864 [apkp_call_frame.] 2.443 secs (2.078u,0.263s)
+Chars 865 - 869 [Qed.] 0.819 secs (0.798u,0.018s)
+Chars 870 - 882 [End~Checked.] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 883 - 942 [Print~Assumptions~Checked.proo...] 0.848 secs (0.817u,0.03s)

@@ -1,0 +1,12 @@
+From ArgmaxPool Require Import Model ap_exact_frame_strategy_goal.
+From SimpleC.SL Require Import SeparationLogic.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedExactFrame : ArgmaxPool.ap_exact_frame_strategy_goal.ap_exact_frame_Strategy_Correct.
+Lemma ap_exact_frame_strategy1_correctness : ArgmaxPool.ap_exact_frame_strategy_goal.ap_exact_frame_strategy1.
+Proof. pre_process_default;entailer!. Qed.
+Lemma ap_exact_frame_strategy2_correctness : ArgmaxPool.ap_exact_frame_strategy_goal.ap_exact_frame_strategy2.
+Proof. pre_process_default;entailer!. Qed.
+End CheckedExactFrame.
+Module ExactFrameGate:ArgmaxPool.ap_exact_frame_strategy_goal.ap_exact_frame_Strategy_Correct:=CheckedExactFrame.
+Print Assumptions ExactFrameGate.ap_exact_frame_strategy1_correctness.
+Print Assumptions ExactFrameGate.ap_exact_frame_strategy2_correctness.

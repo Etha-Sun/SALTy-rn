@@ -1,0 +1,8 @@
+From ArgmaxPool Require Import RvvUpdateIntoSupport rvv_update_into_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedRvvUpdateIntoPart01.
+Lemma proof_of_ap_rvv_update_into32_partial_solve_wit_1:ArgmaxPool.rvv_update_into_goal.ap_rvv_update_into32_partial_solve_wit_1.
+Proof. unfold ArgmaxPool.rvv_update_into_goal.ap_rvv_update_into32_partial_solve_wit_1;apb_intro;
+apu_frame. Qed.
+End CheckedRvvUpdateIntoPart01.
+Print Assumptions CheckedRvvUpdateIntoPart01.proof_of_ap_rvv_update_into32_partial_solve_wit_1.

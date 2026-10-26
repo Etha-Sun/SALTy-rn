@@ -1,0 +1,12 @@
+From ArgmaxPool Require Import NeonKernelMemoryFinish01 NeonKernelMemoryFinish02 NeonKernelMemoryFinish03 NeonKernelMemoryFinish04 NeonKernelMemoryFinish05 NeonKernelMemoryFinish06 NeonKernelMemoryFinish07 NeonKernelMemoryFinish08 NeonKernelMemoryFinish09.
+Module CheckedNeonMemoryFinish.
+Include ArgmaxPool.NeonKernelMemoryFinish01.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish02.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish03.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish04.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish05.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish06.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish07.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish08.Checked.
+Include ArgmaxPool.NeonKernelMemoryFinish09.Checked.
+End CheckedNeonMemoryFinish.

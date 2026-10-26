@@ -1,6 +1,6 @@
 # 已验证 kernel 审核入口
 
-当前完整清单 **38/40**；目标 **40/40**。此文件仅汇总已签发包的入口，不产生新的证明，也不表示人工 intrinsic 规范审核已经完成。
+当前完整清单 **39/40**；目标 **40/40**。此文件仅汇总已签发包的入口，不产生新的证明，也不表示人工 intrinsic 规范审核已经完成。
 
 统一验收边界是各包公开契约下的 C-shim 模块化部分正确性。原生 intrinsic 可采用公开规范、合同与 Coq 定义；普通 helper、实际 kernel、调用者及最终接口仍需完整证明。硬件配置、内存条件、NaN 观察方式和未覆盖范围须逐案查看；不从 kernel 数量推出 ISA、物理 ABI、编译器精化或终止性结论。
 
@@ -8,6 +8,7 @@
 
 | kernel | 公开契约 | 语义与 intrinsic 审核入口 | 完整证据 |
 |---|---|---|---|
+| f32-argmaxpool | [spec.c](../verified/f32-argmaxpool/spec.c) | [intrinsic台账](../verified/f32-argmaxpool/proof/intrinsic-ledger.json) / [合并原生规格边界](../verified/f32-argmaxpool/proof/intrinsic-boundary-status.json) / [RVV台账](../verified/f32-argmaxpool/proof/rvv-intrinsic-ledger.json) / [包内说明](../verified/f32-argmaxpool/README.md) | [证书](../verified/f32-argmaxpool/proof/status.json) / [清单](../verified/f32-argmaxpool/proof/manifest.json) |
 | f32-dwconv-minmax | [spec.c](../verified/f32-dwconv-minmax/spec.c) | [语义](../verified/f32-dwconv-minmax/proof/semantics.json) / [包内说明](../verified/f32-dwconv-minmax/README.zh-CN.md) | [证书](../verified/f32-dwconv-minmax/proof/status.json) / [清单](../verified/f32-dwconv-minmax/proof/manifest.json) |
 | f32-dwconv2d-chw | [spec.c](../verified/f32-dwconv2d-chw/spec.c) | [语义](../verified/f32-dwconv2d-chw/proof/semantics.json) / [intrinsic台账](../verified/f32-dwconv2d-chw/proof/intrinsic-ledger.json) / [包内说明](../verified/f32-dwconv2d-chw/VERIFIED.zh-CN.md) | [证书](../verified/f32-dwconv2d-chw/proof/status.json) / [清单](../verified/f32-dwconv2d-chw/proof/manifest.json) |
 | f32-f16-vcvt | [spec.c](../verified/f32-f16-vcvt/spec.c) | [语义](../verified/f32-f16-vcvt/proof/semantics.json) / [intrinsic记录](../verified/f32-f16-vcvt/proof/intrinsic-review.json) / [包内说明](../verified/f32-f16-vcvt/README.zh-CN.md) | [证书](../verified/f32-f16-vcvt/proof/status.json) / [清单](../verified/f32-f16-vcvt/proof/manifest.json) |
@@ -47,6 +48,6 @@
 | x32-packw-gemm-goi | [spec.c](../verified/x32-packw-gemm-goi/spec.c) | [语义](../verified/x32-packw-gemm-goi/proof/semantics.json) / [intrinsic台账](../verified/x32-packw-gemm-goi/proof/intrinsic-ledger.json) / [包内说明](../verified/x32-packw-gemm-goi/VERIFIED.zh-CN.md) | [证书](../verified/x32-packw-gemm-goi/proof/status.json) / [清单](../verified/x32-packw-gemm-goi/proof/manifest.json) |
 | x32-transposec | [spec.c](../verified/x32-transposec/spec.c) | [语义](../verified/x32-transposec/proof/semantics.json) / [intrinsic台账](../verified/x32-transposec/proof/intrinsic-ledger.json) / [包内说明](../verified/x32-transposec/README.zh-CN.md) | [证书](../verified/x32-transposec/proof/status.json) / [清单](../verified/x32-transposec/proof/manifest.json) |
 
-尚未完整收录：f32-argmaxpool、f32-conv-hwc2chw。这些项的局部证明与 native 回归不增加已验证数量。
+尚未完整收录：f32-conv-hwc2chw。这些项的局部证明与 native 回归不增加已验证数量。
 
 归属和本聊天 token 统计另见本地 `CHAT_KERNEL_ACCOUNTING.zh-CN.md`；外部 worker 的成果保留作者归属。证书/清单是唯一准入依据，本文与旧进度快照冲突时以当前清单为准。

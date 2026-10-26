@@ -1,0 +1,10 @@
+From Coq Require Import ZArith Lia.
+From ArgmaxPool Require Import BorrowedConsumerSupport borrowed_consumers_goal.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope. Local Open Scope sac.
+Module CheckedBorrowedConsumerPart02.
+Lemma proof_of_ap_borrow_rvv_gt32_partial_solve_wit_2:ArgmaxPool.borrowed_consumers_goal.ap_borrow_rvv_gt32_partial_solve_wit_2.
+Proof. unfold ArgmaxPool.borrowed_consumers_goal.ap_borrow_rvv_gt32_partial_solve_wit_2;apb_intro;
+unfold ap_same_bits in *;apb_frame. Qed.
+End CheckedBorrowedConsumerPart02.
+Print Assumptions CheckedBorrowedConsumerPart02.proof_of_ap_borrow_rvv_gt32_partial_solve_wit_2.

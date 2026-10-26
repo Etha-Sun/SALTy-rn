@@ -1,0 +1,76 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "Two actual ordinary C same-local-vector lane-insert then store callers only; no main-kernel or intrinsic body proof credit",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/lane-insert-generation-h20xr57d",
+  "input_sha256": {
+    "shim/formal_model.h": "50cc39a0a4db75b3f3b88296ac30589246e91d6f6dcb6c13e4e7e630bdf2e526",
+    "shim/formal_types.h": "d942042907d09f03e85bf8678b107632af9c0cb02e656d767674c930d86d12ec",
+    "shim/neon_specs.h": "7bd6bb444a064a5be2a63672bb8b9da6d2c6307cf5541db35552afcf0ba7ee0f",
+    "shim/read_previous.h": "4c75dbafa0dc9e4df654ef82edfcfa3819350a998c6bd7a1fbf959969fa5ba48",
+    "shim/read_table.h": "42fd107503bdb4d7364c218f241685e2c1b3a8613b681e2af5c131b56c1e0faa",
+    "proof/build_neon_specs.py": "1cbbb84c5430e96705075b9d2f9d2803edf3e35ae4e84965da0df7007ef13eaf",
+    "proof/coq/LaneInsertModel.v": "79d2f6050281f27b0ccf28612fa6de292e596a3acc393dbc1d5f04903b846c59"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/lane-insert-generation-h20xr57d/probe.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/lane-insert-generation-h20xr57d/expanded.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.008238781010732055,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/lane-insert-generation-h20xr57d/expanded.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/lane-insert-generation-h20xr57d",
+        "--coq-logic-path=ArgmaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim",
+        "ArgmaxPool"
+      ],
+      "exit_code": 0,
+      "seconds": 0.11450686887837946,
+      "log_sha256": "ebd2b8f67311abb4c7750f1067c6d288d664158acc2981a6036c6916799b1c8f"
+    }
+  ],
+  "configured_parallel_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "fields": [
+    "probe_insert_f32_return_wit_1",
+    "probe_insert_f32_partial_solve_wit_1_pure",
+    "probe_insert_f32_partial_solve_wit_1",
+    "probe_insert_f32_partial_solve_wit_2",
+    "probe_insert_f32_partial_solve_wit_3_pure",
+    "probe_insert_f32_partial_solve_wit_3",
+    "probe_insert_u32_return_wit_1",
+    "probe_insert_u32_partial_solve_wit_1_pure",
+    "probe_insert_u32_partial_solve_wit_1",
+    "probe_insert_u32_partial_solve_wit_2",
+    "probe_insert_u32_partial_solve_wit_3_pure",
+    "probe_insert_u32_partial_solve_wit_3"
+  ],
+  "actual_probe_C_fields": 12,
+  "goal_sha256": "a2fb737dbfa62cfed87e9fdcf4a0ac09f33a8984a4efa067963bc253dea2b219"
+}

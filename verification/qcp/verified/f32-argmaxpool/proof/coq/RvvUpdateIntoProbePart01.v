@@ -1,0 +1,6 @@
+From ArgmaxPool Require Import RvvUpdateIntoProbeSupport probe_goal.
+Module Checked.
+Lemma proof_of_ap_update_fullframe_probe_partial_solve_wit_1_pure:ArgmaxPool.probe_goal.ap_update_fullframe_probe_partial_solve_wit_1_pure.
+Proof. unfold ArgmaxPool.probe_goal.ap_update_fullframe_probe_partial_solve_wit_1_pure;apup_goal. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_ap_update_fullframe_probe_partial_solve_wit_1_pure.

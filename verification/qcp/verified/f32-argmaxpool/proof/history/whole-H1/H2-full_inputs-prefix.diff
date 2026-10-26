@@ -1,0 +1,19 @@
+--- a/proof/full_inputs.py
++++ b/proof/full_inputs.py
+@@ -43,6 +43,7 @@
+  if stem=='neon_unit':inputs+=['proof/generate_borrowed_kernels.py','proof/generate_neon_kernel.py','proof/generate_kernels.py']
+  if stem in {'annotated','block32'}:inputs+=['proof/annotation-plans/'+('rvv'if stem=='annotated'else'block32')+'.json']
+  if stem=='public_caller':inputs+=['shim/public_model.h']
++ if stem=='read_previous':inputs+=['shim/formal_model.h']
+  return dict(stem=stem,source=source,generator_source=generator,kind='live_runtime_with_comment_annotations'if generator else'actual_ordinary_C_body',direct_source_sha256={n:sha(CASE/n)for n in inputs})
+ def render_unit(stem,destination,expected_recipe=None):
+  dest=Path(destination);require(dest.resolve().is_relative_to((CASE/'.build').resolve()),'Private destination required');dest.parent.mkdir(parents=True,exist_ok=True);recipe=construction(stem);require(expected_recipe is None or expected_recipe==recipe,'Live source/recipe drift')
+@@ -52,6 +53,8 @@
+   require(raw==(CASE/recipe['source']).read_text(),'NEON renderer is not live impl')
+  elif stem in {'annotated','block32'}:
+   g=module('argmax_live_block_renderer',CASE/recipe['generator_source']);identity,text=g.render('rvv'if stem=='annotated'else'block32')
++ elif stem=='read_previous':
++  text='#include "'+str(CASE/'shim/formal_model.h')+'"\n#include "'+str(CASE/recipe['source'])+'"\n'
+  else:text='#include "'+str(CASE/recipe['source'])+'"\n'
+  if identity is not None:require(tokens(text)==tokens(identity),'Runtime tokens changed by annotations')
+  dest.write_text(text);raw=dest.with_name(stem+'.raw.c')if identity is not None else None

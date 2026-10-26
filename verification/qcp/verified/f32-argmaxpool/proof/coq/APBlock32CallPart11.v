@@ -1,0 +1,17 @@
+From Coq Require Import ZArith Lia.
+From ArgmaxPool Require Import APBlock32CallSupport block32_goal.
+Import Snaive_C_Rules64. Local Open Scope Z_scope. Local Open Scope sac. Local Open Scope string_scope.
+Module Checked.
+Lemma proof_of_ap_rvv_block32_partial_solve_wit_23_pure:ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_23_pure.
+Proof. unfold ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_23_pure;apbc_goal. Qed.
+Lemma proof_of_ap_rvv_block32_partial_solve_wit_23:ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_23.
+Proof. unfold ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_23,ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_23_aux;apbc_goal. Qed.
+Lemma proof_of_ap_rvv_block32_partial_solve_wit_24_pure:ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_24_pure.
+Proof. unfold ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_24_pure;apbc_goal. Qed.
+Lemma proof_of_ap_rvv_block32_partial_solve_wit_24:ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_24.
+Proof. unfold ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_24,ArgmaxPool.block32_goal.ap_rvv_block32_partial_solve_wit_24_aux;apbc_goal. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_ap_rvv_block32_partial_solve_wit_23_pure.
+Print Assumptions Checked.proof_of_ap_rvv_block32_partial_solve_wit_23.
+Print Assumptions Checked.proof_of_ap_rvv_block32_partial_solve_wit_24_pure.
+Print Assumptions Checked.proof_of_ap_rvv_block32_partial_solve_wit_24.

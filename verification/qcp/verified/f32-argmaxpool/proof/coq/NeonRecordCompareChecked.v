@@ -1,0 +1,28 @@
+From Coq Require Import ZArith Lia.
+From ArgmaxPool Require Import BorrowedConsumerSupport NeonRecordCompareModel neon_record_compare_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Ltac apnc_frame := unfold ArgmaxPool.VectorRecords.StructPredfloat32x4_t,
+ ArgmaxPool.VectorRecords.StructPreduint32x4_t,
+ ArgmaxPool.VectorRecords.UndefStructPredfloat32x4_t,
+ ArgmaxPool.VectorRecords.UndefStructPreduint32x4_t;
+ unfold ap_record_same_u4,ap_record_mask4;
+ cbn [ap_record_gt4 uint32x4_t_s0 uint32x4_t_s1 uint32x4_t_s2 uint32x4_t_s3];
+ apb_frame;try apply ap_gt_mask_cases.
+Module CheckedNeonRecordCompare:ArgmaxPool.neon_record_compare_goal.VC_Correct.
+Lemma proof_of_ap_record_neon_gt4_return_wit_1:ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_return_wit_1.
+Proof. unfold ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_return_wit_1;left;intros pb pa Right Left out;Exists (ap_record_gt4 Left Right);apnc_frame. Qed.
+Lemma proof_of_ap_record_neon_gt4_partial_solve_wit_1:ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_1.
+Proof. unfold ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_1;apb_intro;apnc_frame. Qed.
+Lemma proof_of_ap_record_neon_gt4_partial_solve_wit_2:ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_2.
+Proof. unfold ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_2;apb_intro;apnc_frame. Qed.
+Lemma proof_of_ap_record_neon_gt4_partial_solve_wit_3:ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_3.
+Proof. unfold ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_3;apb_intro;apnc_frame. Qed.
+Lemma proof_of_ap_record_neon_gt4_partial_solve_wit_4:ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_4.
+Proof. unfold ArgmaxPool.neon_record_compare_goal.ap_record_neon_gt4_partial_solve_wit_4;apb_intro;apnc_frame. Qed.
+End CheckedNeonRecordCompare.
+Module Exact:ArgmaxPool.neon_record_compare_goal.VC_Correct:=CheckedNeonRecordCompare.
+Print Assumptions Exact.proof_of_ap_record_neon_gt4_return_wit_1.
+Print Assumptions Exact.proof_of_ap_record_neon_gt4_partial_solve_wit_1.
+Print Assumptions Exact.proof_of_ap_record_neon_gt4_partial_solve_wit_2.
+Print Assumptions Exact.proof_of_ap_record_neon_gt4_partial_solve_wit_3.
+Print Assumptions Exact.proof_of_ap_record_neon_gt4_partial_solve_wit_4.

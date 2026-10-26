@@ -1,0 +1,23 @@
+{
+  "variant": "both-sides-unsigned-pooling-count-v1",
+  "semantic_repair_not_original_proof": true,
+  "whole_kernel_verified": false,
+  "reason": "Both originals narrow the positive size_t pooling_elements to int and can skip all input processing at2^31. Keep the actual64-bit count; saturate only the final9-element loop decrement to zero so unsigned subtraction cannot wrap. Inputs, tie order, FP operations and32-bit index wrap stay unchanged.",
+  "sides": {
+    "neon": {
+      "original_sha256": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+      "actual_sha256": "ac086ead21a86f8f2184aa7578773642b6089b55b3778c6af10adaa2e2d033ef",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "e18b66062fa261ecd5407986e0ef4bfaa9c3cf3e37e92c25511d855ccf30ddab"
+    },
+    "rvv": {
+      "original_sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+      "actual_sha256": "3cd83b5ae03e6119955d3ace8d5210054bf244413e8753d01c7568654cf86c85",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "e40d13412fe600abb3f885bd1d98300e667046b185c8a2aabac264c7345504f7"
+    }
+  },
+  "original_counterexamples": "proof/original-counterexamples.json",
+  "public_domain": "Intended full positive64-bit counts subject to real readable pointer-table/data/output-footprint ownership; no2^31 restriction",
+  "frama_reference": "Existing historical complex/cases/f32-argmaxpool inspected only; neither model nor proof credit inherited"
+}

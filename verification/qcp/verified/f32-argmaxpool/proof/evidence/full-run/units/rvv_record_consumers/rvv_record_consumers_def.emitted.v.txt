@@ -1,0 +1,665 @@
+Require Import Coq.ZArith.ZArith.
+Require Import Coq.Bool.Bool.
+Require Import Coq.Strings.String.
+Require Import Coq.Lists.List.
+Require Import Coq.Classes.RelationClasses.
+Require Import Coq.Classes.Morphisms.
+Require Import Coq.micromega.Psatz.
+Require Import Coq.Sorting.Permutation.
+From AUXLib Require Import int_auto Axioms Feq Idents ListLib VMap.
+Require Import SetsClass.SetsClass. Import SetsNotation.
+From SimpleC.SL Require Import Mem SeparationLogic.
+Require Import Logic.LogicGenerator.demo932.Interface.
+Local Open Scope Z_scope.
+Local Open Scope sets.
+Local Open Scope string.
+Local Open Scope list.
+Import naive_C_Rules.
+Local Open Scope sac.
+
+Record Recordvbool4_t : Type := make_record_vbool4_t {
+  vbool4_t_s0 : Z;
+  vbool4_t_s1 : Z;
+  vbool4_t_s2 : Z;
+  vbool4_t_s3 : Z;
+  vbool4_t_s4 : Z;
+  vbool4_t_s5 : Z;
+  vbool4_t_s6 : Z;
+  vbool4_t_s7 : Z;
+  vbool4_t_s8 : Z;
+  vbool4_t_s9 : Z;
+  vbool4_t_s10 : Z;
+  vbool4_t_s11 : Z;
+  vbool4_t_s12 : Z;
+  vbool4_t_s13 : Z;
+  vbool4_t_s14 : Z;
+  vbool4_t_s15 : Z;
+  vbool4_t_s16 : Z;
+  vbool4_t_s17 : Z;
+  vbool4_t_s18 : Z;
+  vbool4_t_s19 : Z;
+  vbool4_t_s20 : Z;
+  vbool4_t_s21 : Z;
+  vbool4_t_s22 : Z;
+  vbool4_t_s23 : Z;
+  vbool4_t_s24 : Z;
+  vbool4_t_s25 : Z;
+  vbool4_t_s26 : Z;
+  vbool4_t_s27 : Z;
+  vbool4_t_s28 : Z;
+  vbool4_t_s29 : Z;
+  vbool4_t_s30 : Z;
+  vbool4_t_s31 : Z
+}.
+
+Definition zero_record_vbool4_t : Recordvbool4_t :=
+  make_record_vbool4_t 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.
+
+Definition StructPredvbool4_t (x : Z) (v : Recordvbool4_t) : Assertion :=
+  ((&(x # "vbool4_t" ->ₛ "s0")) # UInt  |-> v.(vbool4_t_s0)) **
+  ((&(x # "vbool4_t" ->ₛ "s1")) # UInt  |-> v.(vbool4_t_s1)) **
+  ((&(x # "vbool4_t" ->ₛ "s2")) # UInt  |-> v.(vbool4_t_s2)) **
+  ((&(x # "vbool4_t" ->ₛ "s3")) # UInt  |-> v.(vbool4_t_s3)) **
+  ((&(x # "vbool4_t" ->ₛ "s4")) # UInt  |-> v.(vbool4_t_s4)) **
+  ((&(x # "vbool4_t" ->ₛ "s5")) # UInt  |-> v.(vbool4_t_s5)) **
+  ((&(x # "vbool4_t" ->ₛ "s6")) # UInt  |-> v.(vbool4_t_s6)) **
+  ((&(x # "vbool4_t" ->ₛ "s7")) # UInt  |-> v.(vbool4_t_s7)) **
+  ((&(x # "vbool4_t" ->ₛ "s8")) # UInt  |-> v.(vbool4_t_s8)) **
+  ((&(x # "vbool4_t" ->ₛ "s9")) # UInt  |-> v.(vbool4_t_s9)) **
+  ((&(x # "vbool4_t" ->ₛ "s10")) # UInt  |-> v.(vbool4_t_s10)) **
+  ((&(x # "vbool4_t" ->ₛ "s11")) # UInt  |-> v.(vbool4_t_s11)) **
+  ((&(x # "vbool4_t" ->ₛ "s12")) # UInt  |-> v.(vbool4_t_s12)) **
+  ((&(x # "vbool4_t" ->ₛ "s13")) # UInt  |-> v.(vbool4_t_s13)) **
+  ((&(x # "vbool4_t" ->ₛ "s14")) # UInt  |-> v.(vbool4_t_s14)) **
+  ((&(x # "vbool4_t" ->ₛ "s15")) # UInt  |-> v.(vbool4_t_s15)) **
+  ((&(x # "vbool4_t" ->ₛ "s16")) # UInt  |-> v.(vbool4_t_s16)) **
+  ((&(x # "vbool4_t" ->ₛ "s17")) # UInt  |-> v.(vbool4_t_s17)) **
+  ((&(x # "vbool4_t" ->ₛ "s18")) # UInt  |-> v.(vbool4_t_s18)) **
+  ((&(x # "vbool4_t" ->ₛ "s19")) # UInt  |-> v.(vbool4_t_s19)) **
+  ((&(x # "vbool4_t" ->ₛ "s20")) # UInt  |-> v.(vbool4_t_s20)) **
+  ((&(x # "vbool4_t" ->ₛ "s21")) # UInt  |-> v.(vbool4_t_s21)) **
+  ((&(x # "vbool4_t" ->ₛ "s22")) # UInt  |-> v.(vbool4_t_s22)) **
+  ((&(x # "vbool4_t" ->ₛ "s23")) # UInt  |-> v.(vbool4_t_s23)) **
+  ((&(x # "vbool4_t" ->ₛ "s24")) # UInt  |-> v.(vbool4_t_s24)) **
+  ((&(x # "vbool4_t" ->ₛ "s25")) # UInt  |-> v.(vbool4_t_s25)) **
+  ((&(x # "vbool4_t" ->ₛ "s26")) # UInt  |-> v.(vbool4_t_s26)) **
+  ((&(x # "vbool4_t" ->ₛ "s27")) # UInt  |-> v.(vbool4_t_s27)) **
+  ((&(x # "vbool4_t" ->ₛ "s28")) # UInt  |-> v.(vbool4_t_s28)) **
+  ((&(x # "vbool4_t" ->ₛ "s29")) # UInt  |-> v.(vbool4_t_s29)) **
+  ((&(x # "vbool4_t" ->ₛ "s30")) # UInt  |-> v.(vbool4_t_s30)) **
+  ((&(x # "vbool4_t" ->ₛ "s31")) # UInt  |-> v.(vbool4_t_s31)).
+
+Definition UndefStructPredvbool4_t (x : Z) : Assertion :=
+  ((&(x # "vbool4_t" ->ₛ "s0")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s1")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s2")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s3")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s4")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s5")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s6")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s7")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s8")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s9")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s10")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s11")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s12")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s13")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s14")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s15")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s16")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s17")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s18")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s19")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s20")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s21")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s22")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s23")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s24")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s25")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s26")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s27")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s28")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s29")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s30")) # UInt  |->_) **
+  ((&(x # "vbool4_t" ->ₛ "s31")) # UInt  |->_).
+
+Lemma store_Predvbool4_t_to_undef : forall x v,
+  StructPredvbool4_t x v |-- UndefStructPredvbool4_t x.
+Proof.
+  intros.
+  unfold StructPredvbool4_t, UndefStructPredvbool4_t.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  sep_apply store_uint_undef_store_uint.
+  cancel.
+Qed.
+
+Lemma undefstore_Predvbool4_t_to_align : forall x,
+  UndefStructPredvbool4_t x |-- store_align_n ((((((((((((((((((((((((((((((((0 + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)).
+Proof.
+  intros.
+  unfold UndefStructPredvbool4_t.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply undef_store_uint_align4.
+  sep_apply store_align4_to_store_align.
+  sep_apply (store_align_merge (4 * 1)).
+  sep_apply (store_align_merge ((4 * 1 + 4 * 1))).
+  sep_apply (store_align_merge (((4 * 1 + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  replace (((((((((((((((((((((((((((((((((0 + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4)) with 128 by lia.
+  replace ((((((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1)) with 128 by lia.
+  cancel.
+Qed.
+
+Lemma store_Predvbool4_t_to_align : forall x v,
+  StructPredvbool4_t x v |-- store_align_n ((((((((((((((((((((((((((((((((0 + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)).
+Proof.
+  intros.
+  sep_apply store_Predvbool4_t_to_undef.
+  sep_apply undefstore_Predvbool4_t_to_align.
+  cancel.
+Qed.
+
+Module StoreStructvbool4_tAsElement <: ELEMENT_STORE.
+  Definition A := Recordvbool4_t.
+  Definition sizeA := ((((((((((((((((((((((((((((((((0 + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)) + sizeof(UINT)).
+  Definition storeA (x: addr) (lo: Z) (a: Recordvbool4_t): Assertion :=
+    (StructPredvbool4_t (x + lo * sizeA) a).
+  Definition undefstoreA (x: addr) (lo: Z): Assertion :=
+    (UndefStructPredvbool4_t (x + lo * sizeA)).
+
+  Lemma store_to_undefstore : forall x lo a,
+    storeA x lo a |-- undefstoreA x lo.
+  Proof.
+    intros.
+    unfold storeA, undefstoreA.
+    sep_apply store_Predvbool4_t_to_undef.
+    cancel.
+  Qed.
+
+  Lemma storeA_shift : forall x n lo a,
+    storeA (x + n * sizeA) lo a --||-- storeA x (lo + n) a.
+  Proof.
+    intros.
+    unfold storeA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma undefstoreA_shift : forall x n lo,
+    undefstoreA (x + n * sizeA) lo --||-- undefstoreA x (lo + n).
+  Proof.
+    intros.
+    unfold undefstoreA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma store_to_align : forall x lo a, storeA x lo a |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold storeA, sizeA.
+    sep_apply store_Predvbool4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma undefstore_to_align : forall x lo, undefstoreA x lo |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold undefstoreA, sizeA.
+    sep_apply undefstore_Predvbool4_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
+  Proof.
+    unfold sizeA.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+  try rewrite sizeof_uint.
+    replace Int.max_unsigned with 4294967295 by reflexivity.
+    lia.
+  Qed.
+
+End StoreStructvbool4_tAsElement.
+
+Module Structvbool4_tArray := ArrayLib (StoreStructvbool4_tAsElement).
+
+Record Recordvfloat32m8_t : Type := make_record_vfloat32m8_t {
+  vfloat32m8_t_s0 : R;
+  vfloat32m8_t_s1 : R;
+  vfloat32m8_t_s2 : R;
+  vfloat32m8_t_s3 : R;
+  vfloat32m8_t_s4 : R;
+  vfloat32m8_t_s5 : R;
+  vfloat32m8_t_s6 : R;
+  vfloat32m8_t_s7 : R;
+  vfloat32m8_t_s8 : R;
+  vfloat32m8_t_s9 : R;
+  vfloat32m8_t_s10 : R;
+  vfloat32m8_t_s11 : R;
+  vfloat32m8_t_s12 : R;
+  vfloat32m8_t_s13 : R;
+  vfloat32m8_t_s14 : R;
+  vfloat32m8_t_s15 : R;
+  vfloat32m8_t_s16 : R;
+  vfloat32m8_t_s17 : R;
+  vfloat32m8_t_s18 : R;
+  vfloat32m8_t_s19 : R;
+  vfloat32m8_t_s20 : R;
+  vfloat32m8_t_s21 : R;
+  vfloat32m8_t_s22 : R;
+  vfloat32m8_t_s23 : R;
+  vfloat32m8_t_s24 : R;
+  vfloat32m8_t_s25 : R;
+  vfloat32m8_t_s26 : R;
+  vfloat32m8_t_s27 : R;
+  vfloat32m8_t_s28 : R;
+  vfloat32m8_t_s29 : R;
+  vfloat32m8_t_s30 : R;
+  vfloat32m8_t_s31 : R
+}.
+
+Definition zero_record_vfloat32m8_t : Recordvfloat32m8_t :=
+  make_record_vfloat32m8_t 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.
+
+Definition StructPredvfloat32m8_t (x : Z) (v : Recordvfloat32m8_t) : Assertion :=
+  ((&(x # "vfloat32m8_t" ->ₛ "s0")) # Int  |-> v.(vfloat32m8_t_s0)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s1")) # Int  |-> v.(vfloat32m8_t_s1)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s2")) # Int  |-> v.(vfloat32m8_t_s2)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s3")) # Int  |-> v.(vfloat32m8_t_s3)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s4")) # Int  |-> v.(vfloat32m8_t_s4)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s5")) # Int  |-> v.(vfloat32m8_t_s5)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s6")) # Int  |-> v.(vfloat32m8_t_s6)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s7")) # Int  |-> v.(vfloat32m8_t_s7)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s8")) # Int  |-> v.(vfloat32m8_t_s8)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s9")) # Int  |-> v.(vfloat32m8_t_s9)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s10")) # Int  |-> v.(vfloat32m8_t_s10)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s11")) # Int  |-> v.(vfloat32m8_t_s11)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s12")) # Int  |-> v.(vfloat32m8_t_s12)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s13")) # Int  |-> v.(vfloat32m8_t_s13)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s14")) # Int  |-> v.(vfloat32m8_t_s14)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s15")) # Int  |-> v.(vfloat32m8_t_s15)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s16")) # Int  |-> v.(vfloat32m8_t_s16)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s17")) # Int  |-> v.(vfloat32m8_t_s17)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s18")) # Int  |-> v.(vfloat32m8_t_s18)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s19")) # Int  |-> v.(vfloat32m8_t_s19)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s20")) # Int  |-> v.(vfloat32m8_t_s20)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s21")) # Int  |-> v.(vfloat32m8_t_s21)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s22")) # Int  |-> v.(vfloat32m8_t_s22)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s23")) # Int  |-> v.(vfloat32m8_t_s23)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s24")) # Int  |-> v.(vfloat32m8_t_s24)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s25")) # Int  |-> v.(vfloat32m8_t_s25)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s26")) # Int  |-> v.(vfloat32m8_t_s26)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s27")) # Int  |-> v.(vfloat32m8_t_s27)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s28")) # Int  |-> v.(vfloat32m8_t_s28)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s29")) # Int  |-> v.(vfloat32m8_t_s29)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s30")) # Int  |-> v.(vfloat32m8_t_s30)) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s31")) # Int  |-> v.(vfloat32m8_t_s31)).
+
+Definition UndefStructPredvfloat32m8_t (x : Z) : Assertion :=
+  ((&(x # "vfloat32m8_t" ->ₛ "s0")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s1")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s2")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s3")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s4")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s5")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s6")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s7")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s8")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s9")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s10")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s11")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s12")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s13")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s14")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s15")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s16")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s17")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s18")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s19")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s20")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s21")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s22")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s23")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s24")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s25")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s26")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s27")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s28")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s29")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s30")) # Int  |->_) **
+  ((&(x # "vfloat32m8_t" ->ₛ "s31")) # Int  |->_).
+
+Lemma store_Predvfloat32m8_t_to_undef : forall x v,
+  StructPredvfloat32m8_t x v |-- UndefStructPredvfloat32m8_t x.
+Proof.
+  intros.
+  unfold StructPredvfloat32m8_t, UndefStructPredvfloat32m8_t.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  sep_apply store_int_undef_store_int.
+  cancel.
+Qed.
+
+Lemma undefstore_Predvfloat32m8_t_to_align : forall x,
+  UndefStructPredvfloat32m8_t x |-- store_align_n ((((((((((((((((((((((((((((((((0 + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4).
+Proof.
+  intros.
+  unfold UndefStructPredvfloat32m8_t.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply undef_store_int_align4.
+  sep_apply store_align4_to_store_align.
+  sep_apply (store_align_merge (4 * 1)).
+  sep_apply (store_align_merge ((4 * 1 + 4 * 1))).
+  sep_apply (store_align_merge (((4 * 1 + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge ((((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  sep_apply (store_align_merge (((((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1))).
+  replace (((((((((((((((((((((((((((((((((0 + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4)) with 128 by lia.
+  replace ((((((((((((((((((((((((((((((((4 * 1 + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1) + 4 * 1)) with 128 by lia.
+  cancel.
+Qed.
+
+Lemma store_Predvfloat32m8_t_to_align : forall x v,
+  StructPredvfloat32m8_t x v |-- store_align_n ((((((((((((((((((((((((((((((((0 + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4).
+Proof.
+  intros.
+  sep_apply store_Predvfloat32m8_t_to_undef.
+  sep_apply undefstore_Predvfloat32m8_t_to_align.
+  cancel.
+Qed.
+
+Module StoreStructvfloat32m8_tAsElement <: ELEMENT_STORE.
+  Definition A := Recordvfloat32m8_t.
+  Definition sizeA := ((((((((((((((((((((((((((((((((0 + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4) + 4).
+  Definition storeA (x: addr) (lo: Z) (a: Recordvfloat32m8_t): Assertion :=
+    (StructPredvfloat32m8_t (x + lo * sizeA) a).
+  Definition undefstoreA (x: addr) (lo: Z): Assertion :=
+    (UndefStructPredvfloat32m8_t (x + lo * sizeA)).
+
+  Lemma store_to_undefstore : forall x lo a,
+    storeA x lo a |-- undefstoreA x lo.
+  Proof.
+    intros.
+    unfold storeA, undefstoreA.
+    sep_apply store_Predvfloat32m8_t_to_undef.
+    cancel.
+  Qed.
+
+  Lemma storeA_shift : forall x n lo a,
+    storeA (x + n * sizeA) lo a --||-- storeA x (lo + n) a.
+  Proof.
+    intros.
+    unfold storeA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma undefstoreA_shift : forall x n lo,
+    undefstoreA (x + n * sizeA) lo --||-- undefstoreA x (lo + n).
+  Proof.
+    intros.
+    unfold undefstoreA.
+    replace (x + n * sizeA + lo * sizeA) with (x + (lo + n) * sizeA) by lia.
+    reflexivity.
+  Qed.
+
+  Lemma store_to_align : forall x lo a, storeA x lo a |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold storeA, sizeA.
+    sep_apply store_Predvfloat32m8_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma undefstore_to_align : forall x lo, undefstoreA x lo |-- store_align_n sizeA.
+  Proof.
+    intros.
+    unfold undefstoreA, sizeA.
+    sep_apply undefstore_Predvfloat32m8_t_to_align.
+    cancel.
+  Qed.
+
+  Lemma sizeA_valid : 0 < sizeA < Int.max_unsigned.
+  Proof.
+    unfold sizeA.
+    replace Int.max_unsigned with 4294967295 by reflexivity.
+    lia.
+  Qed.
+
+End StoreStructvfloat32m8_tAsElement.
+
+Module Structvfloat32m8_tArray := ArrayLib (StoreStructvfloat32m8_tAsElement).
+

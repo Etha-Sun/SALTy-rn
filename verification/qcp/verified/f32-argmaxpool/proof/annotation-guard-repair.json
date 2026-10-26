@@ -1,0 +1,55 @@
+{
+  "kind": "annotation_control_fact_repair",
+  "timestamp_utc": "2026-10-25T12:08:33.996349+00:00",
+  "implementation_changed": false,
+  "public_precondition_changed": false,
+  "public_postcondition_changed": false,
+  "heap_ownership_changed": false,
+  "source_C_tokens_changed": false,
+  "issue": "A before-read Assert inside if(count<k) retained row/cursor/ownership facts but dropped count<k. Subsequent VC12_1 demanded read_cursor8+8=read_cursor9 even for k=1.",
+  "repair": "The NEW renderer adds the already established C-branch count<k to exactly the eight before-read cuts (count1..8) on each side. It retains all old assertions, owners and original C tokens.",
+  "old_constructors": {
+    "generate_kernels.py": "b245088b0cfa5539214312fb489f8a1a8c36c6d243321684b11f3dab613752ab",
+    "generate_neon_kernel.py": "48a9b2d2c1296b6cf0a47ca6e7e4bd276520a0c7bef260304bb4e8dec889fe59",
+    "generate_borrowed_kernels.py": "00e556f27b8266e5bde0ed3c3dc716551a638f8966badb1af5acbd96a5de2c57"
+  },
+  "new_constructor": {
+    "path": "proof/generate_guarded_borrowed_kernels.py",
+    "sha256": "7d5b56b23ea66b85895b1d668c927008d9f87b0a275f164857d5590cda142458"
+  },
+  "implementations": {
+    "impl/testNEON.c": "2960adeba2536e6ef01aa16b84ba7ad2581a376c9cdd8487ae073eb456aab062",
+    "impl/testRVV.c": "ac460e258c95014e7451be1eb40c3a8be67033bd3e235b0bedaf0748540742fa",
+    "spec.c": "1cd007a62a635e2019e68801e4d0dabf715476697decf5eff89d644b8eee0bc1"
+  },
+  "actual_guard_probe": {
+    "path": "proof/guard-cut-probe-status.json",
+    "sha256": "bcae211f314bf5423db34e0955e679fa1536362a18da2292705c2f9b55491836",
+    "actual_C_fields": 10,
+    "strict_typed_and_second_ascription": true,
+    "small_probe_only": true,
+    "probe_window9_is_not_a_public_kernel_requirement": true
+  },
+  "mathematical_witness": "forall p, app_read_cursor p 1 0 8 + 8 <> app_read_cursor p 1 0 9 (ordinary Coq Closed); this is an annotation sub-obligation witness, not a C implementation counterexample or a proof of negation of a complete spatial VC.",
+  "old_NEON_goal_sha256": "ef672ad136b5570b26e7eeb039d87e36467bcae3ffdac117fc892e39adce44b9",
+  "old_NEON_complete_kernel_accepted": false,
+  "old_components_retained": [
+    "proof/neon-base-status.json",
+    "proof/neon-read-calls-status.json",
+    "proof/neon-memory-entry-status.json",
+    "proof/neon-memory-initial-return-status.json",
+    "proof/neon-memory-table-status.json",
+    "proof/neon-memory-rows-status.json"
+  ],
+  "migration_rule": "No old objects count for new goals. Match each actual field definition SHA and compile its .v proof against the fresh exact new goal; changed fields receive new proofs.",
+  "old_RVV_retirement_receipt": {
+    "path": ".build/rvv-borrowed-kernel-q2f9wtph/retirement-history/retirement.json",
+    "sha256": "548b2c6c97073785356236b0d349482e3faf16064c1d68c6b762f1402e2bcc72",
+    "reason": "known annotation gap, actively superseded; qcp real exit -15, not a natural timeout or C counterexample"
+  },
+  "new_main_runs": {
+    "neon": ".build/neon-guarded-borrowed-pk32t288",
+    "rvv": ".build/rvv-guarded-borrowed-cbi_48pr"
+  },
+  "whole_kernel_verified": false
+}

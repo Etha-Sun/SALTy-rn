@@ -1,0 +1,19 @@
+From ArgmaxPool Require Import NeonReadCallPart00 NeonReadCallPart01 NeonReadCallPart02 NeonReadCallPart03 NeonReadCallPart04 NeonReadCallPart05 NeonReadCallPart06 NeonReadCallPart07 NeonReadCallPart08 NeonReadCallPart09 NeonReadCallPart10 NeonReadCallPart11 NeonReadCallPart12 NeonReadCallPart13 NeonReadCallPart14 NeonReadCallPart15.
+Module CheckedNeonReadCalls.
+Include ArgmaxPool.NeonReadCallPart00.Checked.
+Include ArgmaxPool.NeonReadCallPart01.Checked.
+Include ArgmaxPool.NeonReadCallPart02.Checked.
+Include ArgmaxPool.NeonReadCallPart03.Checked.
+Include ArgmaxPool.NeonReadCallPart04.Checked.
+Include ArgmaxPool.NeonReadCallPart05.Checked.
+Include ArgmaxPool.NeonReadCallPart06.Checked.
+Include ArgmaxPool.NeonReadCallPart07.Checked.
+Include ArgmaxPool.NeonReadCallPart08.Checked.
+Include ArgmaxPool.NeonReadCallPart09.Checked.
+Include ArgmaxPool.NeonReadCallPart10.Checked.
+Include ArgmaxPool.NeonReadCallPart11.Checked.
+Include ArgmaxPool.NeonReadCallPart12.Checked.
+Include ArgmaxPool.NeonReadCallPart13.Checked.
+Include ArgmaxPool.NeonReadCallPart14.Checked.
+Include ArgmaxPool.NeonReadCallPart15.Checked.
+End CheckedNeonReadCalls.

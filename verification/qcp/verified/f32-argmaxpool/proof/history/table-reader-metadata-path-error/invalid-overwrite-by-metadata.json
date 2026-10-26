@@ -1,0 +1,32 @@
+{
+  "variant": "both-sides-unsigned-count-and-ordinary-table-reader-v2",
+  "semantic_repair_not_original_proof": true,
+  "whole_kernel_verified": false,
+  "reason": "Both originals narrow the positive size_t pooling_elements to int and can skip all input processing at2^31. Keep the actual64-bit count; saturate only the final9-element loop decrement to zero so unsigned subtraction cannot wrap. Inputs, tie order, FP operations and32-bit index wrap stay unchanged.",
+  "sides": {
+    "neon": {
+      "original_sha256": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+      "actual_sha256": "0e47f5bed5a0096711fafd3f2a235ecaac73650a8760f5ebfbd0d286e355e01a",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "897dc0a746d24544d39e598089bf660074bab44c30d15611c627f25558cd8528"
+    },
+    "rvv": {
+      "original_sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+      "actual_sha256": "b0c590f6b13925c5d3d9a41c67f12de6062f994ca3b40dfaf553cb20fe91af23",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "1402e014dae2d2a6dd98da817b48a30d649ac769b9cc3323aff80c92835b37d7"
+    }
+  },
+  "original_counterexamples": "proof/original-counterexamples.json",
+  "public_domain": "Intended full positive64-bit counts subject to real readable pointer-table/data/output-footprint ownership; no2^31 restriction",
+  "frama_reference": "Existing historical complex/cases/f32-argmaxpool inspected only; neither model nor proof credit inherited",
+  "ordinary_refactor": {
+    "helper": "shim/read_table.c",
+    "reason": "Each indirect table read is routed through a proved ordinary C function that reads exactly *p once. The original id++ remains a single post-increment argument. This preserves table reuse/aliases without duplicating owned heap resources in per-call contracts. It is a disclosed implementation refactor, not an intrinsic exemption or a mechanically established original-source refinement.",
+    "calls_per_static_kernel": 9,
+    "actual_body_proof": "proof/read-table-status.json",
+    "actual_body_proof_sha256": "ccb4831eadcc1057569f94a9a19d3ff1b9316e9fed5a26bfa2d8df6145c76033",
+    "helper_sha256": "5c7fef59e14d3ca139403074a307d265bdd6ac089345f19209abcec0bb692527",
+    "prior_repair_preserved": "proof/history/before-ordinary-table-reader/proof/repair.json"
+  }
+}

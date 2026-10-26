@@ -109,9 +109,12 @@
         "repair_source": null
       },
       "qcp": {
-        "whole_kernel_proved": false,
-        "status": "inventoried_not_verified",
-        "status_scope": "original bodies + mapper + actual intrinsic bodies + comparator dependency closure"
+        "whole_kernel_proved": true,
+        "status": "proved",
+        "status_scope": "修复后的实际 NEON/RVV 主核、普通读表/读旧值/块更新/适配器与顺序公开 caller，在 spec.c 的 app_arguments/app_valid 和显式所有权条件下给出 C-shim 部分正确性与结果等价。XLEN64、小端；RVV 固定 VLEN128/SEW32/LMUL8/VLMAX32、vstart=0，覆盖该配置全部合法 VL 选择。全部 binary32，写入结果按精确浮点位和 u32 索引观察，保留 NaN payload、符号零、严格大于更新、并列索引及索引模 2^32。共享只读指针表/输入允许内部别名；每行 channels+3 可读 padding 值任意；表内指针值零在无符号偏移后窗口合法时允许。输出/索引各自可选值所有权允许初值 None，未写帧和跨像素回绕/重复写按模型保留。原 size_t→int 计数问题与 NEON 有效尾读修复、原件、精确 patch 和 2^31 有效表反例保留。30 个原生 intrinsic 规范视图/28 个名称仅在所列规格边界使用，人工语义审阅 pending；普通 C helper 不豁免实际函数体证明。未证明真实 ISA、物理 ABI、编译器精化、浮点异常标志/陷阱或终止性。",
+        "implementation_variant": "both-sides-unsigned-count-linear-evaluation-neon-active-tail-and-rvv-ordinary-block-v5",
+        "case": "verified/f32-argmaxpool",
+        "status_evidence": "verification/qcp/verified/f32-argmaxpool/proof/status.json"
       }
     },
     {

@@ -1,0 +1,165 @@
+{
+  "kind": "checked_ordinary_adapter_frontend_migration_not_semantic_impl_repair",
+  "implementation_sources_unchanged": {
+    "impl/testNEON.c": "2960adeba2536e6ef01aa16b84ba7ad2581a376c9cdd8487ae073eb456aab062",
+    "impl/testRVV.c": "ac460e258c95014e7451be1eb40c3a8be67033bd3e235b0bedaf0748540742fa"
+  },
+  "frozen_intrinsic_headers_unchanged": {
+    "shim/neon_specs.h": "7bd6bb444a064a5be2a63672bb8b9da6d2c6307cf5541db35552afcf0ba7ee0f",
+    "shim/rvv_specs.h": "f262c04a285eb4da7ef105358b0b5850729c3c6f47da9c2752e5655628f7db29"
+  },
+  "old_attempts": [
+    {
+      "status_path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/status.json",
+      "status_sha256": "93855424d68867f5ac4d022ee55f44c026f3eb215d2489231856c2ae229a61fc",
+      "passed": false,
+      "records": [
+        {
+          "label": "cpp",
+          "command": [
+            "prlimit",
+            "--as=34359738368:34359738368",
+            "--",
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/rvv_unit.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/annotated.i"
+          ],
+          "exit_code": 0,
+          "seconds": 0.022056696005165577,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "label": "raw-cpp",
+          "command": [
+            "prlimit",
+            "--as=34359738368:34359738368",
+            "--",
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/raw.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/raw.i"
+          ],
+          "exit_code": 0,
+          "seconds": 0.008151012007147074,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "label": "qcp",
+          "command": [
+            "prlimit",
+            "--as=34359738368:34359738368",
+            "--",
+            "qcp",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--strategy-application-limit=8192",
+            "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/annotated.i",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-kernel-d4dizdpb/generated",
+            "--coq-logic-path=ArgmaxPool",
+            "-slp",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim",
+            "ArgmaxPool"
+          ],
+          "exit_code": 124,
+          "seconds": 21600.384906330844,
+          "log_sha256": "740b541d60705cb473b6b022d317588a13c8dbc02c9a2a7272ae4e6c0ae67820"
+        }
+      ],
+      "scope": "old by-value transport frontend generation failure, not a C counterexample"
+    },
+    {
+      "status_path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/status.json",
+      "status_sha256": "996381aa6d9e7c4dc971c54b2922c54220a484fd6b93414c9acfa5db9d040761",
+      "passed": false,
+      "records": [
+        {
+          "label": "cpp",
+          "command": [
+            "prlimit",
+            "--as=34359738368:34359738368",
+            "--",
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/neon_unit.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/neon_unit.i"
+          ],
+          "exit_code": 0,
+          "seconds": 0.016350663965567946,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "label": "raw-cpp",
+          "command": [
+            "prlimit",
+            "--as=34359738368:34359738368",
+            "--",
+            "gcc",
+            "-E",
+            "-P",
+            "-CC",
+            "-nostdinc",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/raw.c",
+            "-o",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/raw.i"
+          ],
+          "exit_code": 0,
+          "seconds": 0.016235411167144775,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "label": "qcp",
+          "command": [
+            "prlimit",
+            "--as=34359738368:34359738368",
+            "--",
+            "qcp",
+            "--arch=64",
+            "--endian=little",
+            "--no-float-finite-vc",
+            "--no-exec-info",
+            "--strategy-application-limit=8192",
+            "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/neon_unit.i",
+            "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-kernel-gce1tumd/generated",
+            "--coq-logic-path=ArgmaxPool",
+            "-slp",
+            "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim",
+            "ArgmaxPool"
+          ],
+          "exit_code": -11,
+          "seconds": 5310.401488729054,
+          "log_sha256": "566c235d4ec3a29d2545068563f27e22ce9affa80869d3d7b69a3e16ce927653"
+        }
+      ],
+      "scope": "old by-value transport frontend generation failure, not a C counterexample"
+    }
+  ],
+  "ordinary_adapter_status": "proof/borrowed-consumers-status.json",
+  "ordinary_adapter_status_sha256": "d73589ee2d8579dd49e5c0982f2601ed959dc47dee68f828f6c5adc67ee871bd",
+  "adapter_body_source": "shim/borrowed_consumers.c",
+  "adapter_body_sha256": "bd8ae35147397f5adc3801c44b5809e4b7bdbeb90afa023322d760dcbbfc87dd",
+  "bindings": "shim/borrowed_bindings.h",
+  "bindings_sha256": "597b0c2199182f8477a4be1503a19320c24f578bb7ca506ebbd938dac7c40d42",
+  "scalar_fp_observation": "exact structural binary32 equality, including signaling bit and NaN sign/payload; never weakened to numeric-or-bothNaN",
+  "all_legal_RVV_VL_choices_unchanged": true,
+  "inactive_RVV_lanes_unconstrained": true,
+  "single_operand_evaluation": "each actual selected call has distinct named local objects; macro takes each address once; aliasing source input rows remains unrestricted",
+  "no_new_public_precondition": true,
+  "ordinary_helpers_not_intrinsic_exemptions": true,
+  "main_kernel_verified": false,
+  "whole_kernel_verified": false
+}

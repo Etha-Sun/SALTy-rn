@@ -1,0 +1,13 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -30,8 +30,8 @@
+     assert(!ab);
+     assert(!ib);
+ 
+-    int k = (int) pooling_elements;
+-    for (; k > 0; k -= 9) {
++    size_t k = pooling_elements;
++    for (; k > 0; k = k > 9 ? k - 9 : 0) {
+       const float* i0 = *id++;
+       const float* i1 = 1 < k ? *id++ : i0;
+       const float* i2 = 2 < k ? *id++ : i0;

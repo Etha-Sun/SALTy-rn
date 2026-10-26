@@ -1,0 +1,94 @@
+{
+  "variant": "both-sides-unsigned-count-linear-evaluation-neon-active-tail-and-rvv-ordinary-block-v5",
+  "semantic_repair_not_original_proof": true,
+  "whole_kernel_verified": false,
+  "reason": "Both originals narrow the positive size_t pooling_elements to int and can skip all input processing at2^31. Keep the actual64-bit count; saturate only the final9-element loop decrement to zero so unsigned subtraction cannot wrap. Inputs, tie order, FP operations and32-bit index wrap stay unchanged.",
+  "sides": {
+    "neon": {
+      "original_sha256": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+      "actual_sha256": "2960adeba2536e6ef01aa16b84ba7ad2581a376c9cdd8487ae073eb456aab062",
+      "patch": "proof/repair-neon.patch",
+      "patch_sha256": "58a465c82cd25d225a708eb6283eff39db72f0bbf9cdf3ead40e5fa47c402ad2"
+    },
+    "rvv": {
+      "original_sha256": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+      "actual_sha256": "088b200265be5efeb738deb953f5729436149ff86aefc11bbad2ca9b74e20ad5",
+      "patch": "proof/repair-rvv.patch",
+      "patch_sha256": "383d51780201a4e4504a282d3660574bbf1a251dcfd7f2130e9371323e0c96a4"
+    }
+  },
+  "original_counterexamples": "proof/original-counterexamples.json",
+  "public_domain": "Intended full positive64-bit counts subject to real readable pointer-table/data/output-footprint ownership; no2^31 restriction",
+  "frama_reference": "Existing historical complex/cases/f32-argmaxpool inspected only; neither model nor proof credit inherited",
+  "ordinary_refactor": {
+    "helper": "shim/read_table.c",
+    "reason": "Each indirect read uses the proved ordinary ap_read_table(id), followed by a separate id+=1. Conditional rows advance the table cursor exactly once only on their original branch. No private-vector rewriting or intrinsic exemption. This compatibility edit makes evaluation order explicit for QCP; it is disclosed as adapted C, not a proved original-source refinement.",
+    "calls_per_static_kernel": 9,
+    "actual_body_proof": "proof/read-table-status.json",
+    "actual_body_proof_sha256": "a691d1e27f0f5318b4e598ae39224998264e40004fc5c3b4d6203ba478061523",
+    "helper_sha256": "7fedee64834407205896c5b4f80d5aeff5ddb0bfb46ce662f44ed397f2cba350",
+    "prior_repair_preserved": "proof/history/before-ordinary-table-reader/proof/repair.json",
+    "explicit_nonnull_precondition": true,
+    "scope": "Public pointer-table windows already imply nonnull. The ordinary helper separately requires p!=0; prior receipt with weaker standalone pointer predicate remains historical."
+  },
+  "evaluation_compatibility": {
+    "prior_repair": "proof/history/before-linear-evaluation-v3/proof/repair.json",
+    "reason": "QCP front-end does not accept post-increment as a function argument or pre-decrement in a do-while condition. Split the one-argument readonly table read from its local pointer increment, and sequence the same local pixel decrement at the end of the body immediately before the unchanged comparison. No floating operation, access branch, count domain or tie order changes.",
+    "ordinary_reader_body_unchanged": true,
+    "loop_shape": "original do-while and original vector operations retained; only local side-effect expressions linearized",
+    "new_semantic_counterexample_claimed": false,
+    "current_native_replay_pending": false,
+    "current_native_receipt": "proof/native-status.json",
+    "current_native_receipt_sha256": "245a9deb61e1968ece66c65a9f62257e400969d552beca78be435425c18c2d62"
+  },
+  "active_tail_repair": {
+    "prior_repair": "proof/history/before-active-tail-v4/proof/repair.json",
+    "reason": "Read only initialized active previous-output and index lanes for the NEON c=1..3 tail. Avoid reading unwritten inactive padding; do not add padding initialization or stronger output-capacity preconditions. First pass, bulk path, strict comparison order, original index tie order and RVV arithmetic remain unchanged.",
+    "new_semantic_counterexample_claimed": false,
+    "scope": "Explicit implementation repair; no original-to-repaired source refinement is claimed. Complete repaired equivalence requires the separate whole-case gate; see proof/status.json.",
+    "ordinary_readers": "shim/read_previous.c",
+    "reader_actual_C_fields": 4,
+    "reader_proof": "proof/read-previous-proof-status.json",
+    "reader_proof_sha256": "c986dd08dd362b68214ab8c26e189dd07881637052158ba424c328224f0e68cd",
+    "original_intrinsic_operations_added": [
+      "vsetq_lane_f32",
+      "vsetq_lane_u32"
+    ],
+    "intrinsic_source_version": "ARM-software/acle aef52c2b0944bf652443c1acd867dbb893af8dd0",
+    "current_native_replay_pending": false,
+    "current_native_receipt": "proof/native-status.json",
+    "current_native_receipt_sha256": "245a9deb61e1968ece66c65a9f62257e400969d552beca78be435425c18c2d62"
+  },
+  "ordinary_rvv_channel_block": {
+    "reason": "Extract the genuine nine ordered candidate loads/strict comparisons/float and uint32 merges and paired stores into an ordinary C function so QCP can process the actual main within a finite budget. Preserve all original native operations and hardware parameters. Move only nonescaping local cursor increments after the helper returns. This is an explicit C compatibility refactor, not a newly claimed semantic bug or an original-to-repaired source-refinement proof.",
+    "helpers": {
+      "shim/rvv_block32.c": "d89018eb1d1ac39875a406917a48bb3d34be16ec5e34ae2d271410013876b4c0",
+      "shim/rvv_block32.h": "77200fd7470d41425f8ed42d0ddd82e2591774284127f9788188e51a0f2ccd75",
+      "shim/rvv_update_into.c": "8ae55d1890d99c440b7b3caeafb0140a8f413784d0c9a3ab8d3bea959b212e9f",
+      "shim/rvv_update_into.h": "86861836a43570893f8bedc7b764e8b3e81a5e8166f81a8d0266bf8e5da317b4"
+    },
+    "helper_actual_C_fields": 93,
+    "helper_proof": "proof/apblock32-full-status.json",
+    "helper_proof_sha256": "434d1f8aea3e05094d923be6409ec81f15e9794ec26fccdc0aae50243904af03",
+    "main_actual_C_fields": 274,
+    "main_component_proof": "proof/ap-block-main-proof-status.json",
+    "main_component_proof_sha256": "e1738edf19d3001df90bcb7232b73f8b10461ec05efc93a577c9f235a5dadaf8",
+    "fixed_RVV": "XLEN64/VLEN128/SEW32/LMUL8/VLMAX32, all legal VL choices",
+    "original_public_domain_and_exact_FPbits_u32_observation_preserved": true,
+    "current_native_replay_pending": false,
+    "prior_runtime_and_repair": "proof/history/before-ordinary-block32-runtime",
+    "current_native_receipt": "proof/native-status.json",
+    "current_native_receipt_sha256": "245a9deb61e1968ece66c65a9f62257e400969d552beca78be435425c18c2d62",
+    "current_public_native_receipt": "proof/public-native-status.json",
+    "current_public_native_receipt_sha256": "74ea0b5ed2dc43ae224e08bf98de4bf4dd59e312f5b56efa32317647271b48db",
+    "current_main_CPP_target_receipt": "proof/public-main-render-status.json",
+    "current_main_CPP_target_receipt_sha256": "da870ecc90c29312de1aaef73f892be698bc61e8e6b5c65c8d4356b1df1c9f32",
+    "whole_case_gate_required": true,
+    "whole_case_status_reference": "proof/status.json"
+  },
+  "current_native_replay_pending": false,
+  "ordinary_block32_preparation_ready": true,
+  "current_native_receipt": "proof/native-status.json",
+  "current_native_receipt_sha256": "245a9deb61e1968ece66c65a9f62257e400969d552beca78be435425c18c2d62",
+  "verification_status_reference": "proof/status.json; this repair record alone grants no whole-kernel proof credit"
+}

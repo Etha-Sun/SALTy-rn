@@ -1,0 +1,8 @@
+From ArgmaxPool Require Import RvvRecordConsumerSupport rvv_record_consumers_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedRvvRecordConsumerPart10.
+Lemma proof_of_ap_record_rvv_merge32_partial_solve_wit_4_pure:ArgmaxPool.rvv_record_consumers_goal.ap_record_rvv_merge32_partial_solve_wit_4_pure.
+Proof. unfold ArgmaxPool.rvv_record_consumers_goal.ap_record_rvv_merge32_partial_solve_wit_4_pure;apb_intro;
+aprr_frame. Qed.
+End CheckedRvvRecordConsumerPart10.
+Print Assumptions CheckedRvvRecordConsumerPart10.proof_of_ap_record_rvv_merge32_partial_solve_wit_4_pure.

@@ -1,0 +1,43 @@
+From Coq Require Import ZArith Lia.
+From ArgmaxPool Require Import BorrowedConsumerSupport.
+From ArgmaxPool Require Import record_consumers_goal.
+From ArgmaxPool Require Import VectorRecords.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Ltac apr_frame := unfold ArgmaxPool.VectorRecords.StructPredfloat32x4_t,
+ ArgmaxPool.VectorRecords.StructPreduint32x4_t,
+ ArgmaxPool.VectorRecords.UndefStructPredfloat32x4_t,
+ ArgmaxPool.VectorRecords.UndefStructPreduint32x4_t;
+ unfold ap_record_mask4 in *;repeat match goal with H:_ /\ _ |- _=>destruct H end;
+ cbn [ap_record_same4 ap_record_select4 float32x4_t_s0 float32x4_t_s1 float32x4_t_s2 float32x4_t_s3];apb_frame.
+Module CheckedRecordConsumers:ArgmaxPool.record_consumers_goal.VC_Correct.
+Lemma proof_of_ap_record_select4_borrow_return_wit_1:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_return_wit_1.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_return_wit_1;left;intros pm pb pa Mask Right Left out Hmask;
+Exists (ap_record_select4 Mask Left Right);
+apr_frame. Qed.
+Lemma proof_of_ap_record_select4_borrow_partial_solve_wit_1:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_1.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_1;apb_intro;
+apr_frame. Qed.
+Lemma proof_of_ap_record_select4_borrow_partial_solve_wit_2:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_2.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_2;apb_intro;
+apr_frame. Qed.
+Lemma proof_of_ap_record_select4_borrow_partial_solve_wit_3:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_3.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_3;apb_intro;
+apr_frame. Qed.
+Lemma proof_of_ap_record_select4_borrow_partial_solve_wit_4_pure:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_4_pure.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_4_pure;apb_intro;
+apr_frame. Qed.
+Lemma proof_of_ap_record_select4_borrow_partial_solve_wit_4:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_4.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_4,ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_4_aux;apb_intro;
+apr_frame. Qed.
+Lemma proof_of_ap_record_select4_borrow_partial_solve_wit_5:ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_5.
+Proof. unfold ArgmaxPool.record_consumers_goal.ap_record_select4_borrow_partial_solve_wit_5;apb_intro;
+apr_frame. Qed.
+End CheckedRecordConsumers.
+Module Exact:ArgmaxPool.record_consumers_goal.VC_Correct:=CheckedRecordConsumers.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_return_wit_1.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_partial_solve_wit_1.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_partial_solve_wit_2.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_partial_solve_wit_3.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_partial_solve_wit_4_pure.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_partial_solve_wit_4.
+Print Assumptions Exact.proof_of_ap_record_select4_borrow_partial_solve_wit_5.

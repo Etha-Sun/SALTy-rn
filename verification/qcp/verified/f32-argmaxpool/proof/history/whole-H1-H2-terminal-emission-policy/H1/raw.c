@@ -1,0 +1,459 @@
+typedef unsigned long long size_t;
+typedef unsigned long long uintptr_t;
+typedef unsigned int uint32_t;
+/*@ Import Coq Require Import ArgmaxPool.Model ArgmaxPool.MemoryModel */
+/*@ Extern Coq (APMap :: *) */
+/*@ Extern Coq (ap_data:APMap->Assertion)
+ (ap_get:APMap->Z->fp32) (ap_present:APMap->Z->Prop)
+ (ap_window:APMap->Z->Z->Prop) (ap_load_lane:APMap->Z->Z->fp32)
+ (ap_gt_mask:fp32->fp32->Z) (ap_bool_mask:Z->Prop)
+ (ap_same_bits:fp32->fp32->Prop)
+ (ap_u32:Z->Z) (ap_vl:Z->Z) (ap_add_u32:Z->Z->Z)
+ (ap_select_f32:Z->fp32->fp32->fp32) (ap_select_u32:Z->Z->Z->Z)
+ (PtrArray::full:Z->Z->list Z->Assertion)
+ (FloatArray::full:Z->Z->list fp32->Assertion)
+ (FloatArray::undef_full:Z->Z->Assertion)
+ (UIntArray::full:Z->Z->list Z->Assertion)
+ (UIntArray::undef_full:Z->Z->Assertion)
+ (Znth:{A}->Z->list A->A->A) */
+/*@ Import Coq Require Import ArgmaxPool.Types */
+typedef struct float32x4_t{float s0; float s1; float s2; float s3;}float32x4_t;
+typedef struct float32x2_t{float s0; float s1;}float32x2_t;
+typedef struct uint32x4_t{uint32_t s0; uint32_t s1; uint32_t s2; uint32_t s3;}uint32x4_t;
+typedef struct uint32x2_t{uint32_t s0; uint32_t s1;}uint32x2_t;
+typedef struct vfloat32m8_t{float s0; float s1; float s2; float s3; float s4; float s5; float s6; float s7; float s8; float s9; float s10; float s11; float s12; float s13; float s14; float s15; float s16; float s17; float s18; float s19; float s20; float s21; float s22; float s23; float s24; float s25; float s26; float s27; float s28; float s29; float s30; float s31;}vfloat32m8_t;
+typedef struct vuint32m8_t{uint32_t s0; uint32_t s1; uint32_t s2; uint32_t s3; uint32_t s4; uint32_t s5; uint32_t s6; uint32_t s7; uint32_t s8; uint32_t s9; uint32_t s10; uint32_t s11; uint32_t s12; uint32_t s13; uint32_t s14; uint32_t s15; uint32_t s16; uint32_t s17; uint32_t s18; uint32_t s19; uint32_t s20; uint32_t s21; uint32_t s22; uint32_t s23; uint32_t s24; uint32_t s25; uint32_t s26; uint32_t s27; uint32_t s28; uint32_t s29; uint32_t s30; uint32_t s31;}vuint32m8_t;
+typedef struct vbool4_t{uint32_t s0; uint32_t s1; uint32_t s2; uint32_t s3; uint32_t s4; uint32_t s5; uint32_t s6; uint32_t s7; uint32_t s8; uint32_t s9; uint32_t s10; uint32_t s11; uint32_t s12; uint32_t s13; uint32_t s14; uint32_t s15; uint32_t s16; uint32_t s17; uint32_t s18; uint32_t s19; uint32_t s20; uint32_t s21; uint32_t s22; uint32_t s23; uint32_t s24; uint32_t s25; uint32_t s26; uint32_t s27; uint32_t s28; uint32_t s29; uint32_t s30; uint32_t s31;}vbool4_t;
+/*@ Import Coq Require Import ArgmaxPool.ProgramModel ArgmaxPool.MemoryFacts */
+/*@ Extern Coq (APPtrMap :: *) */
+/*@ Extern Coq (ap_ptr_present:APPtrMap->Z->Prop) (ap_ptr_data:APPtrMap->Assertion) (ap_ptr_get:APPtrMap->Z->Z) (ap_ptr_pop:APPtrMap->Z->APPtrMap) */
+const float* ap_read_table(const float** p)
+/*@ With (P:APPtrMap) Require p!=0 && ap_ptr_present(P,p) && ap_ptr_data(P)
+ Ensure __return==ap_ptr_get(P,p) && ap_ptr_data(P) */;
+/*@ Import Coq Require Import ArgmaxPool.APKernelModel */
+/*@ Extern Coq (APProgram :: *) (APOutput :: *) (APIndex :: *) */
+/*@ Extern Coq
+ (app_arguments:APProgram->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Prop)
+ (app_valid:APMap->APPtrMap->list Z->list Z->APProgram->Prop)
+ (ap_output:list Z->APOutput->Assertion) (ap_index:list Z->APIndex->Assertion)
+ (app_neon_output:APMap->APPtrMap->APProgram->APOutput->APIndex->APOutput)
+ (app_neon_index:APMap->APPtrMap->APProgram->APOutput->APIndex->APIndex)
+ (app_rvv_output:APMap->APPtrMap->APProgram->APOutput->APIndex->APOutput)
+ (app_rvv_index:APMap->APPtrMap->APProgram->APOutput->APIndex->APIndex)
+ */
+void ap_assert(int condition)
+/*@ Require condition!=0 && emp Ensure emp */;
+/*@ Import Coq Require Import ArgmaxPool.RvvKernelModel */
+/*@ Extern Coq (APOutput :: *) (APIndex :: *) */
+/*@ Extern Coq
+ (ap_vl_allowed:Z->Z->Prop)
+ (apr_float_lane:Z->Z->fp32->fp32->Prop) (apr_int_lane:Z->Z->Z->Z->Prop)
+ (ap_rvv_gt:fp32->fp32->Z) (ap_rvv_select_f32:Z->fp32->fp32->fp32)
+ (ap_rvv_select_u32:Z->Z->Z->Z) (ap_rvv_mask_active:Z->Z->Z->Prop)
+ (ap_output:list Z->APOutput->Assertion) (ap_index:list Z->APIndex->Assertion)
+ (ap_write_window:list Z->Z->Z->Prop)
+ (ap_output_readable:APOutput->Z->Z->Prop) (ap_index_readable:APIndex->Z->Z->Prop)
+ (ap_output_active_loaded:Z->Z->APOutput->Z->fp32->Prop)
+ (ap_index_active_loaded:Z->Z->APIndex->Z->Z->Prop)
+ (ap_output_write:APOutput->Z->Z->(Z->fp32)->APOutput)
+ (ap_index_write:APIndex->Z->Z->(Z->Z)->APIndex)
+ (ap_fpack32:fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->fp32->Z->fp32)
+ (ap_ipack32:Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z->Z)
+ */
+size_t __riscv_vsetvl_e32m8(size_t avl)
+/*@ Require emp
+ Ensure ap_vl_allowed(avl,__return) && emp */;
+vfloat32m8_t __riscv_vle32_v_f32m8(const float*p,size_t vl)
+/*@ readonly_map With (F:APMap) Require 0<=vl && vl<=32 && ap_window(F,p,vl) && ap_data(F)
+ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), apr_float_lane(0,vl,r0,ap_load_lane(F,p,0)) && apr_float_lane(1,vl,r1,ap_load_lane(F,p,1)) && apr_float_lane(2,vl,r2,ap_load_lane(F,p,2)) && apr_float_lane(3,vl,r3,ap_load_lane(F,p,3)) && apr_float_lane(4,vl,r4,ap_load_lane(F,p,4)) && apr_float_lane(5,vl,r5,ap_load_lane(F,p,5)) && apr_float_lane(6,vl,r6,ap_load_lane(F,p,6)) && apr_float_lane(7,vl,r7,ap_load_lane(F,p,7)) && apr_float_lane(8,vl,r8,ap_load_lane(F,p,8)) && apr_float_lane(9,vl,r9,ap_load_lane(F,p,9)) && apr_float_lane(10,vl,r10,ap_load_lane(F,p,10)) && apr_float_lane(11,vl,r11,ap_load_lane(F,p,11)) && apr_float_lane(12,vl,r12,ap_load_lane(F,p,12)) && apr_float_lane(13,vl,r13,ap_load_lane(F,p,13)) && apr_float_lane(14,vl,r14,ap_load_lane(F,p,14)) && apr_float_lane(15,vl,r15,ap_load_lane(F,p,15)) && apr_float_lane(16,vl,r16,ap_load_lane(F,p,16)) && apr_float_lane(17,vl,r17,ap_load_lane(F,p,17)) && apr_float_lane(18,vl,r18,ap_load_lane(F,p,18)) && apr_float_lane(19,vl,r19,ap_load_lane(F,p,19)) && apr_float_lane(20,vl,r20,ap_load_lane(F,p,20)) && apr_float_lane(21,vl,r21,ap_load_lane(F,p,21)) && apr_float_lane(22,vl,r22,ap_load_lane(F,p,22)) && apr_float_lane(23,vl,r23,ap_load_lane(F,p,23)) && apr_float_lane(24,vl,r24,ap_load_lane(F,p,24)) && apr_float_lane(25,vl,r25,ap_load_lane(F,p,25)) && apr_float_lane(26,vl,r26,ap_load_lane(F,p,26)) && apr_float_lane(27,vl,r27,ap_load_lane(F,p,27)) && apr_float_lane(28,vl,r28,ap_load_lane(F,p,28)) && apr_float_lane(29,vl,r29,ap_load_lane(F,p,29)) && apr_float_lane(30,vl,r30,ap_load_lane(F,p,30)) && apr_float_lane(31,vl,r31,ap_load_lane(F,p,31)) && ap_data(F) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;
+vfloat32m8_t __riscv_vle32_v_f32m8(const float*p,size_t vl)
+/*@ output_map With (W:list Z) (O:APOutput) Require 0<=vl && vl<=32 && ap_write_window(W,p,vl) && ap_output_readable(O,p,vl) && ap_output(W,O)
+ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), ap_output_active_loaded(0,vl,O,p,r0) && ap_output_active_loaded(1,vl,O,p,r1) && ap_output_active_loaded(2,vl,O,p,r2) && ap_output_active_loaded(3,vl,O,p,r3) && ap_output_active_loaded(4,vl,O,p,r4) && ap_output_active_loaded(5,vl,O,p,r5) && ap_output_active_loaded(6,vl,O,p,r6) && ap_output_active_loaded(7,vl,O,p,r7) && ap_output_active_loaded(8,vl,O,p,r8) && ap_output_active_loaded(9,vl,O,p,r9) && ap_output_active_loaded(10,vl,O,p,r10) && ap_output_active_loaded(11,vl,O,p,r11) && ap_output_active_loaded(12,vl,O,p,r12) && ap_output_active_loaded(13,vl,O,p,r13) && ap_output_active_loaded(14,vl,O,p,r14) && ap_output_active_loaded(15,vl,O,p,r15) && ap_output_active_loaded(16,vl,O,p,r16) && ap_output_active_loaded(17,vl,O,p,r17) && ap_output_active_loaded(18,vl,O,p,r18) && ap_output_active_loaded(19,vl,O,p,r19) && ap_output_active_loaded(20,vl,O,p,r20) && ap_output_active_loaded(21,vl,O,p,r21) && ap_output_active_loaded(22,vl,O,p,r22) && ap_output_active_loaded(23,vl,O,p,r23) && ap_output_active_loaded(24,vl,O,p,r24) && ap_output_active_loaded(25,vl,O,p,r25) && ap_output_active_loaded(26,vl,O,p,r26) && ap_output_active_loaded(27,vl,O,p,r27) && ap_output_active_loaded(28,vl,O,p,r28) && ap_output_active_loaded(29,vl,O,p,r29) && ap_output_active_loaded(30,vl,O,p,r30) && ap_output_active_loaded(31,vl,O,p,r31) && ap_output(W,O) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;
+vuint32m8_t __riscv_vle32_v_u32m8(const uint32_t*p,size_t vl)
+/*@ output_map With (W:list Z) (O:APIndex) Require 0<=vl && vl<=32 && ap_write_window(W,p,vl) && ap_index_readable(O,p,vl) && ap_index(W,O)
+ Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), ap_index_active_loaded(0,vl,O,p,r0) && ap_index_active_loaded(1,vl,O,p,r1) && ap_index_active_loaded(2,vl,O,p,r2) && ap_index_active_loaded(3,vl,O,p,r3) && ap_index_active_loaded(4,vl,O,p,r4) && ap_index_active_loaded(5,vl,O,p,r5) && ap_index_active_loaded(6,vl,O,p,r6) && ap_index_active_loaded(7,vl,O,p,r7) && ap_index_active_loaded(8,vl,O,p,r8) && ap_index_active_loaded(9,vl,O,p,r9) && ap_index_active_loaded(10,vl,O,p,r10) && ap_index_active_loaded(11,vl,O,p,r11) && ap_index_active_loaded(12,vl,O,p,r12) && ap_index_active_loaded(13,vl,O,p,r13) && ap_index_active_loaded(14,vl,O,p,r14) && ap_index_active_loaded(15,vl,O,p,r15) && ap_index_active_loaded(16,vl,O,p,r16) && ap_index_active_loaded(17,vl,O,p,r17) && ap_index_active_loaded(18,vl,O,p,r18) && ap_index_active_loaded(19,vl,O,p,r19) && ap_index_active_loaded(20,vl,O,p,r20) && ap_index_active_loaded(21,vl,O,p,r21) && ap_index_active_loaded(22,vl,O,p,r22) && ap_index_active_loaded(23,vl,O,p,r23) && ap_index_active_loaded(24,vl,O,p,r24) && ap_index_active_loaded(25,vl,O,p,r25) && ap_index_active_loaded(26,vl,O,p,r26) && ap_index_active_loaded(27,vl,O,p,r27) && ap_index_active_loaded(28,vl,O,p,r28) && ap_index_active_loaded(29,vl,O,p,r29) && ap_index_active_loaded(30,vl,O,p,r30) && ap_index_active_loaded(31,vl,O,p,r31) && ap_index(W,O) * store(&(__return.s0),unsigned int,r0) * store(&(__return.s1),unsigned int,r1) * store(&(__return.s2),unsigned int,r2) * store(&(__return.s3),unsigned int,r3) * store(&(__return.s4),unsigned int,r4) * store(&(__return.s5),unsigned int,r5) * store(&(__return.s6),unsigned int,r6) * store(&(__return.s7),unsigned int,r7) * store(&(__return.s8),unsigned int,r8) * store(&(__return.s9),unsigned int,r9) * store(&(__return.s10),unsigned int,r10) * store(&(__return.s11),unsigned int,r11) * store(&(__return.s12),unsigned int,r12) * store(&(__return.s13),unsigned int,r13) * store(&(__return.s14),unsigned int,r14) * store(&(__return.s15),unsigned int,r15) * store(&(__return.s16),unsigned int,r16) * store(&(__return.s17),unsigned int,r17) * store(&(__return.s18),unsigned int,r18) * store(&(__return.s19),unsigned int,r19) * store(&(__return.s20),unsigned int,r20) * store(&(__return.s21),unsigned int,r21) * store(&(__return.s22),unsigned int,r22) * store(&(__return.s23),unsigned int,r23) * store(&(__return.s24),unsigned int,r24) * store(&(__return.s25),unsigned int,r25) * store(&(__return.s26),unsigned int,r26) * store(&(__return.s27),unsigned int,r27) * store(&(__return.s28),unsigned int,r28) * store(&(__return.s29),unsigned int,r29) * store(&(__return.s30),unsigned int,r30) * store(&(__return.s31),unsigned int,r31) */;
+vbool4_t __riscv_vmfgt_vv_f32m8_b4(vfloat32m8_t a,vfloat32m8_t b,size_t vl)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (b4:fp32) (b5:fp32) (b6:fp32) (b7:fp32) (b8:fp32) (b9:fp32) (b10:fp32) (b11:fp32) (b12:fp32) (b13:fp32) (b14:fp32) (b15:fp32) (b16:fp32) (b17:fp32) (b18:fp32) (b19:fp32) (b20:fp32) (b21:fp32) (b22:fp32) (b23:fp32) (b24:fp32) (b25:fp32) (b26:fp32) (b27:fp32) (b28:fp32) (b29:fp32) (b30:fp32) (b31:fp32) Require 0<=vl && vl<=32 && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(a.s8),float,a8) * store(&(a.s9),float,a9) * store(&(a.s10),float,a10) * store(&(a.s11),float,a11) * store(&(a.s12),float,a12) * store(&(a.s13),float,a13) * store(&(a.s14),float,a14) * store(&(a.s15),float,a15) * store(&(a.s16),float,a16) * store(&(a.s17),float,a17) * store(&(a.s18),float,a18) * store(&(a.s19),float,a19) * store(&(a.s20),float,a20) * store(&(a.s21),float,a21) * store(&(a.s22),float,a22) * store(&(a.s23),float,a23) * store(&(a.s24),float,a24) * store(&(a.s25),float,a25) * store(&(a.s26),float,a26) * store(&(a.s27),float,a27) * store(&(a.s28),float,a28) * store(&(a.s29),float,a29) * store(&(a.s30),float,a30) * store(&(a.s31),float,a31) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3) * store(&(b.s4),float,b4) * store(&(b.s5),float,b5) * store(&(b.s6),float,b6) * store(&(b.s7),float,b7) * store(&(b.s8),float,b8) * store(&(b.s9),float,b9) * store(&(b.s10),float,b10) * store(&(b.s11),float,b11) * store(&(b.s12),float,b12) * store(&(b.s13),float,b13) * store(&(b.s14),float,b14) * store(&(b.s15),float,b15) * store(&(b.s16),float,b16) * store(&(b.s17),float,b17) * store(&(b.s18),float,b18) * store(&(b.s19),float,b19) * store(&(b.s20),float,b20) * store(&(b.s21),float,b21) * store(&(b.s22),float,b22) * store(&(b.s23),float,b23) * store(&(b.s24),float,b24) * store(&(b.s25),float,b25) * store(&(b.s26),float,b26) * store(&(b.s27),float,b27) * store(&(b.s28),float,b28) * store(&(b.s29),float,b29) * store(&(b.s30),float,b30) * store(&(b.s31),float,b31)
+ Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), apr_int_lane(0,vl,r0,ap_rvv_gt(a0,b0)) && apr_int_lane(1,vl,r1,ap_rvv_gt(a1,b1)) && apr_int_lane(2,vl,r2,ap_rvv_gt(a2,b2)) && apr_int_lane(3,vl,r3,ap_rvv_gt(a3,b3)) && apr_int_lane(4,vl,r4,ap_rvv_gt(a4,b4)) && apr_int_lane(5,vl,r5,ap_rvv_gt(a5,b5)) && apr_int_lane(6,vl,r6,ap_rvv_gt(a6,b6)) && apr_int_lane(7,vl,r7,ap_rvv_gt(a7,b7)) && apr_int_lane(8,vl,r8,ap_rvv_gt(a8,b8)) && apr_int_lane(9,vl,r9,ap_rvv_gt(a9,b9)) && apr_int_lane(10,vl,r10,ap_rvv_gt(a10,b10)) && apr_int_lane(11,vl,r11,ap_rvv_gt(a11,b11)) && apr_int_lane(12,vl,r12,ap_rvv_gt(a12,b12)) && apr_int_lane(13,vl,r13,ap_rvv_gt(a13,b13)) && apr_int_lane(14,vl,r14,ap_rvv_gt(a14,b14)) && apr_int_lane(15,vl,r15,ap_rvv_gt(a15,b15)) && apr_int_lane(16,vl,r16,ap_rvv_gt(a16,b16)) && apr_int_lane(17,vl,r17,ap_rvv_gt(a17,b17)) && apr_int_lane(18,vl,r18,ap_rvv_gt(a18,b18)) && apr_int_lane(19,vl,r19,ap_rvv_gt(a19,b19)) && apr_int_lane(20,vl,r20,ap_rvv_gt(a20,b20)) && apr_int_lane(21,vl,r21,ap_rvv_gt(a21,b21)) && apr_int_lane(22,vl,r22,ap_rvv_gt(a22,b22)) && apr_int_lane(23,vl,r23,ap_rvv_gt(a23,b23)) && apr_int_lane(24,vl,r24,ap_rvv_gt(a24,b24)) && apr_int_lane(25,vl,r25,ap_rvv_gt(a25,b25)) && apr_int_lane(26,vl,r26,ap_rvv_gt(a26,b26)) && apr_int_lane(27,vl,r27,ap_rvv_gt(a27,b27)) && apr_int_lane(28,vl,r28,ap_rvv_gt(a28,b28)) && apr_int_lane(29,vl,r29,ap_rvv_gt(a29,b29)) && apr_int_lane(30,vl,r30,ap_rvv_gt(a30,b30)) && apr_int_lane(31,vl,r31,ap_rvv_gt(a31,b31)) && ap_rvv_mask_active(0,vl,r0) && ap_rvv_mask_active(1,vl,r1) && ap_rvv_mask_active(2,vl,r2) && ap_rvv_mask_active(3,vl,r3) && ap_rvv_mask_active(4,vl,r4) && ap_rvv_mask_active(5,vl,r5) && ap_rvv_mask_active(6,vl,r6) && ap_rvv_mask_active(7,vl,r7) && ap_rvv_mask_active(8,vl,r8) && ap_rvv_mask_active(9,vl,r9) && ap_rvv_mask_active(10,vl,r10) && ap_rvv_mask_active(11,vl,r11) && ap_rvv_mask_active(12,vl,r12) && ap_rvv_mask_active(13,vl,r13) && ap_rvv_mask_active(14,vl,r14) && ap_rvv_mask_active(15,vl,r15) && ap_rvv_mask_active(16,vl,r16) && ap_rvv_mask_active(17,vl,r17) && ap_rvv_mask_active(18,vl,r18) && ap_rvv_mask_active(19,vl,r19) && ap_rvv_mask_active(20,vl,r20) && ap_rvv_mask_active(21,vl,r21) && ap_rvv_mask_active(22,vl,r22) && ap_rvv_mask_active(23,vl,r23) && ap_rvv_mask_active(24,vl,r24) && ap_rvv_mask_active(25,vl,r25) && ap_rvv_mask_active(26,vl,r26) && ap_rvv_mask_active(27,vl,r27) && ap_rvv_mask_active(28,vl,r28) && ap_rvv_mask_active(29,vl,r29) && ap_rvv_mask_active(30,vl,r30) && ap_rvv_mask_active(31,vl,r31) && store(&(__return.s0),unsigned int,r0) * store(&(__return.s1),unsigned int,r1) * store(&(__return.s2),unsigned int,r2) * store(&(__return.s3),unsigned int,r3) * store(&(__return.s4),unsigned int,r4) * store(&(__return.s5),unsigned int,r5) * store(&(__return.s6),unsigned int,r6) * store(&(__return.s7),unsigned int,r7) * store(&(__return.s8),unsigned int,r8) * store(&(__return.s9),unsigned int,r9) * store(&(__return.s10),unsigned int,r10) * store(&(__return.s11),unsigned int,r11) * store(&(__return.s12),unsigned int,r12) * store(&(__return.s13),unsigned int,r13) * store(&(__return.s14),unsigned int,r14) * store(&(__return.s15),unsigned int,r15) * store(&(__return.s16),unsigned int,r16) * store(&(__return.s17),unsigned int,r17) * store(&(__return.s18),unsigned int,r18) * store(&(__return.s19),unsigned int,r19) * store(&(__return.s20),unsigned int,r20) * store(&(__return.s21),unsigned int,r21) * store(&(__return.s22),unsigned int,r22) * store(&(__return.s23),unsigned int,r23) * store(&(__return.s24),unsigned int,r24) * store(&(__return.s25),unsigned int,r25) * store(&(__return.s26),unsigned int,r26) * store(&(__return.s27),unsigned int,r27) * store(&(__return.s28),unsigned int,r28) * store(&(__return.s29),unsigned int,r29) * store(&(__return.s30),unsigned int,r30) * store(&(__return.s31),unsigned int,r31) */;
+vfloat32m8_t __riscv_vmerge_vvm_f32m8(vfloat32m8_t a,vfloat32m8_t b,vbool4_t m,size_t vl)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (b4:fp32) (b5:fp32) (b6:fp32) (b7:fp32) (b8:fp32) (b9:fp32) (b10:fp32) (b11:fp32) (b12:fp32) (b13:fp32) (b14:fp32) (b15:fp32) (b16:fp32) (b17:fp32) (b18:fp32) (b19:fp32) (b20:fp32) (b21:fp32) (b22:fp32) (b23:fp32) (b24:fp32) (b25:fp32) (b26:fp32) (b27:fp32) (b28:fp32) (b29:fp32) (b30:fp32) (b31:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z) (m16:Z) (m17:Z) (m18:Z) (m19:Z) (m20:Z) (m21:Z) (m22:Z) (m23:Z) (m24:Z) (m25:Z) (m26:Z) (m27:Z) (m28:Z) (m29:Z) (m30:Z) (m31:Z) Require 0<=vl && vl<=32 && ap_rvv_mask_active(0,vl,m0) && ap_rvv_mask_active(1,vl,m1) && ap_rvv_mask_active(2,vl,m2) && ap_rvv_mask_active(3,vl,m3) && ap_rvv_mask_active(4,vl,m4) && ap_rvv_mask_active(5,vl,m5) && ap_rvv_mask_active(6,vl,m6) && ap_rvv_mask_active(7,vl,m7) && ap_rvv_mask_active(8,vl,m8) && ap_rvv_mask_active(9,vl,m9) && ap_rvv_mask_active(10,vl,m10) && ap_rvv_mask_active(11,vl,m11) && ap_rvv_mask_active(12,vl,m12) && ap_rvv_mask_active(13,vl,m13) && ap_rvv_mask_active(14,vl,m14) && ap_rvv_mask_active(15,vl,m15) && ap_rvv_mask_active(16,vl,m16) && ap_rvv_mask_active(17,vl,m17) && ap_rvv_mask_active(18,vl,m18) && ap_rvv_mask_active(19,vl,m19) && ap_rvv_mask_active(20,vl,m20) && ap_rvv_mask_active(21,vl,m21) && ap_rvv_mask_active(22,vl,m22) && ap_rvv_mask_active(23,vl,m23) && ap_rvv_mask_active(24,vl,m24) && ap_rvv_mask_active(25,vl,m25) && ap_rvv_mask_active(26,vl,m26) && ap_rvv_mask_active(27,vl,m27) && ap_rvv_mask_active(28,vl,m28) && ap_rvv_mask_active(29,vl,m29) && ap_rvv_mask_active(30,vl,m30) && ap_rvv_mask_active(31,vl,m31) && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(a.s4),float,a4) * store(&(a.s5),float,a5) * store(&(a.s6),float,a6) * store(&(a.s7),float,a7) * store(&(a.s8),float,a8) * store(&(a.s9),float,a9) * store(&(a.s10),float,a10) * store(&(a.s11),float,a11) * store(&(a.s12),float,a12) * store(&(a.s13),float,a13) * store(&(a.s14),float,a14) * store(&(a.s15),float,a15) * store(&(a.s16),float,a16) * store(&(a.s17),float,a17) * store(&(a.s18),float,a18) * store(&(a.s19),float,a19) * store(&(a.s20),float,a20) * store(&(a.s21),float,a21) * store(&(a.s22),float,a22) * store(&(a.s23),float,a23) * store(&(a.s24),float,a24) * store(&(a.s25),float,a25) * store(&(a.s26),float,a26) * store(&(a.s27),float,a27) * store(&(a.s28),float,a28) * store(&(a.s29),float,a29) * store(&(a.s30),float,a30) * store(&(a.s31),float,a31) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3) * store(&(b.s4),float,b4) * store(&(b.s5),float,b5) * store(&(b.s6),float,b6) * store(&(b.s7),float,b7) * store(&(b.s8),float,b8) * store(&(b.s9),float,b9) * store(&(b.s10),float,b10) * store(&(b.s11),float,b11) * store(&(b.s12),float,b12) * store(&(b.s13),float,b13) * store(&(b.s14),float,b14) * store(&(b.s15),float,b15) * store(&(b.s16),float,b16) * store(&(b.s17),float,b17) * store(&(b.s18),float,b18) * store(&(b.s19),float,b19) * store(&(b.s20),float,b20) * store(&(b.s21),float,b21) * store(&(b.s22),float,b22) * store(&(b.s23),float,b23) * store(&(b.s24),float,b24) * store(&(b.s25),float,b25) * store(&(b.s26),float,b26) * store(&(b.s27),float,b27) * store(&(b.s28),float,b28) * store(&(b.s29),float,b29) * store(&(b.s30),float,b30) * store(&(b.s31),float,b31) * store(&(m.s0),unsigned int,m0) * store(&(m.s1),unsigned int,m1) * store(&(m.s2),unsigned int,m2) * store(&(m.s3),unsigned int,m3) * store(&(m.s4),unsigned int,m4) * store(&(m.s5),unsigned int,m5) * store(&(m.s6),unsigned int,m6) * store(&(m.s7),unsigned int,m7) * store(&(m.s8),unsigned int,m8) * store(&(m.s9),unsigned int,m9) * store(&(m.s10),unsigned int,m10) * store(&(m.s11),unsigned int,m11) * store(&(m.s12),unsigned int,m12) * store(&(m.s13),unsigned int,m13) * store(&(m.s14),unsigned int,m14) * store(&(m.s15),unsigned int,m15) * store(&(m.s16),unsigned int,m16) * store(&(m.s17),unsigned int,m17) * store(&(m.s18),unsigned int,m18) * store(&(m.s19),unsigned int,m19) * store(&(m.s20),unsigned int,m20) * store(&(m.s21),unsigned int,m21) * store(&(m.s22),unsigned int,m22) * store(&(m.s23),unsigned int,m23) * store(&(m.s24),unsigned int,m24) * store(&(m.s25),unsigned int,m25) * store(&(m.s26),unsigned int,m26) * store(&(m.s27),unsigned int,m27) * store(&(m.s28),unsigned int,m28) * store(&(m.s29),unsigned int,m29) * store(&(m.s30),unsigned int,m30) * store(&(m.s31),unsigned int,m31)
+ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), apr_float_lane(0,vl,r0,ap_rvv_select_f32(m0,a0,b0)) && apr_float_lane(1,vl,r1,ap_rvv_select_f32(m1,a1,b1)) && apr_float_lane(2,vl,r2,ap_rvv_select_f32(m2,a2,b2)) && apr_float_lane(3,vl,r3,ap_rvv_select_f32(m3,a3,b3)) && apr_float_lane(4,vl,r4,ap_rvv_select_f32(m4,a4,b4)) && apr_float_lane(5,vl,r5,ap_rvv_select_f32(m5,a5,b5)) && apr_float_lane(6,vl,r6,ap_rvv_select_f32(m6,a6,b6)) && apr_float_lane(7,vl,r7,ap_rvv_select_f32(m7,a7,b7)) && apr_float_lane(8,vl,r8,ap_rvv_select_f32(m8,a8,b8)) && apr_float_lane(9,vl,r9,ap_rvv_select_f32(m9,a9,b9)) && apr_float_lane(10,vl,r10,ap_rvv_select_f32(m10,a10,b10)) && apr_float_lane(11,vl,r11,ap_rvv_select_f32(m11,a11,b11)) && apr_float_lane(12,vl,r12,ap_rvv_select_f32(m12,a12,b12)) && apr_float_lane(13,vl,r13,ap_rvv_select_f32(m13,a13,b13)) && apr_float_lane(14,vl,r14,ap_rvv_select_f32(m14,a14,b14)) && apr_float_lane(15,vl,r15,ap_rvv_select_f32(m15,a15,b15)) && apr_float_lane(16,vl,r16,ap_rvv_select_f32(m16,a16,b16)) && apr_float_lane(17,vl,r17,ap_rvv_select_f32(m17,a17,b17)) && apr_float_lane(18,vl,r18,ap_rvv_select_f32(m18,a18,b18)) && apr_float_lane(19,vl,r19,ap_rvv_select_f32(m19,a19,b19)) && apr_float_lane(20,vl,r20,ap_rvv_select_f32(m20,a20,b20)) && apr_float_lane(21,vl,r21,ap_rvv_select_f32(m21,a21,b21)) && apr_float_lane(22,vl,r22,ap_rvv_select_f32(m22,a22,b22)) && apr_float_lane(23,vl,r23,ap_rvv_select_f32(m23,a23,b23)) && apr_float_lane(24,vl,r24,ap_rvv_select_f32(m24,a24,b24)) && apr_float_lane(25,vl,r25,ap_rvv_select_f32(m25,a25,b25)) && apr_float_lane(26,vl,r26,ap_rvv_select_f32(m26,a26,b26)) && apr_float_lane(27,vl,r27,ap_rvv_select_f32(m27,a27,b27)) && apr_float_lane(28,vl,r28,ap_rvv_select_f32(m28,a28,b28)) && apr_float_lane(29,vl,r29,ap_rvv_select_f32(m29,a29,b29)) && apr_float_lane(30,vl,r30,ap_rvv_select_f32(m30,a30,b30)) && apr_float_lane(31,vl,r31,ap_rvv_select_f32(m31,a31,b31)) && store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;
+vuint32m8_t __riscv_vmerge_vxm_u32m8(vuint32m8_t a,uint32_t x,vbool4_t m,size_t vl)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z) (m16:Z) (m17:Z) (m18:Z) (m19:Z) (m20:Z) (m21:Z) (m22:Z) (m23:Z) (m24:Z) (m25:Z) (m26:Z) (m27:Z) (m28:Z) (m29:Z) (m30:Z) (m31:Z) Require 0<=vl && vl<=32 && ap_rvv_mask_active(0,vl,m0) && ap_rvv_mask_active(1,vl,m1) && ap_rvv_mask_active(2,vl,m2) && ap_rvv_mask_active(3,vl,m3) && ap_rvv_mask_active(4,vl,m4) && ap_rvv_mask_active(5,vl,m5) && ap_rvv_mask_active(6,vl,m6) && ap_rvv_mask_active(7,vl,m7) && ap_rvv_mask_active(8,vl,m8) && ap_rvv_mask_active(9,vl,m9) && ap_rvv_mask_active(10,vl,m10) && ap_rvv_mask_active(11,vl,m11) && ap_rvv_mask_active(12,vl,m12) && ap_rvv_mask_active(13,vl,m13) && ap_rvv_mask_active(14,vl,m14) && ap_rvv_mask_active(15,vl,m15) && ap_rvv_mask_active(16,vl,m16) && ap_rvv_mask_active(17,vl,m17) && ap_rvv_mask_active(18,vl,m18) && ap_rvv_mask_active(19,vl,m19) && ap_rvv_mask_active(20,vl,m20) && ap_rvv_mask_active(21,vl,m21) && ap_rvv_mask_active(22,vl,m22) && ap_rvv_mask_active(23,vl,m23) && ap_rvv_mask_active(24,vl,m24) && ap_rvv_mask_active(25,vl,m25) && ap_rvv_mask_active(26,vl,m26) && ap_rvv_mask_active(27,vl,m27) && ap_rvv_mask_active(28,vl,m28) && ap_rvv_mask_active(29,vl,m29) && ap_rvv_mask_active(30,vl,m30) && ap_rvv_mask_active(31,vl,m31) && store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3) * store(&(a.s4),unsigned int,a4) * store(&(a.s5),unsigned int,a5) * store(&(a.s6),unsigned int,a6) * store(&(a.s7),unsigned int,a7) * store(&(a.s8),unsigned int,a8) * store(&(a.s9),unsigned int,a9) * store(&(a.s10),unsigned int,a10) * store(&(a.s11),unsigned int,a11) * store(&(a.s12),unsigned int,a12) * store(&(a.s13),unsigned int,a13) * store(&(a.s14),unsigned int,a14) * store(&(a.s15),unsigned int,a15) * store(&(a.s16),unsigned int,a16) * store(&(a.s17),unsigned int,a17) * store(&(a.s18),unsigned int,a18) * store(&(a.s19),unsigned int,a19) * store(&(a.s20),unsigned int,a20) * store(&(a.s21),unsigned int,a21) * store(&(a.s22),unsigned int,a22) * store(&(a.s23),unsigned int,a23) * store(&(a.s24),unsigned int,a24) * store(&(a.s25),unsigned int,a25) * store(&(a.s26),unsigned int,a26) * store(&(a.s27),unsigned int,a27) * store(&(a.s28),unsigned int,a28) * store(&(a.s29),unsigned int,a29) * store(&(a.s30),unsigned int,a30) * store(&(a.s31),unsigned int,a31) * store(&(m.s0),unsigned int,m0) * store(&(m.s1),unsigned int,m1) * store(&(m.s2),unsigned int,m2) * store(&(m.s3),unsigned int,m3) * store(&(m.s4),unsigned int,m4) * store(&(m.s5),unsigned int,m5) * store(&(m.s6),unsigned int,m6) * store(&(m.s7),unsigned int,m7) * store(&(m.s8),unsigned int,m8) * store(&(m.s9),unsigned int,m9) * store(&(m.s10),unsigned int,m10) * store(&(m.s11),unsigned int,m11) * store(&(m.s12),unsigned int,m12) * store(&(m.s13),unsigned int,m13) * store(&(m.s14),unsigned int,m14) * store(&(m.s15),unsigned int,m15) * store(&(m.s16),unsigned int,m16) * store(&(m.s17),unsigned int,m17) * store(&(m.s18),unsigned int,m18) * store(&(m.s19),unsigned int,m19) * store(&(m.s20),unsigned int,m20) * store(&(m.s21),unsigned int,m21) * store(&(m.s22),unsigned int,m22) * store(&(m.s23),unsigned int,m23) * store(&(m.s24),unsigned int,m24) * store(&(m.s25),unsigned int,m25) * store(&(m.s26),unsigned int,m26) * store(&(m.s27),unsigned int,m27) * store(&(m.s28),unsigned int,m28) * store(&(m.s29),unsigned int,m29) * store(&(m.s30),unsigned int,m30) * store(&(m.s31),unsigned int,m31)
+ Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), apr_int_lane(0,vl,r0,ap_rvv_select_u32(m0,a0,ap_u32(x))) && apr_int_lane(1,vl,r1,ap_rvv_select_u32(m1,a1,ap_u32(x))) && apr_int_lane(2,vl,r2,ap_rvv_select_u32(m2,a2,ap_u32(x))) && apr_int_lane(3,vl,r3,ap_rvv_select_u32(m3,a3,ap_u32(x))) && apr_int_lane(4,vl,r4,ap_rvv_select_u32(m4,a4,ap_u32(x))) && apr_int_lane(5,vl,r5,ap_rvv_select_u32(m5,a5,ap_u32(x))) && apr_int_lane(6,vl,r6,ap_rvv_select_u32(m6,a6,ap_u32(x))) && apr_int_lane(7,vl,r7,ap_rvv_select_u32(m7,a7,ap_u32(x))) && apr_int_lane(8,vl,r8,ap_rvv_select_u32(m8,a8,ap_u32(x))) && apr_int_lane(9,vl,r9,ap_rvv_select_u32(m9,a9,ap_u32(x))) && apr_int_lane(10,vl,r10,ap_rvv_select_u32(m10,a10,ap_u32(x))) && apr_int_lane(11,vl,r11,ap_rvv_select_u32(m11,a11,ap_u32(x))) && apr_int_lane(12,vl,r12,ap_rvv_select_u32(m12,a12,ap_u32(x))) && apr_int_lane(13,vl,r13,ap_rvv_select_u32(m13,a13,ap_u32(x))) && apr_int_lane(14,vl,r14,ap_rvv_select_u32(m14,a14,ap_u32(x))) && apr_int_lane(15,vl,r15,ap_rvv_select_u32(m15,a15,ap_u32(x))) && apr_int_lane(16,vl,r16,ap_rvv_select_u32(m16,a16,ap_u32(x))) && apr_int_lane(17,vl,r17,ap_rvv_select_u32(m17,a17,ap_u32(x))) && apr_int_lane(18,vl,r18,ap_rvv_select_u32(m18,a18,ap_u32(x))) && apr_int_lane(19,vl,r19,ap_rvv_select_u32(m19,a19,ap_u32(x))) && apr_int_lane(20,vl,r20,ap_rvv_select_u32(m20,a20,ap_u32(x))) && apr_int_lane(21,vl,r21,ap_rvv_select_u32(m21,a21,ap_u32(x))) && apr_int_lane(22,vl,r22,ap_rvv_select_u32(m22,a22,ap_u32(x))) && apr_int_lane(23,vl,r23,ap_rvv_select_u32(m23,a23,ap_u32(x))) && apr_int_lane(24,vl,r24,ap_rvv_select_u32(m24,a24,ap_u32(x))) && apr_int_lane(25,vl,r25,ap_rvv_select_u32(m25,a25,ap_u32(x))) && apr_int_lane(26,vl,r26,ap_rvv_select_u32(m26,a26,ap_u32(x))) && apr_int_lane(27,vl,r27,ap_rvv_select_u32(m27,a27,ap_u32(x))) && apr_int_lane(28,vl,r28,ap_rvv_select_u32(m28,a28,ap_u32(x))) && apr_int_lane(29,vl,r29,ap_rvv_select_u32(m29,a29,ap_u32(x))) && apr_int_lane(30,vl,r30,ap_rvv_select_u32(m30,a30,ap_u32(x))) && apr_int_lane(31,vl,r31,ap_rvv_select_u32(m31,a31,ap_u32(x))) && store(&(__return.s0),unsigned int,r0) * store(&(__return.s1),unsigned int,r1) * store(&(__return.s2),unsigned int,r2) * store(&(__return.s3),unsigned int,r3) * store(&(__return.s4),unsigned int,r4) * store(&(__return.s5),unsigned int,r5) * store(&(__return.s6),unsigned int,r6) * store(&(__return.s7),unsigned int,r7) * store(&(__return.s8),unsigned int,r8) * store(&(__return.s9),unsigned int,r9) * store(&(__return.s10),unsigned int,r10) * store(&(__return.s11),unsigned int,r11) * store(&(__return.s12),unsigned int,r12) * store(&(__return.s13),unsigned int,r13) * store(&(__return.s14),unsigned int,r14) * store(&(__return.s15),unsigned int,r15) * store(&(__return.s16),unsigned int,r16) * store(&(__return.s17),unsigned int,r17) * store(&(__return.s18),unsigned int,r18) * store(&(__return.s19),unsigned int,r19) * store(&(__return.s20),unsigned int,r20) * store(&(__return.s21),unsigned int,r21) * store(&(__return.s22),unsigned int,r22) * store(&(__return.s23),unsigned int,r23) * store(&(__return.s24),unsigned int,r24) * store(&(__return.s25),unsigned int,r25) * store(&(__return.s26),unsigned int,r26) * store(&(__return.s27),unsigned int,r27) * store(&(__return.s28),unsigned int,r28) * store(&(__return.s29),unsigned int,r29) * store(&(__return.s30),unsigned int,r30) * store(&(__return.s31),unsigned int,r31) */;
+vuint32m8_t __riscv_vmv_v_x_u32m8(uint32_t x,size_t vl)
+/*@ Require 0<=vl && vl<=32 && emp
+ Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), apr_int_lane(0,vl,r0,ap_u32(x)) && apr_int_lane(1,vl,r1,ap_u32(x)) && apr_int_lane(2,vl,r2,ap_u32(x)) && apr_int_lane(3,vl,r3,ap_u32(x)) && apr_int_lane(4,vl,r4,ap_u32(x)) && apr_int_lane(5,vl,r5,ap_u32(x)) && apr_int_lane(6,vl,r6,ap_u32(x)) && apr_int_lane(7,vl,r7,ap_u32(x)) && apr_int_lane(8,vl,r8,ap_u32(x)) && apr_int_lane(9,vl,r9,ap_u32(x)) && apr_int_lane(10,vl,r10,ap_u32(x)) && apr_int_lane(11,vl,r11,ap_u32(x)) && apr_int_lane(12,vl,r12,ap_u32(x)) && apr_int_lane(13,vl,r13,ap_u32(x)) && apr_int_lane(14,vl,r14,ap_u32(x)) && apr_int_lane(15,vl,r15,ap_u32(x)) && apr_int_lane(16,vl,r16,ap_u32(x)) && apr_int_lane(17,vl,r17,ap_u32(x)) && apr_int_lane(18,vl,r18,ap_u32(x)) && apr_int_lane(19,vl,r19,ap_u32(x)) && apr_int_lane(20,vl,r20,ap_u32(x)) && apr_int_lane(21,vl,r21,ap_u32(x)) && apr_int_lane(22,vl,r22,ap_u32(x)) && apr_int_lane(23,vl,r23,ap_u32(x)) && apr_int_lane(24,vl,r24,ap_u32(x)) && apr_int_lane(25,vl,r25,ap_u32(x)) && apr_int_lane(26,vl,r26,ap_u32(x)) && apr_int_lane(27,vl,r27,ap_u32(x)) && apr_int_lane(28,vl,r28,ap_u32(x)) && apr_int_lane(29,vl,r29,ap_u32(x)) && apr_int_lane(30,vl,r30,ap_u32(x)) && apr_int_lane(31,vl,r31,ap_u32(x)) && store(&(__return.s0),unsigned int,r0) * store(&(__return.s1),unsigned int,r1) * store(&(__return.s2),unsigned int,r2) * store(&(__return.s3),unsigned int,r3) * store(&(__return.s4),unsigned int,r4) * store(&(__return.s5),unsigned int,r5) * store(&(__return.s6),unsigned int,r6) * store(&(__return.s7),unsigned int,r7) * store(&(__return.s8),unsigned int,r8) * store(&(__return.s9),unsigned int,r9) * store(&(__return.s10),unsigned int,r10) * store(&(__return.s11),unsigned int,r11) * store(&(__return.s12),unsigned int,r12) * store(&(__return.s13),unsigned int,r13) * store(&(__return.s14),unsigned int,r14) * store(&(__return.s15),unsigned int,r15) * store(&(__return.s16),unsigned int,r16) * store(&(__return.s17),unsigned int,r17) * store(&(__return.s18),unsigned int,r18) * store(&(__return.s19),unsigned int,r19) * store(&(__return.s20),unsigned int,r20) * store(&(__return.s21),unsigned int,r21) * store(&(__return.s22),unsigned int,r22) * store(&(__return.s23),unsigned int,r23) * store(&(__return.s24),unsigned int,r24) * store(&(__return.s25),unsigned int,r25) * store(&(__return.s26),unsigned int,r26) * store(&(__return.s27),unsigned int,r27) * store(&(__return.s28),unsigned int,r28) * store(&(__return.s29),unsigned int,r29) * store(&(__return.s30),unsigned int,r30) * store(&(__return.s31),unsigned int,r31) */;
+void ap_rvv_store_f32_view(float*p,const vfloat32m8_t*a,size_t vl)
+/*@ With (W:list Z) (O:APOutput) (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32) Require 0<=vl && vl<=32 && ap_write_window(W,p,vl) && ap_output(W,O) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1) * store(&(a->s2),float,a2) * store(&(a->s3),float,a3) * store(&(a->s4),float,a4) * store(&(a->s5),float,a5) * store(&(a->s6),float,a6) * store(&(a->s7),float,a7) * store(&(a->s8),float,a8) * store(&(a->s9),float,a9) * store(&(a->s10),float,a10) * store(&(a->s11),float,a11) * store(&(a->s12),float,a12) * store(&(a->s13),float,a13) * store(&(a->s14),float,a14) * store(&(a->s15),float,a15) * store(&(a->s16),float,a16) * store(&(a->s17),float,a17) * store(&(a->s18),float,a18) * store(&(a->s19),float,a19) * store(&(a->s20),float,a20) * store(&(a->s21),float,a21) * store(&(a->s22),float,a22) * store(&(a->s23),float,a23) * store(&(a->s24),float,a24) * store(&(a->s25),float,a25) * store(&(a->s26),float,a26) * store(&(a->s27),float,a27) * store(&(a->s28),float,a28) * store(&(a->s29),float,a29) * store(&(a->s30),float,a30) * store(&(a->s31),float,a31)
+ Ensure ap_output(W,ap_output_write(O,p,vl,ap_fpack32(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,a25,a26,a27,a28,a29,a30,a31))) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1) * store(&(a->s2),float,a2) * store(&(a->s3),float,a3) * store(&(a->s4),float,a4) * store(&(a->s5),float,a5) * store(&(a->s6),float,a6) * store(&(a->s7),float,a7) * store(&(a->s8),float,a8) * store(&(a->s9),float,a9) * store(&(a->s10),float,a10) * store(&(a->s11),float,a11) * store(&(a->s12),float,a12) * store(&(a->s13),float,a13) * store(&(a->s14),float,a14) * store(&(a->s15),float,a15) * store(&(a->s16),float,a16) * store(&(a->s17),float,a17) * store(&(a->s18),float,a18) * store(&(a->s19),float,a19) * store(&(a->s20),float,a20) * store(&(a->s21),float,a21) * store(&(a->s22),float,a22) * store(&(a->s23),float,a23) * store(&(a->s24),float,a24) * store(&(a->s25),float,a25) * store(&(a->s26),float,a26) * store(&(a->s27),float,a27) * store(&(a->s28),float,a28) * store(&(a->s29),float,a29) * store(&(a->s30),float,a30) * store(&(a->s31),float,a31) */;
+void ap_rvv_store_u32_view(uint32_t*p,const vuint32m8_t*a,size_t vl)
+/*@ With (W:list Z) (O:APIndex) (a0:Z) (a1:Z) (a2:Z) (a3:Z) (a4:Z) (a5:Z) (a6:Z) (a7:Z) (a8:Z) (a9:Z) (a10:Z) (a11:Z) (a12:Z) (a13:Z) (a14:Z) (a15:Z) (a16:Z) (a17:Z) (a18:Z) (a19:Z) (a20:Z) (a21:Z) (a22:Z) (a23:Z) (a24:Z) (a25:Z) (a26:Z) (a27:Z) (a28:Z) (a29:Z) (a30:Z) (a31:Z) Require 0<=vl && vl<=32 && ap_write_window(W,p,vl) && ap_index(W,O) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1) * store(&(a->s2),unsigned int,a2) * store(&(a->s3),unsigned int,a3) * store(&(a->s4),unsigned int,a4) * store(&(a->s5),unsigned int,a5) * store(&(a->s6),unsigned int,a6) * store(&(a->s7),unsigned int,a7) * store(&(a->s8),unsigned int,a8) * store(&(a->s9),unsigned int,a9) * store(&(a->s10),unsigned int,a10) * store(&(a->s11),unsigned int,a11) * store(&(a->s12),unsigned int,a12) * store(&(a->s13),unsigned int,a13) * store(&(a->s14),unsigned int,a14) * store(&(a->s15),unsigned int,a15) * store(&(a->s16),unsigned int,a16) * store(&(a->s17),unsigned int,a17) * store(&(a->s18),unsigned int,a18) * store(&(a->s19),unsigned int,a19) * store(&(a->s20),unsigned int,a20) * store(&(a->s21),unsigned int,a21) * store(&(a->s22),unsigned int,a22) * store(&(a->s23),unsigned int,a23) * store(&(a->s24),unsigned int,a24) * store(&(a->s25),unsigned int,a25) * store(&(a->s26),unsigned int,a26) * store(&(a->s27),unsigned int,a27) * store(&(a->s28),unsigned int,a28) * store(&(a->s29),unsigned int,a29) * store(&(a->s30),unsigned int,a30) * store(&(a->s31),unsigned int,a31)
+ Ensure ap_index(W,ap_index_write(O,p,vl,ap_ipack32(a0,a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,a17,a18,a19,a20,a21,a22,a23,a24,a25,a26,a27,a28,a29,a30,a31))) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1) * store(&(a->s2),unsigned int,a2) * store(&(a->s3),unsigned int,a3) * store(&(a->s4),unsigned int,a4) * store(&(a->s5),unsigned int,a5) * store(&(a->s6),unsigned int,a6) * store(&(a->s7),unsigned int,a7) * store(&(a->s8),unsigned int,a8) * store(&(a->s9),unsigned int,a9) * store(&(a->s10),unsigned int,a10) * store(&(a->s11),unsigned int,a11) * store(&(a->s12),unsigned int,a12) * store(&(a->s13),unsigned int,a13) * store(&(a->s14),unsigned int,a14) * store(&(a->s15),unsigned int,a15) * store(&(a->s16),unsigned int,a16) * store(&(a->s17),unsigned int,a17) * store(&(a->s18),unsigned int,a18) * store(&(a->s19),unsigned int,a19) * store(&(a->s20),unsigned int,a20) * store(&(a->s21),unsigned int,a21) * store(&(a->s22),unsigned int,a22) * store(&(a->s23),unsigned int,a23) * store(&(a->s24),unsigned int,a24) * store(&(a->s25),unsigned int,a25) * store(&(a->s26),unsigned int,a26) * store(&(a->s27),unsigned int,a27) * store(&(a->s28),unsigned int,a28) * store(&(a->s29),unsigned int,a29) * store(&(a->s30),unsigned int,a30) * store(&(a->s31),unsigned int,a31) */;
+/*@ Extern Coq
+ (app_pixels:APProgram->Z) (app_rows:APProgram->Z) (app_channels:APProgram->Z)
+ (app_input:APProgram->Z) (app_offset:APProgram->Z) (app_pixel_stride:APProgram->Z)
+ (app_output_base:APProgram->Z) (app_index_base:APProgram->Z)
+ (app_input_increment:APProgram->Z) (app_output_increment:APProgram->Z)
+ (app_index_increment:APProgram->Z)
+ (app_table:APProgram->Z->Z) (app_offset_at:APProgram->Z->Z)
+ (app_output_at:APProgram->Z->Z) (app_index_at:APProgram->Z->Z)
+ (app_groups:Z->Z) (app_remaining:Z->Z->Z) (app_group_cursor:APProgram->Z->Z)
+ (app_consumed:Z->Z->Z) (app_index_base_at:Z->Z)
+ (app_table_cursor:Z->Z->Z->Z) (app_output_cursor:Z->Z->Z)
+ (app_previous_cursor:Z->Z->Z->Z) (app_read_cursor:Z->Z->Z->Z->Z)
+ (app_row_pointer:APPtrMap->Z->Z->Z->Z->Z)
+ (app_row_base:APPtrMap->Z->Z->Z->Z->Z->Z)
+ (app_row_cursor:APPtrMap->Z->Z->Z->Z->Z->Z->Z)
+ (app_rvv_partial_output:APMap->APPtrMap->APProgram->Z->Z->Z->APOutput->APIndex->APOutput)
+ (app_rvv_partial_index:APMap->APPtrMap->APProgram->Z->Z->Z->APOutput->APIndex->APIndex)
+ */
+/*@ Import Coq Require Import ArgmaxPool.ReadPreviousModel */
+/*@ Extern Coq (APOutput :: *) (APIndex :: *) */
+/*@ Extern Coq (ap_distinct:list Z->Prop) (ap_owned:list Z->Z->Prop)
+ (ap_removed:list Z->Z->list Z) (ap_output:list Z->APOutput->Assertion)
+ (ap_index:list Z->APIndex->Assertion)
+ (ap_float_initialized:APOutput->Z->fp32->Prop)
+ (ap_uint_initialized:APIndex->Z->Z->Prop) */
+float ap_read_previous_float(const float*p)
+/*@ With (W:list Z) (O:APOutput) (v:fp32)
+ Require p!=0 && ap_distinct(W) && ap_owned(W,p) && ap_float_initialized(O,p,v) && ap_output(W,O)
+ Ensure ap_same_bits(__return,v) && ap_output(W,O) */;
+uint32_t ap_read_previous_uint(const uint32_t*p)
+/*@ With (W:list Z) (O:APIndex) (v:Z)
+ Require p!=0 && ap_distinct(W) && ap_owned(W,p) && ap_uint_initialized(O,p,v) && ap_index(W,O)
+ Ensure __return==v && ap_index(W,O) */;
+/*@ Import Coq Require Import ArgmaxPool.PackModel ArgmaxPool.ReadWindows ArgmaxPool.LaneInsertModel */
+/*@ Extern Coq (APOutput :: *) (APIndex :: *) */
+/*@ Extern Coq (ap_output:list Z->APOutput->Assertion) (ap_index:list Z->APIndex->Assertion)
+ (ap_write_window:list Z->Z->Z->Prop)
+ (ap_output_readable:APOutput->Z->Z->Prop) (ap_index_readable:APIndex->Z->Z->Prop)
+ (ap_output_loaded_lane:APOutput->Z->Z->fp32->Prop) (ap_index_loaded_lane:APIndex->Z->Z->Z->Prop)
+ (ap_output_write:APOutput->Z->Z->(Z->fp32)->APOutput) (ap_index_write:APIndex->Z->Z->(Z->Z)->APIndex)
+ (ap_fpack2:fp32->fp32->Z->fp32) (ap_fpack4:fp32->fp32->fp32->fp32->Z->fp32)
+ (ap_insert_f32:fp32->fp32->fp32->fp32->fp32->Z->Z->fp32)
+ (ap_insert_u32:Z->Z->Z->Z->Z->Z->Z->Z)
+ (ap_ipack2:Z->Z->Z->Z) (ap_ipack4:Z->Z->Z->Z->Z->Z) */
+float32x4_t vld1q_f32(const float*p)
+/*@ readonly_map With (F:APMap) Require ap_window(F,p,4) && ap_data(F)
+ Ensure ap_data(F) * store(&(__return.s0),float,ap_load_lane(F,p,0)) * store(&(__return.s1),float,ap_load_lane(F,p,1)) * store(&(__return.s2),float,ap_load_lane(F,p,2)) * store(&(__return.s3),float,ap_load_lane(F,p,3)) */;
+float32x4_t vld1q_f32(const float*p)
+/*@ output_map With (W:list Z) (O:APOutput) Require ap_write_window(W,p,4) && ap_output_readable(O,p,4) && ap_output(W,O)
+ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32), ap_output_loaded_lane(O,p,0,r0) && ap_output_loaded_lane(O,p,1,r1) && ap_output_loaded_lane(O,p,2,r2) && ap_output_loaded_lane(O,p,3,r3) && ap_output(W,O) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) */;
+uint32x4_t vld1q_u32(const uint32_t*p)
+/*@ output_map With (W:list Z) (O:APIndex) Require ap_write_window(W,p,4) && ap_index_readable(O,p,4) && ap_index(W,O)
+ Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z), ap_index_loaded_lane(O,p,0,r0) && ap_index_loaded_lane(O,p,1,r1) && ap_index_loaded_lane(O,p,2,r2) && ap_index_loaded_lane(O,p,3,r3) && ap_index(W,O) * store(&(__return.s0),unsigned int,r0) * store(&(__return.s1),unsigned int,r1) * store(&(__return.s2),unsigned int,r2) * store(&(__return.s3),unsigned int,r3) */;
+uint32x4_t vdupq_n_u32(uint32_t x)
+/*@ Require emp
+ Ensure store(&(__return.s0),unsigned int,x) * store(&(__return.s1),unsigned int,x) * store(&(__return.s2),unsigned int,x) * store(&(__return.s3),unsigned int,x) */;
+uint32x4_t vaddq_u32(uint32x4_t a,uint32x4_t b)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) Require store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3) * store(&(b.s0),unsigned int,b0) * store(&(b.s1),unsigned int,b1) * store(&(b.s2),unsigned int,b2) * store(&(b.s3),unsigned int,b3)
+ Ensure store(&(__return.s0),unsigned int,ap_add_u32(a0,b0)) * store(&(__return.s1),unsigned int,ap_add_u32(a1,b1)) * store(&(__return.s2),unsigned int,ap_add_u32(a2,b2)) * store(&(__return.s3),unsigned int,ap_add_u32(a3,b3)) */;
+uint32x4_t vcgtq_f32(float32x4_t a,float32x4_t b)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)
+ Ensure store(&(__return.s0),unsigned int,ap_gt_mask(a0,b0)) * store(&(__return.s1),unsigned int,ap_gt_mask(a1,b1)) * store(&(__return.s2),unsigned int,ap_gt_mask(a2,b2)) * store(&(__return.s3),unsigned int,ap_gt_mask(a3,b3)) */;
+float32x4_t vbslq_f32(uint32x4_t m,float32x4_t a,float32x4_t b)
+/*@ With (m0:Z) (m1:Z) (m2:Z) (m3:Z) (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) Require ap_bool_mask(m0) && ap_bool_mask(m1) && ap_bool_mask(m2) && ap_bool_mask(m3) && store(&(m.s0),unsigned int,m0) * store(&(m.s1),unsigned int,m1) * store(&(m.s2),unsigned int,m2) * store(&(m.s3),unsigned int,m3) * store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3) * store(&(b.s0),float,b0) * store(&(b.s1),float,b1) * store(&(b.s2),float,b2) * store(&(b.s3),float,b3)
+ Ensure store(&(__return.s0),float,ap_select_f32(m0,a0,b0)) * store(&(__return.s1),float,ap_select_f32(m1,a1,b1)) * store(&(__return.s2),float,ap_select_f32(m2,a2,b2)) * store(&(__return.s3),float,ap_select_f32(m3,a3,b3)) */;
+uint32x4_t vbslq_u32(uint32x4_t m,uint32x4_t a,uint32x4_t b)
+/*@ With (m0:Z) (m1:Z) (m2:Z) (m3:Z) (a0:Z) (a1:Z) (a2:Z) (a3:Z) (b0:Z) (b1:Z) (b2:Z) (b3:Z) Require ap_bool_mask(m0) && ap_bool_mask(m1) && ap_bool_mask(m2) && ap_bool_mask(m3) && store(&(m.s0),unsigned int,m0) * store(&(m.s1),unsigned int,m1) * store(&(m.s2),unsigned int,m2) * store(&(m.s3),unsigned int,m3) * store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3) * store(&(b.s0),unsigned int,b0) * store(&(b.s1),unsigned int,b1) * store(&(b.s2),unsigned int,b2) * store(&(b.s3),unsigned int,b3)
+ Ensure store(&(__return.s0),unsigned int,ap_select_u32(m0,a0,b0)) * store(&(__return.s1),unsigned int,ap_select_u32(m1,a1,b1)) * store(&(__return.s2),unsigned int,ap_select_u32(m2,a2,b2)) * store(&(__return.s3),unsigned int,ap_select_u32(m3,a3,b3)) */;
+float32x2_t vget_low_f32(float32x4_t a)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)
+ Ensure store(&(__return.s0),float,a0) * store(&(__return.s1),float,a1) */;
+float32x2_t vget_high_f32(float32x4_t a)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) Require store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)
+ Ensure store(&(__return.s0),float,a2) * store(&(__return.s1),float,a3) */;
+uint32x2_t vget_low_u32(uint32x4_t a)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) Require store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3)
+ Ensure store(&(__return.s0),unsigned int,a0) * store(&(__return.s1),unsigned int,a1) */;
+uint32x2_t vget_high_u32(uint32x4_t a)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) Require store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3)
+ Ensure store(&(__return.s0),unsigned int,a2) * store(&(__return.s1),unsigned int,a3) */;
+void ap_vst1q_f32_view(float*p,const float32x4_t*a)
+/*@ With (W:list Z) (O:APOutput) (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) Require ap_write_window(W,p,4) && ap_output(W,O) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1) * store(&(a->s2),float,a2) * store(&(a->s3),float,a3)
+ Ensure ap_output(W,ap_output_write(O,p,4,ap_fpack4(a0,a1,a2,a3))) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1) * store(&(a->s2),float,a2) * store(&(a->s3),float,a3) */;
+void ap_vst1_f32_view(float*p,const float32x2_t*a)
+/*@ With (W:list Z) (O:APOutput) (a0:fp32) (a1:fp32) Require ap_write_window(W,p,2) && ap_output(W,O) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1)
+ Ensure ap_output(W,ap_output_write(O,p,2,ap_fpack2(a0,a1))) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1) */;
+void ap_vst1_lane_f32_view(float*p,const float32x2_t*a,int lane)
+/*@ With (W:list Z) (O:APOutput) (a0:fp32) (a1:fp32) Require lane==0 && ap_write_window(W,p,1) && ap_output(W,O) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1)
+ Ensure ap_output(W,ap_output_write(O,p,1,ap_fpack2(a0,a1))) * store(&(a->s0),float,a0) * store(&(a->s1),float,a1) */;
+void ap_vst1q_u32_view(uint32_t*p,const uint32x4_t*a)
+/*@ With (W:list Z) (O:APIndex) (a0:Z) (a1:Z) (a2:Z) (a3:Z) Require ap_write_window(W,p,4) && ap_index(W,O) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1) * store(&(a->s2),unsigned int,a2) * store(&(a->s3),unsigned int,a3)
+ Ensure ap_index(W,ap_index_write(O,p,4,ap_ipack4(a0,a1,a2,a3))) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1) * store(&(a->s2),unsigned int,a2) * store(&(a->s3),unsigned int,a3) */;
+void ap_vst1_u32_view(uint32_t*p,const uint32x2_t*a)
+/*@ With (W:list Z) (O:APIndex) (a0:Z) (a1:Z) Require ap_write_window(W,p,2) && ap_index(W,O) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1)
+ Ensure ap_index(W,ap_index_write(O,p,2,ap_ipack2(a0,a1))) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1) */;
+void ap_vst1_lane_u32_view(uint32_t*p,const uint32x2_t*a,int lane)
+/*@ With (W:list Z) (O:APIndex) (a0:Z) (a1:Z) Require lane==0 && ap_write_window(W,p,1) && ap_index(W,O) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1)
+ Ensure ap_index(W,ap_index_write(O,p,1,ap_ipack2(a0,a1))) * store(&(a->s0),unsigned int,a0) * store(&(a->s1),unsigned int,a1) */;
+float32x4_t vsetq_lane_f32(float value,float32x4_t a,int lane)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) Require 0<=lane && lane<4 && store(&(a.s0),float,a0) * store(&(a.s1),float,a1) * store(&(a.s2),float,a2) * store(&(a.s3),float,a3)
+ Ensure store(&(__return.s0),float,ap_insert_f32(value,a0,a1,a2,a3,lane,0)) * store(&(__return.s1),float,ap_insert_f32(value,a0,a1,a2,a3,lane,1)) * store(&(__return.s2),float,ap_insert_f32(value,a0,a1,a2,a3,lane,2)) * store(&(__return.s3),float,ap_insert_f32(value,a0,a1,a2,a3,lane,3)) */;
+uint32x4_t vsetq_lane_u32(uint32_t value,uint32x4_t a,int lane)
+/*@ With (a0:Z) (a1:Z) (a2:Z) (a3:Z) Require 0<=lane && lane<4 && store(&(a.s0),unsigned int,a0) * store(&(a.s1),unsigned int,a1) * store(&(a.s2),unsigned int,a2) * store(&(a.s3),unsigned int,a3)
+ Ensure store(&(__return.s0),unsigned int,ap_insert_u32(value,a0,a1,a2,a3,lane,0)) * store(&(__return.s1),unsigned int,ap_insert_u32(value,a0,a1,a2,a3,lane,1)) * store(&(__return.s2),unsigned int,ap_insert_u32(value,a0,a1,a2,a3,lane,2)) * store(&(__return.s3),unsigned int,ap_insert_u32(value,a0,a1,a2,a3,lane,3)) */;
+/*@ Import Coq Require Import ArgmaxPool.NeonKernelModel */
+/*@ Extern Coq
+ (app_neon_partial_output:APMap->APPtrMap->APProgram->Z->Z->Z->APOutput->APIndex->APOutput)
+ (app_neon_partial_index:APMap->APPtrMap->APProgram->Z->Z->Z->APOutput->APIndex->APIndex)
+ (UndefStructPreduint32x4_t:Z->Assertion)
+ (app_previous_float_value:APMap->APPtrMap->APProgram->Z->Z->Z->fp32)
+ (app_previous_index_value:APMap->APPtrMap->APProgram->Z->Z->Z->Z)
+ */
+/*@ Import Coq Require Import ArgmaxPool.BorrowedKernelModel */
+vbool4_t ap_borrow_rvv_gt32(const vfloat32m8_t*pa,const vfloat32m8_t*pb,size_t vl)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (b4:fp32) (b5:fp32) (b6:fp32) (b7:fp32) (b8:fp32) (b9:fp32) (b10:fp32) (b11:fp32) (b12:fp32) (b13:fp32) (b14:fp32) (b15:fp32) (b16:fp32) (b17:fp32) (b18:fp32) (b19:fp32) (b20:fp32) (b21:fp32) (b22:fp32) (b23:fp32) (b24:fp32) (b25:fp32) (b26:fp32) (b27:fp32) (b28:fp32) (b29:fp32) (b30:fp32) (b31:fp32) Require 0<=vl && vl<=32 && store(&(pa->s0),float,a0) * store(&(pa->s1),float,a1) * store(&(pa->s2),float,a2) * store(&(pa->s3),float,a3) * store(&(pa->s4),float,a4) * store(&(pa->s5),float,a5) * store(&(pa->s6),float,a6) * store(&(pa->s7),float,a7) * store(&(pa->s8),float,a8) * store(&(pa->s9),float,a9) * store(&(pa->s10),float,a10) * store(&(pa->s11),float,a11) * store(&(pa->s12),float,a12) * store(&(pa->s13),float,a13) * store(&(pa->s14),float,a14) * store(&(pa->s15),float,a15) * store(&(pa->s16),float,a16) * store(&(pa->s17),float,a17) * store(&(pa->s18),float,a18) * store(&(pa->s19),float,a19) * store(&(pa->s20),float,a20) * store(&(pa->s21),float,a21) * store(&(pa->s22),float,a22) * store(&(pa->s23),float,a23) * store(&(pa->s24),float,a24) * store(&(pa->s25),float,a25) * store(&(pa->s26),float,a26) * store(&(pa->s27),float,a27) * store(&(pa->s28),float,a28) * store(&(pa->s29),float,a29) * store(&(pa->s30),float,a30) * store(&(pa->s31),float,a31) * store(&(pb->s0),float,b0) * store(&(pb->s1),float,b1) * store(&(pb->s2),float,b2) * store(&(pb->s3),float,b3) * store(&(pb->s4),float,b4) * store(&(pb->s5),float,b5) * store(&(pb->s6),float,b6) * store(&(pb->s7),float,b7) * store(&(pb->s8),float,b8) * store(&(pb->s9),float,b9) * store(&(pb->s10),float,b10) * store(&(pb->s11),float,b11) * store(&(pb->s12),float,b12) * store(&(pb->s13),float,b13) * store(&(pb->s14),float,b14) * store(&(pb->s15),float,b15) * store(&(pb->s16),float,b16) * store(&(pb->s17),float,b17) * store(&(pb->s18),float,b18) * store(&(pb->s19),float,b19) * store(&(pb->s20),float,b20) * store(&(pb->s21),float,b21) * store(&(pb->s22),float,b22) * store(&(pb->s23),float,b23) * store(&(pb->s24),float,b24) * store(&(pb->s25),float,b25) * store(&(pb->s26),float,b26) * store(&(pb->s27),float,b27) * store(&(pb->s28),float,b28) * store(&(pb->s29),float,b29) * store(&(pb->s30),float,b30) * store(&(pb->s31),float,b31)
+ Ensure exists (r0:Z) (r1:Z) (r2:Z) (r3:Z) (r4:Z) (r5:Z) (r6:Z) (r7:Z) (r8:Z) (r9:Z) (r10:Z) (r11:Z) (r12:Z) (r13:Z) (r14:Z) (r15:Z) (r16:Z) (r17:Z) (r18:Z) (r19:Z) (r20:Z) (r21:Z) (r22:Z) (r23:Z) (r24:Z) (r25:Z) (r26:Z) (r27:Z) (r28:Z) (r29:Z) (r30:Z) (r31:Z), apr_int_lane(0,vl,r0,ap_rvv_gt(a0,b0)) && apr_int_lane(1,vl,r1,ap_rvv_gt(a1,b1)) && apr_int_lane(2,vl,r2,ap_rvv_gt(a2,b2)) && apr_int_lane(3,vl,r3,ap_rvv_gt(a3,b3)) && apr_int_lane(4,vl,r4,ap_rvv_gt(a4,b4)) && apr_int_lane(5,vl,r5,ap_rvv_gt(a5,b5)) && apr_int_lane(6,vl,r6,ap_rvv_gt(a6,b6)) && apr_int_lane(7,vl,r7,ap_rvv_gt(a7,b7)) && apr_int_lane(8,vl,r8,ap_rvv_gt(a8,b8)) && apr_int_lane(9,vl,r9,ap_rvv_gt(a9,b9)) && apr_int_lane(10,vl,r10,ap_rvv_gt(a10,b10)) && apr_int_lane(11,vl,r11,ap_rvv_gt(a11,b11)) && apr_int_lane(12,vl,r12,ap_rvv_gt(a12,b12)) && apr_int_lane(13,vl,r13,ap_rvv_gt(a13,b13)) && apr_int_lane(14,vl,r14,ap_rvv_gt(a14,b14)) && apr_int_lane(15,vl,r15,ap_rvv_gt(a15,b15)) && apr_int_lane(16,vl,r16,ap_rvv_gt(a16,b16)) && apr_int_lane(17,vl,r17,ap_rvv_gt(a17,b17)) && apr_int_lane(18,vl,r18,ap_rvv_gt(a18,b18)) && apr_int_lane(19,vl,r19,ap_rvv_gt(a19,b19)) && apr_int_lane(20,vl,r20,ap_rvv_gt(a20,b20)) && apr_int_lane(21,vl,r21,ap_rvv_gt(a21,b21)) && apr_int_lane(22,vl,r22,ap_rvv_gt(a22,b22)) && apr_int_lane(23,vl,r23,ap_rvv_gt(a23,b23)) && apr_int_lane(24,vl,r24,ap_rvv_gt(a24,b24)) && apr_int_lane(25,vl,r25,ap_rvv_gt(a25,b25)) && apr_int_lane(26,vl,r26,ap_rvv_gt(a26,b26)) && apr_int_lane(27,vl,r27,ap_rvv_gt(a27,b27)) && apr_int_lane(28,vl,r28,ap_rvv_gt(a28,b28)) && apr_int_lane(29,vl,r29,ap_rvv_gt(a29,b29)) && apr_int_lane(30,vl,r30,ap_rvv_gt(a30,b30)) && apr_int_lane(31,vl,r31,ap_rvv_gt(a31,b31)) && ap_rvv_mask_active(0,vl,r0) && ap_rvv_mask_active(1,vl,r1) && ap_rvv_mask_active(2,vl,r2) && ap_rvv_mask_active(3,vl,r3) && ap_rvv_mask_active(4,vl,r4) && ap_rvv_mask_active(5,vl,r5) && ap_rvv_mask_active(6,vl,r6) && ap_rvv_mask_active(7,vl,r7) && ap_rvv_mask_active(8,vl,r8) && ap_rvv_mask_active(9,vl,r9) && ap_rvv_mask_active(10,vl,r10) && ap_rvv_mask_active(11,vl,r11) && ap_rvv_mask_active(12,vl,r12) && ap_rvv_mask_active(13,vl,r13) && ap_rvv_mask_active(14,vl,r14) && ap_rvv_mask_active(15,vl,r15) && ap_rvv_mask_active(16,vl,r16) && ap_rvv_mask_active(17,vl,r17) && ap_rvv_mask_active(18,vl,r18) && ap_rvv_mask_active(19,vl,r19) && ap_rvv_mask_active(20,vl,r20) && ap_rvv_mask_active(21,vl,r21) && ap_rvv_mask_active(22,vl,r22) && ap_rvv_mask_active(23,vl,r23) && ap_rvv_mask_active(24,vl,r24) && ap_rvv_mask_active(25,vl,r25) && ap_rvv_mask_active(26,vl,r26) && ap_rvv_mask_active(27,vl,r27) && ap_rvv_mask_active(28,vl,r28) && ap_rvv_mask_active(29,vl,r29) && ap_rvv_mask_active(30,vl,r30) && ap_rvv_mask_active(31,vl,r31) && store(&(pa->s0),float,a0) * store(&(pa->s1),float,a1) * store(&(pa->s2),float,a2) * store(&(pa->s3),float,a3) * store(&(pa->s4),float,a4) * store(&(pa->s5),float,a5) * store(&(pa->s6),float,a6) * store(&(pa->s7),float,a7) * store(&(pa->s8),float,a8) * store(&(pa->s9),float,a9) * store(&(pa->s10),float,a10) * store(&(pa->s11),float,a11) * store(&(pa->s12),float,a12) * store(&(pa->s13),float,a13) * store(&(pa->s14),float,a14) * store(&(pa->s15),float,a15) * store(&(pa->s16),float,a16) * store(&(pa->s17),float,a17) * store(&(pa->s18),float,a18) * store(&(pa->s19),float,a19) * store(&(pa->s20),float,a20) * store(&(pa->s21),float,a21) * store(&(pa->s22),float,a22) * store(&(pa->s23),float,a23) * store(&(pa->s24),float,a24) * store(&(pa->s25),float,a25) * store(&(pa->s26),float,a26) * store(&(pa->s27),float,a27) * store(&(pa->s28),float,a28) * store(&(pa->s29),float,a29) * store(&(pa->s30),float,a30) * store(&(pa->s31),float,a31) * store(&(pb->s0),float,b0) * store(&(pb->s1),float,b1) * store(&(pb->s2),float,b2) * store(&(pb->s3),float,b3) * store(&(pb->s4),float,b4) * store(&(pb->s5),float,b5) * store(&(pb->s6),float,b6) * store(&(pb->s7),float,b7) * store(&(pb->s8),float,b8) * store(&(pb->s9),float,b9) * store(&(pb->s10),float,b10) * store(&(pb->s11),float,b11) * store(&(pb->s12),float,b12) * store(&(pb->s13),float,b13) * store(&(pb->s14),float,b14) * store(&(pb->s15),float,b15) * store(&(pb->s16),float,b16) * store(&(pb->s17),float,b17) * store(&(pb->s18),float,b18) * store(&(pb->s19),float,b19) * store(&(pb->s20),float,b20) * store(&(pb->s21),float,b21) * store(&(pb->s22),float,b22) * store(&(pb->s23),float,b23) * store(&(pb->s24),float,b24) * store(&(pb->s25),float,b25) * store(&(pb->s26),float,b26) * store(&(pb->s27),float,b27) * store(&(pb->s28),float,b28) * store(&(pb->s29),float,b29) * store(&(pb->s30),float,b30) * store(&(pb->s31),float,b31) * store(&(__return.s0),unsigned int,r0) * store(&(__return.s1),unsigned int,r1) * store(&(__return.s2),unsigned int,r2) * store(&(__return.s3),unsigned int,r3) * store(&(__return.s4),unsigned int,r4) * store(&(__return.s5),unsigned int,r5) * store(&(__return.s6),unsigned int,r6) * store(&(__return.s7),unsigned int,r7) * store(&(__return.s8),unsigned int,r8) * store(&(__return.s9),unsigned int,r9) * store(&(__return.s10),unsigned int,r10) * store(&(__return.s11),unsigned int,r11) * store(&(__return.s12),unsigned int,r12) * store(&(__return.s13),unsigned int,r13) * store(&(__return.s14),unsigned int,r14) * store(&(__return.s15),unsigned int,r15) * store(&(__return.s16),unsigned int,r16) * store(&(__return.s17),unsigned int,r17) * store(&(__return.s18),unsigned int,r18) * store(&(__return.s19),unsigned int,r19) * store(&(__return.s20),unsigned int,r20) * store(&(__return.s21),unsigned int,r21) * store(&(__return.s22),unsigned int,r22) * store(&(__return.s23),unsigned int,r23) * store(&(__return.s24),unsigned int,r24) * store(&(__return.s25),unsigned int,r25) * store(&(__return.s26),unsigned int,r26) * store(&(__return.s27),unsigned int,r27) * store(&(__return.s28),unsigned int,r28) * store(&(__return.s29),unsigned int,r29) * store(&(__return.s30),unsigned int,r30) * store(&(__return.s31),unsigned int,r31) */;
+vfloat32m8_t ap_borrow_rvv_merge32(const vfloat32m8_t*pa,const vfloat32m8_t*pb,const vbool4_t*pm,size_t vl)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (a4:fp32) (a5:fp32) (a6:fp32) (a7:fp32) (a8:fp32) (a9:fp32) (a10:fp32) (a11:fp32) (a12:fp32) (a13:fp32) (a14:fp32) (a15:fp32) (a16:fp32) (a17:fp32) (a18:fp32) (a19:fp32) (a20:fp32) (a21:fp32) (a22:fp32) (a23:fp32) (a24:fp32) (a25:fp32) (a26:fp32) (a27:fp32) (a28:fp32) (a29:fp32) (a30:fp32) (a31:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (b4:fp32) (b5:fp32) (b6:fp32) (b7:fp32) (b8:fp32) (b9:fp32) (b10:fp32) (b11:fp32) (b12:fp32) (b13:fp32) (b14:fp32) (b15:fp32) (b16:fp32) (b17:fp32) (b18:fp32) (b19:fp32) (b20:fp32) (b21:fp32) (b22:fp32) (b23:fp32) (b24:fp32) (b25:fp32) (b26:fp32) (b27:fp32) (b28:fp32) (b29:fp32) (b30:fp32) (b31:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) (m4:Z) (m5:Z) (m6:Z) (m7:Z) (m8:Z) (m9:Z) (m10:Z) (m11:Z) (m12:Z) (m13:Z) (m14:Z) (m15:Z) (m16:Z) (m17:Z) (m18:Z) (m19:Z) (m20:Z) (m21:Z) (m22:Z) (m23:Z) (m24:Z) (m25:Z) (m26:Z) (m27:Z) (m28:Z) (m29:Z) (m30:Z) (m31:Z) Require 0<=vl && vl<=32 && ap_rvv_mask_active(0,vl,m0) && ap_rvv_mask_active(1,vl,m1) && ap_rvv_mask_active(2,vl,m2) && ap_rvv_mask_active(3,vl,m3) && ap_rvv_mask_active(4,vl,m4) && ap_rvv_mask_active(5,vl,m5) && ap_rvv_mask_active(6,vl,m6) && ap_rvv_mask_active(7,vl,m7) && ap_rvv_mask_active(8,vl,m8) && ap_rvv_mask_active(9,vl,m9) && ap_rvv_mask_active(10,vl,m10) && ap_rvv_mask_active(11,vl,m11) && ap_rvv_mask_active(12,vl,m12) && ap_rvv_mask_active(13,vl,m13) && ap_rvv_mask_active(14,vl,m14) && ap_rvv_mask_active(15,vl,m15) && ap_rvv_mask_active(16,vl,m16) && ap_rvv_mask_active(17,vl,m17) && ap_rvv_mask_active(18,vl,m18) && ap_rvv_mask_active(19,vl,m19) && ap_rvv_mask_active(20,vl,m20) && ap_rvv_mask_active(21,vl,m21) && ap_rvv_mask_active(22,vl,m22) && ap_rvv_mask_active(23,vl,m23) && ap_rvv_mask_active(24,vl,m24) && ap_rvv_mask_active(25,vl,m25) && ap_rvv_mask_active(26,vl,m26) && ap_rvv_mask_active(27,vl,m27) && ap_rvv_mask_active(28,vl,m28) && ap_rvv_mask_active(29,vl,m29) && ap_rvv_mask_active(30,vl,m30) && ap_rvv_mask_active(31,vl,m31) && store(&(pa->s0),float,a0) * store(&(pa->s1),float,a1) * store(&(pa->s2),float,a2) * store(&(pa->s3),float,a3) * store(&(pa->s4),float,a4) * store(&(pa->s5),float,a5) * store(&(pa->s6),float,a6) * store(&(pa->s7),float,a7) * store(&(pa->s8),float,a8) * store(&(pa->s9),float,a9) * store(&(pa->s10),float,a10) * store(&(pa->s11),float,a11) * store(&(pa->s12),float,a12) * store(&(pa->s13),float,a13) * store(&(pa->s14),float,a14) * store(&(pa->s15),float,a15) * store(&(pa->s16),float,a16) * store(&(pa->s17),float,a17) * store(&(pa->s18),float,a18) * store(&(pa->s19),float,a19) * store(&(pa->s20),float,a20) * store(&(pa->s21),float,a21) * store(&(pa->s22),float,a22) * store(&(pa->s23),float,a23) * store(&(pa->s24),float,a24) * store(&(pa->s25),float,a25) * store(&(pa->s26),float,a26) * store(&(pa->s27),float,a27) * store(&(pa->s28),float,a28) * store(&(pa->s29),float,a29) * store(&(pa->s30),float,a30) * store(&(pa->s31),float,a31) * store(&(pb->s0),float,b0) * store(&(pb->s1),float,b1) * store(&(pb->s2),float,b2) * store(&(pb->s3),float,b3) * store(&(pb->s4),float,b4) * store(&(pb->s5),float,b5) * store(&(pb->s6),float,b6) * store(&(pb->s7),float,b7) * store(&(pb->s8),float,b8) * store(&(pb->s9),float,b9) * store(&(pb->s10),float,b10) * store(&(pb->s11),float,b11) * store(&(pb->s12),float,b12) * store(&(pb->s13),float,b13) * store(&(pb->s14),float,b14) * store(&(pb->s15),float,b15) * store(&(pb->s16),float,b16) * store(&(pb->s17),float,b17) * store(&(pb->s18),float,b18) * store(&(pb->s19),float,b19) * store(&(pb->s20),float,b20) * store(&(pb->s21),float,b21) * store(&(pb->s22),float,b22) * store(&(pb->s23),float,b23) * store(&(pb->s24),float,b24) * store(&(pb->s25),float,b25) * store(&(pb->s26),float,b26) * store(&(pb->s27),float,b27) * store(&(pb->s28),float,b28) * store(&(pb->s29),float,b29) * store(&(pb->s30),float,b30) * store(&(pb->s31),float,b31) * store(&(pm->s0),unsigned int,m0) * store(&(pm->s1),unsigned int,m1) * store(&(pm->s2),unsigned int,m2) * store(&(pm->s3),unsigned int,m3) * store(&(pm->s4),unsigned int,m4) * store(&(pm->s5),unsigned int,m5) * store(&(pm->s6),unsigned int,m6) * store(&(pm->s7),unsigned int,m7) * store(&(pm->s8),unsigned int,m8) * store(&(pm->s9),unsigned int,m9) * store(&(pm->s10),unsigned int,m10) * store(&(pm->s11),unsigned int,m11) * store(&(pm->s12),unsigned int,m12) * store(&(pm->s13),unsigned int,m13) * store(&(pm->s14),unsigned int,m14) * store(&(pm->s15),unsigned int,m15) * store(&(pm->s16),unsigned int,m16) * store(&(pm->s17),unsigned int,m17) * store(&(pm->s18),unsigned int,m18) * store(&(pm->s19),unsigned int,m19) * store(&(pm->s20),unsigned int,m20) * store(&(pm->s21),unsigned int,m21) * store(&(pm->s22),unsigned int,m22) * store(&(pm->s23),unsigned int,m23) * store(&(pm->s24),unsigned int,m24) * store(&(pm->s25),unsigned int,m25) * store(&(pm->s26),unsigned int,m26) * store(&(pm->s27),unsigned int,m27) * store(&(pm->s28),unsigned int,m28) * store(&(pm->s29),unsigned int,m29) * store(&(pm->s30),unsigned int,m30) * store(&(pm->s31),unsigned int,m31)
+ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32) (r4:fp32) (r5:fp32) (r6:fp32) (r7:fp32) (r8:fp32) (r9:fp32) (r10:fp32) (r11:fp32) (r12:fp32) (r13:fp32) (r14:fp32) (r15:fp32) (r16:fp32) (r17:fp32) (r18:fp32) (r19:fp32) (r20:fp32) (r21:fp32) (r22:fp32) (r23:fp32) (r24:fp32) (r25:fp32) (r26:fp32) (r27:fp32) (r28:fp32) (r29:fp32) (r30:fp32) (r31:fp32), apr_float_lane(0,vl,r0,ap_rvv_select_f32(m0,a0,b0)) && apr_float_lane(1,vl,r1,ap_rvv_select_f32(m1,a1,b1)) && apr_float_lane(2,vl,r2,ap_rvv_select_f32(m2,a2,b2)) && apr_float_lane(3,vl,r3,ap_rvv_select_f32(m3,a3,b3)) && apr_float_lane(4,vl,r4,ap_rvv_select_f32(m4,a4,b4)) && apr_float_lane(5,vl,r5,ap_rvv_select_f32(m5,a5,b5)) && apr_float_lane(6,vl,r6,ap_rvv_select_f32(m6,a6,b6)) && apr_float_lane(7,vl,r7,ap_rvv_select_f32(m7,a7,b7)) && apr_float_lane(8,vl,r8,ap_rvv_select_f32(m8,a8,b8)) && apr_float_lane(9,vl,r9,ap_rvv_select_f32(m9,a9,b9)) && apr_float_lane(10,vl,r10,ap_rvv_select_f32(m10,a10,b10)) && apr_float_lane(11,vl,r11,ap_rvv_select_f32(m11,a11,b11)) && apr_float_lane(12,vl,r12,ap_rvv_select_f32(m12,a12,b12)) && apr_float_lane(13,vl,r13,ap_rvv_select_f32(m13,a13,b13)) && apr_float_lane(14,vl,r14,ap_rvv_select_f32(m14,a14,b14)) && apr_float_lane(15,vl,r15,ap_rvv_select_f32(m15,a15,b15)) && apr_float_lane(16,vl,r16,ap_rvv_select_f32(m16,a16,b16)) && apr_float_lane(17,vl,r17,ap_rvv_select_f32(m17,a17,b17)) && apr_float_lane(18,vl,r18,ap_rvv_select_f32(m18,a18,b18)) && apr_float_lane(19,vl,r19,ap_rvv_select_f32(m19,a19,b19)) && apr_float_lane(20,vl,r20,ap_rvv_select_f32(m20,a20,b20)) && apr_float_lane(21,vl,r21,ap_rvv_select_f32(m21,a21,b21)) && apr_float_lane(22,vl,r22,ap_rvv_select_f32(m22,a22,b22)) && apr_float_lane(23,vl,r23,ap_rvv_select_f32(m23,a23,b23)) && apr_float_lane(24,vl,r24,ap_rvv_select_f32(m24,a24,b24)) && apr_float_lane(25,vl,r25,ap_rvv_select_f32(m25,a25,b25)) && apr_float_lane(26,vl,r26,ap_rvv_select_f32(m26,a26,b26)) && apr_float_lane(27,vl,r27,ap_rvv_select_f32(m27,a27,b27)) && apr_float_lane(28,vl,r28,ap_rvv_select_f32(m28,a28,b28)) && apr_float_lane(29,vl,r29,ap_rvv_select_f32(m29,a29,b29)) && apr_float_lane(30,vl,r30,ap_rvv_select_f32(m30,a30,b30)) && apr_float_lane(31,vl,r31,ap_rvv_select_f32(m31,a31,b31)) && store(&(pa->s0),float,a0) * store(&(pa->s1),float,a1) * store(&(pa->s2),float,a2) * store(&(pa->s3),float,a3) * store(&(pa->s4),float,a4) * store(&(pa->s5),float,a5) * store(&(pa->s6),float,a6) * store(&(pa->s7),float,a7) * store(&(pa->s8),float,a8) * store(&(pa->s9),float,a9) * store(&(pa->s10),float,a10) * store(&(pa->s11),float,a11) * store(&(pa->s12),float,a12) * store(&(pa->s13),float,a13) * store(&(pa->s14),float,a14) * store(&(pa->s15),float,a15) * store(&(pa->s16),float,a16) * store(&(pa->s17),float,a17) * store(&(pa->s18),float,a18) * store(&(pa->s19),float,a19) * store(&(pa->s20),float,a20) * store(&(pa->s21),float,a21) * store(&(pa->s22),float,a22) * store(&(pa->s23),float,a23) * store(&(pa->s24),float,a24) * store(&(pa->s25),float,a25) * store(&(pa->s26),float,a26) * store(&(pa->s27),float,a27) * store(&(pa->s28),float,a28) * store(&(pa->s29),float,a29) * store(&(pa->s30),float,a30) * store(&(pa->s31),float,a31) * store(&(pb->s0),float,b0) * store(&(pb->s1),float,b1) * store(&(pb->s2),float,b2) * store(&(pb->s3),float,b3) * store(&(pb->s4),float,b4) * store(&(pb->s5),float,b5) * store(&(pb->s6),float,b6) * store(&(pb->s7),float,b7) * store(&(pb->s8),float,b8) * store(&(pb->s9),float,b9) * store(&(pb->s10),float,b10) * store(&(pb->s11),float,b11) * store(&(pb->s12),float,b12) * store(&(pb->s13),float,b13) * store(&(pb->s14),float,b14) * store(&(pb->s15),float,b15) * store(&(pb->s16),float,b16) * store(&(pb->s17),float,b17) * store(&(pb->s18),float,b18) * store(&(pb->s19),float,b19) * store(&(pb->s20),float,b20) * store(&(pb->s21),float,b21) * store(&(pb->s22),float,b22) * store(&(pb->s23),float,b23) * store(&(pb->s24),float,b24) * store(&(pb->s25),float,b25) * store(&(pb->s26),float,b26) * store(&(pb->s27),float,b27) * store(&(pb->s28),float,b28) * store(&(pb->s29),float,b29) * store(&(pb->s30),float,b30) * store(&(pb->s31),float,b31) * store(&(pm->s0),unsigned int,m0) * store(&(pm->s1),unsigned int,m1) * store(&(pm->s2),unsigned int,m2) * store(&(pm->s3),unsigned int,m3) * store(&(pm->s4),unsigned int,m4) * store(&(pm->s5),unsigned int,m5) * store(&(pm->s6),unsigned int,m6) * store(&(pm->s7),unsigned int,m7) * store(&(pm->s8),unsigned int,m8) * store(&(pm->s9),unsigned int,m9) * store(&(pm->s10),unsigned int,m10) * store(&(pm->s11),unsigned int,m11) * store(&(pm->s12),unsigned int,m12) * store(&(pm->s13),unsigned int,m13) * store(&(pm->s14),unsigned int,m14) * store(&(pm->s15),unsigned int,m15) * store(&(pm->s16),unsigned int,m16) * store(&(pm->s17),unsigned int,m17) * store(&(pm->s18),unsigned int,m18) * store(&(pm->s19),unsigned int,m19) * store(&(pm->s20),unsigned int,m20) * store(&(pm->s21),unsigned int,m21) * store(&(pm->s22),unsigned int,m22) * store(&(pm->s23),unsigned int,m23) * store(&(pm->s24),unsigned int,m24) * store(&(pm->s25),unsigned int,m25) * store(&(pm->s26),unsigned int,m26) * store(&(pm->s27),unsigned int,m27) * store(&(pm->s28),unsigned int,m28) * store(&(pm->s29),unsigned int,m29) * store(&(pm->s30),unsigned int,m30) * store(&(pm->s31),unsigned int,m31) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) * store(&(__return.s4),float,r4) * store(&(__return.s5),float,r5) * store(&(__return.s6),float,r6) * store(&(__return.s7),float,r7) * store(&(__return.s8),float,r8) * store(&(__return.s9),float,r9) * store(&(__return.s10),float,r10) * store(&(__return.s11),float,r11) * store(&(__return.s12),float,r12) * store(&(__return.s13),float,r13) * store(&(__return.s14),float,r14) * store(&(__return.s15),float,r15) * store(&(__return.s16),float,r16) * store(&(__return.s17),float,r17) * store(&(__return.s18),float,r18) * store(&(__return.s19),float,r19) * store(&(__return.s20),float,r20) * store(&(__return.s21),float,r21) * store(&(__return.s22),float,r22) * store(&(__return.s23),float,r23) * store(&(__return.s24),float,r24) * store(&(__return.s25),float,r25) * store(&(__return.s26),float,r26) * store(&(__return.s27),float,r27) * store(&(__return.s28),float,r28) * store(&(__return.s29),float,r29) * store(&(__return.s30),float,r30) * store(&(__return.s31),float,r31) */;
+float32x4_t ap_borrow_neon_select4(const float32x4_t*pa,const float32x4_t*pb,const uint32x4_t*pm)
+/*@ With (a0:fp32) (a1:fp32) (a2:fp32) (a3:fp32) (b0:fp32) (b1:fp32) (b2:fp32) (b3:fp32) (m0:Z) (m1:Z) (m2:Z) (m3:Z) Require ap_bool_mask(m0) && ap_bool_mask(m1) && ap_bool_mask(m2) && ap_bool_mask(m3) && store(&(pa->s0),float,a0) * store(&(pa->s1),float,a1) * store(&(pa->s2),float,a2) * store(&(pa->s3),float,a3) * store(&(pb->s0),float,b0) * store(&(pb->s1),float,b1) * store(&(pb->s2),float,b2) * store(&(pb->s3),float,b3) * store(&(pm->s0),unsigned int,m0) * store(&(pm->s1),unsigned int,m1) * store(&(pm->s2),unsigned int,m2) * store(&(pm->s3),unsigned int,m3)
+ Ensure exists (r0:fp32) (r1:fp32) (r2:fp32) (r3:fp32), ap_same_bits(r0,ap_select_f32(m0,a0,b0)) && ap_same_bits(r1,ap_select_f32(m1,a1,b1)) && ap_same_bits(r2,ap_select_f32(m2,a2,b2)) && ap_same_bits(r3,ap_select_f32(m3,a3,b3)) && store(&(pa->s0),float,a0) * store(&(pa->s1),float,a1) * store(&(pa->s2),float,a2) * store(&(pa->s3),float,a3) * store(&(pb->s0),float,b0) * store(&(pb->s1),float,b1) * store(&(pb->s2),float,b2) * store(&(pb->s3),float,b3) * store(&(pm->s0),unsigned int,m0) * store(&(pm->s1),unsigned int,m1) * store(&(pm->s2),unsigned int,m2) * store(&(pm->s3),unsigned int,m3) * store(&(__return.s0),float,r0) * store(&(__return.s1),float,r1) * store(&(__return.s2),float,r2) * store(&(__return.s3),float,r3) */;
+/* Ordinary checked C adapters. The actual kernel call sites use named,
+   separately owned local objects; every operand address is evaluated once. */
+void test_neon(
+    size_t output_pixels,
+    size_t pooling_elements,
+    size_t channels,
+    const float** input,
+    size_t input_offset,
+    size_t input_pixel_stride,
+    float* output,
+    uint32_t* index,
+    size_t input_increment,
+    size_t output_increment,
+    size_t index_increment)
+{
+  ap_assert((output_pixels != 0));
+  ap_assert((pooling_elements != 0));
+  ap_assert((channels != 0));
+  const uint32x4_t v1 = vdupq_n_u32(1);
+  do {
+    // Accumulators start out null, after each pass the accumulator is set to
+    // the output.
+    const float* ab = ((void*)0);
+    const uint32_t* ib = ((void*)0);
+    const float** id = input;
+    uint32x4_t vidx0 = vdupq_n_u32(0);
+    uint32x4_t vidx8;
+    ap_assert((!ab));
+    ap_assert((!ib));
+    size_t k = pooling_elements;
+    for (; k > 0; k = k > 9 ? k - 9 : 0) {
+      const float* i0 = ap_read_table(id);
+      id += 1;
+      const float* i1 = i0;
+      if (1 < k) {
+        i1 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i2 = i0;
+      if (2 < k) {
+        i2 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i3 = i0;
+      if (3 < k) {
+        i3 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i4 = i0;
+      if (4 < k) {
+        i4 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i5 = i0;
+      if (5 < k) {
+        i5 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i6 = i0;
+      if (6 < k) {
+        i6 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i7 = i0;
+      if (7 < k) {
+        i7 = ap_read_table(id);
+        id += 1;
+      }
+      const float* i8 = i0;
+      if (8 < k) {
+        i8 = ap_read_table(id);
+        id += 1;
+      }
+      i0 = (const float*) ((uintptr_t) i0 + input_offset);
+      i1 = (const float*) ((uintptr_t) i1 + input_offset);
+      i2 = (const float*) ((uintptr_t) i2 + input_offset);
+      i3 = (const float*) ((uintptr_t) i3 + input_offset);
+      i4 = (const float*) ((uintptr_t) i4 + input_offset);
+      i5 = (const float*) ((uintptr_t) i5 + input_offset);
+      i6 = (const float*) ((uintptr_t) i6 + input_offset);
+      i7 = (const float*) ((uintptr_t) i7 + input_offset);
+      i8 = (const float*) ((uintptr_t) i8 + input_offset);
+      float* o = output;
+      uint32_t* i = index;
+      size_t c = channels;
+      for (; c >= 4; c -= 4) {
+        const float32x4_t vi0 = vld1q_f32(i0);
+        i0 += 4;
+        const float32x4_t vi1 = vld1q_f32(i1);
+        i1 += 4;
+        const float32x4_t vi2 = vld1q_f32(i2);
+        i2 += 4;
+        const float32x4_t vi3 = vld1q_f32(i3);
+        i3 += 4;
+        const float32x4_t vi4 = vld1q_f32(i4);
+        i4 += 4;
+        const float32x4_t vi5 = vld1q_f32(i5);
+        i5 += 4;
+        const float32x4_t vi6 = vld1q_f32(i6);
+        i6 += 4;
+        const float32x4_t vi7 = vld1q_f32(i7);
+        i7 += 4;
+        const float32x4_t vi8 = vld1q_f32(i8);
+        i8 += 4;
+        float32x4_t vmax;
+        uint32x4_t vidx;
+        if (ab) {
+          vmax = vld1q_f32(ab); ab += 4;
+          vidx = vld1q_u32(ib); ib += 4;
+          const uint32x4_t vm0 = vcgtq_f32(vi0, vmax);
+          vmax = ap_borrow_neon_select4(&(vi0),&(vmax),&(vm0));
+          vidx = vbslq_u32(vm0, vidx0, vidx);
+        } else {
+          vmax = vi0;
+          vidx = vidx0;
+        }
+        const uint32x4_t vm1 = vcgtq_f32(vi1, vmax);
+        const uint32x4_t vidx1 = vaddq_u32(vidx0, v1);
+        vmax = ap_borrow_neon_select4(&(vi1),&(vmax),&(vm1));
+        vidx = vbslq_u32(vm1, vidx1, vidx);
+        const uint32x4_t vm2 = vcgtq_f32(vi2, vmax);
+        const uint32x4_t vidx2 = vaddq_u32(vidx1, v1);
+        vmax = ap_borrow_neon_select4(&(vi2),&(vmax),&(vm2));
+        vidx = vbslq_u32(vm2, vidx2, vidx);
+        const uint32x4_t vm3 = vcgtq_f32(vi3, vmax);
+        const uint32x4_t vidx3 = vaddq_u32(vidx2, v1);
+        vmax = ap_borrow_neon_select4(&(vi3),&(vmax),&(vm3));
+        vidx = vbslq_u32(vm3, vidx3, vidx);
+        const uint32x4_t vm4 = vcgtq_f32(vi4, vmax);
+        const uint32x4_t vidx4 = vaddq_u32(vidx3, v1);
+        vmax = ap_borrow_neon_select4(&(vi4),&(vmax),&(vm4));
+        vidx = vbslq_u32(vm4, vidx4, vidx);
+        const uint32x4_t vm5 = vcgtq_f32(vi5, vmax);
+        const uint32x4_t vidx5 = vaddq_u32(vidx4, v1);
+        vmax = ap_borrow_neon_select4(&(vi5),&(vmax),&(vm5));
+        vidx = vbslq_u32(vm5, vidx5, vidx);
+        const uint32x4_t vm6 = vcgtq_f32(vi6, vmax);
+        const uint32x4_t vidx6 = vaddq_u32(vidx5, v1);
+        vmax = ap_borrow_neon_select4(&(vi6),&(vmax),&(vm6));
+        vidx = vbslq_u32(vm6, vidx6, vidx);
+        const uint32x4_t vm7 = vcgtq_f32(vi7, vmax);
+        const uint32x4_t vidx7 = vaddq_u32(vidx6, v1);
+        vmax = ap_borrow_neon_select4(&(vi7),&(vmax),&(vm7));
+        vidx = vbslq_u32(vm7, vidx7, vidx);
+        const uint32x4_t vm8 = vcgtq_f32(vi8, vmax);
+        vidx8 = vaddq_u32(vidx7, v1);
+        vmax = ap_borrow_neon_select4(&(vi8),&(vmax),&(vm8));
+        vidx = vbslq_u32(vm8, vidx8, vidx);
+        ap_vst1q_f32_view((o),&(vmax));
+        o += 4;
+        ap_vst1q_u32_view((i),&(vidx));
+        i += 4;
+      }
+      if (c != 0) {
+        const float32x4_t vi0 = vld1q_f32(i0);
+        const float32x4_t vi1 = vld1q_f32(i1);
+        const float32x4_t vi2 = vld1q_f32(i2);
+        const float32x4_t vi3 = vld1q_f32(i3);
+        const float32x4_t vi4 = vld1q_f32(i4);
+        const float32x4_t vi5 = vld1q_f32(i5);
+        const float32x4_t vi6 = vld1q_f32(i6);
+        const float32x4_t vi7 = vld1q_f32(i7);
+        const float32x4_t vi8 = vld1q_f32(i8);
+        float32x4_t vmax;
+        uint32x4_t vidx;
+        if (ab) {
+          const float previous0 = ap_read_previous_float(ab);
+          const uint32_t previous_index0 = ap_read_previous_uint(ib);
+          vmax = vsetq_lane_f32(previous0, vi0, 0);
+          vidx = vsetq_lane_u32(previous_index0, vidx0, 0);
+          if (c >= 2) {
+            const float previous1 = ap_read_previous_float(ab + 1);
+            const uint32_t previous_index1 = ap_read_previous_uint(ib + 1);
+            vmax = vsetq_lane_f32(previous1, vmax, 1);
+            vidx = vsetq_lane_u32(previous_index1, vidx, 1);
+          }
+          if (c >= 3) {
+            const float previous2 = ap_read_previous_float(ab + 2);
+            const uint32_t previous_index2 = ap_read_previous_uint(ib + 2);
+            vmax = vsetq_lane_f32(previous2, vmax, 2);
+            vidx = vsetq_lane_u32(previous_index2, vidx, 2);
+          }
+          const uint32x4_t vm0 = vcgtq_f32(vi0, vmax);
+          vmax = ap_borrow_neon_select4(&(vi0),&(vmax),&(vm0));
+          vidx = vbslq_u32(vm0, vidx0, vidx);
+        } else {
+          vmax = vi0;
+          vidx = vidx0;
+        }
+        const uint32x4_t vm1 = vcgtq_f32(vi1, vmax);
+        const uint32x4_t vidx1 = vaddq_u32(vidx0, v1);
+        vmax = ap_borrow_neon_select4(&(vi1),&(vmax),&(vm1));
+        vidx = vbslq_u32(vm1, vidx1, vidx);
+        const uint32x4_t vm2 = vcgtq_f32(vi2, vmax);
+        const uint32x4_t vidx2 = vaddq_u32(vidx1, v1);
+        vmax = ap_borrow_neon_select4(&(vi2),&(vmax),&(vm2));
+        vidx = vbslq_u32(vm2, vidx2, vidx);
+        const uint32x4_t vm3 = vcgtq_f32(vi3, vmax);
+        const uint32x4_t vidx3 = vaddq_u32(vidx2, v1);
+        vmax = ap_borrow_neon_select4(&(vi3),&(vmax),&(vm3));
+        vidx = vbslq_u32(vm3, vidx3, vidx);
+        const uint32x4_t vm4 = vcgtq_f32(vi4, vmax);
+        const uint32x4_t vidx4 = vaddq_u32(vidx3, v1);
+        vmax = ap_borrow_neon_select4(&(vi4),&(vmax),&(vm4));
+        vidx = vbslq_u32(vm4, vidx4, vidx);
+        const uint32x4_t vm5 = vcgtq_f32(vi5, vmax);
+        const uint32x4_t vidx5 = vaddq_u32(vidx4, v1);
+        vmax = ap_borrow_neon_select4(&(vi5),&(vmax),&(vm5));
+        vidx = vbslq_u32(vm5, vidx5, vidx);
+        const uint32x4_t vm6 = vcgtq_f32(vi6, vmax);
+        const uint32x4_t vidx6 = vaddq_u32(vidx5, v1);
+        vmax = ap_borrow_neon_select4(&(vi6),&(vmax),&(vm6));
+        vidx = vbslq_u32(vm6, vidx6, vidx);
+        const uint32x4_t vm7 = vcgtq_f32(vi7, vmax);
+        const uint32x4_t vidx7 = vaddq_u32(vidx6, v1);
+        vmax = ap_borrow_neon_select4(&(vi7),&(vmax),&(vm7));
+        vidx = vbslq_u32(vm7, vidx7, vidx);
+        const uint32x4_t vm8 = vcgtq_f32(vi8, vmax);
+        vidx8 = vaddq_u32(vidx7, v1);
+        vmax = ap_borrow_neon_select4(&(vi8),&(vmax),&(vm8));
+        vidx = vbslq_u32(vm8, vidx8, vidx);
+        float32x2_t vmax_lo = vget_low_f32(vmax);
+        uint32x2_t vidx_lo = vget_low_u32(vidx);
+        if (c & 2) {
+          ap_vst1_f32_view((o),&(vmax_lo)); o += 2;
+          ap_vst1_u32_view((i),&(vidx_lo)); i += 2;
+          vmax_lo = vget_high_f32(vmax);
+          vidx_lo = vget_high_u32(vidx);
+        }
+        if (c & 1) {
+          ap_vst1_lane_f32_view((o),&(vmax_lo),(0)); o += 1;
+          ap_vst1_lane_u32_view((i),&(vidx_lo),(0)); i += 1;
+        }
+      }
+      vidx0 = vaddq_u32(vidx8, v1);
+      ab = output;
+      ib = index;
+    }
+    input = (const float**) ((uintptr_t) input + input_increment);
+    input_offset += input_pixel_stride;
+    output = (float*) ((uintptr_t) output + output_increment);
+    index = (uint32_t*) ((uintptr_t) index + index_increment);
+    output_pixels -= 1;
+  } while (output_pixels != 0);
+}

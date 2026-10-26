@@ -1,0 +1,240 @@
+{
+  "counterexample_observed": true,
+  "whole_kernel_verified": false,
+  "formal_proof": false,
+  "scope": "Both original actual C functions with a fully initialized16GiB valid pointer table; independent uniform-input result is1.0/index0; not a repaired-kernel proof",
+  "large_pooling_counterexample": {
+    "pooling_elements": 2147483648,
+    "input_pointer_table_bytes": 17179869184,
+    "all_entries_valid_and_equal": true,
+    "int_k": -2147483648,
+    "expected_value_bits": 1065353216,
+    "expected_index": 0,
+    "neon_value_bits": 0,
+    "rvv_value_bits": 0,
+    "both_equal_but_wrong": true
+  },
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i",
+  "source_sha256": {
+    "impl/testNEON.c": "0e47f5bed5a0096711fafd3f2a235ecaac73650a8760f5ebfbd0d286e355e01a",
+    "impl/testRVV.c": "b0c590f6b13925c5d3d9a41c67f12de6062f994ca3b40dfaf553cb20fe91af23",
+    "proof/original/testNEON.c": "e1038b6c59a957e8d3faa014eef580b87ae4e79baf59c7a68bff4cdf8e0b1fa5",
+    "proof/original/testRVV.c": "bba499affac6bbf7e1898225341ea849ac61da35b18abe277979685faaaee315",
+    "proof/native/isa_arrays.h": "696913b8f65efaa9a1f1bb3075fd0ed98408c4797acbe4e98830df8ab363dae7",
+    "proof/native/regression.c": "93166ea6fe9738f4803350ee65b4f5a9b98ac1c61fa3ecbb174518d4c3ae310e",
+    "shim/read_table.c": "7fedee64834407205896c5b4f80d5aeff5ddb0bfb46ce662f44ed397f2cba350",
+    "shim/read_table.h": "42fd107503bdb4d7364c218f241685e2c1b3a8613b681e2af5c131b56c1e0faa",
+    "proof/check_native.py": "ac62d50b3e5153ef1dfcf14f229a8fd880d5138aa49888468b25dd793deaca94"
+  },
+  "records": [
+    {
+      "label": "undefined-read-table",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim/read_table.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-read-table.o"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 0.07629740214906633,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-original-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/native/isa_arrays.h",
+        "-Dtest_neon=original_neon",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/original/testNEON.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-original-neon.o"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 1.2855879878625274,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-neon",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/impl/testNEON.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-neon.o"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 1.358838794985786,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-original-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/native/isa_arrays.h",
+        "-Dtest_rvv=original_rvv",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/original/testRVV.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-original-rvv.o"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 1.4786529180128127,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-rvv",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "-include",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/native/isa_arrays.h",
+        "-c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/impl/testRVV.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-rvv.o"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 1.9780722300056368,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-link",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-std=c11",
+        "-O2",
+        "-g",
+        "-fsanitize=undefined",
+        "-fno-sanitize-recover=all",
+        "-fno-omit-frame-pointer",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/proof/native/regression.c",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-rvv.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-original-neon.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-original-rvv.o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined-read-table.o",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 0.28370770695619285,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "undefined-regression",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 0.11553680105134845,
+      "log_sha256": "f5667814d990ece542f90ecae22e455d4af1eaf728edba692f38525b57341bee"
+    },
+    {
+      "label": "undefined-negative-one",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined",
+        "--negative-one"
+      ],
+      "exit_code": 2,
+      "expected_exit": 2,
+      "seconds": 0.0044263440649956465,
+      "log_sha256": "6631697b9e236088fae3ea8f3a1992f7b2242b395da23007fa15f732fe67bc0c"
+    },
+    {
+      "label": "undefined-negative-both",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined",
+        "--negative-both"
+      ],
+      "exit_code": 2,
+      "expected_exit": 2,
+      "seconds": 0.0041610191110521555,
+      "log_sha256": "f7095040e02037b866bfd6cea2d932d6b5526fca9d71959f90ce4c9c67bff5d0"
+    },
+    {
+      "label": "large-original",
+      "command": [
+        "prlimit",
+        "--as=34359738368:34359738368",
+        "--",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/native-diagnostic-v56c3e9i/undefined",
+        "--large-original"
+      ],
+      "exit_code": 0,
+      "expected_exit": 0,
+      "seconds": 14.252339550992474,
+      "log_sha256": "2a88cf20e42f64d35155b459e5900dc3eab3549e1ef7a360b4d107f8e78cf46e"
+    }
+  ]
+}

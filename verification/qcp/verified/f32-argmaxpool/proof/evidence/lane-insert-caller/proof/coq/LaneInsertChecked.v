@@ -1,0 +1,52 @@
+From Coq Require Import ZArith Lia List.
+From ArgmaxPool Require Import PackModel Types FastFrame expanded_goal.
+Import Snaive_C_Rules64.
+Local Open Scope Z_scope. Local Open Scope sac.
+Ltac pframe:=
+ unfold UndefStructPredfloat32x4_t,UndefStructPredfloat32x2_t,UndefStructPreduint32x4_t,UndefStructPreduint32x2_t;
+ rewrite ?ap_local_field_address;
+ repeat progress rewrite <-logic_equiv_andp_assoc;
+ first[solve[unfold derivable1,andp,coq_prop,truep;intros;repeat first[assumption|split|reflexivity|lia|apply ap_gt_mask_cases]]
+ |apply _derivable1_andp_intros;
+ [unfold derivable1,andp,coq_prop,truep;intros;repeat first[assumption|split|reflexivity|lia|apply ap_gt_mask_cases]
+ |opaque_leaves;sepcon_assoc_change;fast_cancel]
+ |opaque_leaves;sepcon_assoc_change;fast_cancel].
+Module CheckedLaneInsert : ArgmaxPool.expanded_goal.VC_Correct.
+Lemma proof_of_probe_insert_f32_return_wit_1 : ArgmaxPool.expanded_goal.probe_insert_f32_return_wit_1.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_f32_return_wit_1;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_f32_partial_solve_wit_1_pure : ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_1_pure.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_1_pure;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_f32_partial_solve_wit_1 : ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_1.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_1, ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_1_aux;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_f32_partial_solve_wit_2 : ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_2.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_2;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_f32_partial_solve_wit_3_pure : ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_3_pure.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_3_pure;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_f32_partial_solve_wit_3 : ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_3.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_3, ArgmaxPool.expanded_goal.probe_insert_f32_partial_solve_wit_3_aux;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_u32_return_wit_1 : ArgmaxPool.expanded_goal.probe_insert_u32_return_wit_1.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_u32_return_wit_1;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_u32_partial_solve_wit_1_pure : ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_1_pure.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_1_pure;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_u32_partial_solve_wit_1 : ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_1.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_1, ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_1_aux;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_u32_partial_solve_wit_2 : ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_2.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_2;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_u32_partial_solve_wit_3_pure : ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_3_pure.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_3_pure;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+Lemma proof_of_probe_insert_u32_partial_solve_wit_3 : ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_3.
+Proof. unfold ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_3, ArgmaxPool.expanded_goal.probe_insert_u32_partial_solve_wit_3_aux;intros;try left;intros;unfold ap_same_bits;pframe. Qed.
+End CheckedLaneInsert.
+Module ActualLaneInsert:ArgmaxPool.expanded_goal.VC_Correct:=CheckedLaneInsert.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_f32_return_wit_1.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_f32_partial_solve_wit_1_pure.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_f32_partial_solve_wit_1.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_f32_partial_solve_wit_2.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_f32_partial_solve_wit_3_pure.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_f32_partial_solve_wit_3.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_u32_return_wit_1.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_u32_partial_solve_wit_1_pure.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_u32_partial_solve_wit_1.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_u32_partial_solve_wit_2.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_u32_partial_solve_wit_3_pure.
+Print Assumptions ActualLaneInsert.proof_of_probe_insert_u32_partial_solve_wit_3.

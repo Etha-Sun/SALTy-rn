@@ -1,3 +1,10 @@
+<!-- CURRENT_VERIFIED_39_f32_argmaxpool -->
+当前完整已验证 **39/40**，目标 **40/40**。新增 f32-argmaxpool：10实际C单元/2362实际C字段/14普通函数体/647模块源码fresh；4950最终假设报告。修复后的实际 NEON/RVV 主核、普通读表/读旧值/块更新/适配器与顺序公开 caller，在 spec.c 的 app_arguments/app_valid 和显式所有权条件下给出 C-shim 部分正确性与结果等价。XLEN64、小端；RVV 固定 VLEN128/SEW32/LMUL8/VLMAX32、vstart=0，覆盖该配置全部合法 VL 选择。全部 binary32，写入结果按精确浮点位和 u32 索引观察，保留 NaN payload、符号零、严格大于更新、并列索引及索引模 2^32。共享只读指针表/输入允许内部别名；每行 channels+3 可读 padding 值任意；表内指针值零在无符号偏移后窗口合法时允许。输出/索引各自可选值所有权允许初值 None，未写帧和跨像素回绕/重复写按模型保留。原 size_t→int 计数问题与 NEON 有效尾读修复、原件、精确 patch 和 2^31 有效表反例保留。30 个原生 intrinsic 规范视图/28 个名称仅在所列规格边界使用，人工语义审阅 pending；普通 C helper 不豁免实际函数体证明。未证明真实 ISA、物理 ABI、编译器精化、浮点异常标志/陷阱或终止性。
+
+签发包保持原字节；发布副本按原proof-run做只读issuer审查，额外native/public回归仅在私有副本执行，不是第二次形式证明。人工intrinsic规范审阅pending；未声称ISA、ABI、编译器精化或终止性。证书SHA 095149983772a0b16a541f71d4ced2c8ad457ee54ddaf34f0c4325aacee6a49a。登记日期2026-10-26。
+
+以下保留先前阶段记录。
+
 <!-- CURRENT_VERIFIED_38_f32_raddstoreexpminusmax -->
 当前完整已验证 **38/40**，目标 **40/40**。新增 f32-raddstoreexpminusmax：4实际C单元/502实际C字段/6普通函数体/604模块源码fresh；504最终假设报告。修复后的实际 NEON/RVV 主核、全部普通 C helper 与顺序公开 caller，在 spec.c 的 em_valid 和显式所有权条件下给出 C-shim 部分正确性与结果等价。64 位小端、RNE、全部 binary32（NaN/Inf/正负零/subnormal）；观察所写输出与最终 sum 为数值相等或双方均 NaN，不观察 NaN payload。比较既定多项式/位操作算法，未证明数学 exp 近似误差。RVV 固定 VLEN128/SEW32/LMUL4/VLMAX16，覆盖全部合法 VL；运行时 AVL4 重建 NEON 的有序求和树，不使用浮点加法结合律。正的字节 batch 是 4 的倍数，输入含 3 个可读 padding lane；input/max 共用只读图且可内部别名，output/sum 共用一个可变图且允许别名和任意 None/Some 初值，最后写入获胜并保留未写帧；只读图与可变图分离，未使用 params 可为 NULL。原求和顺序反例、原件、修复说明及精确 patch 保留。40 个原生 intrinsic 形式视图的官方来源和精确模型单列，人工语义审阅 pending；普通 helper 仍证明实际 C 函数体。未证明真实 ISA、物理 ABI、编译器精化、浮点异常标志/陷阱或终止性。
 

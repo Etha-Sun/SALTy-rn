@@ -1,0 +1,95 @@
+{
+  "passed": false,
+  "whole_kernel_verified": false,
+  "scope": "actual_C_kernel_goal_generation_with_checked_ordinary_borrow_adapters_only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph",
+  "isa": "rvv",
+  "input_sha256": {
+    "proof/generate_borrowed_kernels.py": "00e556f27b8266e5bde0ed3c3dc716551a638f8966badb1af5acbd96a5de2c57",
+    "proof/generate_kernels.py": "b245088b0cfa5539214312fb489f8a1a8c36c6d243321684b11f3dab613752ab",
+    "proof/generate_neon_kernel.py": "48a9b2d2c1296b6cf0a47ca6e7e4bd276520a0c7bef260304bb4e8dec889fe59",
+    "spec.c": "1cd007a62a635e2019e68801e4d0dabf715476697decf5eff89d644b8eee0bc1",
+    "impl/testRVV.c": "ac460e258c95014e7451be1eb40c3a8be67033bd3e235b0bedaf0748540742fa",
+    "impl/testNEON.c": "2960adeba2536e6ef01aa16b84ba7ad2581a376c9cdd8487ae073eb456aab062",
+    "shim/borrowed_bindings.h": "597b0c2199182f8477a4be1503a19320c24f578bb7ca506ebbd938dac7c40d42",
+    "shim/borrowed_consumers.h": "dfe91820d2800b66bcec56af70d13b4fbb031c45193bdf6130554288d4cd718e",
+    "shim/formal_model.h": "50cc39a0a4db75b3f3b88296ac30589246e91d6f6dcb6c13e4e7e630bdf2e526",
+    "shim/formal_types.h": "d942042907d09f03e85bf8678b107632af9c0cb02e656d767674c930d86d12ec",
+    "shim/kernel_control.h": "f42d9b8af2f60ce8800b77ac498f6de2824f8f507bbc54ce6425cab409d76ce8",
+    "shim/kernel_frontend.h": "bae6fc16d9daf697abfc8300fe12de0122a3af5d0c01a9dd7bd56d13f5aea864",
+    "shim/neon_kernel_frontend.h": "34e19840a74950d4b2dd1c471b6e78658329cb3fa2796615ff1c3207ba0606c9",
+    "shim/neon_specs.h": "7bd6bb444a064a5be2a63672bb8b9da6d2c6307cf5541db35552afcf0ba7ee0f",
+    "shim/program_model.h": "4193c456e229906fe29f5ada31318cb3eed3cae932453911c41b3cc38b61ff28",
+    "shim/public_model.h": "9aa694ec1b32d82364af65b92824738c55e64cd2592aa80eb6faa8edc83de034",
+    "shim/read_previous.h": "4c75dbafa0dc9e4df654ef82edfcfa3819350a998c6bd7a1fbf959969fa5ba48",
+    "shim/read_table.h": "42fd107503bdb4d7364c218f241685e2c1b3a8613b681e2af5c131b56c1e0faa",
+    "shim/rvv_specs.h": "f262c04a285eb4da7ef105358b0b5850729c3c6f47da9c2752e5655628f7db29"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=34359738368:34359738368",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/rvv_unit.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/rvv_unit.i"
+      ],
+      "exit_code": 0,
+      "seconds": 0.0467982089612633,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "raw-cpp",
+      "command": [
+        "prlimit",
+        "--as=34359738368:34359738368",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/raw.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/raw.i"
+      ],
+      "exit_code": 0,
+      "seconds": 0.05114231398329139,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=34359738368:34359738368",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=8192",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/rvv_unit.i",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/generated",
+        "--coq-logic-path=ArgmaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim",
+        "ArgmaxPool"
+      ],
+      "exit_code": -15,
+      "seconds": 19303.20322372997,
+      "log_sha256": "93b77b9c7ca23af8f2efb19f1c88f876761d879488c59b1991517a3d79a0af15"
+    }
+  ],
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 32,
+  "error": "Program: `/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/rvv-borrowed-kernel-q2f9wtph/rvv_unit.i`\nStart to parse strategies file common\nFile Path: builtin/common.strategies\nFinish parsing strategies file common\nStart to parse strategies file string_literal\nFile Path: builtin/string_literal.strategies\nFinish parsing strategies file string_literal\nStart to parse function declaration of function ap_read_table\nStart to parse function declaration of function ap_assert\nStart to parse function declaration of function __riscv_vsetvl_e32m8\nStart to parse function declaration of function __riscv_vle32_v_f32m8\nStart to parse function declaration of function __riscv_vle32_v_f32m8\nStart to parse function declaration of function __riscv_vle32_v_u32m8\nStart to parse function declaration of function __riscv_vmfgt_vv_f32m8_b4\nStart to parse function declaration of function __riscv_vmerge_vvm_f32m8\nStart to parse function declaration of function __riscv_vmerge_vxm_u32m8\nStart to parse function declaration of function __riscv_vmv_v_x_u32m8\nStart to parse function declaration of function ap_rvv_store_f32_view\nStart to parse function declaration of function ap_rvv_store_u32_view\nStart to parse function declaration of function ap_read_previous_float\nStart to parse function declaration of function ap_read_previous_uint\nStart to parse function declaration of function vld1q_f32\nStart to parse function declaration of function vld1q_f32\nStart to parse function declaration of function vld1q_u32\nStart to parse function declaration of function vdupq_n_u32\nStart to parse function declaration of function vaddq_u32\nStart to parse function declaration of function vcgtq_f32\nStart to parse function declaration of function vbslq_f32\nStart to parse function declaration of function vbslq_u32\nStart to parse function declaration of function vget_low_f32\nStart to parse function declaration of function vget_high_f32\nStart to parse function declaration of function vget_low_u32\nStart to parse function declaration of function vget_high_u32\nStart to parse function declaration of function ap_vst1q_f32_view\nStart to parse function declaration of function ap_vst1_f32_view\nStart to parse function declaration of function ap_vst1_lane_f32_view\nStart to parse function declaration of function ap_vst1q_u32_view\nStart to parse function declaration of function ap_vst1_u32_view\nStart to parse function declaration of function ap_vst1_lane_u32_view\nStart to parse function declaration of function vsetq_lane_f32\nStart to parse function declaration of function vsetq_lane_u32\nStart to parse function declaration of function ap_borrow_rvv_gt32\nStart to parse function declaration of function ap_borrow_rvv_merge32\nStart to parse function declaration of function ap_borrow_neon_select4\nFunction `test_rvv`\n"
+}

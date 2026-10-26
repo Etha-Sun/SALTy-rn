@@ -1,0 +1,92 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "actual_ordinary_record_consumer_goal_generation_only",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-record-compare-generation-zi9gbknx",
+  "input_sha256": {
+    "proof/check_neon_record_compare.py": "228f5a5b3c86a7496c02d156f8861243e0c01f43f6e836e6a800840af34dd74c",
+    "shim/neon_record_compare.c": "6fe784bcaa4534c2e48348bb5f34455aa3af2ca1b87a0d607dc8f5643a3ab740",
+    "proof/coq/VectorRecords.v": "cb27ce7e47a630a1e8bed71e9f60329c82e708bb6f8b76bef542cb0762c9e3f6",
+    "proof/coq/NeonRecordCompareModel.v": "a5f44b117dea544b8e1b36c6201f72627c341a26dba8876df4d0afcb1befdfa6",
+    "proof/coq/neon_record_compare_def.v": "698ac7e63893d6ebffecabcbe785e5969718ad4aa5dec36de83312cefb33f89a",
+    "shim/borrowed_bindings.h": "597b0c2199182f8477a4be1503a19320c24f578bb7ca506ebbd938dac7c40d42",
+    "shim/borrowed_consumers.h": "dfe91820d2800b66bcec56af70d13b4fbb031c45193bdf6130554288d4cd718e",
+    "shim/formal_model.h": "50cc39a0a4db75b3f3b88296ac30589246e91d6f6dcb6c13e4e7e630bdf2e526",
+    "shim/formal_types.h": "d942042907d09f03e85bf8678b107632af9c0cb02e656d767674c930d86d12ec",
+    "shim/kernel_control.h": "f42d9b8af2f60ce8800b77ac498f6de2824f8f507bbc54ce6425cab409d76ce8",
+    "shim/kernel_frontend.h": "bae6fc16d9daf697abfc8300fe12de0122a3af5d0c01a9dd7bd56d13f5aea864",
+    "shim/neon_kernel_frontend.h": "34e19840a74950d4b2dd1c471b6e78658329cb3fa2796615ff1c3207ba0606c9",
+    "shim/neon_record_compare.h": "3b8549e3df522e679c7d322836e9543d98b189e187cfafc413a5034954194767",
+    "shim/neon_specs.h": "7bd6bb444a064a5be2a63672bb8b9da6d2c6307cf5541db35552afcf0ba7ee0f",
+    "shim/program_model.h": "4193c456e229906fe29f5ada31318cb3eed3cae932453911c41b3cc38b61ff28",
+    "shim/public_model.h": "9aa694ec1b32d82364af65b92824738c55e64cd2592aa80eb6faa8edc83de034",
+    "shim/read_previous.h": "4c75dbafa0dc9e4df654ef82edfcfa3819350a998c6bd7a1fbf959969fa5ba48",
+    "shim/read_table.h": "42fd107503bdb4d7364c218f241685e2c1b3a8613b681e2af5c131b56c1e0faa",
+    "shim/record_consumers.h": "26fcfb2d2642043e1dd7ea4bc4d5eb34e9c50424984d3a3b17564240ef78567c",
+    "shim/rvv_record_consumers.h": "ea26321a45a8bfa6861bd62a6711e9dbb766f0681275f0c3a04d68d06be90ea5",
+    "shim/rvv_specs.h": "f262c04a285eb4da7ef105358b0b5850729c3c6f47da9c2752e5655628f7db29"
+  },
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim/neon_record_compare.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-record-compare-generation-zi9gbknx/neon_record_compare.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.03598232287913561,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-record-compare-generation-zi9gbknx/neon_record_compare.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-record-compare-generation-zi9gbknx/generated",
+        "--coq-logic-path=ArgmaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim",
+        "ArgmaxPool"
+      ],
+      "exit_code": 0,
+      "seconds": 0.2487588650546968,
+      "log_sha256": "93a175461ddc8f77ef277930823e8a9864f9fcef42f1e570eeabb8828458b99a"
+    }
+  ],
+  "configured_jobs": 32,
+  "max_live_processes": 1,
+  "per_process_memory_GiB": 16,
+  "actual_C_fields": 5,
+  "fields": [
+    "ap_record_neon_gt4_return_wit_1",
+    "ap_record_neon_gt4_partial_solve_wit_1",
+    "ap_record_neon_gt4_partial_solve_wit_2",
+    "ap_record_neon_gt4_partial_solve_wit_3",
+    "ap_record_neon_gt4_partial_solve_wit_4"
+  ],
+  "goal_path": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/neon-record-compare-generation-zi9gbknx/generated/neon_record_compare_goal.v",
+  "goal_sha256": "85d8cbe9a0b2474caf8fdd20713d3eb97d93e50b5e3a2bd44bb9baac2d9e2c38",
+  "actual_CPP_sha256": "2cca27057df03c4979b4690cbd66b05a04a41fe88ea77f1f4c72762c1cf54b51",
+  "raw_emitted_definition_sha256": "9b960a5707fd6f85a493955aa513e2cb2952921ec58d1af6273a64a86e845a77",
+  "raw_emitted_definition_rejected": true,
+  "canonical_definition_module": "ArgmaxPool.VectorRecords",
+  "canonical_definition_sha256": "cb27ce7e47a630a1e8bed71e9f60329c82e708bb6f8b76bef542cb0762c9e3f6",
+  "definition_export_module": "ArgmaxPool.neon_record_compare_def",
+  "definition_export_sha256": "698ac7e63893d6ebffecabcbe785e5969718ad4aa5dec36de83312cefb33f89a"
+}

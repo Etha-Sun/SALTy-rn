@@ -1,0 +1,37 @@
+From ArgmaxPool Require Import NeonKernelPureFacts neon_unit_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module Checked.
+Lemma proof_of_test_neon_safety_wit_10:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_10.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_10;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_42:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_42.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_42;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_74:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_74.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_74;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_106:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_106.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_106;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_138:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_138.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_138;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_170:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_170.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_170;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_202:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_202.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_202;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_234:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_234.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_234;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_266:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_266.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_266;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_298:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_298.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_298;apkp_pure_goal. Qed.
+Lemma proof_of_test_neon_safety_wit_330:ArgmaxPool.neon_unit_goal.test_neon_safety_wit_330.
+Proof. unfold ArgmaxPool.neon_unit_goal.test_neon_safety_wit_330;apkp_pure_goal. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_10.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_42.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_74.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_106.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_138.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_170.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_202.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_234.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_266.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_298.
+Print Assumptions Checked.proof_of_test_neon_safety_wit_330.

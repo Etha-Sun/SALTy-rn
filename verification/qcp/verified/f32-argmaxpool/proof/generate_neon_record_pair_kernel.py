@@ -1,0 +1,48 @@
+#!/usr/bin/env python3
+"""Independent source renderer using the checked, exact record select helper.
+
+The original C and intrinsic specifications are unchanged. Every ordinary
+helper requires its own actual C proof; generated float record definitions
+are rejected in favor of the explicitly frozen canonical fp32/Float model.
+"""
+from pathlib import Path
+import argparse,json,os,re,subprocess,tempfile,time
+import generate_borrowed_kernels as B
+import generate_kernels as G
+import generate_record_borrowed_kernels as N
+C=B.C;R=B.R;sha=B.sha
+def prefix():
+ return N.prefix()+'#include "'+str(C/'shim/neon_record_compare.h')+'"\n#undef vcgtq_f32\n#define vcgtq_f32(a,b) ap_record_neon_gt4(&(a),&(b))\n'
+def render():
+ raw,t=N.render();t,count=re.subn(r'(vcgtq_f32\([^;\n]+?\))\s*/\*@\s*where\s+[^*]+\*/',lambda m:m[1],t);assert count
+ assert G.tokens(raw)==G.tokens(t)
+ return raw,t
+def main():
+ ap=argparse.ArgumentParser();ap.add_argument('--timeout',type=int,default=600);ap.add_argument('--prepare-only',action='store_true');a=ap.parse_args();assert 0<a.timeout<=21600
+ assert not json.loads((R/'.build/memory/quota/state.json').read_text())['wind_down_requested']
+ assert json.loads((C/'proof/record-consumers-status.json').read_text())['passed']
+ component=json.loads((C/'proof/neon-record-compare-status.json').read_text());native=json.loads((C/'proof/neon-record-compare-native-status.json').read_text());assert component['passed']and native['passed']
+ for n,h in component['source_sha256'].items():assert sha(C/'proof/coq'/(n+'.v'))==h,('proof source changed',n)
+ for n,h in native['input_sha256'].items():assert sha(C/n)==h,('native input changed',n)
+ run=Path(tempfile.mkdtemp(prefix='neon-record-pair-',dir=C/'.build'));gen=run/'generated';gen.mkdir();records=[]
+ paths=[Path(__file__),Path(N.__file__),Path(B.__file__),C/'shim/neon_record_compare.c',C/'proof/coq/NeonRecordCompareModel.v',C/'proof/generate_neon_kernel.py',C/'proof/generate_kernels.py',C/'impl/testNEON.c',C/'spec.c',C/'shim/record_consumers.c',C/'proof/coq/VectorRecords.v',C/'proof/coq/record_consumers_def.v',*sorted((C/'shim').glob('*.h'))]
+ inputs={str(p.relative_to(C)):sha(p)for p in paths}
+ s=dict(passed=False,whole_kernel_verified=False,scope='actual_NEON_C_generation_with_checked_record_select_ordinary_helper_only',run_directory=str(run),records=records,input_sha256=inputs,configured_jobs=32,max_live_processes=1,per_process_memory_GiB=32,timeout_seconds=a.timeout)
+ env={**os.environ,'PATH':str(R/'.build/simple-kernels-bootstrap/bin')+':/tmp/qcp-coq820-install/bin:'+os.environ['PATH']}
+ try:
+  raw,t=render();(run/'neon_unit.c').write_text(prefix()+t);(run/'raw.c').write_text(prefix()+raw)
+  for label,cmd in [('cpp',['gcc','-E','-P','-CC','-nostdinc',str(run/'neon_unit.c'),'-o',str(run/'neon_unit.i')]),('raw-cpp',['gcc','-E','-P','-CC','-nostdinc',str(run/'raw.c'),'-o',str(run/'raw.i')])]+([]if a.prepare_only else[('qcp',['qcp','--arch=64','--endian=little','--no-float-finite-vc','--no-exec-info','--strategy-application-limit=8192','--input-file='+str(run/'neon_unit.i'),'--coq-output-dir='+str(gen),'--coq-logic-path=ArgmaxPool','-slp',str(C/'shim'),'ArgmaxPool'])]):
+   if label=='qcp':assert G.tokens((run/'neon_unit.i').read_text())==G.tokens((run/'raw.i').read_text())
+   cmd=['prlimit','--as=34359738368:34359738368','--']+cmd;log=run/(label+'.log');start=time.monotonic()
+   try:
+    with log.open('w')as f:ec=subprocess.run(cmd,cwd=run,env=env,stdout=f,stderr=f,timeout=a.timeout).returncode
+   except subprocess.TimeoutExpired:ec=124
+   records.append(dict(label=label,command=cmd,exit_code=ec,seconds=time.monotonic()-start,log_sha256=sha(log)));(run/'status.json').write_text(json.dumps(s,indent=2)+'\n');assert ec==0,log.read_text()[-2000:]
+  assert inputs=={n:sha(C/n)for n in inputs};s.update(passed=True,original_same_frontend_CPP_tokens_identical=True,prepare_only=a.prepare_only)
+  if not a.prepare_only:
+   goal=gen/'neon_unit_goal.v';emitted=gen/'neon_unit_def.v';assert '# Int'in emitted.read_text()and'float32x4_t_s0 : R;'in emitted.read_text()
+   wrapper=run/'neon_unit_def.v';wrapper.write_text('From ArgmaxPool Require Export NeonRecordCompareModel.\n')
+   s.update(goal_path=str(goal),goal_sha256=sha(goal),actual_C_fields=len(re.findall(r'^Axiom proof_of_',goal.read_text(),re.M)),raw_emitted_definition_rejected=True,raw_emitted_definition_sha256=sha(emitted),definition_export_path=str(wrapper),definition_export_sha256=sha(wrapper),canonical_record_module='ArgmaxPool.NeonRecordCompareModel',canonical_record_source_sha256=sha(C/'proof/coq/VectorRecords.v'))
+ except Exception as e:s['error']=str(e)
+ (run/'status.json').write_text(json.dumps(s,indent=2)+'\n');print(json.dumps({k:s.get(k)for k in ['passed','run_directory','actual_C_fields','error']}),flush=True);return 0 if s['passed']else 1
+if __name__=='__main__':raise SystemExit(main())

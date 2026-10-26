@@ -1,0 +1,7 @@
+From ArgmaxPool Require Import RvvUpdateIntoProbeSupport probe_goal.
+Import Snaive_C_Rules64. Local Open Scope sac. Local Open Scope string_scope.
+Module Checked.
+Lemma proof_of_ap_update_fullframe_probe_partial_solve_wit_3:ArgmaxPool.probe_goal.ap_update_fullframe_probe_partial_solve_wit_3.
+Proof. unfold ArgmaxPool.probe_goal.ap_update_fullframe_probe_partial_solve_wit_3,ArgmaxPool.probe_goal.ap_update_fullframe_probe_partial_solve_wit_3_aux;apup_goal. Qed.
+End Checked.
+Print Assumptions Checked.proof_of_ap_update_fullframe_probe_partial_solve_wit_3.

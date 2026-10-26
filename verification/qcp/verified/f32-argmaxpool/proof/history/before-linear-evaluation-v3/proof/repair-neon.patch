@@ -1,0 +1,31 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -30,17 +30,17 @@
+     assert(!ab);
+     assert(!ib);
+ 
+-    int k = (int) pooling_elements;
+-    for (; k > 0; k -= 9) {
+-      const float* i0 = *id++;
+-      const float* i1 = 1 < k ? *id++ : i0;
+-      const float* i2 = 2 < k ? *id++ : i0;
+-      const float* i3 = 3 < k ? *id++ : i0;
+-      const float* i4 = 4 < k ? *id++ : i0;
+-      const float* i5 = 5 < k ? *id++ : i0;
+-      const float* i6 = 6 < k ? *id++ : i0;
+-      const float* i7 = 7 < k ? *id++ : i0;
+-      const float* i8 = 8 < k ? *id++ : i0;
++    size_t k = pooling_elements;
++    for (; k > 0; k = k > 9 ? k - 9 : 0) {
++      const float* i0 = ap_read_table(id++);
++      const float* i1 = 1 < k ? ap_read_table(id++) : i0;
++      const float* i2 = 2 < k ? ap_read_table(id++) : i0;
++      const float* i3 = 3 < k ? ap_read_table(id++) : i0;
++      const float* i4 = 4 < k ? ap_read_table(id++) : i0;
++      const float* i5 = 5 < k ? ap_read_table(id++) : i0;
++      const float* i6 = 6 < k ? ap_read_table(id++) : i0;
++      const float* i7 = 7 < k ? ap_read_table(id++) : i0;
++      const float* i8 = 8 < k ? ap_read_table(id++) : i0;
+       i0 = (const float*) ((uintptr_t) i0 + input_offset);
+       i1 = (const float*) ((uintptr_t) i1 + input_offset);
+       i2 = (const float*) ((uintptr_t) i2 + input_offset);

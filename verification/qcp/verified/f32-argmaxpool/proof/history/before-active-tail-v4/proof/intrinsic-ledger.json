@@ -1,0 +1,696 @@
+{
+  "schema": 1,
+  "kernel": "f32-argmaxpool",
+  "status": "candidate",
+  "whole_kernel_verified": false,
+  "inventory_complete": false,
+  "complete_for": "current17 NEON intrinsic names in18 selected contract views; RVV inventory still pending",
+  "source_version": "ARM-software/acle aef52c2b0944bf652443c1acd867dbb893af8dd0",
+  "primary_source": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+  "primary_source_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+  "header_sha256": "5c893737eb55bb58d7e38f534f4c565556fad26a73945f75157e1e244e112054",
+  "ISA": "Arm NEON AArch64 selected128-bit and64-bit vectors",
+  "FP_configuration": "IEEE binary32 comparison with FZ/FIZ/DN disabled; exception flags/traps outside the observation",
+  "memory": "32-bit cells at p+4*j; explicit readable/owned windows; vector borrowed store fields are preserved",
+  "new_unproved_Coq_axioms": false,
+  "body_proofs_optional_for_intrinsics_only": true,
+  "ordinary_helper": "ap_read_table remains actual body-checked C, never exempted as intrinsic",
+  "ordinary_helper_status": "proof/read-table-status.json",
+  "ISA_refinement": false,
+  "physical_ABI_refinement": false,
+  "human_semantic_review": "pending",
+  "entries": [
+    {
+      "intrinsic": "vld1q_f32",
+      "callee": "vld1q_f32",
+      "view": "readonly_map",
+      "signature": "float32x4_t vld1q_f32(const float*p)",
+      "signature_sha256": "695594fec3fb32c650c3a08fd6e62edece0d3bd1b313b1a5e5e60a8773bf8424",
+      "contract_sha256": "48285c63ba3847f8ddcc6943ac6cea7aa06853229665a6230d2023d131c96e9f",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.MemoryModel.ap_data",
+          "path": "proof/coq/MemoryModel.v",
+          "source_sha256": "a84149bed089fd77f1665591f328ff1f1134bf9a188fc71c9cb51523dccfbfb0"
+        },
+        {
+          "definition": "ArgmaxPool.MemoryModel.ap_window",
+          "path": "proof/coq/MemoryModel.v",
+          "source_sha256": "a84149bed089fd77f1665591f328ff1f1134bf9a188fc71c9cb51523dccfbfb0"
+        },
+        {
+          "definition": "ArgmaxPool.MemoryModel.ap_load_lane",
+          "path": "proof/coq/MemoryModel.v",
+          "source_sha256": "a84149bed089fd77f1665591f328ff1f1134bf9a188fc71c9cb51523dccfbfb0"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vld1q_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "9e1f298dfee050511f5c3dbd71120ca5f01714178a8e5ef39bb9f0e859f7d1a9",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vld1q_f32",
+      "callee": "vld1q_f32",
+      "view": "output_map",
+      "signature": "float32x4_t vld1q_f32(const float*p)",
+      "signature_sha256": "695594fec3fb32c650c3a08fd6e62edece0d3bd1b313b1a5e5e60a8773bf8424",
+      "contract_sha256": "558c649f0603adaefb19b8a5ba3f46ae713c04e6715492e61f82788e43ee3980",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_output",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_output_loaded_lane",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.ReadWindows.ap_output_readable",
+          "path": "proof/coq/ReadWindows.v",
+          "source_sha256": "fc353d7f060dd44ac4cc9950760b276a069dd9a727b35b7c20dd5af86896b2f2"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vld1q_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "9e1f298dfee050511f5c3dbd71120ca5f01714178a8e5ef39bb9f0e859f7d1a9",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Requires initialized active output cells; arbitrary values for None are outside this view precondition."
+      ]
+    },
+    {
+      "intrinsic": "vld1q_u32",
+      "callee": "vld1q_u32",
+      "view": "output_map",
+      "signature": "uint32x4_t vld1q_u32(const uint32_t*p)",
+      "signature_sha256": "845a7ac258c9419ac4b4de18f1fd79f1da6363020e929ded9517920dc0f0743f",
+      "contract_sha256": "00a00de31f1f2e53c415b7a33a4e6dc16fb6d1fe81c69173f77d3127e84dd24a",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_index",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_index_loaded_lane",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.ReadWindows.ap_index_readable",
+          "path": "proof/coq/ReadWindows.v",
+          "source_sha256": "fc353d7f060dd44ac4cc9950760b276a069dd9a727b35b7c20dd5af86896b2f2"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vld1q_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "d3339cd8fd4f0bbcea9d0a76ab602badc2cfafbac059a40a819ce5d90e772e4b",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Requires initialized active output cells; arbitrary values for None are outside this view precondition."
+      ]
+    },
+    {
+      "intrinsic": "vdupq_n_u32",
+      "callee": "vdupq_n_u32",
+      "view": "value",
+      "signature": "uint32x4_t vdupq_n_u32(uint32_t x)",
+      "signature_sha256": "21198a863d28dd7a707e2d1e8882a17d96c70ae08ddb95b35550a8e521c57330",
+      "contract_sha256": "dd84bb852ee4c892d9a3a85c1ea42bcd0dd6267d62cdf303df7f9f392bb8682e",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [],
+      "coq_literal_contract": true,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vdupq_n_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "db74af818882bdf405137b41ddec0404a3a9b9d1809873c2a0951c1af2abe72a",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vaddq_u32",
+      "callee": "vaddq_u32",
+      "view": "value",
+      "signature": "uint32x4_t vaddq_u32(uint32x4_t a,uint32x4_t b)",
+      "signature_sha256": "c64071c8031ea4c84c81f1b40dacd5958f94e4c727eaee90b438ba054a574605",
+      "contract_sha256": "dcf8994cf513f8584755efc42cee3f8e0d553775491518f4e80318b6d77009ef",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.Model.ap_add_u32",
+          "path": "proof/coq/Model.v",
+          "source_sha256": "0082378d16e6a65c1f5e72ae0e1c8caff6b1fd46581d7f4eedfbbaf608337b59"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vaddq_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "cbdbaabcbfec261e44c13a3fbe2aaa99d34bde195221c4d543b15cee8006873e",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vcgtq_f32",
+      "callee": "vcgtq_f32",
+      "view": "value",
+      "signature": "uint32x4_t vcgtq_f32(float32x4_t a,float32x4_t b)",
+      "signature_sha256": "e6bae96dc9baffe163688f51022061b533a217340073b35cd009d26d3da001bb",
+      "contract_sha256": "329aebcfdf1abdecc3172dc3bffbac7f445225cb6dc2691bf72792e7e045bf7b",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.Model.ap_gt_mask",
+          "path": "proof/coq/Model.v",
+          "source_sha256": "0082378d16e6a65c1f5e72ae0e1c8caff6b1fd46581d7f4eedfbbaf608337b59"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vcgtq_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "e52d82927d73d54836845b1f315669bc34727abe53134cca24b4f0f24ad517eb",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vbslq_f32",
+      "callee": "vbslq_f32",
+      "view": "value",
+      "signature": "float32x4_t vbslq_f32(uint32x4_t m,float32x4_t a,float32x4_t b)",
+      "signature_sha256": "918c36d665a270b3e05c77b174e112ecc8e893ddd0aa6e3dcabca60ccb770767",
+      "contract_sha256": "b7ccc64f5874561320d4681ba86eb61be4f1b07132262ae5cbe32f1bacdd584e",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.Model.ap_bool_mask",
+          "path": "proof/coq/Model.v",
+          "source_sha256": "0082378d16e6a65c1f5e72ae0e1c8caff6b1fd46581d7f4eedfbbaf608337b59"
+        },
+        {
+          "definition": "ArgmaxPool.Model.ap_select_f32",
+          "path": "proof/coq/Model.v",
+          "source_sha256": "0082378d16e6a65c1f5e72ae0e1c8caff6b1fd46581d7f4eedfbbaf608337b59"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vbslq_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "efff492771f154218f57cacc36e9595bc783db8101e85b5e03ce032a4a849bcd",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Selected comparison-generated all-zero/all-one32-bit masks; preserves the selected operand bits, including NaN payload."
+      ]
+    },
+    {
+      "intrinsic": "vbslq_u32",
+      "callee": "vbslq_u32",
+      "view": "value",
+      "signature": "uint32x4_t vbslq_u32(uint32x4_t m,uint32x4_t a,uint32x4_t b)",
+      "signature_sha256": "238bf9c1a9fc48ff5975d0516203ee05c6dbae855e7f62d3637e513eb7cbd10d",
+      "contract_sha256": "3ae590b9a9c99f4cd1583b70baa65a1b7faf12779089ab4a9ed5db43c162709c",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.Model.ap_bool_mask",
+          "path": "proof/coq/Model.v",
+          "source_sha256": "0082378d16e6a65c1f5e72ae0e1c8caff6b1fd46581d7f4eedfbbaf608337b59"
+        },
+        {
+          "definition": "ArgmaxPool.Model.ap_select_u32",
+          "path": "proof/coq/Model.v",
+          "source_sha256": "0082378d16e6a65c1f5e72ae0e1c8caff6b1fd46581d7f4eedfbbaf608337b59"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vbslq_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "8361db7596147433b80a62a10996aae95336e120cf156e45e586a99cd9d3cc29",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Selected comparison-generated all-zero/all-one32-bit masks; preserves the selected operand bits, including NaN payload."
+      ]
+    },
+    {
+      "intrinsic": "vget_low_f32",
+      "callee": "vget_low_f32",
+      "view": "value",
+      "signature": "float32x2_t vget_low_f32(float32x4_t a)",
+      "signature_sha256": "2c09f71754e071c41ac2021b06f1fb36d009eb0942ae91b3ae5514ef7d931a11",
+      "contract_sha256": "9539c37bf261eef5a2a20f74f51251ea99cb57d1e53b27f7b2f3f87f67d896b9",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [],
+      "coq_literal_contract": true,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vget_low_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "40f1117d1e82926edf7c8ead57f1f18f289d488e54f41472bf5a3a64a2e610e5",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vget_high_f32",
+      "callee": "vget_high_f32",
+      "view": "value",
+      "signature": "float32x2_t vget_high_f32(float32x4_t a)",
+      "signature_sha256": "28bb86ac3586673a2ab92f81855c975e77995d72ec8ee78a4a466201c7ca8dc6",
+      "contract_sha256": "4ae8133b192b9884c9e848c60bf7b9fa755e11c9a50a9e6beeecd87034c1e57e",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [],
+      "coq_literal_contract": true,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vget_high_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "6d090e3b7768dbe43ae682036a5cf0c0628851cd0c7b4091edf5355c4458ea77",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vget_low_u32",
+      "callee": "vget_low_u32",
+      "view": "value",
+      "signature": "uint32x2_t vget_low_u32(uint32x4_t a)",
+      "signature_sha256": "f7e9da8d059cd4b57a83b3eb679dafbf1c12a38d7d4ebc1e9f05075e57a86ad6",
+      "contract_sha256": "f6bd8b3ef6a37b25a11c8204151b6678f1f65042dc920923d83380ee61526fe4",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [],
+      "coq_literal_contract": true,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vget_low_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "4d504384494fe365e9e24c0b2f6e9d43b5565a8741d77f2510fa7c1abee6f2f4",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vget_high_u32",
+      "callee": "vget_high_u32",
+      "view": "value",
+      "signature": "uint32x2_t vget_high_u32(uint32x4_t a)",
+      "signature_sha256": "ffd4f69abca125085398d6876a6bd999caf910b15f51a0c4fb65c2e3f5e6c53d",
+      "contract_sha256": "af27e9c7d61024b88ab8f3e772b290ab0c0084e7c23079f2fdea16d84ec0fe1e",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [],
+      "coq_literal_contract": true,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vget_high_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "c8288cdb1af3cdc301912823d6e7312bb8e269fb9c58ec30335ae0cf690cc6ea",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": []
+    },
+    {
+      "intrinsic": "vst1q_f32",
+      "callee": "ap_vst1q_f32_view",
+      "view": "borrowed-vector",
+      "signature": "void ap_vst1q_f32_view(float*p,const float32x4_t*a)",
+      "signature_sha256": "40393efa2365743118d12109f9a437c4c7e099759ee77fd26f96f9fdff8bac01",
+      "contract_sha256": "157e3e7e13d130804cef12bb261c907940a8f74a861a2dceb128ecf23ada7e80",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_output",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_output_write",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_fpack4",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vst1q_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "4fb2cb4b4fac2472c14c5abe4e0d63073db23ac4eea297c1e3d9b7f9fcfc8886",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Borrows local vector fields and preserves them; writes the stated active output addresses. Source macro accepts the actual bare local-vector lvalues only."
+      ]
+    },
+    {
+      "intrinsic": "vst1_f32",
+      "callee": "ap_vst1_f32_view",
+      "view": "borrowed-vector",
+      "signature": "void ap_vst1_f32_view(float*p,const float32x2_t*a)",
+      "signature_sha256": "dba5b3f699ba9f49f1ebc5eb431f4cae6d73c4329abf99e84043515b9d97f294",
+      "contract_sha256": "d67cbadbba8fca4dade55c5bdaae7ebac0d0ec46be3b64769b0e06a88457aad8",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_output",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_output_write",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_fpack2",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vst1_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "c1c92ea8e963d6957de4d45fd11c94b0ed930123e670b5d832db5ed579e0f296",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Borrows local vector fields and preserves them; writes the stated active output addresses. Source macro accepts the actual bare local-vector lvalues only."
+      ]
+    },
+    {
+      "intrinsic": "vst1_lane_f32",
+      "callee": "ap_vst1_lane_f32_view",
+      "view": "borrowed-vector",
+      "signature": "void ap_vst1_lane_f32_view(float*p,const float32x2_t*a,int lane)",
+      "signature_sha256": "d52f55659697725ae3352c8db67d122607049674dd1f885584014e416d8ede96",
+      "contract_sha256": "7a4c230b039e8ba1a2b91790c1b3f2bad37620f42dc4c36ff12b05a7933c15cc",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_output",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_output_write",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_fpack2",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vst1_lane_f32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "95930adc9026f70c8d5a17e467699297feb6a55b72f15e0809b76354ef0fed02",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Borrows local vector fields and preserves them; writes the stated active output addresses. Source macro accepts the actual bare local-vector lvalues only.",
+        "Selected constant lane0; public kernel calls no other lane."
+      ]
+    },
+    {
+      "intrinsic": "vst1q_u32",
+      "callee": "ap_vst1q_u32_view",
+      "view": "borrowed-vector",
+      "signature": "void ap_vst1q_u32_view(uint32_t*p,const uint32x4_t*a)",
+      "signature_sha256": "75fd8f894532787e785c8fb1e536e3e538392fd77c1089d6f6cda9c5689eb689",
+      "contract_sha256": "3340866c6d34aff72be9444927e95043419b25b2e957923af5fc99c09b04809f",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_index",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_index_write",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_ipack4",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vst1q_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "7fbcf10734eb05b91c6d67606db389c37a549c71c4f79c2d5786ed7011a3afa4",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Borrows local vector fields and preserves them; writes the stated active output addresses. Source macro accepts the actual bare local-vector lvalues only."
+      ]
+    },
+    {
+      "intrinsic": "vst1_u32",
+      "callee": "ap_vst1_u32_view",
+      "view": "borrowed-vector",
+      "signature": "void ap_vst1_u32_view(uint32_t*p,const uint32x2_t*a)",
+      "signature_sha256": "ee965147821025029da7f20116d9559202758c15781977bba109ac3cc4cf5a12",
+      "contract_sha256": "89ba65625ef17afd3825b4fb77fb1e41363d8429272b8edbf738424b64d70e61",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_index",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_index_write",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_ipack2",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vst1_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "2891fad5a5118e68319bf4bbec94da8ec6e1c654dbcbfdc2f5b961185e47c737",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Borrows local vector fields and preserves them; writes the stated active output addresses. Source macro accepts the actual bare local-vector lvalues only."
+      ]
+    },
+    {
+      "intrinsic": "vst1_lane_u32",
+      "callee": "ap_vst1_lane_u32_view",
+      "view": "borrowed-vector",
+      "signature": "void ap_vst1_lane_u32_view(uint32_t*p,const uint32x2_t*a,int lane)",
+      "signature_sha256": "b26a28bd507bb1a4c3fa29c78ccb5be3be359d365472e07539aad3587481e7bd",
+      "contract_sha256": "8f8444fd61c71af1591b16023b8207ee3720749ec764c23506d7947724cbae70",
+      "contract_header": "shim/neon_specs.h",
+      "coq_definitions": [
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_index",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.OutputMemory.ap_write_window",
+          "path": "proof/coq/OutputMemory.v",
+          "source_sha256": "85c0ffae35680eb3891ca0890b4c4af4dacd67fcbe2556f88052f51d18c11d76"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_index_write",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        },
+        {
+          "definition": "ArgmaxPool.PackModel.ap_ipack2",
+          "path": "proof/coq/PackModel.v",
+          "source_sha256": "bb751ccda6b546fe2f5a1e0d3443425842d57df3f66f8cc3f4a931d808b5b78b"
+        }
+      ],
+      "coq_literal_contract": false,
+      "type_layout": {
+        "path": "proof/coq/Types.v",
+        "sha256": "7cc95d4f475fcac4d20d55622595236699f2a8662c3b3835ef00ed2113737fb2"
+      },
+      "primary_source": "https://developer.arm.com/architectures/instruction-sets/intrinsics/vst1_lane_u32",
+      "source_document": "https://raw.githubusercontent.com/ARM-software/acle/aef52c2b0944bf652443c1acd867dbb893af8dd0/neon_intrinsics/advsimd.md",
+      "source_document_sha256": "722dcf758d7a6dbbab54210d55bbce73a6db7691bb4092112375bf096563fd73",
+      "source_row_sha256": "3872a8b19383d34fefa1e8704aa892e022d725e44b2b425483a7a0a26b5d93b7",
+      "proof_status": "source-reviewed-spec",
+      "C_body_proof_required": false,
+      "ISA_correspondence_formally_checked": false,
+      "human_semantic_review": "pending",
+      "notes": [
+        "Borrows local vector fields and preserves them; writes the stated active output addresses. Source macro accepts the actual bare local-vector lvalues only.",
+        "Selected constant lane0; public kernel calls no other lane."
+      ]
+    }
+  ]
+}

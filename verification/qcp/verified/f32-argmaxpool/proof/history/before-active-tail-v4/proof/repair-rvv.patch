@@ -1,0 +1,73 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -24,17 +24,50 @@
+ 
+     uint32_t idx0 = 0;
+ 
+-    int k = (int) pooling_elements;
+-    for (; k > 0; k -= 9) {
+-      const float* i0 = *id++;
+-      const float* i1 = 1 < k ? *id++ : i0;
+-      const float* i2 = 2 < k ? *id++ : i0;
+-      const float* i3 = 3 < k ? *id++ : i0;
+-      const float* i4 = 4 < k ? *id++ : i0;
+-      const float* i5 = 5 < k ? *id++ : i0;
+-      const float* i6 = 6 < k ? *id++ : i0;
+-      const float* i7 = 7 < k ? *id++ : i0;
+-      const float* i8 = 8 < k ? *id++ : i0;
++    size_t k = pooling_elements;
++    for (; k > 0; k = k > 9 ? k - 9 : 0) {
++      const float* i0 = ap_read_table(id);
++      id += 1;
++      const float* i1 = i0;
++      if (1 < k) {
++        i1 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i2 = i0;
++      if (2 < k) {
++        i2 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i3 = i0;
++      if (3 < k) {
++        i3 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i4 = i0;
++      if (4 < k) {
++        i4 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i5 = i0;
++      if (5 < k) {
++        i5 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i6 = i0;
++      if (6 < k) {
++        i6 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i7 = i0;
++      if (7 < k) {
++        i7 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i8 = i0;
++      if (8 < k) {
++        i8 = ap_read_table(id);
++        id += 1;
++      }
+       i0 = (const float*) ((uintptr_t) i0 + input_offset);
+       i1 = (const float*) ((uintptr_t) i1 + input_offset);
+       i2 = (const float*) ((uintptr_t) i2 + input_offset);
+@@ -124,5 +157,6 @@
+     input_offset += input_pixel_stride;
+     output = (float*) ((uintptr_t) output + output_increment);
+     index = (uint32_t*) ((uintptr_t) index + index_increment);
+-  } while (--output_pixels != 0);
++    output_pixels -= 1;
++  } while (output_pixels != 0);
+ }
+\ No newline at end of file

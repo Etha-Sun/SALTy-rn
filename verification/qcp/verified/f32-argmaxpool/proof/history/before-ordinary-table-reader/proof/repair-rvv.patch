@@ -1,0 +1,13 @@
+--- a/impl/testRVV.c
++++ b/impl/testRVV.c
+@@ -24,8 +24,8 @@
+ 
+     uint32_t idx0 = 0;
+ 
+-    int k = (int) pooling_elements;
+-    for (; k > 0; k -= 9) {
++    size_t k = pooling_elements;
++    for (; k > 0; k = k > 9 ? k - 9 : 0) {
+       const float* i0 = *id++;
+       const float* i1 = 1 < k ? *id++ : i0;
+       const float* i2 = 2 < k ? *id++ : i0;

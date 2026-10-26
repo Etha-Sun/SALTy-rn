@@ -1,0 +1,138 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "formal_proof_replayed": false,
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/.build/emission-probe-73e_ju17",
+  "configured_jobs": 32,
+  "max_actual_processes": 1,
+  "memory_GiB": 16,
+  "timeout_seconds": 7200,
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "-I",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/.build/emission-probe-73e_ju17/borrowed_consumers.in.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/.build/emission-probe-73e_ju17/borrowed_consumers.c"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01685251691378653,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "borrowed_consumers-qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--strategy-application-limit=8192",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/.build/emission-probe-73e_ju17/borrowed_consumers.c",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/.build/emission-probe-73e_ju17/generated",
+        "--coq-logic-path=ArgmaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/shim",
+        "ArgmaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/.build/argmax-h3-isolated/f32-argmaxpool/proof/c",
+        "ArgmaxPool"
+      ],
+      "exit_code": 0,
+      "seconds": 59.55231928802095,
+      "log_sha256": "30ab6c4d4d1e1e5fd5f7314d5cc596e51ef9f338ce599c24ce8bc7d3ff77a62d"
+    }
+  ],
+  "fresh_QCP_units": [
+    "borrowed_consumers"
+  ],
+  "NEON_generation_started": false,
+  "goal_sha256": "873f2283cda3d906950dab53275f728c2433b334800e3b00be85e1e6add77012",
+  "cpp_sha256": "56278d83153cd633148bf54685fdf58c775db19a821e3893f83239a09735401f",
+  "exact_goal_and_CPP_equal": true,
+  "actual_C_fields": 20,
+  "fresh_emission_policy": {
+    "kind": "opaque_no_emit",
+    "raw_def_emission": "forbidden",
+    "goal_definition_import": null,
+    "compiled_definition_source": null,
+    "direct_model_import": "ArgmaxPool.BorrowedKernelModel"
+  },
+  "fresh_def_artifacts": [],
+  "negative_checks": [
+    {
+      "label": "unexpected opaque def import",
+      "rejected": true,
+      "reason": "Actual goal definition import policy borrowed_consumers"
+    },
+    {
+      "label": "missing direct canonical model",
+      "rejected": true,
+      "reason": "Opaque actual goal must directly import canonical BorrowedKernelModel borrowed_consumers"
+    },
+    {
+      "label": "unexpected opaque rawdef",
+      "rejected": true,
+      "reason": "Actual raw def emission policy borrowed_consumers"
+    },
+    {
+      "label": "missing required raw annotated",
+      "rejected": true,
+      "reason": "Actual raw def emission policy annotated"
+    },
+    {
+      "label": "missing required raw block32",
+      "rejected": true,
+      "reason": "Actual raw def emission policy block32"
+    },
+    {
+      "label": "missing required raw rvv_update_into",
+      "rejected": true,
+      "reason": "Actual raw def emission policy rvv_update_into"
+    },
+    {
+      "label": "missing required raw rvv_record_consumers",
+      "rejected": true,
+      "reason": "Actual raw def emission policy rvv_record_consumers"
+    }
+  ],
+  "required_record_old_artifact_checks": [
+    {
+      "stem": "annotated",
+      "scope": "Read-only old artifact identity, no H3 fresh credit",
+      "goal_sha256": "9a67d5319dff16049d4ba6bb79acc8e9abea59c112ba67630b6fd2a1ad5e69fc",
+      "raw_definition_sha256": "bf03497300b9033419d2bad4ba416a6a75bd80cb3780dcf2c7399557a3cc78d6"
+    },
+    {
+      "stem": "block32",
+      "scope": "Read-only old artifact identity, no H3 fresh credit",
+      "goal_sha256": "f71b195825a5c0f69cf36f3214ce14f9abe5f6d77a05f70a3789cf64b603f331",
+      "raw_definition_sha256": "bf03497300b9033419d2bad4ba416a6a75bd80cb3780dcf2c7399557a3cc78d6"
+    },
+    {
+      "stem": "rvv_update_into",
+      "scope": "Read-only old artifact identity, no H3 fresh credit",
+      "goal_sha256": "3a6d978244bfe2ddc96788b62129d2bb72a5da7069aa1306f103ef45dd9ea317",
+      "raw_definition_sha256": "bf03497300b9033419d2bad4ba416a6a75bd80cb3780dcf2c7399557a3cc78d6"
+    },
+    {
+      "stem": "rvv_record_consumers",
+      "scope": "Read-only old artifact identity, no H3 fresh credit",
+      "goal_sha256": "ee65a370d12dd8f12be891b2cbda7ba23ff8dc94a83074dbfddd22ee0aef7f9b",
+      "raw_definition_sha256": "5956fe9806a4e4b61651ae2ab96d6ab8f00a0a8c91012a2e2fbb9be5ac795722"
+    }
+  ]
+}

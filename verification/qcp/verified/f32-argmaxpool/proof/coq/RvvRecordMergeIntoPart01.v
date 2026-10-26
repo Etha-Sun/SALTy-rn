@@ -1,0 +1,8 @@
+From ArgmaxPool Require Import RvvRecordMergeIntoSupport rvv_record_merge_into_goal.
+Import Snaive_C_Rules64. Local Open Scope sac.
+Module CheckedRvvRecordMergeIntoPart01.
+Lemma proof_of_ap_record_rvv_merge_into32_partial_solve_wit_1:ArgmaxPool.rvv_record_merge_into_goal.ap_record_rvv_merge_into32_partial_solve_wit_1.
+Proof. unfold ArgmaxPool.rvv_record_merge_into_goal.ap_record_rvv_merge_into32_partial_solve_wit_1;apb_intro;
+aprr_frame. Qed.
+End CheckedRvvRecordMergeIntoPart01.
+Print Assumptions CheckedRvvRecordMergeIntoPart01.proof_of_ap_record_rvv_merge_into32_partial_solve_wit_1.

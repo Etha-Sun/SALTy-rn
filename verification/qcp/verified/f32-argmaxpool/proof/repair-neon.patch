@@ -1,0 +1,97 @@
+--- a/impl/testNEON.c
++++ b/impl/testNEON.c
+@@ -30,17 +30,50 @@
+     assert(!ab);
+     assert(!ib);
+ 
+-    int k = (int) pooling_elements;
+-    for (; k > 0; k -= 9) {
+-      const float* i0 = *id++;
+-      const float* i1 = 1 < k ? *id++ : i0;
+-      const float* i2 = 2 < k ? *id++ : i0;
+-      const float* i3 = 3 < k ? *id++ : i0;
+-      const float* i4 = 4 < k ? *id++ : i0;
+-      const float* i5 = 5 < k ? *id++ : i0;
+-      const float* i6 = 6 < k ? *id++ : i0;
+-      const float* i7 = 7 < k ? *id++ : i0;
+-      const float* i8 = 8 < k ? *id++ : i0;
++    size_t k = pooling_elements;
++    for (; k > 0; k = k > 9 ? k - 9 : 0) {
++      const float* i0 = ap_read_table(id);
++      id += 1;
++      const float* i1 = i0;
++      if (1 < k) {
++        i1 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i2 = i0;
++      if (2 < k) {
++        i2 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i3 = i0;
++      if (3 < k) {
++        i3 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i4 = i0;
++      if (4 < k) {
++        i4 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i5 = i0;
++      if (5 < k) {
++        i5 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i6 = i0;
++      if (6 < k) {
++        i6 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i7 = i0;
++      if (7 < k) {
++        i7 = ap_read_table(id);
++        id += 1;
++      }
++      const float* i8 = i0;
++      if (8 < k) {
++        i8 = ap_read_table(id);
++        id += 1;
++      }
+       i0 = (const float*) ((uintptr_t) i0 + input_offset);
+       i1 = (const float*) ((uintptr_t) i1 + input_offset);
+       i2 = (const float*) ((uintptr_t) i2 + input_offset);
+@@ -147,8 +180,22 @@
+         float32x4_t vmax;
+         uint32x4_t vidx;
+         if (ab) {
+-          vmax = vld1q_f32(ab);
+-          vidx = vld1q_u32(ib);
++          const float previous0 = ap_read_previous_float(ab);
++          const uint32_t previous_index0 = ap_read_previous_uint(ib);
++          vmax = vsetq_lane_f32(previous0, vi0, 0);
++          vidx = vsetq_lane_u32(previous_index0, vidx0, 0);
++          if (c >= 2) {
++            const float previous1 = ap_read_previous_float(ab + 1);
++            const uint32_t previous_index1 = ap_read_previous_uint(ib + 1);
++            vmax = vsetq_lane_f32(previous1, vmax, 1);
++            vidx = vsetq_lane_u32(previous_index1, vidx, 1);
++          }
++          if (c >= 3) {
++            const float previous2 = ap_read_previous_float(ab + 2);
++            const uint32_t previous_index2 = ap_read_previous_uint(ib + 2);
++            vmax = vsetq_lane_f32(previous2, vmax, 2);
++            vidx = vsetq_lane_u32(previous_index2, vidx, 2);
++          }
+ 
+           const uint32x4_t vm0 = vcgtq_f32(vi0, vmax);
+           vmax = vbslq_f32(vm0, vi0, vmax);
+@@ -220,5 +267,6 @@
+     input_offset += input_pixel_stride;
+     output = (float*) ((uintptr_t) output + output_increment);
+     index = (uint32_t*) ((uintptr_t) index + index_increment);
+-  } while (--output_pixels != 0);
++    output_pixels -= 1;
++  } while (output_pixels != 0);
+ }

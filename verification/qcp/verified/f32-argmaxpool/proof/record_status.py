@@ -1,0 +1,170 @@
+#!/usr/bin/env python3
+"""Independently audit and archive a completed whole Argmax run.
+
+No QCP/Coq proof is run here. Missing full evidence is rejected. This writer
+never edits the global registry or treats a component as a verified kernel.
+"""
+import argparse,gzip,hashlib,importlib.util,json,re,shutil,subprocess,tempfile,sys
+from pathlib import Path
+NS='ArgmaxPool'
+sha=lambda p:hashlib.sha256(Path(p).read_bytes()).hexdigest()
+read=lambda p:json.loads(Path(p).read_text())
+ALLOWED={
+ 'CNotation.LE_arrow_field_congr','CNotation.RE_addr_of_congr',
+ 'CNotation.eval_addr_expr','CNotation.eval_addr_expr_congr',
+ 'CNotation.sizeof_alias_type','CNotation.sizeof_enum_type',
+ 'CNotation.sizeof_struct_type','CNotation.sizeof_union_type',
+ 'ClassicalDedekindReals.sig_forall_dec','ClassicalDedekindReals.sig_not_dec',
+ 'Classical_Prop.classic','FunctionalExtensionality.functional_extensionality_dep',
+ 'SeparationLogic.Snaive_C_Rules64.eval_addr'}
+def require(value,message):
+ if not value:raise ValueError(message)
+def module(name,path):
+ sys.path.insert(0,str(Path(path).parent))
+ spec=importlib.util.spec_from_file_location(name,path);m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m);return m
+def preserve(source,target):
+ source,target=Path(source),Path(target);target.parent.mkdir(parents=True,exist_ok=True)
+ require(not target.exists()or source.read_bytes()==target.read_bytes(),'Immutable archive differs: '+str(target))
+ if not target.exists():shutil.copyfile(source,target)
+def check_hashes(case,values):
+ require(bool(values),'Empty frozen source inventory')
+ for name,digest in values.items():
+  require(not Path(name).is_absolute()and(case/name).resolve().is_relative_to(case.resolve()),'Source escapes case: '+name)
+  require(sha(case/name)==digest,'Source identity changed: '+name)
+def assumption_names(text):
+ names=set(re.findall(r'^([A-Za-z_]\w*(?:\.\w+)*)\s*:',text,re.M))-{'Axioms'};result=set()
+ for name in names:
+  matches={n for n in ALLOWED if n==name or('.'not in name and n.rsplit('.',1)[-1]==name)}
+  if name in {'Snaive_C_Rules64.eval_addr','SimpleC.SL.SeparationLogic.Snaive_C_Rules64.eval_addr'}:matches={'SeparationLogic.Snaive_C_Rules64.eval_addr'}
+  require(len(matches)==1,'Unknown/ambiguous inherited assumption: '+name);result|=matches
+ return sorted(result)
+def native_log(case,status_name,n,record):
+ original=Path(n['run_directory'])/(record['label']+'.log')
+ archived=case/'proof/evidence/native'/Path(status_name).stem/original.name
+ return archived if archived.exists()else original
+def identity(case,work,handoff=None):
+ from full_identity import identity as audit_identity
+ return audit_identity(case,work,handoff)
+def validate(case,run,h,f):
+ require(f['passed']is True and f['whole_kernel_verified']is True and f['no_component_vo_reused']is True,'Completed full ordinary source replay required')
+ require((run/'status.json').read_bytes()==(case/'proof/full-status.json').read_bytes(),'Original/public full receipt differ')
+ require(set(h['inherited_assumption_allowlist'])==ALLOWED,'Inherited assumption boundary differs')
+ require(h['namespace']==NS and h['strategies']==f['strategies']==[],'Unexpected namespace/strategy scope')
+ require(f['handoff_sha256']==sha(case/'proof/frozen-full-handoff.json')and f['input_sha256']==h['frozen_source_sha256']and f['limits']==h['limits']and f['config_sha256']==h['coq_config_sha256'],'Full/H binding differs');check_hashes(case,f['input_sha256'])
+ require(not({'proof/status.json','proof/manifest.json','proof/assumption-audit.json'}&set(f['input_sha256'])),'Mutable certificate outputs cannot be frozen proof inputs')
+ require(f['peak_address_space_admitted_bytes']<=32*16*1024**3 and f['peak_actual_live_processes']<=32,'Aggregate admission cap exceeded')
+ require(f['parallel_jobs']==32 and 2<=f['initial_live_admission_slots']<=32 and f['ordinary_process_memory_GiB']==16 and f['heavy_process_memory_GiB']==32,'Unreviewed resource profile')
+ from full_inputs import definition_emission_policy,check_definition_emission,check_opaque_C
+ require(h['definition_emission_policies']=={u['stem']:definition_emission_policy(u['stem'])for u in h['units']},'Frozen definition emission policy mismatch')
+ units=f['actual_c_units'];stems={u['stem']for u in units}
+ require(len(units)==f['checked_c_units']==len(h['units'])==len(stems)==10 and f['checked_strategy_fields']==0 and f['checked_second_c_fields']==2362 and h['total_actual_c_vcs']==2362 and h['actual_c_function_count']==14,'Actual complete C/strategy inventory differs')
+
+ require(sum(len(u['fields'])for u in units)==f['checked_c_vcs']==h['total_actual_c_vcs'],'Actual C field accounting differs')
+ artifacts=[];cpp={}
+ for actual,expected in zip(units,h['units']):
+  stem=expected['stem'];goal=run/'units'/stem/'generated'/(stem+'_goal.v');expanded=run/'units'/stem/(stem+'.c')
+  require(actual['namespace']==NS and actual['stem']==stem and actual['checked_module']==expected['typed_instance'],'Typed unit/H mismatch')
+  require(all(actual[k]==expected[k]for k in ['fields','goal_sha256','cpp_sha256'])and actual['c_vcs']==len(actual['fields']),'Actual unit/H identity mismatch')
+  require(sha(goal)==actual['goal_sha256']and sha(expanded)==actual['cpp_sha256']and(goal.read_bytes()==(run/'coq'/NS/goal.name).read_bytes()),'Fresh goal/CPP differs')
+  require(re.findall(r'^Axiom proof_of_(\w+)\s*:',goal.read_text(),re.M)==actual['fields'],'Actual generated field inventory changed')
+  qcp=[r for r in f['records']if r['label']==stem+'-qcp'];require(len(qcp)==1 and '--arch=64'in qcp[0]['command']and '--endian=little'in qcp[0]['command']and '--input-file='+str(Path(f['run_directory'])/'units'/stem/(stem+'.c'))in qcp[0]['command'],'Missing actual C generation command')
+  policy=check_definition_emission(stem,goal,goal.parent,after_replacement=True);require(actual['definition_emission_policy']==expected['definition_emission_policy']==policy,'Actual/H definition emission policy mismatch');check_opaque_C(stem,expanded.read_text())
+  cpp[stem]=expanded;artifacts.extend([(expanded,Path('units')/stem/'expanded.c'),(goal,Path('units')/stem/'goal.v')])
+  if policy['raw_def_emission']=='required':
+   require(bool(expected.get('definition_source')),'Record canonical definition missing')
+   folder=goal.parent;definition=folder/(stem+'_def.v');raw=folder/(stem+'_def.emitted.v.txt')
+   require(definition.read_text()==expected['definition_source']and sha(definition)==expected['definition_source_sha256']==actual['definition_source_sha256'],'Faithful model export differs')
+   require(raw.is_file()and sha(raw)==actual['raw_definition_sha256'],'Rejected raw emitter not preserved')
+   require(definition.read_bytes()==(run/'coq'/NS/definition.name).read_bytes(),'Compiled model export differs')
+   artifacts.extend([(definition,Path('units')/stem/definition.name),(raw,Path('units')/stem/raw.name)])
+  else:
+   require(expected.get('definition_source')is None and expected.get('definition_source_sha256')is None and actual['definition_source_sha256']is None and actual['raw_definition_sha256']is None,'Forbidden fabricated definition credit '+stem)
+   require(not(run/'coq'/NS/(stem+'_def.v')).exists(),'Forbidden opaque/scalar compiled def '+stem)
+
+ coverage=module('argmax_issuer_coverage',case/'proof/full_call_coverage.py');closure=json.loads(json.dumps(coverage.check(cpp)))
+ require(closure['source_closure_passed']and closure==f['call_closure']['source_audit']and closure['unique_actual_C_definitions']==h['actual_c_function_count']==f['call_closure']['unique_c_functions_with_bodies'],'Actual ordinary body/call/contract closure differs')
+ require(f['call_closure']['unbound_callees']==f['call_closure']['declarations_without_checked_body']==[]and f['call_closure']['intrinsic_spec_body_credit']is False,'Unproved ordinary callees or incorrect intrinsic credit')
+ records=f['records'];require(records and len({r['label']for r in records})==len(records)and all(r['exit_code']==0 for r in records),'Missing/duplicate/failed full execution')
+ compiled=f['compiled_source_sha256'];ordinary={}
+ for r in records:
+  command=r['command'];mem=r['memory_GiB'];require(mem in{16,32}and command[:3]==['prlimit','--as='+str(mem*1024**3)+':'+str(mem*1024**3),'--']and 0<r['timeout_seconds']<=21600,'Finite execution/resource guard differs')
+  require(sha(run/(r['label']+'.log'))==r['log_sha256'],'Full execution log changed: '+r['label'])
+  if 'coqc'in command:
+   require(command[3:5]==['qcp-env','coqc']and not any(a.startswith(('-vos','-vok','-quick','-vio'))for a in command),'Ordinary Coq compilation required')
+   require(command[5:-1]==['-time',*h['coq_flags'],'-Q',str(Path(f['run_directory'])/'coq'/NS),NS],'Unexpected ordinary flags or project library mapping')
+   require(command[-1]not in ordinary,'Duplicate ordinary source compilation');ordinary[command[-1]]=r
+ require(len(compiled)==len(ordinary)==f['fresh_compiled_local_modules']==647,'Ordinary source compilation inventory differs')
+ gates={'UnitInterfaces','UnitSecond','FinalCaseCheck'}|{'AssumptionsPart'+str(i).zfill(2)for i in range(16)}
+ require(set(compiled)=={NS+'.'+n for n in set(h['own_modules'])|gates},'Unexpected/missing fresh source modules')
+ generated={u['stem']+'_goal'for u in units}|{u['stem']+'_def'for u in h['units']if u.get('definition_source')}
+ for logical,digest in compiled.items():
+  require(logical.startswith(NS+'.')and logical.count('.')==1,'Unexpected project namespace');stem=logical.split('.')[1];relative=Path('coq')/NS/(stem+'.v')
+  require(sha(run/relative)==digest and str(Path(f['run_directory'])/relative)in ordinary,'Compiled source identity differs: '+logical)
+  if stem in h['own_modules']and stem not in generated:require(sha(case/'proof/coq'/(stem+'.v'))==digest,'Public ordinary source differs: '+stem)
+  artifacts.append((run/relative,relative))
+ runner=module('argmax_issuer_runner',case/'proof/check_full.py')
+ require((run/'coq'/NS/'UnitInterfaces.v').read_text()==runner.interface_source(units,f['strategies']),'Typed complete interfaces differ')
+ require((run/'coq'/NS/'UnitSecond.v').read_text()==runner.second_source(units),'Independent second full type source differs')
+ c_reports=['Print Assumptions '+NS+'.UnitInterfaces.ActualUnit'+str(i)+'.proof_of_'+field+'.'for i,u in enumerate(units)for field in u['fields']]
+ math_reports=runner.mathematical_support_reports(run/'coq'/NS,h['math_modules'],h['strategies'])
+ require(math_reports==f['mathematical_support_reports']and {'APPublicModel','APProgramObservation'}<=set(h['math_modules']),'Program observation/full-state mathematical reports missing')
+ strategy_reports=['Print Assumptions '+NS+'.UnitInterfaces.ActualStrategy'+str(i)+'.'+field+'.'for i,u in enumerate(f['strategies'])for field in u['fields']];require(not strategy_reports,'Unexpected strategy reports');second_reports=['Print Assumptions '+NS+'.UnitSecond.SecondUnit'+str(i)+'.proof_of_'+field+'.'for i,u in enumerate(units)for field in u['fields']];reports=c_reports+second_reports+math_reports;require(len(reports)==len(set(reports)),'Duplicate final theorem report');parts=f['assumption_parts'];require(len(parts)==16,'Incomplete assumption shards');texts=[]
+ for i,part in enumerate(parts):
+  name='AssumptionsPart'+str(i).zfill(2);lines=reports[i::16];source='From ArgmaxPool Require Import UnitInterfaces UnitSecond '+' '.join(h['math_modules'])+'.\n'+'\n'.join(lines)+'\n'
+  require(part['name']==name and part['reports']==lines and(run/'coq'/NS/(name+'.v')).read_text()==source,'Final Print source/partition differs')
+  text=(run/(name+'.log')).read_bytes();require(len(re.findall(rb'^(?:Axioms:|Closed under the global context)',text,re.M))==len(lines),'Missing/duplicate actual Print result');texts.append(text)
+ aggregate=run/'FinalAssumptions.log';require(aggregate.read_bytes()==b''.join(texts)and sha(aggregate)==f['final_assumptions_log_sha256'],'Final aggregated assumptions differ')
+ final=run/'coq'/NS/'FinalCaseCheck.v';expected=runner.final_source(parts)
+ require(final.read_text()==expected and sha(final)==f['final_gate_sha256'],'Final full program gate differs')
+ dep=read(run/'coqdep-status.json');require(dep['exit_code']==0 and dep['command'][:5]==['prlimit','--as=17179869184:17179869184','--','qcp-env','coqdep']and dep['stdout_sha256']==sha(run/'dependencies.mk')and dep['stderr_sha256']==sha(run/'coqdep.log'),'Actual finite dependency-extraction record differs')
+ require({n for n in dep['command']if n.endswith('.v')}=={str(Path(f['run_directory'])/'coq'/NS/(n+'.v'))for n in h['own_modules']},'Actual dependency-extraction source inventory differs')
+ external=module('argmax_issuer_external',case/'proof/external_dependencies.py');origin=external.validate_external(case,run,f,require)
+ for name in ['external-before.v','external-before-locations.v','external-after.v','external-after-locations.v','external-dependencies.json','FinalAssumptions.log','coqdep-status.json','dependencies.mk','coqdep.log']:artifacts.append((run/name,Path(name)))
+ return dict(passed=True,print_commands=len(reports),actual_C_print_commands=len(c_reports),strategy_print_commands=0,second_actual_C_print_commands=len(second_reports),mathematical_support_print_commands=len(math_reports),inherited_assumption_names=assumption_names(aggregate.read_text()),new_project_axioms_observed=False,library_origin_audit=origin),artifacts
+def issue(case,run,h,f,audit,artifacts,identities):
+ proof=case/'proof';archive=proof/'evidence/full-run';check_hashes(case,f['input_sha256'])
+ for name in ['full-status.json','frozen-full-handoff.json']:preserve(proof/name,archive/('status.json'if name=='full-status.json'else name))
+ for record in f['records']:preserve(run/(record['label']+'.log'),archive/'logs'/(record['label']+'.log'))
+ artifact_index=[]
+ for source,target in artifacts:
+  source=Path(source);target=Path(target)
+  if source.stat().st_size>8*1024**2:
+   data=source.read_bytes();compressed=gzip.compress(data,mtime=0);dest=archive/(str(target)+'.gz');dest.parent.mkdir(parents=True,exist_ok=True)
+   require(not dest.exists()or dest.read_bytes()==compressed,'Immutable gzip archive differs')
+   if not dest.exists():dest.write_bytes(compressed)
+   require(gzip.decompress(dest.read_bytes())==data,'Archive gzip roundtrip differs')
+   artifact_index.append(dict(path=str(dest.relative_to(case)),sha256=sha(dest),raw_sha256=sha(source),raw_bytes=len(data),encoding='gzip'))
+  else:
+   preserve(source,archive/target);artifact_index.append(dict(path=str((archive/target).relative_to(case)),sha256=sha(archive/target),encoding='identity'))
+ (archive/'artifact-index.json').write_text(json.dumps(artifact_index,indent=2)+'\n')
+ for native in identities['native_statuses']:
+  n=read(case/native['path']);dest=proof/'evidence/native'/Path(native['path']).stem
+  for record in n['records']:
+   log=native_log(case,native['path'],n,record);preserve(log,dest/log.name)
+  preserve(case/native['path'],dest/'status.json')
+ for name in ['status.json','manifest.json']:
+  path=proof/name
+  if path.exists():
+   require(not read(path).get('whole_kernel_verified',read(path).get('whole_kernel_proved',False)),'Refuse to overwrite issued certificate');preserve(path,proof/'evidence/candidate-history'/(path.stem+'-'+sha(path)+'.json'))
+ (proof/'assumption-audit.json').write_text(json.dumps(dict(audit,full_status_sha256=sha(proof/'full-status.json')),indent=2)+'\n')
+ files=[]
+ for path in sorted(case.rglob('*')):
+  relative=path.relative_to(case)
+  if not path.is_file()or any(n in{'.build','__pycache__'}for n in relative.parts)or path in{proof/'status.json',proof/'manifest.json'}or path.suffix in{'.vo','.vos','.vok','.glob','.aux','.pyc'}:continue
+  files.append(dict(path=str(relative),sha256=sha(path)))
+ manifest=dict(schema=2,kernel=case.name,variant=read(proof/'repair.json')['variant'],whole_kernel_proved=True,files=files,full_evidence='proof/evidence/full-run/status.json',full_evidence_sha256=sha(proof/'full-status.json'),intrinsic_spec_body_credit=False)
+ (proof/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
+ status=dict(schema=2,kernel=case.name,passed=True,scope='full',status='proved',whole_kernel_verified=True,whole_kernel_proved=True,checked_c_units=f['checked_c_units'],checked_c_vcs=f['checked_c_vcs'],checked_strategy_fields=f['checked_strategy_fields'],unique_c_functions_with_bodies=h['actual_c_function_count'],ordinary_modules_including_final=f['fresh_compiled_local_modules'],final_assumptions_report_count=audit['print_commands'],full_evidence='full-status.json',full_evidence_sha256=sha(proof/'full-status.json'),manifest_sha256=sha(proof/'manifest.json'),assumption_audit_sha256=sha(proof/'assumption-audit.json'),inherited_assumption_names=audit['inherited_assumption_names'],human_intrinsic_spec_review='pending',formal_isa_refinement_established=False,intrinsic_spec_body_credit=False,implementation_variant=manifest['variant'],limits=h['limits'],remaining=[],formal_proof_replayed_by_writer=False,verified_manifest_changed=False)
+ (proof/'status.json').write_text(json.dumps(status,indent=2)+'\n')
+def main():
+ parser=argparse.ArgumentParser(description=__doc__);parser.add_argument('--proof-run',type=Path);parser.add_argument('--preflight',action='store_true');parser.add_argument('--dry-run',action='store_true');args=parser.parse_args();case=Path(__file__).resolve().parent.parent
+ require(case.name=='f32-argmaxpool','Unknown case');work=Path(tempfile.mkdtemp(prefix='record-audit-',dir=case/'.build'));report=dict(passed=False,formal_proof_replayed=False,certificate_issued=False,directory=str(work))
+ try:
+  hp=case/'proof/frozen-full-handoff.json';h=read(hp)if hp.exists()else None;report['identity']=identity(case,work,h)
+  if not args.preflight:
+   require(h is not None,'Complete frozen handoff required');f=read(case/'proof/full-status.json');run=args.proof_run.resolve()if args.proof_run else Path(f['run_directory']);audit,artifacts=validate(case,run,h,f);report['assumptions']=audit
+   if not args.dry_run:issue(case,run,h,f,audit,artifacts,report['identity']);report['certificate_issued']=True
+  report['passed']=True
+ except Exception as error:report['error']=repr(error)
+ (work/'status.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2));return 0 if report['passed']else 1
+if __name__=='__main__':raise SystemExit(main())

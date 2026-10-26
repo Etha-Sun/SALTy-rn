@@ -1,0 +1,66 @@
+{
+  "passed": true,
+  "whole_kernel_verified": false,
+  "scope": "actual initialized scalar previous-output/index readers only; no main kernel credit",
+  "run_directory": "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/initialized-readers-generation-em6e4m6v",
+  "records": [
+    {
+      "label": "cpp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "gcc",
+        "-E",
+        "-P",
+        "-CC",
+        "-nostdinc",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/initialized-readers-generation-em6e4m6v/read_previous.c",
+        "-o",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/initialized-readers-generation-em6e4m6v/read_previous.i"
+      ],
+      "exit_code": 0,
+      "seconds": 0.01688706804998219,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "label": "qcp",
+      "command": [
+        "prlimit",
+        "--as=17179869184:17179869184",
+        "--",
+        "qcp",
+        "--arch=64",
+        "--endian=little",
+        "--no-float-finite-vc",
+        "--no-exec-info",
+        "--input-file=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/initialized-readers-generation-em6e4m6v/read_previous.i",
+        "--coq-output-dir=/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/.build/initialized-readers-generation-em6e4m6v",
+        "--coq-logic-path=ArgmaxPool",
+        "-slp",
+        "/srv/home/yuechunsun/tools/qcp-simple-kernels/verification/qcp/candidates/f32-argmaxpool/shim",
+        "ArgmaxPool"
+      ],
+      "exit_code": 0,
+      "seconds": 0.018315994180738926,
+      "log_sha256": "9d16d940bb112fd7569b5f6538055bcff6eb99cda133f9db68764c4f957cd2a2"
+    }
+  ],
+  "input_sha256": {
+    "shim/formal_model.h": "50cc39a0a4db75b3f3b88296ac30589246e91d6f6dcb6c13e4e7e630bdf2e526",
+    "shim/read_previous.h": "4c75dbafa0dc9e4df654ef82edfcfa3819350a998c6bd7a1fbf959969fa5ba48",
+    "shim/read_previous.c": "2778ef003c38a44dda223673f0a73ce39a30d710ee19e07812b5b67f29db0b5a",
+    "proof/coq/ReadPreviousModel.v": "704595deddb661c5cd1680b41b10ecab50de7664b5f07531ae123a00de0d3c45"
+  },
+  "configured_jobs": 32,
+  "per_process_memory_GiB": 16,
+  "fields": [
+    "ap_read_previous_float_entail_wit_1",
+    "ap_read_previous_float_return_wit_1",
+    "ap_read_previous_uint_entail_wit_1",
+    "ap_read_previous_uint_return_wit_1"
+  ],
+  "actual_reader_C_fields": 4,
+  "goal_sha256": "dfbadecc04567a5ac680cfdf46177c22364972fae81043aa34b4f1711d9bb80e",
+  "cpp_sha256": "4ac11b129d729bb19b6bc46e972fce0feda705ef2049480f9cb82e8f82665b5c"
+}

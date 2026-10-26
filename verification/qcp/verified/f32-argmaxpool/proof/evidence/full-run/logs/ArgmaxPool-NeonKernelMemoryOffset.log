@@ -1,0 +1,53 @@
+Chars 0 - 45 [From~Coq~Require~Import~ZArith...] 0.432 secs (0.236u,0.195s)
+Chars 46 - 120 [From~ArgmaxPool~Require~Import...] 5.744 secs (4.926u,0.803s)
+Chars 121 - 145 [Import~Snaive_C_Rules64.] 0.062 secs (0.062u,0.s)
+Chars 146 - 171 [#[local]~Open~Scope~Z_scope.] 0. secs (0.u,0.s)
+Chars 172 - 193 [#[local]~Open~Scope~sac.] 0. secs (0.u,0.s)
+Chars 194 - 225 [Module~CheckedNeonMemoryOffset.] 0. secs (0.u,0.s)
+Chars 226 - 315 [Lemma~proof_of_test_neon_entai...] 0. secs (0.u,0.s)
+Chars 316 - 322 [Proof.] 0. secs (0.u,0.s)
+Chars 324 - 397 [(unfold~ArgmaxPool.neon_unit_g...] 0.008 secs (0.008u,0.s)
+Chars 399 - 432 [(assert~(Hk~:~0~<~k~<=~app_row...] 0.053 secs (0.053u,0.s)
+Chars 434 - 497 [(assert~(Hrem~:~k~=~app_remain...] 0. secs (0.u,0.s)
+Chars 499 - 500 [{] 0. secs (0.u,0.s)
+Chars 501 - 530 [(rewrite~<-~PreH1;~exact~PreH23).] 0. secs (0.u,0.s)
+Chars 531 - 532 [}] 0. secs (0.u,0.s)
+Chars 534 - 602 [(pose~proof~(apmk_table_cursor...] 0. secs (0.u,0.s)
+Chars 604 - 639 [(rewrite~<-~PreH1,~<-~PreH27~i...] 0. secs (0.u,0.s)
+Chars 641 - 756 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 758 - 873 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 875 - 990 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 992 - 1107 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 1109 - 1224 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 1226 - 1341 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 1343 - 1458 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 1460 - 1575 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 1577 - 1692 [(pose~proof~~~(apmk_row_offset...] 0. secs (0.u,0.s)
+Chars 1694 - 1714 [(rewrite~!Z.sub_diag).] 0.008 secs (0.008u,0.s)
+Chars 1716 - 1771 [(unfold~app_output_cursor;~rew...] 0.025 secs (0.025u,0.s)
+Chars 1773 - 1789 [apkp_call_frame.] 0.482 secs (0.458u,0.023s)
+Chars 1790 - 1794 [Qed.] 0.498 secs (0.497u,0.s)
+Chars 1795 - 1823 [End~CheckedNeonMemoryOffset.] 0. secs (0.u,0.s)
+Chars 1824 - 1961 [Definition~ExactMemoryOffset~:...] 0. secs (0.u,0.s)
+Axioms:
+sizeof_union_type : String.string -> Z
+sizeof_struct_type : String.string -> Z
+sizeof_enum_type : String.string -> Z
+sizeof_alias_type : String.string -> Z
+FunctionalExtensionality.functional_extensionality_dep :
+  forall (A : Type) (B : A -> Type) (f g : forall x : A, B x),
+  (forall x : A, f x = g x) -> f = g
+eval_addr_expr_congr :
+  Morphisms.Proper (Morphisms.respectful rvalue_expr_equiv eq) eval_addr_expr
+eval_addr_expr : rvalue_expr -> addr
+eval_addr :
+  forall (R : rvalue_expr) (t : front_end_type),
+  rvalue_expr_equiv (RE_const (eval_addr_expr R) t) R
+RE_addr_of_congr :
+  Morphisms.Proper (Morphisms.respectful lvalue_expr_equiv rvalue_expr_equiv)
+    RE_addr_of
+LE_arrow_field_congr :
+  Morphisms.Proper
+    (Morphisms.respectful rvalue_expr_equiv
+       (Morphisms.respectful eq lvalue_expr_equiv)) LE_arrow_field
+Chars 1962 - 1998 [Print~Assumptions~ExactMemoryO...] 0.533 secs (0.513u,0.019s)

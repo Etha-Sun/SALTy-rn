@@ -1,0 +1,21 @@
+From ArgmaxPool Require Import block32_goal APBlock32CallPart00 APBlock32CallPart01 APBlock32CallPart02 APBlock32CallPart03 APBlock32CallPart04 APBlock32CallPart05 APBlock32CallPart06 APBlock32CallPart07 APBlock32CallPart08 APBlock32CallPart09 APBlock32CallPart10 APBlock32CallPart11 APBlock32CallPart12 APBlock32CallPart13 APBlock32CallPart14 APBlock32CallPart15 APBlock32CallPart16 APBlock32CallPart17.
+Module CheckedAPBlock32Calls.
+Include ArgmaxPool.APBlock32CallPart00.Checked.
+Include ArgmaxPool.APBlock32CallPart01.Checked.
+Include ArgmaxPool.APBlock32CallPart02.Checked.
+Include ArgmaxPool.APBlock32CallPart03.Checked.
+Include ArgmaxPool.APBlock32CallPart04.Checked.
+Include ArgmaxPool.APBlock32CallPart05.Checked.
+Include ArgmaxPool.APBlock32CallPart06.Checked.
+Include ArgmaxPool.APBlock32CallPart07.Checked.
+Include ArgmaxPool.APBlock32CallPart08.Checked.
+Include ArgmaxPool.APBlock32CallPart09.Checked.
+Include ArgmaxPool.APBlock32CallPart10.Checked.
+Include ArgmaxPool.APBlock32CallPart11.Checked.
+Include ArgmaxPool.APBlock32CallPart12.Checked.
+Include ArgmaxPool.APBlock32CallPart13.Checked.
+Include ArgmaxPool.APBlock32CallPart14.Checked.
+Include ArgmaxPool.APBlock32CallPart15.Checked.
+Include ArgmaxPool.APBlock32CallPart16.Checked.
+Include ArgmaxPool.APBlock32CallPart17.Checked.
+End CheckedAPBlock32Calls.
